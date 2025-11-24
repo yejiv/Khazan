@@ -315,6 +315,12 @@ HRESULT CLoader::Loading_For_Map_Level()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Loop_001/WIP_BGQ_Gear_Loop_001.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 엘리베이터 잠금 해제 기어
+    /* Prototype_Component_Model_UnLockGear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_UnLockGear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_ERM_Gear_Switch_001/WIP_ERM_Gear_Switch_001.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거 모델 원형 ( 야매? )
@@ -497,6 +503,12 @@ HRESULT CLoader::Loading_For_Map_Level()
         CDoor_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
+#pragma region 엘리베이터 잠금 해제 기어
+    /* Prototype_GameObject_Prop_UnLockGear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_UnLockGear"),
+        CUnLockGear::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 게임오브젝트 원형 로딩 ( 트리거 및 몬스터 )
@@ -556,7 +568,7 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_Texture_TestParticle
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Particle_Prototype"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/particle/particle%d.png"), 9))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/particle/particle%d.png"), 10))))
 		return E_FAIL;
 	
 	// Prototype_Component_Texture_TestSpriteImage

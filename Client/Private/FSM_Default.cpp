@@ -18,6 +18,18 @@ HRESULT CFSM_Default::Add_State(_uint iStateIndex, CAI_State* pState)
     return __super::Add_State(iStateIndex, pState);
 }
 
+HRESULT CFSM_Default::Set_CulState(_uint iStateIndex, CGameObject* pOwner)
+{
+    m_pCurrentState = m_States[iStateIndex];
+    if (nullptr == m_pCurrentState)
+        return E_FAIL;
+
+    Safe_AddRef(m_pCurrentState);
+    m_pCurrentState->Enter(this, pOwner);
+
+    return S_OK;
+}
+
 HRESULT CFSM_Default::Initialize(CGameObject* pOwner)
 {
     return S_OK;

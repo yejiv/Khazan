@@ -913,6 +913,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
     m_Prototypes_Inter.push_back("IronGate");
     m_Prototypes_Inter.push_back("Ladder");
     m_Prototypes_Inter.push_back("GearGate");
+    m_Prototypes_Inter.push_back("UnLockGear");
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -1182,6 +1183,23 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Ladder"), TIME_CHANNEL::WORLD, &LadderDesc), );
                 }
+                else if ("UnLockGear" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CUnLockGear::UNLOCK_GEAR_DESC UnLockGearDesc = {};
+
+                    UnLockGearDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    UnLockGearDesc.eLevel = LEVEL::MAP;
+                    memcpy(UnLockGearDesc.szModelName, strModelTag.c_str(), sizeof(UnLockGearDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&UnLockGearDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    UnLockGearDesc.eInteractiveType = INTERACTIVE_TYPE::UNLOCKGEAR;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_UnLockGear"), TIME_CHANNEL::WORLD, &UnLockGearDesc), );
+                }
+
+                // UnLockGear
 #pragma endregion
 
 				CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
@@ -1617,6 +1635,19 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
                 pLadder->Set_TopPosition_Y(m_fLadderTopHeight);
                 pLadder->Set_MiddlePosition_Y(m_fLadderMiddleHeight);
 
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::UNLOCKGEAR == m_pFixPropObj->Get_InteractiveType())
+            {
+                CUnLockGear* pUnLockGear = static_cast<CUnLockGear*>(m_pFixPropObj);
+
+                ImGui::Text("== UNLOCK GEAR INFORMATION ==");
+                ImGui::Text("BEFORE EVENT ID : %d", m_iInteractEventID);
+                SEPARATOR;
+                ImGui::Text("FIX EVENT ID : "); SAMELINE;
+                ImGui::InputInt("##fix_event_id", &m_iFixEventID);
+
+                pUnLockGear->Set_EventID(m_iFixEventID);
                 SEPARATOR;
             }
 
@@ -2182,6 +2213,13 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
                             m_fLadderTopHeightOffset = m_fLadderTopHeight = pLadder->Get_TopPosition_Y();
 
                             m_fLadderMiddleHeightOffset = m_fLadderMiddleHeight = pLadder->Get_MiddlePosition_Y();
+                        }
+
+                        if (INTERACTIVE_TYPE::UNLOCKGEAR == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            CUnLockGear* pUnLockGear = static_cast<CUnLockGear*>(m_pFixPropObj);
+
+                            m_iFixEventID = m_iInteractEventID = pUnLockGear->Get_EventID();
                         }
 
 						m_isFixInteractObjectWindow = true;
@@ -4450,6 +4488,12 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 
                 WriteFile(hObjectFile, &iSegmentCount, sizeof(_int), &dwByte, nullptr);
             }
+            if (INTERACTIVE_TYPE::UNLOCKGEAR == eType)
+            {
+                _int iEventID = static_cast<CProp_Interactive*>(pProp)->Get_EventID();
+
+                WriteFile(hObjectFile, &iEventID, sizeof(_int), &dwByte, nullptr);
+            }
 		}
 	}
 
@@ -5174,6 +5218,23 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Ladder"), TIME_CHANNEL::WORLD, &LadderDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::UNLOCKGEAR == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CUnLockGear::UNLOCK_GEAR_DESC UnLockGearDesc = {};
+
+                UnLockGearDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                UnLockGearDesc.eLevel = LEVEL::MAP;
+                memcpy(UnLockGearDesc.szModelName, TEXT("Prototype_Component_Model_UnLockGear"), sizeof(UnLockGearDesc.szModelName));		// 프로토타입 태그명
+
+                UnLockGearDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                UnLockGearDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FALSE(ReadFile(hObjectFile, &UnLockGearDesc.iEventID, sizeof(_int), &dwByte, nullptr), false);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_UnLockGear"), TIME_CHANNEL::WORLD, &UnLockGearDesc), false);
             }
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));

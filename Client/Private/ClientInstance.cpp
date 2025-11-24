@@ -10,7 +10,7 @@
 #include "Player_Manager.h"
 #include "Interact_Manager.h"
 #include "Sequence_Data_Manager.h"
-
+#include "Sequence_Interface.h"
 #ifdef _DEBUG
 #include "Debug_Manager.h"
 #include "Camera_Controller.h"
@@ -281,6 +281,26 @@ void CClientInstance::Clear_CameraManager(_uint iLevelIndex)
 {
 	m_pCamera_Manager->Clear(iLevelIndex);
 }
+void CClientInstance::Camera_Set_ObjMatrix(_uint iLevelIndex, _wstring strCameraTag, _float4x4* ObjMatrix)
+{
+    m_pCamera_Manager->Set_ObjMatrix(iLevelIndex, strCameraTag, ObjMatrix);
+}
+void CClientInstance::Camera_Switch_CameraMode(CAMERATYPE eType)
+{
+    m_pCamera_Manager->Switch_CameraMode(eType);
+}
+void CClientInstance::Camera_Set_FixEnd()
+{
+    m_pCamera_Manager->Set_FixEnd();
+}
+void CClientInstance::Camera_Set_Animation(_wstring strAnimationTag)
+{
+    m_pCamera_Manager->Set_Animation(strAnimationTag);
+}
+HRESULT CClientInstance::Camera_Set_Animation_Json(string strAnimationTag)
+{
+    return m_pCamera_Manager->Set_Animation_Json(strAnimationTag);
+}
 void CClientInstance::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
 {
     m_pCamera_Manager->Start_ForceOrbit(eForceDir);
@@ -369,11 +389,11 @@ void CClientInstance::Unlock_BladeNexus(_uint iID)
 #pragma endregion
 
 #pragma region SEQ_DATA_MANAGER
-HRESULT CClientInstance::Push_Sequence(_wstring strName, class ISeqInstance* pSequence)
+HRESULT CClientInstance::Push_Sequence(_wstring strName, ISeqInstance* pSequence)
 {
     return m_pSeq_Data_Manager->Push_Sequence(strName, pSequence);
 }
-class ISeqInstance* CClientInstance::Find_Sequence(_wstring strName)
+ISeqInstance* CClientInstance::Find_Sequence(_wstring strName)
 {
     return m_pSeq_Data_Manager->Find_Sequence(strName);
 }

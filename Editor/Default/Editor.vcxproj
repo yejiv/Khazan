@@ -196,6 +196,7 @@
     <ClInclude Include="..\Public\ElevatorS.h" />
     <ClInclude Include="..\Public\Elevator_Gear.h" />
     <ClInclude Include="..\Public\GearGate.h" />
+    <ClInclude Include="..\Public\UnLockGear.h" />
     <ClInclude Include="..\Public\IronGate.h" />
     <ClInclude Include="..\Public\IronGate_Lock.h" />
     <ClInclude Include="..\Public\IronGate_Part_L.h" />
@@ -288,6 +289,7 @@
     <ClCompile Include="..\Private\ElevatorS.cpp" />
     <ClCompile Include="..\Private\Elevator_Gear.cpp" />
     <ClCompile Include="..\Private\GearGate.cpp" />
+    <ClCompile Include="..\Private\UnLockGear.cpp" />
     <ClCompile Include="..\Private\IronGate.cpp" />
     <ClCompile Include="..\Private\IronGate_Lock.cpp" />
     <ClCompile Include="..\Private\IronGate_Part_L.cpp" />

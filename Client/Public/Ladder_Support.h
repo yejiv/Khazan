@@ -21,7 +21,7 @@ public:
 
 private:
     CLadder_Support(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CLadder_Support(const CPartObject& Prototype);
+    CLadder_Support(const CLadder_Support& Prototype);
     virtual ~CLadder_Support() = default;
 
 public:

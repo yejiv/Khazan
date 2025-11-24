@@ -1299,7 +1299,7 @@ void CBody_Khazan_Spear::Free()
     __super::Free();
 
     Safe_Release(m_pMotionTrailCom);
-
+    
     Safe_Release(m_pBodyCom_Search);
     Safe_Release(m_pBodyCom_SpearPole);
     Safe_Release(m_pBodyCom_SpearTip1);
@@ -1311,7 +1311,7 @@ void CBody_Khazan_Spear::Free()
 
     Safe_Release(m_pSpear);
     Safe_Release(m_pClientInstance);
-
+    
     if (!m_isPrototype)
     {
         m_pModelCom->Detach_Part(m_pModelCom_Arm);
@@ -1321,7 +1321,7 @@ void CBody_Khazan_Spear::Free()
         m_pModelCom->Detach_Part(m_pModelCom_Shoes);
         m_pModelCom->Detach_Part(m_pModelCom_Torso);
     }
-
+    
     Safe_Release(m_pParentTransform);
     Safe_Release(m_pShaderCom);
 
@@ -1333,4 +1333,10 @@ void CBody_Khazan_Spear::Free()
     Safe_Release(m_pModelCom_Shoes);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
+
+
+    for (auto pObj : m_CollMonsters)
+        Safe_Release(pObj);
+    m_CollMonsters.clear();
+
 }

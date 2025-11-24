@@ -2,6 +2,7 @@
 #include "Camera_Compre.h"
 #include "UI_Announce_MapName.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 CSequence_HeinMach_Field::CSequence_HeinMach_Field(CCamera_Compre* pCamera)
     : m_pCamera_Compre { pCamera }
@@ -16,47 +17,8 @@ HRESULT CSequence_HeinMach_Field::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 	m_fTime = tDesc.fStartTime;
     m_State = STATE::Playing;
 
-    
 	string filePath = "../../Client/Bin/Data/Camera/Animation/HeinMach";
-	filePath += ".json";
-	ifstream In(filePath);
-	if (!In.is_open())
-	{
-		MSG_BOX(TEXT("UI JSON 파일 불러오기 실패"));
-		In.close();
-	}
-	else
-	{
-		nlohmann::json jsonData;
-		In >> jsonData;
-
-		map<_wstring, vector<CAMERA_KEYFRAME>> Animations;
-		for (auto Animation : jsonData["Animation"])
-		{
-			vector<CAMERA_KEYFRAME> KeyFrames;
-			for (auto Ani : Animation["Animations"])
-			{
-				CAMERA_KEYFRAME KeyFrame{};
-				KeyFrame.vTranslation.x = Ani["Translation"]["x"];
-				KeyFrame.vTranslation.y = Ani["Translation"]["y"];
-				KeyFrame.vTranslation.z = Ani["Translation"]["z"];
-				KeyFrame.vLookAt.x = Ani["LookAt"]["x"];
-				KeyFrame.vLookAt.y = Ani["LookAt"]["y"];
-				KeyFrame.vLookAt.z = Ani["LookAt"]["z"];
-				KeyFrame.vLookAt.w = Ani["LookAt"]["w"];
-				KeyFrame.fSpeed = Ani["Speed"];
-				KeyFrame.fTrackPosition = Ani["TrackPosition"];
-				KeyFrame.isCurPos = Ani["isCurPos"];
-
-				KeyFrames.push_back(KeyFrame);
-			}
-
-			Animations.emplace(AnsiToWString(Animation["Name"]), KeyFrames);
-		}
-
-		m_pCamera_Compre->Load_Animation(Animations);
-
-	}
+    CClientInstance::GetInstance()->Camera_Set_Animation_Json(filePath);
 
     return S_OK;
 }

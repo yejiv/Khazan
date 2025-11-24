@@ -1120,6 +1120,24 @@
     <Filter Include="92.AI\State\Viper\13.5HitCombo">
       <UniqueIdentifier>{8ec62639-19b8-4845-94bc-69ab15b162c5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\01.Trigger\01.Embars\Embars_Trigger">
+      <UniqueIdentifier>{4a4c48b1-c1ef-47ea-a805-8864a198e555}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\11.UnLockGear">
+      <UniqueIdentifier>{1acb5ddc-1a20-48b3-bcb0-901a9c9dcd3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Embars">
+      <UniqueIdentifier>{ec33bbf4-67c3-44e0-bf6d-a5fdac1d5c90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Embars\Puzzle_First">
+      <UniqueIdentifier>{e56fe0e5-fe85-43d6-be56-da7b45f75b0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Embars\Puzzle_Second">
+      <UniqueIdentifier>{0239f673-84dd-4160-aca1-f77a0134a12f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Embars\Puzzle_Thrid">
+      <UniqueIdentifier>{34c06702-b641-444c-b914-c404a3a692ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2155,6 +2173,21 @@
     <ClInclude Include="..\Public\AS_5HitCombo_Viper.h">
       <Filter>92.AI\State\Viper\13.5HitCombo</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Embars_Trigger.h">
+      <Filter>02.GameObject\MapObject\01.Trigger\01.Embars\Embars_Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UnLockGear.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\11.UnLockGear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Embars_Puzzle_First.h">
+      <Filter>04.Sequence\Embars\Puzzle_First</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Embars_Puzzle_Second.h">
+      <Filter>04.Sequence\Embars\Puzzle_Second</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Embars_Puzzle_Third.h">
+      <Filter>04.Sequence\Embars\Puzzle_Thrid</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3071,8 +3104,6 @@
     <ClCompile Include="..\Private\IronGate_Part_L.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Left</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\IronGate_Part_R.cpp">
-    </ClCompile>
     <ClCompile Include="..\Private\TwinBlade_Viper.cpp">
       <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBlade</Filter>
     </ClCompile>
@@ -3104,9 +3135,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_5HitCombo_Viper.cpp">
       <Filter>92.AI\State\Viper\13.5HitCombo</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\.cpp">
-      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Ladder_Middle.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Middle</Filter>
@@ -3167,6 +3195,27 @@
     </ClCompile>
     <ClCompile Include="..\Private\GearGate.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Embars_Trigger.cpp">
+      <Filter>02.GameObject\MapObject\01.Trigger\01.Embars\Embars_Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate_Part_R.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Right</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UnLockGear.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\11.UnLockGear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Embars_Puzzle_First.cpp">
+      <Filter>04.Sequence\Embars\Puzzle_First</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Embars_Puzzle_Second.cpp">
+      <Filter>04.Sequence\Embars\Puzzle_Second</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Embars_Puzzle_Third.cpp">
+      <Filter>04.Sequence\Embars\Puzzle_Thrid</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
