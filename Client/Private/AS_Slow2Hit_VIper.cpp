@@ -25,7 +25,7 @@ void CAS_Slow2Hit_VIper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        pViper->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pViper->Get_Name(), "isSlow2HitFinished", true);
+        pViper->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pViper->Get_Name(), "isP1_Slow2HitFinished", true);
     }
 
 }

@@ -9,6 +9,7 @@ NS_BEGIN(Engine)
 class CShader;
 class CModel;
 class CBody;
+class CMotionTrail;
 NS_END
 
 NS_BEGIN(Client)
@@ -73,7 +74,12 @@ public:
         m_OutlineConfig.fSize = Config.fSize;
     }
     // Shader
-    void        Set_EnableEdge(_bool isEnable) { m_isEnableEdge = isEnable; }
+    void                        Set_EnableEdge(_bool isEnable) { m_isEnableEdge = isEnable; }
+    const MOTIONTRAIL_CONFIG&   Get_MotionTrailConfig();
+    void                        Set_MotionTrailConfig(const MOTIONTRAIL_CONFIG& Config);
+    void                        Set_EnableMotionTrail(_bool isEnable);
+    _bool                       isEnableMotionTrail();
+    void                        Start_MotionTrail(_float fDuration);
 
     _bool       Is_SpearFullExtension() const { return m_isSpearFullExtension; }
 
@@ -96,6 +102,8 @@ private:
     CBody*              m_pBodyCom_SpearTip1 = { nullptr };
     CBody*              m_pBodyCom_SpearPole = { nullptr };
     CBody*              m_pBodyCom_Search = { nullptr };
+
+    CMotionTrail*       m_pMotionTrailCom = { nullptr };
 
     _float4x4*          m_pSpearFX_Matrix = { nullptr };
     _matrix				m_SpearOffset_Matrix = {};
@@ -164,6 +172,7 @@ private:
 
     // Shader
     _bool               m_isEnableEdge = { true };
+    _bool               m_isEnableMotionTrail = {};
 
 
     COLLISION_DESC      m_tSearchCollisionDesc = {};

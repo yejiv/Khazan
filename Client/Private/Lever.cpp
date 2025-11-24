@@ -47,6 +47,8 @@ HRESULT CLever::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(ANIM_STATE::IDLE1);
     m_pModelCom->Set_AnimationLoop(true);
     m_pModelCom->Set_AnimationBlend(false);
+    m_pModelCom->Play_Animation(0.f);
+    m_pModelCom->Set_AnimationBlend(true);
 
     m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {

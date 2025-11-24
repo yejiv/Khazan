@@ -267,5 +267,5 @@ void CElevatorS::Free()
 {
     __super::Free();
 
-
+    Safe_Release(m_pBodyCom);
 }

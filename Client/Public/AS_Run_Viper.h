@@ -2,7 +2,7 @@
 #include "AI_State.h"
 #include "Client_Defines.h"
 
-NS_BEGIN(Engine)
+NS_BEGIN(Client)
 
 class CAS_Run_Viper final : public CAI_State
 {

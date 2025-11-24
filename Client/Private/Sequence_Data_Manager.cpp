@@ -22,6 +22,7 @@ HRESULT CSequence_Data_Manager::Push_Sequence(_wstring strName, ISeqInstance* pS
         return E_FAIL;
 
     m_Sequences.emplace(strName, pSequence);
+    return S_OK;
 }
 
 class ISeqInstance* CSequence_Data_Manager::Find_Sequence(_wstring strName)
@@ -52,6 +53,8 @@ HRESULT CSequence_Data_Manager::Remove_Sequence(_wstring strName)
         return E_FAIL;
 
     m_Sequences.erase(strName);
+
+    return S_OK;
 }
 
 CSequence_Data_Manager* CSequence_Data_Manager::Create()

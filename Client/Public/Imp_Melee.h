@@ -3,6 +3,7 @@
 
 NS_BEGIN(Engine)
 class CModel;
+class CGameInstance;
 NS_END
 
 NS_BEGIN(Client)

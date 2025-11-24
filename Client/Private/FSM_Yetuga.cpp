@@ -18,6 +18,7 @@
 #include "AS_Dead_Yetuga.h"
 #include "AS_LockOn_Yetuga.h"
 #include "AS_CutScene_Yetuga.h"
+#include "AS_SideMove_P1_Viper.h"
 
 CFSM_Yetuga::CFSM_Yetuga()
 {
@@ -69,7 +70,6 @@ HRESULT CFSM_Yetuga::Initialize()
     Safe_AddRef(m_pCurrentState);
     if (nullptr == m_pCurrentState)
         return E_FAIL;
-    Safe_AddRef(m_pCurrentState);
 
     return S_OK;
 }

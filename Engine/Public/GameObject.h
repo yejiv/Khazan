@@ -31,7 +31,6 @@ public:
 	virtual HRESULT Render_Shadow() { return S_OK; }
 	virtual HRESULT Render_Outline() { return S_OK; }
     virtual HRESULT Render_MotionVector() { return S_OK; }
-    virtual HRESULT Render_MotionTrail() { return S_OK; }
 
 public:
 	void Set_IsPool(_bool isPool) { m_isPool = isPool; }

@@ -240,12 +240,12 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 		CRigidBody::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* Prototype_Component_CharacterVirtual*/
+	/* Prototype_Component_CharacterVirtual*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
 		CCharacterVirtual::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* Prototype_Component_Body*/
+	/* Prototype_Component_Body*/
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
 		CBody::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
@@ -354,6 +354,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal"),
         CDecal::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
+
+    /* Prototype_Component_MotionTrail */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
+        CMotionTrail::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 
 	return S_OK;
 }
@@ -685,7 +690,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
 
 	// Prototype_Component_Texture_MeshEffect(Masking)
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Masking"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Mask/Masking%d.png"), 14)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Mask/Masking%d.png"), 15)), E_FAIL);
 
 	// Prototype_Component_Texture_MeshEffect(Dissolve)
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Dissolve"),

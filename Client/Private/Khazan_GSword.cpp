@@ -125,7 +125,6 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
 
     m_EffectTimeDelta = 0.f;
 
-
     return S_OK;
 
 }
@@ -139,7 +138,6 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
         m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.f, -11.f, 264.f, 1.f));
         m_pCharVirCom->Set_Position(XMVectorSet(516.f, -11.f, 264.f, 1.f));
     }
-
 
 }
 

@@ -82,6 +82,15 @@ namespace Engine
         CHECKPOINT, CHEST, TOMBSTONE, TRIGGER, SPAWN, LADDER, ELEVATOR, LEVER, GEAR1, GEAR2,
         STATUE, VERTICALGATE, IRONGATE,
         END };
+
+    enum MATERIAL_FLAG_BIT {
+        M_DIFFUSE            = 1 << 0,
+        M_NORMAL             = 1 << 1,
+        M_EMISSIVE           = 1 << 2,
+        M_SPECULAR           = 1 << 3,
+        M_METALIC            = 1 << 4,
+        M_ROUGHNESS          = 1 << 5
+    };
 }
 
 namespace JoltLayers
