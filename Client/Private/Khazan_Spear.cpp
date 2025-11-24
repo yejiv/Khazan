@@ -2750,6 +2750,16 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
 
             break;
         }
+        case INTERACTIVE_TYPE::UNLOCKGEAR:
+        {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
+                isDone = true;
+            }
+
+            break;
+        }
         default:
             break;
         }
@@ -2812,6 +2822,11 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         if (INTERACTIVE_TYPE::IRONGATE == m_EventInteract.eInteractType)
         {
             IronGate_Event(fTimeDelta);
+        }
+        // 엘리베이터 가동 위한 잠금 장치 가동 시
+        if (INTERACTIVE_TYPE::UNLOCKGEAR == m_EventInteract.eInteractType)
+        {
+            UnLockGear_Event(fTimeDelta);
         }
     }
 }
@@ -3004,6 +3019,20 @@ void CKhazan_Spear::IronGate_Event(_float fTimeDelta)
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&IronGateEvent.vPlayerPosition));
     IronGateEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&IronGateEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::UnLockGear_Event(_float fTimeDelta)
+{
+    EventUnLockGear ULGearEvent = m_EventInteract.UnLockGearEvent;
+
+    // 플레이어가 엘리베이터 잠금 장치를 조작하는 애니메이션 실행
+
+    ULGearEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&ULGearEvent.vPlayerPosition));
+    ULGearEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&ULGearEvent.vPosition));
 
     m_EventInteract.End_Event();
 }

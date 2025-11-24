@@ -124,12 +124,6 @@ void CLever_Gear::Animation_Update(_float fTimeDelta)
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
         }
-        //if (ANIM_STATE::IDLE2 == m_eAnimState)
-        //{
-        //    m_eAnimState = ANIM_STATE::ACTIVATION2;
-        //    m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-        //    m_pModelCom->Set_AnimationLoop(false);
-        //}
     }
 }
 
@@ -138,27 +132,23 @@ void CLever_Gear::Animation_Change(_float fTimeDelta)
     if (ANIM_STATE::ACTIVATION1 == m_eAnimState)
     {
         // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
-        m_eAnimState = ANIM_STATE::IDLE2;
+        m_eAnimState = ANIM_STATE::ACTIVATION2;
         m_pModelCom->Set_Animation(m_eAnimState);
-        m_pModelCom->Set_AnimationLoop(true);
+        m_pModelCom->Set_AnimationLoop(false);
 
         m_EventGate.isActiveGear1 = true;
 
         // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
         m_pGameInstance->Emit_Event<EventGateGear>(ENUM_CLASS(m_eEventType), m_EventGate);
     }
-    // if (ANIM_STATE::ACTIVATION2 == m_eAnimState)
-    // {
-    //     // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
-    //     m_eAnimState = ANIM_STATE::IDLE1;
-    //     m_pModelCom->Set_Animation(m_eAnimState);
-    //     m_pModelCom->Set_AnimationLoop(true);
-    // 
-    //     m_EventGate.isActiveGear1 = true;
-    // 
-    //     // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
-    //     m_pGameInstance->Emit_Event<EventGateGear>(ENUM_CLASS(m_eEventType), m_EventGate);
-    // }
+    else if (ANIM_STATE::ACTIVATION2 == m_eAnimState)
+    {
+        // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
+        m_eAnimState = ANIM_STATE::IDLE2;
+        m_pModelCom->Set_Animation(m_eAnimState);
+        m_pModelCom->Set_AnimationLoop(false);
+        //m_pModelCom->Set_AnimationBlend(false);
+    }
 }
 
 CLever_Gear* CLever_Gear::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

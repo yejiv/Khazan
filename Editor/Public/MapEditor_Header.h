@@ -51,6 +51,8 @@
 #include "GearGate.h"                   // 문쪽 기어 작동 완료하면 열리는 문
 #include "Door_Gear.h"                  // 문쪽 기어, 레버랑 기어 완료되면 해당 기어 가동
 
+#include "UnLockGear.h"                 // 엘리베이터 잠금 해제하는 기어
+
 // Properties Test
 #include "Prop_Test.h"
 

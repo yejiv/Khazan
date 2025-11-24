@@ -209,7 +209,6 @@ HRESULT CLoader::Loading_For_Test_Level()
 {
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Test_Texture();
-        return S_OK;
 		}));
 
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
@@ -219,7 +218,6 @@ HRESULT CLoader::Loading_For_Test_Level()
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Test_Shader();
-        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::TEST), E_FAIL);
@@ -401,10 +399,10 @@ HRESULT CLoader::Loading_For_HeinMach_Level()
 		return Loading_For_HeinMach_GameObject();
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+        return Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH);
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+        return Loading_Prototype_MapObject_Inst_From_DAT(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH);
 		}));
 
 	//lstrcpy(m_szLoadingText, TEXT("�ε��� �Ϸ�Ǿ����ϴ�."));
@@ -1095,10 +1093,10 @@ HRESULT CLoader::Loading_For_Embars_Level()
         return Loading_For_Embars_GameObject();
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-        CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+        return Loading_Prototype_MapObject_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS);
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-        CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+        return Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS);
         }));
 
     return S_OK;
@@ -1216,10 +1214,6 @@ HRESULT CLoader::Loading_For_Embars_Model()
     /* Prototype_Component_Model_Lever_Gear */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Lever_Gear"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Machine_Loop_001/WIP_BGQ_Machine_Loop_001.dat")), E_FAIL);
-
-    /* Prototype_Component_Model_Door_Gear */
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Door_Gear"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Loop_001/WIP_BGQ_Gear_Loop_001.dat")), E_FAIL);
 #pragma endregion
 
 #pragma region 조각상 퍼즐
@@ -1282,6 +1276,12 @@ HRESULT CLoader::Loading_For_Embars_Model()
     /* Prototype_Component_Model_Door_Gear */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Door_Gear"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Loop_001/WIP_BGQ_Gear_Loop_001.dat")), E_FAIL);
+#pragma endregion
+
+#pragma region 엘리베이터 잠금 해제 기어
+    /* Prototype_Component_Model_UnLockGear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_UnLockGear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_ERM_Gear_Switch_001/WIP_ERM_Gear_Switch_001.dat")), E_FAIL);
 #pragma endregion
 
 #pragma endregion
@@ -1424,6 +1424,12 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
         CDoor_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
+#pragma region 엘리베이터 잠금 해제 기어
+    /* Prototype_GameObject_Prop_UnLockGear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_UnLockGear"),
+        CUnLockGear::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 게임오브젝트 원형 로딩 ( 트리거 및 몬스터 )
@@ -1438,6 +1444,11 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
         CDecal::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
+#pragma region 엠바스 트리거
+    /* Prototype_GameObject_Prop_Trigger */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Embars_Trigger"),
+        CEmbars_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
 
     /* Prototype_GameObject_Khazan_Spear */
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_Spear"),

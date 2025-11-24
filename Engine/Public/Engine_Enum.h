@@ -80,10 +80,11 @@ namespace Engine
 
 	enum class INTERACTIVE_TYPE {
         CHECKPOINT, CHEST, TOMBSTONE, TRIGGER, SPAWN, LADDER, ELEVATOR, LEVER, GEAR1, GEAR2,
-        STATUE, VERTICALGATE, IRONGATE,
+        STATUE, VERTICALGATE, IRONGATE, UNLOCKGEAR,
         END };
 
-    enum MATERIAL_FLAG_BIT {
+    enum MATERIAL_FLAG_BIT : unsigned int
+    {
         M_DIFFUSE            = 1 << 0,
         M_NORMAL             = 1 << 1,
         M_EMISSIVE           = 1 << 2,
