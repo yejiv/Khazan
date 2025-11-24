@@ -1126,6 +1126,18 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\11.UnLockGear">
       <UniqueIdentifier>{1acb5ddc-1a20-48b3-bcb0-901a9c9dcd3f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.Sequence\Embars">
+      <UniqueIdentifier>{ec33bbf4-67c3-44e0-bf6d-a5fdac1d5c90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Embars\Puzzle_First">
+      <UniqueIdentifier>{e56fe0e5-fe85-43d6-be56-da7b45f75b0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Embars\Puzzle_Second">
+      <UniqueIdentifier>{0239f673-84dd-4160-aca1-f77a0134a12f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Embars\Puzzle_Thrid">
+      <UniqueIdentifier>{34c06702-b641-444c-b914-c404a3a692ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2167,6 +2179,12 @@
     <ClInclude Include="..\Public\UnLockGear.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\11.UnLockGear</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Embars_Puzzle_First.h">
+      <Filter>04.Sequence\Embars\Puzzle_First</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Embars_Puzzle_Second.h">
+      <Filter>04.Sequence\Embars\Puzzle_Second</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3186,6 +3204,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\UnLockGear.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\11.UnLockGear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Embars_Puzzle_First.cpp">
+      <Filter>04.Sequence\Embars\Puzzle_First</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Embars_Puzzle_Second.cpp">
+      <Filter>04.Sequence\Embars\Puzzle_Second</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -8,7 +8,8 @@
 #include "Dummy.h"
 #include "Monster.h"
 #include "Khazan_Spear.h"
-#include "Sequence_HeinMach_Start.h"
+#include "Sequence_Embars_Puzzle_First.h"
+#include "Sequence_Embars_Puzzle_Second.h"
 
 #pragma region MAP OBJECT
 #include "MapObject_Header.h"
