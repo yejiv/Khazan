@@ -209,16 +209,25 @@ void CUI_Logo::Bubble_EventCall(BUBBLEEVENT* pArg)
 
 		if (m_eNextEvent == LISTTYPE::NEWGAME)
 		{
+            m_iLevel = ENUM_CLASS(LEVEL::HEINMACH);
             m_pGameInstance->PlaySoundOnce(TEXT("UI_Title_Seq_Any_Button.wav"));
 			CClientInstance::GetInstance()->Fade_Out([this]() {this->Event_NewGame(); });
 			m_isClick = true;
 		}
 		else if (m_eNextEvent == LISTTYPE::OPTION)
 		{
-
+            m_iLevel = ENUM_CLASS(LEVEL::VIPER);
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_Title_Seq_Any_Button.wav"));
+            CClientInstance::GetInstance()->Fade_Out([this]() {this->Event_NewGame(); });
+            m_isClick = true;
 		}
 		else if (m_eNextEvent == LISTTYPE::EXIT)
 		{
+            m_iLevel = ENUM_CLASS(LEVEL::EMBARS);
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_Title_Seq_Any_Button.wav"));
+            CClientInstance::GetInstance()->Fade_Out([this]() {this->Event_NewGame(); });
+            m_isClick = true;
+
 		}
 	}
 	else
@@ -308,20 +317,20 @@ void CUI_Logo::Update_MenuState(_float fTimeDelta)
 	if (m_eState == UISTATE::MENU)
 	{
 		_bool isKeyInput = false;
-		//if (m_pGameInstance->Key_Down(DIK_W, INPUT_TYPE::UI))
-		//{
-		//	m_iSeleteIndex -= 1;
-		//	isKeyInput = true;
-		//	if (m_iSeleteIndex < 0)
-		//		m_iSeleteIndex = ENUM_CLASS(LISTTYPE::END) - 1;
-		//}
-		//else if (m_pGameInstance->Key_Down(DIK_S, INPUT_TYPE::UI))
-		//{
-		//	m_iSeleteIndex += 1;
-		//	isKeyInput = true;
-		//	if (m_iSeleteIndex >= ENUM_CLASS(LISTTYPE::END))
-		//		m_iSeleteIndex = 0;
-		//}
+		if (m_pGameInstance->Key_Down(DIK_W, INPUT_TYPE::UI))
+		{
+			m_iSeleteIndex -= 1;
+			isKeyInput = true;
+			if (m_iSeleteIndex < 0)
+				m_iSeleteIndex = ENUM_CLASS(LISTTYPE::END) - 1;
+		}
+		else if (m_pGameInstance->Key_Down(DIK_S, INPUT_TYPE::UI))
+		{
+			m_iSeleteIndex += 1;
+			isKeyInput = true;
+			if (m_iSeleteIndex >= ENUM_CLASS(LISTTYPE::END))
+				m_iSeleteIndex = 0;
+		}
 
 		if (isKeyInput)
 			for (_int i = 0; i < ENUM_CLASS(LISTTYPE::END); ++i)
@@ -331,7 +340,7 @@ void CUI_Logo::Update_MenuState(_float fTimeDelta)
 
 void CUI_Logo::Event_NewGame()
 {
-	m_pGameInstance->Emit_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), { ENUM_CLASS(LEVEL::HEINMACH) });
+	m_pGameInstance->Emit_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), { m_iLevel });
 }
 
 CUI_Logo* CUI_Logo::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

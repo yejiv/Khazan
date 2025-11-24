@@ -1,0 +1,154 @@
+#include "Ladder_Bottom.h"
+
+#include "GameInstance.h"
+
+CLadder_Bottom::CLadder_Bottom(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+    : CPartObject{ pDevice, pContext }
+{
+}
+
+CLadder_Bottom::CLadder_Bottom(const CPartObject& Prototype)
+    : CPartObject{ Prototype }
+{
+}
+
+HRESULT CLadder_Bottom::Initialize_Prototype()
+{
+    return S_OK;
+}
+
+HRESULT CLadder_Bottom::Initialize_Clone(void* pArg)
+{
+    LADDER_BOTTOM_DESC* pDesc = static_cast<LADDER_BOTTOM_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
+
+    CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
+
+    CHECK_FAILED(Ready_Components(pArg), E_FAIL);
+
+    return S_OK;
+}
+
+void CLadder_Bottom::Priority_Update(_float fTimeDelta)
+{
+}
+
+void CLadder_Bottom::Update(_float fTimeDelta)
+{
+    Update_CombinedMatrix();
+}
+
+void CLadder_Bottom::Late_Update(_float fTimeDelta)
+{
+    m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+}
+
+HRESULT CLadder_Bottom::Render()
+{
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CLadder_Bottom : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
+
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    for (_uint i = 0; i < iNumMeshes; ++i)
+    {
+        Bind_Materials(i);
+
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(4), E_FAIL);
+
+        CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
+    }
+
+    return S_OK;
+}
+
+HRESULT CLadder_Bottom::Ready_Components(void* pArg)
+{
+    LADDER_BOTTOM_DESC* pDesc = static_cast<LADDER_BOTTOM_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
+
+    LEVEL eLevel = pDesc->eLevel;
+    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("level==end"), E_FAIL);
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
+        TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_Ladder_Bottom"),
+        TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CLadder_Bottom::Bind_ShaderResources()
+{
+    // 월드 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix), E_FAIL);
+
+    // 뷰 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
+
+    // 투영 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CLadder_Bottom::Bind_Materials(_uint iMeshIndex)
+{
+    _bool isDiffuse = { false };
+    _bool isNormal = { false };
+    _bool isEmissive = { false };
+    _bool isSpecular = { false };
+
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+        isDiffuse = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
+        isNormal = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
+        isEmissive = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
+        isSpecular = true;
+
+    isEmissive = false;
+    isSpecular = false;
+
+    m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
+
+    return S_OK;
+}
+
+CLadder_Bottom* CLadder_Bottom::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+{
+    CLadder_Bottom* pInstance = new CLadder_Bottom(pDevice, pContext);
+
+    if (FAILED(pInstance->Initialize_Prototype()))
+    {
+        MSG_BOX(TEXT("Failed To Created : CLadder_Bottom"));
+        Safe_Release(pInstance);
+    }
+
+    return pInstance;
+}
+
+CGameObject* CLadder_Bottom::Clone(void* pArg)
+{
+    CLadder_Bottom* pInstance = new CLadder_Bottom(*this);
+
+    if (FAILED(pInstance->Initialize_Clone(pArg)))
+    {
+        MSG_BOX(TEXT("Failed To Cloned : CLadder_Bottom"));
+        Safe_Release(pInstance);
+    }
+
+    return pInstance;
+}
+
+void CLadder_Bottom::Free()
+{
+    __super::Free();
+
+    Safe_Release(m_pShaderCom);
+    Safe_Release(m_pModelCom);
+}

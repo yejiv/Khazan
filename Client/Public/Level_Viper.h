@@ -48,6 +48,7 @@ private:
     HRESULT Ready_Layer_Monster_Viper(const _wstring& strLayerTag);
     HRESULT Ready_Layer_Effect(const _wstring& strLayerTag);
 
+
 public:
 	static CLevel_Viper* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

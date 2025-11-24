@@ -50,6 +50,13 @@ _matrix CBody_Viper::Get_BoneMatrix(const _char* pBoneName)
     return BoneWorld;
 }
 
+
+_float4x4* CBody_Viper::Get_BoneMatrix_Ptr(const _char* pBoneName)
+{
+    return m_pModelCom->Get_BoneMatrix(pBoneName);
+}
+
+
 CBody_Viper::CBody_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CPartObject{ pDevice,pContext }
 {

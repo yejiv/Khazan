@@ -220,4 +220,6 @@ CGameObject* CProjectile_Rock_Yetuga::Clone(void* pArg)
 void CProjectile_Rock_Yetuga::Free()
 {
 	__super::Free();
+
+    Safe_Release(m_pBody);
 }

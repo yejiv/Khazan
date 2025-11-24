@@ -163,6 +163,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\public\AI_Controller_Dragonian_Melee.h" />
     <ClInclude Include="..\Public\AI_Controller_Gomdol.h" />
     <ClInclude Include="..\Public\AI_Controller_Imp_Melee.h" />
     <ClInclude Include="..\Public\AI_Controller_Imp_Range.h" />
@@ -171,6 +172,7 @@
     <ClInclude Include="..\public\Amount.h" />
     <ClInclude Include="..\public\Amount_Info.h" />
     <ClInclude Include="..\public\Amount_Panel.h" />
+    <ClInclude Include="..\Public\AS_5HitCombo_Viper.h" />
     <ClInclude Include="..\Public\AS_Amageddon_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Attack_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Boomarang_Imp_Range.h" />
@@ -180,7 +182,16 @@
     <ClInclude Include="..\Public\AS_Dead_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Dead_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Dead_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_Devour_Viper.h" />
     <ClInclude Include="..\Public\AS_Dodge_Yetuga.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Attack.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Brutal.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Damage.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Dead.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Groggy.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_LockOn.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Sleep.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Walk.h" />
     <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h" />
     <ClInclude Include="..\Public\AS_Groggy_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Hit_Imp_Melee.h" />
@@ -193,6 +204,7 @@
     <ClInclude Include="..\Public\AS_Idle_Viper.h" />
     <ClInclude Include="..\Public\AS_JumpAttack_Yetuga.h" />
     <ClInclude Include="..\Public\AS_JumpGrab_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_JumpSmash_Viper.h" />
     <ClInclude Include="..\Public\AS_LieDown_Yetuga.h" />
     <ClInclude Include="..\Public\AS_LockOn_ImpRange.h" />
     <ClInclude Include="..\Public\AS_LockOn_Viper.h" />
@@ -205,12 +217,17 @@
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Run_Viper.h" />
     <ClInclude Include="..\Public\AS_Rush_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_SideMove_P1_Viper.h" />
+    <ClInclude Include="..\Public\AS_SlashBackJump_Viper.h" />
     <ClInclude Include="..\Public\AS_Sleep_Gomdol.h" />
     <ClInclude Include="..\Public\AS_Sleep_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Sleep_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Slow2Hit_VIper.h" />
+    <ClInclude Include="..\Public\AS_Slow3Hit_Viper.h" />
     <ClInclude Include="..\Public\AS_Smash_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_StingSlashCombo_Viper.h" />
     <ClInclude Include="..\Public\AS_ThrowBall_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_TurnAttack_Viper.h" />
     <ClInclude Include="..\Public\AS_Turn_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Walk_Viper.h" />
     <ClInclude Include="..\public\Atlas_RenderGroup.h" />
@@ -219,15 +236,22 @@
     <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
+    <ClInclude Include="..\public\Body_Dragonian_Melee.h" />
+    <ClInclude Include="..\public\Body_Dragonian_Rampage.h" />
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
     <ClInclude Include="..\Public\Body_Khazan_GS.h" />
     <ClInclude Include="..\Public\Body_Viper.h" />
+    <ClInclude Include="..\public\Dragonian_Sword.h" />
+    <ClInclude Include="..\public\FSM_Default.h" />
     <ClInclude Include="..\Public\Door_Gear.h" />
+    <ClInclude Include="..\public\Dragonian_Melee.h" />
+    <ClInclude Include="..\public\Dragonian_Rampage.h" />
     <ClInclude Include="..\Public\ElevatorS.h" />
     <ClInclude Include="..\Public\Elevator_Gear.h" />
     <ClInclude Include="..\public\Cursor_Circle_Fx.h" />
     <ClInclude Include="..\Public\Fence.h" />
     <ClInclude Include="..\Public\FSM_Imp_Melee.h" />
+    <ClInclude Include="..\Public\GearGate.h" />
     <ClInclude Include="..\Public\Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Sword.h" />
     <ClInclude Include="..\Public\IronGate.h" />
@@ -246,6 +270,11 @@
     <ClInclude Include="..\public\Khazan_GS_Anim_Move.h" />
     <ClInclude Include="..\public\Khazan_GS_InputHandler.h" />
     <ClInclude Include="..\public\Khazan_GS_StateMachine.h" />
+    <ClInclude Include="..\Public\Ladder.h" />
+    <ClInclude Include="..\Public\Ladder_Bottom.h" />
+    <ClInclude Include="..\Public\Ladder_Middle.h" />
+    <ClInclude Include="..\Public\Ladder_Support.h" />
+    <ClInclude Include="..\Public\Ladder_Top.h" />
     <ClInclude Include="..\Public\Lantern_Khazan_GS.h" />
     <ClInclude Include="..\Public\Lever.h" />
     <ClInclude Include="..\Public\Lever_Gear.h" />
@@ -272,6 +301,7 @@
     <ClInclude Include="..\public\Store_List.h" />
     <ClInclude Include="..\public\Store_Slot.h" />
     <ClInclude Include="..\public\UI_Announce_Warning.h" />
+    <ClInclude Include="..\Public\TwinBlade_Viper.h" />
     <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
     <ClInclude Include="..\public\BladeNexus_Map_List.h" />
     <ClInclude Include="..\Public\Body_Gomdol.h" />
@@ -481,8 +511,27 @@
     <ClInclude Include="..\Public\Collection_Info.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\private\AI_Controller_Dragonian_Melee.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Attack.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Brutal.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Damage.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Dead.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Groggy.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_LockOn.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Sleep.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Walk.cpp" />
+    <ClCompile Include="..\private\Body_Dragonian_Melee.cpp" />
+    <ClCompile Include="..\private\Body_Dragonian_Rampage.cpp" />
+    <ClCompile Include="..\Private\AS_5HitCombo_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_Devour_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_SideMove_P1_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp" />
+    <ClCompile Include="..\private\Dragonian_Sword.cpp" />
+    <ClCompile Include="..\private\FSM_Default.cpp" />
+    <ClCompile Include="..\private\Dragonian_Melee.cpp" />
+    <ClCompile Include="..\private\Dragonian_Rampage.cpp" />
     <ClCompile Include="..\Private\FSM_Viper.cpp" />
+    <ClCompile Include="..\Private\GearGate.cpp" />
     <ClCompile Include="..\Private\GSword_Khazan_GS.cpp" />
     <ClCompile Include="..\Private\Collection_Info.cpp" />
     <ClCompile Include="..\Private\AI_Controller_Gomdol.cpp" />
@@ -515,6 +564,7 @@
     <ClCompile Include="..\Private\AS_Idle_Viper.cpp" />
     <ClCompile Include="..\Private\AS_JumpAttack_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_JumpGrab_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_JumpSmash_Viper.cpp" />
     <ClCompile Include="..\Private\AS_LieDown_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_LockOn_ImpRange.cpp" />
     <ClCompile Include="..\Private\AS_LockOn_Viper.cpp" />
@@ -527,12 +577,16 @@
     <ClCompile Include="..\Private\AS_RightHand_5Hit_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Run_Viper.cpp" />
     <ClCompile Include="..\Private\AS_Rush_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_SlashBackJump_Viper.cpp" />
     <ClCompile Include="..\Private\AS_Sleep_Gomdol.cpp" />
     <ClCompile Include="..\private\AS_Sleep_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\AS_Sleep_Imp_Range.cpp" />
     <ClCompile Include="..\Private\AS_Slow2Hit_VIper.cpp" />
+    <ClCompile Include="..\Private\AS_Slow3Hit_Viper.cpp" />
     <ClCompile Include="..\Private\AS_Smash_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_StingSlashCombo_Viper.cpp" />
     <ClCompile Include="..\Private\AS_ThrowBall_Yetuga.cpp" />
+    <ClCompile Include="..\Private\AS_TurnAttack_Viper.cpp" />
     <ClCompile Include="..\private\AS_Turn_Yetuga.cpp" />
     <ClCompile Include="..\Private\AS_Walk_Viper.cpp" />
     <ClCompile Include="..\private\Atlas_RenderGroup.cpp" />
@@ -568,6 +622,11 @@
     <ClCompile Include="..\private\Khazan_GS_Anim_Move.cpp" />
     <ClCompile Include="..\private\Khazan_GS_InputHandler.cpp" />
     <ClCompile Include="..\private\Khazan_GS_StateMachine.cpp" />
+    <ClCompile Include="..\Private\Ladder.cpp" />
+    <ClCompile Include="..\Private\Ladder_Bottom.cpp" />
+    <ClCompile Include="..\Private\Ladder_Middle.cpp" />
+    <ClCompile Include="..\Private\Ladder_Support.cpp" />
+    <ClCompile Include="..\Private\Ladder_Top.cpp" />
     <ClCompile Include="..\Private\Lantern_Khazan_GS.cpp" />
     <ClCompile Include="..\Private\Lever.cpp" />
     <ClCompile Include="..\Private\Lever_Gear.cpp" />
@@ -594,6 +653,7 @@
     <ClCompile Include="..\private\Store_List.cpp" />
     <ClCompile Include="..\private\Store_Slot.cpp" />
     <ClCompile Include="..\private\UI_Announce_Warning.cpp" />
+    <ClCompile Include="..\Private\TwinBlade_Viper.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
     <ClCompile Include="..\private\BladeNexus_Map_List.cpp" />
     <ClCompile Include="..\Private\Body_Gomdol.cpp" />

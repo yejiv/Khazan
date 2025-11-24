@@ -43,6 +43,7 @@ private:
     _bool                   m_isEnableMotionBlur = { true };
     _bool                   m_isEnableEdge = { true };
     _bool                   m_isEnableRimLight = { true };
+    _bool                   m_isEnableMotionTrail = {};
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
@@ -69,6 +70,11 @@ private:
 
     // Rim Light
     RIM_LIGHT_DESC          m_RimLightDesc = {};
+
+    // Motion Trail
+    MOTIONTRAIL_CONFIG      m_MotionTrailConfig = {};
+    _int                    m_iCurrentGameObjectIndex = { -1 };
+    _float                  m_fMotionTrailDuration = {};
 
 	LEVEL                   m_eCurrentLevel = { LEVEL::TITLE };
 	_bool                   m_isSelectLevel[ENUM_CLASS(LEVEL::END)];

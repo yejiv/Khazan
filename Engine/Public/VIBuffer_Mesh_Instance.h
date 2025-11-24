@@ -72,6 +72,7 @@ private:
 	ID3D11Buffer*				m_pStructuredBuffer = { nullptr };
 	ID3D11Buffer*				m_pSpeedBuffer = { nullptr };
 	ID3D11Buffer*				m_pStagingBuffer = { nullptr };
+
 ID3D11SamplerState*             m_pLinearWrapSampler;  //p
 	MESH_INSTANCE_PARAMS*		m_pParticleParams;  //p
     

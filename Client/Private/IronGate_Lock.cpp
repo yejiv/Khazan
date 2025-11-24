@@ -38,6 +38,8 @@ HRESULT CIronGate_Lock::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
     m_pModelCom->Set_AnimationLoop(true);
     m_pModelCom->Set_AnimationBlend(false);
+    m_pModelCom->Play_Animation(0.f);
+    m_pModelCom->Set_AnimationBlend(true);
 
     return S_OK;
 }
@@ -86,7 +88,7 @@ HRESULT CIronGate_Lock::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(0), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }

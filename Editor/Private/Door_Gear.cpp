@@ -3,12 +3,12 @@
 #include "GameInstance.h"
 
 CDoor_Gear::CDoor_Gear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CProp_Interactive { pDevice, pContext }
+    : CPartObject { pDevice, pContext }
 {
 }
 
 CDoor_Gear::CDoor_Gear(const CDoor_Gear& Prototype)
-    : CProp_Interactive { Prototype }
+    : CPartObject { Prototype }
 {
 }
 
@@ -21,12 +21,24 @@ HRESULT CDoor_Gear::Initialize_Prototype()
 
 HRESULT CDoor_Gear::Initialize_Clone(void* pArg)
 {
+    DOOR_GEAR_DESC* pDesc = static_cast<DOOR_GEAR_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
+
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
-    m_eAnimState = ANIM_STATE::IDLE1;
-    m_pModelCom->Set_Animation(ANIM_STATE::IDLE1);
+    CHECK_NULLPTR(pDesc->pSocketMatrix, E_FAIL);
+
+    m_pSocketMatrix = pDesc->pSocketMatrix;
+
+    m_pUnLock = pDesc->pUnLock;
+    m_iEventID = pDesc->iEventID;
+
+    m_pTransformCom->Rotation(XMConvertToRadians(270.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f));
+
+    m_eAnimState = ANIM_STATE::ACTIVATION;
+    m_pModelCom->Set_Animation(m_eAnimState);
     m_pModelCom->Set_AnimationLoop(true);
     m_pModelCom->Set_AnimationBlend(false);
 
@@ -43,6 +55,13 @@ void CDoor_Gear::Update(_float fTimeDelta)
     {
 
     }
+
+    _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+
+    for (_uint i = 0; i < 3; ++i)
+        BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
+
+    XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
 }
 
 void CDoor_Gear::Late_Update(_float fTimeDelta)
@@ -62,7 +81,7 @@ HRESULT CDoor_Gear::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(0), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -82,8 +101,49 @@ HRESULT CDoor_Gear::Ready_Components(void* pArg)
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 
-    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), m_szModelName,
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_Door_Gear"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CDoor_Gear::Bind_ShaderResources()
+{
+    // 월드 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix), E_FAIL);
+
+    // 뷰 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
+
+    // 투영 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CDoor_Gear::Bind_Materials(_uint iMeshIndex)
+{
+    _bool isDiffuse = { false };
+    _bool isNormal = { false };
+    _bool isEmissive = { false };
+    _bool isSpecular = { false };
+
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+        isDiffuse = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
+        isNormal = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
+        isEmissive = true;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
+        isSpecular = true;
+
+    isEmissive = false;
+    isSpecular = false;
+
+    m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
 
     return S_OK;
 }
@@ -118,5 +178,6 @@ void CDoor_Gear::Free()
 {
     __super::Free();
 
-
+    Safe_Release(m_pShaderCom);
+    Safe_Release(m_pModelCom);
 }

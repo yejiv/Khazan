@@ -8,10 +8,6 @@ NS_END
 
 NS_BEGIN(Client)
 
-
-enum class VIPER_SKILL { NONE, QUICK2HIT, SLOW2HIT, LOCKON , END };
-
-
 class CAI_Controller_Viper final : public CAI_Controller
 {
 private:
@@ -54,8 +50,6 @@ private:
 
     }SKILLCOOLDOWN;
 
-
-
 public:
     void                        Set_ActiveAIController(_bool isToggle) { m_isActive = isToggle; }
 
@@ -72,7 +66,6 @@ public:
     virtual TERMINATE			GetCallbackTeminate(CGameObject* pOwner, const string& name) override;
     virtual INTERRUPTCONDITION	GetCallbackInterruptCondition(CGameObject* pOwner, const string& name) override;
     virtual PERCEPTIONCALLBACK	GetCallBackPerception(class CGameObject* pOwner, const string& name) override;
-    virtual SCORE               GetCallbackScore(CGameObject* pOwner, const string& name) override;
 
 private:
     HRESULT                     Ready_CoolDown();

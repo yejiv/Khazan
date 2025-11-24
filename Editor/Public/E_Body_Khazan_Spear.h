@@ -39,13 +39,16 @@ public:
 	virtual void        Late_Update(_float fTimeDelta);
 	virtual HRESULT     Render();
 	virtual HRESULT     Render_Shadow() override;
-    virtual HRESULT     Render_MotionTrail() override;
 	void			    Render_Part(CModel* pModel);
 	void			    Render_Part_Shadow(CModel* pModel);
-    void                Render_Part_MotionTrail(CModel* pModel);
 
 public:
-	CModel*             Get_Model() { return m_pModelCom; }
+	CModel*                     Get_Model() { return m_pModelCom; }
+    const MOTIONTRAIL_CONFIG&   Get_MotionTrailConfig();
+    void                        Set_MotionTrailConfig(const MOTIONTRAIL_CONFIG& Config);
+    void                        Set_EnableMotionTrail(_bool isEnable);
+    _bool                       isEnableMotionTrail();
+    void                        Start_MotionTrail(_float fDuration);
 
 public:
     // Shader

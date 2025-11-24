@@ -631,10 +631,10 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
         }
         case INTERACTIVE_TYPE::GEAR2:
         {
-            _int iEventID = {};
-            CHECK_FALSE(ReadFile(hFile, &iEventID, sizeof(_int), &dwByte, nullptr), E_FAIL);
-            ObjectDesc.pOtherDesc = &iEventID;
-            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Door_Gear"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            CGearGate::DOOR_GEAR_EVENTID EventIDs = {};
+            CHECK_FALSE(ReadFile(hFile, &EventIDs, sizeof(CGearGate::DOOR_GEAR_EVENTID), &dwByte, nullptr), E_FAIL);
+            ObjectDesc.pOtherDesc = &EventIDs;
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_GearGate"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
         case INTERACTIVE_TYPE::STATUE:
@@ -670,6 +670,15 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
         case INTERACTIVE_TYPE::IRONGATE:
         {
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_IronGate"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
+        case INTERACTIVE_TYPE::LADDER:
+        {
+            CLadder::LADDER_OFFSET LadderOffSet = {};
+            CHECK_FALSE(ReadFile(hFile, &LadderOffSet.fOffSetHeight, sizeof(_float), &dwByte, nullptr), E_FAIL);
+            CHECK_FALSE(ReadFile(hFile, &LadderOffSet.iSegmentCount, sizeof(_int), &dwByte, nullptr), E_FAIL);
+            ObjectDesc.pOtherDesc = &LadderOffSet;
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Ladder"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
         default:

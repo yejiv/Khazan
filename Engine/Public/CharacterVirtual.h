@@ -86,6 +86,13 @@ public:
 		JPH::Vec3 vLinvel;
 	}PHYSPOSE;
 
+    enum class MOVE_MODE
+    {
+        NORMAL,
+        JUMP,
+        DASH
+    };
+
 private:
 	CCharacterVirtual(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CCharacterVirtual(const CCharacterVirtual& Prototype);
@@ -111,6 +118,12 @@ public:
 	void Collision_Active(_bool isActive);
 
 public:
+    void Jump(_float fHeightUp, _float fHorizontalSpeed);
+    void Jump_ToTarget(_vector vTargetWorldPos,
+        _float  fJumpApexHeight,
+        _float  fDesiredHorizontalSpeed);
+
+public:
 	_bool Get_isGround();
 
 public:
@@ -134,6 +147,8 @@ private:
 	_float m_fAirLoss = 2.f;
 	_float m_fLoss = 25.f;
 
+
+    MOVE_MODE m_eMove_Mode = { MOVE_MODE::NORMAL };
 public:
 	static CCharacterVirtual* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CComponent* Clone(void* pArg) override;
