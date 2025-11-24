@@ -69,7 +69,7 @@ void CAS_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
 
     if (fDot > m_fDotThreshold)
     {
-        pBB->Set_Value<_bool>(pViper->Get_Name(), "isP1_LockOnFinished", true);
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isP1_LockOn_Finished", true);
         pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pOwner);
     }
 

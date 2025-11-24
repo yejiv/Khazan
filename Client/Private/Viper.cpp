@@ -6,6 +6,7 @@
 #include "CharacterVirtual.h"
 #include "BossHp.h"
 #include "Body_Viper.h"
+#include "TwinBlade_Viper.h"
 
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -71,9 +72,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
 
 void CViper::Priority_Update(_float fTimeDelta)
 {
-    //CBlackBoard* pBB = m_pController->Get_BlackBoard();
-
-  /*  if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
+  /*  CBlackBoard* pBB = m_pController->Get_BlackBoard();
+    if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
     {
         CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
         HPDesc.isOpen = true;
@@ -82,6 +82,7 @@ void CViper::Priority_Update(_float fTimeDelta)
         HPDesc.pStaminaMaxValue = &m_fMaxStamina;
         HPDesc.pStaminaCulValue = &m_fCurrentStamina;
         HPDesc.wstrName = TEXT("바이퍼");
+
 
         CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
     }*/
@@ -93,13 +94,16 @@ void CViper::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
 
-    if (m_isLookAt)
+    if (m_fCurrentHP <= 0.f)
     {
-        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
-        if (nullptr == pModel)
-            return;
-        _float fRatio = pModel->MakeRatio();
-        Look_Target_Lerp(fTimeDelta, fRatio, m_fTurnSpeed);
+        if (m_isLookAt)
+        {
+            CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+            if (nullptr == pModel)
+                return;
+            _float fRatio = pModel->MakeRatio();
+            Look_Target_Lerp(fTimeDelta, fRatio, 3.f);
+        }
     }
 
     __super::Update(fTimeDelta);
@@ -193,6 +197,37 @@ void CViper::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 
 HRESULT CViper::Ready_Components()
 {
+    //CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
+    //_float3 vPos{};
+    //_float4 vQuat{};
+
+    //XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    //XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    //tCharVirDesc.eShapeType = SHAPE::CAPSULE;
+    //tCharVirDesc.vPos = vPos;
+    //tCharVirDesc.vQuat = vQuat;
+    //tCharVirDesc.vShapeOffset = _float3(0.f, 4.1f, 0.f);
+    //tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
+    //tCharVirDesc.fRadius = 2.f;
+    //tCharVirDesc.fHeight = 4.f;
+    //tCharVirDesc.fMaxSlopeAngle = 45.f;
+    //tCharVirDesc.fMass = 10.f;
+    //tCharVirDesc.fMaxStrength = 0.f;
+    //tCharVirDesc.fPredictiveContactDistance = 0.3f;
+    //tCharVirDesc.iMaxConstraintIterations = 20;
+    //tCharVirDesc.fCollisionTolerance = 0.03f;
+    //tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
+
+    //m_tCollisionDesc.pGameObject = this;
+    ////pCollDesc.pInfo = ?? // �ۼ��ϱ�
+    //tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
+    //    TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
+    //    return E_FAIL;
+
+    //m_pCharVirCom->Collision_Active(true);
+
     CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
     _float3 vPos{};
     _float4 vQuat{};
@@ -202,17 +237,12 @@ HRESULT CViper::Ready_Components()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 4.1f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.6f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-    tCharVirDesc.fRadius = 2.f;
-    tCharVirDesc.fHeight = 4.f;
+    tCharVirDesc.fRadius = 0.3f;
+    tCharVirDesc.fHeight = 0.7f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
-    tCharVirDesc.fMass = 10.f;
-    tCharVirDesc.fMaxStrength = 0.f;
-    tCharVirDesc.fPredictiveContactDistance = 0.3f;
-    tCharVirDesc.iMaxConstraintIterations = 20;
-    tCharVirDesc.fCollisionTolerance = 0.03f;
-    tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
+    tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
@@ -221,9 +251,6 @@ HRESULT CViper::Ready_Components()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
         return E_FAIL;
-
-    m_pCharVirCom->Collision_Active(true);
-
 
 
     return S_OK;
@@ -246,6 +273,26 @@ HRESULT CViper::Ready_PartObjects()
     m_pBody = dynamic_cast<CBody_Viper*>(pBody);
     Safe_AddRef(m_pBody);
 
+
+   /* CTwinBlade_Viper::WEAPON_DESC WeaponDesc{};
+    WeaponDesc.pOwner = this;
+    WeaponDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    WeaponDesc.pOwnerTransform = m_pTransformCom;
+    WeaponDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Weapon_R");
+
+    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon"), ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_TwinBlade"), &WeaponDesc)))
+        return E_FAIL;
+
+    CPartObject* pWeapon = Find_PartObject(TEXT("Part_Weapon"));
+    if (nullptr == pWeapon)
+        return E_FAIL;
+
+    m_pWeapon = dynamic_cast<CTwinBlade_Viper*>(pWeapon);
+    Safe_AddRef(m_pWeapon);
+    if (nullptr == pWeapon)
+        return E_FAIL;*/
+
+
     return S_OK;
 }
 
@@ -257,6 +304,9 @@ HRESULT CViper::Ready_Projectiles()
 
 HRESULT CViper::Ready_AnimEvent()
 {
+
+#pragma region WALK
+
     CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
     if (nullptr == pModel)
         return E_FAIL;
@@ -264,8 +314,96 @@ HRESULT CViper::Ready_AnimEvent()
         {
             _uint iStepCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName,"WalkStepCount");
             m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName,"WalkStepCount", iStepCnt + 1);
-            cout << "Step1111111111111111111111111111111111111111" << endl;
         });
+
+    pModel->Register_Event("WalkStepEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            _uint iStepCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "WalkStepCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "WalkStepCount", iStepCnt + 1);
+        });
+
+#pragma endregion
+
+
+#pragma region BACKJUMPSLASH
+
+    pModel->Register_Event("BackJumpMovement", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
+        {
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "BackJump", true);
+        });
+
+    pModel->Register_Event("BackJumpMovement", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "BackJump", false);
+        });
+
+
+   /* pModel->Register_Event("BackJumpAfter", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            _uint iStepCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "WalkStepCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "WalkStepCount", iStepCnt + 1);
+        });
+
+    pModel->Register_Event("BackJumpAfter", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            _uint iStepCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "WalkStepCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "WalkStepCount", iStepCnt + 1);
+        });*/
+
+
+
+
+
+#pragma endregion
+
+#pragma region JUMPSMASH
+
+    pModel->Register_Event("P1_JumpStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_JumpStart", true);
+        });
+
+    pModel->Register_Event("P1_JumpStart", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_JumpStart", false);
+        });
+
+    pModel->Register_Event("P1_JumpStop", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.3f, 0.5f, 2.f);
+
+        });
+
+
+    pModel->Register_Event("P1_Landing", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_LandStart", true);
+        });
+
+    pModel->Register_Event("P1_Landing", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_LandStart", false);
+        });
+
+
+#pragma endregion
+
+
+
+#pragma region DEVOUR
+
+    pModel->Register_Event("P1_SpinStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_SpinStart", true);
+        });
+
+    pModel->Register_Event("P1_SpinStart", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_SpinStart", false);
+        });
+
+
+#pragma endregion
 
   
     return S_OK;
@@ -297,5 +435,6 @@ CGameObject* CViper::Clone(void* pArg)
 void CViper::Free()
 {
     Safe_Release(m_pBody);
+    Safe_Release(m_pWeapon);
     __super::Free();
 }

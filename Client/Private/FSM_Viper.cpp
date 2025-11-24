@@ -5,6 +5,14 @@
 #include "AS_Quick2Hit_Viper.h"
 #include "AS_Slow2Hit_VIper.h"
 #include "AS_LockOn_Viper.h"
+#include "AS_StingSlashCombo_Viper.h"
+#include "AS_Slow3Hit_Viper.h"
+#include "AS_SlashBackJump_Viper.h"
+#include "AS_TurnAttack_Viper.h"
+#include "AS_JumpSmash_Viper.h"
+#include "AS_Devour_Viper.h"
+#include "AS_SideMove_P1_Viper.h"
+#include "AS_5HitCombo_Viper.h"
 
 CFSM_Viper::CFSM_Viper()
 {
@@ -18,20 +26,38 @@ HRESULT CFSM_Viper::Initialize()
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::RUN), CAS_Run_Viper::Create())))
         return E_FAIL;
+
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::LOCKON), CAS_LockOn_Viper::Create())))
+        return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::QUICK2HIT), CAS_Quick2Hit_Viper::Create())))
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::SLOW2HIT), CAS_Slow2Hit_VIper::Create())))
         return E_FAIL;
-    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::LOCKON), CAS_LockOn_Viper::Create())))
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::STINGSLASHCOMBO), CAS_StingSlashCombo_Viper::Create())))
         return E_FAIL;
 
+
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::SLOW3HIT), CAS_Slow3Hit_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::SLASHBACKJUMP), CAS_SlashBackJump_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::TURNATTACK), CAS_TurnAttack_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::JUMPSMASH), CAS_JumpSmash_Viper::Create())))
+        return E_FAIL;
+
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::DIVOUR), CAS_Devour_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::SIDEMOVE), CAS_SideMove_P1_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::COMBO5HIT), CAS_5HitCombo_Viper::Create())))
+        return E_FAIL;
 
 
     m_pCurrentState = m_States[ENUM_CLASS(VIPER_STATE_P1::IDLE)];
     Safe_AddRef(m_pCurrentState);
     if (nullptr == m_pCurrentState)
         return E_FAIL;
-    Safe_AddRef(m_pCurrentState);
 
     return S_OK;
 }

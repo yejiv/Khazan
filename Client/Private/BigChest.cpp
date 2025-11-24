@@ -47,6 +47,8 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(ANIM_STATE::CLOSE);
     m_pModelCom->Set_AnimationLoop(true);
     m_pModelCom->Set_AnimationBlend(false);
+    m_pModelCom->Play_Animation(0.f);
+    m_pModelCom->Set_AnimationBlend(true);
 
     m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
@@ -93,7 +95,7 @@ HRESULT CBigChest::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(0), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }

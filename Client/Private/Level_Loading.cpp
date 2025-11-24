@@ -125,6 +125,8 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			pNewLevel = CLevel_Viper::Create(m_pDevice, m_pContext);
 			break;
 		}
+
+        m_pGameInstance->StopAll();
 		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(m_eNextLevelID), pNewLevel)))
 			return;
 	}
@@ -589,6 +591,4 @@ void CLevel_Loading::Free()
 	__super::Free();
 	Safe_Release(m_pLoader);
 	Safe_Release(m_pClientInstance);
-
-    m_pGameInstance->StopAll();
 }

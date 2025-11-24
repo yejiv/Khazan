@@ -18,6 +18,7 @@
 #include "AS_Dead_Yetuga.h"
 #include "AS_LockOn_Yetuga.h"
 #include "AS_CutScene_Yetuga.h"
+#include "AS_SideMove_P1_Viper.h"
 
 CFSM_Yetuga::CFSM_Yetuga()
 {

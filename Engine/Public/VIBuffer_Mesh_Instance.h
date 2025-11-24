@@ -62,23 +62,25 @@ private:
 	_bool						IsFinish();
 
 private:
-	class CComputeShader*		m_ComputeShaders[ENUM_CLASS(CS_PASS::END)] = {};
+	class CComputeShader*		m_ComputeShaders[ENUM_CLASS(CS_PASS::END)] = {};    //p
 	ID3D11ShaderResourceView*	m_pSRV = { nullptr };
-	ID3D11ShaderResourceView*	m_pSRVNoise = { nullptr };	//공유 가능
+	ID3D11ShaderResourceView*	m_pSRVNoise = { nullptr };	//p
 	ID3D11UnorderedAccessView*	m_pUAV = { nullptr };
 	ID3D11UnorderedAccessView*	m_pUAVSpeed = { nullptr };
+
 	ID3D11Buffer*				m_pCB = { nullptr };
 	ID3D11Buffer*				m_pStructuredBuffer = { nullptr };
 	ID3D11Buffer*				m_pSpeedBuffer = { nullptr };
 	ID3D11Buffer*				m_pStagingBuffer = { nullptr };
-	//ID3D11Buffer*               m_pDebugInstanceBuffer = { nullptr };
-	//Debug
-	//ID3D11Buffer*				m_pDebugInstanceBuffer = { nullptr };
-	MESH_INSTANCE_PARAMS*		m_pParticleParams;
-    ID3D11SamplerState*         m_pLinearWrapSampler;
+
+ID3D11SamplerState*             m_pLinearWrapSampler;  //p
+	MESH_INSTANCE_PARAMS*		m_pParticleParams;  //p
+    
+
+    //Debug
+    //ID3D11Buffer*				m_pDebugInstanceBuffer = { nullptr };
 
 private:
-	//_float3*					m_pVertexPositions = { nullptr };
 	POINT_MESH_DESC				m_sData;
     _bool                       m_bLoop;
 

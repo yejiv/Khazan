@@ -48,11 +48,11 @@ public:
 public:
 	HRESULT Initialize();
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pRenderObject);
+    HRESULT Add_RenderComponent(class CComponent* pComponent);
 	HRESULT Draw();
 
 #ifdef _DEBUG
 public:
-	HRESULT Add_DebugComponent(class CComponent* pComponent);
 	void Set_EnableShadow(_bool isEnable) { m_isEnableShadow = isEnable; }
 	void Set_EnableSSAO(_bool isEnable) { m_isEnableSSAO = isEnable; }
 	void Set_EnableFog(_bool isEnable) { m_isEnableFog = isEnable; }
@@ -79,6 +79,7 @@ private:
 	class CGameInstance*		m_pGameInstance = { nullptr };
 
 	list<class CGameObject*>	m_RenderObjects[ENUM_CLASS(RENDERGROUP::END)];
+    list<class CComponent*>		m_RenderComponents;
 	vector<class CShader*>		m_pThreadEffect = { nullptr };
 
 private:
@@ -106,7 +107,6 @@ private:
 
 #ifdef _DEBUG
 private:
-	list<class CComponent*>		m_DebugComponent;
 	_bool						m_isEnableDebugRender = {};
 	_bool						m_isEnableShadow = { true };
 	_bool						m_isEnableSSAO = { true };

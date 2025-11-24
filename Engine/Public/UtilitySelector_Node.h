@@ -11,21 +11,18 @@ private:
     virtual ~CUtilitySelector_Node() = default;
 
 public:
-    virtual BTNODESTATE		Tick(class CBlackBoard* BB) override;
-    virtual void            Terminate(BTNODESTATE eState, class CBlackBoard* BB = nullptr) override;
-    virtual void            Abort(class CBlackBoard* BB) override;
-
-public:
-    virtual void            Add_Child(CBTNode* pNode) override;
+    virtual BTNODESTATE Tick(class CBlackBoard* BB) override;
+    virtual void        Terminate(BTNODESTATE eState, class CBlackBoard* BB = nullptr) override;
+    virtual void        Abort(class CBlackBoard* BB) override;
+    virtual void        Add_Child(CBTNode* pNode) override;
 
 private:
-    vector<CUtilityAction_Node*> m_UtilityChildren;
-
+    vector<CUtilityAction_Node*>        m_UtilityChildren;
+    CUtilityAction_Node*                m_pRunningAction = { nullptr };
 
 public:
     static	CUtilitySelector_Node*  Create();
     virtual void			        Free() override;
-
 };
 
 NS_END
