@@ -363,7 +363,7 @@ void CEffect_Mesh_Instance::Apply(void* pArg)
     sprintf_s(finalNoisePathBuffer, MAX_PATH, NoiseFormat, m_sData.iTurbulenceTextureIdx);
     strcpy_s(m_sData.pNoiseFilePath, MAX_PATH, finalNoisePathBuffer);
 
-    m_bIsNormal = (m_sData.sDissolveData.bIsDissolve == true && m_sData.sDissolveData.iDissolveTextureIdx > 4) ? 1 : 0;
+    m_bIsNormal = (m_sData.sDissolveData.bIsDissolve && m_sData.sDissolveData.iDissolveTextureIdx > 4) ? 1 : 0;
 
     Safe_Release(m_pVIBufferCom);
     m_pVIBufferCom = CVIBuffer_Mesh_Instance::Create(m_pDevice, m_pContext, &m_sData);

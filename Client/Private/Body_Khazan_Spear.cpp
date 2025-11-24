@@ -1333,4 +1333,5 @@ void CBody_Khazan_Spear::Free()
     Safe_Release(m_pModelCom_Shoes);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
+    
 }

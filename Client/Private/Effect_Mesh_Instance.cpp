@@ -43,6 +43,7 @@ HRESULT CEffect_Mesh_Instance::Initialize_Clone()
 
     if (FAILED(Ready_Component()))
         return E_FAIL;
+
     return S_OK;
 }
 
@@ -285,5 +286,4 @@ void CEffect_Mesh_Instance::Free()
     Safe_Release(m_pDissolveTextureCom);
     Safe_Release(m_pVIBufferCom);
     Safe_Release(m_pNormalTextureCom);
-    Safe_Release(m_pDissolveTextureCom);
 }

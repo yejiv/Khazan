@@ -1401,18 +1401,18 @@ void CGameInstance::Batch_Decal(CDecal* pDecal)
 #pragma region EFFECT_MANAGER
 
 void CGameInstance::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint iPoolSize)
-{
+{ 
 	m_pEffect_Manager->Add_Effect_ToPool(iLayerLevelIndex, strPrototypeTag, iPoolSize);
 }
 
 _uint CGameInstance::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpawnPos)
 {
-	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, SpawnPos);
+ 	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, SpawnPos);
 }
 
 _uint CGameInstance::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector Quaternion, _gvector Position)
 {
-	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, Quaternion, Position);
+ 	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, Quaternion, Position);
 }
 
 void CGameInstance::Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpawnPos)
@@ -1663,6 +1663,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pObject_Manager);
+    Safe_Release(m_pEffect_Manager);
 	Safe_Release(m_pPrototype_Manager);	
 	Safe_Release(m_pLevel_Manager);
     Safe_Release(m_pJolt_Manager);
