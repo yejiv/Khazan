@@ -1126,6 +1126,18 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\11.UnLockGear">
       <UniqueIdentifier>{1acb5ddc-1a20-48b3-bcb0-901a9c9dcd3f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL">
+      <UniqueIdentifier>{0074b186-f8df-4917-bb61-582bbe1417ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL\Inner">
+      <UniqueIdentifier>{52b95b73-4560-4ecc-ad4e-63121e83cd15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL\Mid">
+      <UniqueIdentifier>{000c6d6e-c4e0-4175-af06-d5040085c458}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL\Outer">
+      <UniqueIdentifier>{a1bd5e0b-f72a-4a21-b38d-b1af1d7ea752}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2167,6 +2179,18 @@
     <ClInclude Include="..\Public\UnLockGear.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\11.UnLockGear</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\ElevatorL.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Elevator_Inner.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL\Inner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Elevator_Mid.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL\Mid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Elevator_Outer.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL\Outer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3186,6 +3210,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\UnLockGear.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\11.UnLockGear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ElevatorL.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Elevator_Inner.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL\Inner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Elevator_Mid.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL\Mid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Elevator_Outer.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL\Outer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

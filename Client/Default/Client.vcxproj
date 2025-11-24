@@ -242,6 +242,10 @@
     <ClInclude Include="..\Public\Body_Khazan_GS.h" />
     <ClInclude Include="..\Public\Body_Viper.h" />
     <ClInclude Include="..\public\Dragonian_Sword.h" />
+    <ClInclude Include="..\Public\ElevatorL.h" />
+    <ClInclude Include="..\Public\Elevator_Inner.h" />
+    <ClInclude Include="..\Public\Elevator_Mid.h" />
+    <ClInclude Include="..\Public\Elevator_Outer.h" />
     <ClInclude Include="..\Public\Embars_Trigger.h" />
     <ClInclude Include="..\public\FSM_Default.h" />
     <ClInclude Include="..\Public\Door_Gear.h" />
@@ -529,6 +533,10 @@
     <ClCompile Include="..\Private\AS_SideMove_P1_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp" />
     <ClCompile Include="..\private\Dragonian_Sword.cpp" />
+    <ClCompile Include="..\Private\ElevatorL.cpp" />
+    <ClCompile Include="..\Private\Elevator_Inner.cpp" />
+    <ClCompile Include="..\Private\Elevator_Mid.cpp" />
+    <ClCompile Include="..\Private\Elevator_Outer.cpp" />
     <ClCompile Include="..\Private\Embars_Trigger.cpp" />
     <ClCompile Include="..\private\FSM_Default.cpp" />
     <ClCompile Include="..\private\Dragonian_Melee.cpp" />
