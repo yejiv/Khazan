@@ -7,6 +7,7 @@
 #include "Player_Shader.h"
 #include "E_Body_Khazan_Spear.h"
 #include "E_Khazan_Spear.h"
+#include "MapEditor_Header.h"
 
 CLevel_Shader::CLevel_Shader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -38,6 +39,8 @@ HRESULT CLevel_Shader::Initialize()
 	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
 	
 	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
+
+    CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_Interact"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
 #pragma endregion
 
 	m_CascadeConfig.Splits.resize(m_iNumCascades);
@@ -1001,6 +1004,100 @@ HRESULT CLevel_Shader::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentL
 	CloseHandle(hFile);
 
 	return S_OK;
+}
+
+HRESULT CLevel_Shader::Ready_Layer_MapObject_Interactive(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+    _wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+    switch (eMap)
+    {
+    case KHAZAN_MAP::HEINMACH:
+        strDataFilePath += TEXT("Embars/");
+        break;
+    case KHAZAN_MAP::CREVICE:
+        strDataFilePath += TEXT("Crevice/");
+        break;
+    case KHAZAN_MAP::EMBARS:
+        strDataFilePath += TEXT("Embars/");
+        break;
+    case KHAZAN_MAP::VIPER:
+        strDataFilePath += TEXT("Viper/");
+        break;
+    default:
+        break;
+    }
+
+    strDataFilePath += pDataFileName;
+
+    // 동일한 파일명의 _objects.dat 불러오기
+    strDataFilePath += TEXT("_interactive.dat");
+
+    DWORD dwByte = {};
+
+    HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        return E_FAIL;
+    }
+    CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
+
+    _uint iStatueIndex0 = {};
+    _uint iStatueIndex1 = {};
+
+    // 1. 오브젝트의 총 개수
+    _uint iObjectCnt = {};
+    CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+    // 오브젝트 총 개수만큼 순회
+    for (_uint i = 0; i < iObjectCnt; ++i)
+    {
+        CProp_Interactive::PROP_INTERACTIVE_DESC ObjectDesc = {};
+
+        ObjectDesc.eLevel = eCurrentLevel;
+
+        // 2. 프로토 타입 태그 길이 불러오기
+        _uint iPrototypeTagLen = {};
+        CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
+
+        // 3. 프로토 타입 태그 이름 불러오기
+        _tchar szPrototypeTag[MAX_PATH] = {};
+        CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
+
+        // 불러온 태그 카피
+        memcpy(ObjectDesc.szModelName, szPrototypeTag, sizeof(ObjectDesc.szModelName));
+
+        // 4. 객체당 월드 행렬 때오기
+        _float4x4 WorldMatrix = {};
+        CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), E_FAIL);
+
+        ObjectDesc.WorldMatrix = WorldMatrix;
+
+        // 5. 상호 작용 타입 불러오기
+        INTERACTIVE_TYPE eType = {};
+        CHECK_FALSE(ReadFile(hFile, &eType, sizeof(INTERACTIVE_TYPE), &dwByte, nullptr), E_FAIL);
+        CHECK_EQUAL_MSG(INTERACTIVE_TYPE::END, eType, TEXT("맵 에디터에서 상호 작용 타입 미지정"), false);
+
+
+        switch (eType)
+        {
+        case INTERACTIVE_TYPE::CHECKPOINT:
+        {
+            _int iBladeNexusID = {};
+            CHECK_FALSE(ReadFile(hFile, &iBladeNexusID, sizeof(_int), &dwByte, nullptr), E_FAIL);
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BladeNexus"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
+        default:
+            MSG_BOX(TEXT("잉 있으면 안되는디"));
+            break;
+        }
+    }
+
+    CloseHandle(hFile);
+
+    return S_OK;
 }
 
 CLevel_Shader* CLevel_Shader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

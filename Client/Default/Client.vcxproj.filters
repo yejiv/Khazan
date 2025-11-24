@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="98.Default">
@@ -2155,6 +2155,9 @@
     <ClInclude Include="..\Public\AS_5HitCombo_Viper.h">
       <Filter>92.AI\State\Viper\13.5HitCombo</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\FSM_Viper.h" />
+    <ClInclude Include="..\Public\GSword_Khazan_GS.h" />
+    <ClInclude Include="..\Public\Collection_Info.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3168,6 +3171,9 @@
     <ClCompile Include="..\Private\GearGate.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\FSM_Viper.cpp" />
+    <ClCompile Include="..\Private\GSword_Khazan_GS.cpp" />
+    <ClCompile Include="..\Private\Collection_Info.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
@@ -3219,6 +3225,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_UI_Effect.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimMesh_MotionVector.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

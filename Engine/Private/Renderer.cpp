@@ -66,24 +66,27 @@ HRESULT CRenderer::Initialize()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Combined"), 1050.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Velocity"), 1050.0f, 750.0f, 300.f, 300.f)))
+
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_StaticVelocity"), 1350.f, 150.f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Velocity"), 1350.f, 450.f, 300.f, 300.f)))
         return E_FAIL;
 
-    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Brightness"), 1350.0f, 150.0f, 300.f, 300.f)))
-    //    return E_FAIL;
-    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_BlurX"), 1350.0f, 450.0f, 300.f, 300.f)))
-    //    return E_FAIL;
-    //if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Bloom"), 1350.0f, 750.0f, 300.f, 300.f)))
-    //    return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Brightness"), 1350.0f, 150.0f, 300.f, 300.f)))
+    //      return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_BlurX"), 1350.0f, 450.0f, 300.f, 300.f)))
+    //      return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Bloom"), 1350.0f, 750.0f, 300.f, 300.f)))
+    //      return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_AccumColor"), 1350.0f, 150.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_AccumAlpha"), 1350.0f, 450.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Depth"), 1350.0f, 750.0f, 300.f, 300.f)))
-        return E_FAIL;
-    //if (FAILED(m_pGameInstance->Ready_Shadow_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
-    //    return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_AccumColor"), 1350.0f, 150.0f, 300.f, 300.f)))
+    //      return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_AccumAlpha"), 1350.0f, 450.0f, 300.f, 300.f)))
+    //      return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Depth"), 1350.0f, 750.0f, 300.f, 300.f)))
+    //      return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Ready_Shadow_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
+    //      return E_FAIL;
 #endif
 
     return S_OK;
@@ -155,6 +158,12 @@ HRESULT CRenderer::Draw()
     if (FAILED(Render_Dynamic()))
     {
         MSG_BOX(TEXT("Failed To Render Dynamic"));
+        return E_FAIL;
+    }
+
+    if (FAILED(Render_DynamicVelocity()))
+    {
+        MSG_BOX(TEXT("Failed To Render Dynamic Velocity"));
         return E_FAIL;
     }
 
@@ -377,8 +386,8 @@ HRESULT CRenderer::Render_StaticVelocity()
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
 
-    // 이전 뷰 투영 행렬 갱신
-    m_pGameInstance->Update_MotionBlur_PrevMatrices();
+    // Test
+    m_pGameInstance->Copy_RT_Resource(TEXT("RT_StaticVelocity"), TEXT("RT_Velocity"));
 
     return S_OK;
 }
@@ -1043,6 +1052,10 @@ HRESULT CRenderer::Ready_RenderTargets()
 
     /* RT_Velocity */
     if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Velocity"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+        return E_FAIL;
+
+    /* RT_StaticVelocity */
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_StaticVelocity"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
     /* RT_AccumColor */

@@ -490,8 +490,14 @@ void CCamera::Update_PipeLines(_float fTimeDelta)
 
 	Update_FOVChannel(fTimeDelta);
 
+    _float4x4 PrevViewMatrix = *m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW);
+    _float4x4 PrevProjMatrix = *m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ);
+
 	m_pGameInstance->Set_Transform(D3DTS::VIEW, m_pTransformCom->Get_WorldMatrix_Inverse());
 	m_pGameInstance->Set_Transform(D3DTS::PROJ, XMMatrixPerspectiveFovLH(m_fFovy, m_fAspect, m_fNear, m_fFar));
+
+    m_pGameInstance->Set_PrevTransform(D3DTS::VIEW, PrevViewMatrix);
+    m_pGameInstance->Set_PrevTransform(D3DTS::PROJ, PrevProjMatrix);
 }
 
 void CCamera::Shaking_Start(_float fPower, _float fDuration)

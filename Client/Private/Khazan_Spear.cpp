@@ -183,7 +183,8 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
         m_pCharVirCom->Set_Position(XMVectorSet(-23.183f, -29.5f, 153.584f, 1.f));
     }
 
-
+    // 이전 프레임 월드 행렬 저장
+    m_pTransformCom->Cache_PrevWorldMatrix();
 }
 
 void CKhazan_Spear::Update(_float fTimeDelta)

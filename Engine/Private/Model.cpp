@@ -333,6 +333,21 @@ HRESULT CModel::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, 
     return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantName, m_Bones, nullptr);
 }
 
+HRESULT CModel::Bind_PrevBoneMatrices(CShader* pShader, const _char* pConstantName, _uint iMeshIndex)
+{
+    if (iMeshIndex >= m_iNumMeshes)
+        return E_FAIL;
+
+    // 파츠는 마스터의 본을 사용
+    if (m_isSharedSkeleton && m_pMasterSkeleton != nullptr)
+    {
+        // 마스터 본으로 바인딩 (Mesh 내부에서 본 이름으로 매칭)
+        //  Update_PartLocalBones();
+        return m_Meshes[iMeshIndex]->Bind_PrevBoneMatrices(pShader, pConstantName, m_pMasterSkeleton->m_CachedPrevBoneMatrices, &m_PartLocalBoneMatrices);
+    }
+    return m_Meshes[iMeshIndex]->Bind_PrevBoneMatrices(pShader, pConstantName, m_CachedPrevBoneMatrices, nullptr);
+}
+
 _bool CModel::Play_Animation(_float fTimeDelta)
 {
     /* 파츠들은 애니메이션 안돌림 */
@@ -432,6 +447,10 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 
     /* 이벤트 체크 */
     Check_Event(fTimeDelta);
+
+    // 모든 본의 Combined Marix가 계산 완료된 상태
+    if (m_isMaterSkeleton)
+        Cache_CurrentBoneMatrices();
 
     /* Owner에 Transform 적용 */
     if (m_pOwnerTransform && Has_State(ROOTMOTION))
@@ -1224,6 +1243,11 @@ void CModel::Cache_CurrentBoneMatrices()
 {
     if (m_CachedBoneMatrices.size() != m_Bones.size())
         m_CachedBoneMatrices.resize(m_Bones.size());
+
+    if (m_CachedPrevBoneMatrices.size() != m_CachedBoneMatrices.size())
+        m_CachedPrevBoneMatrices.reserve(m_CachedBoneMatrices.size());
+
+    m_CachedPrevBoneMatrices = m_CachedBoneMatrices;
 
     for (size_t i = 0; i < m_Bones.size(); ++i)
     {

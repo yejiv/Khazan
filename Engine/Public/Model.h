@@ -69,7 +69,7 @@ public:
     HRESULT Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex);
     HRESULT Bind_Materials(class CDeferredShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex);
     HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
-
+    HRESULT Bind_PrevBoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
 
 public:
     // 권성은 테스트
@@ -183,6 +183,7 @@ private:
 	/* 뼈 */
 	vector<class CBone*>				m_Bones;
     vector<_float4x4>                   m_CachedBoneMatrices;  // 캐싱용(애니메이션이 끝난 모든 뼈정보를 저장)
+    vector<_float4x4>                   m_CachedPrevBoneMatrices;
 
     /* 애니메이션 */
     _bool								m_isFinished = { false };			/* 루프가 아닌 애니메이션이 끝났는지 여부  */
@@ -226,6 +227,8 @@ private:
 
     /* 최적화용 */
     vector<_int>      m_PartToMasterIndex;     // [partBone] = masterBoneIndex or -1
+
+    _bool isChanged = {};
 
 private:
     /* 루트 모션 */

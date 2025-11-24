@@ -678,7 +678,7 @@ PS_OUT_BACKBUFFER PS_MOTION_BLUR(PS_IN In)
     // 벨로시티 맵 샘플링
     float4 vVelocityDesc = g_VelocityTexture.Sample(DefaultSampler, In.vTexcoord);
     float2 vMotionVector = vVelocityDesc.rg;
-    float fCurDepth = g_VelocityTexture.Sample(DefaultSampler, In.vTexcoord).b;
+    float fCurDepth = vVelocityDesc.b;
 
     // 모션 벡터 길이 계산 및 임계값 설정 (현재 Dynamic 기록 안 되는 문제로 임시 예외 처리)
     float fMotionLength = length(vMotionVector);
@@ -697,8 +697,8 @@ PS_OUT_BACKBUFFER PS_MOTION_BLUR(PS_IN In)
         
             float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleUV).x;
         
-            //  if (abs(fSampleDepth - fCurDepth) > g_fMotionBlurBias)
-            //      break;
+            if (abs(fSampleDepth - fCurDepth) > g_fMotionBlurBias)
+                break;
         
             vFinalColor += g_CombinedTexture.Sample(ClampSampler, vSampleUV).rgb;
             fSampleCount += 1.f;

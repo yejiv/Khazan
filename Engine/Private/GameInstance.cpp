@@ -653,6 +653,26 @@ void CGameInstance::Set_Transform(D3DTS eTransformState, const _float4x4& Matrix
 	m_pPipeLine->Set_Transform(eTransformState, Matrix);
 }
 
+_matrix CGameInstance::Get_PrevTransform_Matrix(D3DTS eTransformState) const
+{
+    return m_pPipeLine->Get_PrevTransform_Matrix(eTransformState);
+}
+
+const _float4x4* CGameInstance::Get_PrevTransform_Float4x4(D3DTS eTransformState) const
+{
+    return m_pPipeLine->Get_PrevTransform_Float4x4(eTransformState);
+}
+
+void CGameInstance::Set_PrevTransform(D3DTS eTransformState, _fmatrix Matrix)
+{
+    m_pPipeLine->Set_PrevTransform(eTransformState, Matrix);
+}
+
+void CGameInstance::Set_PrevTransform(D3DTS eTransformState, const _float4x4& Matrix)
+{
+    m_pPipeLine->Set_PrevTransform(eTransformState, Matrix);
+}
+
 #pragma endregion
 
 #pragma region LIGHT_MANAGER
@@ -1539,11 +1559,6 @@ void CGameInstance::Set_MotionBlurDesc(const MOTION_BLUR_DESC& Desc)
 void CGameInstance::Set_EnableMotionBlur(_bool isEnable)
 {
     m_pMotionBlur->Set_EnableMotionBlur(isEnable);
-}
-
-void CGameInstance::Update_MotionBlur_PrevMatrices()
-{
-    m_pMotionBlur->Update_PrevMatrices();
 }
 
 void CGameInstance::Set_Gloval_Volume(_float fVolume)
