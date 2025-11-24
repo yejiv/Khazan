@@ -561,12 +561,12 @@ HRESULT CLoader::Loading_For_Effect_Level()
 	
 	// Prototype_Component_Texture_TestSpriteImage
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Sprite_Effect"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Sprite/Sprite%d.png"), 8))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Sprite/Sprite%d.png"), 10))))
 		return E_FAIL;
 
 	// Prototype_Component_Texture_MeshEffect(Diffuse)
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Slash"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/SowardTrailTexture/Slash_%d.png"), 27))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/SowardTrailTexture/Slash_%d.png"), 28))))
 		return E_FAIL;
 
 	// Prototype_Component_Texture_MeshEffect(Masking)
@@ -580,7 +580,7 @@ HRESULT CLoader::Loading_For_Effect_Level()
 		return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_MeshEffect_Normal"),
-        CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Normal/Normal%d.png"), 2))))
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Normal/Normal%d.png"), 3))))
         return E_FAIL;
 
 	// Prototype_Component_Texture_Terrain_Texture

@@ -8,6 +8,7 @@ bool g_MaskScrollYDir;
 bool g_MaskScrollInv;
 bool g_IsDissolve = false;
 bool g_IsNormal;
+bool g_IsFresnel;
 
 float g_MaskScrollSpeed;
 
@@ -280,6 +281,12 @@ PS_NORMAL_OUT PS_NORMAL_MAIN(PS_NORMAL_IN In)
     
     //if (vFinalColor.a < 0.01f)
     //    discard;
+    
+    if (g_IsFresnel)
+    {
+        float fresnelFactor = 1.7 - abs(dot(In.vNormal.xyz, normalize(g_vCamPosition.xyz - In.vWorldPos.xyz)));
+        vFinalColor.xyz = vFinalColor.xyz * pow(fresnelFactor, 1.6f);
+    } 
     
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;

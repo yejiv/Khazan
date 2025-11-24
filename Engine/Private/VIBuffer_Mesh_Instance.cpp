@@ -129,7 +129,7 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
         _float		fLifeTime = m_pGameInstance->Rand(pMeshDesc->vLifeTime.x, pMeshDesc->vLifeTime.y);
 
         XMVECTOR rotation;
-        if (m_sData.fRotation.x == 0.f && m_sData.fRotation.y == 0.f && m_sData.fRotation.z == 0.f && m_sData.iNumInstance > 1)
+        if (m_sData.fRotation.x == 0.f && m_sData.fRotation.y == 0.f && m_sData.fRotation.z == 0.f && m_iNumInstance > 8)
             rotation = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(m_pGameInstance->Rand(0, 360)),
                 XMConvertToRadians(m_pGameInstance->Rand(0, 360)),
                 XMConvertToRadians(m_pGameInstance->Rand(0, 360)));
@@ -427,7 +427,7 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_ComputeShader()
     if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::MOVE)])
         return E_FAIL;
 
-    m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Point_Instance_Compute.hlsl"), "CS_UPDATE_GRAVITY");
+    m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Model_Instance_Compute.hlsl"), "CS_UPDATE_GRAVITY");
     if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)])
         return E_FAIL;
 
