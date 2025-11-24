@@ -21,8 +21,6 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instanc
 
 void CVIBuffer_Point_Instance::Reset()
 {
-    return;
-
 	COMPUTE_PASS_DESC PassDesc{};
     PassDesc.SRVs.push_back(m_pSRV);
     PassDesc.SRVs.push_back(m_pSRVNoise);
@@ -226,8 +224,6 @@ HRESULT CVIBuffer_Point_Instance::Render()
 
 _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 {
-    return false;
-
 
 	D3D11_MAPPED_SUBRESOURCE SubResource;
 	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
@@ -268,8 +264,6 @@ _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 
 void CVIBuffer_Point_Instance::UpdateGravity(_float fTimeDelta)
 {
-    return;
-
 	COMPUTE_PASS_DESC PassDesc{};
     PassDesc.SRVs.push_back(m_pSRV);
     PassDesc.SRVs.push_back(m_pSRVNoise);
@@ -294,8 +288,6 @@ void CVIBuffer_Point_Instance::UpdateGravity(_float fTimeDelta)
 
 void CVIBuffer_Point_Instance::UpdateTurbulence(_float fTimeDelta, _float fAccTime)
 {
-    return;
-
 	D3D11_MAPPED_SUBRESOURCE SubResource;
 	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
 	{
@@ -331,8 +323,6 @@ void CVIBuffer_Point_Instance::UpdateTurbulence(_float fTimeDelta, _float fAccTi
 
 void CVIBuffer_Point_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
 {
-    return;
-
 	D3D11_MAPPED_SUBRESOURCE SubResource;
 	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
 	{
@@ -367,7 +357,6 @@ void CVIBuffer_Point_Instance::Remove_Speed(SPEED_VALUE type)
 {
 	//if (m_IsLoop == true)
 	//	return;
-    return;
 
     D3D11_MAPPED_SUBRESOURCE SubResource;
     if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
@@ -401,8 +390,6 @@ void CVIBuffer_Point_Instance::Remove_Speed(SPEED_VALUE type)
 
 void CVIBuffer_Point_Instance::Remove_Speed()
 { 
-    return;
-
     D3D11_MAPPED_SUBRESOURCE SubResource;
     if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
     {
@@ -587,8 +574,6 @@ HRESULT CVIBuffer_Point_Instance::Ready_ComputeShader()
 
 _bool CVIBuffer_Point_Instance::IsFinish()
 {
-    return false;
-
 
     _bool flag = false;
 

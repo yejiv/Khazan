@@ -305,81 +305,81 @@ HRESULT CLoader::Loading_For_Test_GameObject()
 
 HRESULT CLoader::Loading_For_Effect_Static(_uint level)
 {
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpearWind"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust2"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust2"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust3"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust3"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust4"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust4"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust5"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust5"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust6"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust6"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("BlustSmall"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blustSmall"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Fire"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/fire1"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Open"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/TreasureBox"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Spawn"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spawn"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("BloodHit"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/bloodhit"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpiralSpear_SpearFX"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Bloodhand_Big"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Stamp"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/stamp"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Snow"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Snow"))))
-    //    return E_FAIL;
-    //
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpearWind"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust2"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust2"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust3"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust3"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust4"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust4"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust5"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust5"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust6"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust6"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("BlustSmall"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blustSmall"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Fire"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/fire1"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Open"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/TreasureBox"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Spawn"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spawn"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("BloodHit"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/bloodhit"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpiralSpear_SpearFX"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Bloodhand_Big"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Stamp"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/stamp"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Snow"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Snow"))))
+        return E_FAIL;
+    
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Snow_Once"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/snow_once"))))
         return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("GhostKnight"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("GhostKnight_static"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight_static"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("GhostKnight_static_connect"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight_static_connect"))))
-    //    return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("GhostKnight"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("GhostKnight_static"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight_static"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("GhostKnight_static_connect"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight_static_connect"))))
+        return E_FAIL;
 
     return S_OK;
 }
@@ -887,49 +887,49 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 #pragma region Effect 
     Loading_For_Effect_Static(ENUM_CLASS(LEVEL::HEINMACH));
    
-    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Snow"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow_Cam"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/snow_cam"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_SnowUp"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Snow_Big"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Snow_Small"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Boomarang"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Boomerang"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("MagicBall"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/MonsterSphere"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Breath"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Breath"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Focus"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Focus"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Ice"))))
-    //    return E_FAIL;
-    //
-    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice_Disappear"),
-    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Ice_Disappear"))))
-    //    return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Snow"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow_Cam"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/snow_cam"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_SnowUp"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Snow_Big"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Snow_Small"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Boomarang"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Boomerang"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("MagicBall"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/MonsterSphere"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Breath"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Breath"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Focus"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Focus"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Ice"))))
+        return E_FAIL;
+    
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice_Disappear"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Ice_Disappear"))))
+        return E_FAIL;
 #pragma endregion
 
 #pragma region Shader

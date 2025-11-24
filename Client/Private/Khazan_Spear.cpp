@@ -2533,6 +2533,7 @@ HRESULT CKhazan_Spear::Ready_PartObjects()
     if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Body_Khazan_Spear"), &BodyDesc)))
         return E_FAIL;
     m_pBody = static_cast<CBody_Khazan_Spear*>(Find_PartObject(TEXT("Part_Body")));
+    Safe_AddRef(m_pBody);
     m_pWeaponR_Matrix = m_pBody->Get_BoneMatrix("Weapon_R");
     m_BackPack_Matrix = m_pBody->Get_BoneMatrix("Weapon_C_BackPack_Spear");
     m_LanternSocket_Matrix = m_pBody->Get_BoneMatrix("Lantern_Socket_L");
@@ -2545,6 +2546,7 @@ HRESULT CKhazan_Spear::Ready_PartObjects()
     if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Spear_Khazan_Spear"), &SpearDesc)))
         return E_FAIL;
     m_pSpear = static_cast<CSpear_Khazan_Spear*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
+    Safe_AddRef(m_pSpear);
     m_pSpearFX_Matrix = m_pSpear->Get_BoneMatrix("FX");
     m_SpearOffset_Matrix = m_pSpear->Get_OffestMatrix();
 
@@ -2556,7 +2558,7 @@ HRESULT CKhazan_Spear::Ready_PartObjects()
     if (FAILED(__super::Add_PartObject(TEXT("Part_Lantern"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"), &LanternDesc)))
         return E_FAIL;
     m_pLantern = static_cast<CLantern_Khazan_Spear*>(Find_PartObject(TEXT("Part_Lantern")));
-
+    Safe_AddRef(m_pLantern);
 
     /* 넘겨주기  */
     m_pSpear->Set_matBackPack(m_BackPack_Matrix);
@@ -3598,15 +3600,15 @@ void CKhazan_Spear::Free()
 
     Safe_Release(m_pClientInstance);
     Safe_Release(m_pCamera);
-    //   Safe_Release(m_pBody);
-       //Safe_Release(m_pSpear);
+    Safe_Release(m_pBody);
+    Safe_Release(m_pSpear);
     Safe_Release(m_pAnimMove);
     Safe_Release(m_pAnimAttack);
     Safe_Release(m_pAnimGuard);
     Safe_Release(m_pAnimInteraction);
     Safe_Release(m_pAnimDamaged);
     Safe_Release(m_pAnimFall);
-
+    Safe_Release(m_pLantern);
      //Safe_Release(m_pASMachine);
     // Safe_Release(m_pASManager);
 }

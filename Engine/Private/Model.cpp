@@ -359,6 +359,10 @@ _bool CModel::Play_Animation(_float fTimeDelta)
         Remove_State(CHANGE_ANIMATION);
         Add_State(FIRST_FRAME_ANIMATION);
     }
+    //if (sdfsdfsdfsd) { 
+    //    m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
+    //    Add_State(FIRST_FRAME_ANIMATION);
+    //}
 
     m_fPrevTrackPosition = m_fCurrentTrackPosition;
 

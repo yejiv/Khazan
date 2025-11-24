@@ -1,7 +1,6 @@
 #include "Body_Dragonian_Melee.h"
 #include "GameInstance.h"
 
-
 CBody_Dragonian_Melee::CBody_Dragonian_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CPartObject{ pDevice,pContext }
 {
@@ -28,11 +27,10 @@ HRESULT CBody_Dragonian_Melee::Initialize_Clone(void* pArg)
     BODY_DESC* pDesc = static_cast<BODY_DESC*>(pArg);
 
     m_pOwnerTransform = pDesc->pOwnerTransform;
-    if (nullptr == m_pOwnerTransform)
-        return E_FAIL;
-
+    CHECK_NULLPTR(m_pOwnerTransform, E_FAIL);
     Safe_AddRef(m_pOwnerTransform);
-
+    
+    m_pData = pDesc->pData;
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
@@ -40,8 +38,7 @@ HRESULT CBody_Dragonian_Melee::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_pModelCom->Set_OwnerTransform(&m_CombinedWorldMatrix);
-
-   
+    m_pModelCom->Set_RootBone(1);
     return S_OK;
 }
 
@@ -51,8 +48,14 @@ void CBody_Dragonian_Melee::Priority_Update(_float fTimeDelta)
 
 void CBody_Dragonian_Melee::Update(_float fTimeDelta)
 {
+    if (m_iPreAnim != m_pData->iAnimIndex)
+    {
+        m_pModelCom->Set_Animation(m_pData->iAnimIndex);
+        m_iPreAnim = m_pData->iAnimIndex;
+    }
+
     Update_CombinedMatrix();
-    m_pModelCom->Play_Animation(fTimeDelta);
+    m_pData->isAnimFinash = m_pModelCom->Play_Animation(fTimeDelta); 
 }
 
 void CBody_Dragonian_Melee::Late_Update(_float fTimeDelta)
@@ -107,6 +110,8 @@ HRESULT CBody_Dragonian_Melee::Ready_Components()
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
+    //m_pModelCom->Set_RootBone();
+
     return S_OK;
 }
 
@@ -151,9 +156,9 @@ CGameObject* CBody_Dragonian_Melee::Clone(void* pArg)
 
 void CBody_Dragonian_Melee::Free()
 {
+    __super::Free();
+
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
-    __super::Free();
-
 }

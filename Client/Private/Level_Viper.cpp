@@ -28,107 +28,106 @@ HRESULT CLevel_Viper::Initialize()
 
     CHECK_FAILED(Ready_Sequence(), E_FAIL);
 
-	// 플레이어, 카메라, 트리거
-    
-    CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
+    // 플레이어, 카메라, 트리거
 
-	m_pGameInstance->Add_FireTask([this]() {
-	    CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
-        CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
-		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+   CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
+
+    m_pGameInstance->Add_FireTask([this]() {
+        CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+        CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
         if (FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Viper"))))
             return E_FAIL;
 
-		return S_OK;
-		});
+        return S_OK;
+        });
+    CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
+    // 우선 맵 오브젝트 서브 레벨 로드
+    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+        CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"),
+            0, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        return S_OK;
+        }));
 
-	// 우선 맵 오브젝트 서브 레벨 로드
-	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"),
-			0, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-		return S_OK;
-		}));
+    // 조명, 스카이박스 설정
+    m_pGameInstance->Add_FireTask([this]() {
 
-	// 조명, 스카이박스 설정
-	m_pGameInstance->Add_FireTask([this]() {
+        CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
-		CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
-		CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
-		CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        return S_OK;
+        });
 
-		return S_OK;
-		});
+    // 맵 오브젝트 서브 레벨 로드
+    m_pGameInstance->Add_FireTask([this]() {
+        for (_uint i = 0; i < VIPER_SUBLV; ++i)
+        {
+            if (0 == i)
+                continue;
 
-	// 맵 오브젝트 서브 레벨 로드
-	m_pGameInstance->Add_FireTask([this]() {
-		for (_uint i = 0; i < VIPER_SUBLV; ++i)
-		{
-			if (0 == i)
-				continue;
+            CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        }
 
-			CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-		}
+        return S_OK;
+        });
 
-		return S_OK;
-		});
-
-	m_pGameInstance->Add_FireTask([this]() mutable {
-		//CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-		CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-		return S_OK;
-		});
-
-
-
-	CClientInstance::GetInstance()->Fade_Out();
-
-	while (true) {
-		bool all_ready = true;
-
-		for (auto it = m_futures.begin(); it != m_futures.end(); /* no ++ here */) {
-			// 1) invalid면 지워버려서 다시는 접근하지 않게
-			if (!it->valid()) {
-				it = m_futures.erase(it);
-				continue;
-			}
-
-			// 2) 아직 준비 안됐으면 플래그만 내리기
-			if (it->wait_for(0ms) != std::future_status::ready) {
-				all_ready = false;
-			}
-			++it;
-		}
-
-		if (all_ready) break;
-		// 너무 바쁘게 돌지 않도록 살짝 양보(필요시)
-		std::this_thread::sleep_for(1ms);
-	}
-
-	bool all_ok = true;
-	for (auto& f : m_futures) {
-		if (!f.valid()) continue; // 이미 소비/무효면 스킵
-		try {
-			HRESULT hr = f.get();          // get()은 딱 한번만!
-			if (FAILED(hr)) all_ok = false;
-		}
-		catch (const std::future_error& e) {
-			// e.code()가 no_state인지, broken_promise인지 로깅
-			all_ok = false;
-		}
-		catch (...) {
-			all_ok = false;
-		}
-	}
-
-   
-	m_futures.clear();
+    m_pGameInstance->Add_FireTask([this]() mutable {
+        //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        return S_OK;
+        });
 
 
-	CClientInstance::GetInstance()->Fade_In();
 
-	return S_OK;
+    CClientInstance::GetInstance()->Fade_Out();
+
+    while (true) {
+        bool all_ready = true;
+
+        for (auto it = m_futures.begin(); it != m_futures.end(); /* no ++ here */) {
+            // 1) invalid면 지워버려서 다시는 접근하지 않게
+            if (!it->valid()) {
+                it = m_futures.erase(it);
+                continue;
+            }
+
+            // 2) 아직 준비 안됐으면 플래그만 내리기
+            if (it->wait_for(0ms) != std::future_status::ready) {
+                all_ready = false;
+            }
+            ++it;
+        }
+
+        if (all_ready) break;
+        // 너무 바쁘게 돌지 않도록 살짝 양보(필요시)
+        std::this_thread::sleep_for(1ms);
+    }
+
+    bool all_ok = true;
+    for (auto& f : m_futures) {
+        if (!f.valid()) continue; // 이미 소비/무효면 스킵
+        try {
+            HRESULT hr = f.get();          // get()은 딱 한번만!
+            if (FAILED(hr)) all_ok = false;
+        }
+        catch (const std::future_error& e) {
+            // e.code()가 no_state인지, broken_promise인지 로깅
+            all_ok = false;
+        }
+        catch (...) {
+            all_ok = false;
+        }
+    }
+
+
+    m_futures.clear();
+
+
+    CClientInstance::GetInstance()->Fade_In();
+
+    return S_OK;
 }
 
 void CLevel_Viper::Update(_float fTimeDelta)
@@ -207,33 +206,33 @@ HRESULT CLevel_Viper::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	CCamera_Compre* pCamera_Free = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Camera_Compre"), &CameraFreeDesc));
 	pCamera_Free->Set_IsActive(false);
-
+    
 	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::VIPER), pCamera_Free);
 
 	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pCamera_Free);
 
-	CCamera_Compre::CAMERA_COMPRE_DESC	CameraSpringDesc{};
+	//CCamera_Compre::CAMERA_COMPRE_DESC	CameraSpringDesc{};
 
-	CameraFreeDesc.vEye = _float4(0.39f, 3.97f, -1.79f, 1.f);
-	CameraFreeDesc.vAt = _float4(-0.26f, -0.1f, 0.96f, 1.f);
-	CameraSpringDesc.fFovy = XMConvertToRadians(60.0f);
-	CameraSpringDesc.fNear = 0.1f;
-	CameraSpringDesc.fFar = 6000.f;
-	CameraSpringDesc.fSpeedPerSec = 10.f;
-	CameraSpringDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-	CameraSpringDesc.fMouseSensor = 0.2f;
-	CameraSpringDesc.iCameraType = ENUM_CLASS(CAMERATYPE::PLAYER);
+	//CameraFreeDesc.vEye = _float4(0.39f, 3.97f, -1.79f, 1.f);
+	//CameraFreeDesc.vAt = _float4(-0.26f, -0.1f, 0.96f, 1.f);
+	//CameraSpringDesc.fFovy = XMConvertToRadians(60.0f);
+	//CameraSpringDesc.fNear = 0.1f;
+	//CameraSpringDesc.fFar = 6000.f;
+	//CameraSpringDesc.fSpeedPerSec = 10.f;
+	//CameraSpringDesc.fRotationPerSec = XMConvertToRadians(90.0f);
+	//CameraSpringDesc.fMouseSensor = 0.2f;
+	//CameraSpringDesc.iCameraType = ENUM_CLASS(CAMERATYPE::PLAYER);
 
 
-	CCamera_Compre* pCamera_Spring = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Camera_Compre"), &CameraSpringDesc));
-	pCamera_Spring->Set_IsActive(false);
-	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player"));
-	pCamera_Spring->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
-	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::VIPER), pCamera_Spring);
+	//CCamera_Compre* pCamera_Spring = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Camera_Compre"), &CameraSpringDesc));
+	//pCamera_Spring->Set_IsActive(false);
+	//CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player"));
+	//pCamera_Spring->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
+	//m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::VIPER), pCamera_Spring);
 
-	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pCamera_Spring);
+	//m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pCamera_Spring);
 
-	m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::FREE));
+	//m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::FREE));
 
 	return S_OK;
 }
@@ -1038,6 +1037,10 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
     MonsterDesc.fRotationPerSec = 180.f;
 
     XMStoreFloat4x4(&MonsterDesc.WorldMatrix, XMMatrixIdentity());
+    MonsterDesc.WorldMatrix.m[3][0] = -32.365f;   
+    MonsterDesc.WorldMatrix.m[3][1] = -29.5f;
+    MonsterDesc.WorldMatrix.m[3][2] = 198.409f;
+
     MonsterDesc.strName = "Dragonian_Melee";
     MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
 

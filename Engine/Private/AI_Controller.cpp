@@ -110,7 +110,7 @@ HRESULT CAI_Controller::Load_Perception(CGameObject* pOwner, const string& FileP
 }
 
 HRESULT CAI_Controller::Load_BlackBoard(CGameObject* pOwner, const string& FilePath)
-{
+ {
     if (FAILED(Ready_BlackBoard(pOwner)))
         return E_FAIL;
 
