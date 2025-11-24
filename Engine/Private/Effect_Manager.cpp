@@ -31,13 +31,13 @@ void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& 
 
 	if (Layer == nullptr)
 	{
-		MSG_BOX(TEXT("Effect Layer ?놁쓬. ?놁쑝硫??덈릺?붾뜲?"));
+		//MSG_BOX(TEXT("Effect Layer ?놁쓬. ?놁쑝硫??덈릺?붾뜲?"));
 		return;
 	}
 
 	if (Pool == nullptr)
 	{
-		MSG_BOX(TEXT("Effect Pool ?놁쓬. ?놁쑝硫??덈릺?붾뜲?"));
+		//MSG_BOX(TEXT("Effect Pool ?놁쓬. ?놁쑝硫??덈릺?붾뜲?"));
 		return;
 	}
 
@@ -47,7 +47,7 @@ void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& 
 
 		if (effect == nullptr)
 		{
-			MSG_BOX(TEXT("EFFECT :: ?留곹븯?ㅺ퀬 Clone?섎젮?붾뜲 ?꾨줈?좏????놁쓬! ?꾨줈?????留뚮뱶?몄슂"));
+			//MSG_BOX(TEXT("EFFECT :: "));
 			return;
 		}
 
@@ -62,16 +62,19 @@ void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& 
 
 _uint CEffect_Manager::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpwanPos)
 {
+    CPrefab* effect{ nullptr };
+
 	auto Pool = Find_Effect_Pool(iLayerLevelIndex, strPrototypeTag);
 	auto RunningLayer = Find_RunningEffect_Layer(strPrototypeTag);
 
-	if (Pool == nullptr || Pool->size() == 0)
-	{
-        MSG_BOX(TEXT("Effect Pool이 없거나 Pool에 객체가 없어서 Spwan 실패!!! 아마도 객체가 모자를 확률이 큼"));
+    if (nullptr == Pool || Pool->size() == 0 || nullptr == RunningLayer)
+    {
+        //MSG_BOX(TEXT("Effect Pool이 없거나 Pool에 객체가 없어서 Spwan 실패!!! 아마도 객체가 모자를 확률이 큼"));
         return 0;
 	}
 
-	CPrefab* effect = Pool->back();
+    effect = Pool->back();
+
 	Pool->pop_back();
 	RunningLayer->push_back(effect);
 	effect->ResetChildren();
@@ -82,16 +85,19 @@ _uint CEffect_Manager::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strP
 
 _uint CEffect_Manager::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector Quaternion, _gvector Position)
 {
+    CPrefab* effect{ nullptr };
+
 	auto Pool = Find_Effect_Pool(iLayerLevelIndex, strPrototypeTag);
 	auto RunningLayer = Find_RunningEffect_Layer(strPrototypeTag);
 
-	if (Pool == nullptr || Pool->size() == 0)
+	if (nullptr == Pool || Pool->size() == 0 || nullptr == RunningLayer)
 	{
-		MSG_BOX(TEXT("Effect Pool이 없거나 Pool에 객체가 없어서 Spwan 실패!!! 아마도 객체가 모자를 확률이 큼"));
+		//MSG_BOX(TEXT("Effect Pool이 없거나 Pool에 객체가 없어서 Spwan 실패!!! 아마도 객체가 모자를 확률이 큼"));
 		return 0;
 	}
+    
+    effect = Pool->back();
 
-	CPrefab* effect = Pool->back();
 	Pool->pop_back();
 	RunningLayer->push_back(effect);
 	effect->ResetChildren();
@@ -103,24 +109,40 @@ _uint CEffect_Manager::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strP
 void CEffect_Manager::Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpwanPos)
 {
 	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
+
+    if (nullptr == Layer || nullptr ==  (*Layer)[ID])
+        return;
+
 	(*Layer)[ID]->UpdatePosition(SpwanPos);
 }
 
 void CEffect_Manager::Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector Quaternion, _gvector Position)
 {
 	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
+
+    if (nullptr == Layer || nullptr == (*Layer)[ID])
+        return;
+
 	(*Layer)[ID]->UpdateWorldMatrix(Quaternion, Position); 
 }
 
 void CEffect_Manager::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)
 {
 	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
+
+    if (nullptr == Layer || nullptr == (*Layer)[ID])
+        return;
+
 	(*Layer)[ID]->SetClose();
 }
 
 void CEffect_Manager::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag)
 { 
     auto Layer = Find_RunningEffect_Layer(strPrototypeTag);
+
+    if (nullptr == Layer)
+        return;
+
     for (auto effect : *Layer) 
         effect->SetClose(); 
 }
@@ -151,14 +173,15 @@ void CEffect_Manager::Update(_float fEffectTimeDelta)
 				if (nullptr != *iter)
 				{
 					(*iter)->Update(fEffectTimeDelta);
-					if ((*iter)->IsActive() == false)	//?쒕룞???앸궗?쇰㈃
+					if ((*iter)->IsActive() == false)
 					{
-						//// 1. 由ъ뀑?쒖폒二쇨퀬 -> 洹몃깷 Spwan?????댁쨳?쒕떎
-						//(*iter)->Reset();
-						// 2. Pool???뚮젮蹂대궦??
 						auto pool = Find_Effect_Pool(i, Pair.first);
+                        if (nullptr == pool)    //임시
+                        {
+                            iter ++;
+                            continue;
+                        }
 						pool->push_back(*iter);
-						// 3. Running?먯꽌??吏?곌린.
 						iter = Pair.second.erase(iter);
 					}
 					else
@@ -197,19 +220,20 @@ void CEffect_Manager::Clear(_uint iLevelIndex)
 
 	for (auto Pair : m_pEffectPools[iLevelIndex])
 	{
-		for (auto& effect : Pair.second)
-			Safe_Release(effect);
+		//for (auto& effect : Pair.second)
+		//	Safe_Release(effect);
 		Pair.second.clear();
 	}
 	m_pEffectPools[iLevelIndex].clear();
 
 	for (auto Pair : m_pRunningEffects[iLevelIndex])
 	{
-		for (auto& effect : Pair.second)
-			Safe_Release(effect);
+		//for (auto& effect : Pair.second)
+		//	Safe_Release(effect);
 		Pair.second.clear();
 	}
-	m_pRunningEffects[iLevelIndex].clear();
+	
+    m_pRunningEffects[iLevelIndex].clear();
 }
 
 deque<class CPrefab*>* CEffect_Manager::Find_Effect_Pool(_uint iLayerLevelIndex, const _wstring& strLayerTag)
@@ -218,7 +242,7 @@ deque<class CPrefab*>* CEffect_Manager::Find_Effect_Pool(_uint iLayerLevelIndex,
 
 	if (iter == m_pEffectPools[iLayerLevelIndex].end())
 	{
-		MSG_BOX(TEXT("Effect Pool??紐살갼?? ?꾨쭏??Tag Error"));
+		//MSG_BOX(TEXT("Effect Pool??紐살갼?? ?꾨쭏??Tag Error"));
 		return nullptr;
 	}
 
@@ -245,7 +269,7 @@ list<class CPrefab*>* CEffect_Manager::Find_RunningEffect_Layer(const _wstring& 
 
 	if (iter == m_pRunningEffects[m_iCurLevel].end())
 	{
-		MSG_BOX(TEXT("Running?섎뒗 Effect Layer ?녿떎?붾뜲 洹몃윺 由ш? ?녿떎;"));
+		//MSG_BOX(TEXT("Running?섎뒗 Effect Layer ?녿떎?붾뜲 洹몃윺 由ш? ?녿떎;"));
 		return nullptr;
 	}
 
@@ -270,6 +294,7 @@ CEffect_Manager* CEffect_Manager::Create(_uint iNumLevels)
 void CEffect_Manager::Free()
 {
 	__super::Free();	 
+
 	Safe_Release(m_pGameInstance); 
 
 	for (size_t i = 0; i < m_iNumLevels; i++)
@@ -285,6 +310,7 @@ void CEffect_Manager::Free()
 		for (auto Pair : m_pEffectPools[i])
 		{
 			for (auto& effect : Pair.second)
+                //effect = nullptr;
 				Safe_Release(effect);
 			Pair.second.clear();
 		}
@@ -293,7 +319,8 @@ void CEffect_Manager::Free()
 		for (auto Pair : m_pRunningEffects[i])
 		{
 			for (auto& effect : Pair.second)
-				Safe_Release(effect);
+                //effect = nullptr;
+                Safe_Release(effect);
 			Pair.second.clear();
 		}
 		m_pRunningEffects[i].clear();
