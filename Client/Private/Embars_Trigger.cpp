@@ -1,0 +1,251 @@
+#include "Embars_Trigger.h"
+#include "GameInstance.h"
+#include "ClientInstance.h"
+//#include "Sequence_HeinMach_Field.h"
+//#include "Sequence_HeinMach_Yetuga.h"
+//#include "Sequence_HeinMach_Start_Chat.h"
+#include "Camera_Compre.h"
+#include "Transform.h"
+#include "Creature.h"
+
+#include "MapObject_Header.h"
+
+CEmbars_Trigger::CEmbars_Trigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+    : CTrigger { pDevice, pContext }
+    , m_pClientInstance { CClientInstance::GetInstance() }
+{
+    Safe_AddRef(m_pClientInstance);
+}
+
+CEmbars_Trigger::CEmbars_Trigger(const CEmbars_Trigger& Prototype)
+    : CTrigger { Prototype }
+    , m_pClientInstance { Prototype.m_pClientInstance }
+{
+    Safe_AddRef(m_pClientInstance);
+}
+
+HRESULT CEmbars_Trigger::Initialize_Prototype()
+{
+    CHECK_FAILED(__super::Initialize_Prototype(), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CEmbars_Trigger::Initialize_Clone(void* pArg)
+{
+    CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
+
+    CHECK_FAILED(Ready_TriggerType(pArg), E_FAIL);
+
+    return S_OK;
+}
+
+void CEmbars_Trigger::Priority_Update(_float fTimeDelta)
+{
+    __super::Priority_Update(fTimeDelta);
+}
+
+void CEmbars_Trigger::Update(_float fTimeDelta)
+{
+    __super::Update(fTimeDelta);
+}
+
+void CEmbars_Trigger::Late_Update(_float fTimeDelta)
+{
+    __super::Late_Update(fTimeDelta);
+}
+
+HRESULT CEmbars_Trigger::Render()
+{
+    //CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
+
+    //_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    //for (_uint i = 0; i < iNumMeshes; ++i)
+    //{
+    //    CHECK_FAILED_ASSERT(m_pShaderCom->Begin(1), E_FAIL);
+
+    //    CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
+    //}
+
+    return S_OK;
+}
+
+HRESULT CEmbars_Trigger::Ready_Components(void* pArg)
+{
+    return S_OK;
+}
+
+HRESULT CEmbars_Trigger::Ready_Collision(void* pArg)
+{
+    return S_OK;
+}
+
+HRESULT CEmbars_Trigger::Ready_TriggerType(void* pArg)
+{
+    if (m_strTriggerKey == "Puzzle_1")
+    {
+
+    }
+    else if (m_strTriggerKey == "Puzzle_2")
+    {
+
+    }
+
+    /*
+    if (m_strTriggerKey == "CutScene")
+    {
+        m_pHeinMach_Field = CSequence_HeinMach_Field::Create(
+            dynamic_cast<CCamera_Compre*>(m_pClientInstance->Find_Camera(
+                ENUM_CLASS(LEVEL::HEINMACH),
+                CAMERATYPE::PLAYER))
+        );
+    }
+    else if (m_strTriggerKey == "Yetuga")
+    {
+        m_pHeinMach_Yetuga = CSequence_HeinMach_Yetuga::Create(
+            dynamic_cast<CCamera_Compre*>(m_pClientInstance->Find_Camera(ENUM_CLASS(LEVEL::HEINMACH), CAMERATYPE::PLAYER)),
+            dynamic_cast<CCreature*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")))
+        );
+
+        Load_SkyBoxBinaryFile(TEXT("HeinMach_Yetuga"));
+    }
+    */
+
+    /*
+    if (m_strTriggerKey == "Talk_03")
+    {
+        m_pHeinMach_Start_Chat = CSequence_HeinMach_Start_Chat::Create();
+    }
+    */
+
+    return S_OK;
+}
+
+void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
+    {
+        if (m_strTriggerKey == "Puzzle_1")
+        {
+            /*
+            SEQ_REQ_PLAY_DESC tPlayDesc{};
+            tPlayDesc.tId.iSeq = 1000;
+            tPlayDesc.pAsset = L"Field_Cut";
+            tPlayDesc.fStartTime = 0.f;
+            m_pGameInstance->SEQ_AdoptAndPlay(m_pHeinMach_Field, tPlayDesc);
+
+            FOG_TRANSITION_DESC Desc{};
+            Desc.fDensity = 0.03f;
+            Desc.fBias = 0.6f;
+            Desc.vColor = _float4(0.f, 0.106f, 0.137f, 1.f);
+            Desc.isUseHeight = true;
+            Desc.fBaseHeight = 1120.f;
+            Desc.isUseNoise = false;
+            m_pGameInstance->Start_FogTransition(3.f, Desc);
+
+            m_isDead = true;
+            */
+        }
+        else if (m_strTriggerKey == "Puzzle_2")
+        {
+            /*
+            SEQ_REQ_PLAY_DESC tPlayDesc{};
+            tPlayDesc.tId.iSeq = 1001;
+            tPlayDesc.pAsset = L"Yetuga_Cut";
+            tPlayDesc.fStartTime = 0.f;
+            m_pGameInstance->SEQ_AdoptAndPlay(m_pHeinMach_Yetuga, tPlayDesc);
+            m_isDead = true;
+
+            // 예투가 Fog
+            //  Set_FogConfig(m_FogConfig);
+            FOG_TRANSITION_DESC Desc{};
+            Desc.fDensity = 0.03f;
+            Desc.fBias = 0.6f;
+            Desc.vColor = _float4(0.338f, 0.545f, 0.749f, 1.f);
+            Desc.isUseHeight = false;
+            Desc.isUseNoise = false;
+            m_pGameInstance->Start_FogTransition(7.f, Desc);
+
+            // 예투가 스카이 박스
+            Start_SkyTransition(m_Sky_Desc, m_Cloud_Desc, 5.f);
+            */
+        }
+        else if (m_strTriggerKey == "포그 바뀌는")
+        {
+            FOG_TRANSITION_DESC Desc{};
+            Desc.fDensity = 0.035f;
+            Desc.fBias = 1.f;
+            Desc.vColor = _float4(0.031f, 0.137f, 0.200f, 1.f);
+            Desc.isUseHeight = false;
+            Desc.isUseNoise = false;
+            m_pGameInstance->Start_FogTransition(5.f, Desc);
+
+            // 그림자 보간 추가
+            m_pGameInstance->Start_ShadowTransition(5.f, 1.f);
+        }
+        /*
+        else if (m_strTriggerKey == "Talk_03")
+        {
+            SEQ_REQ_PLAY_DESC tPlayDesc{};
+            tPlayDesc.tId.iSeq = 1100;
+            tPlayDesc.pAsset = L"Start_Chat";
+            tPlayDesc.fStartTime = 0.f;
+            m_pGameInstance->SEQ_AdoptAndPlay(m_pHeinMach_Start_Chat, tPlayDesc);
+
+            m_isDead = true;
+        }
+        */
+    }
+}
+
+void CEmbars_Trigger::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+
+}
+
+void CEmbars_Trigger::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+{
+
+}
+
+void CEmbars_Trigger::Set_FogConfig(FOG_CONFIG FogConfig)
+{
+    m_pGameInstance->Set_FogConfig(FogConfig);
+}
+
+CEmbars_Trigger* CEmbars_Trigger::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+{
+    CEmbars_Trigger* pInstance = new CEmbars_Trigger(pDevice, pContext);
+
+    if (FAILED(pInstance->Initialize_Prototype()))
+    {
+        MSG_BOX(TEXT("Failed to Created : CEmbars_Trigger"));
+        Safe_Release(pInstance);
+    }
+
+    return pInstance;
+}
+
+CGameObject* CEmbars_Trigger::Clone(void* pArg)
+{
+    CEmbars_Trigger* pInstance = new CEmbars_Trigger(*this);
+
+    if (FAILED(pInstance->Initialize_Clone(pArg)))
+    {
+        MSG_BOX(TEXT("Failed to Cloned : CEmbars_Trigger"));
+        Safe_Release(pInstance);
+    }
+
+    return pInstance;
+}
+
+void CEmbars_Trigger::Free()
+{
+    __super::Free();
+
+    Safe_Release(m_pClientInstance);
+    //Safe_Release(m_pHeinMach_Field);
+    //Safe_Release(m_pHeinMach_Yetuga);
+    //Safe_Release(m_pHeinMach_Start_Chat);
+}

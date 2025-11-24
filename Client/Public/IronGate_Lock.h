@@ -28,7 +28,7 @@ public:
 
 private:
     CIronGate_Lock(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CIronGate_Lock(const CPartObject& Prototype);
+    CIronGate_Lock(const CIronGate_Lock& Prototype);
     virtual ~CIronGate_Lock() = default;
 
 public:

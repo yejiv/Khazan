@@ -104,7 +104,7 @@ protected:
     _int                        m_iPrototypeIndex = { -1 };
 	COLLISION_DESC				m_tCollisionDesc = {};
 
-	
+    _uint                       m_iMtrlFlags = { 0 };
 
 protected:
 	HRESULT Add_Component(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, 

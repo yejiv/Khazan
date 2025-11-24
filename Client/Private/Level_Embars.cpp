@@ -44,6 +44,8 @@ HRESULT CLevel_Embars::Initialize()
 
     CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
 
+    CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
+
     for (_uint i = 0; i < EMBARS_SUBLV; ++i)
     {
         CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Embars"), i, LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
@@ -58,7 +60,7 @@ HRESULT CLevel_Embars::Initialize()
 
     CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
-    //CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+    CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
     CClientInstance::GetInstance()->Fade_In();
 
@@ -171,6 +173,31 @@ HRESULT CLevel_Embars::Ready_Layer_Camera(const _wstring& strLayerTag)
 
     return S_OK;
 }
+
+
+HRESULT CLevel_Embars::Ready_Layer_Effect(const _wstring& strLayerTag)
+{
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpearWind"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiralSpear_SpearFX"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust2"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust3"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust4"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust5"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust6"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Stamp"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("BlustSmall"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Fire"), 10);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Spawn"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("BloodHit"), 100);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Open"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GhostKnight"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GhostKnight_static"), 4);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GhostKnight_static_connect"), 4);
+
+    return S_OK;
+}
+
 
 HRESULT CLevel_Embars::Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {
@@ -298,7 +325,7 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, 
     switch (eMap)
     {
     case KHAZAN_MAP::HEINMACH:
-        strDataFilePath += TEXT("Embars/");
+        strDataFilePath += TEXT("HeinMach/");
         break;
     case KHAZAN_MAP::CREVICE:
         strDataFilePath += TEXT("Crevice/");
@@ -402,7 +429,7 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
     switch (eMap)
     {
     case KHAZAN_MAP::HEINMACH:
-        strJsonFilePath += TEXT("Embars/");
+        strJsonFilePath += TEXT("HeinMach/");
         break;
     case KHAZAN_MAP::CREVICE:
         strJsonFilePath += TEXT("Crevice/");
@@ -520,7 +547,7 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
     switch (eMap)
     {
     case KHAZAN_MAP::HEINMACH:
-        strDataFilePath += TEXT("Embars/");
+        strDataFilePath += TEXT("HeinMach/");
         break;
     case KHAZAN_MAP::CREVICE:
         strDataFilePath += TEXT("Crevice/");
@@ -699,7 +726,7 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, c
     switch (eMap)
     {
     case KHAZAN_MAP::HEINMACH:
-        strDataFilePath += TEXT("Embars/");
+        strDataFilePath += TEXT("HeinMach/");
         break;
     case KHAZAN_MAP::CREVICE:
         strDataFilePath += TEXT("Crevice/");
@@ -790,7 +817,7 @@ HRESULT CLevel_Embars::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentL
     switch (eMap)
     {
     case KHAZAN_MAP::HEINMACH:
-        strDataFilePath += TEXT("Embars/");
+        strDataFilePath += TEXT("HeinMach/");
         break;
     case KHAZAN_MAP::CREVICE:
         strDataFilePath += TEXT("Crevice/");
@@ -868,7 +895,7 @@ HRESULT CLevel_Embars::Ready_FireLights(const _tchar* pDataFileName, LEVEL eCurr
     switch (eMap)
     {
     case KHAZAN_MAP::HEINMACH:
-        strDataFilePath += TEXT("Embars/");
+        strDataFilePath += TEXT("HeinMach/");
         break;
     case KHAZAN_MAP::CREVICE:
         strDataFilePath += TEXT("Crevice/");
@@ -936,7 +963,7 @@ HRESULT CLevel_Embars::Ready_Trigger(const _wstring& strLayerTag, const _tchar* 
     switch (eMap)
     {
     case KHAZAN_MAP::HEINMACH:
-        strJsonFilePath += TEXT("Embars/");
+        strJsonFilePath += TEXT("HeinMach/");
         break;
     case KHAZAN_MAP::CREVICE:
         strJsonFilePath += TEXT("Crevice/");
@@ -994,7 +1021,7 @@ HRESULT CLevel_Embars::Ready_Map_Decal(const _wstring& strLayerTag, const _tchar
     switch (eMap)
     {
     case KHAZAN_MAP::HEINMACH:
-        strDataFilePath += TEXT("Embars/");
+        strDataFilePath += TEXT("HeinMach/");
         break;
     case KHAZAN_MAP::CREVICE:
         strDataFilePath += TEXT("Crevice/");

@@ -83,7 +83,8 @@ namespace Engine
         STATUE, VERTICALGATE, IRONGATE,
         END };
 
-    enum MATERIAL_FLAG_BIT {
+    enum MATERIAL_FLAG_BIT : unsigned int
+    {
         M_DIFFUSE            = 1 << 0,
         M_NORMAL             = 1 << 1,
         M_EMISSIVE           = 1 << 2,

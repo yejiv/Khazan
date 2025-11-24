@@ -53,6 +53,8 @@
 // Trigger
 #include "Trigger.h"
 #include "HeinMach_Trigger.h"
+#include "Embars_Trigger.h"
+#include "Viper_Trigger.h"
 
 // Destructible
 #include "Prop_Destructible.h"
