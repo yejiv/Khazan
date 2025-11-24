@@ -38,7 +38,6 @@ private:
     BTNODESTATE                             Attack(CGameObject* pOwner);
     BTNODESTATE                             Damage_Check(CGameObject* pOwner);
     BTNODESTATE                             Damage(CGameObject* pOwner);
-    BTNODESTATE                             LockOn_Check(CGameObject* pOwner);
     BTNODESTATE                             LockOn(CGameObject* pOwner);
     BTNODESTATE                             Chase(CGameObject* pOwner);
     BTNODESTATE                             Sleep(CGameObject* pOwner);
