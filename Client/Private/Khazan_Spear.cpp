@@ -127,6 +127,8 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     m_strName = "Khazan";
 
     m_EffectTimeDelta = 0.f;
+
+    m_pCharVirCom->Set_Position(XMVectorSet(0.f, 10.f, 0.f, 1.f));
 #pragma region 3D UI 테스트
     //CUIObject::UIOBJECT_DESC Desc;
 
@@ -209,7 +211,7 @@ void CKhazan_Spear::Update(_float fTimeDelta)
             _bool isPicked = m_pGameInstance->isPicked(&vPickedPos);
             if (true == isPicked)
             {
-                m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
+                m_pCharVirCom->Set_Position(XMVectorSet(vPickedPos.x, vPickedPos.y, vPickedPos.z, 1.f));
                 m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));
             }
         }

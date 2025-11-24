@@ -121,6 +121,10 @@ public:
 	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 	void Save_Json_Animation(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 	void Clear_CameraManager(_uint iLevelIndex);
+
+
+    void Camera_Set_ObjMatrix(_uint iLevelIndex, _wstring strCameraTag, _float4x4* ObjMatrix);
+    void Camera_Switch_CameraMode(CAMERATYPE eType);
 #pragma endregion
 
 #pragma region PlayerData

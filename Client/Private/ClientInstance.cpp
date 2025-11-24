@@ -281,6 +281,14 @@ void CClientInstance::Clear_CameraManager(_uint iLevelIndex)
 {
 	m_pCamera_Manager->Clear(iLevelIndex);
 }
+void CClientInstance::Camera_Set_ObjMatrix(_uint iLevelIndex, _wstring strCameraTag, _float4x4* ObjMatrix)
+{
+    m_pCamera_Manager->Set_ObjMatrix(iLevelIndex, strCameraTag, ObjMatrix);
+}
+void CClientInstance::Camera_Switch_CameraMode(CAMERATYPE eType)
+{
+    m_pCamera_Manager->Switch_CameraMode(eType);
+}
 void CClientInstance::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
 {
     m_pCamera_Manager->Start_ForceOrbit(eForceDir);

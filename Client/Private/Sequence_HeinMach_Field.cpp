@@ -27,34 +27,37 @@ HRESULT CSequence_HeinMach_Field::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 	}
 	else
 	{
-		nlohmann::json jsonData;
-		In >> jsonData;
+        nlohmann::json jsonData;
+        In >> jsonData;
 
-		map<_wstring, vector<CAMERA_KEYFRAME>> Animations;
-		for (auto Animation : jsonData["Animation"])
-		{
-			vector<CAMERA_KEYFRAME> KeyFrames;
-			for (auto Ani : Animation["Animations"])
-			{
-				CAMERA_KEYFRAME KeyFrame{};
-				KeyFrame.vTranslation.x = Ani["Translation"]["x"];
-				KeyFrame.vTranslation.y = Ani["Translation"]["y"];
-				KeyFrame.vTranslation.z = Ani["Translation"]["z"];
-				KeyFrame.vLookAt.x = Ani["LookAt"]["x"];
-				KeyFrame.vLookAt.y = Ani["LookAt"]["y"];
-				KeyFrame.vLookAt.z = Ani["LookAt"]["z"];
-				KeyFrame.vLookAt.w = Ani["LookAt"]["w"];
-				KeyFrame.fSpeed = Ani["Speed"];
-				KeyFrame.fTrackPosition = Ani["TrackPosition"];
-				KeyFrame.isCurPos = Ani["isCurPos"];
+        map<_wstring, CAMERA_ANIMATION> Animations;
+        for (auto Animation : jsonData["Animation"])
+        {
+            CAMERA_ANIMATION AnimationDesc;
+            AnimationDesc.Name = AnsiToWString(Animation["Name"]);
+            AnimationDesc.isFix = Animation["isFix"];
+            vector<CAMERA_KEYFRAME> KeyFrames;
+            for (auto Ani : Animation["KeyFrame"])
+            {
+                CAMERA_KEYFRAME KeyFrame{};
+                KeyFrame.vTranslation.x = Ani["Translation"]["x"];
+                KeyFrame.vTranslation.y = Ani["Translation"]["y"];
+                KeyFrame.vTranslation.z = Ani["Translation"]["z"];
+                KeyFrame.vLookAt.x = Ani["LookAt"]["x"];
+                KeyFrame.vLookAt.y = Ani["LookAt"]["y"];
+                KeyFrame.vLookAt.z = Ani["LookAt"]["z"];
+                KeyFrame.vLookAt.w = Ani["LookAt"]["w"];
+                KeyFrame.fSpeed = Ani["Speed"];
+                KeyFrame.fTrackPosition = Ani["TrackPosition"];
 
-				KeyFrames.push_back(KeyFrame);
-			}
+                KeyFrame.isCurPos = Ani["isCurPos"];
+                KeyFrames.push_back(KeyFrame);
+            }
+            AnimationDesc.KeyFrames = KeyFrames;
+            Animations.emplace(AnsiToWString(Animation["Name"]), AnimationDesc);
+        }
 
-			Animations.emplace(AnsiToWString(Animation["Name"]), KeyFrames);
-		}
-
-		m_pCamera_Compre->Load_Animation(Animations);
+        m_pCamera_Compre->Load_Animation(Animations);
 
 	}
 

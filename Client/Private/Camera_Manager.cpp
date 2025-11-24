@@ -206,13 +206,14 @@ void CCamera_Manager::Save_Json(_uint iLevelIndex, _wstring strCameraTag, nlohma
 	Data["MouseSensor"] = CameraDesc.fMouseSensor;
 	Data["CameraType"] = CameraDesc.iCameraType;
 
-	map<_wstring, vector<CAMERA_KEYFRAME>>* Animations = pCamera->Get_AllAnimations();
+	map<_wstring, CAMERA_ANIMATION>* Animations = pCamera->Get_AllAnimations();
 
 	for (auto Animation : *Animations)
 	{
 		nlohmann::ordered_json AnimationData;
 		AnimationData["Name"] = Animation.first.c_str();
-		for (auto Ani : Animation.second)
+        AnimationData["isFix"] = Animation.second.isFix;
+		for (auto Ani : Animation.second.KeyFrames)
 		{
 			nlohmann::ordered_json AniData;
 			AniData["Translation"]["x"] = Ani.vTranslation.x;
@@ -226,7 +227,7 @@ void CCamera_Manager::Save_Json(_uint iLevelIndex, _wstring strCameraTag, nlohma
 			AniData["TrackPosition"] = Ani.fTrackPosition;
 			AniData["isCurPos"] = Ani.isCurPos;
 
-			AnimationData["Animations"].push_back(AniData);
+			AnimationData["KeyFrame"].push_back(AniData);
 		}
 		Data["Animation"].push_back(AnimationData);
 	}
@@ -257,13 +258,14 @@ void CCamera_Manager::Save_Json_Animation(_uint iLevelIndex, _wstring strCameraT
 	CCamera* pCamera = Find_Camera(iLevelIndex, strCameraTag);
 	CCamera::CAMERA_DESC CameraDesc = pCamera->Get_CameraDesc();
 
-	map<_wstring, vector<CAMERA_KEYFRAME>>* Animations = pCamera->Get_AllAnimations();
+    map<_wstring, CAMERA_ANIMATION>* Animations = pCamera->Get_AllAnimations();
 
 	for (auto Animation : *Animations)
 	{
-		nlohmann::ordered_json AnimationData;
+		nlohmann::ordered_json AnimationData;        
 		AnimationData["Name"] = Animation.first.c_str();
-		for (auto Ani : Animation.second)
+        AnimationData["isFix"] = Animation.second.isFix;     
+		for (auto Ani : Animation.second.KeyFrames)
 		{
 			nlohmann::ordered_json AniData;
 			AniData["Translation"]["x"] = Ani.vTranslation.x;
@@ -277,10 +279,28 @@ void CCamera_Manager::Save_Json_Animation(_uint iLevelIndex, _wstring strCameraT
 			AniData["TrackPosition"] = Ani.fTrackPosition;
 			AniData["isCurPos"] = Ani.isCurPos;
 
-			AnimationData["Animations"].push_back(AniData);
+			AnimationData["KeyFrame"].push_back(AniData);
 		}
 		pOutData["Animation"].push_back(AnimationData);
 	}
+}
+
+void CCamera_Manager::Set_ObjMatrix(_uint iLevelIndex, _wstring strCameraTag, _float4x4* ObjMatrix)
+{
+    CCamera* pCamera = Find_Camera(iLevelIndex, strCameraTag);
+    if (pCamera->Get_CameraType() == ENUM_CLASS(CAMERATYPE::PLAYER))
+    {
+        CCamera_Compre* pCameraCompre = dynamic_cast<CCamera_Compre*>(pCamera);
+        pCameraCompre->Set_ObjMatrix(ObjMatrix);
+    }
+}
+
+void CCamera_Manager::Switch_CameraMode(CAMERATYPE eType)
+{
+    CCamera* pCamera = Get_ActiveCamera();
+    CCamera_Compre* pCameraCompre = dynamic_cast<CCamera_Compre*>(pCamera);
+    pCameraCompre->Switch_CameraMode(eType);
+
 }
 
 CCamera_Manager* CCamera_Manager::Create(_uint iNumLevels)

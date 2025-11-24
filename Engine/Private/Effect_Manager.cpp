@@ -31,13 +31,13 @@ void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& 
 
 	if (Layer == nullptr)
 	{
-		MSG_BOX(TEXT("Effect Layer ?놁쓬. ?놁쑝硫??덈릺?붾뜲?"));
+		//MSG_BOX(TEXT("Effect Layer NULL"));
 		return;
 	}
 
 	if (Pool == nullptr)
 	{
-		MSG_BOX(TEXT("Effect Pool ?놁쓬. ?놁쑝硫??덈릺?붾뜲?"));
+		//MSG_BOX(TEXT("Effect Pool NULL"));
 		return;
 	}
 
@@ -47,7 +47,7 @@ void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& 
 
 		if (effect == nullptr)
 		{
-			MSG_BOX(TEXT("EFFECT :: ?留곹븯?ㅺ퀬 Clone?섎젮?붾뜲 ?꾨줈?좏????놁쓬! ?꾨줈?????留뚮뱶?몄슂"));
+			//MSG_BOX(TEXT("EFFECT ::NULL"));
 			return;
 		}
 
@@ -67,7 +67,7 @@ _uint CEffect_Manager::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strP
 
 	if (Pool == nullptr || Pool->size() == 0)
 	{
-        MSG_BOX(TEXT("Effect Pool이 없거나 Pool에 객체가 없어서 Spwan 실패!!! 아마도 객체가 모자를 확률이 큼"));
+        //MSG_BOX(TEXT("Effect Pool이 없거나 Pool에 객체가 없어서 Spwan 실패!!! 아마도 객체가 모자를 확률이 큼"));
         return 0;
 	}
 
@@ -87,7 +87,7 @@ _uint CEffect_Manager::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strP
 
 	if (Pool == nullptr || Pool->size() == 0)
 	{
-		MSG_BOX(TEXT("Effect Pool이 없거나 Pool에 객체가 없어서 Spwan 실패!!! 아마도 객체가 모자를 확률이 큼"));
+		//MSG_BOX(TEXT("Effect Pool이 없거나 Pool에 객체가 없어서 Spwan 실패!!! 아마도 객체가 모자를 확률이 큼"));
 		return 0;
 	}
 

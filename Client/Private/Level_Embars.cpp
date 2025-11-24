@@ -44,6 +44,8 @@ HRESULT CLevel_Embars::Initialize()
 
     CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
 
+    CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
+
     for (_uint i = 0; i < EMBARS_SUBLV; ++i)
     {
         CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Embars"), i, LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
@@ -74,19 +76,13 @@ HRESULT CLevel_Embars::Initialize()
 
 void CLevel_Embars::Update(_float fTimeDelta)
 {
-	if (GetKeyState(VK_RETURN) & 0x8000)
-	{
-		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
-			return;
-	}
-
     if (m_pGameInstance->Key_Down(DIK_F1))
     {
-        m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::EMBARS), ENUM_CLASS(CAMERATYPE::FREE));
+        m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
     }
     else if (m_pGameInstance->Key_Down(DIK_F2))
     {
-        m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::EMBARS), ENUM_CLASS(CAMERATYPE::PLAYER));
+        m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
 
 	return;
@@ -125,25 +121,6 @@ HRESULT CLevel_Embars::Ready_Layer_Player(const _wstring& strLayerTag)
 
 HRESULT CLevel_Embars::Ready_Layer_Camera(const _wstring& strLayerTag)
 {
-    CCamera_Compre::CAMERA_COMPRE_DESC	CameraFreeDesc{};
-
-    CameraFreeDesc.vEye = _float4(0.39f, 3.97f, -1.79f, 1.f);
-    CameraFreeDesc.vAt = _float4(-0.26f, -0.1f, 0.96f, 1.f);
-    CameraFreeDesc.fFovy = XMConvertToRadians(60.0f);
-    CameraFreeDesc.fNear = 0.1f;
-    CameraFreeDesc.fFar = 6000.f;
-    CameraFreeDesc.fSpeedPerSec = 40.f;
-    CameraFreeDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-    CameraFreeDesc.fMouseSensor = 0.2f;
-    CameraFreeDesc.iCameraType = ENUM_CLASS(CAMERATYPE::FREE);
-
-    CCamera_Compre* pCamera_Free = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Camera_Compre"), &CameraFreeDesc));
-    pCamera_Free->Set_IsActive(false);
-
-    m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::EMBARS), pCamera_Free);
-
-    m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), strLayerTag, pCamera_Free);
-
     CCamera_Compre::CAMERA_COMPRE_DESC	PlayerCameraDesc{};
 
     PlayerCameraDesc.vEye = _float4(0.51f, 2.08f, -3.94f, 1.f);
@@ -171,6 +148,31 @@ HRESULT CLevel_Embars::Ready_Layer_Camera(const _wstring& strLayerTag)
 
     return S_OK;
 }
+
+
+HRESULT CLevel_Embars::Ready_Layer_Effect(const _wstring& strLayerTag)
+{
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpearWind"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiralSpear_SpearFX"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust2"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust3"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust4"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust5"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust6"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Stamp"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("BlustSmall"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Fire"), 10);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Spawn"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("BloodHit"), 100);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Open"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GhostKnight"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GhostKnight_static"), 4);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GhostKnight_static_connect"), 4);
+
+    return S_OK;
+}
+
 
 HRESULT CLevel_Embars::Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {

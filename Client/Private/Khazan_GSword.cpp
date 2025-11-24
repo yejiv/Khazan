@@ -160,7 +160,7 @@ void CKhazan_GSword::Update(_float fTimeDelta)
             _bool isPicked = m_pGameInstance->isPicked(&vPickedPos);
             if (true == isPicked)
             {
-                m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
+                m_pCharVirCom->Set_Position(XMVectorSet(vPickedPos.x, vPickedPos.y, vPickedPos.z, 1.f));
                 m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));
             }
         }
