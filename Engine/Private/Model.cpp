@@ -607,6 +607,13 @@ void CModel::AnimationSetIndexIncrease()
     }
 }
 
+void CModel::AnimationLoop(_bool isLoop)
+{
+    Add_State(USED_ANIM_LOOP);
+    
+    isLoop ? Add_State(ANIM_LOOP) : Remove_State(ANIM_LOOP);
+}
+
 
 void CModel::Update_BoneCombinedMatrices()
 {

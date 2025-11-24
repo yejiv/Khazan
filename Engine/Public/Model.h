@@ -119,6 +119,7 @@ public:
     _bool			Check_MinAnimationTime();
     void            AnimationSetIndexIncrease(); //애니메이션세트 강제로 다음으로 넘기기
     void            Set_AnimationBlend(_bool isBlend) { m_isBlendEnable = isBlend; }      // 애니메이션 보간할건지 여부
+    void            AnimationLoop(_bool isLoop);
 
     /* rootBone Combined  */
     void			Update_BoneCombinedMatrices();

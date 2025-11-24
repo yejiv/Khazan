@@ -164,6 +164,10 @@
     <ClInclude Include="..\Public\AIController_Edit.h" />
     <ClInclude Include="..\public\AnimationTool.h" />
     <ClInclude Include="..\Public\BigChest.h" />
+    <ClInclude Include="..\Public\ElevatorL.h" />
+    <ClInclude Include="..\Public\Elevator_Inner.h" />
+    <ClInclude Include="..\Public\Elevator_Mid.h" />
+    <ClInclude Include="..\Public\Elevator_Outer.h" />
     <ClInclude Include="..\Public\E_Body_Khazan_Spear.h" />
     <ClInclude Include="..\Public\Camera_Compre.h" />
     <ClInclude Include="..\Public\Camera_Effect.h" />
@@ -259,6 +263,10 @@
     <ClCompile Include="..\Private\AIController_Edit.cpp" />
     <ClCompile Include="..\private\AnimationTool.cpp" />
     <ClCompile Include="..\Private\BigChest.cpp" />
+    <ClCompile Include="..\Private\ElevatorL.cpp" />
+    <ClCompile Include="..\Private\Elevator_Inner.cpp" />
+    <ClCompile Include="..\Private\Elevator_Mid.cpp" />
+    <ClCompile Include="..\Private\Elevator_Outer.cpp" />
     <ClCompile Include="..\Private\E_Body_Khazan_Spear.cpp" />
     <ClCompile Include="..\Private\Camera_Compre.cpp" />
     <ClCompile Include="..\Private\Camera_Effect.cpp" />
