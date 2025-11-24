@@ -243,9 +243,9 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
         vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
      
     float fDecreaseAlpha = 1.0f - abs((In.vLifeTime.x / In.vLifeTime.y) * 2.0f - 1.0f); 
-
     
-    if (g_IsDisolve == false && (g_numCols == 1 && g_numRows == 1))
+    
+    if (g_IsDisolve == false && (g_numCols == 1 && g_numRows == 1)) //스프라이트 중에서, 라이프타임이 적은 건 안한다.
         vFinalColor.a *= fDecreaseAlpha;
     else if (g_IsDisolve == true)
         vFinalColor = Dissolve(vFinalColor, (In.vLifeTime.x / In.vLifeTime.y), In.vTexcoord);

@@ -2185,6 +2185,9 @@
     <ClInclude Include="..\Public\Sequence_Embars_Puzzle_Second.h">
       <Filter>04.Sequence\Embars\Puzzle_Second</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Embars_Puzzle_Third.h">
+      <Filter>04.Sequence\Embars\Puzzle_Thrid</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3210,6 +3213,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sequence_Embars_Puzzle_Second.cpp">
       <Filter>04.Sequence\Embars\Puzzle_Second</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Embars_Puzzle_Third.cpp">
+      <Filter>04.Sequence\Embars\Puzzle_Thrid</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

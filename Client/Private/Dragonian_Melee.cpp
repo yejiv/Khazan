@@ -18,6 +18,21 @@ CDragonian_Melee::CDragonian_Melee(const CDragonian_Melee& Prototype)
 {
 }
 
+CDragonian_Melee::MONDATA& CDragonian_Melee::Get_Data()
+{
+    return m_Data;
+}
+
+void CDragonian_Melee::Move_F()
+{
+    m_pTarget->Get_Position();
+    m_pTransformCom->LookAt(m_pTarget->Get_Position());
+
+    _float fWorkSpeed = m_Data.isSlowWalk ? 3.5f : 4.1f;
+
+    m_pTransformCom->AI_Chase(m_pTarget->Get_Position() , m_fTimeDelta, fWorkSpeed);
+}
+
 HRESULT CDragonian_Melee::Initialize_Prototype(_int iLevel)
 {
     m_iPrototypeIndex = iLevel;
@@ -30,24 +45,30 @@ HRESULT CDragonian_Melee::Initialize_Prototype(_int iLevel)
 HRESULT CDragonian_Melee::Initialize_Clone(void* pArg)
 {
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
-    CHECK_FAILED(Ready_Components(),E_FAIL);
-    CHECK_FAILED(Ready_PartObjects(),E_FAIL);
-    CHECK_FAILED(Ready_AnimEvent(),E_FAIL);
 
     m_pController = CAI_Controller_Dragonian_Melee::Create(this);
     CHECK_NULLPTR(m_pController, E_FAIL);
 
+    CHECK_FAILED(Ready_PartObjects(),E_FAIL);
+    CHECK_FAILED(Ready_AnimEvent(),E_FAIL);
+    CHECK_FAILED(Ready_Components(),E_FAIL);
     m_pController->Get_BlackBoard()->Set_Value<CGameObject*>(m_strName, "Target", m_pTarget);
+
+    m_Data.pOwner = this;
     return S_OK;
 }
 
 void CDragonian_Melee::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
+
+    if (m_pGameInstance->Key_Down(DIK_M))
+        m_Data.isSleep = true;
 }
 
 void CDragonian_Melee::Update(_float fTimeDelta)
 {
+    m_fTimeDelta = fTimeDelta;
     m_pController->Update(this, fTimeDelta);
     __super::Update(fTimeDelta);
 }
@@ -125,6 +146,7 @@ HRESULT CDragonian_Melee::Ready_Components()
 HRESULT CDragonian_Melee::Ready_PartObjects()
 {
     CBody_Dragonian_Melee::BODY_DESC BodyDesc{};
+    BodyDesc.pData = &m_Data;
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pOwnerTransform = m_pTransformCom;
 
@@ -158,10 +180,20 @@ HRESULT CDragonian_Melee::Ready_PartObjects()
 
 HRESULT CDragonian_Melee::Ready_AnimEvent()
 {
+    CModel* pModel = m_pBody->Get_Model();
+
+    pModel->Register_Event("Walk1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isSlowWalk = false; });
+    pModel->Register_Event("Walk2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isSlowWalk = false; });
+    pModel->Register_Event("Walk3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isSlowWalk = false; });
+    pModel->Register_Event("Walk4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isSlowWalk = false; });
+    
+    pModel->Register_Event("Walk1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
+    pModel->Register_Event("Walk2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
+    pModel->Register_Event("Walk3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
+    pModel->Register_Event("Walk4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
+
     return S_OK;
 }
-
-
 
 CDragonian_Melee* CDragonian_Melee::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
 {

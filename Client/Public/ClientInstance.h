@@ -4,6 +4,7 @@
 #include "DB_Manager.h"
 #include "PlayerData_Manager.h"
 #include "Player_Manager.h"
+#include "Sequence_Interface.h"
 
 using CONTROL_BUTTON = CPlayer_Manager::CONTROL_BUTTON;
 using SPEARSKILL = CPlayerData_Manager::SPEARSKILL;

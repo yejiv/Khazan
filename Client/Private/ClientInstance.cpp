@@ -10,7 +10,7 @@
 #include "Player_Manager.h"
 #include "Interact_Manager.h"
 #include "Sequence_Data_Manager.h"
-
+#include "Sequence_Interface.h"
 #ifdef _DEBUG
 #include "Debug_Manager.h"
 #include "Camera_Controller.h"
@@ -389,11 +389,11 @@ void CClientInstance::Unlock_BladeNexus(_uint iID)
 #pragma endregion
 
 #pragma region SEQ_DATA_MANAGER
-HRESULT CClientInstance::Push_Sequence(_wstring strName, class ISeqInstance* pSequence)
+HRESULT CClientInstance::Push_Sequence(_wstring strName, ISeqInstance* pSequence)
 {
     return m_pSeq_Data_Manager->Push_Sequence(strName, pSequence);
 }
-class ISeqInstance* CClientInstance::Find_Sequence(_wstring strName)
+ISeqInstance* CClientInstance::Find_Sequence(_wstring strName)
 {
     return m_pSeq_Data_Manager->Find_Sequence(strName);
 }

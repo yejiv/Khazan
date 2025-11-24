@@ -259,5 +259,6 @@ void CSpear_Khazan_Spear::Free()
     Safe_Release(m_pParentTransform);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
+    Safe_Release(m_pMotionTrailCom);
     //Safe_Release(m_pColliderCom);
 }

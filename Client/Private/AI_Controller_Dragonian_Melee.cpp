@@ -23,11 +23,13 @@ CAI_Controller_Dragonian_Melee::CAI_Controller_Dragonian_Melee()
 HRESULT CAI_Controller_Dragonian_Melee::Initialize(CCreature* pOwner)
 {
     CDragonian_Melee* pCast_Owner = static_cast<CDragonian_Melee*>(pOwner);
+    m_pMonData = &pCast_Owner->Get_Data();
 
     CHECK_FAILED(__super::Initialize(pCast_Owner, pCast_Owner->Get_Name()), E_FAIL);
     CHECK_FAILED(Ready_FSM(pCast_Owner), E_FAIL);
 
     m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+
 
     return S_OK;
 
@@ -41,18 +43,19 @@ void CAI_Controller_Dragonian_Melee::Update(CGameObject* pOwner, _float fTimeDel
 
     m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
 
-    Update_Aggro(pOwner, fTimeDelta);
+    //Update_Aggro(pOwner, fTimeDelta);
 
-    _float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
+    //_float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
 
-    if (m_pBB->Get_Value<_bool>(m_strMonstertag, "HasAggro"))
-    {
-        m_pBB->Set_Value<_float>(m_strMonstertag, "CurrentTime", fPervTime + fTimeDelta);
-        m_pBT->Update();
-    }
-    else
-        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+    //if (m_pBB->Get_Value<_bool>(m_strMonstertag, "HasAggro"))
+    //{
+    //    m_pBB->Set_Value<_float>(m_strMonstertag, "CurrentTime", fPervTime + fTimeDelta);
+    //    m_pBT->Update();
+    //}
+    //else
+    //    m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
+    m_pBT->Update();
     m_pFSM->Update(pOwner, fTimeDelta);
 
 }
@@ -122,13 +125,20 @@ CONDITION CAI_Controller_Dragonian_Melee::GetCallbackCondition(CGameObject* pOwn
 
 ACTION CAI_Controller_Dragonian_Melee::GetCallbackAction(CGameObject* pOwner, const string& name)
 {
+    if ("Attack_Check" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Attack_Check(pOwner); };
+    else if ("Attack_Change" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Attack(pOwner); };
+    else if ("Damage_Check" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Damage_Check(pOwner); };
+    else if ("Damage_Change" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Damage(pOwner); };
+    else if ("LockOn_Check" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->LockOn_Check(pOwner); };
+    else if ("LockOn_Change" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->LockOn(pOwner); };
+    else if ("Chase_Change" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Chase(pOwner); };
+    else if ("Sleep_Change" == name) return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Sleep(pOwner); };
 
     return nullptr;
 }
 
 TERMINATE CAI_Controller_Dragonian_Melee::GetCallbackTeminate(CGameObject* pOwner, const string& name)
 {
-
     return nullptr;
 
 }
@@ -187,17 +197,93 @@ HRESULT CAI_Controller_Dragonian_Melee::Ready_FSM(class CCreature* pOwner)
     
     CHECK_NULLPTR(pFsm, E_FAIL);
 
-    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(STATE::ATTACK), CAS_Dr_Melee_Attack::Create()), E_FAIL);
-    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(STATE::BRUTAL), CAS_Dr_Melee_Brutal::Create()), E_FAIL);
-    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(STATE::DAMAGE), CAS_Dr_Melee_Damage::Create()), E_FAIL);
-    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(STATE::DEAD), CAS_Dr_Melee_Dead::Create()), E_FAIL);
-    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(STATE::GRORRY), CAS_Dr_Melee_Groggy::Create()), E_FAIL);
-    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(STATE::LOCKON), CAS_Dr_Melee_LockOn::Create()), E_FAIL);
-    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(STATE::WALK), CAS_Dr_Melee_Walk::Create()), E_FAIL);
-        
+    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::ATTACK), CAS_Dr_Melee_Attack::Create()), E_FAIL);
+    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::BRUTAL), CAS_Dr_Melee_Brutal::Create()), E_FAIL);
+    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::DAMAGE), CAS_Dr_Melee_Damage::Create()), E_FAIL);
+    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::DEAD), CAS_Dr_Melee_Dead::Create()), E_FAIL);
+    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::GRORRY), CAS_Dr_Melee_Groggy::Create()), E_FAIL);
+    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::LOCKON), CAS_Dr_Melee_LockOn::Create()), E_FAIL);
+    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::SLEEP), CAS_Dr_Melee_Sleep::Create()), E_FAIL);
+    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::WALK), CAS_Dr_Melee_Walk::Create()), E_FAIL);
     m_pFSM = pFsm;
 
+    m_pMonData->isSleep = true;
+    pFsm->Set_CulState(ENUM_CLASS(CDragonian_Melee::MONSTATE::SLEEP), pOwner);
+
     return S_OK;
+}
+
+BTNODESTATE CAI_Controller_Dragonian_Melee::Attack_Check(CGameObject* pOwner)
+{
+    if (m_pMonData->isSleep)
+        return BTNODESTATE::FAILURE;
+
+    return BTNODESTATE::FAILURE;
+}
+
+BTNODESTATE CAI_Controller_Dragonian_Melee::Attack(CGameObject* pOwner)
+{
+    if (m_pMonData->isSleep)
+        return BTNODESTATE::FAILURE;
+
+    return BTNODESTATE::FAILURE;
+}
+
+BTNODESTATE CAI_Controller_Dragonian_Melee::Damage_Check(CGameObject* pOwner)
+{
+    if (m_pMonData->isSleep)
+        return BTNODESTATE::FAILURE;
+
+    return BTNODESTATE::FAILURE;
+}
+
+BTNODESTATE CAI_Controller_Dragonian_Melee::Damage(CGameObject* pOwner)
+{
+    if (m_pMonData->isSleep)
+        return BTNODESTATE::FAILURE;
+
+    return BTNODESTATE::FAILURE;
+}
+
+BTNODESTATE CAI_Controller_Dragonian_Melee::LockOn_Check(CGameObject* pOwner)
+{
+    if (m_pMonData->isSleep)
+        return BTNODESTATE::FAILURE;
+
+    return BTNODESTATE::FAILURE;
+}
+
+BTNODESTATE CAI_Controller_Dragonian_Melee::LockOn(CGameObject* pOwner)
+{
+    if (m_pMonData->isSleep)
+        return BTNODESTATE::FAILURE;
+
+    return BTNODESTATE::FAILURE;
+}
+
+BTNODESTATE CAI_Controller_Dragonian_Melee::Chase(CGameObject* pOwner)
+{
+    if (m_pMonData->isSleep)
+        return BTNODESTATE::FAILURE;
+
+    if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Melee::MONSTATE::WALK)))
+        m_pFSM->Change_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::WALK), pOwner);
+
+    return BTNODESTATE::SUCCESS;
+}
+
+BTNODESTATE CAI_Controller_Dragonian_Melee::Sleep(CGameObject* pOwner)
+{
+    if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Melee::MONSTATE::SLEEP)))
+        m_pFSM->Change_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::SLEEP), pOwner);
+
+    _bool pisis = m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected");
+    if (m_pMonData->isSleep && m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected"))
+        m_pMonData->isSleep = false;
+    else if (m_pMonData->isStateFiash)
+        return BTNODESTATE::SUCCESS;
+
+    return BTNODESTATE::RUNNING;
 }
 
 CAI_Controller_Dragonian_Melee* CAI_Controller_Dragonian_Melee::Create(CCreature* pOwner)

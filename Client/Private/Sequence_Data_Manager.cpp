@@ -74,6 +74,10 @@ void CSequence_Data_Manager::Free()
     Safe_Release(m_pGameInstance);
     Safe_Release(m_pClientInstance);
 
+    for (auto& Pair : m_Sequences)
+    {
+        Safe_Release(Pair.second);
+    }
     m_Sequences.clear();
 }
 
