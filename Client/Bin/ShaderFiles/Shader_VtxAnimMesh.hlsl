@@ -15,6 +15,7 @@ static const unsigned int M_METALIC       = (1 << 4);
 static const unsigned int M_ROUGHNESS     = (1 << 5);
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+
 matrix g_LightViewMatrix, g_LightProjMatrix;
 
 Texture2D g_DiffuseTexture, g_NormalTexture, g_SpecularTexture;
@@ -52,6 +53,9 @@ float4 g_vCamPosition;
 float2 g_vLifeTime;
 float3 g_vStartColor, g_vTargetColor;
 float g_fRimPower, g_fRimLightIntensity;
+
+// 귀검
+float g_fColorRatio;
 
 struct VS_IN
 {
@@ -385,11 +389,14 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
     if (IsFlag(M_NORMAL))
     {
         vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+        float3 vNormal = vMtrlNormal.xyz * 2.f - 1.f;
+        
+        float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+        vNormal = mul(vNormal, WorldMatrix);
+        
+        vMtrlNormal = float4(normalize(vNormal.xyz), 0.f);
     }
-    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
-    
-    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
-    vNormal = normalize(mul(vNormal, WorldMatrix));
     
     vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
     if (IsFlag(M_EMISSIVE))
@@ -401,6 +408,7 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
     if (IsFlag(M_SPECULAR))
     {
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+        vMtrlSpecular.a = 0.f;
     }
     
     vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
@@ -415,12 +423,17 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
         vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
     }
     
-    Out.vDiffuse = vMtrlDiffuse;
-    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    //  Out.vDiffuse = vMtrlDiffuse * vMtrlSpecular * g_fEmissiveIntensity;
+    vMtrlDiffuse.g = 0.f;
+    Out.vDiffuse = lerp(vMtrlDiffuse, vMtrlSpecular, g_fColorRatio) * g_fEmissiveIntensity;
+    // Out.vDiffuse = vMtrlSpecular * 10.f;
+    
+    Out.vNormal = vector(vMtrlNormal);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
-    //Out.vSpecular = vMtrlSpecular;
-    //Out.vEmissive = vMtrlEmissive;
+    //  Out.vEmissive = vMtrlEmissive;
+    
+    //  Out.vEmissive = vMtrlSpecular * 2.f;
 
     return Out;
 }
@@ -504,6 +517,20 @@ PS_OUT PS_LANTERN(PS_IN In)
 
     Out.vEmissive = float4(fEmissvie, fEmissvie, fEmissvie, 1.f);
     //  Out.vEmissive *= 2.f;
+    
+    return Out;
+}
+
+struct PS_OUT_VELOCITY
+{
+    float4 vVelocity : SV_TARGET0;
+};
+
+PS_OUT_VELOCITY PS_MOTIONVECTOR(PS_IN In)
+{
+    PS_OUT_VELOCITY Out = (PS_OUT_VELOCITY) 0;
+    
+    Out.vVelocity = float4(1.f, 0.f, 0.f, 1.f);
     
     return Out;
 }
@@ -636,5 +663,17 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_LANTERN();
+    }
+
+    // 모션 벡터 패스        ( 11번 )
+    pass MotionVector
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MOTIONVECTOR();
     }
 }

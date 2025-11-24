@@ -809,6 +809,11 @@ HRESULT CLoader::Loading_For_Shader_Level()
 		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 50, 50))))
 		return E_FAIL;
 
+    /* Prototype_Component_Model_BladeNexus */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_BladeNexus"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
+
+
 	// Prototype_Component_Model_WP_WOD_Ground_Base_004
 	//	_matrix PreTransformMatrix = XMMatrixScaling(0.0001f, 0.0001f, 0.0001f);
 	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
@@ -839,6 +844,10 @@ HRESULT CLoader::Loading_For_Shader_Level()
 #pragma region 테스트용 ( 프로토타입 모델 생성 ) ( 박준영이 남기고간거 필요없으면 삭제 )
 	CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Test"), LEVEL::SHADER), E_FAIL);
 	CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Test"), LEVEL::SHADER), E_FAIL);
+
+    /* Prototype_GameObject_Prop_BladeNexus */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_BladeNexus"),
+        CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));

@@ -123,6 +123,11 @@ public:
 	const _float4* Get_CamPosition() const;
 	void Set_Transform(D3DTS eTransformState, _fmatrix Matrix);
 	void Set_Transform(D3DTS eTransformState, const _float4x4& Matrix);
+
+    _matrix             Get_PrevTransform_Matrix(D3DTS eTransformState) const;
+    const _float4x4*    Get_PrevTransform_Float4x4(D3DTS eTransformState) const;
+    void                Set_PrevTransform(D3DTS eTransformState, _fmatrix Matrix);
+    void                Set_PrevTransform(D3DTS eTransformState, const _float4x4& Matrix);
 #pragma endregion
 
 #pragma region LIGHT_MANAGER
@@ -423,7 +428,6 @@ public:
     MOTION_BLUR_DESC		    Get_MotionBlurDesc();
     void						Set_MotionBlurDesc(const MOTION_BLUR_DESC& Desc);
     void                        Set_EnableMotionBlur(_bool isEnable);
-    void                        Update_MotionBlur_PrevMatrices();
 #pragma endregion
 
 #pragma region SOUND_MANAGER

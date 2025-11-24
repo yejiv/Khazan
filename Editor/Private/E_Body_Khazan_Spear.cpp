@@ -63,6 +63,7 @@ void CE_Body_Khazan_Spear::Update(_float fTimeDelta)
     m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDelta);
 
     Update_CombinedMatrix();
+    XMStoreFloat4x4(&m_PrevCombinedMatrix, m_pTransformCom->Get_PrevWorldMatrix() * XMLoadFloat4x4(m_pParentMatrix));
 
     if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
     {
@@ -79,6 +80,9 @@ void CE_Body_Khazan_Spear::Late_Update(_float fTimeDelta)
         return;
 
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
+        return;
+
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::MOTIONVECTOR, this)))
         return;
 }
 
@@ -148,6 +152,55 @@ HRESULT CE_Body_Khazan_Spear::Render_Shadow()
     return S_OK;
 }
 
+HRESULT CE_Body_Khazan_Spear::Render_MotionVector()
+{
+    if (FAILED(m_pMotionVectorShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pMotionVectorShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
+        return E_FAIL;
+
+    if (FAILED(m_pMotionVectorShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+        return E_FAIL;
+
+    if (FAILED(m_pMotionVectorShaderCom->Bind_Matrix("g_PrevWorldMatrix", &m_PrevCombinedMatrix)))
+        return E_FAIL;
+    
+    if (FAILED(m_pMotionVectorShaderCom->Bind_Matrix("g_PrevViewMatrix", m_pGameInstance->Get_PrevTransform_Float4x4(D3DTS::VIEW))))
+        return E_FAIL;
+    
+    if (FAILED(m_pMotionVectorShaderCom->Bind_Matrix("g_PrevProjMatrix", m_pGameInstance->Get_PrevTransform_Float4x4(D3DTS::PROJ))))
+        return E_FAIL;
+
+    _uint       iNumViewports = { 1 };
+    D3D11_VIEWPORT      ViewportDesc{};
+    
+    m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
+    _float2 vScreenSize = _float2(ViewportDesc.Width, ViewportDesc.Height);
+    if (FAILED(m_pMotionVectorShaderCom->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
+        return E_FAIL;
+
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        if (FAILED(m_pModelCom->Bind_PrevBoneMatrices(m_pMotionVectorShaderCom, "g_PrevBoneMatrices", i)))
+            return E_FAIL;
+
+        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pMotionVectorShaderCom, "g_BoneMatrices", i)))
+            return E_FAIL;
+    }
+
+    Render_Part_MotionVector(m_pModelCom_Arm);
+    Render_Part_MotionVector(m_pModelCom_Face);
+    Render_Part_MotionVector(m_pModelCom_Hair);
+    Render_Part_MotionVector(m_pModelCom_Leg);
+    Render_Part_MotionVector(m_pModelCom_Shoes);
+    Render_Part_MotionVector(m_pModelCom_Torso);
+
+    return S_OK;
+}
+
 void CE_Body_Khazan_Spear::Render_Part(CModel* pModel)
 {
     if (nullptr == pModel)
@@ -191,6 +244,29 @@ void CE_Body_Khazan_Spear::Render_Part_Shadow(CModel* pModel)
     }
 }
 
+void CE_Body_Khazan_Spear::Render_Part_MotionVector(CModel* pModel)
+{
+    if (nullptr == pModel)
+        return;
+
+    pModel->Update_PartLocalBones();
+
+    _uint iNumMeshes = pModel->Get_NumMeshes();
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        // 마스터의 본을 자동으로 사용
+        if (FAILED(pModel->Bind_PrevBoneMatrices(m_pMotionVectorShaderCom, "g_PrevBoneMatrices", i)))
+            continue;
+
+        if (FAILED(pModel->Bind_BoneMatrices(m_pMotionVectorShaderCom, "g_BoneMatrices", i)))
+            continue;
+
+        m_pMotionVectorShaderCom->Begin(0);
+        pModel->Render(i);
+    }
+}
+
 const MOTIONTRAIL_CONFIG& CE_Body_Khazan_Spear::Get_MotionTrailConfig()
 {
     return m_pMotionTrailCom->Get_Config();
@@ -220,6 +296,9 @@ HRESULT CE_Body_Khazan_Spear::Ready_Components()
 {
    // LEVEL eCurrentLevel = CClientInstance::GetInstance()->Get_CurrLevel();
 
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh_MotionVector"),
+        TEXT("Com_MotionVectorShader"), reinterpret_cast<CComponent**>(&m_pMotionVectorShaderCom), nullptr)))
+        return E_FAIL;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
@@ -336,6 +415,7 @@ void CE_Body_Khazan_Spear::Free()
     }
 
     Safe_Release(m_pParentTransform);
+    Safe_Release(m_pMotionVectorShaderCom);
     Safe_Release(m_pShaderCom);
 
     Safe_Release(m_pModelCom_Torso);
