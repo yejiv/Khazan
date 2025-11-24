@@ -148,6 +148,11 @@ _float CModel::MakeRatio()
     return m_Animations[m_iCurrentAnimIndex]->MakeRatio();
 }
 
+void CModel::Set_BlendTime(_float fBlendTime)
+{
+     m_Animations[m_iCurrentAnimIndex]->Set_AnimBlendTime(fBlendTime); 
+}
+
 _uint CModel::Get_BoneIndex(const _char* pBoneName)
 {
     auto    iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone) {

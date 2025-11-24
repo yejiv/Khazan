@@ -7,83 +7,79 @@ CUtilitySelector_Node::CUtilitySelector_Node()
 
 BTNODESTATE CUtilitySelector_Node::Tick(CBlackBoard* BB)
 {
-   
-    // 현재 RUNNING 중인 노드가 있는 경우 먼저 실행하도록
-    if (m_iCurrentIndex < m_UtilityChildren.size())
+    // 모든 Action Score 재계산
+
+    for (auto& fAction : m_UtilityChildren)
     {
-        auto& pRunningNode = m_UtilityChildren[m_iCurrentIndex];
-        BTNODESTATE eState = pRunningNode->Tick(BB);
-
-        // RUNNIG유지
-        if (eState == BTNODESTATE::RUNNING)
-            return BTNODESTATE::RUNNING;
-
-        // 끝나면 Terminate호출시키도록
-        pRunningNode->Terminate(eState,BB);
+        fAction->UpdateScore(BB);
     }
 
-    // 새로 점수를 계산해서 최고 점수의 Action 을 선택하도록 한다.
+    
+    // 최고 점수 Action 찾기
 
-
+    CUtilityAction_Node* pBestAction = nullptr;
     _float fBestScore = -FLT_MAX;
-    _uint iBestIndex = 0;
 
-    for (_uint i = 0; i < m_UtilityChildren.size(); ++i)
+    for (auto& fAction : m_UtilityChildren)
     {
-        auto& pChild = m_UtilityChildren[i];
-        _float fScore = pChild->Get_Score(BB);
-
-        if (fScore > fBestScore)
+        _float score = fAction->Get_Score();
+        if (score > fBestScore)
         {
-            fBestScore = fScore;
-            iBestIndex = i;
+            fBestScore = score;
+            pBestAction = fAction;
         }
     }
 
+    // 모든 스킬 점수가 0 이하면선택 불가
     if (fBestScore <= 0.f)
     {
-        m_iCurrentIndex = 0;
+        m_pRunningAction = nullptr;
         return BTNODESTATE::FAILURE;
     }
 
+    // 현재 실행 중인 Action 비교
 
-    // 계산 후 해당 노드를 새 RUNNING 노드로 설정
-    m_iCurrentIndex = iBestIndex;
-    auto& pBestNode = m_UtilityChildren[m_iCurrentIndex];
+    if (nullptr != m_pRunningAction && m_pRunningAction != pBestAction)
+    {
+        //더 높은 점수 Action이 등장하면 교체
+        m_pRunningAction->Abort(BB);
+        Safe_Release(m_pRunningAction);
+    }
 
-    return pBestNode->Tick(BB);
 
+    // 새 Action 실행 혹은 기존 유지
+    m_pRunningAction = pBestAction;
+
+    return m_pRunningAction->Tick(BB);
 }
 
 void CUtilitySelector_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 {
-    if (m_iCurrentIndex < m_UtilityChildren.size())
-        m_UtilityChildren[m_iCurrentIndex]->Terminate(eState, BB);
-
-    m_iCurrentIndex = 0;
+    if (m_pRunningAction)
+    {
+        m_pRunningAction->Terminate(eState, BB);
+        m_pRunningAction = nullptr;
+    }
 }
 
 void CUtilitySelector_Node::Abort(CBlackBoard* BB)
 {
-    if (m_iCurrentIndex < m_UtilityChildren.size())
-        m_UtilityChildren[m_iCurrentIndex]->Abort(BB);
-
-    m_iCurrentIndex = 0;
+    if (m_pRunningAction)
+    {
+        m_pRunningAction->Abort(BB);
+        m_pRunningAction = nullptr;
+    }
 }
 
-void CUtilitySelector_Node::Add_Child(CBTNode* pChild)
+void CUtilitySelector_Node::Add_Child(CBTNode* pNode)
 {
-    if (nullptr != pChild)
+    if (auto* pAction = dynamic_cast<CUtilityAction_Node*>(pNode))
     {
-        m_Children.push_back(pChild);
-        Safe_AddRef(pChild);
-
-        if (auto* pUtility = dynamic_cast<CUtilityAction_Node*>(pChild))
-        {
-            m_UtilityChildren.push_back(pUtility);
-        }
-
+        m_UtilityChildren.push_back(pAction);
     }
+
+    m_Children.push_back(pNode);
+    Safe_AddRef(pNode);
 }
 
 CUtilitySelector_Node* CUtilitySelector_Node::Create()

@@ -30,7 +30,6 @@ void CAS_Walk_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTi
     _float fMoveRange = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange") - 0.5f;
 
     pViper->Get_Controller()->AI_MoveTo(pOwner, pTarget, fMoveRange, m_fSpeed, fTimeDelta);
-
     pModel->Play_Animation(fTimeDelta);
 
 }
