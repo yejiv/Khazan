@@ -840,7 +840,9 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
             );
             Q = XMQuaternionRotationMatrix(RotationMatrix);
         }
+
         EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiralSpear_SpearFX"), W.r[3]);
+
         FX_StrongAtk_Charge_Blust1(m_pParentTransform->Get_WorldMatrix().r[3]);
         });
 
@@ -878,7 +880,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         });
 
     m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        SpawnSpearWind();
+        //SpawnSpearWind();
         });
     
     m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {UpdateSpearWind(); FX_Trail(); });
@@ -1014,7 +1016,9 @@ void CBody_Khazan_Spear::FX_Trail()
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust1(_fvector pos)
 {
+
     m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust"), pos);
+
 
     // Distortion
     DISTORTION_DESC Desc{};
@@ -1043,12 +1047,15 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust1(_fvector pos)
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust2(_fvector pos)
 {
+
     m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust2"), pos);
+
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust3(_fvector pos)
 {
     m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust3"), pos);
+
 
     // Distortion
     DISTORTION_DESC Desc{};
@@ -1068,17 +1075,23 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust3(_fvector pos)
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust4(_fvector pos)
 {
+
     m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust4"), pos);
+
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust5(_fvector pos)
 {
+
     m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust5"), pos);
+
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust6(_fvector pos)
 {
+
     m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust6"), pos);
+
 
     // Distortion
     DISTORTION_DESC Desc{};
@@ -1173,6 +1186,7 @@ void CBody_Khazan_Spear::UpdateSpearWind()
 
         Q = XMQuaternionRotationMatrix(RotationMatrix);
     }
+
     m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearWind"), EffectID_SpearWind, Q, W.r[3]);
 
     DISTORTION_DESC Desc{};

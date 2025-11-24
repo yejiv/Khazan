@@ -1090,6 +1090,36 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate">
       <UniqueIdentifier>{0b2d171c-7a2b-4cc9-9976-4831e2bb9379}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Weapon">
+      <UniqueIdentifier>{efe62000-548b-4730-b09f-84572c7f47b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Weapon\TwinBlade">
+      <UniqueIdentifier>{77b6416e-2029-4261-be77-a8373ea77918}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\06.StingAttackCombo">
+      <UniqueIdentifier>{7510c446-c4fb-4db2-abe9-ea06a2255c0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\07.Slow3Hit">
+      <UniqueIdentifier>{dcf9e46d-4781-481c-874f-1f83609bf5bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\08.SlashBackJump">
+      <UniqueIdentifier>{8e406fb0-7aec-4705-aa6d-c9f2f838bd82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\09.TurnAttack">
+      <UniqueIdentifier>{21946a99-19a3-43b5-98db-b05635dabe11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\10.JumpSmash">
+      <UniqueIdentifier>{4dbd0b02-eeb7-4f37-a262-fd730ddca2ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\11.Devour">
+      <UniqueIdentifier>{d57af63a-bd37-40c8-a4d8-f13d78e6e24e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\12.SideMove">
+      <UniqueIdentifier>{2b13d4b9-d3f4-4d52-81f5-b487c954f472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\13.5HitCombo">
+      <UniqueIdentifier>{8ec62639-19b8-4845-94bc-69ab15b162c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2030,9 +2060,6 @@
     <ClInclude Include="..\Public\IronGate_Part_R.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Right</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\FSM_Viper.h" />
-    <ClInclude Include="..\Public\GSword_Khazan_GS.h" />
-    <ClInclude Include="..\Public\Collection_Info.h" />
     <ClInclude Include="..\Public\Ladder.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder</Filter>
     </ClInclude>
@@ -2095,6 +2122,38 @@
     </ClInclude>
     <ClInclude Include="..\Public\GearGate.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TwinBlade_Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBlade</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_StingSlashCombo_Viper.h">
+      <Filter>92.AI\State\Viper\06.StingAttackCombo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Slow3Hit_Viper.h">
+      <Filter>92.AI\State\Viper\07.Slow3Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_SlashBackJump_Viper.h">
+      <Filter>92.AI\State\Viper\08.SlashBackJump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_TurnAttack_Viper.h">
+      <Filter>92.AI\State\Viper\09.TurnAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_JumpSmash_Viper.h">
+      <Filter>92.AI\State\Viper\10.JumpSmash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GSword_Khazan_GS.h" />
+    <ClInclude Include="..\Public\Collection_Info.h" />
+    <ClInclude Include="..\Public\AS_Devour_Viper.h">
+      <Filter>92.AI\State\Viper\11.Devour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Viper.h">
+      <Filter>92.AI\StateMachine\Viper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_SideMove_P1_Viper.h">
+      <Filter>92.AI\State\Viper\12.SideMove</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_5HitCombo_Viper.h">
+      <Filter>92.AI\State\Viper\13.5HitCombo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2739,7 +2798,6 @@
     <ClCompile Include="..\Private\Imp_Wand.cpp">
       <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Projectile_Imp_MagicBall.cpp" />
     <ClCompile Include="..\Private\AI_Controller_Imp_Melee.cpp">
       <Filter>92.AI\Controller\Imp_Melee</Filter>
     </ClCompile>
@@ -3014,12 +3072,40 @@
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Left</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\IronGate_Part_R.cpp">
-      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Right</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\FSM_Viper.cpp" />
+    <ClCompile Include="..\Private\TwinBlade_Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBlade</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_StingSlashCombo_Viper.cpp">
+      <Filter>92.AI\State\Viper\06.StingAttackCombo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Slow3Hit_Viper.cpp">
+      <Filter>92.AI\State\Viper\07.Slow3Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_SlashBackJump_Viper.cpp">
+      <Filter>92.AI\State\Viper\08.SlashBackJump</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_TurnAttack_Viper.cpp">
+      <Filter>92.AI\State\Viper\09.TurnAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_JumpSmash_Viper.cpp">
+      <Filter>92.AI\State\Viper\10.JumpSmash</Filter>
+    </ClCompile>
     <ClCompile Include="..\Private\GSword_Khazan_GS.cpp" />
     <ClCompile Include="..\Private\Collection_Info.cpp" />
-    <ClCompile Include="..\Private\Ladder.cpp">
+    <ClCompile Include="..\Private\AS_Devour_Viper.cpp">
+      <Filter>92.AI\State\Viper\11.Devour</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Viper.cpp">
+      <Filter>92.AI\StateMachine\Viper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_SideMove_P1_Viper.cpp">
+      <Filter>92.AI\State\Viper\12.SideMove</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_5HitCombo_Viper.cpp">
+      <Filter>92.AI\State\Viper\13.5HitCombo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Ladder_Middle.cpp">
