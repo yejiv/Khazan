@@ -44,11 +44,8 @@ HRESULT CTwinBlade_Viper::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components())) return E_FAIL;
     if (FAILED(Ready_Collision())) return E_FAIL;
 
-    /*XMStoreFloat3(&m_vLocalRotation, XMVectorSet(-0.08f, 3.22f, -0.5f, -2.53f));
-    XMStoreFloat3(&m_vLocalWeaponOffset, XMVectorSet(-0.4f, -0.6f, -0.5f, 1.f)) ;*/
-    XMStoreFloat3(&m_vLocalRotation, XMVectorSet(0.09f, 3.39f, 0.63f,1.f));
-    XMStoreFloat3(&m_vLocalWeaponOffset, XMVectorSet(-0.4f, -0.6f, -0.5f, 1.f)) ;
- 
+    m_pTransformCom->Rotation(0.1f, 3.14f, 1.f);
+
     return S_OK;
 }
 
@@ -59,41 +56,44 @@ void CTwinBlade_Viper::Priority_Update(_float fTimeDelta)
 void CTwinBlade_Viper::Update(_float fTimeDelta)
 {
 #pragma region ETC
-    if (m_pGameInstance->Key_Down(DIK_J))   // X축 +90도
-    {
-        m_vLocalRotation.x += XMConvertToRadians(5.f);
-        cout << "Rotate X +90 : " << m_vLocalRotation.x << endl;
-    }
+    //if (m_pGameInstance->Key_Down(DIK_J))   // X축 +90도
+    //{
+    //    m_vLocalRotation.x += XMConvertToRadians(5.f);
+    //    cout << "Rotate X +90 : " << m_vLocalRotation.x << endl;
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_K))   // Y축 +90도
-    {
-        m_vLocalRotation.y += XMConvertToRadians(5.f);
-        cout << "Rotate Y +90 : " << m_vLocalRotation.y << endl;
-    }
+    //if (m_pGameInstance->Key_Down(DIK_K))   // Y축 +90도
+    //{
+    //    m_vLocalRotation.y += XMConvertToRadians(5.f);
+    //    cout << "Rotate Y +90 : " << m_vLocalRotation.y << endl;
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_L))   // Z축 +90도
-    {
-        m_vLocalRotation.z += XMConvertToRadians(5.f);
-        cout << "Rotate Z +90 : " << m_vLocalRotation.z << endl;
-    }
+    //if (m_pGameInstance->Key_Down(DIK_L))   // Z축 +90도
+    //{
+    //    m_vLocalRotation.z += XMConvertToRadians(5.f);
+    //    cout << "Rotate Z +90 : " << m_vLocalRotation.z << endl;
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_B))   // X축 +90도
-    {
-        m_vLocalRotation.x -= XMConvertToRadians(5.f);
-        cout << "Rotate X +90 : " << m_vLocalRotation.x << endl;
-    }
+    //if (m_pGameInstance->Key_Down(DIK_B))   // X축 +90도
+    //{
+    //    m_vLocalRotation.x -= XMConvertToRadians(5.f);
+    //    cout << "Rotate X +90 : " << m_vLocalRotation.x << endl;
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_N))   // Y축 +90도
-    {
-        m_vLocalRotation.y -= XMConvertToRadians(5.f);
-        cout << "Rotate Y +90 : " << m_vLocalRotation.y << endl;
-    }
+    //if (m_pGameInstance->Key_Down(DIK_N))   // Y축 +90도
+    //{
+    //    m_vLocalRotation.y -= XMConvertToRadians(5.f);
+    //    cout << "Rotate Y +90 : " << m_vLocalRotation.y << endl;
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_M))   // Z축 +90도
-    {
-        m_vLocalRotation.z -= XMConvertToRadians(5.f);
-        cout << "Rotate Z +90 : " << m_vLocalRotation.z << endl;
-    }
+    //if (m_pGameInstance->Key_Down(DIK_M))   // Z축 +90도
+    //{
+    //    m_vLocalRotation.z -= XMConvertToRadians(5.f);
+    //    cout << "Rotate Z +90 : " << m_vLocalRotation.z << endl;
+    //}
+
+    //m_pTransformCom->Rotation(m_vLocalRotation.x, m_vLocalRotation.y, m_vLocalRotation.z);
+
 
     //if (m_pGameInstance->Key_Down(DIK_J))
     //{
@@ -134,25 +134,14 @@ void CTwinBlade_Viper::Update(_float fTimeDelta)
 
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 
-    _matrix LocalOffset =
-        XMMatrixRotationRollPitchYaw(
-            m_vLocalRotation.x,
-            m_vLocalRotation.y,
-            m_vLocalRotation.z
-        ) *
-        XMMatrixTranslation(
-            m_vLocalWeaponOffset.x,
-            m_vLocalWeaponOffset.y,
-            m_vLocalWeaponOffset.z
-        );
-
-    for (_uint i = 0; i < 3; i++)
+    for (uint32_t i = 0; i < 3; i++)
         BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
     XMStoreFloat4x4(
         &m_CombinedWorldMatrix,
-        m_pTransformCom->Get_WorldMatrix() * LocalOffset * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
+        m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
     );
+
 
 
   /*  _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
