@@ -14,13 +14,13 @@ BTNODESTATE CUtilityAction_Node::Tick(CBlackBoard* BB)
     if (nullptr == m_Action)
         return BTNODESTATE::FAILURE;
 
-    // ½ÇÇà ½ÃÀÛ ¡æ ³»ºÎ »óÅÂ ON
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ON
     m_isExecuting = true;
 
-    // ACTION °á°ú ¹ÝÈ¯ (FSMÀÌ ½ÇÇà/À¯Áö/Á¾·á °áÁ¤)
+    // ACTION ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ (FSMï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     BTNODESTATE eState = m_Action(BB);
 
-    // Á¾·á¸é »óÅÂ OFF
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ OFF
     if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
         m_isExecuting = false;
 
@@ -37,7 +37,7 @@ void CUtilityAction_Node::Terminate(BTNODESTATE eState, CBlackBoard* BB)
 
 void CUtilityAction_Node::Abort(CBlackBoard* BB)
 {
-    // °­Á¦ Á¾·á Ã³¸®
+    // ê°•ì œ ì¤‘ë‹¨
     if (m_Terminate)
         m_Terminate(BB, BTNODESTATE::FAILURE);
 

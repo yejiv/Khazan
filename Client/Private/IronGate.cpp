@@ -53,14 +53,19 @@ HRESULT CIronGate::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(ENUM_CLASS((m_eAnimState)));
     m_pModelCom->Set_AnimationLoop(false);
     m_pModelCom->Set_AnimationBlend(false);
-
     m_pModelCom->Play_Animation(0.f);
+    m_pModelCom->Set_AnimationBlend(true);
 
     return S_OK;
 }
 
 void CIronGate::Priority_Update(_float fTimeDelta)
 {
+    if (false == m_isCollision)
+    {
+        m_Event.None();
+    }
+
     __super::Priority_Update(fTimeDelta);
 }
 
@@ -357,4 +362,13 @@ CGameObject* CIronGate::Clone(void* pArg)
 void CIronGate::Free()
 {
     __super::Free();
+
+    Safe_Release(m_pStaticCom);
+    Safe_Release(m_pTriggerCom);
+
+    if (nullptr != m_pGuide)
+    {
+        m_pGuide->Set_IsDead(true);
+        Safe_Release(m_pGuide);
+    }
 }

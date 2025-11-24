@@ -101,6 +101,18 @@ HRESULT CRenderer::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject* pRende
     return S_OK;
 }
 
+HRESULT CRenderer::Add_RenderComponent(CComponent* pComponent)
+{
+    if (nullptr == pComponent)
+        return E_FAIL;
+
+    m_RenderComponents.push_back(pComponent);
+
+    Safe_AddRef(pComponent);
+
+    return S_OK;
+}
+
 HRESULT CRenderer::Draw()
 {
     if (FAILED(Bind_Pipeline_ShaderResources()))
@@ -260,17 +272,6 @@ HRESULT CRenderer::Draw()
 
     return S_OK;
 }
-
-#ifdef _DEBUG
-HRESULT CRenderer::Add_DebugComponent(CComponent* pComponent)
-{
-    m_DebugComponent.push_back(pComponent);
-
-    Safe_AddRef(pComponent);
-
-    return S_OK;
-}
-#endif
 
 HRESULT CRenderer::Render_Priority()
 {
@@ -621,16 +622,16 @@ HRESULT CRenderer::Render_MotionTrail()
 {
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
         return E_FAIL;
-    
-    for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::MOTIONTRAIL)])
+
+    for (auto& pComponent : m_RenderComponents)
     {
-        if (nullptr != pRenderObject)
-            pRenderObject->Render_MotionTrail();
-
-        Safe_Release(pRenderObject);
+        if (nullptr != pComponent)
+            pComponent->Render();
+    
+        Safe_Release(pComponent);
     }
-
-    m_RenderObjects[ENUM_CLASS(RENDERGROUP::MOTIONTRAIL)].clear();
+    
+    m_RenderComponents.clear();
 
     if (FAILED(m_pGameInstance->End_MRT()))
         return E_FAIL;
@@ -1306,16 +1307,6 @@ void CRenderer::Deferred_JobAndImmediate(vector<class CGameObject*>& Deferred, v
 
 HRESULT CRenderer::Render_Debug()
 {
-    for (auto& pDebugCom : m_DebugComponent)
-    {
-        if (nullptr != pDebugCom)
-            pDebugCom->Render();
-
-        Safe_Release(pDebugCom);
-    }
-    m_DebugComponent.clear();
-
-
     if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
         return E_FAIL;
 
@@ -1409,12 +1400,10 @@ void CRenderer::Free()
 {
     __super::Free();
 
-#ifdef DEBUG
-    for (auto& pDebugComponent : m_DebugComponent)
-        Safe_Release(pDebugComponent);
-    m_DebugComponent.clear();
-#endif // DEBUG
-    
+    for (auto& pComponent : m_RenderComponents)
+        Safe_Release(pComponent);
+    m_RenderComponents.clear();
+
     for (size_t i = 0; i < ENUM_CLASS(RENDERGROUP::END); i++)
     {
         for (auto& pRenderObject : m_RenderObjects[i])
@@ -1422,6 +1411,10 @@ void CRenderer::Free()
 
         m_RenderObjects[i].clear();
     }
+
+    for (auto& pCL : m_threadCLs)
+        Safe_Release(pCL);
+    m_threadCLs.clear();
 
     Safe_Release(m_pShader);
     Safe_Release(m_pVIBuffer);

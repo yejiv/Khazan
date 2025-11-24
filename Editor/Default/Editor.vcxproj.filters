@@ -253,20 +253,8 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear">
       <UniqueIdentifier>{76d246d6-54b7-4963-a3a7-c29f74861b04}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\05.Gear\01.Door_Gear">
-      <UniqueIdentifier>{a22ba3a5-385e-426b-8bf4-0ce42b0ef93a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\Shader\Player\Test">
       <UniqueIdentifier>{4efb7951-3bc5-4cb1-a5cd-517cac6afce2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\Shader\Player\Creature">
-      <UniqueIdentifier>{34c515b2-0cc9-42c6-838d-808c38bbdaf0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\Shader\Player\Creature\Khazan_Spear">
-      <UniqueIdentifier>{2ef60926-428b-4645-941b-312e78aad06b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObject\Shader\Player\Creature\Khazan_Spear\Body">
-      <UniqueIdentifier>{0685344d-6782-4a3b-8afd-9bba86c38ff7}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\06.Statue">
       <UniqueIdentifier>{24ddf31b-a69e-4658-9050-c8655c0eaa43}</UniqueIdentifier>
@@ -294,6 +282,36 @@
     </Filter>
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Right">
       <UniqueIdentifier>{cb5b7fd7-347c-4067-bc39-e81fe81cd005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder">
+      <UniqueIdentifier>{4a32cba8-964a-45e4-868a-643d9e2396e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Top">
+      <UniqueIdentifier>{ee07b1c5-11dc-4f10-9a0f-53dd35274911}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom">
+      <UniqueIdentifier>{6e226c8a-4e0d-4441-b379-fd6b9221faa6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom\Support">
+      <UniqueIdentifier>{eac75b3a-236b-4b53-bd46-03c3155a5b20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Middle">
+      <UniqueIdentifier>{9ad2d95f-b384-4dbd-b7f9-5408fcc9ab6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Player\Khazan">
+      <UniqueIdentifier>{34c515b2-0cc9-42c6-838d-808c38bbdaf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Player\Khazan\Khazan_Spear">
+      <UniqueIdentifier>{2ef60926-428b-4645-941b-312e78aad06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Player\Khazan\Khazan_Spear\Body">
+      <UniqueIdentifier>{0685344d-6782-4a3b-8afd-9bba86c38ff7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\10.GearGate">
+      <UniqueIdentifier>{2626eb1b-b972-4950-80e4-b3a23eefe83c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\10.GearGate\Door_Gear">
+      <UniqueIdentifier>{a22ba3a5-385e-426b-8bf4-0ce42b0ef93a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -520,16 +538,16 @@
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\04.Lever</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Door_Gear.h">
-      <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\01.Door_Gear</Filter>
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\10.GearGate\Door_Gear</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Lever_Gear.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\E_Khazan_Spear.h">
-      <Filter>02.GameObject\Shader\Player\Creature\Khazan_Spear</Filter>
+      <Filter>02.GameObject\Shader\Player\Khazan\Khazan_Spear</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\E_Body_Khazan_Spear.h">
-      <Filter>02.GameObject\Shader\Player\Creature\Khazan_Spear\Body</Filter>
+      <Filter>02.GameObject\Shader\Player\Khazan\Khazan_Spear\Body</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Player_Shader.h">
       <Filter>02.GameObject\Shader\Player\Test</Filter>
@@ -557,6 +575,24 @@
     </ClInclude>
     <ClInclude Include="..\Public\IronGate_Part_R.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Right</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Top.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Top</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Bottom.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Support.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Middle.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Middle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GearGate.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\10.GearGate</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -778,16 +814,16 @@
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\04.Lever</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Door_Gear.cpp">
-      <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\01.Door_Gear</Filter>
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\10.GearGate\Door_Gear</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Lever_Gear.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\E_Khazan_Spear.cpp">
-      <Filter>02.GameObject\Shader\Player\Creature\Khazan_Spear</Filter>
+      <Filter>02.GameObject\Shader\Player\Khazan\Khazan_Spear</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\E_Body_Khazan_Spear.cpp">
-      <Filter>02.GameObject\Shader\Player\Creature\Khazan_Spear\Body</Filter>
+      <Filter>02.GameObject\Shader\Player\Khazan\Khazan_Spear\Body</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Player_Shader.cpp">
       <Filter>02.GameObject\Shader\Player\Test</Filter>
@@ -815,6 +851,24 @@
     </ClCompile>
     <ClCompile Include="..\Private\IronGate_Part_R.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Right</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Top.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Top</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Bottom.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Support.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Middle.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Middle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GearGate.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\10.GearGate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -67,7 +67,7 @@ void CCSM::Update(_float fTimeDelta)
         m_Config.fIntensity = Lerp(m_Config.fIntensity, m_fTargetIntensity, fRatio);
     }
 
-    // Ä³½ºÄÉÀÌµå ÄÚ³Ê Ä«¸Ş¶ó ÀıµÎÃ¼ °¡Á®¿Í¼­ ºñÀ²·Î °è»ê
+    // ìºìŠ¤ì¼€ì´ë“œ ì½”ë„ˆ ì¹´ë©”ë¼ ì ˆë‘ì²´ ê°€ì ¸ì™€ì„œ ë¹„ìœ¨ë¡œ ê³„ì‚°
     m_pGameInstance->Get_Frustum_WorldPoints(m_vFrustumWorldPoints);
 
     for (_uint i = 0; i < m_Cascade.iNumCascades; ++i)
@@ -78,7 +78,7 @@ void CCSM::Update(_float fTimeDelta)
         _float fNearRatio = (fCascadeNear - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
         _float fFarRatio = (fCascadeFar - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
 
-        // 1. ÄÚ³Ê ºñÀ²·Î ³ª´©±â
+        // 1. ì½”ë„ˆ ë¹„ìœ¨ë¡œ ë‚˜ëˆ„ê¸°
         for (_uint j = 0; j < 4; ++j)
         {
             _vector vNear = XMLoadFloat4(&m_vFrustumWorldPoints[j]);
@@ -94,14 +94,14 @@ void CCSM::Update(_float fTimeDelta)
             XMStoreFloat4(&m_FrustumCorners[j + 4], vCornerFar);
         }
 
-        // 2. °¢ ÄÚ³ÊÀÇ Áß½É À§Ä¡ Ã£±â
+        // 2. ê° ì½”ë„ˆì˜ ì¤‘ì‹¬ ìœ„ì¹˜ ì°¾ê¸°
         _vector vCenter = {};
 
         for (_uint j = 0; j < 8; ++j)
             vCenter += XMLoadFloat4(&m_FrustumCorners[j]);
         vCenter /= 8.f;
 
-        // 3. Áß½ÉÁ¡ -> ÄÚ³ÊÀÇ ´ë°¢¼± Áß ÃÖ´ë ±æÀÌ ±¸ÇÏ±â
+        // 3. ì¤‘ì‹¬ì  -> ì½”ë„ˆì˜ ëŒ€ê°ì„  ì¤‘ ìµœëŒ€ ê¸¸ì´ êµ¬í•˜ê¸°
         _float fRadius = {};
 
         for (_uint j = 0; j < 8; ++j)
@@ -131,7 +131,7 @@ void CCSM::Update(_float fTimeDelta)
             vMaxPoint = XMVectorMax(vMaxPoint, vCornerView);
         }
 
-        // ¸ğµç ·çÇÁ°¡ ³¡³­ ÈÄ, ÃÖÁ¾ Min/Max ·¹Áö½ºÅÍ °ªÀ» ½ºÄ®¶ó·Î ÃßÃâ
+        // ëª¨ë“  ë£¨í”„ê°€ ëë‚œ í›„, ìµœì¢… Min/Max ë ˆì§€ìŠ¤í„° ê°’ì„ ìŠ¤ì¹¼ë¼ë¡œ ì¶”ì¶œ
         _float3 vMin{}, vMax{};
         XMStoreFloat3(&vMin, vMinPoint);
         XMStoreFloat3(&vMax, vMaxPoint);

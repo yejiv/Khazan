@@ -78,7 +78,7 @@ void CPerception::Check_Sight(class CGameObject* pOwner, class CBlackBoard* pBB)
 {
     
 	CGameObject* pTarget = pBB->Get_Value<CGameObject*>(m_strName,"Target");
-	CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+ 	CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
 	CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
 
 	_vector vEyePos = pOwnerTransform->Get_State(STATE::POSITION);

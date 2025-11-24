@@ -61,10 +61,18 @@
 
 #pragma endregion
 
+#pragma region MONSTER_KBS
+#include "Dragonian_Melee.h"
+
+#include "Dragonian_Rampage.h"
+#include "Body_Dragonian_Rampage.h"
+#pragma endregion
+
 #pragma region UI
 #include "Logo_BG.h"
 #include "UI_Logo.h"
 #pragma endregion
+
 #include "Effect_Prefab.h"
 //static mutex g_GpuGate;
 
@@ -182,13 +190,7 @@ HRESULT CLoader::Loading()
 
 HRESULT CLoader::Loading_For_Title_Level()
 {
-	lstrcpy(m_szLoadingText, TEXT("�ؽ��ĸ� �ε����Դϴ�."));
-
-	lstrcpy(m_szLoadingText, TEXT("���� �ε����Դϴ�."));
-
-	lstrcpy(m_szLoadingText, TEXT("���̴��� �ε����Դϴ�."));
-
-	lstrcpy(m_szLoadingText, TEXT("���ӿ�����Ʈ�� �ε����Դϴ�."));
+	lstrcpy(m_szLoadingText, TEXT("UI 객체 생성 중"));
 
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_Logo_BG"),
 		CLogo_BG::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::TITLE))), E_FAIL);
@@ -196,7 +198,7 @@ HRESULT CLoader::Loading_For_Title_Level()
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_UI_Logo"),
 		CUI_Logo::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::TITLE))), E_FAIL);
 
-	lstrcpy(m_szLoadingText, TEXT("�ε��� �Ϸ�Ǿ����ϴ�."));
+	lstrcpy(m_szLoadingText, TEXT("탁예지: 다나가!!"));
 	
 	m_isFinished = true;
 
@@ -207,18 +209,21 @@ HRESULT CLoader::Loading_For_Test_Level()
 {
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Test_Texture();
+        return S_OK;
 		}));
 
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		Loading_For_Test_Model();
 		Loading_For_Test_GameObject();
-		return E_FAIL;
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		return Loading_For_Test_Shader();
+        return S_OK;
 		}));
 	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 		CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("HeinMach"), LEVEL::TEST), E_FAIL);
+        return S_OK;
 		}));
 
 	
@@ -581,7 +586,7 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 
 #pragma endregion
 
-#pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ
+#pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ 
 	/* Prototype_Component_Model_BigChest */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_BigChest"),
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
@@ -1251,6 +1256,34 @@ HRESULT CLoader::Loading_For_Embars_Model()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_B/WP_BTP_Door_Metal_004/WP_BTP_Door_Metal_004.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 사다리
+    /* Prototype_Component_Model_Ladder_Top */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Ladder_Top"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_Top_Ladder_Metal_01/WIP_Top_Ladder_Metal_01.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Ladder_Middle */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Ladder_Middle"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_Middle_Ladder_Metal_01/WIP_Middle_Ladder_Metal_01.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Ladder_Bottom */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Ladder_Bottom"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_Bottom_Ladder_Metal_01/WIP_Bottom_Ladder_Metal_01.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Ladder_Support */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Ladder_Support"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_Bottom_Ladder_Support_Static_Metal_01/WIP_Bottom_Ladder_Support_Static_Metal_01.dat")), E_FAIL);
+#pragma endregion
+
+#pragma region 기어 게이트
+    /* Prototype_Component_Model_GearGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_GearGate"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gate_Open_001_b/WIP_BGQ_Gate_Open_001_b.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Door_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Door_Gear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Loop_001/WIP_BGQ_Gear_Loop_001.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거
@@ -1319,10 +1352,6 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     /* Prototype_GameObject_Prop_Lever_Gear */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Lever_Gear"),
         CLever_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
-
-    /* Prototype_GameObject_Prop_Door_Gear */
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Door_Gear"),
-        CDoor_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma region 조각상 퍼즐
@@ -1361,6 +1390,38 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     /* Prototype_GameObject_Prop_IronGate_Part_R */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_IronGate_Part_R"),
         CIronGate_Part_R::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 사다리
+    /* Prototype_GameObject_Prop_Ladder */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Ladder"),
+        CLadder::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Ladder_Top */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Ladder_Top"),
+        CLadder_Top::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Ladder_Middle */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Ladder_Middle"),
+        CLadder_Middle::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Ladder_Bottom */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Ladder_Bottom"),
+        CLadder_Bottom::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Ladder_Support */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Ladder_Support"),
+        CLadder_Support::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 기어 게이트
+    /* Prototype_GameObject_Prop_GearGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_GearGate"),
+        CGearGate::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Door_Gear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Door_Gear"),
+        CDoor_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion
@@ -1723,6 +1784,12 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_TwinBlade"),
         CTwinBlade_Viper::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+#pragma endregion
+#pragma region Dragonian_Melee
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"),
+        CDragonian_Melee::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
         return E_FAIL;
 
 #pragma endregion

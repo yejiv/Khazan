@@ -7,7 +7,22 @@ CUtilitySelector_Node::CUtilitySelector_Node()
 
 BTNODESTATE CUtilitySelector_Node::Tick(CBlackBoard* BB)
 {
-    // ¸ğµç Action Score Àç°è»ê
+ 
+    //if (m_iCurrentIndex < m_UtilityChildren.size())
+    //{
+    //    auto& pRunningNode = m_UtilityChildren[m_iCurrentIndex];
+    //    BTNODESTATE eState = pRunningNode->Tick(BB);
+
+    //    // RUNNIG
+    //    if (eState == BTNODESTATE::RUNNING)
+    //        return BTNODESTATE::RUNNING;
+
+    //    pRunningNode->Terminate(eState,BB);
+    //}
+
+
+
+    // ëª¨ë“  Action Score ì¬ê³„ì‚°
 
     for (auto& fAction : m_UtilityChildren)
     {
@@ -15,7 +30,7 @@ BTNODESTATE CUtilitySelector_Node::Tick(CBlackBoard* BB)
     }
 
     
-    // ÃÖ°í Á¡¼ö Action Ã£±â
+    // ìµœê³  ì ìˆ˜ Action ì°¾ê¸°
 
     CUtilityAction_Node* pBestAction = nullptr;
     _float fBestScore = -FLT_MAX;
@@ -30,24 +45,26 @@ BTNODESTATE CUtilitySelector_Node::Tick(CBlackBoard* BB)
         }
     }
 
-    // ¸ğµç ½ºÅ³ Á¡¼ö°¡ 0 ÀÌÇÏ¸é¼±ÅÃ ºÒ°¡
+    // ëª¨ë“  ìŠ¤í‚¬ ì ìˆ˜ê°€ 0 ì´í•˜ë©´ì„ íƒ ë¶ˆê°€
     if (fBestScore <= 0.f)
     {
         m_pRunningAction = nullptr;
         return BTNODESTATE::FAILURE;
     }
 
-    // ÇöÀç ½ÇÇà ÁßÀÎ Action ºñ±³
+    // í˜„ì¬ ì‹¤í–‰ ì¤‘ì¸ Action ë¹„êµ
 
+    //m_iCurrentIndex = iBestIndex;
+    //auto& pBestNode = m_UtilityChildren[m_iCurrentIndex];
     if (nullptr != m_pRunningAction && m_pRunningAction != pBestAction)
     {
-        //´õ ³ôÀº Á¡¼ö ActionÀÌ µîÀåÇÏ¸é ±³Ã¼
+        //ë” ë†’ì€ ì ìˆ˜ Actionì´ ë“±ì¥í•˜ë©´ êµì²´
         m_pRunningAction->Abort(BB);
         Safe_Release(m_pRunningAction);
     }
 
 
-    // »õ Action ½ÇÇà È¤Àº ±âÁ¸ À¯Áö
+    // ìƒˆ Action ì‹¤í–‰ í˜¹ì€ ê¸°ì¡´ ìœ ì§€
     m_pRunningAction = pBestAction;
 
     return m_pRunningAction->Tick(BB);

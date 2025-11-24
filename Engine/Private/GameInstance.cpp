@@ -502,12 +502,12 @@ HRESULT CGameInstance::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject* pR
 	return m_pRenderer->Add_RenderGroup(eRenderGroup, pRenderObject);
 }
 
-#ifdef _DEBUG
-
-HRESULT CGameInstance::Add_DebugComponent(CComponent* pComponent)
+HRESULT CGameInstance::Add_RenderComponent(CComponent* pComponent)
 {
-	return m_pRenderer->Add_DebugComponent(pComponent);
+    return m_pRenderer->Add_RenderComponent(pComponent);
 }
+
+#ifdef _DEBUG
 
 void CGameInstance::Set_EnableShadow(_bool isEnable)
 {
@@ -1656,7 +1656,8 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pResource_Manager);
-	Safe_Release(m_pBlackBoard);	
+    Safe_Release(m_pBlackBoard);
+    Safe_Release(m_pEffect_Manager);
 
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);
@@ -1664,9 +1665,9 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pPrototype_Manager);	
 	Safe_Release(m_pLevel_Manager);
-	Safe_Release(m_pGraphic_Device);
-	Safe_Release(m_pEffect_Manager);
     Safe_Release(m_pJolt_Manager);
+	Safe_Release(m_pGraphic_Device);
+    
 }
 
 void CGameInstance::Free()
