@@ -13,6 +13,7 @@
 #include "AS_Devour_Viper.h"
 #include "AS_SideMove_P1_Viper.h"
 #include "AS_5HitCombo_Viper.h"
+#include "AS_ThrowBlade_Viper.h"
 
 CFSM_Viper::CFSM_Viper()
 {
@@ -35,6 +36,8 @@ HRESULT CFSM_Viper::Initialize()
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::STINGSLASHCOMBO), CAS_StingSlashCombo_Viper::Create())))
         return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::THROWBLADE), CAS_ThrowBlade_Viper::Create())))
+        return E_FAIL;
 
 
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::SLOW3HIT), CAS_Slow3Hit_Viper::Create())))
@@ -52,6 +55,8 @@ HRESULT CFSM_Viper::Initialize()
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::COMBO5HIT), CAS_5HitCombo_Viper::Create())))
         return E_FAIL;
+
+  
 
 
     m_pCurrentState = m_States[ENUM_CLASS(VIPER_STATE_P1::IDLE)];

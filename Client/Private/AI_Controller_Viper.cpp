@@ -401,7 +401,28 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
             };
     }
 
-    else if ("P1_StingSlash" == name)
+    else if ("P1_ThrowBlade" == name)
+    {
+        return [pViper](CBlackBoard* BB)->_bool
+            {
+
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+                _float fThrowRange = BB->Get_Value<_float>(pViper->Get_Name(), "ThorwRange");
+
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_ThrowBladeFinished");
+                if (fDist <= fThrowRange  && fDist >= fAttackRange)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "AttackInterrupt", true);
+                    return true;
+                }
+                else
+                    return false;
+            };
+            }
+
+
+ /*   else if ("P1_StingSlash" == name)
     {
         return [pViper](CBlackBoard* BB)->_bool
             {
@@ -417,7 +438,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
                 else
                     return false;
             };
-    }
+    }*/
 
     else if ("P1_Slow2Hit" == name)
     {
@@ -707,9 +728,28 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
 
 
+    else if ("P1_ThrowBlade" == name)
+    {
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_ThrowBladeFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::THROWBLADE), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+            }
 
 
-    else if ("P1_StingSlash" == name)
+
+
+    /*else if ("P1_StingSlash" == name)
     {
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
@@ -725,7 +765,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
                 return BTNODESTATE::RUNNING;
             };
-    }
+    }*/
 
 
 
@@ -804,6 +844,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB) ->BTNODESTATE
             {
+
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
 
@@ -1052,7 +1093,27 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
             };
     }
 
-    else if ("P1_StingSlash" == name)
+
+    else if ("P1_ThrowBlade" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isP1_ThrowBladeFinished", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "AttackInterrupt", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+            }
+
+  /*  else if ("P1_StingSlash" == name)
     {
         return [pViper](CBlackBoard* BB, BTNODESTATE eState)
             {
@@ -1068,7 +1129,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
-    }
+    }*/
 
 
 

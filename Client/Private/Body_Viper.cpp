@@ -93,12 +93,8 @@ HRESULT CBody_Viper::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    if (FAILED(Ready_Colliders()))
-        return E_FAIL;
-
-    m_pTransformCom->Scale(_float3(1.3f, 1.3f, 1.3f));
-
-    
+   /* if (FAILED(Ready_Colliders()))
+        return E_FAIL;*/
 
     return S_OK;
 }
@@ -231,26 +227,26 @@ void CBody_Viper::Carculate_Matrix(_float fTimeDelta)
 
 HRESULT CBody_Viper::Ready_Colliders()
 {
-    //CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
+    CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
-    //BodyDesc.fRadius = 2.f;
-    //BodyDesc.eMotion = EMotionType::Kinematic;
-    //BodyDesc.eQuality = EMotionQuality::Discrete;
-    //BodyDesc.eShapeType = SHAPE::SPHERE;
-    //BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-    //_float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
-    //XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
-    //_vector vScale, vQuat, vTrans;
-    //XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_RightHandMatrix));
-    //BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
-    //BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
-    //BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    //m_tCollisionDesc.pGameObject = this;
-    //BodyDesc.pCollisionDesc = &m_tCollisionDesc;
-    //BodyDesc.bIsTrigger = true;
-    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-    //    TEXT("Com_Body_RH"), reinterpret_cast<CComponent**>(&m_pRH_BodyCom), &BodyDesc)))
-    //    return E_FAIL;
+    BodyDesc.fRadius = 2.f;
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete;
+    BodyDesc.eShapeType = SHAPE::SPHERE;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
+    XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
+    _vector vScale, vQuat, vTrans;
+    XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_RightHandMatrix));
+    BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+    BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
+    BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc.pGameObject = this;
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    BodyDesc.bIsTrigger = true;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body_RH"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
+        return E_FAIL;
 
     return S_OK;
 }
@@ -285,6 +281,7 @@ void CBody_Viper::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
+    Safe_Release(m_pBodyCom);
 
     __super::Free();
 

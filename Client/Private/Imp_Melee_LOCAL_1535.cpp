@@ -6,6 +6,7 @@
 #include "Mon_HP.h"
 #include "ClientInstance.h"
 #include "Amount.h"
+#include "Model.h"
 #include "GameInstance.h"
 
 CImp_Melee::CImp_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -54,7 +55,8 @@ HRESULT CImp_Melee::Initialize_Clone(void* pArg)
 
 void CImp_Melee::Priority_Update(_float fTimeDelta)
 {
-    CContainerObject::Priority_Update(fTimeDelta);
+   CContainerObject::Priority_Update(fTimeDelta);
+
     if (m_fCurrentHP <= 0.f && !m_isDeadFlag)
     {
         CClientInstance::GetInstance()->Add_SkillExp(10.f);
@@ -65,8 +67,7 @@ void CImp_Melee::Priority_Update(_float fTimeDelta)
 
 void CImp_Melee::Update(_float fTimeDelta)
 {
-
-    m_pController->Update(this, fTimeDelta);
+   m_pController->Update(this, fTimeDelta);
 
 
     if (m_isLookAt)

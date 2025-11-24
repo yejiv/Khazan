@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "AI_Controller.h"
 #include "Viper.h"
+#include "Body_Viper.h"
 
 
 _matrix CTwinBlade_Viper::Get_BoneMatrix(const _char* pBoneName)
@@ -43,12 +44,8 @@ HRESULT CTwinBlade_Viper::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components())) return E_FAIL;
     if (FAILED(Ready_Collision())) return E_FAIL;
 
-    //m_pTransformCom->Rotation(1.5, 1.5, 0.5f);
-    //m_vDebugRotation = _float3(-0, 3.22f, -2.6f);
-    //XMStoreFloat3(&m_vLocalWeaponOffset, XMVectorSet(-0.4f, -0.6f, -0.5f, 1.f)) ;
-    //m_vLocalWeaponOffset = {x=-0.400000006 y=-0.600000024 z=-0.500000000 }
-    m_OffsetMatrix = XMMatrixRotationX(XMConvertToRadians(-90.f));
-  
+    m_pTransformCom->Rotation(0.1f, 3.14f, 1.f);
+
     return S_OK;
 }
 
@@ -58,50 +55,44 @@ void CTwinBlade_Viper::Priority_Update(_float fTimeDelta)
 
 void CTwinBlade_Viper::Update(_float fTimeDelta)
 {
+#pragma region ETC
+    //if (m_pGameInstance->Key_Down(DIK_J))   // X축 +90도
+    //{
+    //    m_vLocalRotation.x += XMConvertToRadians(5.f);
+    //    cout << "Rotate X +90 : " << m_vLocalRotation.x << endl;
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_J))   // X축 +90도
-    {
-        m_vDebugRotation.x += XMConvertToRadians(5.f);
-        cout << "Rotate X +90 : " << m_vDebugRotation.x << endl;
-    }
+    //if (m_pGameInstance->Key_Down(DIK_K))   // Y축 +90도
+    //{
+    //    m_vLocalRotation.y += XMConvertToRadians(5.f);
+    //    cout << "Rotate Y +90 : " << m_vLocalRotation.y << endl;
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_K))   // Y축 +90도
-    {
-        m_vDebugRotation.y += XMConvertToRadians(5.f);
-        cout << "Rotate Y +90 : " << m_vDebugRotation.y << endl;
-    }
+    //if (m_pGameInstance->Key_Down(DIK_L))   // Z축 +90도
+    //{
+    //    m_vLocalRotation.z += XMConvertToRadians(5.f);
+    //    cout << "Rotate Z +90 : " << m_vLocalRotation.z << endl;
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_L))   // Z축 +90도
-    {
-        m_vDebugRotation.z += XMConvertToRadians(5.f);
-        cout << "Rotate Z +90 : " << m_vDebugRotation.z << endl;
-    }
+    //if (m_pGameInstance->Key_Down(DIK_B))   // X축 +90도
+    //{
+    //    m_vLocalRotation.x -= XMConvertToRadians(5.f);
+    //    cout << "Rotate X +90 : " << m_vLocalRotation.x << endl;
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_B))   // X축 +90도
-    {
-        m_vDebugRotation.x -= XMConvertToRadians(5.f);
-        cout << "Rotate X +90 : " << m_vDebugRotation.x << endl;
-    }
+    //if (m_pGameInstance->Key_Down(DIK_N))   // Y축 +90도
+    //{
+    //    m_vLocalRotation.y -= XMConvertToRadians(5.f);
+    //    cout << "Rotate Y +90 : " << m_vLocalRotation.y << endl;
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_N))   // Y축 +90도
-    {
-        m_vDebugRotation.y -= XMConvertToRadians(5.f);
-        cout << "Rotate Y +90 : " << m_vDebugRotation.y << endl;
-    }
+    //if (m_pGameInstance->Key_Down(DIK_M))   // Z축 +90도
+    //{
+    //    m_vLocalRotation.z -= XMConvertToRadians(5.f);
+    //    cout << "Rotate Z +90 : " << m_vLocalRotation.z << endl;
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_M))   // Z축 +90도
-    {
-        m_vDebugRotation.z -= XMConvertToRadians(5.f);
-        cout << "Rotate Z +90 : " << m_vDebugRotation.z << endl;
-    }
-
-    // 누적된 각도를 TransformCom에 반영
-    //m_pTransformCom->Rotation(
-    //    m_vDebugRotation.x,
-    //    m_vDebugRotation.y,
-    //    m_vDebugRotation.z
-    //);
-
+    //m_pTransformCom->Rotation(m_vLocalRotation.x, m_vLocalRotation.y, m_vLocalRotation.z);
 
 
     //if (m_pGameInstance->Key_Down(DIK_J))
@@ -139,26 +130,33 @@ void CTwinBlade_Viper::Update(_float fTimeDelta)
     //    cout << "Offset Z: " << m_vLocalWeaponOffset.z << endl;
     //}
 
+#pragma endregion
 
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
-    //_matrix OffsetMatrix = XMMatrixTranslationFromVector(XMLoadFloat3(&m_vLocalWeaponOffset));
 
     for (uint32_t i = 0; i < 3; i++)
         BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
-    m_pModelCom->Update_BoneCombinedMatrices();
-
     XMStoreFloat4x4(
         &m_CombinedWorldMatrix,
-        /*m_pTransformCom->Get_WorldMatrix() **/ m_OffsetMatrix * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
+        m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
     );
 
 
-  /*  _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
 
-    _vector vScale, vQuat, vPos;
-    XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
-    XMStoreFloat4(&m_vTipPos, vPos);*/
+  /*  _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+    _matrix ParentWorld = XMLoadFloat4x4(m_pParentMatrix);
+    _matrix LocalOffset = 
+        XMMatrixRotationRollPitchYaw(m_vLocalRotation.x,
+            m_vLocalRotation.y,
+            m_vLocalRotation.z) *
+        XMMatrixTranslation(m_vLocalWeaponOffset.x,
+            m_vLocalWeaponOffset.y,
+            m_vLocalWeaponOffset.z);
+
+    _matrix World = LocalOffset * BoneMatrix * ParentWorld;
+
+    XMStoreFloat4x4(&m_CombinedWorldMatrix, World);*/
 
 }
 

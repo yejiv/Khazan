@@ -170,6 +170,7 @@ _uint CModel::Get_BoneIndex(const _char* pBoneName)
 _float4x4* CModel::Get_BoneMatrix(const _char* pBoneName)
 {
     auto    iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone) {
+       
         if (true == pBone->Compare_Name(pBoneName))
             return true;
         return false;

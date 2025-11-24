@@ -2,14 +2,13 @@
 #include "AI_State.h"
 #include "Client_Defines.h"
 
-NS_BEGIN(Engine)
+NS_BEGIN(Client)
 
-
-class CAS_StingSlashCombo_Viper final : public CAI_State
+class CAS_ThrowBlade_Viper final : public CAI_State
 {
 private:
-    CAS_StingSlashCombo_Viper();
-    virtual ~CAS_StingSlashCombo_Viper() = default;
+    CAS_ThrowBlade_Viper();
+    virtual ~CAS_ThrowBlade_Viper() = default;
 
 public:
     virtual void Enter(class CStateMachine* pFSM, class CGameObject* pOwner = nullptr) override;
@@ -18,8 +17,8 @@ public:
 
 
 public:
-    static CAS_StingSlashCombo_Viper*   Create();
-    virtual void                        Free() override;
+    static CAS_ThrowBlade_Viper*    Create();
+    virtual void                    Free() override;
 
 };
 

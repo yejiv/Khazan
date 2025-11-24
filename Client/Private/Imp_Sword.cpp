@@ -1,3 +1,4 @@
+
 #include "Imp_Sword.h"
 #include "Model.h"
 #include "GameInstance.h"
@@ -144,13 +145,22 @@ void CImp_Sword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 
 HRESULT CImp_Sword::Ready_Components()
 {
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
+    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
+    //    TEXT("Com_Shader"), (CComponent**)&m_pShaderCom, nullptr)))
+    //    return E_FAIL;
+
+   /* if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_ImpSword"),
+        TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr)))
+        return E_FAIL;*/
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), (CComponent**)&m_pShaderCom, nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_ImpSword"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_TwinBlade_Viper"),
         TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr)))
         return E_FAIL;
+
 
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
 

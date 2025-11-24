@@ -55,6 +55,7 @@ HRESULT CImp_Melee::Initialize_Clone(void* pArg)
 void CImp_Melee::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
+
     if (m_fCurrentHP <= 0.f && !m_isDeadFlag)
     {
         CClientInstance::GetInstance()->Add_SkillExp(10.f);
@@ -65,7 +66,6 @@ void CImp_Melee::Priority_Update(_float fTimeDelta)
 
 void CImp_Melee::Update(_float fTimeDelta)
 {
-
     m_pController->Update(this, fTimeDelta);
 
 
