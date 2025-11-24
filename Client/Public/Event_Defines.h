@@ -19,6 +19,7 @@ namespace Client {
         SKILL_RESET,
         STATUE_PUZZLE0,
         STATUE_PUZZLE1,
+        HALL_ELEVATOR_UNLOCK,
 		END };
 
 	// Structs
@@ -162,10 +163,44 @@ namespace Client {
                 return isSection0();
             if (1 == iGateEventID)
                 return isSection1();
+            return false;
+        }
+    };
+
+    // 상호작용 오브젝트끼리의 이벤트 ( 해제 기어 -> 홀 엘리베이터 )
+    struct EventHallElevator
+    {
+        enum UNLOCK_STATE { NONE, STEP_1, STEP_2, STEP_3, END};
+
+        UNLOCK_STATE eStep{};
+
+        void Set_UnLockState(bool isUnLock)
+        {
+            if (false == isUnLock)
+                return;
+
+            if (UNLOCK_STATE::NONE == eStep)
+                eStep = STEP_1;
+            else if (UNLOCK_STATE::STEP_1 == eStep)
+                eStep = STEP_2;
+            else if (UNLOCK_STATE::STEP_2 == eStep)
+                eStep = STEP_3;
+        }
+
+        bool IsThirdStep() {
+            if (UNLOCK_STATE::STEP_3 == eStep)
+                return true;
+            return false;
         }
     };
 
     struct EventIronGate
+    {
+        XMFLOAT4 vPosition{};
+        XMFLOAT4 vPlayerPosition{};
+    };
+
+    struct EventUnLockGear
     {
         XMFLOAT4 vPosition{};
         XMFLOAT4 vPlayerPosition{};
@@ -185,6 +220,7 @@ namespace Client {
         EventLever LeverEvent{};
         EventStatue StatueEvent{};
         EventIronGate IronGateEvent{};
+        EventUnLockGear UnLockGearEvent{};
 
 		void End_Event() { isEvent = false; }
 

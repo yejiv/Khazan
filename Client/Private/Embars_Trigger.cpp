@@ -57,7 +57,7 @@ void CEmbars_Trigger::Late_Update(_float fTimeDelta)
 
 HRESULT CEmbars_Trigger::Render()
 {
-    //CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    //CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     //_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -157,7 +157,7 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             m_pGameInstance->SEQ_AdoptAndPlay(m_pHeinMach_Yetuga, tPlayDesc);
             m_isDead = true;
 
-            // ¿¹Åõ°¡ Fog
+            // ì˜ˆíˆ¬ê°€ Fog
             //  Set_FogConfig(m_FogConfig);
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.03f;
@@ -167,11 +167,11 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(7.f, Desc);
 
-            // ¿¹Åõ°¡ ½ºÄ«ÀÌ ¹Ú½º
+            // ì˜ˆíˆ¬ê°€ ìŠ¤ì¹´ì´ ë°•ìŠ¤
             Start_SkyTransition(m_Sky_Desc, m_Cloud_Desc, 5.f);
             */
         }
-        else if (m_strTriggerKey == "Æ÷±× ¹Ù²î´Â")
+        else if (m_strTriggerKey == "í¬ê·¸ ë°”ë€ŒëŠ”")
         {
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.035f;
@@ -181,7 +181,7 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(5.f, Desc);
 
-            // ±×¸²ÀÚ º¸°£ Ãß°¡
+            // ê·¸ë¦¼ìž ë³´ê°„ ì¶”ê°€
             m_pGameInstance->Start_ShadowTransition(5.f, 1.f);
         }
         /*

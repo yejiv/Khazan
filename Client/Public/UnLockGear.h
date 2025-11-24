@@ -5,31 +5,30 @@
 
 NS_BEGIN(Client)
 
-class CLever final : public CProp_Interactive
+class CUnLockGear final : public CProp_Interactive
 {
-    // 0, 1 : 시작 지점 레버, 기어, 문 연동 이벤트
-
 private:
     enum ANIM_STATE
     {
-        ACTIVATION,
-        DEACTIVATION,
-        IDLE1,
-        IDLE2,
+        STOP,
+        IDLE,
+        START,
         END
     };
 
+    // Position_Ch
+
 public:
-    typedef struct tagLeverDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
+    typedef struct tagUnLockGearDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
     {
 
 
-    }LEVER_DESC;
+    }UNLOCK_GEAR_DESC;
 
 private:
-    CLever(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CLever(const CLever& Prototype);
-    virtual ~CLever() = default;
+    CUnLockGear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    CUnLockGear(const CUnLockGear& Prototype);
+    virtual ~CUnLockGear() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
@@ -46,7 +45,7 @@ private:
     class CInteraction_Guide* m_pGuide = { nullptr };
 
 private:
-    ANIM_STATE m_eAnimState = { ANIM_STATE::IDLE1 };
+    ANIM_STATE m_eAnimState = { ANIM_STATE::IDLE };
 
     EventObject m_Event = {};
 
@@ -54,7 +53,7 @@ private:
 
     _float m_fColTimeAcc = { 0.f };
 
-    EventGateGear m_EventGate = {};
+    EventHallElevator m_EventHallElevator = {};
 
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
@@ -70,7 +69,7 @@ private:
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
 
 public:
-    static CLever* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    static CUnLockGear* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CGameObject* Clone(void* pArg) override;
     virtual void Free() override;
 };

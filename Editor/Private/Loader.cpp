@@ -315,6 +315,12 @@ HRESULT CLoader::Loading_For_Map_Level()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Loop_001/WIP_BGQ_Gear_Loop_001.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 엘리베이터 잠금 해제 기어
+    /* Prototype_Component_Model_UnLockGear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_UnLockGear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_ERM_Gear_Switch_001/WIP_ERM_Gear_Switch_001.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거 모델 원형 ( 야매? )
@@ -495,6 +501,12 @@ HRESULT CLoader::Loading_For_Map_Level()
     /* Prototype_GameObject_Prop_Door_Gear */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Door_Gear"),
         CDoor_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 엘리베이터 잠금 해제 기어
+    /* Prototype_GameObject_Prop_UnLockGear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_UnLockGear"),
+        CUnLockGear::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion

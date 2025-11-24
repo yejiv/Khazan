@@ -498,6 +498,7 @@
     <ClInclude Include="..\public\UI_Atlas_Icon.h" />
     <ClInclude Include="..\public\UI_Tutorial.h" />
     <ClInclude Include="..\public\UI_WorldTextBox.h" />
+    <ClInclude Include="..\Public\UnLockGear.h" />
     <ClInclude Include="..\Public\Viper.h" />
     <ClInclude Include="..\Public\VerticalGate.h" />
     <ClInclude Include="..\Public\Viper_Trigger.h" />
@@ -844,6 +845,7 @@
     <ClCompile Include="..\private\UI_Atlas_Icon.cpp" />
     <ClCompile Include="..\private\UI_Tutorial.cpp" />
     <ClCompile Include="..\private\UI_WorldTextBox.cpp" />
+    <ClCompile Include="..\Private\UnLockGear.cpp" />
     <ClCompile Include="..\Private\Viper.cpp" />
     <ClCompile Include="..\Private\VerticalGate.cpp" />
     <ClCompile Include="..\Private\Viper_Trigger.cpp" />

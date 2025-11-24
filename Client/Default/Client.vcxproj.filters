@@ -1123,6 +1123,9 @@
     <Filter Include="02.GameObject\MapObject\01.Trigger\01.Embars\Embars_Trigger">
       <UniqueIdentifier>{4a4c48b1-c1ef-47ea-a805-8864a198e555}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\11.UnLockGear">
+      <UniqueIdentifier>{1acb5ddc-1a20-48b3-bcb0-901a9c9dcd3f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2161,6 +2164,9 @@
     <ClInclude Include="..\Public\Embars_Trigger.h">
       <Filter>02.GameObject\MapObject\01.Trigger\01.Embars\Embars_Trigger</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UnLockGear.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\11.UnLockGear</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3077,8 +3083,6 @@
     <ClCompile Include="..\Private\IronGate_Part_L.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Left</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\IronGate_Part_R.cpp">
-    </ClCompile>
     <ClCompile Include="..\Private\TwinBlade_Viper.cpp">
       <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBlade</Filter>
     </ClCompile>
@@ -3171,9 +3175,17 @@
     <ClCompile Include="..\Private\GearGate.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Ladder.cpp" />
     <ClCompile Include="..\Private\Embars_Trigger.cpp">
       <Filter>02.GameObject\MapObject\01.Trigger\01.Embars\Embars_Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate_Part_R.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Right</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UnLockGear.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\11.UnLockGear</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

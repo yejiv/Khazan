@@ -1093,10 +1093,10 @@ HRESULT CLoader::Loading_For_Embars_Level()
         return Loading_For_Embars_GameObject();
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-        CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+        return Loading_Prototype_MapObject_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS);
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-        CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+        return Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS);
         }));
 
     return S_OK;
@@ -1187,12 +1187,6 @@ HRESULT CLoader::Loading_For_Embars_Model()
         return E_FAIL;
 #pragma endregion
 
-#pragma region �� ���� : Ʈ����
-    /* Prototype_Component_Model_Trigger */
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Trigger"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Base/Cube/Cube.dat")), E_FAIL);
-#pragma endregion
-
 #pragma region 상호작용 오브젝
     /* Prototype_Component_Model_BigChest */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_BigChest"),
@@ -1220,10 +1214,6 @@ HRESULT CLoader::Loading_For_Embars_Model()
     /* Prototype_Component_Model_Lever_Gear */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Lever_Gear"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Machine_Loop_001/WIP_BGQ_Machine_Loop_001.dat")), E_FAIL);
-
-    /* Prototype_Component_Model_Door_Gear */
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Door_Gear"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Loop_001/WIP_BGQ_Gear_Loop_001.dat")), E_FAIL);
 #pragma endregion
 
 #pragma region 조각상 퍼즐
@@ -1286,6 +1276,12 @@ HRESULT CLoader::Loading_For_Embars_Model()
     /* Prototype_Component_Model_Door_Gear */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Door_Gear"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Loop_001/WIP_BGQ_Gear_Loop_001.dat")), E_FAIL);
+#pragma endregion
+
+#pragma region 엘리베이터 잠금 해제 기어
+    /* Prototype_Component_Model_UnLockGear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_UnLockGear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_ERM_Gear_Switch_001/WIP_ERM_Gear_Switch_001.dat")), E_FAIL);
 #pragma endregion
 
 #pragma endregion
@@ -1426,6 +1422,12 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     /* Prototype_GameObject_Prop_Door_Gear */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Door_Gear"),
         CDoor_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 엘리베이터 잠금 해제 기어
+    /* Prototype_GameObject_Prop_UnLockGear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_UnLockGear"),
+        CUnLockGear::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion

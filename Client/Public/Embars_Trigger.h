@@ -50,7 +50,7 @@ private:
     //class CSequence_HeinMach_Start_Chat* m_pHeinMach_Start_Chat = { nullptr };
     class CClientInstance* m_pClientInstance = { nullptr };
 
-    // FOG ±¸Á¶Ã¼
+    // FOG êµ¬ì¡°ì²´
     FOG_CONFIG m_FogConfig = {};
 
 private:
