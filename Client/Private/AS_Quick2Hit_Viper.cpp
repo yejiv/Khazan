@@ -27,7 +27,7 @@ void CAS_Quick2Hit_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        pViper->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pViper->Get_Name(), "isQuick2HitFinished", true);
+        pViper->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pViper->Get_Name(), "isP1_Quick2HitFinished", true);
     }
 
 }

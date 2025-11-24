@@ -16,8 +16,8 @@ public:
 
     typedef struct tagFrameSnapshot
     {
-        vector<XMFLOAT4X4>      BoneCombinedMatrices;   // Combined Çà·Äµé
-        XMFLOAT4X4              OwnerWorldMatrix;       // ¿ùµå Çà·Äµé
+        vector<XMFLOAT4X4>      BoneCombinedMatrices;   // Combined í–‰ë ¬ë“¤
+        XMFLOAT4X4              OwnerWorldMatrix;       // ì›”ë“œ í–‰ë ¬ë“¤
         XMFLOAT2                vLifeTime;
         XMFLOAT3                vStartColor;
         XMFLOAT3                vTargetColor;

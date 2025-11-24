@@ -1021,6 +1021,105 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Left">
       <UniqueIdentifier>{02b95e17-b904-41fc-9b1b-f602db9a5933}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder">
+      <UniqueIdentifier>{55244ac6-e756-4460-aa91-2895dd0c5437}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Middle">
+      <UniqueIdentifier>{e3ae5dae-1975-416c-9615-3fcf87b10845}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Top">
+      <UniqueIdentifier>{c41e00f3-e9d1-48c6-b5a3-b44eb2cfc05a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Bottom">
+      <UniqueIdentifier>{b0339617-5aa1-4724-9322-bb931d49d2fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Bottom\Support">
+      <UniqueIdentifier>{126aa4e2-07d9-455f-a2f8-4ea073d3d567}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Dragonian_Melee">
+      <UniqueIdentifier>{9823864e-ac4b-4e3f-842d-65012fd1f086}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Dragonian_Rampage">
+      <UniqueIdentifier>{20e76737-7a31-4fe2-a71f-42fbdd26e98d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Dragonian_Melee\Body">
+      <UniqueIdentifier>{7913fa6c-f0a9-4ee3-8044-4484c5cecaca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Dragonian_Melee\Weapon">
+      <UniqueIdentifier>{0f46a6d3-dee1-453f-919a-55f43b781a09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Dragonian_Rampage\Body">
+      <UniqueIdentifier>{42d8f19d-dd2f-41da-9344-8600bdf68bb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Dragonian_Rampage\Weapon">
+      <UniqueIdentifier>{3b14ece7-b2e3-47ba-aafb-e51ab8b5658f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\StateMachine\Default_StateMachine">
+      <UniqueIdentifier>{049dc071-31dc-4bb1-b93f-c53d451dbb58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Dragonian_Melee">
+      <UniqueIdentifier>{1d3948c1-b637-4632-a32b-0032a0b2f856}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Melee">
+      <UniqueIdentifier>{1152f434-7861-4e2f-88fd-7aea18c52f8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Melee\Dead">
+      <UniqueIdentifier>{21c1bf96-5216-4825-88f8-10d567bec4c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Melee\Groggy">
+      <UniqueIdentifier>{cf4d05f5-14ce-4d8d-8efe-73680f95f766}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Melee\Attack">
+      <UniqueIdentifier>{36a12880-4e18-4b31-86b7-310df8773c60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Melee\Damage">
+      <UniqueIdentifier>{b0cf5725-5084-45e2-9e7a-0b704f1f1eaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Melee\Walk">
+      <UniqueIdentifier>{1cd011fb-aaa3-4ec5-a232-8198b16d3122}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Melee\LockOn">
+      <UniqueIdentifier>{936eaedd-155e-41a3-81a7-80f4cc60e499}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Melee\Sleep">
+      <UniqueIdentifier>{a2f9b658-6a7f-41c8-adf5-99ebf444cb68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Melee\Brutal">
+      <UniqueIdentifier>{2eb34cdf-af20-4202-bf36-78237cd4ea32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate">
+      <UniqueIdentifier>{0b2d171c-7a2b-4cc9-9976-4831e2bb9379}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Weapon">
+      <UniqueIdentifier>{efe62000-548b-4730-b09f-84572c7f47b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Weapon\TwinBlade">
+      <UniqueIdentifier>{77b6416e-2029-4261-be77-a8373ea77918}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\06.StingAttackCombo">
+      <UniqueIdentifier>{7510c446-c4fb-4db2-abe9-ea06a2255c0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\07.Slow3Hit">
+      <UniqueIdentifier>{dcf9e46d-4781-481c-874f-1f83609bf5bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\08.SlashBackJump">
+      <UniqueIdentifier>{8e406fb0-7aec-4705-aa6d-c9f2f838bd82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\09.TurnAttack">
+      <UniqueIdentifier>{21946a99-19a3-43b5-98db-b05635dabe11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\10.JumpSmash">
+      <UniqueIdentifier>{4dbd0b02-eeb7-4f37-a262-fd730ddca2ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\11.Devour">
+      <UniqueIdentifier>{d57af63a-bd37-40c8-a4d8-f13d78e6e24e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\12.SideMove">
+      <UniqueIdentifier>{2b13d4b9-d3f4-4d52-81f5-b487c954f472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\13.5HitCombo">
+      <UniqueIdentifier>{8ec62639-19b8-4845-94bc-69ab15b162c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -1943,10 +2042,6 @@
     <ClInclude Include="..\Public\Body_Khazan_GS.h">
       <Filter>02.GameObject\Creature\Khazan\GSword\Body</Filter>
     </ClInclude>
-    <ClInclude Include="CBody_Viper.h" />
-    <ClInclude Include="CFSM_Viper.h" />
-    <ClInclude Include="CGSword_Khazan_GS.h" />
-    <ClInclude Include="CCollection_Info.h" />
     <ClInclude Include="..\Public\Body_Viper.h">
       <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
     </ClInclude>
@@ -1964,6 +2059,101 @@
     </ClInclude>
     <ClInclude Include="..\Public\IronGate_Part_R.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Right</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Middle.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Middle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Bottom.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Bottom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Support.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Bottom\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Top.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Top</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Dragonian_Melee.h">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Body_Dragonian_Melee.h">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Dragonian_Rampage.h">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Body_Dragonian_Rampage.h">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\FSM_Default.h">
+      <Filter>92.AI\StateMachine\Default_StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AI_Controller_Dragonian_Melee.h">
+      <Filter>92.AI\Controller\Dragonian_Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Dr_Melee_Dead.h">
+      <Filter>92.AI\State\Dragonian_Melee\Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Dr_Melee_Groggy.h">
+      <Filter>92.AI\State\Dragonian_Melee\Groggy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Dr_Melee_Brutal.h">
+      <Filter>92.AI\State\Dragonian_Melee\Brutal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Dr_Melee_Walk.h">
+      <Filter>92.AI\State\Dragonian_Melee\Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Dr_Melee_Sleep.h">
+      <Filter>92.AI\State\Dragonian_Melee\Sleep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Dr_Melee_LockOn.h">
+      <Filter>92.AI\State\Dragonian_Melee\LockOn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Dr_Melee_Damage.h">
+      <Filter>92.AI\State\Dragonian_Melee\Damage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Dr_Melee_Attack.h">
+      <Filter>92.AI\State\Dragonian_Melee\Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Dragonian_Sword.h">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GearGate.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TwinBlade_Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBlade</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_StingSlashCombo_Viper.h">
+      <Filter>92.AI\State\Viper\06.StingAttackCombo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Slow3Hit_Viper.h">
+      <Filter>92.AI\State\Viper\07.Slow3Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_SlashBackJump_Viper.h">
+      <Filter>92.AI\State\Viper\08.SlashBackJump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_TurnAttack_Viper.h">
+      <Filter>92.AI\State\Viper\09.TurnAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_JumpSmash_Viper.h">
+      <Filter>92.AI\State\Viper\10.JumpSmash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GSword_Khazan_GS.h" />
+    <ClInclude Include="..\Public\Collection_Info.h" />
+    <ClInclude Include="..\Public\AS_Devour_Viper.h">
+      <Filter>92.AI\State\Viper\11.Devour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FSM_Viper.h">
+      <Filter>92.AI\StateMachine\Viper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_SideMove_P1_Viper.h">
+      <Filter>92.AI\State\Viper\12.SideMove</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_5HitCombo_Viper.h">
+      <Filter>92.AI\State\Viper\13.5HitCombo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2608,7 +2798,6 @@
     <ClCompile Include="..\Private\Imp_Wand.cpp">
       <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Projectile_Imp_MagicBall.cpp" />
     <ClCompile Include="..\Private\AI_Controller_Imp_Melee.cpp">
       <Filter>92.AI\Controller\Imp_Melee</Filter>
     </ClCompile>
@@ -2867,10 +3056,6 @@
     <ClCompile Include="..\Private\Body_Khazan_GS.cpp">
       <Filter>02.GameObject\Creature\Khazan\GSword\Body</Filter>
     </ClCompile>
-    <ClCompile Include="CBody_Viper.cpp" />
-    <ClCompile Include="CFSM_Viper.cpp" />
-    <ClCompile Include="CGSword_Khazan_GS.cpp" />
-    <ClCompile Include="CCollection_Info.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp">
       <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
     </ClCompile>
@@ -2887,7 +3072,101 @@
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Left</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\IronGate_Part_R.cpp">
-      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Right</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TwinBlade_Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBlade</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_StingSlashCombo_Viper.cpp">
+      <Filter>92.AI\State\Viper\06.StingAttackCombo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Slow3Hit_Viper.cpp">
+      <Filter>92.AI\State\Viper\07.Slow3Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_SlashBackJump_Viper.cpp">
+      <Filter>92.AI\State\Viper\08.SlashBackJump</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_TurnAttack_Viper.cpp">
+      <Filter>92.AI\State\Viper\09.TurnAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_JumpSmash_Viper.cpp">
+      <Filter>92.AI\State\Viper\10.JumpSmash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GSword_Khazan_GS.cpp" />
+    <ClCompile Include="..\Private\Collection_Info.cpp" />
+    <ClCompile Include="..\Private\AS_Devour_Viper.cpp">
+      <Filter>92.AI\State\Viper\11.Devour</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Viper.cpp">
+      <Filter>92.AI\StateMachine\Viper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_SideMove_P1_Viper.cpp">
+      <Filter>92.AI\State\Viper\12.SideMove</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_5HitCombo_Viper.cpp">
+      <Filter>92.AI\State\Viper\13.5HitCombo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Middle.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Middle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Bottom.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Bottom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Support.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Bottom\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Top.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Top</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Dragonian_Melee.cpp">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Body_Dragonian_Melee.cpp">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Dragonian_Rampage.cpp">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Body_Dragonian_Rampage.cpp">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\FSM_Default.cpp">
+      <Filter>92.AI\StateMachine\Default_StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AI_Controller_Dragonian_Melee.cpp">
+      <Filter>92.AI\Controller\Dragonian_Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Dr_Melee_Dead.cpp">
+      <Filter>92.AI\State\Dragonian_Melee\Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Dr_Melee_Groggy.cpp">
+      <Filter>92.AI\State\Dragonian_Melee\Groggy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Dr_Melee_Brutal.cpp">
+      <Filter>92.AI\State\Dragonian_Melee\Brutal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Dr_Melee_Walk.cpp">
+      <Filter>92.AI\State\Dragonian_Melee\Walk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Dr_Melee_Sleep.cpp">
+      <Filter>92.AI\State\Dragonian_Melee\Sleep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Dr_Melee_LockOn.cpp">
+      <Filter>92.AI\State\Dragonian_Melee\LockOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Dr_Melee_Damage.cpp">
+      <Filter>92.AI\State\Dragonian_Melee\Damage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Dr_Melee_Attack.cpp">
+      <Filter>92.AI\State\Dragonian_Melee\Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Dragonian_Sword.cpp">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GearGate.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

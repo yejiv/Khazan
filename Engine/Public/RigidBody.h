@@ -29,6 +29,9 @@ protected:
 	virtual void Set_Rotation(_vector vRot) {};
 	virtual void Set_Velocity(_vector vVelocity) {};
 
+protected:
+    _bool m_isJump = { false };
+
 public:
 	static CRigidBody* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CComponent* Clone(void* pArg) override;

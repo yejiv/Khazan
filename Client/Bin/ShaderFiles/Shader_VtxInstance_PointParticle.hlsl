@@ -238,16 +238,16 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     vector vFinalColor = vSourColor * vMask;
     
     vFinalColor.a = max(max(vMask.r, vMask.g), vMask.b);
-        
+    
     if (g_MaskScrollSpeed)
         vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
      
     float fDecreaseAlpha = 1.0f - abs((In.vLifeTime.x / In.vLifeTime.y) * 2.0f - 1.0f); 
 
     
-    if (g_IsDisolve == false) 
+    if (g_IsDisolve == false && (g_numCols == 1 && g_numRows == 1))
         vFinalColor.a *= fDecreaseAlpha;
-    else
+    else if (g_IsDisolve == true)
         vFinalColor = Dissolve(vFinalColor, (In.vLifeTime.x / In.vLifeTime.y), In.vTexcoord);
     
     if (vFinalColor.a <= 0)

@@ -76,6 +76,8 @@ public:
     _float				MakeRatio();
     _float3				Get_RootMotionDelta() const { return m_vDelta; }
     ROOTMOTION_INFO		Get_RootMotion_Info() const { return m_RootMotionInfo; }
+    void                Set_BlendTime(_float fBlendTime);
+
     /* 정보 */
     _uint				Get_NumMeshes() const { return m_iNumMeshes; }
     _uint				Get_BoneIndex(const _char* pBoneName);
