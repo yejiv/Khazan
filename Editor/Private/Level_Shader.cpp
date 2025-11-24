@@ -444,14 +444,6 @@ HRESULT CLevel_Shader::Initialize()
                     m_pGameInstance->Set_RimLightDesc(m_RimLightDesc);
             }
 
-            if (ImGui::SliderFloat("Ghost Alpha", &m_fGhostAlpha, 0.f, 1.f, "%.2f"))
-            {
-                CE_Khazan_Spear* pKhazan = dynamic_cast<CE_Khazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
-                    TEXT("Layer_Player"), 0));
-                CE_Body_Khazan_Spear* pKhazanBody = dynamic_cast<CE_Body_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
-                pKhazanBody->Set_Alpha(m_fGhostAlpha);
-            }
-
             if (ImGui::Checkbox("Edge", &m_isEnableEdge))
             {
                 CE_Khazan_Spear* pKhazan = dynamic_cast<CE_Khazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
@@ -565,6 +557,90 @@ HRESULT CLevel_Shader::Initialize()
 
 			ImGui::Separator();
 		}
+
+        if (ImGui::CollapsingHeader("Motion Trail"), ImGuiTreeNodeFlags_DefaultOpen)
+        {
+            // 리스트 박스로 Player, Yetuga, Viper 등 고르기 (현재는 플레이어밖에 없음)
+            const _char* ObjectTags[] = { "Player", "Yetuga", "Viper" };
+            ImGui::Combo("GameObject List", &m_iCurrentGameObjectIndex, ObjectTags, IM_ARRAYSIZE(ObjectTags));
+
+            // 고르면 해당 객체의 모션 트레일 정보 Get해서 띄우기
+            if (0 == m_iCurrentGameObjectIndex)
+            {
+                CE_Khazan_Spear* pKhazan = dynamic_cast<CE_Khazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+                    TEXT("Layer_Player"), 0));
+                CE_Body_Khazan_Spear* pKhazanBody = dynamic_cast<CE_Body_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                m_MotionTrailConfig = pKhazanBody->Get_MotionTrailConfig();
+                m_isEnableMotionTrail = pKhazanBody->isEnableMotionTrail();
+            }
+            else
+            {
+                m_iCurrentGameObjectIndex = -1;
+                m_isEnableMotionTrail = false;
+            }
+
+            if (0 <= m_iCurrentGameObjectIndex)
+            {
+                // 특정 설정이 바뀔 때 Set
+                _bool isChanged = false;
+
+                // bool Enable(체크박스)
+                if (ImGui::Checkbox("Enable Motion Trail", &m_isEnableMotionTrail))
+                {
+                    CE_Khazan_Spear* pKhazan = dynamic_cast<CE_Khazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+                        TEXT("Layer_Player"), 0));
+                    CE_Body_Khazan_Spear* pKhazanBody = dynamic_cast<CE_Body_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                    pKhazanBody->Set_EnableMotionTrail(m_isEnableMotionTrail);
+                }
+
+                // float2 vLifeTime
+                // float3 Start / Target Color
+                // float Rim Power
+                // float Rim Intensity
+                // float Emissive Intensity
+                // bool Individual(컬러 보간을 개별적으로 적용할 건지 체크 박스)
+                // float Color Update Speed 위에 체크 되었을 때, 색 바뀌는 속도
+                // float Interval(스폰 주기)
+                // uint MaxFrames
+
+                isChanged |= ImGui::SliderFloat("Motion Trail LifeTime", &m_MotionTrailConfig.vLifeTime.y, 0.1f, 10.f, "%.1f");
+
+                isChanged |= ImGui::ColorEdit3("Motion Trail Start Color", reinterpret_cast<_float*>(&m_MotionTrailConfig.vStartColor));
+                isChanged |= ImGui::ColorEdit3("Motion Trail Target Color", reinterpret_cast<_float*>(&m_MotionTrailConfig.vTargetColor));
+
+                isChanged |= ImGui::SliderFloat("Motion Trail Rim Power", &m_MotionTrailConfig.fRimPower, 0.f, 10.f, "%.2f");
+                isChanged |= ImGui::SliderFloat("Motion Trail Rim Intensity", &m_MotionTrailConfig.fRimIntensity, 0.f, 10.f, "%.2f");
+                isChanged |= ImGui::SliderFloat("Motion Trail Emissive Intensity", &m_MotionTrailConfig.fEmissiveIntensity, 0.f, 5.f, "%.2f");
+
+                isChanged |= ImGui::Checkbox("Individual Color", &m_MotionTrailConfig.isIndividualColor);
+
+                if (false == m_MotionTrailConfig.isIndividualColor)
+                    isChanged |= ImGui::SliderFloat("Motion Trail Color Update Speed", &m_MotionTrailConfig.fColorUpdateSpeed, 1.f, 1000.f, "%.1f");
+
+                isChanged |= ImGui::SliderFloat("Motion Trail Interval", &m_MotionTrailConfig.fInterval, 0.1f, 5.f, "%.2f");
+                isChanged |= ImGui::SliderInt("Motion Trail Max Frame Snapshot", reinterpret_cast<_int*>(&m_MotionTrailConfig.iMaxFrames), 1, 10);
+
+                if (true == isChanged)
+                {
+                    CE_Khazan_Spear* pKhazan = dynamic_cast<CE_Khazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+                        TEXT("Layer_Player"), 0));
+                    CE_Body_Khazan_Spear* pKhazanBody = dynamic_cast<CE_Body_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                    pKhazanBody->Set_MotionTrailConfig(m_MotionTrailConfig);
+                }
+
+                ImGui::SliderFloat("Motion Trail Duration", &m_fMotionTrailDuration, 0.f, 10.f, "%.1f");
+
+                if (ImGui::Button("Start Motion Trail"))
+                {
+                    CE_Khazan_Spear* pKhazan = dynamic_cast<CE_Khazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::SHADER),
+                        TEXT("Layer_Player"), 0));
+                    CE_Body_Khazan_Spear* pKhazanBody = dynamic_cast<CE_Body_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                    pKhazanBody->Start_MotionTrail(m_fMotionTrailDuration);
+                }
+            }
+
+            ImGui::Separator();
+        }
 
 		ImGui::End();
 	});

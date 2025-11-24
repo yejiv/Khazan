@@ -8,6 +8,7 @@
 NS_BEGIN(Engine)
 class CShader;
 class CModel;
+class CMotionTrail;
 NS_END
 
 NS_BEGIN(Client)
@@ -47,11 +48,17 @@ public:
 public:
 	CModel* Get_Model() { return m_pModelCom; }
     void    Set_Enble(_bool isEnble) { m_isEnble = isEnble; }
+    const MOTIONTRAIL_CONFIG&   Get_MotionTrailConfig();
+    void                        Set_MotionTrailConfig(const MOTIONTRAIL_CONFIG& Config);
+    void                        Set_EnableMotionTrail(_bool isEnable);
+    _bool                       isEnableMotionTrail();
+    void                        Start_MotionTrail(_float fDuration);
 
 private:
 	CShader*					m_pShaderCom = { nullptr };
 	CModel*						m_pModelCom = { nullptr };
 	class CTransform*			m_pParentTransform = { nullptr };
+    CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
 	_uint*						m_pParentState = { nullptr };
 	_float4x4*					m_pWeaponR_Matrix = { nullptr };

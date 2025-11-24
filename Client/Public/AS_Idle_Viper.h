@@ -1,5 +1,8 @@
 #pragma once
 #include "AI_State.h"
+#include "Client_Defines.h"
+
+NS_BEGIN(Client)
 
 class CAS_Idle_Viper : public CAI_State
 {
@@ -21,3 +24,4 @@ public:
 
 };
 
+NS_END

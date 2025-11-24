@@ -76,6 +76,8 @@ HRESULT CSSAO::Ready_NoiseTexture()
     // 여기서 xyz를 가져와 랜덤 벡터로 만듦
     // 노이즈 평면 회전 정보 생성
 
+    Safe_Release(m_pNoiseSRV);
+
     vector<_float3> Noise;
     Noise.reserve(m_Config.iNumKernels);
 
@@ -125,6 +127,8 @@ HRESULT CSSAO::Ready_NoiseTexture()
 
     if (FAILED(m_pDevice->CreateShaderResourceView(pTexture, &SRVDesc, &m_pNoiseSRV)))
         return E_FAIL;
+
+    Safe_Release(pTexture);
 
     return S_OK;
 }

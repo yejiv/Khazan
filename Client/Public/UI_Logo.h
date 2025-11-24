@@ -43,7 +43,7 @@ private:
 	LISTTYPE							m_eNextEvent = { LISTTYPE::END };
 
 	_bool								m_isClick = { false };
-	
+    _int                                m_iLevel = {};
 private:
 	virtual	HRESULT						Ready_Prototype();
 

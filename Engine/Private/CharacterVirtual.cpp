@@ -139,8 +139,10 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
         (ground_state == JPH::CharacterVirtual::EGroundState::OnGround) ||
         (ground_state == JPH::CharacterVirtual::EGroundState::OnSteepGround);
 
+    _bool onGroundForRoot = !m_isJump && onGround;
+
     // 3) 애니 루트 델타 → 속도 반영 (지면일 때만)
-    if (onGround)
+    if (onGroundForRoot)
     {
         const RVec3 curCharPos = m_pCharVir->GetPosition();
         JPH::Vec3   curCharPosF(
@@ -226,7 +228,15 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
 
     if (!m_pCharVir->IsSupported())
     {
-        m_vVelocity += m_vGravity * fTimeDelta * 1.3f;
+
+        if (m_isJump)
+        {
+            m_vVelocity += m_vGravity * fTimeDelta;
+        }
+        else
+        {
+            m_vVelocity += m_vGravity * fTimeDelta * 1.3f;
+        }
 
         const _float maxFallSpeed = -50.0f;
         if (m_vVelocity.GetY() < maxFallSpeed)
@@ -239,7 +249,11 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
     }
 
 
-    const _float loss = m_pCharVir->IsSupported() ? m_fLoss : m_fAirLoss;
+    _float loss = 0.0f;
+
+    if (!m_isJump)
+        loss = m_pCharVir->IsSupported() ? m_fLoss : m_fAirLoss;
+
     if (loss > 0.0f)
     {
         const _float k = expf(-loss * fTimeDelta);
@@ -265,6 +279,17 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
     );
 
     m_vVelocity = m_pCharVir->GetLinearVelocity();
+
+    if (m_isJump && m_pCharVir->IsSupported())
+    {
+        m_isJump = false;
+
+        // 착지 후 Y속도는 0으로 클램프(바운스 방지)
+        if (m_vVelocity.GetY() < 0.0f)
+            m_vVelocity.SetY(0.0f);
+
+        m_pCharVir->SetLinearVelocity(m_vVelocity);
+    }
 }
 
 void CCharacterVirtual::Set_Position(_vector vPos)
@@ -311,6 +336,168 @@ void CCharacterVirtual::Collision_Active(_bool isActive)
 			m_pBodyInterface->RemoveBody(m_BodyId);
 		}
 	}
+}
+
+void CCharacterVirtual::Jump(_float fHeightUp, _float fHorizontalSpeed)
+{
+    if (!m_pCharVir)
+        return;
+
+    _float fGravity = m_vGravity.GetY();
+    if (!isfinite(fGravity) || fGravity >= 0.f)
+        fGravity = g_fGravity;
+
+    _float fHeight = fHeightUp;
+    if (isfinite(fHeight) || fHeight <= 0.f)
+        fHeight = 0.5f;
+
+    _float v0Y = sqrtf(-2.f * fGravity * fHeight);
+
+    Vec3 vHoriz(m_vVelocity.GetX(), 0.f, m_vVelocity.GetZ());
+    if (vHoriz.LengthSq() > 0.0001f && fHorizontalSpeed > 0.f)
+    {
+        vHoriz = vHoriz.Normalized() * fHorizontalSpeed;
+    }
+    else
+    {
+        vHoriz = Vec3::sZero();
+    }
+
+    Vec3 v0 = vHoriz;
+    v0.SetY(v0Y);
+
+    if (IsFiniteVec3(v0))
+        return;
+
+    m_isJump = true;
+    m_vVelocity = v0;
+    m_pCharVir->SetLinearVelocity(m_vVelocity);
+
+    m_vGravity = Vec3(0.f, fGravity, 0.f);
+}
+
+void CCharacterVirtual::Jump_ToTarget(_vector vTargetWorldPos,
+    _float  fJumpApexHeight,
+    _float  fDesiredHorizontalSpeed)
+{
+    if (!m_pCharVir)
+        return;
+
+    // --- 시작 / 목표 위치 ---
+    const RVec3 vCurrentPosR = m_pCharVir->GetPosition();
+    JPH::Vec3   vStartPos(
+        (float)vCurrentPosR.GetX(),
+        (float)vCurrentPosR.GetY(),
+        (float)vCurrentPosR.GetZ()
+    );
+
+    JPH::Vec3 vTargetPos = LoadVec3(vTargetWorldPos);
+
+    _float fStartY = vStartPos.GetY();
+    _float fTargetY = vTargetPos.GetY();
+
+    // --- 중력 ---
+    _float fGravityY = m_vGravity.GetY();
+    if (!std::isfinite(fGravityY) || fGravityY >= 0.0f)
+        fGravityY = -9.81f;
+
+    // --- 원하는 최고 높이 (현재 위치 기준) ---
+    _float fClampedApexHeight = fJumpApexHeight;
+    if (!std::isfinite(fClampedApexHeight) || fClampedApexHeight <= 0.0f)
+        fClampedApexHeight = 0.5f;
+
+    // 수직 초기 속도: apex = fStartY + fClampedApexHeight
+    _float fInitialVerticalVelocity = sqrtf(-2.0f * fGravityY * fClampedApexHeight);
+
+    // 이 수직 속도로 targetY에 도달하는 시간 T 해 구하기:
+    // 0.5 * g * T^2 + v0y * T + (startY - targetY) = 0
+    _float fQuadA = 0.5f * fGravityY;
+    _float fQuadB = fInitialVerticalVelocity;
+    _float fQuadC = fStartY - fTargetY;
+
+    _float fDiscriminant = fQuadB * fQuadB - 4.0f * fQuadA * fQuadC;
+    if (fDiscriminant < 0.0f)
+    {
+        // 이 높이/중력 조합으로는 targetY에 도달 불가 → 자기 기준 점프로 대체
+        Jump(fJumpApexHeight, fDesiredHorizontalSpeed);
+        return;
+    }
+
+    _float fSqrtDiscriminant = sqrtf(fDiscriminant);
+    _float fTravelTimeCandidate1 = (-fQuadB + fSqrtDiscriminant) / (2.0f * fQuadA);
+    _float fTravelTimeCandidate2 = (-fQuadB - fSqrtDiscriminant) / (2.0f * fQuadA);
+    _float fTimeToApex = -fInitialVerticalVelocity / fGravityY; // 최고점까지 시간
+
+    // --- 수평 거리 ---
+    JPH::Vec3 vToTarget = vTargetPos - vStartPos;
+    JPH::Vec3 vToTargetXZ = JPH::Vec3(vToTarget.GetX(), 0.0f, vToTarget.GetZ());
+    _float    fHorizontalDistance = vToTargetXZ.Length();
+
+    if (fHorizontalDistance < 0.0001f)
+    {
+        // 거의 같은 자리 → 수평 이동 의미 없음 → 제자리 점프
+        Jump(fJumpApexHeight, 0.0f);
+        return;
+    }
+
+    auto IsValidTravelTime = [&](float fTravelTime) -> bool
+        {
+            return fTravelTime > fTimeToApex &&
+                fTravelTime > 0.0f &&
+                std::isfinite(fTravelTime);
+        };
+
+    _float fSelectedTravelTime = -1.0f;
+    _float fBestSpeedDiff = FLT_MAX;
+
+    auto EvaluateCandidateTime = [&](float fCandidateTime)
+        {
+            if (!IsValidTravelTime(fCandidateTime))
+                return;
+
+            _float fRequiredHorizontalSpeed = fHorizontalDistance / fCandidateTime;
+            _float fSpeedDiff = fabsf(fRequiredHorizontalSpeed - fDesiredHorizontalSpeed);
+
+            if (fSpeedDiff < fBestSpeedDiff)
+            {
+                fBestSpeedDiff = fSpeedDiff;
+                fSelectedTravelTime = fCandidateTime;
+            }
+        };
+
+    // 두 후보 시간 중에서 "원하는 수평 속도"에 가장 가까운 것을 고른다.
+    EvaluateCandidateTime(fTravelTimeCandidate1);
+    EvaluateCandidateTime(fTravelTimeCandidate2);
+
+    // 쓸만한 시간 못 찾으면 fallback
+    if (!(fSelectedTravelTime > 0.0f && std::isfinite(fSelectedTravelTime)))
+    {
+        Jump(fJumpApexHeight, fDesiredHorizontalSpeed);
+        return;
+    }
+
+    // --- 최종 초기 속도 계산 ---
+    JPH::Vec3 vInitialVelocity = JPH::Vec3::sZero();
+    if (fHorizontalDistance > 0.0001f)
+    {
+        vInitialVelocity.SetX(vToTargetXZ.GetX() / fSelectedTravelTime);
+        vInitialVelocity.SetZ(vToTargetXZ.GetZ() / fSelectedTravelTime);
+    }
+
+    vInitialVelocity.SetY(fInitialVerticalVelocity);
+
+    if (!IsFiniteVec3(vInitialVelocity))
+    {
+        Jump(fJumpApexHeight, fDesiredHorizontalSpeed);
+        return;
+    }
+
+    m_isJump = true;
+    m_vVelocity = vInitialVelocity;
+    m_pCharVir->SetLinearVelocity(m_vVelocity);
+
+    m_vGravity = JPH::Vec3(0.0f, fGravityY, 0.0f);
+
 }
 
 _bool CCharacterVirtual::Get_isGround()

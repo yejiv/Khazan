@@ -34,6 +34,8 @@ HRESULT CElevator_Gear::Initialize_Clone(void* pArg)
     m_eAnimState = ANIM_STATE::IDLE;
     m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
     m_pModelCom->Set_AnimationBlend(false);
+    m_pModelCom->Play_Animation(0.f);
+    m_pModelCom->Set_AnimationBlend(true);
 
     return S_OK;
 }

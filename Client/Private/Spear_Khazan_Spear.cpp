@@ -1,7 +1,8 @@
 #include "Spear_Khazan_Spear.h"
-#include "Khazan_Sample.h"
+#include "Khazan_Spear.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
+
 CSpear_Khazan_Spear::CSpear_Khazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
 {
@@ -44,6 +45,7 @@ HRESULT CSpear_Khazan_Spear::Initialize_Clone(void* pArg)
     m_matOffset = XMMatrixRotationX(XMConvertToRadians(-90.0f));
     int a = m_pModelCom->Get_BoneIndex("Weapon_R");
     m_pModelCom->Set_RootBone(0);
+    m_pModelCom->Set_Transform(&m_CombinedWorldMatrix);
 
     /* 충돌 겹쳐지게*/
     m_isGhost = true;
@@ -71,8 +73,17 @@ void CSpear_Khazan_Spear::Update(_float fTimeDelta)
 
     m_pModelCom->Update_BoneCombinedMatrices();
 
-   XMStoreFloat4x4(&m_CombinedWorldMatrix, m_matOffset * matWeapon * XMLoadFloat4x4(m_pParentMatrix) );
+    XMStoreFloat4x4(&m_CombinedWorldMatrix, m_matOffset * matWeapon * XMLoadFloat4x4(m_pParentMatrix));
 
+    m_pMotionTrailCom->Update(fTimeDelta);
+
+    // TEST
+    //  if (CKhazan_Spear::CHARGING_SPRINT & *m_pParentStatus)
+    //      m_pMotionTrailCom->Start_MotionTrail(0.5f);
+    //  if (CKhazan_Spear::BACK_DODGE & *m_pParentStatus)
+    //      m_pMotionTrailCom->Start_MotionTrail(0.5f);
+    //  if (CKhazan_Spear::CHARGING_STRONG_ATTACK & *m_pParentStatus)
+    //      m_pMotionTrailCom->Start_MotionTrail(2.5f);
 }
 
 void CSpear_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -142,6 +153,31 @@ HRESULT CSpear_Khazan_Spear::Render_Shadow()
     return S_OK;
 }
 
+const MOTIONTRAIL_CONFIG& CSpear_Khazan_Spear::Get_MotionTrailConfig()
+{
+    return m_pMotionTrailCom->Get_Config();
+}
+
+void CSpear_Khazan_Spear::Set_MotionTrailConfig(const MOTIONTRAIL_CONFIG& Config)
+{
+    m_pMotionTrailCom->Set_Config(Config);
+}
+
+void CSpear_Khazan_Spear::Set_EnableMotionTrail(_bool isEnable)
+{
+    m_pMotionTrailCom->Set_Enable(isEnable);
+}
+
+_bool CSpear_Khazan_Spear::isEnableMotionTrail()
+{
+    return m_pMotionTrailCom->isEnable();
+}
+
+void CSpear_Khazan_Spear::Start_MotionTrail(_float fDuration)
+{
+    m_pMotionTrailCom->Start_MotionTrail(fDuration);
+}
+
 HRESULT CSpear_Khazan_Spear::Ready_Components()
 {
     LEVEL eCurrentLevel = CClientInstance::GetInstance()->Get_CurrLevel();
@@ -154,6 +190,22 @@ HRESULT CSpear_Khazan_Spear::Ready_Components()
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
+    CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
+    MTDesc.pOwnerMasterModel = m_pModelCom;
+    MTDesc.HasPartModels = false;
+    MTDesc.Config.vLifeTime = { 0.f, 0.3f };
+    MTDesc.Config.vStartColor = { 1.f, 1.f, 1.f };
+    MTDesc.Config.vTargetColor = { 1.f, 1.f, 1.f };
+    MTDesc.Config.fRimPower = 2.f;
+    MTDesc.Config.fRimIntensity = 1.f;
+    MTDesc.Config.fEmissiveIntensity = 2.f;
+    MTDesc.Config.isIndividualColor = true;
+    MTDesc.Config.fColorUpdateSpeed = 1000.f;
+    MTDesc.Config.fInterval = 0.05f;
+    MTDesc.Config.iMaxFrames = 10.f;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
+        TEXT("Com_MotionTrail"), reinterpret_cast<CComponent**>(&m_pMotionTrailCom), &MTDesc)))
+        return E_FAIL;
 
     return S_OK;
 }
