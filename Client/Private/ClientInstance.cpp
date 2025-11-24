@@ -289,6 +289,18 @@ void CClientInstance::Camera_Switch_CameraMode(CAMERATYPE eType)
 {
     m_pCamera_Manager->Switch_CameraMode(eType);
 }
+void CClientInstance::Camera_Set_FixEnd()
+{
+    m_pCamera_Manager->Set_FixEnd();
+}
+void CClientInstance::Camera_Set_Animation(_wstring strAnimationTag)
+{
+    m_pCamera_Manager->Set_Animation(strAnimationTag);
+}
+HRESULT CClientInstance::Camera_Set_Animation_Json(string strAnimationTag)
+{
+    return m_pCamera_Manager->Set_Animation_Json(strAnimationTag);
+}
 void CClientInstance::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
 {
     m_pCamera_Manager->Start_ForceOrbit(eForceDir);

@@ -285,6 +285,55 @@ void CCamera_Manager::Save_Json_Animation(_uint iLevelIndex, _wstring strCameraT
 	}
 }
 
+HRESULT CCamera_Manager::Set_Animation_Json(string strFilePath)
+{
+
+    string filePath = strFilePath;
+    filePath += ".json";
+    ifstream In(filePath);
+    if (!In.is_open())
+    {
+        In.close();
+        return E_FAIL;
+    }
+    else
+    {
+        nlohmann::json jsonData;
+        In >> jsonData;
+
+        map<_wstring, CAMERA_ANIMATION> Animations;
+        for (auto Animation : jsonData["Animation"])
+        {
+            CAMERA_ANIMATION AnimationDesc;
+            AnimationDesc.Name = AnsiToWString(Animation["Name"]);
+            AnimationDesc.isFix = Animation["isFix"];
+            vector<CAMERA_KEYFRAME> KeyFrames;
+            for (auto Ani : Animation["KeyFrame"])
+            {
+                CAMERA_KEYFRAME KeyFrame{};
+                KeyFrame.vTranslation.x = Ani["Translation"]["x"];
+                KeyFrame.vTranslation.y = Ani["Translation"]["y"];
+                KeyFrame.vTranslation.z = Ani["Translation"]["z"];
+                KeyFrame.vLookAt.x = Ani["LookAt"]["x"];
+                KeyFrame.vLookAt.y = Ani["LookAt"]["y"];
+                KeyFrame.vLookAt.z = Ani["LookAt"]["z"];
+                KeyFrame.vLookAt.w = Ani["LookAt"]["w"];
+                KeyFrame.fSpeed = Ani["Speed"];
+                KeyFrame.fTrackPosition = Ani["TrackPosition"];
+
+                KeyFrame.isCurPos = Ani["isCurPos"];
+                KeyFrames.push_back(KeyFrame);
+            }
+            AnimationDesc.KeyFrames = KeyFrames;
+            Animations.emplace(AnsiToWString(Animation["Name"]), AnimationDesc);
+        }
+
+        m_pActiveCamera->Load_Animation(Animations);
+        In.close();
+    }
+    return S_OK;
+}
+
 void CCamera_Manager::Set_ObjMatrix(_uint iLevelIndex, _wstring strCameraTag, _float4x4* ObjMatrix)
 {
     CCamera* pCamera = Find_Camera(iLevelIndex, strCameraTag);
@@ -293,6 +342,18 @@ void CCamera_Manager::Set_ObjMatrix(_uint iLevelIndex, _wstring strCameraTag, _f
         CCamera_Compre* pCameraCompre = dynamic_cast<CCamera_Compre*>(pCamera);
         pCameraCompre->Set_ObjMatrix(ObjMatrix);
     }
+}
+
+void CCamera_Manager::Set_FixEnd()
+{
+    CCamera* pCamera = Get_ActiveCamera();
+    pCamera->Set_IsAniFix(false);
+}
+
+void CCamera_Manager::Set_Animation(_wstring strAnimationTag)
+{
+    CCamera* pCamera = Get_ActiveCamera();
+    pCamera->Set_Animation(strAnimationTag);
 }
 
 void CCamera_Manager::Switch_CameraMode(CAMERATYPE eType)

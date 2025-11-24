@@ -48,11 +48,36 @@ void CEmbars_Trigger::Priority_Update(_float fTimeDelta)
 void CEmbars_Trigger::Update(_float fTimeDelta)
 {
     __super::Update(fTimeDelta);
+
+    if (m_EventVTGate.isUnLockGate(m_iEventID))
+    {
+        if (m_iEventID == 0)
+        {
+            if (m_strTriggerKey == "Puzzle_1")
+            {
+                m_pClientInstance->Camera_Set_FixEnd();
+                m_isDead = true;
+            }
+        }
+
+        else if (m_iEventID == 1)
+        {
+            if (m_strTriggerKey == "Puzzle_2")
+            {
+                m_pClientInstance->Camera_Set_FixEnd();
+                m_isDead = true;
+            }
+        }
+    }
+
 }
 
 void CEmbars_Trigger::Late_Update(_float fTimeDelta)
 {
     __super::Late_Update(fTimeDelta);
+    
+    
+    
 }
 
 HRESULT CEmbars_Trigger::Render()
@@ -85,11 +110,17 @@ HRESULT CEmbars_Trigger::Ready_TriggerType(void* pArg)
 {
     if (m_strTriggerKey == "Puzzle_1")
     {
-
+        m_iEventID = 0;
+        string filePath = "../../Client/Bin/Data/Camera/Animation/Statue1";
+        m_pClientInstance->Camera_Set_Animation_Json(filePath);
+        m_pGameInstance->Subscribe_Event<EventVerticalGate>(ENUM_CLASS(EVENT_TYPE::STATUE_PUZZLE0), [&](const EventVerticalGate& e) { m_EventVTGate = e; });        
     }
     else if (m_strTriggerKey == "Puzzle_2")
     {
-
+        m_iEventID = 1;
+        string filePath = "../../Client/Bin/Data/Camera/Animation/Statue2";
+        m_pClientInstance->Camera_Set_Animation_Json(filePath);
+        m_pGameInstance->Subscribe_Event<EventVerticalGate>(ENUM_CLASS(EVENT_TYPE::STATUE_PUZZLE1), [&](const EventVerticalGate& e) { m_EventVTGate = e; });
     }
 
     /*
@@ -128,48 +159,11 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
     {
         if (m_strTriggerKey == "Puzzle_1")
         {
-            /*
-            SEQ_REQ_PLAY_DESC tPlayDesc{};
-            tPlayDesc.tId.iSeq = 1000;
-            tPlayDesc.pAsset = L"Field_Cut";
-            tPlayDesc.fStartTime = 0.f;
-            m_pGameInstance->SEQ_AdoptAndPlay(m_pHeinMach_Field, tPlayDesc);
-
-            FOG_TRANSITION_DESC Desc{};
-            Desc.fDensity = 0.03f;
-            Desc.fBias = 0.6f;
-            Desc.vColor = _float4(0.f, 0.106f, 0.137f, 1.f);
-            Desc.isUseHeight = true;
-            Desc.fBaseHeight = 1120.f;
-            Desc.isUseNoise = false;
-            m_pGameInstance->Start_FogTransition(3.f, Desc);
-
-            m_isDead = true;
-            */
+            m_pClientInstance->Camera_Set_Animation(TEXT("Statue1"));
         }
         else if (m_strTriggerKey == "Puzzle_2")
         {
-            /*
-            SEQ_REQ_PLAY_DESC tPlayDesc{};
-            tPlayDesc.tId.iSeq = 1001;
-            tPlayDesc.pAsset = L"Yetuga_Cut";
-            tPlayDesc.fStartTime = 0.f;
-            m_pGameInstance->SEQ_AdoptAndPlay(m_pHeinMach_Yetuga, tPlayDesc);
-            m_isDead = true;
-
-            // 예투가 Fog
-            //  Set_FogConfig(m_FogConfig);
-            FOG_TRANSITION_DESC Desc{};
-            Desc.fDensity = 0.03f;
-            Desc.fBias = 0.6f;
-            Desc.vColor = _float4(0.338f, 0.545f, 0.749f, 1.f);
-            Desc.isUseHeight = false;
-            Desc.isUseNoise = false;
-            m_pGameInstance->Start_FogTransition(7.f, Desc);
-
-            // 예투가 스카이 박스
-            Start_SkyTransition(m_Sky_Desc, m_Cloud_Desc, 5.f);
-            */
+            m_pClientInstance->Camera_Set_Animation(TEXT("Statue2"));
         }
         else if (m_strTriggerKey == "포그 바뀌는")
         {
@@ -206,6 +200,13 @@ void CEmbars_Trigger::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLa
 
 void CEmbars_Trigger::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
+    {
+        if (m_strTriggerKey == "Puzzle_1" || m_strTriggerKey == "Puzzle_2")
+        {
+            m_pClientInstance->Camera_Set_FixEnd();
+        }
+    }
 
 }
 

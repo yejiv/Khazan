@@ -43,8 +43,10 @@ public:
 	void Save_Json(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 
 	void Save_Json_Animation(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
-
+    HRESULT Set_Animation_Json(string strFilePath);
     void Set_ObjMatrix(_uint iLevelIndex, _wstring strCameraTag, _float4x4* ObjMatrix);
+    void Set_FixEnd();    
+    void Set_Animation(_wstring strAnimationTag);
 
 public:
     void Switch_CameraMode(CAMERATYPE eType);
