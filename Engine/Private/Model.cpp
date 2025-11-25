@@ -170,6 +170,7 @@ _uint CModel::Get_BoneIndex(const _char* pBoneName)
 _float4x4* CModel::Get_BoneMatrix(const _char* pBoneName)
 {
     auto    iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone) {
+       
         if (true == pBone->Compare_Name(pBoneName))
             return true;
         return false;
@@ -333,12 +334,27 @@ HRESULT CModel::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName, 
     return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantName, m_Bones, nullptr);
 }
 
+HRESULT CModel::Bind_PrevBoneMatrices(CShader* pShader, const _char* pConstantName, _uint iMeshIndex)
+{
+    if (iMeshIndex >= m_iNumMeshes)
+        return E_FAIL;
+
+    // 파츠는 마스터의 본을 사용
+    if (m_isSharedSkeleton && m_pMasterSkeleton != nullptr)
+    {
+        // 마스터 본으로 바인딩 (Mesh 내부에서 본 이름으로 매칭)
+        //  Update_PartLocalBones();
+        return m_Meshes[iMeshIndex]->Bind_PrevBoneMatrices(pShader, pConstantName, m_pMasterSkeleton->m_CachedPrevBoneMatrices, &m_PartLocalBoneMatrices);
+    }
+    return m_Meshes[iMeshIndex]->Bind_PrevBoneMatrices(pShader, pConstantName, m_CachedPrevBoneMatrices, nullptr);
+}
+
 _bool CModel::Play_Animation(_float fTimeDelta)
 {
     /* 파츠들은 애니메이션 안돌림 */
     //if (m_pMasterSkeleton != nullptr )
     //    return false;
-
+    m_isAnimStart = true;
     m_isFinished = false;
 
     /* 애니메이션 세트  */
@@ -436,6 +452,10 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 
     /* 이벤트 체크 */
     Check_Event(fTimeDelta);
+
+    // 모든 본의 Combined Marix가 계산 완료된 상태
+    if (m_isMaterSkeleton)
+        Cache_CurrentBoneMatrices();
 
     /* Owner에 Transform 적용 */
     if (m_pOwnerTransform && Has_State(ROOTMOTION))
@@ -549,9 +569,12 @@ void CModel::Set_Animation(_uint iIndex)
     /* 이벤트 설정 */
     Setup_Events();
 
+    m_isAnimStart = false; 
 
-    if (m_strModelName == L"Khazan_Spear")
-        cout << m_iCurrentAnimIndex << " : " << Get_CurAnimName() << endl;
+    if (m_strModelName == L"Khazan_Spear" || m_strModelName == L"Khazan_GSword") {
+        cout << m_iCurrentAnimIndex << " : " << Get_CurAnimName() <<  endl;
+
+    }
 }
 
 void CModel::Set_AnimationSet(const string& strKey)
@@ -595,8 +618,11 @@ void CModel::Set_AnimationLoop(_bool isLoop)
 
 _bool CModel::Check_MinAnimationTime()
 {
-    if (m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime < 1.f)
+ 
+    if (m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime < 1.f )
         return true;
+    //if (m_fCurrentTrackPosition >= m_Animations[m_iCurrentAnimIndex]->Get_Duration())
+    //    return false;
     return m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime <= m_fCurrentTrackPosition;
 }
 
@@ -609,6 +635,13 @@ void CModel::AnimationSetIndexIncrease()
     {
         Remove_State(ANIMSET_PLAYING | ANIMSET_NEXT);
     }
+}
+
+void CModel::AnimationLoop(_bool isLoop)
+{
+    Add_State(USED_ANIM_LOOP);
+    
+    isLoop ? Add_State(ANIM_LOOP) : Remove_State(ANIM_LOOP);
 }
 
 
@@ -1228,6 +1261,11 @@ void CModel::Cache_CurrentBoneMatrices()
 {
     if (m_CachedBoneMatrices.size() != m_Bones.size())
         m_CachedBoneMatrices.resize(m_Bones.size());
+
+    if (m_CachedPrevBoneMatrices.size() != m_CachedBoneMatrices.size())
+        m_CachedPrevBoneMatrices.reserve(m_CachedBoneMatrices.size());
+
+    m_CachedPrevBoneMatrices = m_CachedBoneMatrices;
 
     for (size_t i = 0; i < m_Bones.size(); ++i)
     {

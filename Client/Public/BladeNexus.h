@@ -71,6 +71,9 @@ private:
     _bool m_isFindTarget = { false };
     CTransform* m_pTargetCom = { nullptr };
 
+    _bool m_isFinishedRadialBlur = {};
+    _float m_fRadialBlurTimeAcc = {};
+
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);

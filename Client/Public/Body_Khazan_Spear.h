@@ -52,9 +52,11 @@ public:
 	virtual HRESULT Render();
 	virtual HRESULT Render_Shadow() override;
     virtual HRESULT Render_Outline() override;
+    virtual HRESULT Render_MotionVector() override;
 	void			Render_Part(CModel* pModel);
 	void			Render_Part_Shadow(CModel* pModel);
     void            Render_Part_Outline(CModel* pModel);
+    void            Render_Part_MotionVector(CModel* pModel);
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;

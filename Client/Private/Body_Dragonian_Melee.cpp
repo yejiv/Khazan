@@ -38,7 +38,7 @@ HRESULT CBody_Dragonian_Melee::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_pModelCom->Set_OwnerTransform(&m_CombinedWorldMatrix);
-    m_pModelCom->Set_RootBone(1);
+
     return S_OK;
 }
 
@@ -110,7 +110,7 @@ HRESULT CBody_Dragonian_Melee::Ready_Components()
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
-    //m_pModelCom->Set_RootBone();
+    m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
 
     return S_OK;
 }

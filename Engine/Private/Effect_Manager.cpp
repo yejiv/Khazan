@@ -110,7 +110,7 @@ void CEffect_Manager::Update_Effect_Position(_uint iLayerLevelIndex, const _wstr
 {
 	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
 
-    if (nullptr == Layer || nullptr ==  (*Layer)[ID])
+    if (nullptr == Layer || Layer->size() <= ID || nullptr == (*Layer)[ID])
         return;
 
 	(*Layer)[ID]->UpdatePosition(SpwanPos);
@@ -120,7 +120,7 @@ void CEffect_Manager::Update_Effect_World(_uint iLayerLevelIndex, const _wstring
 {
 	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
 
-    if (nullptr == Layer || nullptr == (*Layer)[ID])
+    if (nullptr == Layer || Layer->size() <= ID || nullptr == (*Layer)[ID])
         return;
 
 	(*Layer)[ID]->UpdateWorldMatrix(Quaternion, Position); 
@@ -130,7 +130,7 @@ void CEffect_Manager::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPro
 {
 	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
 
-    if (nullptr == Layer || nullptr == (*Layer)[ID])
+    if (nullptr == Layer || Layer->size() <= ID || nullptr == (*Layer)[ID])
         return;
 
 	(*Layer)[ID]->SetClose();

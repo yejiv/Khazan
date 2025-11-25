@@ -85,9 +85,9 @@ private:
     CModel*                     m_pModelCom_Torso = { nullptr };
 
     CBody*                      m_pBodyCom_BodyAttack  = { nullptr }; //플레이어 바디에 붙이는 졸트바디 (공격용)
-    CBody*                      m_pBodyCom_Attack = { nullptr }; //검 공격시 사용하는 졸트 바디
-    CBody*                      m_pBodyCom_Guard  = { nullptr }; //검 방어에 사용하는 졸트 바디
-    CBody*                      m_pBodyCom_Search = { nullptr }; //몬스터 서치에 사용하는 졸트 바디 
+    CBody*                      m_pBodyCom_Attack       = { nullptr }; //검 공격시 사용하는 졸트 바디
+    CBody*                      m_pBodyCom_Guard        = { nullptr }; //검 방어에 사용하는 졸트 바디
+    CBody*                      m_pBodyCom_Search        = { nullptr }; //몬스터 서치에 사용하는 졸트 바디 
 
     PLAYER_DATA*                m_pPlayerData;
     COLLISION_DESC				m_tAttackCollisionDesc = {};

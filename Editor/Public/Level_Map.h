@@ -80,7 +80,7 @@ private:
 
 	_bool m_isRenderOption = { false };
 
-	_bool m_isObjectListView = { true };
+	_bool m_isObjectListView = { false };
 
 	unordered_map<string, string> m_ModelPathCache;
 
@@ -116,6 +116,7 @@ private:
     _int m_iFixMonsterSubLevel = {};
 
     _float4 m_vElevatorUpPos = {};
+    _float4 m_vElevatorMidPos = {};
     _float4 m_vElevatorDownPos = {};
 
     _int m_iInteractEventID = {};

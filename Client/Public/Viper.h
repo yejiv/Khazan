@@ -37,7 +37,9 @@ public:
     virtual void					Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
 
     void                            Update_Landing(_float fTimeDelta);
-
+                    
+    void                            Grab_Check_Begin();
+    void                            Grab_Check_End();
 
 private:
     HRESULT							Ready_Components();

@@ -15,11 +15,27 @@ public:
     enum class MONSTATE { DEAD, GRORRY, BRUTAL, ATTACK, DAMAGE, LOCKON, SLEEP, WALK, END };
 
     typedef struct TagMonData{
+        //Anim
         _int                iAnimIndex = {};
-        _bool               isAnimFinash;
-        _bool               isSleep;
-        _bool               isStateFiash;
-        _bool               isSlowWalk;
+        _bool               isAnimFinash = {false};
+        _bool               isSleep = {false};
+        _bool               isStateFiash = {false};
+        _bool               isSlowWalk = {false};
+
+        //BT
+        _bool               isDamage = { false };
+        _bool               isAttack = { false };
+        _float              fAttackCool = {};
+        
+        HITREACTION         eHitType = { HITREACTION::END };
+        //ETC
+        _float              fGloggyTime = {};
+        
+        //State
+        _float*             pMaxHp = { nullptr };
+        _float*             pCulHp = { nullptr };
+        _float*             pMaxStamina = { nullptr };
+        _float*             pCulStamina = { nullptr };
 
         CDragonian_Melee*   pOwner = { nullptr };
     }MONDATA;
@@ -31,6 +47,10 @@ private:
 public:
     MONDATA&                        Get_Data();
     void                            Move_F();
+    void                            Hp_Visivle(_bool isVisivle);
+    void                            Hp_Dead();
+    _bool                           Check_AttackRanage(string strKey);
+
 public:
     virtual HRESULT					Initialize_Prototype(_int iLevel);
     virtual HRESULT					Initialize_Clone(void* pArg) override;
@@ -46,13 +66,22 @@ public:
 private:
     HRESULT                         Ready_Prototype();
       
+    HRESULT                         Ready_ETC();
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();
     HRESULT							Ready_AnimEvent();
 
+    HRESULT							Ready_MonData();
+
+    void                            Update_UIHp();
 private:
     class CBody_Dragonian_Melee*    m_pBody = { nullptr };
+    class CBlackBoard*              m_pBlackBoard = { nullptr };
     class CDragonian_Sword*         m_pWeapon = { nullptr };
+    class CMon_HP*                  m_pUI_HP = { nullptr };
+
+    _float4                         m_vHpPos = {};
+    _float4x4*                      m_pHeadMatrix = { nullptr };
     MONDATA                         m_Data = {};
 
     _float                          m_fTimeDelta = {};

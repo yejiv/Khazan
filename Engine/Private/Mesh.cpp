@@ -363,6 +363,46 @@ HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName,
 	return pShader->Bind_Matrices(pConstantName, m_BoneMatrices, m_iNumBones);
 }
 
+HRESULT CMesh::Bind_PrevBoneMatrices(CShader* pShader, const _char* pConstantName, const vector<_float4x4>& PrevBoneMatrices, const vector<_float4x4>* PartLocalBoneMatrices)
+{
+    if (m_BoneNames.empty())
+    {
+        // 마스터 메시: 기존 로직
+        for (size_t i = 0; i < m_iNumBones; i++)
+        {
+            XMStoreFloat4x4(&m_BoneMatrices[i],
+                XMLoadFloat4x4(&m_OffsetMatrices[i]) *
+                XMLoadFloat4x4(&PrevBoneMatrices[m_BoneIndices[i]]));
+        }
+    }
+    else
+    {
+        // 파츠 메시: 파츠 로컬 본 사용
+        if (!m_isBoneIndicesCached || !PartLocalBoneMatrices)
+            return E_FAIL;
+
+        for (size_t i = 0; i < m_iNumBones; i++)
+        {
+            // m_BoneIndices[i]는 파츠 본 인덱스
+            _int partBoneIdx = m_BoneIndices[i];
+
+            if (partBoneIdx >= 0 && partBoneIdx < PartLocalBoneMatrices->size())
+            {
+                // 파츠 로컬 본 행렬 사용 (초기 위치 포함됨)
+                XMStoreFloat4x4(&m_BoneMatrices[i],
+                    XMLoadFloat4x4(&m_OffsetMatrices[i]) *
+                    XMLoadFloat4x4(&(*PartLocalBoneMatrices)[partBoneIdx]));
+            }
+            else
+            {
+                XMStoreFloat4x4(&m_BoneMatrices[i], XMMatrixIdentity());
+            }
+        }
+    }
+
+    return pShader->Bind_Matrices(pConstantName, m_BoneMatrices, m_iNumBones);
+}
+
 //HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const _char* pConstantName,
 //    const vector<class CBone*>& Bones, const vector<_float4x4>* PartLocalBoneMatrices)
 //{

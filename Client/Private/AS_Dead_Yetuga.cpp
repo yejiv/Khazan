@@ -19,9 +19,6 @@ void CAS_Dead_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_RESULT>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_RESULT), {});
     pModel->Set_Animation(94);
 
-
-
-
 }
 
 void CAS_Dead_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
