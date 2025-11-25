@@ -244,9 +244,13 @@ HRESULT CEffect_Mesh_Instance::Bind_ShaderResources()
     }
     else
     {
+        _bool IsFresnel = m_sData.bIsFresnel;
         if (FAILED(m_pNormalTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_NormalTexture", m_sData.sDissolveData.iDissolveTextureIdx - 5)))
             return E_FAIL;
+        if (FAILED(m_pShaderCom->Bind_Bool("g_IsFresnel", &IsFresnel)))
+            return E_FAIL;
     }
+
 
     return S_OK;
 }

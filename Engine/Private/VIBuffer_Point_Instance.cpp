@@ -224,7 +224,6 @@ HRESULT CVIBuffer_Point_Instance::Render()
 
 _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 {
-
 	D3D11_MAPPED_SUBRESOURCE SubResource;
 	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
 	{
@@ -355,9 +354,6 @@ void CVIBuffer_Point_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
 
 void CVIBuffer_Point_Instance::Remove_Speed(SPEED_VALUE type)
 {
-	//if (m_IsLoop == true)
-	//	return;
-
     D3D11_MAPPED_SUBRESOURCE SubResource;
     if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
     {
@@ -574,7 +570,6 @@ HRESULT CVIBuffer_Point_Instance::Ready_ComputeShader()
 
 _bool CVIBuffer_Point_Instance::IsFinish()
 {
-
     _bool flag = false;
 
     m_pContext->CopyResource(m_pStagingBuffer, m_pSpeedBuffer);
