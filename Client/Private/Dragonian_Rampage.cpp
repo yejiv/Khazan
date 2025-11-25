@@ -92,17 +92,17 @@ void CDragonian_Rampage::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
 
-    //if (m_pGameInstance->Key_Down(DIK_M))
-    //{
-    //    m_fCurrentHP = m_fMaxHP;
-    //    m_Data.isSleep = true;
-    //}
-    //else if (m_pGameInstance->Key_Down(DIK_V))
-    //    Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, m_pTarget);
-    //else if (m_pGameInstance->Key_Down(DIK_B))
-    //    Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
-    //else if (m_pGameInstance->Key_Down(DIK_N))
-    //    m_fCurrentStamina = 0;
+    if (m_pGameInstance->Key_Down(DIK_M))
+    {
+        m_fCurrentHP = m_fMaxHP;
+        m_Data.isSleep = true;
+    }
+    else if (m_pGameInstance->Key_Down(DIK_V))
+        Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, m_pTarget);
+    else if (m_pGameInstance->Key_Down(DIK_B))
+        Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
+    else if (m_pGameInstance->Key_Down(DIK_N))
+        m_fCurrentStamina = 0;
 
 }
 

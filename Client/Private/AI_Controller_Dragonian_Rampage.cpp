@@ -116,12 +116,12 @@ ACTION CAI_Controller_Dragonian_Rampage::GetCallbackAction(CGameObject* pOwner, 
     if ("Attack_Check" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Attack_Check(pOwner); };
     else if ("Attack_Jump" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Attack_Jump(pOwner); };
     else if ("Attack_Rush" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Attack_Rush(pOwner); };
-    else if ("Attack_back" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Attack_Back(pOwner); };
+    else if ("Attack_Back" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Attack_Back(pOwner); };
     else if ("Attack_Default" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Attack_Default(pOwner); };
     else if ("Damage_Check" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Damage_Check(pOwner); };
     else if ("Damage" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Damage(pOwner); };
     else if ("LockOn" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->LockOn(pOwner); };
-    else if ("Chase" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Chase(pOwner); };
+    else if ("Walk" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Walk(pOwner); };
     else if ("Sleep" == name) return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Sleep(pOwner); };
 
     return nullptr;
@@ -213,7 +213,7 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Check(CGameObject* pOwner)
 {
     if (!m_pMonData->isSleep && m_pMonData->fAttackCool <= 0.f && m_pMonData->pOwner->Check_AttackRanage("AttackRange"))
     {
-        m_pMonData->isAttack = true;
+        m_pMonData->eAttack_State = CDragonian_Rampage::ATTACKSTATE::BACK;
         return BTNODESTATE::SUCCESS;
     }
 
@@ -222,7 +222,7 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Check(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Jump(CGameObject* pOwner)
 {
-    if (m_pMonData->isAttack)
+    if (m_pMonData->eAttack_State == CDragonian_Rampage::ATTACKSTATE::JUMP)
     {
         if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_JUMP)))
             m_pFSM->Change_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_JUMP), pOwner);
@@ -235,7 +235,7 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Jump(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Rush(CGameObject* pOwner)
 {
-    if (m_pMonData->isAttack)
+    if (m_pMonData->eAttack_State == CDragonian_Rampage::ATTACKSTATE::RUSH)
     {
         if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_RUSH)))
             m_pFSM->Change_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_RUSH), pOwner);
@@ -248,7 +248,7 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Rush(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Back(CGameObject* pOwner)
 {
-    if (m_pMonData->isAttack)
+    if (m_pMonData->eAttack_State == CDragonian_Rampage::ATTACKSTATE::BACK)
     {
         if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_BACK)))
             m_pFSM->Change_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_BACK), pOwner);
@@ -261,7 +261,7 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Back(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Default(CGameObject* pOwner)
 {
-    if (m_pMonData->isAttack)
+    if (m_pMonData->eAttack_State == CDragonian_Rampage::ATTACKSTATE::DEFAULT)
     {
         if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_DEFAULT)))
             m_pFSM->Change_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_DEFAULT), pOwner);
@@ -308,7 +308,7 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::LockOn(CGameObject* pOwner)
     return BTNODESTATE::FAILURE;
 }
 
-BTNODESTATE CAI_Controller_Dragonian_Rampage::Chase(CGameObject* pOwner)
+BTNODESTATE CAI_Controller_Dragonian_Rampage::Walk(CGameObject* pOwner)
 {
     if (m_pMonData->isSleep)
         return BTNODESTATE::FAILURE;

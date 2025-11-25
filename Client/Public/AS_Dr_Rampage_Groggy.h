@@ -5,6 +5,9 @@
 class CAS_Dr_Rampage_Groggy : public CAI_State
 {
 private:
+    enum FSMSTATE { START, LOOP, END };
+
+private:
     CAS_Dr_Rampage_Groggy();
     virtual ~CAS_Dr_Rampage_Groggy() = default;
 
@@ -15,9 +18,9 @@ public:
 
 private:
     CDragonian_Rampage::MONDATA*    m_pMonData = { nullptr };
-
+    FSMSTATE                        m_eState = { FSMSTATE::END };
 public:
-    static CAS_Dr_Rampage_Groggy*      Create();
+    static CAS_Dr_Rampage_Groggy*   Create();
     virtual void				    Free() override;
 
 };

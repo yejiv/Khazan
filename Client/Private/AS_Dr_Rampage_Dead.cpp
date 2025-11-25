@@ -9,7 +9,7 @@ void CAS_Dr_Rampage_Dead::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     if (m_pMonData == nullptr)
         m_pMonData = &static_cast<CDragonian_Rampage*>(pOwner)->Get_Data();
 
-    m_pMonData->iAnimIndex = 19;
+    m_pMonData->iAnimIndex = 0;
     m_eState = DIE;
 }
 

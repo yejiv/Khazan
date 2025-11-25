@@ -41,7 +41,7 @@ private:
     BTNODESTATE                                 Damage_Check(CGameObject* pOwner);
     BTNODESTATE                                 Damage(CGameObject* pOwner);
     BTNODESTATE                                 LockOn(CGameObject* pOwner);
-    BTNODESTATE                                 Chase(CGameObject* pOwner);
+    BTNODESTATE                                 Walk(CGameObject* pOwner);
     BTNODESTATE                                 Sleep(CGameObject* pOwner);
 
 public:

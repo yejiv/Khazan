@@ -13,7 +13,8 @@ class CDragonian_Rampage final : public CMonster
 {
 public:
     enum class MONSTATE { ATTACK_DEFAULT, ATTACK_BACK, ATTACK_JUMP, ATTACK_RUSH, DEAD, GRORRY, BRUTAL, DAMAGE, LOCKON, SLEEP, WALK, END };
-
+    enum class ATTACKSTATE { DEFAULT, JUMP, RUSH, BACK, END};
+    
     typedef struct TagMonData_Rampage{
         //애니메이션 관련
         _int                iAnimIndex = {};
@@ -24,7 +25,6 @@ public:
 
         //BT 판단용 변수
         _bool               isDamage = { false };
-        _bool               isAttack = { false };
         _float              fAttackCool = {};
         
         HITREACTION         eHitType = { HITREACTION::END };
@@ -38,6 +38,8 @@ public:
         _float*             pCulStamina = { nullptr };
 
         CDragonian_Rampage*   pOwner = { nullptr };
+
+        ATTACKSTATE         eAttack_State = { ATTACKSTATE::END };
     }MONDATA;
 private:
     CDragonian_Rampage(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
