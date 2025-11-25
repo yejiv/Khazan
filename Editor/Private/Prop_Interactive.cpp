@@ -105,9 +105,6 @@ HRESULT CProp_Interactive::Bind_Materials(_uint iMeshIndex)
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
         isSpecular = true;
 
-    isSpecular = false;
-    isEmissive = false;
-
     m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
     m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
     m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
