@@ -31,6 +31,16 @@ void CAS_Dr_Melee_Attack::Exit(CStateMachine* pFSM, CGameObject* pOwner)
     m_pMonData->fAttackCool = m_pGameInstance->Rand(5.f, 9.f);
 }
 
+void CAS_Dr_Melee_Attack::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_WEAK, nullptr);
+    }
+}
+
 CAS_Dr_Melee_Attack* CAS_Dr_Melee_Attack::Create()
 {
     return new CAS_Dr_Melee_Attack();

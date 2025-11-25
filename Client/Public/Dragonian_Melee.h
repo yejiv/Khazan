@@ -30,8 +30,11 @@ public:
         HITREACTION         eHitType = { HITREACTION::END };
         //ETC
         _float              fGloggyTime = {};
-        
+        _bool               isAttack_Collision = { false };
+
         //State
+        _float              fAttackDamage = {};
+        
         _float*             pMaxHp = { nullptr };
         _float*             pCulHp = { nullptr };
         _float*             pMaxStamina = { nullptr };

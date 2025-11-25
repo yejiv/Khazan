@@ -58,6 +58,16 @@
 #include "Elevator_Mid.h"               // 엘리베이터 큰거 ( 중간꺼 )
 #include "Elevator_Outer.h"             // 엘리베이터 큰거 ( 바깥꺼 )
 
+#include "GiantGate.h"                   // 바이퍼 가는 문 ( 렌더 X )
+#include "GiantGate_Part_L.h"            // 바이퍼 가는 문 왼쪽
+#include "GiantGate_Part_R.h"            // 바이퍼 가는 문 오른쪽
+
+// Interactive ( NPC )
+#include "NPC_Daphrona.h"
+#include "NPC_Duimuk.h"
+#include "Duimuk_Part.h"
+#include "NPC_Danjin.h"
+
 // Properties Test
 #include "Prop_Test.h"
 

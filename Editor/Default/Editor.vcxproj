@@ -164,6 +164,7 @@
     <ClInclude Include="..\Public\AIController_Edit.h" />
     <ClInclude Include="..\public\AnimationTool.h" />
     <ClInclude Include="..\Public\BigChest.h" />
+    <ClInclude Include="..\Public\Duimuk_Part.h" />
     <ClInclude Include="..\Public\ElevatorL.h" />
     <ClInclude Include="..\Public\Elevator_Inner.h" />
     <ClInclude Include="..\Public\Elevator_Mid.h" />
@@ -200,6 +201,12 @@
     <ClInclude Include="..\Public\ElevatorS.h" />
     <ClInclude Include="..\Public\Elevator_Gear.h" />
     <ClInclude Include="..\Public\GearGate.h" />
+    <ClInclude Include="..\Public\GiantGate.h" />
+    <ClInclude Include="..\Public\GiantGate_Part_L.h" />
+    <ClInclude Include="..\Public\GiantGate_Part_R.h" />
+    <ClInclude Include="..\Public\NPC_Danjin.h" />
+    <ClInclude Include="..\Public\NPC_Duimuk.h" />
+    <ClInclude Include="..\Public\NPC_Daphrona.h" />
     <ClInclude Include="..\Public\UnLockGear.h" />
     <ClInclude Include="..\Public\IronGate.h" />
     <ClInclude Include="..\Public\IronGate_Lock.h" />
@@ -263,6 +270,7 @@
     <ClCompile Include="..\Private\AIController_Edit.cpp" />
     <ClCompile Include="..\private\AnimationTool.cpp" />
     <ClCompile Include="..\Private\BigChest.cpp" />
+    <ClCompile Include="..\Private\Duimuk_Part.cpp" />
     <ClCompile Include="..\Private\ElevatorL.cpp" />
     <ClCompile Include="..\Private\Elevator_Inner.cpp" />
     <ClCompile Include="..\Private\Elevator_Mid.cpp" />
@@ -297,6 +305,12 @@
     <ClCompile Include="..\Private\ElevatorS.cpp" />
     <ClCompile Include="..\Private\Elevator_Gear.cpp" />
     <ClCompile Include="..\Private\GearGate.cpp" />
+    <ClCompile Include="..\Private\GiantGate.cpp" />
+    <ClCompile Include="..\Private\GiantGate_Part_L.cpp" />
+    <ClCompile Include="..\Private\GiantGate_Part_R.cpp" />
+    <ClCompile Include="..\Private\NPC_Danjin.cpp" />
+    <ClCompile Include="..\Private\NPC_Duimuk.cpp" />
+    <ClCompile Include="..\Private\NPC_Daphrona.cpp" />
     <ClCompile Include="..\Private\UnLockGear.cpp" />
     <ClCompile Include="..\Private\IronGate.cpp" />
     <ClCompile Include="..\Private\IronGate_Lock.cpp" />

@@ -1,6 +1,7 @@
 #pragma once
 #include "Client_Defines.h"
 #include "PartObject.h"
+#include "Dragonian_Rampage.h"
 
 NS_BEGIN(Engine)
 class CShader;
@@ -17,7 +18,7 @@ public:
     {
         CTransform* pOwnerTransform = { nullptr };
         _float4x4* pSocketMatrix = { nullptr };
-
+        CDragonian_Rampage::MONDATA* pData = { nullptr };
     }WEAPON_DESC;
 
 private:
@@ -48,13 +49,12 @@ private:
     CShader*                    m_pShaderCom = { nullptr };
     CModel*                     m_pModelCom = { nullptr };
     CTransform*                 m_pOwnerTransform = { nullptr };
+    CBody*                      m_pBodyComp = { nullptr };
 
     _bool					    m_isOnAttackCollision = { false };
-    CBody*                      m_pBodyComp = { nullptr };
     _float4x4*                  m_pSocketMatrix = { nullptr };
 
-    _float4                     m_vTipPos = {};
-
+    CDragonian_Rampage::MONDATA* m_pData = { nullptr };
 public:
     static CDragonian_Claw_R*    Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*        Clone(void* pArg) override;

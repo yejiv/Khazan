@@ -62,6 +62,7 @@ _bool CDragonian_Melee::Check_AttackRanage(string strKey)
 
 HRESULT CDragonian_Melee::Initialize_Prototype(_int iLevel)
 {
+
     m_iPrototypeIndex = iLevel;
 
     CHECK_FAILED(Ready_Prototype(), E_FAIL);
@@ -82,7 +83,6 @@ HRESULT CDragonian_Melee::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_AnimEvent(),E_FAIL);
     CHECK_FAILED(Ready_Components(),E_FAIL);
     
-
     return S_OK;
 }
 
@@ -96,7 +96,7 @@ void CDragonian_Melee::Priority_Update(_float fTimeDelta)
         m_Data.isSleep = true;
     }
     else if (m_pGameInstance->Key_Down(DIK_V))
-        Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, m_pTarget);
+        Ready_Components();
     else if (m_pGameInstance->Key_Down(DIK_B))
         Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
     else if (m_pGameInstance->Key_Down(DIK_N))
@@ -175,7 +175,7 @@ HRESULT CDragonian_Melee::Ready_ETC()
 }
 
 HRESULT CDragonian_Melee::Ready_Components()
-{
+{    
     CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
     _float3 vPos{};
     _float4 vQuat{};
@@ -185,20 +185,21 @@ HRESULT CDragonian_Melee::Ready_Components()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.6f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 1.35f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-    tCharVirDesc.fRadius = 0.3f;
-    tCharVirDesc.fHeight = 0.7f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
-
+    
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
-        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
-        return E_FAIL;
+    //캡슐 Desc
+    tCharVirDesc.fRadius = 1.2f;
+    tCharVirDesc.fHeight = 0.4f;
+    
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
+        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc), E_FAIL);
+
 
     return S_OK;
 }
@@ -224,6 +225,7 @@ HRESULT CDragonian_Melee::Ready_PartObjects()
     WeaponDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     WeaponDesc.pOwnerTransform = m_pTransformCom;
     WeaponDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Weapon_R");
+    WeaponDesc.pData = &m_Data;
 
     if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon"), m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Dragonian_Sword"), &WeaponDesc)))
         return E_FAIL;
@@ -252,14 +254,28 @@ HRESULT CDragonian_Melee::Ready_AnimEvent()
     pModel->Register_Event("Walk3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
     pModel->Register_Event("Walk4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
 
+    pModel->Register_Event("Attack_DoubleSwing1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+    pModel->Register_Event("Attack_DoubleSwing2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+    pModel->Register_Event("Attack_DoubleSwing3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+    pModel->Register_Event("Attack_DoubleSwing4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+
+    pModel->Register_Event("Attack_DoubleSwing1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
+    pModel->Register_Event("Attack_DoubleSwing2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
+    pModel->Register_Event("Attack_DoubleSwing3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
+    pModel->Register_Event("Attack_DoubleSwing4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
+
+    pModel->Register_Event("Attack_HardSmash1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+    pModel->Register_Event("Attack_HardSmash2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+
+    pModel->Register_Event("Attack_HardSmash1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
+    pModel->Register_Event("Attack_HardSmash2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
+
     return S_OK;
 }
 
 HRESULT CDragonian_Melee::Ready_MonData()
 {
     m_Data.pOwner = this;
-    Safe_AddRef(m_Data.pOwner);
-
     m_Data.fGloggyTime = 3.f;
     m_Data.pCulHp = &m_fCurrentHP;
     m_Data.pMaxHp = &m_fMaxHP;
@@ -306,10 +322,12 @@ void CDragonian_Melee::Free()
         m_pUI_HP->Set_IsDead(true);
     }
     Safe_Release(m_Data.pOwner);
+
     
     __super::Free();
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
     Safe_Release(m_pBlackBoard);
+    m_Data.pOwner = nullptr;
     
 }

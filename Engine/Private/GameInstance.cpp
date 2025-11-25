@@ -238,7 +238,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	if (m_pOctree)
 		m_pOctree->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	//	m_pDecal_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+	m_pDecal_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	// Renderer Resources
 	m_pCSM->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
@@ -248,12 +248,11 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	m_pDistortion->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
     m_pRadialBlur->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
+    m_pLight_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+
 	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-
-
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
-
 
 #ifdef _DEBUG
 
@@ -710,6 +709,16 @@ _bool CGameInstance::Is_LightEnable(const _wstring& strLightTag, _uint iLevelInd
 HRESULT CGameInstance::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex)
 {
 	return m_pLight_Manager->Render(pShader, pVIBuffer, iLevelIndex);
+}
+
+const vector<_wstring>& CGameInstance::Get_LightTags(_uint iLevelIndex)
+{
+    return m_pLight_Manager->Get_LightTags(iLevelIndex);
+}
+
+void CGameInstance::Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc)
+{
+    m_pLight_Manager->Start_LightTransition(strLightTag, iLevelIndex, Desc);
 }
 
 #pragma endregion

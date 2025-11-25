@@ -37,7 +37,6 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
     {
         it->fCurTime += fTimeDelta;
 
-        //if(it->fCurTime > it->fDurTime && it->EventType != 1)
         if(it->fCurTime >= it->fDurTime)
         {
             if (m_pVIBufferCom->isLoop() && m_TimeTracks.size() == 1)
