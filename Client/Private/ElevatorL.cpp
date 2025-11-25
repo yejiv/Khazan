@@ -66,7 +66,15 @@ void CElevatorL::Update(_float fTimeDelta)
 {
 #pragma region TEST
     if (m_pGameInstance->Key_Pressing(DIK_NUMPAD7, 0.f) && m_pGameInstance->Key_Pressing(DIK_NUMPAD8, 0.f) && m_pGameInstance->Key_Down(DIK_NUMPAD9))
-        m_isMidToUpMove = true;
+        m_isMidToUpMove = !m_isMidToUpMove;
+    if (m_pGameInstance->Key_Pressing(DIK_NUMPAD4, 0.f) && m_pGameInstance->Key_Pressing(DIK_NUMPAD5, 0.f) && m_pGameInstance->Key_Down(DIK_NUMPAD6))
+    {
+        m_eAnimState = ANIM_STATE::IDLE;
+        m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+        m_pModelCom->AnimationLoop(false);
+
+        m_eMoveState = MOVE_STATE::MIDTODOWN;
+    }
 #pragma endregion
 
 
@@ -80,6 +88,8 @@ void CElevatorL::Update(_float fTimeDelta)
     VerticalOnTime_Update(fTimeDelta);
 
     __super::Update(fTimeDelta);
+    m_pBodyCom->Sync_Update(m_pTransformCom);
+    m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
 }
 
 void CElevatorL::Late_Update(_float fTimeDelta)
@@ -210,31 +220,30 @@ HRESULT CElevatorL::Ready_PartObjects(void* pArg)
 HRESULT CElevatorL::Ready_Collision(void* pArg)
 {
 #pragma region 스태틱 몸체
-    CBody::BODY_BOXSHAPE_DESC StaticBodyDesc{};
-    StaticBodyDesc.vExtent = _float3(0.5f, 0.5f, 0.5f);
-    StaticBodyDesc.bIsTrigger = false;
-    StaticBodyDesc.bStartActive = true;
-    StaticBodyDesc.eMotion = EMotionType::Static;
-    StaticBodyDesc.eQuality = EMotionQuality::LinearCast;
-    StaticBodyDesc.eShapeType = SHAPE::BOX;
-    StaticBodyDesc.fFriction = 0.8f;
-    StaticBodyDesc.fMass = 1.0f;
-    StaticBodyDesc.fRestitution = 0.0f;
-    StaticBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_STATIC_TRIGGER);
-    _float3 vPos{};
-    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
-    vPos.y += StaticBodyDesc.vExtent.y;
-    _float4 vQuat{};
-    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
-    StaticBodyDesc.vPos = vPos;
-    StaticBodyDesc.vQuat = vQuat;
-    StaticBodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    CBody::BODY_BOXSHAPE_DESC BodyDesc{};
+    BodyDesc.vExtent = _float3(17.f, 1.5f, 17.f);
+    BodyDesc.bIsTrigger = false;
+    BodyDesc.bStartActive = true;
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::LinearCast;
+    BodyDesc.eShapeType = SHAPE::BOX;
+    BodyDesc.fFriction = 0.8f;
+    BodyDesc.fMass = 1.0f;
+    BodyDesc.fRestitution = 0.0f;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM);
+
+    XMStoreFloat3(&BodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    BodyDesc.vPos.y += BodyDesc.vExtent.y;
+
+    XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+
+    BodyDesc.vShapeOffset = _float3(0.f, -0.95f, 0.f);
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
-    StaticBodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-        TEXT("Com_Static"), reinterpret_cast<CComponent**>(&m_pBodyCom), &StaticBodyDesc)))
+        TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
         return E_FAIL;
 #pragma endregion
 
@@ -281,7 +290,7 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
         switch (m_eMoveState)
         {
         case MOVE_STATE::MIDTODOWN:
-            Lerp_ElevatorMove(fTimeDelta, m_vMidPos, m_vDownPos, 30.f);
+            Lerp_ElevatorMove(fTimeDelta, m_vMidPos, m_vDownPos, 5.f);
             break;
         case MOVE_STATE::DOWNTOUP:
             Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 30.f);
