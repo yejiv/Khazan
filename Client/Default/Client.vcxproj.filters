@@ -1123,73 +1123,73 @@
     <Filter Include="92.AI\State\Dragonian_Rampage\Groggy">
       <UniqueIdentifier>{b7534503-4d50-42e8-b71c-2c865681b8d4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster">
+    <Filter Include="02.GameObject\Creature\Monster">
       <UniqueIdentifier>{f663abf4-dee0-497f-bd4b-b6469c804f8a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Yetuga">
+    <Filter Include="02.GameObject\Creature\Monster\Yetuga">
       <UniqueIdentifier>{985c2727-eace-4eab-933f-dd5fc5515f2d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Yetuga\Body">
+    <Filter Include="02.GameObject\Creature\Monster\Yetuga\Body">
       <UniqueIdentifier>{8fef0fd1-b2ca-4175-81dc-514453bf821a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Yetuga\Head">
+    <Filter Include="02.GameObject\Creature\Monster\Yetuga\Head">
       <UniqueIdentifier>{6139718a-8b42-4ba4-afef-9aeecb79be21}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Gomdolzzing">
+    <Filter Include="02.GameObject\Creature\Monster\Gomdolzzing">
       <UniqueIdentifier>{6cf68861-f9b1-42bc-8280-afe5e503de49}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Gomdolzzing\Head">
+    <Filter Include="02.GameObject\Creature\Monster\Gomdolzzing\Head">
       <UniqueIdentifier>{af3b0474-79c0-451f-8366-b1ef7dadd8b7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Gomdolzzing\Body">
+    <Filter Include="02.GameObject\Creature\Monster\Gomdolzzing\Body">
       <UniqueIdentifier>{8ab5f034-585d-4334-8a1d-f90ce485b5cf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Range">
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Range">
       <UniqueIdentifier>{a84c5084-3491-465b-8433-5dd4482d1a56}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Range\Body">
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Range\Body">
       <UniqueIdentifier>{cb10d419-c31f-4ee4-97b3-bec607520b92}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Range\Weapon">
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Range\Weapon">
       <UniqueIdentifier>{eea85058-c071-46c7-88ce-3d9400ec4488}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Melee">
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Melee">
       <UniqueIdentifier>{61d05502-fd8c-49b7-8c63-d5e7e3f841e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Melee\Body">
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Melee\Body">
       <UniqueIdentifier>{eee25bb8-385c-4040-adbc-2d574f096e4c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Melee\Weapon">
+    <Filter Include="02.GameObject\Creature\Monster\Imp_Melee\Weapon">
       <UniqueIdentifier>{ea415365-d3fc-4073-b06a-e38eb521563b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Viper">
+    <Filter Include="02.GameObject\Creature\Monster\Viper">
       <UniqueIdentifier>{2bb74306-f76e-49de-a0b7-66b20f90e692}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Viper\Body">
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Body">
       <UniqueIdentifier>{19576cf9-0a98-450b-b75c-1d35e0544ea0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Viper\Weapon">
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Weapon">
       <UniqueIdentifier>{efe62000-548b-4730-b09f-84572c7f47b6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Viper\Weapon\TwinBlade">
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Weapon\TwinBlade">
       <UniqueIdentifier>{77b6416e-2029-4261-be77-a8373ea77918}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Melee">
+    <Filter Include="02.GameObject\Creature\Monster\Dragonian_Melee">
       <UniqueIdentifier>{9823864e-ac4b-4e3f-842d-65012fd1f086}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Melee\Body">
+    <Filter Include="02.GameObject\Creature\Monster\Dragonian_Melee\Body">
       <UniqueIdentifier>{7913fa6c-f0a9-4ee3-8044-4484c5cecaca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Melee\Weapon">
+    <Filter Include="02.GameObject\Creature\Monster\Dragonian_Melee\Weapon">
       <UniqueIdentifier>{0f46a6d3-dee1-453f-919a-55f43b781a09}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Rampage">
+    <Filter Include="02.GameObject\Creature\Monster\Dragonian_Rampage">
       <UniqueIdentifier>{20e76737-7a31-4fe2-a71f-42fbdd26e98d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Rampage\Body">
+    <Filter Include="02.GameObject\Creature\Monster\Dragonian_Rampage\Body">
       <UniqueIdentifier>{42d8f19d-dd2f-41da-9344-8600bdf68bb6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Rampage\Weapon">
+    <Filter Include="02.GameObject\Creature\Monster\Dragonian_Rampage\Weapon">
       <UniqueIdentifier>{3b14ece7-b2e3-47ba-aafb-e51ab8b5658f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -1234,7 +1234,7 @@
       <Filter>02.GameObject\Terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Monster.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster</Filter>
+      <Filter>02.GameObject\Creature\Monster</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\JOH_Test1.h">
       <Filter>02.GameObject\JOH Test\Test Anim Model</Filter>
@@ -1348,7 +1348,7 @@
       <Filter>02.GameObject\UI\ETC</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Yetuga.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Yetuga</Filter>
+      <Filter>02.GameObject\Creature\Monster\Yetuga</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Creature.h">
       <Filter>02.GameObject\Creature</Filter>
@@ -1444,7 +1444,7 @@
       <Filter>94.ClientInstance\Debug</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Body_Yetuga.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Yetuga\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Turn_Yetuga.h">
       <Filter>92.AI\State\Yetuga\05.Turn</Filter>
@@ -1717,7 +1717,7 @@
       <Filter>02.GameObject\UI\Slot</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Head_Yetuga.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Yetuga\Head</Filter>
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Skill_Tap.h">
       <Filter>02.GameObject\UI\Skill_Tree\Tap</Filter>
@@ -1747,10 +1747,10 @@
       <Filter>94.ClientInstance\Player_Manger</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Gomdol.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Gomdolzzing</Filter>
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Body_Gomdol.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Gomdolzzing\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing\Body</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AI_Controller_Gomdol.h">
       <Filter>92.AI\Controller\Gomdol</Filter>
@@ -1813,7 +1813,7 @@
       <Filter>02.GameObject\UI\Announce\Over</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Body_Imp_Range.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Range\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Body</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AI_Controller_Imp_Range.h">
       <Filter>92.AI\Controller\Imp_Range</Filter>
@@ -1833,7 +1833,6 @@
     <ClInclude Include="..\Public\AS_Move_Imp_Range.h">
       <Filter>92.AI\State\Imp_Range\Move</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Imp_Range.h" />
     <ClInclude Include="..\Public\Interact_Manager.h">
       <Filter>94.ClientInstance\Interact</Filter>
     </ClInclude>
@@ -1853,7 +1852,7 @@
       <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Imp_Wand.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Range\Weapon</Filter>
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Projectile_Imp_MagicBall.h" />
     <ClInclude Include="..\Public\AI_Controller_Imp_Melee.h">
@@ -1863,13 +1862,13 @@
       <Filter>92.AI\StateMachine\Imp_Melee</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Imp_Melee.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Melee</Filter>
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Body_Imp_Melee.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Melee\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Body</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Imp_Sword.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Melee\Weapon</Filter>
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Projectile_Imp_MagicBall.h">
       <Filter>02.GameObject\Projectile\Imp_Range\Magic</Filter>
@@ -2091,7 +2090,7 @@
       <Filter>02.GameObject\UI\Announce\Warning</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Viper.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Viper</Filter>
+      <Filter>02.GameObject\Creature\Monster\Viper</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Lantern_Khazan_GS.h">
       <Filter>02.GameObject\Creature\Khazan\GSword\Lantern</Filter>
@@ -2115,7 +2114,7 @@
       <Filter>02.GameObject\Creature\Khazan\GSword\Body</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Body_Viper.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Viper\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VerticalGate.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\07.VerticalGate</Filter>
@@ -2148,13 +2147,13 @@
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Top</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Dragonian_Melee.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Melee</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Body_Dragonian_Melee.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Melee\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee\Body</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Dragonian_Rampage.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Rampage</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage</Filter>
     </ClInclude>
     <ClInclude Include="..\public\FSM_Default.h">
       <Filter>92.AI\StateMachine\Default_StateMachine</Filter>
@@ -2187,13 +2186,13 @@
       <Filter>92.AI\State\Dragonian_Melee\Attack</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Dragonian_Sword.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Melee\Weapon</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\GearGate.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\TwinBlade_Viper.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Viper\Weapon\TwinBlade</Filter>
+      <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBlade</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_StingSlashCombo_Viper.h">
       <Filter>92.AI\State\Viper\06.StingAttackCombo</Filter>
@@ -2253,13 +2252,13 @@
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL\Outer</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Dragonian_Claw_L.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Rampage\Weapon</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Dragonian_Claw_R.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Rampage\Weapon</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Body_Dragonian_Rampage.h">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Rampage\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Body</Filter>
     </ClInclude>
     <ClInclude Include="..\public\AI_Controller_Dragonian_Rampage.h">
       <Filter>92.AI\Controller\Dragonian_Rampage</Filter>
@@ -2305,6 +2304,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Collection_Info.h">
       <Filter>02.GameObject\UI\Collection_Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Imp_Range.h">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2352,7 +2354,7 @@
       <Filter>02.GameObject\Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Monster.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster</Filter>
+      <Filter>02.GameObject\Creature\Monster</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\JOH_Test1.cpp">
       <Filter>02.GameObject\JOH Test\Test Anim Model</Filter>
@@ -2454,7 +2456,7 @@
       <Filter>02.GameObject\UI\ETC</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Yetuga.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Yetuga</Filter>
+      <Filter>02.GameObject\Creature\Monster\Yetuga</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Creature.cpp">
       <Filter>02.GameObject\Creature</Filter>
@@ -2553,7 +2555,7 @@
       <Filter>94.ClientInstance\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Body_Yetuga.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Yetuga\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Body</Filter>
     </ClCompile>
     <ClCompile Include="..\private\AS_Turn_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\05.Turn</Filter>
@@ -2817,7 +2819,7 @@
       <Filter>02.GameObject\UI\Slot</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Head_Yetuga.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Yetuga\Head</Filter>
+      <Filter>02.GameObject\Creature\Monster\Yetuga\Head</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UI_SkillTree.cpp">
       <Filter>02.GameObject\UI\Skill_Tree</Filter>
@@ -2847,10 +2849,10 @@
       <Filter>94.ClientInstance\Player_Manger</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Gomdol.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Gomdolzzing</Filter>
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Body_Gomdol.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Gomdolzzing\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Gomdolzzing\Body</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AI_Controller_Gomdol.cpp">
       <Filter>92.AI\Controller\Gomdol</Filter>
@@ -2907,7 +2909,7 @@
       <Filter>02.GameObject\UI\Announce\Over</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Body_Imp_Range.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Range\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Body</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AI_Controller_Imp_Range.cpp">
       <Filter>92.AI\Controller\Imp_Range</Filter>
@@ -2927,7 +2929,6 @@
     <ClCompile Include="..\Private\AS_Move_Imp_Range.cpp">
       <Filter>92.AI\State\Imp_Range\Move</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Imp_Range.cpp" />
     <ClCompile Include="..\Private\Interact_Manager.cpp">
       <Filter>94.ClientInstance\Interact</Filter>
     </ClCompile>
@@ -2947,7 +2948,7 @@
       <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Imp_Wand.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Range\Weapon</Filter>
+      <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AI_Controller_Imp_Melee.cpp">
       <Filter>92.AI\Controller\Imp_Melee</Filter>
@@ -2956,13 +2957,13 @@
       <Filter>92.AI\StateMachine\Imp_Melee</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Imp_Melee.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Melee</Filter>
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Body_Imp_Melee.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Melee\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Body</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Imp_Sword.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Imp_Melee\Weapon</Filter>
+      <Filter>02.GameObject\Creature\Monster\Imp_Melee\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Projectile_Imp_MagicBall.cpp">
       <Filter>02.GameObject\Projectile\Imp_Range\Magic</Filter>
@@ -3130,7 +3131,7 @@
       <Filter>92.AI\State\Viper\00.Idle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Viper.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Viper</Filter>
+      <Filter>02.GameObject\Creature\Monster\Viper</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Quick2Hit_Viper.cpp">
       <Filter>92.AI\State\Viper\03.Quick2Hit</Filter>
@@ -3208,7 +3209,7 @@
       <Filter>02.GameObject\Creature\Khazan\GSword\Body</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Body_Viper.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Viper\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VerticalGate.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\07.VerticalGate</Filter>
@@ -3223,7 +3224,7 @@
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\08.IronGate\Part\Left</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\TwinBlade_Viper.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Viper\Weapon\TwinBlade</Filter>
+      <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBlade</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_StingSlashCombo_Viper.cpp">
       <Filter>92.AI\State\Viper\06.StingAttackCombo</Filter>
@@ -3265,13 +3266,13 @@
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Top</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Dragonian_Melee.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Melee</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Body_Dragonian_Melee.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Melee\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee\Body</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Dragonian_Rampage.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Rampage</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage</Filter>
     </ClCompile>
     <ClCompile Include="..\private\FSM_Default.cpp">
       <Filter>92.AI\StateMachine\Default_StateMachine</Filter>
@@ -3304,7 +3305,7 @@
       <Filter>92.AI\State\Dragonian_Melee\Attack</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Dragonian_Sword.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Melee\Weapon</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\GearGate.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
@@ -3344,13 +3345,13 @@
     </ClCompile>
     <ClCompile Include="..\Private\Ladder.cpp" />
     <ClCompile Include="..\private\Dragonian_Claw_L.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Rampage\Weapon</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Dragonian_Claw_R.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Rampage\Weapon</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Body_Dragonian_Rampage.cpp">
-      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon\Monster\Dragonian_Rampage\Body</Filter>
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Body</Filter>
     </ClCompile>
     <ClCompile Include="..\private\AI_Controller_Dragonian_Rampage.cpp">
       <Filter>92.AI\Controller\Dragonian_Rampage</Filter>
@@ -3399,6 +3400,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Collection_Info.cpp">
       <Filter>02.GameObject\UI\Collection_Info</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Imp_Range.cpp">
+      <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
