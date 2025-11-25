@@ -115,17 +115,17 @@ HRESULT CBody_Imp_Range::Render()
     return S_OK;
 }
 
-void CBody_Imp_Range::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBody_Imp_Range::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC*)
 {
 
 }
 
-void CBody_Imp_Range::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBody_Imp_Range::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC*)
 {
 
 }
 
-void CBody_Imp_Range::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CBody_Imp_Range::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC*)
 {
 
 }

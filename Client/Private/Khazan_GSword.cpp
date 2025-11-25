@@ -220,18 +220,18 @@ HRESULT CKhazan_GSword::Render()
     return S_OK;
 }
 
-void CKhazan_GSword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CKhazan_GSword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK))
         Get_HitReaction(vContactPoint);
 }
 
-void CKhazan_GSword::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CKhazan_GSword::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CKhazan_GSword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CKhazan_GSword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }
@@ -822,7 +822,7 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
         if (m_pGameInstance->Key_Down(DIK_SPACE))
         {
             /* 닷지 중복 방지*/
-            if (isPrevDodge)
+            if (m_pAnimMove->IsDodge())
                 return;
 
             m_fSprintTime = 0.f;
@@ -1093,7 +1093,6 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
                         Add_Status(CHARGING_STRONG_ATTACK);
                        // Add_SubState(ATT::ATK_CHARGE);
                         Add_State(CAT::M_ATTACK);
-                        Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
 
                         m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
                         //Add_State(CAT::M_SKILL);
@@ -1122,7 +1121,6 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
                     Add_Status(CHARGING_STRONG_ATTACK);
                     Add_SubState(ATT::ATK_CHARGE);
                     Add_State(CAT::M_ATTACK);
-                    Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
 
                     m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
                     return true;
@@ -1131,7 +1129,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
         }
 
     }
-    else if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::RB))
+    else if (!Has_Status(CHARGING_STRONG_ATTACK) && m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::RB))
     {
         _bool wasCharging = Has_Status(CHARGING_STRONG_ATTACK);
         Remove_Status(CHARGING_STRONG_ATTACK);
@@ -1226,17 +1224,17 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
 
 
 
-    ///*  브루탈 공격.*/
-    //if (Has_Status(BRUTAL_READY) && m_pGameInstance->Key_Down(DIK_F))
-    //{
-    //    if (m_pAnimAttack->Try_GrappleAttack())
-    //    {
-    //        Clear_Step0();
-    //        Add_State(CAT::M_ATTACK);
-    //        Add_SubState(ATT::ATK_GRAPPLE);
-    //        Add_Status(BRUTAL_SUCCESS);
-    //    }
-    //}
+    /*  브루탈 공격.*/
+    if (Has_Status(BRUTAL_READY) && m_pGameInstance->Key_Down(DIK_F))
+    {
+        if (m_pAnimAttack->Try_GrappleAttack())
+        {
+            Clear_Step0();
+            Add_State(CAT::M_ATTACK);
+            Add_SubState(ATT::ATK_GRAPPLE);
+            Add_Status(BRUTAL_SUCCESS);
+        }
+    }
 
 
     /* dodge 공격 */
@@ -1259,7 +1257,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
     }
 
     /* Sprint 공격  - 애니메이션 자체가 이상함. 한 프레임 순간에 순간이동함 - 사용 xxx */
-    //else if ((m_iPrevMainState & CAT::M_MOVE) && (m_iPrevSubState & MOV::MOVE_SPRINT) && (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB)))
+    //if ((m_iPrevMainState & CAT::M_MOVE) && (m_iPrevSubState & MOV::MOVE_SPRINT) && (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB)))
     //{
     //    if (m_pAnimAttack->Try_SprintAttack())
     //    {
@@ -1270,8 +1268,6 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
     //        return true;
     //    }
     //}
-
-    
 
     /* 빠른 공격 3연타 + 차징 */
     if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
@@ -2336,9 +2332,9 @@ _uint CKhazan_GSword::ConvertCameraToPlayerDir(PLAYER_CAMERA_DIR playerCamDir)
 void CKhazan_GSword::Subscribe_Events()
 {
 #pragma region 상호 작용 맵 오브젝트 이벤트
-    m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e) { m_EventInteract = e; });
+    m_iInteractTypeEventID = m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e) { m_EventInteract = e; });
 
-    m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e) {
+    m_iObjectInteractEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e) {
         if (e.isOff())
         {
             m_pBody->Get_Model()->AnimationSetIndexIncrease();
@@ -3219,6 +3215,9 @@ CGameObject* CKhazan_GSword::Clone(void* pArg)
 
 void CKhazan_GSword::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), m_iInteractTypeEventID);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iObjectInteractEventID);
+
     __super::Free();
 
     Safe_Release(m_pClientInstance);

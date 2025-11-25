@@ -298,18 +298,18 @@ HRESULT CKhazan_Spear::Render()
     return S_OK;
 }
 
-void CKhazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CKhazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK)) 
         Get_HitReaction(vContactPoint); 
 }
 
-void CKhazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CKhazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CKhazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CKhazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }
@@ -2645,9 +2645,9 @@ _uint CKhazan_Spear::ConvertCameraToPlayerDir(PLAYER_CAMERA_DIR playerCamDir)
 void CKhazan_Spear::Subscribe_Events()
 {
 #pragma region 상호 작용 맵 오브젝트 이벤트
-    m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e) { m_EventInteract = e; });
+    m_iInteractTypeEventID = m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e) { m_EventInteract = e; });
 
-    m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e) {
+    m_iObjectInteractEventID =  m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e) {
         if (e.isOff())
         {
             m_pBody->Get_Model()->AnimationSetIndexIncrease();
@@ -2762,6 +2762,16 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
 
             break;
         }
+        case INTERACTIVE_TYPE::GIANTGATE:
+        {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
+                isDone = true;
+            }
+
+            break;
+        }
         default:
             break;
         }
@@ -2829,6 +2839,11 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         if (INTERACTIVE_TYPE::UNLOCKGEAR == m_EventInteract.eInteractType)
         {
             UnLockGear_Event(fTimeDelta);
+        }
+        // 엘리베이터 가동 위한 잠금 장치 가동 시
+        if (INTERACTIVE_TYPE::GIANTGATE == m_EventInteract.eInteractType)
+        {
+            GiantGate_Event(fTimeDelta);
         }
     }
 }
@@ -3035,6 +3050,20 @@ void CKhazan_Spear::UnLockGear_Event(_float fTimeDelta)
     //m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&ULGearEvent.vPlayerPosition));
     ULGearEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&ULGearEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::GiantGate_Event(_float fTimeDelta)
+{
+    EventGiantGate GateEvent = m_EventInteract.GiantGateEvent;
+
+    // 플레이어가 잠금해제하고 문을 여는 애니메이션 실행
+
+    GateEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&GateEvent.vPlayerPosition));
+    GateEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&GateEvent.vPosition));
 
     m_EventInteract.End_Event();
 }
@@ -3627,6 +3656,9 @@ CGameObject* CKhazan_Spear::Clone(void* pArg)
 
 void CKhazan_Spear::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), m_iInteractTypeEventID);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iObjectInteractEventID);
+
     __super::Free();
 
     Safe_Release(m_pClientInstance);

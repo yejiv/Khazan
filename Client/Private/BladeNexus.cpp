@@ -7,13 +7,13 @@
 #include "ClientInstance.h"
 #include "UI_BladeNexus.h"
 
-CBladeNexus::CBladeNexus(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CProp_Interactive { pDevice, pContext }
+    CBladeNexus::CBladeNexus(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+    : CProp_Interactive{ pDevice, pContext }
 {
 }
 
 CBladeNexus::CBladeNexus(const CBladeNexus& Prototype)
-    : CProp_Interactive { Prototype }
+    : CProp_Interactive{ Prototype }
 {
 }
 
@@ -45,7 +45,7 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
     m_pModelCom->Play_Animation(0.f);
     m_pModelCom->Set_AnimationBlend(true);
 
-    m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
+    m_iEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
             m_Event = e;
         });
@@ -200,7 +200,6 @@ HRESULT CBladeNexus::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    Safe_AddRef(m_pGuide);
 
     m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("접촉"), 1.5f);
 
@@ -256,7 +255,7 @@ HRESULT CBladeNexus::Ready_DefaultSetting(void* pArg)
 
 HRESULT CBladeNexus::Ready_AnimationEvent()
 {
-    m_pModelCom->Register_Event("Strong_RadialBlur", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+    m_pModelCom->Register_Event("Strong_RadialBlur", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             RADIAL_BLUR_DESC Desc{};
             Desc.vCenterUV = _float2(0.5f, 0.5f);
@@ -303,8 +302,8 @@ HRESULT CBladeNexus::Bind_Materials(_uint iMeshIndex)
 
 void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
 {
-    if (ANIM_STATE::AFTER_START == m_eAnimState || ANIM_STATE::AFTER_LOOP == m_eAnimState|| ANIM_STATE::AFTER_END == m_eAnimState ||
-        ANIM_STATE::BEFORE_START == m_eAnimState || ANIM_STATE::BEFORE_LOOP == m_eAnimState|| ANIM_STATE::BEFORE_END == m_eAnimState)
+    if (ANIM_STATE::AFTER_START == m_eAnimState || ANIM_STATE::AFTER_LOOP == m_eAnimState || ANIM_STATE::AFTER_END == m_eAnimState ||
+        ANIM_STATE::BEFORE_START == m_eAnimState || ANIM_STATE::BEFORE_LOOP == m_eAnimState || ANIM_STATE::BEFORE_END == m_eAnimState)
         return;
 
     _bool isPressing = { false };
@@ -442,6 +441,16 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
     // 귀검 가동 끝나면 ( 첫 해금 O )
     if (ANIM_STATE::BEFORE_START == m_eAnimState)       // BEFORE_START 가 끝나면 BEFORE_LOOP ( 플레이어가 UI랑 상호 작용 )
     {
+        if (3 == m_iBladeNexus_ID)
+            // 귀검 애니메이션 끝나면 귀검 UI 창 팝업
+        {
+            static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::EMBARS, m_szPlaceName);
+        }
+        else
+        {
+            static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, m_szPlaceName);;
+        }
+
         // 귀검 애니메이션 끝나면 귀검 UI 창 팝업
         static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, m_szPlaceName);
 
@@ -542,9 +551,9 @@ void CBladeNexus::Find_Target()
     m_isFindTarget = true;
 }
 
-void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
 
     if (ANIM_STATE::AFTER_IDLE == m_eAnimState || ANIM_STATE::BEFORE_IDLE == m_eAnimState)
@@ -553,7 +562,7 @@ void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer
     m_isCollision = true;
 }
 
-void CBladeNexus::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBladeNexus::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -561,7 +570,7 @@ void CBladeNexus::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer,
     m_isCollision = true;
 }
 
-void CBladeNexus::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CBladeNexus::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -599,6 +608,8 @@ CGameObject* CBladeNexus::Clone(void* pArg)
 
 void CBladeNexus::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iEventID);
+
     __super::Free();
 
     Safe_Release(m_pStaticCom);
@@ -607,6 +618,5 @@ void CBladeNexus::Free()
     if (nullptr != m_pGuide)
     {
         m_pGuide->Set_IsDead(true);
-        Safe_Release(m_pGuide);
     }
 }

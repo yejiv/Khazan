@@ -44,7 +44,7 @@ HRESULT CIronGate::Initialize_Clone(void* pArg)
 
 #pragma endregion
 
-    m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
+    m_iEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
             m_Event = e;
         });
@@ -205,16 +205,15 @@ HRESULT CIronGate::Ready_Collision(void* pArg)
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
         return E_FAIL;
-    return S_OK;
 #pragma endregion
+
+    return S_OK;
 }
 
 HRESULT CIronGate::Ready_Interaction_Guide(void* pArg)
 {
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
-
-    Safe_AddRef(m_pGuide);
 
     m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("열어이"), 1.f);
 
@@ -304,7 +303,7 @@ void CIronGate::Animation_Change(_float fTimeDelta)
 {
 }
 
-void CIronGate::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CIronGate::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -315,7 +314,7 @@ void CIronGate::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, 
     m_isCollision = true;
 }
 
-void CIronGate::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CIronGate::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -323,7 +322,7 @@ void CIronGate::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _
     m_isCollision = true;
 }
 
-void CIronGate::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CIronGate::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -361,6 +360,8 @@ CGameObject* CIronGate::Clone(void* pArg)
 
 void CIronGate::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iEventID);
+
     __super::Free();
 
     Safe_Release(m_pStaticCom);
@@ -369,6 +370,5 @@ void CIronGate::Free()
     if (nullptr != m_pGuide)
     {
         m_pGuide->Set_IsDead(true);
-        Safe_Release(m_pGuide);
     }
 }

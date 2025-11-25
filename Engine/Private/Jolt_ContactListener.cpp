@@ -37,10 +37,14 @@ void CJolt_ContactListener::OnContactAdded(const Body& inBody1, const Body& inBo
 	{
 		pBody1Desc->pGameObject->Collision_Enter(pBody2Desc, pBody2Desc->iObjectLayer,
 			_float3(inManifold.GetWorldSpaceContactPointOn1(0).GetX(), inManifold.GetWorldSpaceContactPointOn1(0).GetY(), inManifold.GetWorldSpaceContactPointOn1(0).GetZ()),
-			_float3(inManifold.mWorldSpaceNormal.GetX(), inManifold.mWorldSpaceNormal.GetY(), inManifold.mWorldSpaceNormal.GetZ()));
+			_float3(inManifold.mWorldSpaceNormal.GetX(), inManifold.mWorldSpaceNormal.GetY(), inManifold.mWorldSpaceNormal.GetZ()),
+            pBody1Desc
+            );
 		pBody2Desc->pGameObject->Collision_Enter(pBody1Desc, pBody1Desc->iObjectLayer,
 			_float3(inManifold.GetWorldSpaceContactPointOn2(0).GetX(), inManifold.GetWorldSpaceContactPointOn2(0).GetY(), inManifold.GetWorldSpaceContactPointOn2(0).GetZ()),
-			_float3(inManifold.mWorldSpaceNormal.GetX(), inManifold.mWorldSpaceNormal.GetY(), inManifold.mWorldSpaceNormal.GetZ()));
+			_float3(inManifold.mWorldSpaceNormal.GetX(), inManifold.mWorldSpaceNormal.GetY(), inManifold.mWorldSpaceNormal.GetZ()),
+            pBody2Desc
+            );
 	}
 		
 }
@@ -57,10 +61,14 @@ void CJolt_ContactListener::OnContactPersisted(const Body& inBody1, const Body& 
 	{
 		pBody1Desc->pGameObject->Collision_Stay(pBody2Desc, pBody2Desc->iObjectLayer,
 			_float3(inManifold.GetWorldSpaceContactPointOn1(0).GetX(), inManifold.GetWorldSpaceContactPointOn1(0).GetY(), inManifold.GetWorldSpaceContactPointOn1(0).GetZ()),
-			_float3(inManifold.mWorldSpaceNormal.GetX(), inManifold.mWorldSpaceNormal.GetY(), inManifold.mWorldSpaceNormal.GetZ()));
+			_float3(inManifold.mWorldSpaceNormal.GetX(), inManifold.mWorldSpaceNormal.GetY(), inManifold.mWorldSpaceNormal.GetZ()),
+            pBody1Desc
+        );
 		pBody2Desc->pGameObject->Collision_Stay(pBody1Desc, pBody1Desc->iObjectLayer,
 			_float3(inManifold.GetWorldSpaceContactPointOn2(0).GetX(), inManifold.GetWorldSpaceContactPointOn2(0).GetY(), inManifold.GetWorldSpaceContactPointOn2(0).GetZ()),
-			_float3(inManifold.mWorldSpaceNormal.GetX(), inManifold.mWorldSpaceNormal.GetY(), inManifold.mWorldSpaceNormal.GetZ()));
+			_float3(inManifold.mWorldSpaceNormal.GetX(), inManifold.mWorldSpaceNormal.GetY(), inManifold.mWorldSpaceNormal.GetZ()),
+            pBody2Desc
+        );
 	}
 
 }
@@ -78,7 +86,15 @@ void CJolt_ContactListener::OnContactRemoved(const SubShapeIDPair& inSubShapePai
 
 	if (!pBody1Desc->pGameObject->Get_IsDead() && !pBody2Desc->pGameObject->Get_IsDead())
 	{
-		pBody1Desc->pGameObject->Collision_Exit(pBody2Desc, pBody2Desc->iObjectLayer);
-		pBody2Desc->pGameObject->Collision_Exit(pBody1Desc, pBody1Desc->iObjectLayer);
+		pBody1Desc->pGameObject->Collision_Exit(
+            pBody2Desc, 
+            pBody2Desc->iObjectLayer,
+            pBody1Desc
+        );
+		pBody2Desc->pGameObject->Collision_Exit(
+            pBody1Desc, 
+            pBody1Desc->iObjectLayer,
+            pBody2Desc
+        );
 	}
 }

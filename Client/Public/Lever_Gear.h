@@ -41,6 +41,7 @@ private:
     ANIM_STATE m_eAnimState = { ANIM_STATE::IDLE1 };
 
     EventGateGear m_EventGate = {};
+    _uint m_iEventID = { 0 };
 
 private:
     virtual HRESULT Ready_Components(void* pArg) override;

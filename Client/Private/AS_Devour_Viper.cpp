@@ -48,7 +48,7 @@ void CAS_Devour_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
 
         _float fSpeed = MakeDevourSpeed(fDist);
 
-        if (m_fDevourAcc >= 0.1f)
+        if (m_fDevourAcc >= 0.3f)
         {
             if (fDist < m_fMinRange + 10)
             {

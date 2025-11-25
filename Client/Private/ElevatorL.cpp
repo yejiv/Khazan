@@ -52,7 +52,7 @@ HRESULT CElevatorL::Initialize_Clone(void* pArg)
 
     m_pModelCom->Set_AnimationBlend(true);
 
-    m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(EVENT_TYPE::HALL_ELEVATOR_UNLOCK), [&](const EventHallElevator& e) { m_Event = e; });
+    m_iEventID = m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(EVENT_TYPE::HALL_ELEVATOR_UNLOCK), [&](const EventHallElevator& e) { m_Event = e; });
 
     return S_OK;
 }
@@ -392,7 +392,7 @@ void CElevatorL::Animation_Change(_float fTimeDelta)
     }
 }
 
-void CElevatorL::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CElevatorL::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -400,7 +400,7 @@ void CElevatorL::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer
 
 }
 
-void CElevatorL::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CElevatorL::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -408,7 +408,7 @@ void CElevatorL::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer,
 
 }
 
-void CElevatorL::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer)
+void CElevatorL::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -463,6 +463,8 @@ CGameObject* CElevatorL::Clone(void* pArg)
 
 void CElevatorL::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::HALL_ELEVATOR_UNLOCK), m_iEventID);
+
     __super::Free();
 
     Safe_Release(m_pBodyCom);

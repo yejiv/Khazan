@@ -62,6 +62,8 @@ private:
 
     EventGateGear m_EventGate = {};
 
+    _uint m_iEventLisID = { 0 };
+
 private:
     HRESULT Ready_Components(void* pArg);
 

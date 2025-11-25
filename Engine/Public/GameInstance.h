@@ -229,7 +229,7 @@ public:
 	uint64 Find_BodyDesc(BodyID id);
 	void Remove_BodyDesc(BodyID id);
 
-    void Destroy_Body(BodyID id);
+    void Destroy_Body(BodyID& id);
 
 	void Set_Gravity(_vector vGravity);
 	void Reset_Gravity();
@@ -390,6 +390,7 @@ public:
 	HRESULT                 Render_Decals();
     CTexture*               Get_DecalTexture(DECALTYPE eType);
     void                    Batch_Decal(class CDecal* pDecal);
+    void                    Decal_Clear();
 #pragma endregion
 
 #pragma region EFFECT_MANAGER

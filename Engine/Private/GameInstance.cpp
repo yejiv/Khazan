@@ -1001,7 +1001,7 @@ void CGameInstance::Remove_BodyDesc(BodyID id)
 	m_pJolt_Manager->Remove_BodyDesc(id);
 }
 
-void CGameInstance::Destroy_Body(BodyID id)
+void CGameInstance::Destroy_Body(BodyID& id)
 {
     m_pJolt_Manager->Destroy_Body(id);
 }
@@ -1425,6 +1425,11 @@ void CGameInstance::Batch_Decal(CDecal* pDecal)
     m_pDecal_Manager->Batch_Decal(pDecal);
 }
 
+void CGameInstance::Decal_Clear()
+{
+    m_pDecal_Manager->Decal_Clear();
+}
+
 #pragma endregion
 
 #pragma region EFFECT_MANAGER
@@ -1671,11 +1676,11 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pCSM);
 
 	Safe_Release(m_pComputeShader_Manager);
-	Safe_Release(m_pPool_Manager);
+	
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pFrustum);
-	Safe_Release(m_pEvent_Manager);
+	
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pInput_Manager);
@@ -1690,6 +1695,8 @@ void CGameInstance::Release_Engine()
     Safe_Release(m_pEffect_Manager);
 	Safe_Release(m_pPrototype_Manager);	
 	Safe_Release(m_pLevel_Manager);
+    Safe_Release(m_pPool_Manager);
+    Safe_Release(m_pEvent_Manager);
     Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pGraphic_Device);
     

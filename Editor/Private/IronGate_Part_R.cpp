@@ -30,8 +30,6 @@ HRESULT CIronGate_Part_R::Initialize_Clone(void* pArg)
 
     m_pSocketMatrix = pDesc->pSocketMatrix;
 
-    this;
-
     m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
 
     _float4 vPos = {};

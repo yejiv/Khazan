@@ -54,7 +54,7 @@ HRESULT CLever_Gear::Initialize_Clone(void* pArg)
     }
 
     if (EVENT_TYPE::END != m_eEventType)
-        m_pGameInstance->Subscribe_Event<EventGateGear>(ENUM_CLASS(m_eEventType), [&](const EventGateGear& e) { m_EventGate = e; });
+        m_iEventID = m_pGameInstance->Subscribe_Event<EventGateGear>(ENUM_CLASS(m_eEventType), [&](const EventGateGear& e) { m_EventGate = e; });
 
     return S_OK;
 }
@@ -179,7 +179,7 @@ CGameObject* CLever_Gear::Clone(void* pArg)
 
 void CLever_Gear::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(m_eEventType), m_iEventID);
+
     __super::Free();
-
-
 }
