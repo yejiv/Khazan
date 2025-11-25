@@ -187,11 +187,11 @@ HRESULT CProjectile_Imp_MagicBall::Bind_ShaderResources()
     return S_OK;
 }
 
-void CProjectile_Imp_MagicBall::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CProjectile_Imp_MagicBall::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 }
 
-void CProjectile_Imp_MagicBall::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CProjectile_Imp_MagicBall::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (PRJSTATE::LOOP == m_eState)
     {
@@ -210,7 +210,7 @@ void CProjectile_Imp_MagicBall::Collision_Stay(COLLISION_DESC* pDesc, _uint iOth
     }
 }
 
-void CProjectile_Imp_MagicBall::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CProjectile_Imp_MagicBall::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 }
 

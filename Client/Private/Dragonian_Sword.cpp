@@ -86,7 +86,7 @@ HRESULT CDragonian_Sword::Render()
     return S_OK;
 }
 
-void CDragonian_Sword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CDragonian_Sword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
     if (COLLISION_LAYER::PLAYER == eLayer)
@@ -95,12 +95,14 @@ void CDragonian_Sword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObject
     }
 }
 
-void CDragonian_Sword::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CDragonian_Sword::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 }
 
-void CDragonian_Sword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
-{ 
+
+void CDragonian_Sword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
+{
+
 }
 
 HRESULT CDragonian_Sword::Ready_Components()

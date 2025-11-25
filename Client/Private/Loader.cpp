@@ -328,6 +328,18 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust6"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust6"))))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust7"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust7"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust8"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust8"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust9"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust9"))))
+        return E_FAIL;
     
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("BlustSmall"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blustSmall"))))
@@ -375,6 +387,60 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
     
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("GhostKnight_static_connect"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight_static_connect"))))
+        return E_FAIL;
+
+
+    // [GS]
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("FerociousMomentum0"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Fierce_Spirit/FerociousMomentum0"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpiningCharger0"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Vital_Strike/SpiningCharger0"))))
+        return E_FAIL; 
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpiningCharger1"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Vital_Strike/SpiningCharger1"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpiningCharger2"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Vital_Strike/SpiningCharger2"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpiningCharger_Smoke"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Vital_Strike/SpiningCharger_Smoke"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpiningCharger_Trail"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Vital_Strike/SpiningCharger_Trail"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Manifest_Strength_Land"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Force_Release/Manifest_Strength_Land"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpiningCharger_Smoke_Red"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Force_Release/SpiningCharger_Smoke_Red"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpiningCharger_Trail_V"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Force_Release/SpiningCharger_Trail_V"))))
+        return E_FAIL;
+     
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Giant_Hunt_Land"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Giant_Hunt/Giant_Hunt_Land"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Giant_Roar"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Giant_Roar/Giant_Roar"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("DarkShadow_Land_1"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/DarkShadow_Land/DarkShadow_Land_1"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("DarkShadow_Land_2"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/DarkShadow_Land/DarkShadow_Land_2"))))
         return E_FAIL;
 
     return S_OK;
@@ -578,9 +644,6 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_ImpSword"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Goblin_Melee/Imp_Sword/Imp_Sword.dat"))))
         return E_FAIL;
-
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_TwinBlade_Viper"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/TwinBlade_R/TwinBlade_R.dat")), E_FAIL);
 
 #pragma endregion
 
@@ -1302,6 +1365,16 @@ HRESULT CLoader::Loading_For_Embars_Model()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_A/WP_BGQ_Elevator_Move_001_03/WP_BGQ_Elevator_Move_001_03.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 바이퍼 가는 문
+    /* Prototype_Component_Model_GiantGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_GiantGate"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_Base_GiantDoor_Open_001/WIP_Base_GiantDoor_Open_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_GiantGate_Part */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_GiantGate_Part"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_A/WIP_BGQ_Door_Wood_001/WIP_BGQ_Door_Wood_001.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거
@@ -1464,6 +1537,20 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     /* Prototype_GameObject_Prop_Elevator_Outer */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Elevator_Outer"),
         CElevator_Outer::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 바이퍼 가는 문
+    /* Prototype_GameObject_Prop_GiantGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_GiantGate"),
+        CGiantGate::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_GiantGate_Part_L */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_GiantGate_Part_L"),
+        CGiantGate_Part_L::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_GiantGate_Part_R */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_GiantGate_Part_R"),
+        CGiantGate_Part_R::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion

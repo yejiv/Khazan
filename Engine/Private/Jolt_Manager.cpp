@@ -222,17 +222,26 @@ void CJolt_Manager::Remove_BodyDesc(BodyID id)
     }
 }
 
-void CJolt_Manager::Destroy_Body(BodyID id)
+void CJolt_Manager::Destroy_Body(BodyID& id)
 {
     if (!m_pPhysics || id.IsInvalid())
         return;
 
     BodyInterface& bi = m_pPhysics->GetBodyInterface();
+    auto& bli = m_pPhysics->GetBodyLockInterfaceNoLock();
 
+    Body* pBody = bli.TryGetBody(id);
+    if (pBody == nullptr)
+    {
+        id = BodyID();
+        return;
+    }
     if (bi.IsAdded(id))
         bi.RemoveBody(id);
 
     bi.DestroyBody(id);
+
+    id = BodyID();
 
     Remove_BodyDesc(id);
 }

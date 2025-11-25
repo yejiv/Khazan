@@ -80,7 +80,7 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
         m_pVIBufferCom->UpdateTurbulence(fTimeDelta, m_fAccTime);
     }
 
-    if (m_fSpriteTime > m_sData.fSpriteSpeed)
+    if (m_fSpriteTime * 100.f > m_sData.fSpriteSpeed)
     {
         ++m_iUVIdx;
         m_fSpriteTime = 0.f;

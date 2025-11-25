@@ -110,8 +110,6 @@ void CImp_Range::Late_Update(_float fTimeDelta)
 
             if (m_pUI_HP != nullptr)
             {
-                Safe_AddRef(m_pUI_HP);
-
                 m_pUI_HP->Setting_HP(m_vLockOnPosition, { 0.f, 30.f }, &m_fCurrentHP, &m_fMaxHP, &m_fCurrentStamina, &m_fMaxStamina);
                 m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pUI_HP);
             }
@@ -127,7 +125,7 @@ HRESULT CImp_Range::Render()
     return S_OK;
 }
 
-void CImp_Range::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CImp_Range::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
     if (eLayer == COLLISION_LAYER::PLAYER_ATTACK)
@@ -135,11 +133,11 @@ void CImp_Range::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer,
 
 }
 
-void CImp_Range::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CImp_Range::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 }
 
-void CImp_Range::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CImp_Range::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 }
 
@@ -341,7 +339,6 @@ void CImp_Range::Cast_MagicBall(_uint iIndex)
     m_MagicBalls[iIndex] = static_cast<CProjectile_Imp_MagicBall*>(pGameObject);
     if (m_MagicBalls[iIndex] == nullptr)
         return;
-    Safe_AddRef(m_MagicBalls[iIndex]);
 
     _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
@@ -400,10 +397,6 @@ void CImp_Range::Shoot_MagicBall(_uint iIndex)
     pMagicBall->Set_IsActive(true);
     pMagicBall->Fire_Projectile();
 
-
-    Safe_Release(pMagicBall);
-
-    
 }
 
 void CImp_Range::Cast_Boomarang()
@@ -418,7 +411,6 @@ void CImp_Range::Cast_Boomarang()
     m_pBoomarang = static_cast<CProjectile_Boomarang*>(pGameObject);
     if (m_pBoomarang == nullptr)
         return;
-    Safe_AddRef(m_pBoomarang);
 
     _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
@@ -480,15 +472,11 @@ void CImp_Range::Shoot_Boomarang()
     m_pBoomarang->Reset();
     m_pBoomarang->Set_IsActive(true);
     m_pBoomarang->Fire_Projectile();
-
-
-    Safe_Release(m_pBoomarang);
 }
 
 void CImp_Range::HPUI_Dead()
 {
     m_pUI_HP->Update_Visible(false);
-    Safe_Release(m_pUI_HP);
     m_pUI_HP->Set_IsDead(true);
 }
 
@@ -519,12 +507,18 @@ void CImp_Range::Free()
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
     for (_uint i = 0; i < m_MagicBalls.size(); i++)
-        Safe_Release(m_MagicBalls[i]);
-
+    {
+        if (m_MagicBalls[i])
+            m_MagicBalls[i]->Set_IsDead(true);
+    }
+       
     m_MagicBalls.clear();
     
-    Safe_Release(m_pBoomarang);
-    Safe_Release(m_pUI_HP);
+    if (m_pBoomarang)
+        m_pBoomarang->Set_IsDead(true);
+
+    if (m_pUI_HP)
+        m_pUI_HP->Set_IsDead(true);
 
     __super::Free();
 }

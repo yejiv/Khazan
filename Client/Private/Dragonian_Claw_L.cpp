@@ -88,7 +88,7 @@ HRESULT CDragonian_Claw_L::Render()
     return S_OK;
 }
 
-void CDragonian_Claw_L::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CDragonian_Claw_L::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
     if (COLLISION_LAYER::PLAYER == eLayer)
@@ -97,11 +97,11 @@ void CDragonian_Claw_L::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
     }
 }
 
-void CDragonian_Claw_L::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CDragonian_Claw_L::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 }
 
-void CDragonian_Claw_L::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CDragonian_Claw_L::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 }
 

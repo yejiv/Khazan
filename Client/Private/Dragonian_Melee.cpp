@@ -121,17 +121,17 @@ void CDragonian_Melee::Late_Update(_float fTimeDelta)
     CContainerObject::Late_Update(fTimeDelta);
 }
 
-void CDragonian_Melee::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CDragonian_Melee::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CDragonian_Melee::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CDragonian_Melee::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CDragonian_Melee::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CDragonian_Melee::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }
@@ -161,7 +161,6 @@ HRESULT CDragonian_Melee::Ready_ETC()
 {
     m_pUI_HP = static_cast<CMon_HP*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP")));
     CHECK_NULLPTR(m_pUI_HP, E_FAIL);
-    Safe_AddRef(m_pUI_HP);
     m_pUI_HP->Setting_HP(&m_vHpPos, { 0.f, 0.f }, &m_fCurrentHP, &m_fMaxHP, &m_fCurrentStamina, &m_fMaxStamina);
     m_pGameInstance->Push_PoolObject_ToLayer(m_iPrototypeIndex, TEXT("Layer_UI"), m_pUI_HP);
 
@@ -318,7 +317,12 @@ CGameObject* CDragonian_Melee::Clone(void* pArg)
 
 void CDragonian_Melee::Free()
 {
-    Safe_Release(m_pUI_HP);
+    if (m_pUI_HP != nullptr)
+    {
+        m_pUI_HP->Set_IsDead(true);
+    }
+    Safe_Release(m_Data.pOwner);
+
     
     __super::Free();
     Safe_Release(m_pBody);

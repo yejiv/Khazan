@@ -60,8 +60,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
 
     if (FAILED(Ready_AnimationEvent()))
         return E_FAIL;
-
-
+    
     // m_pModelCom->Set_Animation(5);
      /* 부모 트랜스폼 연결 */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
@@ -88,7 +87,6 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
 
 void CBody_Khazan_Spear::Priority_Update(_float fTimeDelta)
 {
-    int a = 10;
     m_pTrail->Priority_Update(fTimeDelta);
 }
 
@@ -119,6 +117,7 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
         m_pMotionTrailCom->Start_MotionTrail(0.5f);
     if (CKhazan_Spear::CHARGING_STRONG_ATTACK & *m_pParentStatus)
         m_pMotionTrailCom->Start_MotionTrail(2.5f);
+
 }
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -375,7 +374,7 @@ void CBody_Khazan_Spear::Render_Part_MotionVector(CModel* pModel)
     }
 }
 
-void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
@@ -389,23 +388,17 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
             if (pMonster == nullptr  || pMonster->Get_CurrentHP() < 0.f)
                 return;
 
-           
-
             pMonster->Take_Damage(m_pPlayerData->fBonusDamage, static_cast<HITREACTION>(*m_pHitReaction), this);
             //pMonster->Take_Damage(m_pPlayerData->fDamage , static_cast<HITREACTION>(*m_pHitReaction), nullptr);
             pMonster->KnockBack(
                 XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION) 
                 - m_pParentTransform->Get_State(STATE::POSITION))
                 , 15.f, 50.f);
+            pMonster->Consume_Stamina(20.f);
             m_isCollision = true;
             CTransform* MonsterTransform = dynamic_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")));  
             XMStoreFloat4(&m_fCollisionPos, MonsterTransform->Get_State(STATE::POSITION));
         }
-
-        CMonster* pMMonste = static_cast<CMonster*>(pDesc->pGameObject);
-        if (pMMonste->Get_Name() != "Yetuga")
-            int a = 10;
-
 
         /*  탐지 */
         CGameObject* pObj = pDesc->pGameObject;
@@ -437,47 +430,31 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 
 }
 
-void CBody_Khazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBody_Khazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER)) {
         CGameObject* pObj = pDesc->pGameObject;
 
         if (!pObj) return;
 
-        if (m_CollMonsters.size() >= 2)
-             int a = 10;
-
-        _bool aa = false;
-        _bool bb = false;
-
-        if (m_CollMonsters.size() >= 2)
-        {
-            aa = bb = true;
-      }
         lock_guard<mutex> lock(m_CollMonsterMutex);
+
         auto it = remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
         if (it != m_CollMonsters.end()) m_CollMonsters.erase(it, m_CollMonsters.end());
-
-        if (m_CollMonsters.size() < 2)
-        {
-             aa = false;
-        }
-        if( !aa && bb)
-             int a = 10 ;
 
         if (m_CollMonsters.empty())
         {
             if (Has_Status(CKhazan_Spear::BRUTAL_BEGIN))
             {
-                if (m_pBrutalAttack && !m_pBrutalAttack->Get_IsDead()) {
-                    m_pBrutalAttack->Off_BrutalAttack();
-                   // Safe_Release(m_pBrutalAttack);
-                }
+                //if (m_pBrutalAttack && !m_pBrutalAttack->Get_IsDead()) {
+                //    m_pBrutalAttack->Off_BrutalAttack();
+                //   // Safe_Release(m_pBrutalAttack);
+                //}
 
                // if (m_pBrutalmonster)
                     //Safe_Release(m_pBrutalmonster);
@@ -505,7 +482,7 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
     lock_guard<mutex> lock(m_CollMonsterMutex);
     for (CGameObject* monster : m_CollMonsters)
     {
-        if (!monster || _CrtIsValidHeapPointer(monster) || monster->Get_IsDead())
+        if (!monster || /*_CrtIsValidHeapPointer(monster) */ monster->Get_IsDead())
             return;
 
         _vector vMonsterPos = monster->Get_Position();
@@ -514,11 +491,11 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
         _float  fDistSq = XMVectorGetX(XMVector3LengthSq(vDiff));
 
         /* 일정 범위에 다가가면  */
-        if (fDistSq < 5.f * 5.f)
+        if (fDistSq < 15.f * 15.f)
         {
 
             /* 후방 */
-            _float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(monster->Get_Look()), XMVector3Normalize(vDiff)));
+          /*  _float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(monster->Get_Look()), XMVector3Normalize(vDiff)));
             if (fDot < 0.f)
             {
 
@@ -533,15 +510,34 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
                 Add_Status(CKhazan_Spear::BRUTAL_BEGIN);
 
                 return;
-            }
+            }*/
 
             /* 몬스터 그로기 상태*/
-            CCreature* pCreatureMoster = static_cast<CCreature*>(monster);
-            if (pCreatureMoster->Get_CurrentStamina() < 5.f)
+            //CCreature* pCreatureMoster = static_cast<CCreature*>(monster);
+            //if (pCreatureMoster->Get_CurrentStamina() < 5.f)
+            //{
+            //    m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+            //    m_pBrutalAttack->Setting_BrutalAttack(reinterpret_cast<const _float4*>(&monster->Get_Transform()->Get_WorldMatrixPtr()->_41), 5.f, { 0.f,8.f });
+            //    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
+
+
+            //    m_pBrutalmonster = monster;
+
+            //    m_isBackBrutal = false;
+            //    m_isGroggyBrutal = true;
+
+            //    Add_Status(CKhazan_Spear::BRUTAL_BEGIN);
+
+            //    return;
+            //}
+
+            CMonster* pCreatureMoster = static_cast<CMonster*>(monster);
+            if (pCreatureMoster->Get_IsGroggy())
             {
-                m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+              /*  m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
                 m_pBrutalAttack->Setting_BrutalAttack(reinterpret_cast<const _float4*>(&monster->Get_Transform()->Get_WorldMatrixPtr()->_41), 5.f, { 0.f,8.f });
-                m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
+                m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);*/
+
                 m_pBrutalmonster = monster;
 
                 m_isBackBrutal = false;
@@ -551,6 +547,7 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
 
                 return;
             }
+
 
         }
     }
@@ -566,22 +563,22 @@ _bool CBody_Khazan_Spear::Check_BrutalAttack(_float fTimeDelta)
     if (Has_Status(CKhazan_Spear::BRUTAL_SUCCESS))
     {
         Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
-        m_pBrutalAttack->Off_BrutalAttack();
+      //  m_pBrutalAttack->Off_BrutalAttack();
         return false;
     }
 
     /* 몬스터가 죽으면  */
     if (!m_pBrutalmonster || m_pBrutalmonster->Get_IsDead()) {
         Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
-        m_pBrutalAttack->Off_BrutalAttack();
+      //  m_pBrutalAttack->Off_BrutalAttack();
         return false;
     }
 
     /* 브루탈 가능 시간이 다 되면 */
-    if (m_pBrutalAttack->Get_IsDead()) {
-        Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
-        return false;
-    }
+    //if (m_pBrutalAttack->Get_IsDead()) {
+    //    Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
+    //    return false;
+    //}
 
     /* 브루탈 가능 범위인지 아닌지 체크 */
     _float  fDistSq = XMVectorGetX(XMVector3LengthSq(XMVectorSet(m_pParentMatrix->_41, m_pParentMatrix->_42, m_pParentMatrix->_43, 1.f) - m_pBrutalmonster->Get_Position()));
@@ -828,6 +825,7 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
     MeshDsc.iTextureIdx = 9;
     MeshDsc.fLifeTime = .25f;
     MeshDsc.iDivisionCount = 10.f;
+
     m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
 
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
@@ -883,14 +881,11 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
     /*보름달 Blust*/
     m_pModelCom->Register_Event("Full_Moon_Spike0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust3(m_pParentTransform->Get_WorldMatrix().r[3]); });
-    m_pModelCom->Register_Event("Full_Moon_Spike1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Spear_Spike(); });
-
+    m_pModelCom->Register_Event("Full_Moon_Spike1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Spear_Spike(); }); 
     /*달빛 베기*/
     m_pModelCom->Register_Event("LightningSpear_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_Trail(); });
     m_pModelCom->Register_Event("LightningSpear_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
-    m_pModelCom->Register_Event("LightningSpear_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust6(m_pParentTransform->Get_WorldMatrix().r[3]); });
-
-
+    m_pModelCom->Register_Event("LightningSpear_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust6(m_pParentTransform->Get_WorldMatrix().r[3]); }); 
     /*나선 찌르기*/
     m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
@@ -1333,7 +1328,7 @@ void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
     {
         m_isSpearTipActive = false;
         m_isSpearFullExtension = true;
-       // m_pBodyCom_SpearTip1->Collision_Active(false);
+        //m_pBodyCom_SpearTip1->Collision_Active(false);
     }
 
 }
@@ -1404,9 +1399,6 @@ void CBody_Khazan_Spear::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
 
-
-    for (auto pObj : m_CollMonsters)
-        Safe_Release(pObj);
     m_CollMonsters.clear();
 
 }

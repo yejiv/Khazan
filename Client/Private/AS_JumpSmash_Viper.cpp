@@ -24,48 +24,36 @@ void CAS_JumpSmash_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     //m_vPeakPos = m_vStartPos;
     //m_vPeakPos.y += 350.f;
 
-    //// 목표 착지 위치는 Enter에서 한 번만 계산 (플레이어 위치 저장)
-    //CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
-    //CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
-    //CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
-    //XMStoreFloat3(&m_vGoalPos, pTargetTransform->Get_State(STATE::POSITION));
+    // 목표 착지 위치는 Enter에서 한 번만 계산 (플레이어 위치 저장)
+    CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+    CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
+    CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
+    XMStoreFloat3(&m_vGoalPos, pTargetTransform->Get_State(STATE::POSITION));
 }
 
 void CAS_JumpSmash_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+    CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
 
-  /*  _float fAnimRatio = pModel->MakeRatio();
-    CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));*/
+ 
+    if (pBB->Get_Value<_bool>(pViper->Get_Name(), "P1_LandStart"))
+    {
+        _float fAnimRatio = pModel->MakeRatio() * 0.5f;
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        _float t = fAnimRatio;
+        t = t * t * t; //점점 빨라지며 떨어짐
 
+        _vector vPeak = XMLoadFloat3(&m_vPeakPos);
+        _vector vGoalPos = XMLoadFloat3(&m_vGoalPos);
 
-    //if (pBB->Get_Value<_bool>(pViper->Get_Name(), "P1_JumpStart"))
-    //{
-    //    _float t = fAnimRatio;
-    //    t = t * t * (3.f - 2.f * t);
+        // XZ만 보간 (공중에서 수직 낙하 보정)
+        _vector vNew = XMVectorLerp(vPeak, vGoalPos, t);
+        vNew.m128_f32[1] = vPeak.m128_f32[1] - (350.f * t);
 
-    //    _vector vStart = XMLoadFloat3(&m_vStartPos);
-    //    _vector vPeak = XMLoadFloat3(&m_vPeakPos);
-    //    _vector vNew = XMVectorLerp(vStart, vPeak, t);
-
-    //    pOwnerTransform->Set_State(STATE::POSITION, vNew);
-    //}
-
-    //else if (pBB->Get_Value<_bool>(pViper->Get_Name(), "P1_LandStart"))
-    //{
-    //    _float t = fAnimRatio;
-    //    t = t * t * t; //점점 빨라지며 떨어짐
-
-    //    _vector vPeak = XMLoadFloat3(&m_vPeakPos);
-    //    _vector vGoalPos = XMLoadFloat3(&m_vGoalPos);
-
-    //    // XZ만 보간 (공중에서 수직 낙하 보정)
-    //    _vector vNew = XMVectorLerp(vPeak, vGoalPos, t);
-    //    vNew.m128_f32[1] = vPeak.m128_f32[1] - (350.f * t); // Y축 직접 계산 (훅 떨어짐 효과)
-
-    //    pOwnerTransform->Set_State(STATE::POSITION, vNew);
-    //}
+        pOwnerTransform->Set_State(STATE::POSITION, vNew);
+    }
 
 
     if (pModel->Play_Animation(fTimeDelta))

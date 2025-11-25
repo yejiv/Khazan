@@ -238,7 +238,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	if (m_pOctree)
 		m_pOctree->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-	//	m_pDecal_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+	m_pDecal_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	// Renderer Resources
 	m_pCSM->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
@@ -248,12 +248,11 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	m_pDistortion->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
     m_pRadialBlur->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
+    m_pLight_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
+
 	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
-
-
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
-
 
 #ifdef _DEBUG
 
@@ -712,6 +711,16 @@ HRESULT CGameInstance::Render_Lights(CShader* pShader, CVIBuffer_Rect* pVIBuffer
 	return m_pLight_Manager->Render(pShader, pVIBuffer, iLevelIndex);
 }
 
+const vector<_wstring>& CGameInstance::Get_LightTags(_uint iLevelIndex)
+{
+    return m_pLight_Manager->Get_LightTags(iLevelIndex);
+}
+
+void CGameInstance::Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc)
+{
+    m_pLight_Manager->Start_LightTransition(strLightTag, iLevelIndex, Desc);
+}
+
 #pragma endregion
 
 #pragma region FONT_MANAGER
@@ -992,7 +1001,7 @@ void CGameInstance::Remove_BodyDesc(BodyID id)
 	m_pJolt_Manager->Remove_BodyDesc(id);
 }
 
-void CGameInstance::Destroy_Body(BodyID id)
+void CGameInstance::Destroy_Body(BodyID& id)
 {
     m_pJolt_Manager->Destroy_Body(id);
 }
@@ -1416,6 +1425,11 @@ void CGameInstance::Batch_Decal(CDecal* pDecal)
     m_pDecal_Manager->Batch_Decal(pDecal);
 }
 
+void CGameInstance::Decal_Clear()
+{
+    m_pDecal_Manager->Decal_Clear();
+}
+
 #pragma endregion
 
 #pragma region EFFECT_MANAGER
@@ -1662,11 +1676,11 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pCSM);
 
 	Safe_Release(m_pComputeShader_Manager);
-	Safe_Release(m_pPool_Manager);
+	
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pFrustum);
-	Safe_Release(m_pEvent_Manager);
+	
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pInput_Manager);
@@ -1681,6 +1695,8 @@ void CGameInstance::Release_Engine()
     Safe_Release(m_pEffect_Manager);
 	Safe_Release(m_pPrototype_Manager);	
 	Safe_Release(m_pLevel_Manager);
+    Safe_Release(m_pPool_Manager);
+    Safe_Release(m_pEvent_Manager);
     Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pGraphic_Device);
     

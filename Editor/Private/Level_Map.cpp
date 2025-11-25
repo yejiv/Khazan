@@ -915,6 +915,10 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
     m_Prototypes_Inter.push_back("GearGate");
     m_Prototypes_Inter.push_back("UnLockGear");
     m_Prototypes_Inter.push_back("LargeElevator");
+    m_Prototypes_Inter.push_back("GiantGate");
+    m_Prototypes_Inter.push_back("NPC_Daphrona");
+    m_Prototypes_Inter.push_back("NPC_Duimuk");
+    m_Prototypes_Inter.push_back("NPC_Danjin");
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -1213,6 +1217,66 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_LargeElevator"), TIME_CHANNEL::WORLD, &LargeElevatorDesc), );
+                }
+                else if ("GiantGate" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CGiantGate::GIANTGATE_DESC GiantGateDesc = {};
+
+                    GiantGateDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    GiantGateDesc.eLevel = LEVEL::MAP;
+                    memcpy(GiantGateDesc.szModelName, strModelTag.c_str(), sizeof(GiantGateDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&GiantGateDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    GiantGateDesc.eInteractiveType = INTERACTIVE_TYPE::GIANTGATE;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_GiantGate"), TIME_CHANNEL::WORLD, &GiantGateDesc), );
+                }
+                else if ("NPC_Daphrona" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CNPC_Daphrona::DAPHRONA_DESC DaphronaDesc = {};
+
+                    DaphronaDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    DaphronaDesc.eLevel = LEVEL::MAP;
+                    memcpy(DaphronaDesc.szModelName, strModelTag.c_str(), sizeof(DaphronaDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&DaphronaDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    DaphronaDesc.eInteractiveType = INTERACTIVE_TYPE::DAPHRONA;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Daphrona"), TIME_CHANNEL::WORLD, &DaphronaDesc), );
+                }
+                else if ("NPC_Duimuk" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CNPC_Duimuk::DUIMUK_DESC DuimukDesc = {};
+
+                    DuimukDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    DuimukDesc.eLevel = LEVEL::MAP;
+                    memcpy(DuimukDesc.szModelName, strModelTag.c_str(), sizeof(DuimukDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&DuimukDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    DuimukDesc.eInteractiveType = INTERACTIVE_TYPE::DUIMUK;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Duimuk"), TIME_CHANNEL::WORLD, &DuimukDesc), );
+                }
+                else if ("NPC_Danjin" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CNPC_Danjin::DANJIN_DESC DanjinDesc = {};
+
+                    DanjinDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    DanjinDesc.eLevel = LEVEL::MAP;
+                    memcpy(DanjinDesc.szModelName, strModelTag.c_str(), sizeof(DanjinDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&DanjinDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    DanjinDesc.eInteractiveType = INTERACTIVE_TYPE::DANJIN;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Danjin"), TIME_CHANNEL::WORLD, &DanjinDesc), );
                 }
 #pragma endregion
 
@@ -1704,6 +1768,34 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 
                     pElevator->Set_Elevator_DownPos(vSetPos);
                 } SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::GIANTGATE == m_pFixPropObj->Get_InteractiveType())
+            {
+                CIronGate* pIronGate = static_cast<CIronGate*>(m_pFixPropObj);
+
+                ImGui::Text("== GIANT GATE ==");
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::DAPHRONA == m_pFixPropObj->Get_InteractiveType())
+            {
+                CNPC_Daphrona* pDaphrona = static_cast<CNPC_Daphrona*>(m_pFixPropObj);
+
+                ImGui::Text("== DAPHRONA ==");
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::DUIMUK == m_pFixPropObj->Get_InteractiveType())
+            {
+                CNPC_Duimuk* pDuimuk = static_cast<CNPC_Duimuk*>(m_pFixPropObj);
+
+                ImGui::Text("== DUIMUK ==");
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::DANJIN == m_pFixPropObj->Get_InteractiveType())
+            {
+                CNPC_Danjin* pDanjin = static_cast<CNPC_Danjin*>(m_pFixPropObj);
+
+                ImGui::Text("== DANJIN ==");
+                SEPARATOR;
             }
 
 #pragma endregion
@@ -2284,6 +2376,18 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
                             m_vElevatorUpPos = pElevator->Get_Elevator_UpPos();
                             m_vElevatorMidPos = pElevator->Get_Elevator_MidPos();
                             m_vElevatorDownPos = pElevator->Get_Elevator_DownPos();
+                        }
+
+                        if (INTERACTIVE_TYPE::GIANTGATE == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            CGiantGate* pGiantGate = static_cast<CGiantGate*>(m_pFixPropObj);
+                        }
+
+                        if (INTERACTIVE_TYPE::DAPHRONA == m_pFixPropObj->Get_InteractiveType() ||
+                            INTERACTIVE_TYPE::DUIMUK == m_pFixPropObj->Get_InteractiveType() ||
+                            INTERACTIVE_TYPE::DANJIN == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            // NPC 일단 빈칸
                         }
 
 						m_isFixInteractObjectWindow = true;
@@ -4568,6 +4672,16 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 
                 WriteFile(hObjectFile, &ElevatorPos, sizeof(CElevatorL::LARGE_ELEVATOR_POS), &dwByte, nullptr);
             }
+            if (INTERACTIVE_TYPE::GIANTGATE == eType)
+            {
+                // 큰 문 일단 공백
+            }
+            if (INTERACTIVE_TYPE::DAPHRONA == m_pFixPropObj->Get_InteractiveType() ||
+                INTERACTIVE_TYPE::DUIMUK == m_pFixPropObj->Get_InteractiveType() ||
+                INTERACTIVE_TYPE::DANJIN == m_pFixPropObj->Get_InteractiveType())
+            {
+                // NPC 일단 공백
+            }
 		}
 	}
 
@@ -5327,6 +5441,66 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_LargeElevator"), TIME_CHANNEL::WORLD, &ElevatorDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::GIANTGATE == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CGiantGate::GIANTGATE_DESC GiantGateDesc = {};
+
+                GiantGateDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                GiantGateDesc.eLevel = LEVEL::MAP;
+                memcpy(GiantGateDesc.szModelName, TEXT("Prototype_Component_Model_GiantGate"), sizeof(GiantGateDesc.szModelName));		// 프로토타입 태그명
+
+                GiantGateDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                GiantGateDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_GiantGate"), TIME_CHANNEL::WORLD, &GiantGateDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::DAPHRONA == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CNPC_Daphrona::DAPHRONA_DESC DaphronaDesc = {};
+
+                DaphronaDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                DaphronaDesc.eLevel = LEVEL::MAP;
+                memcpy(DaphronaDesc.szModelName, TEXT("Prototype_Component_Model_NPC_Daphrona"), sizeof(DaphronaDesc.szModelName));		// 프로토타입 태그명
+
+                DaphronaDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                DaphronaDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Daphrona"), TIME_CHANNEL::WORLD, &DaphronaDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::DUIMUK == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CNPC_Duimuk::DUIMUK_DESC DuimukDesc = {};
+
+                DuimukDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                DuimukDesc.eLevel = LEVEL::MAP;
+                memcpy(DuimukDesc.szModelName, TEXT("Prototype_Component_Model_NPC_Duimuk"), sizeof(DuimukDesc.szModelName));		// 프로토타입 태그명
+
+                DuimukDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                DuimukDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Duimuk"), TIME_CHANNEL::WORLD, &DuimukDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::DANJIN == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CNPC_Danjin::DANJIN_DESC DanjinDesc = {};
+
+                DanjinDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                DanjinDesc.eLevel = LEVEL::MAP;
+                memcpy(DanjinDesc.szModelName, TEXT("Prototype_Component_Model_NPC_Danjin"), sizeof(DanjinDesc.szModelName));		// 프로토타입 태그명
+
+                DanjinDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                DanjinDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Danjin"), TIME_CHANNEL::WORLD, &DanjinDesc), false);
             }
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));

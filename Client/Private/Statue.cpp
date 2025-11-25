@@ -57,7 +57,7 @@ HRESULT CStatue::Initialize_Clone(void* pArg)
     m_pModelCom->Play_Animation(0.f);
     m_pModelCom->Set_AnimationBlend(true);
 
-    m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
+    m_iObjectInteractEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
             m_Event = e;
         });
@@ -76,7 +76,7 @@ HRESULT CStatue::Initialize_Clone(void* pArg)
     }
 
     if (EVENT_TYPE::END != m_eEventType)
-        m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(m_eEventType), [&](const EventGimmick& e) { m_EventGimmick = e; });
+        m_iEventID = m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(m_eEventType), [&](const EventGimmick& e) { m_EventGimmick = e; });
 
     if (m_iUnLockRotation == m_iRotation)
     {
@@ -282,8 +282,6 @@ HRESULT CStatue::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    Safe_AddRef(m_pGuide);
-
     m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("돌리"), 1.f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_UI"), m_pGuide);
@@ -452,7 +450,7 @@ void CStatue::Animation_Change(_float fTimeDelta)
         m_pGuide->Update_Visible(true);
 }
 
-void CStatue::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CStatue::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -466,7 +464,7 @@ void CStatue::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _
     m_isCollision = true;
 }
 
-void CStatue::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CStatue::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -477,7 +475,7 @@ void CStatue::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _f
     m_isCollision = true;
 }
 
-void CStatue::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer)
+void CStatue::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -550,6 +548,11 @@ CGameObject* CStatue::Clone(void* pArg)
 
 void CStatue::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iObjectInteractEventID);
+
+    if (EVENT_TYPE::END != m_eEventType)
+        m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(m_eEventType), m_iEventID);
+
     __super::Free();
 
     Safe_Release(m_pStaticCom);
@@ -559,6 +562,5 @@ void CStatue::Free()
     if (nullptr != m_pGuide)
     {
         m_pGuide->Set_IsDead(true);
-        Safe_Release(m_pGuide);
     }
 }
