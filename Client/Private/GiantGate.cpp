@@ -293,7 +293,7 @@ void CGiantGate::Animation_Change(_float fTimeDelta)
 {
 }
 
-void CGiantGate::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CGiantGate::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -304,7 +304,7 @@ void CGiantGate::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer,
     m_isCollision = true;
 }
 
-void CGiantGate::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CGiantGate::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -312,7 +312,7 @@ void CGiantGate::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, 
     m_isCollision = true;
 }
 
-void CGiantGate::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CGiantGate::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;

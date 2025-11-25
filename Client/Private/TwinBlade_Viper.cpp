@@ -122,7 +122,7 @@ HRESULT CTwinBlade_Viper::Render()
     return S_OK;
 }
 
-void CTwinBlade_Viper::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CTwinBlade_Viper::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
     if (COLLISION_LAYER::PLAYER == eLayer)
@@ -133,11 +133,11 @@ void CTwinBlade_Viper::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObject
 
 }
 
-void CTwinBlade_Viper::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CTwinBlade_Viper::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 }
 
-void CTwinBlade_Viper::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CTwinBlade_Viper::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 }
 
@@ -159,7 +159,7 @@ HRESULT CTwinBlade_Viper::Ready_Components()
 HRESULT CTwinBlade_Viper::Ready_Collision()
 {
     CBody::BODY_SPHERESHAPE_DESC RigthBodyDesc{};
-    RigthBodyDesc.fRadius = 1.3f;
+    RigthBodyDesc.fRadius = 2.f;
     RigthBodyDesc.eMotion = EMotionType::Kinematic;
     RigthBodyDesc.eQuality = EMotionQuality::Discrete;
     RigthBodyDesc.eShapeType = SHAPE::SPHERE;
@@ -177,7 +177,7 @@ HRESULT CTwinBlade_Viper::Ready_Collision()
     RigthBodyDesc.vPos = _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
     RigthBodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
-    RigthBodyDesc.vShapeOffset = _float3(0.f, 1.5f, 0.f);
+    RigthBodyDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
 
     m_tCollisionDesc.pGameObject = this;
     RigthBodyDesc.pCollisionDesc = &m_tCollisionDesc;
@@ -190,7 +190,7 @@ HRESULT CTwinBlade_Viper::Ready_Collision()
 
 
     CBody::BODY_SPHERESHAPE_DESC LeftBodyDesc{};
-    LeftBodyDesc.fRadius = 1.8f;
+    LeftBodyDesc.fRadius = 2.f;
     LeftBodyDesc.eMotion = EMotionType::Kinematic;
     LeftBodyDesc.eQuality = EMotionQuality::Discrete;
     LeftBodyDesc.eShapeType = SHAPE::SPHERE;
@@ -206,7 +206,7 @@ HRESULT CTwinBlade_Viper::Ready_Collision()
     LeftBodyDesc.vPos = _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
     LeftBodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
-    LeftBodyDesc.vShapeOffset = _float3(0.f, -1.8f, 0.f);
+    LeftBodyDesc.vShapeOffset = _float3(0.f, -0.5f, 0.f);
 
     m_tCollisionDesc.pGameObject = this;
     LeftBodyDesc.pCollisionDesc = &m_tCollisionDesc;

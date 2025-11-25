@@ -202,13 +202,13 @@ HRESULT CProjectile_Yetuga::Bind_ShaderResources()
 	return S_OK;
 }
 
-void CProjectile_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CProjectile_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 	
 
 }
 
-void CProjectile_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CProjectile_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 	if (PRJSTATE::LOOP == m_eState)
 	{
@@ -222,7 +222,7 @@ void CProjectile_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjec
 	}
 }
 
-void CProjectile_Yetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CProjectile_Yetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }

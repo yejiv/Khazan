@@ -86,6 +86,10 @@ void CLevel_Embars::Update(_float fTimeDelta)
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
 
+    if (m_pGameInstance->Key_Down(DIK_RETURN))
+        if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))))
+            return;
+
 	return;
 }
 
@@ -135,7 +139,7 @@ HRESULT CLevel_Embars::Ready_Layer_Camera(const _wstring& strLayerTag)
     PlayerCameraDesc.iCameraType = ENUM_CLASS(CAMERATYPE::PLAYER);
 
     CCamera_Compre* pCamera_Player = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Camera_Compre"), &PlayerCameraDesc));
-    pCamera_Player->Set_IsActive(false);
+    pCamera_Player->Set_IsActive(true);
     CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Creature_Player"));
     pCamera_Player->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 

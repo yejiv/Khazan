@@ -197,9 +197,11 @@
     <ClInclude Include="..\Public\AS_Dr_Rampage_Dead.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Groggy.h" />
     <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h" />
+    <ClInclude Include="..\Public\AS_Groggy_Viper.h" />
     <ClInclude Include="..\Public\AS_Groggy_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Hit_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Hit_Imp_Range.h" />
+    <ClInclude Include="..\Public\AS_Hit_Viper.h" />
     <ClInclude Include="..\Public\AS_Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_IceBreath_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Idle_Gomdol.h" />
@@ -560,6 +562,8 @@
     <ClCompile Include="..\Private\AS_Dr_Rampage_Walk.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_LockOn.cpp" />
     <ClCompile Include="..\private\AS_Dr_Rampage_Attack_Jump.cpp" />
+    <ClCompile Include="..\Private\AS_Groggy_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_Hit_Viper.cpp" />
     <ClCompile Include="..\Private\AS_StingGrab_Viper.cpp" />
     <ClCompile Include="..\private\Body_Dragonian_Melee.cpp" />
     <ClCompile Include="..\Private\AS_5HitCombo_Viper.cpp" />

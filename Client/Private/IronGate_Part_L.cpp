@@ -125,9 +125,9 @@ HRESULT CIronGate_Part_L::Bind_Materials(_uint iMeshIndex)
         m_iMtrlFlags |= M_EMISSIVE;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
         m_iMtrlFlags |= M_SPECULAR;
-    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalicTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
         m_iMtrlFlags |= M_METALIC;
-    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
         m_iMtrlFlags |= M_ROUGHNESS;
 
     m_iMtrlFlags &= ~M_EMISSIVE;

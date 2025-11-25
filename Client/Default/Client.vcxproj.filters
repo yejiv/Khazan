@@ -1195,6 +1195,12 @@
     <Filter Include="92.AI\State\Viper\15.StingGrab">
       <UniqueIdentifier>{b9672729-3c7b-40dc-ae1f-65294ca5675c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Viper\16.Groggy">
+      <UniqueIdentifier>{866f7ef1-47f6-4e4e-ba03-2222a67a888e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\17.Hit">
+      <UniqueIdentifier>{6559fa14-d2bf-4014-b8b1-984282d4e467}</UniqueIdentifier>
+    </Filter>
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate">
       <UniqueIdentifier>{d31b73c6-3673-4519-947e-cb0755c60905}</UniqueIdentifier>
     </Filter>
@@ -2319,6 +2325,12 @@
     <ClInclude Include="..\Public\AS_StingGrab_Viper.h">
       <Filter>92.AI\State\Viper\15.StingGrab</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_Groggy_Viper.h">
+      <Filter>92.AI\State\Viper\16.Groggy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Hit_Viper.h">
+      <Filter>92.AI\State\Viper\17.Hit</Filter>
+    </ClInclude>
     <ClInclude Include="..\Public\GiantGate.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate</Filter>
     </ClInclude>
@@ -3422,6 +3434,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_StingGrab_Viper.cpp">
       <Filter>92.AI\State\Viper\15.StingGrab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Groggy_Viper.cpp">
+      <Filter>92.AI\State\Viper\16.Groggy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Hit_Viper.cpp">
+      <Filter>92.AI\State\Viper\17.Hit</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\GiantGate.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate</Filter>

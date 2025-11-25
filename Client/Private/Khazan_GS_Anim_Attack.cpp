@@ -59,6 +59,8 @@ void CKhazan_GS_Anim_Attack::Continue(_float fTimeDelta)
 
     Update_DodgeAttackCharge();
 
+    Update_BrutalAttack();
+
     if (!m_isFastChargeStart) Update_FastAttackCombo();
 
     if (m_isSkillSingle) Update_Skill_Single();
@@ -369,7 +371,30 @@ void CKhazan_GS_Anim_Attack::Execute_DodgeAttack()
 
 _bool CKhazan_GS_Anim_Attack::Try_GrappleAttack()
 {
-    return _bool();
+    if (m_isAttacking)
+        return false;
+
+    m_isAttacking = true;
+    m_isBrutalStart = true;
+    m_isBrutalEnd = false;
+    m_iReserveSkillIndex = 0;
+
+    m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_Grapple_Atk_01");
+    m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 3.3f;
+
+    return true;
+}
+
+void CKhazan_GS_Anim_Attack::Execute_GappleAttack()
+{
+    m_isBrutalSecondAttack = true;
+
+    m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_Grapple_Atk_02");
+    m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 9.99f;
 }
 
 _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
@@ -483,7 +508,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
             return false;
 
         Clear_All();
-        m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_WarDeclaration");
+        m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_WarDeclaration_Atk");
         m_isSkillSingle = true;
         //m_isSkillChargeEnd = false;
         //m_isWarCry = true;
@@ -589,6 +614,7 @@ void CKhazan_GS_Anim_Attack::Clear_Skill()
     m_iCurSkillIndex = { 0 };
     m_isSkillChargeEnd = { false };
     m_isSkillChargeAttack = { false };
+    m_isSkillSingle = { false };
     m_isBreathaking = { false };
     m_isBreathaking_Embryonic = { false };
     m_isBreathaking_Bloodshed = { false };
@@ -596,10 +622,19 @@ void CKhazan_GS_Anim_Attack::Clear_Skill()
     m_isPhantom = { false };
     m_isBreakThrough = { false };
     m_isWarCry = { false };
+    m_isInnerFury = { false };
+    m_isPossibleBreathtaking = { false };
 
     //m_pClientInstance->Set_UnUsedAllSkills();
     m_pClientInstance->Set_UsedSkills(
-        GS_SKILL::BREATHTAKING | GS_SKILL::BREATHTAKING_BLOODSHED | GS_SKILL::BREATHTAKING_EMBRYONIC | GS_SKILL::GIANTHUNT | GS_SKILL::PHANTOM_SHADOWOFDARKNESS | GS_SKILL::BREAK_THROUGH | GS_SKILL::WARCRY | GS_SKILL::INNER_FURY
+        GS_SKILL::BREATHTAKING 
+        | GS_SKILL::BREATHTAKING_BLOODSHED
+        | GS_SKILL::BREATHTAKING_EMBRYONIC
+        | GS_SKILL::GIANTHUNT
+        | GS_SKILL::PHANTOM_SHADOWOFDARKNESS 
+        | GS_SKILL::BREAK_THROUGH
+        | GS_SKILL::WARCRY 
+        | GS_SKILL::INNER_FURY
         , false
     );
 }
@@ -620,7 +655,8 @@ void CKhazan_GS_Anim_Attack::Clear_All()
     m_isFastChargeStart = { false };
     m_isFastChargeEnd = { false };
     m_isFastChargedAttack = { false };
-    m_isStrongChargeStart = { false };
+    m_isStrongAttack = { false };
+    m_isStrongChargeStart = { false }; 
     m_isStrongChargeEnd = { false };
     m_isStrongChargedAttack = { false };
     m_isSprintChargeStart = { false };
@@ -630,7 +666,10 @@ void CKhazan_GS_Anim_Attack::Clear_All()
     m_isDodgeChargeStart = { false };
     m_isDodgeChargeEnd = { false };
     m_isDodgeChargedAttack = { false };
-    m_isAutoComboBrutal = { false };
+    m_isBrutalStart = { false };
+    m_isBrutalEnd = { false };
+    m_isBrutalSecondAttack = { false };
+
     m_iCurSkillIndex = { 0 };
     m_isSkillChargeEnd = { false };
     m_isSkillChargeAttack = { false };
@@ -642,10 +681,19 @@ void CKhazan_GS_Anim_Attack::Clear_All()
     m_isPhantom = { false };
     m_isBreakThrough = { false };
     m_isWarCry = { false };
+    m_isInnerFury = { false };
+    m_isPossibleBreathtaking = { false };
 
     //m_pClientInstance->Set_UnUsedAllSkills();
     m_pClientInstance->Set_UsedSkills(
-        GS_SKILL::BREATHTAKING | GS_SKILL::BREATHTAKING_BLOODSHED | GS_SKILL::BREATHTAKING_EMBRYONIC | GS_SKILL::GIANTHUNT | GS_SKILL::PHANTOM_SHADOWOFDARKNESS | GS_SKILL::BREAK_THROUGH | GS_SKILL::WARCRY | GS_SKILL::INNER_FURY
+        GS_SKILL::BREATHTAKING 
+        | GS_SKILL::BREATHTAKING_BLOODSHED
+        | GS_SKILL::BREATHTAKING_EMBRYONIC
+        | GS_SKILL::GIANTHUNT 
+        | GS_SKILL::PHANTOM_SHADOWOFDARKNESS
+        | GS_SKILL::BREAK_THROUGH 
+        | GS_SKILL::WARCRY 
+        | GS_SKILL::INNER_FURY
         , false
     );
 }
@@ -884,6 +932,42 @@ void CKhazan_GS_Anim_Attack::Update_DodgeAttackCharge()
 
 }
 
+void CKhazan_GS_Anim_Attack::Update_BrutalAttack()
+{
+    /* 브루탈 어택이 아니면 리턴 */
+    if (!m_isBrutalStart)
+        return;
+
+    _bool isCurAnimStart = m_pModel->IsAnimationStart(m_iSelectedAnimationIndex);
+    _bool isMinTime = m_pModel->Check_MinAnimationTime();
+
+    /* 현재 애니메이션이 시작안했으면 리턴 */
+    if (!isCurAnimStart)
+        return;
+
+    /* 현재 애니메이션이 최소 보장 시간이 안지났으면 리턴  */
+    if (isCurAnimStart && !isMinTime)
+        return;
+
+    /* 브루탈 2번쨰 공격을 아직 안했으면 해라 */
+    if (!m_isBrutalEnd)
+    {
+        m_isBrutalEnd = true;
+        Execute_GappleAttack();
+        return;
+    }
+
+    /* 차징공격까지 다 끝마쳣으면 Clear */
+    if (m_isBrutalSecondAttack && isMinTime)
+    {
+        m_isAttacking = { false };
+        m_isBrutalStart = { false };
+        m_isBrutalEnd = { false };
+        m_isBrutalSecondAttack = { false };
+    }
+
+}
+
 void CKhazan_GS_Anim_Attack::Update_Skill_Single()
 {
     if (m_pModel->IsAnimationStart(m_iSelectedAnimationIndex) && m_pModel->Check_MinAnimationTime())
@@ -929,7 +1013,7 @@ void CKhazan_GS_Anim_Attack::Update_Skill_Breathaking()
     }
 
     /* 차징공격까지 다 끝마쳣으면 Clear */
-    if (m_isSkillChargeAttack && isMinTime)
+    if (m_isSkillChargeAttack && /*isMinTime*/ m_pModel->IsFinished())
     {
         m_isSkilling = { false };
         m_isAttacking = { false };

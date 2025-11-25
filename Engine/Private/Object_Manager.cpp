@@ -57,7 +57,7 @@ HRESULT CObject_Manager::Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _w
 	CLayer* pLayer = Find_Layer(iLayerLevelIndex, strLayerTag);
 	if (nullptr == pLayer)
 	{
-		pLayer = CLayer::Create();
+ 		pLayer = CLayer::Create();
 		pLayer->Add_GameObject(pGameObject);
 		pLayer->Set_TimeChannel(eTimeChannel);
 		m_pLayers[iLayerLevelIndex].emplace(strLayerTag, pLayer);

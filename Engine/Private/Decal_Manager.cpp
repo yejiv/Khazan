@@ -113,6 +113,13 @@ HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLeve
     return S_OK;
 }
 
+void CDecal_Manager::Decal_Clear()
+{
+    for (auto& pDecal : m_Decals)
+        Safe_Release(pDecal);
+    m_Decals.clear();
+}
+
 HRESULT CDecal_Manager::Ready_Components()
 {
     // Engine_Shader_Decal.hlsl 생성

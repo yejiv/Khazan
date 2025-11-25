@@ -56,7 +56,7 @@ void CAS_SideMove_P1_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
             pOwnerTransform->LookAt(vTargetPos);
             
             pModel->Set_Animation(18); 
-            pModel->Set_BlendTime(0.08f);
+            pModel->Set_BlendTime(0.05f);
             m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 1.f, 0.1f, 0.25f);
             m_eState = P1SIDEMOVESTATE::ATTACK;
         }
