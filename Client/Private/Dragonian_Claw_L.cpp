@@ -1,5 +1,6 @@
 #include "Dragonian_Claw_L.h"
 #include "GameInstance.h"
+#include "AI_Controller.h"
 
 CDragonian_Claw_L::CDragonian_Claw_L(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CPartObject{ pDevice,pContext }
@@ -20,18 +21,18 @@ HRESULT CDragonian_Claw_L::Initialize_Prototype(_int iLevel)
 HRESULT CDragonian_Claw_L::Initialize_Clone(void* pArg)
 {
     WEAPON_DESC* pDesc = static_cast<WEAPON_DESC*>(pArg);
-
-    m_pOwnerTransform = pDesc->pOwnerTransform;
-    if (!m_pOwnerTransform) return E_FAIL;
-    Safe_AddRef(m_pOwnerTransform);
-
+    m_pData = pDesc->pData;
     m_pSocketMatrix = pDesc->pSocketMatrix;
 
-    if (FAILED(__super::Initialize_Clone(pArg))) return E_FAIL;
-    if (FAILED(Ready_Components())) return E_FAIL;
-    if (FAILED(Ready_Collision())) return E_FAIL;
+    m_pOwnerTransform = pDesc->pOwnerTransform;
+    CHECK_NULLPTR(m_pOwnerTransform, E_FAIL);
+    Safe_AddRef(m_pOwnerTransform);
 
-    m_pTransformCom->Rotation(XMConvertToRadians(180.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
+    CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
+    m_pTransformCom->Rotation(XMConvertToRadians(0.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
+    CHECK_FAILED(Ready_Components(), E_FAIL);
+    CHECK_FAILED(Ready_Collision(), E_FAIL);
+
 
     return S_OK;
 }
@@ -42,43 +43,39 @@ void CDragonian_Claw_L::Priority_Update(_float fTimeDelta)
 
 void CDragonian_Claw_L::Update(_float fTimeDelta)
 {
+    m_pTransformCom->Rotation(XMConvertToRadians(45.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
+
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 
     for (uint32_t i = 0; i < 3; i++)
         BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
-    XMStoreFloat4x4(
-        &m_CombinedWorldMatrix,
-        m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
-    );
+    XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+    m_pBodyComp->Collision_Active(false);
 
+    //    if (!m_pData->isAttack_Collision)
+    //        return;
 
-    _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
-
-    _vector vScale, vQuat, vPos;
-    XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
-
-    m_pBodyComp->Sync_Update(WeaponWorld);
-    m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
-
-
-    XMStoreFloat4(&m_vTipPos, vPos);
+    //_matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
+    //
+    //_vector vScale, vQuat, vPos;
+    //XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
+    //
+    //m_pBodyComp->Sync_Update(WeaponWorld);
+    //m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
 
 }
 
 void CDragonian_Claw_L::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
-        return;
+    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this));
 }
 
 HRESULT CDragonian_Claw_L::Render()
 {
-    if (FAILED(Bind_ShaderResources()))
-        return E_FAIL;
+    CHECK_FAILED(Bind_ShaderResources(), E_FAIL);
 
     uint32_t iNumMeshes = m_pModelCom->Get_NumMeshes();
-
     for (uint32_t i = 0; i < iNumMeshes; i++)
     {
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
@@ -93,7 +90,11 @@ HRESULT CDragonian_Claw_L::Render()
 
 void CDragonian_Claw_L::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        m_pData->pOwner->Get_Controller()->AI_React_Collision(pDesc, iOtherObjectLayer, m_pData->pOwner);
+    }
 }
 
 void CDragonian_Claw_L::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -106,13 +107,8 @@ void CDragonian_Claw_L::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObject
 
 HRESULT CDragonian_Claw_L::Ready_Components()
 {
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
-        TEXT("Com_Shader"), (CComponent**)&m_pShaderCom, nullptr)))
-        return E_FAIL;
-
-    if (FAILED(CGameObject::Add_Component(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_DragonClaw_L"),
-        TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr)))
-        return E_FAIL;
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom, nullptr), E_FAIL);
+    CHECK_FAILED(CGameObject::Add_Component(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_DragonClaw_L"), TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr), E_FAIL);
 
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
 
@@ -121,50 +117,34 @@ HRESULT CDragonian_Claw_L::Ready_Components()
 
 HRESULT CDragonian_Claw_L::Ready_Collision()
 {
+    m_tCollisionDesc.pGameObject = this;
+
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
-    BodyDesc.fRadius = 0.05f;
+    BodyDesc.fRadius = 1.f;
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::SPHERE;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
     BodyDesc.bIsTrigger = true;
 
-    _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+    XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(m_pSocketMatrix) * XMLoadFloat4x4(m_pParentMatrix));
+    BodyDesc.vPos = { m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43 };
+    XMStoreFloat4(&BodyDesc.vQuat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&m_CombinedWorldMatrix)));
 
-    XMStoreFloat4x4(&m_CombinedWorldMatrix,
-        m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
-
-    _vector vScale, vQuat, vPos;
-    XMMatrixDecompose(&vScale, &vQuat, &vPos, XMLoadFloat4x4(&m_CombinedWorldMatrix));
-
-    BodyDesc.vPos = _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
-    BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
-
-    BodyDesc.vShapeOffset = _float3(0.f, 0.75f, 0.f);
-
-    m_tCollisionDesc.pGameObject = this;
+    BodyDesc.vShapeOffset = _float3(-0.3f, -0.3f, 0.f);
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    if (FAILED(CGameObject::Add_Component(
-        ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-        TEXT("Com_Body_RH"), (CComponent**)&m_pBodyComp, &BodyDesc)))
-        return E_FAIL;
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_Body"), (CComponent**)&m_pBodyComp, &BodyDesc), E_FAIL);
+
 
     return S_OK;
 }
 
 HRESULT CDragonian_Claw_L::Bind_ShaderResources()
 {
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
-        return E_FAIL;
-
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix",
-        m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
-        return E_FAIL;
-
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix",
-        m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
-        return E_FAIL;
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix), E_FAIL);
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
 
     return S_OK;
 }

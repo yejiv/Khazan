@@ -150,13 +150,7 @@ HRESULT CLevel_Viper::Ready_Layer_Camera(const _wstring& strLayerTag)
 
     static_cast<CKhazan_Spear*>(pPlayer)->Set_Camera(pCamera_Player);
 
-    m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::VIPER), pCamera_Player);
-
-    m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pCamera_Player);
-
-    m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::PLAYER));
-
-    return S_OK;
+	m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::PLAYER));
 }
 
 HRESULT CLevel_Viper::Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
@@ -826,7 +820,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
     //     ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Viper"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
     //     return E_FAIL; 
 
-    //CMonster::MONSTER_DESC MonsterDesc{};
+    CMonster::MONSTER_DESC MonsterDesc{};
     //MonsterDesc.fAttack = 10.f;
     //MonsterDesc.fMaxHP = 100.f;
     //MonsterDesc.fMaxStamina = 100.f;
@@ -835,34 +829,35 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
     //MonsterDesc.fRotationPerSec = 180.f;
 
     //XMStoreFloat4x4(&MonsterDesc.WorldMatrix, XMMatrixIdentity());
+    //MonsterDesc.WorldMatrix.m[3][0] = -32.365f;
+    //MonsterDesc.WorldMatrix.m[3][1] = -26.5f;
+    //MonsterDesc.WorldMatrix.m[3][2] = 182.409f;
+
     //MonsterDesc.strName = "Dragonian_Melee";
     //MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
 
     //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-    //    ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+    //    ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"), TIME_CHANNEL::WORLD, &MonsterDesc)))
     //    return E_FAIL;
-	// ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-	// return E_FAIL;
 
-    CMonster::MONSTER_DESC MonsterDesc{};
-    MonsterDesc.fAttack = 10.f;
-    MonsterDesc.fMaxHP = 100.f;
-    MonsterDesc.fMaxStamina = 100.f;
-    MonsterDesc.fMoveSpeed = 10.f;
-    MonsterDesc.fSpeedPerSec = 3.f;
-    MonsterDesc.fRotationPerSec = 180.f;
+    //MonsterDesc.fAttack = 10.f;
+    //MonsterDesc.fMaxHP = 100.f;
+    //MonsterDesc.fMaxStamina = 100.f;
+    //MonsterDesc.fMoveSpeed = 10.f;
+    //MonsterDesc.fSpeedPerSec = 3.f;
+    //MonsterDesc.fRotationPerSec = 180.f;
 
-    XMStoreFloat4x4(&MonsterDesc.WorldMatrix, XMMatrixIdentity());
-    MonsterDesc.WorldMatrix.m[3][0] = -32.365f;
-    MonsterDesc.WorldMatrix.m[3][1] = -29.5f;
-    MonsterDesc.WorldMatrix.m[3][2] = 182.409f;
+    //XMStoreFloat4x4(&MonsterDesc.WorldMatrix, XMMatrixIdentity());
+    //MonsterDesc.WorldMatrix.m[3][0] = -32.365f;
+    //MonsterDesc.WorldMatrix.m[3][1] = -29.5f;
+    //MonsterDesc.WorldMatrix.m[3][2] = 192.409f;
 
-    MonsterDesc.strName = "Dragonian_Rampage";
-    MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
+    //MonsterDesc.strName = "Dragonian_Rampage";
+    //MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
 
-    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-        ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-        return E_FAIL;
+    //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
+    //    ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+    //    return E_FAIL;
 
     return S_OK;
 }
