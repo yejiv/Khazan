@@ -15,22 +15,23 @@ public:
     enum class MONSTATE { DEAD, GRORRY, BRUTAL, ATTACK, DAMAGE, LOCKON, SLEEP, WALK, END };
 
     typedef struct TagMonData{
-        //애니메이션 관련
+        //Anim
         _int                iAnimIndex = {};
         _bool               isAnimFinash = {false};
         _bool               isSleep = {false};
         _bool               isStateFiash = {false};
         _bool               isSlowWalk = {false};
 
-        //BT 판단용 변수
+        //BT
+        _bool               isDamage = { false };
         _bool               isAttack = { false };
         _float              fAttackCool = {};
-        _bool               isBrutal = { false };
-
+        
+        HITREACTION         eHitType = { HITREACTION::END };
         //ETC
         _float              fGloggyTime = {};
         
-        //스테이터스
+        //State
         _float*             pMaxHp = { nullptr };
         _float*             pCulHp = { nullptr };
         _float*             pMaxStamina = { nullptr };

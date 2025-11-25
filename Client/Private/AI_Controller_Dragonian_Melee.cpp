@@ -5,8 +5,6 @@
 #include "BehaviorTree.h"
 #include "Perception.h"
 
-#include "Dragonian_Melee.h"
-
 #include "AS_Dr_Melee_Attack.h"
 #include "AS_Dr_Melee_Brutal.h"
 #include "AS_Dr_Melee_Damage.h"
@@ -44,7 +42,7 @@ void CAI_Controller_Dragonian_Melee::Update(CGameObject* pOwner, _float fTimeDel
     {
         m_pFSM->Change_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::DEAD), pOwner);
     }
-    else if (m_pMonData->isBrutal)
+    else if (m_pMonData->eHitType == HITREACTION::BRUTAL_ATTACK)
     {
         m_pFSM->Change_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::BRUTAL), pOwner);
     }
@@ -55,40 +53,11 @@ void CAI_Controller_Dragonian_Melee::Update(CGameObject* pOwner, _float fTimeDel
     else
     {
         m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
-
-        //Update_Aggro(pOwner, fTimeDelta);
-
-        //_float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
-
-        //if (m_pBB->Get_Value<_bool>(m_strMonstertag, "HasAggro"))
-        //{
-        //    m_pBB->Set_Value<_float>(m_strMonstertag, "CurrentTime", fPervTime + fTimeDelta);
-        //    m_pBT->Update();
-        //}
-        //else
-        //    m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
-
         m_pBT->Update();
     }
 
     m_pFSM->Update(pOwner, fTimeDelta);
 
-}
-
-void CAI_Controller_Dragonian_Melee::Update_Aggro(CGameObject* pOwner, _float fTimeDelta)
-{
-    CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-    _bool isDetected = m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected");
-
-    static _float fLostSightTime = 0.f;
-    static const _float fFrogetDelay = 10.f;
-    if (isDetected)
-    {
-    }
-    else
-    {
-
-    }
 }
 
 HRESULT CAI_Controller_Dragonian_Melee::Ready_Perception(CGameObject* pOwner, const AIPERCEPTION_DATA& Desc)
@@ -154,11 +123,10 @@ ACTION CAI_Controller_Dragonian_Melee::GetCallbackAction(CGameObject* pOwner, co
 TERMINATE CAI_Controller_Dragonian_Melee::GetCallbackTeminate(CGameObject* pOwner, const string& name)
 {
     return nullptr;
-
 }
 
 INTERRUPTCONDITION CAI_Controller_Dragonian_Melee::GetCallbackInterruptCondition(CGameObject* pOwner, const string& name)
-{
+{ 
     return nullptr;
 }
 
@@ -195,8 +163,11 @@ PERCEPTIONCALLBACK CAI_Controller_Dragonian_Melee::GetCallBackPerception(CGameOb
                     if (Stim.bSensed)
                     {
                         m_pBB->Set_Value<_uint>(m_strMonstertag, "DamageType", Stim.iDamageType);
-                        m_pBB->Set_Value(m_strMonstertag, "DamageInterrupt", true);
+                        m_pBB->Set_Value(m_strMonstertag, "DamageInterrupt", false);
                         m_pBB->Set_Value(m_strMonstertag, "isDetected", true);
+
+                        if (m_pMonData->eHitType != HITREACTION::BRUTAL_ATTACK)
+                            m_pMonData->eHitType = static_cast<HITREACTION>(m_pBB->Get_Value<_uint>(m_strMonstertag, "DamageType"));
                     }
                 }
             };
@@ -229,8 +200,8 @@ HRESULT CAI_Controller_Dragonian_Melee::Ready_FSM(class CCreature* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Melee::Attack_Check(CGameObject* pOwner)
 {
-    if (!m_pMonData->isSleep && m_pMonData->pOwner->Check_AttackRanage("AttackRange"))
-    {
+    if (!m_pMonData->isSleep && m_pMonData->fAttackCool <= 0.f && m_pMonData->pOwner->Check_AttackRanage("AttackRange"))
+    {  
         m_pMonData->isAttack = true;
         return BTNODESTATE::SUCCESS;
     }
@@ -253,17 +224,24 @@ BTNODESTATE CAI_Controller_Dragonian_Melee::Attack(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Melee::Damage_Check(CGameObject* pOwner)
 {
-    if (m_pMonData->isSleep)
-        return BTNODESTATE::FAILURE;
+    if (!m_pMonData->isSleep && m_pMonData->eHitType != HITREACTION::END)
+    {
+        m_pMonData->isDamage = true;
+        return BTNODESTATE::SUCCESS;
+    }
 
     return BTNODESTATE::FAILURE;
 }
 
 BTNODESTATE CAI_Controller_Dragonian_Melee::Damage(CGameObject* pOwner)
 {
-    if (m_pMonData->isSleep)
-        return BTNODESTATE::FAILURE;
+    if (m_pMonData->isDamage)
+    {
+        if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Melee::MONSTATE::DAMAGE)))
+            m_pFSM->Change_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::DAMAGE), pOwner);
 
+        return BTNODESTATE::RUNNING;
+    }
     return BTNODESTATE::FAILURE;
 }
 

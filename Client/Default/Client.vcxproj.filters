@@ -1120,6 +1120,45 @@
     <Filter Include="92.AI\State\Viper\13.5HitCombo">
       <UniqueIdentifier>{8ec62639-19b8-4845-94bc-69ab15b162c5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\Controller\Dragonian_Rampage">
+      <UniqueIdentifier>{9f604ef9-afca-425a-9438-5513ece85e8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage">
+      <UniqueIdentifier>{85455a01-8284-4698-bbdb-64018dc5596c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage\Damage">
+      <UniqueIdentifier>{4744d471-a245-4836-829f-05c859e2543e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage\LockOn">
+      <UniqueIdentifier>{e59c5c2e-1924-4288-9826-910f5d5975f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage\Walk">
+      <UniqueIdentifier>{015a53e8-1999-40e7-afc2-263af22654d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage\Attack_Jump">
+      <UniqueIdentifier>{ced11d04-7b3e-4cf0-8cf7-6791412c7d31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage\Attack_Back">
+      <UniqueIdentifier>{d39b2609-4e39-4304-8b4b-a4fe3ad17cb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage\Attack_Rush">
+      <UniqueIdentifier>{999b3eb0-5054-4d47-98aa-ee1a9191cbea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage\Attack_Default">
+      <UniqueIdentifier>{11d03e7a-3ac7-41ed-9b4a-50d3011087ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage\Sleep">
+      <UniqueIdentifier>{092e4639-bd3d-4e42-9e20-24d036cfa211}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage\Brutal">
+      <UniqueIdentifier>{35304b29-d828-4fd1-8208-c833bd3d7059}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage\Dead">
+      <UniqueIdentifier>{c22c88b3-fe86-4ede-b91d-2a0e8b9d5d1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage\Groggy">
+      <UniqueIdentifier>{b7534503-4d50-42e8-b71c-2c865681b8d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2084,9 +2123,6 @@
     <ClInclude Include="..\public\Dragonian_Rampage.h">
       <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Body_Dragonian_Rampage.h">
-      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Body</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\FSM_Default.h">
       <Filter>92.AI\StateMachine\Default_StateMachine</Filter>
     </ClInclude>
@@ -2154,6 +2190,51 @@
     </ClInclude>
     <ClInclude Include="..\Public\AS_5HitCombo_Viper.h">
       <Filter>92.AI\State\Viper\13.5HitCombo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Dragonian_Claw_L.h">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Dragonian_Claw_R.h">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Dragonian_Rampage.h">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AI_Controller_Dragonian_Rampage.h">
+      <Filter>92.AI\Controller\Dragonian_Rampage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Dr_Rampage_Attack_Jump.h">
+      <Filter>92.AI\State\Dragonian_Rampage\Attack_Jump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Attack_Back.h">
+      <Filter>92.AI\State\Dragonian_Rampage\Attack_Back</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dr_Rampage_LockOn.h">
+      <Filter>92.AI\State\Dragonian_Rampage\LockOn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Walk.h">
+      <Filter>92.AI\State\Dragonian_Rampage\Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Sleep.h">
+      <Filter>92.AI\State\Dragonian_Rampage\Sleep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Damage.h">
+      <Filter>92.AI\State\Dragonian_Rampage\Damage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Attack_Rush.h">
+      <Filter>92.AI\State\Dragonian_Rampage\Attack_Rush</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Attack_Default.h">
+      <Filter>92.AI\State\Dragonian_Rampage\Attack_Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Groggy.h">
+      <Filter>92.AI\State\Dragonian_Rampage\Groggy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Dead.h">
+      <Filter>92.AI\State\Dragonian_Rampage\Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Brutal.h">
+      <Filter>92.AI\State\Dragonian_Rampage\Brutal</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3105,9 +3186,6 @@
     <ClCompile Include="..\Private\AS_5HitCombo_Viper.cpp">
       <Filter>92.AI\State\Viper\13.5HitCombo</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\.cpp">
-      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Ladder_Middle.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Middle</Filter>
     </ClCompile>
@@ -3128,9 +3206,6 @@
     </ClCompile>
     <ClCompile Include="..\private\Dragonian_Rampage.cpp">
       <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\Body_Dragonian_Rampage.cpp">
-      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Body</Filter>
     </ClCompile>
     <ClCompile Include="..\private\FSM_Default.cpp">
       <Filter>92.AI\StateMachine\Default_StateMachine</Filter>
@@ -3167,6 +3242,52 @@
     </ClCompile>
     <ClCompile Include="..\Private\GearGate.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder.cpp" />
+    <ClCompile Include="..\private\Dragonian_Claw_L.cpp">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Dragonian_Claw_R.cpp">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Dragonian_Rampage.cpp">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AI_Controller_Dragonian_Rampage.cpp">
+      <Filter>92.AI\Controller\Dragonian_Rampage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Dr_Rampage_Attack_Jump.cpp">
+      <Filter>92.AI\State\Dragonian_Rampage\Attack_Jump</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Attack_Back.cpp">
+      <Filter>92.AI\State\Dragonian_Rampage\Attack_Back</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dr_Rampage_LockOn.cpp">
+      <Filter>92.AI\State\Dragonian_Rampage\LockOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Walk.cpp">
+      <Filter>92.AI\State\Dragonian_Rampage\Walk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Sleep.cpp">
+      <Filter>92.AI\State\Dragonian_Rampage\Sleep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Damage.cpp">
+      <Filter>92.AI\State\Dragonian_Rampage\Damage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Attack_Rush.cpp">
+      <Filter>92.AI\State\Dragonian_Rampage\Attack_Rush</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Attack_Default.cpp">
+      <Filter>92.AI\State\Dragonian_Rampage\Attack_Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Brutal.cpp">
+      <Filter>92.AI\State\Dragonian_Rampage\Brutal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Groggy.cpp">
+      <Filter>92.AI\State\Dragonian_Rampage\Groggy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Dead.cpp">
+      <Filter>92.AI\State\Dragonian_Rampage\Dead</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

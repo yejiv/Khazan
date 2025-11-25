@@ -96,9 +96,9 @@ void CDragonian_Melee::Priority_Update(_float fTimeDelta)
         m_Data.isSleep = true;
     }
     else if (m_pGameInstance->Key_Down(DIK_V))
-        m_fCurrentHP = 0;
+        Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, m_pTarget);
     else if (m_pGameInstance->Key_Down(DIK_B))
-        m_Data.isBrutal = true;
+        Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
     else if (m_pGameInstance->Key_Down(DIK_N))
         m_fCurrentStamina = 0;
 

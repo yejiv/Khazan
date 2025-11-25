@@ -20,7 +20,7 @@ void CAS_Dr_Melee_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         if (m_pMonData->isAnimFinash)
         {
             m_eState = RELEASSE;
-            //ÀÛ¾÷ ¿Ï·á ÈÄ »ì·Á¾ßÇÔ
+            //ìž‘ì—… ì™„ë£Œ í›„ ì‚´ë ¤ì•¼í•¨
             //m_pMonData->pOwner->Hp_Dead();
         }
     }
@@ -28,7 +28,7 @@ void CAS_Dr_Melee_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
     {
     }
 }
-
+    
 void CAS_Dr_Melee_Dead::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
 }

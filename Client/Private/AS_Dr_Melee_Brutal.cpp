@@ -16,7 +16,7 @@ void CAS_Dr_Melee_Brutal::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 {
     if (m_pMonData->isAnimFinash)
     {
-        m_pMonData->isBrutal = false;
+        m_pMonData->eHitType = HITREACTION::END;
         *m_pMonData->pCulStamina = *m_pMonData->pMaxStamina;
     }
 }
