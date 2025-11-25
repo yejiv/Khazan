@@ -152,6 +152,10 @@ private:
     _bool                       m_isEnableEdge = { true };
     OUTLINE_CONFIG              m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
 
+private :
+    _uint                       m_iFXIdx_Spining;
+    //_float                      m_SmokeSpawnTIme;
+
 private:
     void			Update_Colliders(_float fTimeDelta);
     void            Check_Guarding(_float fTimeDelta);
@@ -178,6 +182,9 @@ private:
     inline void		Toggle_Status(_uint i) { *m_pParentStatus ^= i; }
     inline void		Remove_Status(_uint i) { *m_pParentStatus &= ~i; }
     inline _bool	Has_Status(_uint i) { return (*m_pParentStatus & i) != 0; }
+
+private: 
+    _vector Decompose_Rotation(_matrix W, _vector offset = { 0.f, 0.f, 0.f, 1.f });
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
