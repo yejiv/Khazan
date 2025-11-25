@@ -7,13 +7,13 @@
 #include "ClientInstance.h"
 #include "UI_BladeNexus.h"
 
-CBladeNexus::CBladeNexus(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CProp_Interactive { pDevice, pContext }
+    CBladeNexus::CBladeNexus(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+    : CProp_Interactive{ pDevice, pContext }
 {
 }
 
 CBladeNexus::CBladeNexus(const CBladeNexus& Prototype)
-    : CProp_Interactive { Prototype }
+    : CProp_Interactive{ Prototype }
 {
 }
 
@@ -255,7 +255,7 @@ HRESULT CBladeNexus::Ready_DefaultSetting(void* pArg)
 
 HRESULT CBladeNexus::Ready_AnimationEvent()
 {
-    m_pModelCom->Register_Event("Strong_RadialBlur", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+    m_pModelCom->Register_Event("Strong_RadialBlur", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             RADIAL_BLUR_DESC Desc{};
             Desc.vCenterUV = _float2(0.5f, 0.5f);
@@ -302,8 +302,8 @@ HRESULT CBladeNexus::Bind_Materials(_uint iMeshIndex)
 
 void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
 {
-    if (ANIM_STATE::AFTER_START == m_eAnimState || ANIM_STATE::AFTER_LOOP == m_eAnimState|| ANIM_STATE::AFTER_END == m_eAnimState ||
-        ANIM_STATE::BEFORE_START == m_eAnimState || ANIM_STATE::BEFORE_LOOP == m_eAnimState|| ANIM_STATE::BEFORE_END == m_eAnimState)
+    if (ANIM_STATE::AFTER_START == m_eAnimState || ANIM_STATE::AFTER_LOOP == m_eAnimState || ANIM_STATE::AFTER_END == m_eAnimState ||
+        ANIM_STATE::BEFORE_START == m_eAnimState || ANIM_STATE::BEFORE_LOOP == m_eAnimState || ANIM_STATE::BEFORE_END == m_eAnimState)
         return;
 
     _bool isPressing = { false };
@@ -441,6 +441,16 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
     // 귀검 가동 끝나면 ( 첫 해금 O )
     if (ANIM_STATE::BEFORE_START == m_eAnimState)       // BEFORE_START 가 끝나면 BEFORE_LOOP ( 플레이어가 UI랑 상호 작용 )
     {
+        if (3 == m_iBladeNexus_ID)
+            // 귀검 애니메이션 끝나면 귀검 UI 창 팝업
+        {
+            static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::EMBARS, m_szPlaceName);
+        }
+        else
+        {
+            static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, m_szPlaceName);;
+        }
+
         // 귀검 애니메이션 끝나면 귀검 UI 창 팝업
         static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, m_szPlaceName);
 
@@ -543,7 +553,7 @@ void CBladeNexus::Find_Target()
 
 void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
 
     if (ANIM_STATE::AFTER_IDLE == m_eAnimState || ANIM_STATE::BEFORE_IDLE == m_eAnimState)
@@ -610,4 +620,3 @@ void CBladeNexus::Free()
         m_pGuide->Set_IsDead(true);
     }
 }
-

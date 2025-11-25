@@ -139,7 +139,7 @@ HRESULT CLevel_Embars::Ready_Layer_Camera(const _wstring& strLayerTag)
     PlayerCameraDesc.iCameraType = ENUM_CLASS(CAMERATYPE::PLAYER);
 
     CCamera_Compre* pCamera_Player = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Camera_Compre"), &PlayerCameraDesc));
-    pCamera_Player->Set_IsActive(false);
+    pCamera_Player->Set_IsActive(true);
     CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Creature_Player"));
     pCamera_Player->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 
@@ -702,6 +702,11 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
             CHECK_FALSE(ReadFile(hFile, &ElevatorPos, sizeof(CElevatorL::LARGE_ELEVATOR_POS), &dwByte, nullptr), E_FAIL);
             ObjectDesc.pOtherDesc = &ElevatorPos;
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_LargeElevator"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
+        case INTERACTIVE_TYPE::GIANTGATE:
+        {
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_GiantGate"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
         default:

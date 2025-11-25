@@ -1,33 +1,32 @@
-#include "IronGate.h"
+#include "GiantGate.h"
 
 #include "GameInstance.h"
 
+#include "GiantGate_Part_L.h"
+#include "GiantGate_Part_R.h"
+
 #include "Interaction_Guide.h"
 
-#include "IronGate_Lock.h"
-#include "IronGate_Part_L.h"
-#include "IronGate_Part_R.h"
-
-CIronGate::CIronGate(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CGiantGate::CGiantGate(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
 {
 }
 
-CIronGate::CIronGate(const CIronGate& Prototype)
+CGiantGate::CGiantGate(const CGiantGate& Prototype)
     : CProp_Interactive{ Prototype }
 {
 }
 
-HRESULT CIronGate::Initialize_Prototype()
+HRESULT CGiantGate::Initialize_Prototype()
 {
     CHECK_FAILED(__super::Initialize_Prototype(), E_FAIL);
 
     return S_OK;
 }
 
-HRESULT CIronGate::Initialize_Clone(void* pArg)
+HRESULT CGiantGate::Initialize_Clone(void* pArg)
 {
-    IRONGATE_DESC* pDesc = static_cast<IRONGATE_DESC*>(pArg);
+    GIANTGATE_DESC* pDesc = static_cast<GIANTGATE_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
@@ -44,22 +43,22 @@ HRESULT CIronGate::Initialize_Clone(void* pArg)
 
 #pragma endregion
 
-    m_iEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
+    m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
             m_Event = e;
         });
 
-    m_eAnimState = ANIM_STATE::ACTIVATION;
+    m_eAnimState = ANIM_STATE::OPENNING;
     m_pModelCom->Set_Animation(ENUM_CLASS((m_eAnimState)));
     m_pModelCom->Set_AnimationLoop(false);
     m_pModelCom->Set_AnimationBlend(false);
+
     m_pModelCom->Play_Animation(0.f);
-    m_pModelCom->Set_AnimationBlend(true);
 
     return S_OK;
 }
 
-void CIronGate::Priority_Update(_float fTimeDelta)
+void CGiantGate::Priority_Update(_float fTimeDelta)
 {
     if (false == m_isCollision)
     {
@@ -69,7 +68,7 @@ void CIronGate::Priority_Update(_float fTimeDelta)
     __super::Priority_Update(fTimeDelta);
 }
 
-void CIronGate::Update(_float fTimeDelta)
+void CGiantGate::Update(_float fTimeDelta)
 {
     Animation_Update(fTimeDelta);
 
@@ -84,19 +83,19 @@ void CIronGate::Update(_float fTimeDelta)
     __super::Update(fTimeDelta);
 }
 
-void CIronGate::Late_Update(_float fTimeDelta)
+void CGiantGate::Late_Update(_float fTimeDelta)
 {
     __super::Late_Update(fTimeDelta);
 }
 
-HRESULT CIronGate::Render()
+HRESULT CGiantGate::Render()
 {
     return S_OK;
 }
 
-HRESULT CIronGate::Ready_Components(void* pArg)
+HRESULT CGiantGate::Ready_Components(void* pArg)
 {
-    IRONGATE_DESC* pDesc = static_cast<IRONGATE_DESC*>(pArg);
+    GIANTGATE_DESC* pDesc = static_cast<GIANTGATE_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
@@ -108,47 +107,36 @@ HRESULT CIronGate::Ready_Components(void* pArg)
     return S_OK;
 }
 
-HRESULT CIronGate::Ready_PartObjects(void* pArg)
+HRESULT CGiantGate::Ready_PartObjects(void* pArg)
 {
-    IRONGATE_DESC* pDesc = static_cast<IRONGATE_DESC*>(pArg);
+    GIANTGATE_DESC* pDesc = static_cast<GIANTGATE_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
     CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("level==end"), E_FAIL);
 
-    CIronGate_Lock::IRONGATE_LOCK_DESC PartLockDesc = {};
-
-    PartLockDesc.eLevel = eLevel;
-    PartLockDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
-    PartLockDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("LockLever");
-
-    PartLockDesc.pUnLock = &m_isUnLock;
-
-    CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Lock"), ENUM_CLASS(eLevel),
-        TEXT("Prototype_GameObject_Prop_IronGate_Lock"), &PartLockDesc), E_FAIL);
-
-    CIronGate_Part_L::IRONGATE_PART_LEFT_DESC PartLeftDesc = {};
+    CGiantGate_Part_L::GIANTGATE_LEFT_DESC PartLeftDesc = {};
 
     PartLeftDesc.eLevel = eLevel;
     PartLeftDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     PartLeftDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Door_Pivot_L");
 
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Gate_L"), ENUM_CLASS(eLevel),
-        TEXT("Prototype_GameObject_Prop_IronGate_Part_L"), &PartLeftDesc), E_FAIL);
+        TEXT("Prototype_GameObject_Prop_GiantGate_Part_L"), &PartLeftDesc), E_FAIL);
 
-    CIronGate_Part_R::IRONGATE_PART_RIGHT_DESC PartRightDesc = {};
+    CGiantGate_Part_R::GIANTGATE_RIGHT_DESC PartRightDesc = {};
 
     PartRightDesc.eLevel = eLevel;
     PartRightDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     PartRightDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Door_Pivot_R");
 
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Gate_R"), ENUM_CLASS(eLevel),
-        TEXT("Prototype_GameObject_Prop_IronGate_Part_R"), &PartRightDesc), E_FAIL);
+        TEXT("Prototype_GameObject_Prop_GiantGate_Part_R"), &PartRightDesc), E_FAIL);
 
     return S_OK;
 }
 
-HRESULT CIronGate::Ready_Collision(void* pArg)
+HRESULT CGiantGate::Ready_Collision(void* pArg)
 {
 #pragma region 스태틱 몸체
     CBody::BODY_BOXSHAPE_DESC StaticBodyDesc{};
@@ -210,12 +198,14 @@ HRESULT CIronGate::Ready_Collision(void* pArg)
     return S_OK;
 }
 
-HRESULT CIronGate::Ready_Interaction_Guide(void* pArg)
+HRESULT CGiantGate::Ready_Interaction_Guide(void* pArg)
 {
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("열어이"), 1.f);
+    Safe_AddRef(m_pGuide);
+
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("바이퍼 가자이"), 1.f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_UI"), m_pGuide);
 
@@ -224,7 +214,7 @@ HRESULT CIronGate::Ready_Interaction_Guide(void* pArg)
     return S_OK;
 }
 
-void CIronGate::Input_Interact_Event(_float fTimeDelta)
+void CGiantGate::Input_Interact_Event(_float fTimeDelta)
 {
     if (true == m_isUnLock)
         return;
@@ -242,21 +232,21 @@ void CIronGate::Input_Interact_Event(_float fTimeDelta)
 
         EventInteractType InteractType = {};
 
-        InteractType.eInteractType = INTERACTIVE_TYPE::IRONGATE;
+        InteractType.eInteractType = INTERACTIVE_TYPE::GIANTGATE;
 
         InteractType.eState = EventInteractType::BEGIN;
 
-        EventIronGate IronGateEvent = {};
+        EventGiantGate GiantGateEvent = {};
 
-        XMStoreFloat4(&IronGateEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&GiantGateEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
 
-        InteractType.IronGateEvent = IronGateEvent;
+        InteractType.GiantGateEvent = GiantGateEvent;
 
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
     }
 }
 
-void CIronGate::Animation_Update(_float fTimeDelta)
+void CGiantGate::Animation_Update(_float fTimeDelta)
 {
     if (false == m_isCollision)
         return;
@@ -279,17 +269,17 @@ void CIronGate::Animation_Update(_float fTimeDelta)
             // 조각상 상호작용 시
             EventInteractType InteractType = {};
 
-            InteractType.eInteractType = INTERACTIVE_TYPE::IRONGATE;
+            InteractType.eInteractType = INTERACTIVE_TYPE::GIANTGATE;
             InteractType.isEvent = true;
 
-            EventIronGate IronGateEvent = {};
+            EventGiantGate GiantGateEvent = {};
 
             _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Position_Ch")) * m_pTransformCom->Get_WorldMatrix();
 
-            XMStoreFloat4(&IronGateEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-            XMStoreFloat4(&IronGateEvent.vPlayerPosition, OffSetMatrix.r[3]);
+            XMStoreFloat4(&GiantGateEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+            XMStoreFloat4(&GiantGateEvent.vPlayerPosition, OffSetMatrix.r[3]);
 
-            InteractType.IronGateEvent = IronGateEvent;
+            InteractType.GiantGateEvent = GiantGateEvent;
 
             // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
@@ -299,11 +289,11 @@ void CIronGate::Animation_Update(_float fTimeDelta)
     }
 }
 
-void CIronGate::Animation_Change(_float fTimeDelta)
+void CGiantGate::Animation_Change(_float fTimeDelta)
 {
 }
 
-void CIronGate::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
+void CGiantGate::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -314,7 +304,7 @@ void CIronGate::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, 
     m_isCollision = true;
 }
 
-void CIronGate::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
+void CGiantGate::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -322,7 +312,7 @@ void CIronGate::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _
     m_isCollision = true;
 }
 
-void CIronGate::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
+void CGiantGate::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -332,36 +322,34 @@ void CIronGate::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, C
     m_isCollision = false;
 }
 
-CIronGate* CIronGate::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CGiantGate* CGiantGate::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-    CIronGate* pInstance = new CIronGate(pDevice, pContext);
+    CGiantGate* pInstance = new CGiantGate(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed to Created : CIronGate"));
+        MSG_BOX(TEXT("Failed to Created : CGiantGate"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-CGameObject* CIronGate::Clone(void* pArg)
+CGameObject* CGiantGate::Clone(void* pArg)
 {
-    CIronGate* pInstance = new CIronGate(*this);
+    CGiantGate* pInstance = new CGiantGate(*this);
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Cloned : CIronGate"));
+        MSG_BOX(TEXT("Failed to Cloned : CGiantGate"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CIronGate::Free()
+void CGiantGate::Free()
 {
-    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iEventID);
-
     __super::Free();
 
     Safe_Release(m_pStaticCom);
@@ -370,5 +358,6 @@ void CIronGate::Free()
     if (nullptr != m_pGuide)
     {
         m_pGuide->Set_IsDead(true);
+        Safe_Release(m_pGuide);
     }
 }

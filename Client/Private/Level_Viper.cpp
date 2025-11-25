@@ -86,14 +86,14 @@ void CLevel_Viper::Update(_float fTimeDelta)
 		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_F1))
-	{
-		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::FREE));
-	}
-	else if (m_pGameInstance->Key_Down(DIK_F2))
-	{
-		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::PLAYER));
-	}
+    if (m_pGameInstance->Key_Down(DIK_F1))
+    {
+        m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
+    }
+    else if (m_pGameInstance->Key_Down(DIK_F2))
+    {
+        m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
+    }
 
 
 	return;
@@ -144,13 +144,15 @@ HRESULT CLevel_Viper::Ready_Layer_Camera(const _wstring& strLayerTag)
     PlayerCameraDesc.iCameraType = ENUM_CLASS(CAMERATYPE::PLAYER);
 
     CCamera_Compre* pCamera_Player = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Camera_Compre"), &PlayerCameraDesc));
-    pCamera_Player->Set_IsActive(false);
+    pCamera_Player->Set_IsActive(true);
     CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player"));
     pCamera_Player->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 
     static_cast<CKhazan_Spear*>(pPlayer)->Set_Camera(pCamera_Player);
 
-	m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::PLAYER));
+    m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::VIPER), pCamera_Player);
+
+    m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pCamera_Player);
 
     return S_OK;
 }

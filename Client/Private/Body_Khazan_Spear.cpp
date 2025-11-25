@@ -1399,9 +1399,6 @@ void CBody_Khazan_Spear::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
 
-
-    for (auto pObj : m_CollMonsters)
-        Safe_Release(pObj);
     m_CollMonsters.clear();
 
 }

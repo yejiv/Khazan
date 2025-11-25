@@ -38,7 +38,7 @@ HRESULT CIronGate_Part_L::Initialize_Clone(void* pArg)
 
     //m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vPos));
 
-    m_pTransformCom->Rotation(XMConvertToRadians(270.f), XMConvertToRadians(0.f), 0.f);
+    m_pTransformCom->Rotation(XMConvertToRadians(270.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f));
 
     return S_OK;
 }

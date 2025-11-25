@@ -1,25 +1,25 @@
-#include "IronGate_Part_R.h"
+#include "Duimuk_Part.h"
 
 #include "GameInstance.h"
 
-CIronGate_Part_R::CIronGate_Part_R(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CPartObject { pDevice, pContext }
+CDuimuk_Part::CDuimuk_Part(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+    : CPartObject{ pDevice, pContext }
 {
 }
 
-CIronGate_Part_R::CIronGate_Part_R(const CIronGate_Part_R& Prototype)
-    : CPartObject { Prototype }
+CDuimuk_Part::CDuimuk_Part(const CDuimuk_Part& Prototype)
+    : CPartObject{ Prototype }
 {
 }
 
-HRESULT CIronGate_Part_R::Initialize_Prototype()
+HRESULT CDuimuk_Part::Initialize_Prototype()
 {
     return S_OK;
 }
 
-HRESULT CIronGate_Part_R::Initialize_Clone(void* pArg)
+HRESULT CDuimuk_Part::Initialize_Clone(void* pArg)
 {
-    IRONGATE_PART_RIGHT_DESC* pDesc = static_cast<IRONGATE_PART_RIGHT_DESC*>(pArg);
+    DUIMUK_PART_DESC* pDesc = static_cast<DUIMUK_PART_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
@@ -30,43 +30,42 @@ HRESULT CIronGate_Part_R::Initialize_Clone(void* pArg)
 
     m_pSocketMatrix = pDesc->pSocketMatrix;
 
-    m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
-
-    _float4 vPos = {};
-
-    XMStoreFloat4(&vPos, m_pTransformCom->Get_State(STATE::POSITION) - m_pTransformCom->Get_State(STATE::UP) * 17.5f);
-
-    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vPos));
+    m_pStateIdle2 = pDesc->pStateIdle2;
 
     m_pTransformCom->Rotation(XMConvertToRadians(90.f), XMConvertToRadians(0.f), XMConvertToRadians(180.f));
+
+    m_eAnimState = ANIM_STATE::IDLE2;
+    m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+    m_pModelCom->Set_AnimationLoop(true);
+    m_pModelCom->Set_AnimationBlend(false);
 
     return S_OK;
 }
 
-void CIronGate_Part_R::Priority_Update(_float fTimeDelta)
+void CDuimuk_Part::Priority_Update(_float fTimeDelta)
 {
 }
 
-void CIronGate_Part_R::Update(_float fTimeDelta)
+void CDuimuk_Part::Update(_float fTimeDelta)
 {
-    _matrix     BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+    m_pModelCom->Play_Animation(fTimeDelta);
 
-    for (size_t i = 0; i < 3; i++)
-    {
+    _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+
+    for (_uint i = 0; i < 3; ++i)
         BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
-    }
 
     XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
 }
 
-void CIronGate_Part_R::Late_Update(_float fTimeDelta)
+void CDuimuk_Part::Late_Update(_float fTimeDelta)
 {
-    m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+    m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
 }
 
-HRESULT CIronGate_Part_R::Render()
+HRESULT CDuimuk_Part::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CIronGate_Part_R : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CDuimuk_Part : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -74,7 +73,9 @@ HRESULT CIronGate_Part_R::Render()
     {
         Bind_Materials(i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(4), E_FAIL);
+        m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(0), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -82,38 +83,38 @@ HRESULT CIronGate_Part_R::Render()
     return S_OK;
 }
 
-HRESULT CIronGate_Part_R::Ready_Components(void* pArg)
+HRESULT CDuimuk_Part::Ready_Components(void* pArg)
 {
-    IRONGATE_PART_RIGHT_DESC* pDesc = static_cast<IRONGATE_PART_RIGHT_DESC*>(pArg);
+    DUIMUK_PART_DESC* pDesc = static_cast<DUIMUK_PART_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
     CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("level==end"), E_FAIL);
 
-    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 
-    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_IronGate_Part"),
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_NPC_Duimuk_Part"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
 
     return S_OK;
 }
 
-HRESULT CIronGate_Part_R::Bind_ShaderResources()
+HRESULT CDuimuk_Part::Bind_ShaderResources()
 {
-    // ì›”ë“œ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
+    // ¿ùµå Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix), E_FAIL);
 
-    // ë·° í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
+    // ºä Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
 
-    // íˆ¬ì˜ í–‰ë ¬ ì‰ì´ë”ì— ë°”ì¸ë”©
+    // Åõ¿µ Çà·Ä ½¦ÀÌ´õ¿¡ ¹ÙÀÎµù
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
 
     return S_OK;
 }
 
-HRESULT CIronGate_Part_R::Bind_Materials(_uint iMeshIndex)
+HRESULT CDuimuk_Part::Bind_Materials(_uint iMeshIndex)
 {
     m_iMtrlFlags = 0;
 
@@ -134,33 +135,33 @@ HRESULT CIronGate_Part_R::Bind_Materials(_uint iMeshIndex)
     return S_OK;
 }
 
-CIronGate_Part_R* CIronGate_Part_R::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CDuimuk_Part* CDuimuk_Part::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-    CIronGate_Part_R* pInstance = new CIronGate_Part_R(pDevice, pContext);
+    CDuimuk_Part* pInstance = new CDuimuk_Part(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed To Created : CIronGate_Part_R"));
+        MSG_BOX(TEXT("Failed To Created : CDuimuk_Part"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-CGameObject* CIronGate_Part_R::Clone(void* pArg)
+CGameObject* CDuimuk_Part::Clone(void* pArg)
 {
-    CIronGate_Part_R* pInstance = new CIronGate_Part_R(*this);
+    CDuimuk_Part* pInstance = new CDuimuk_Part(*this);
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed To Cloned : CIronGate_Part_R"));
+        MSG_BOX(TEXT("Failed To Cloned : CDuimuk_Part"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CIronGate_Part_R::Free()
+void CDuimuk_Part::Free()
 {
     __super::Free();
 
