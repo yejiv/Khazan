@@ -12,31 +12,45 @@ private:
 
 public:
 	HRESULT Initialize(_uint iNumLevels);
+    void    Update(_float fTimeDelta);
 
 public:
 	HRESULT Add_Light(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_DESC& LightDesc, _bool isEnable);
-	void Set_LightDesc(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_DESC& LightDesc);
-	void Set_LightPosition(const _wstring& strLightTag, _uint iLevelIndex, const _float4& vPosition);
-	void Set_LightEnable(const _wstring& strLightTag, _uint iLevelIndex, _bool isEnable);
-	_bool Is_LightEnable(const _wstring& strLightTag, _uint iLevelIndex);
+	void    Set_LightDesc(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_DESC& LightDesc);
+	void    Set_LightPosition(const _wstring& strLightTag, _uint iLevelIndex, const _float4& vPosition);
+	void    Set_LightEnable(const _wstring& strLightTag, _uint iLevelIndex, _bool isEnable);
+	_bool   Is_LightEnable(const _wstring& strLightTag, _uint iLevelIndex);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex);
-	void Clear(_uint iLevelIndex);
+	void    Clear(_uint iLevelIndex);
 
 public:
-	const LIGHT_DESC* Get_LightDesc(const _wstring& strLightTag, _uint iLevelIndex);
+    void    Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc);
+
+public:
+	const LIGHT_DESC*       Get_LightDesc(const _wstring& strLightTag, _uint iLevelIndex);
+    const vector<_wstring>& Get_LightTags(_uint iLevelIndex);
 
 private:
-	class CGameInstance* m_pGameInstance = { nullptr };
+	class CGameInstance*                    m_pGameInstance = { nullptr };
 
 	unordered_map<_wstring, class CLight*>* m_pLights = { nullptr };
-	_uint m_iNumLevels = {};
+	_uint                                   m_iNumLevels = {};
+    vector<_wstring>                        m_strLightTags = {}; // For Light Setting
+
+    // Transition
+    LIGHT_TRANSITION_DESC                   m_TargetLightDesc = {};
+    _float                                  m_fTransTimeAcc = {};
+    _bool                                   m_isTransition = {};
+    class CLight*                           m_pTransLight = { nullptr };
+    LIGHT_DESC                              m_StartLightDesc;
 
 private:
-	class CLight* Find_Light(const _wstring& strLightTag, _uint iLevelIndex);
+	class CLight*           Find_Light(const _wstring& strLightTag, _uint iLevelIndex);
+    void                    Lerp_LightProperties(_fvector vStart, _fvector vTarget);
 
 public:
-	static CLight_Manager* Create(_uint iNumLevels);
-	virtual void Free() override;
+	static CLight_Manager*  Create(_uint iNumLevels);
+	virtual void            Free() override;
 };
 
 NS_END

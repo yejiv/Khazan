@@ -53,9 +53,9 @@ public:
     void                Render_Part_Outline(CModel* pModel);
 
 public:
-    virtual void        Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-    virtual void        Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-    virtual void        Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
 public:
     _float4x4*          Get_BoneMatrix(const _char* pBoneName);
@@ -174,6 +174,11 @@ private:
 
     /*  mutex */
     mutex                       m_CollMonsterMutex;
+
+private :
+    _uint                       m_iFXIdx_Spining;
+    //_float                      m_SmokeSpawnTIme;
+
 private:
     void			Update_Colliders(_float fTimeDelta);
     void            Check_Guarding(_float fTimeDelta);
@@ -204,11 +209,16 @@ private:
     inline void		Remove_Status(_uint i) { *m_pParentStatus &= ~i; }
     inline _bool	Has_Status(_uint i) { return (*m_pParentStatus & i) != 0; }
 
+
     inline void		Add_CollState(_uint i) { m_iCollState |= i; }
     inline void		Toggle_CollState(_uint i) { m_iCollState ^= i; }
     inline void		Remove_CollState(_uint i) { m_iCollState &= ~i; }
     inline _bool	Has_CollState(_uint i) { return (m_iCollState & i) != 0; }
     inline void		Clear_CollState() { m_iCollState = 0; }
+
+private: 
+    _vector Decompose_Rotation(_matrix W, _vector offset = { 0.f, 0.f, 0.f, 1.f });
+
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

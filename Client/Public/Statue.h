@@ -71,6 +71,9 @@ private:
 
     _float m_fColTimeAcc = { 0.f };
 
+    _uint m_iObjectInteractEventID = { 0 };
+    _uint m_iEventID = { 0 };
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_PartObjects(void* pArg);
@@ -81,9 +84,10 @@ private:
     void Animation_Update(_float fTimeDelta);
     void Animation_Change(_float fTimeDelta);
 
-    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+public:
+    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
     _matrix Calculate_BonePosition_MinLength(_float4 vPlayerPosition);
     

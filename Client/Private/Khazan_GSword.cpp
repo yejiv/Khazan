@@ -220,18 +220,18 @@ HRESULT CKhazan_GSword::Render()
     return S_OK;
 }
 
-void CKhazan_GSword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CKhazan_GSword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK))
         Get_HitReaction(vContactPoint);
 }
 
-void CKhazan_GSword::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CKhazan_GSword::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CKhazan_GSword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CKhazan_GSword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }
@@ -2332,9 +2332,9 @@ _uint CKhazan_GSword::ConvertCameraToPlayerDir(PLAYER_CAMERA_DIR playerCamDir)
 void CKhazan_GSword::Subscribe_Events()
 {
 #pragma region 상호 작용 맵 오브젝트 이벤트
-    m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e) { m_EventInteract = e; });
+    m_iInteractTypeEventID = m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e) { m_EventInteract = e; });
 
-    m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e) {
+    m_iObjectInteractEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e) {
         if (e.isOff())
         {
             m_pBody->Get_Model()->AnimationSetIndexIncrease();
@@ -3215,6 +3215,9 @@ CGameObject* CKhazan_GSword::Clone(void* pArg)
 
 void CKhazan_GSword::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), m_iInteractTypeEventID);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iObjectInteractEventID);
+
     __super::Free();
 
     Safe_Release(m_pClientInstance);

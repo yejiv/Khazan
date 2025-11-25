@@ -43,7 +43,7 @@ HRESULT CTombStone::Initialize_Clone(void* pArg)
     m_pModelCom->Play_Animation(0.f);
     m_pModelCom->Set_AnimationBlend(true);
 
-    m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
+    m_iEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
             m_Event = e;
         });
@@ -187,8 +187,6 @@ HRESULT CTombStone::Ready_Interaction_Guide(void* pArg)
 {
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
-
-    Safe_AddRef(m_pGuide);
 
     m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("샤르나크 산맥 일대"), 1.5f);
 
@@ -386,7 +384,7 @@ void CTombStone::Animation_Change(_float fTimeDelta)
     }
 }
 
-void CTombStone::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CTombStone::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -397,7 +395,7 @@ void CTombStone::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer,
     m_isCollision = true;
 }
 
-void CTombStone::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CTombStone::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -405,7 +403,7 @@ void CTombStone::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, 
     m_isCollision = true;
 }
 
-void CTombStone::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CTombStone::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -443,6 +441,8 @@ CGameObject* CTombStone::Clone(void* pArg)
 
 void CTombStone::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iEventID);
+
     __super::Free();
 
     Safe_Release(m_pStaticCom);
@@ -451,6 +451,5 @@ void CTombStone::Free()
     if (nullptr != m_pGuide)
     {
         m_pGuide->Set_IsDead(true);
-        Safe_Release(m_pGuide);
     }
 }

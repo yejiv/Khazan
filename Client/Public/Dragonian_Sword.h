@@ -1,7 +1,7 @@
 #pragma once
 #include "Client_Defines.h"
 #include "PartObject.h"
-
+#include "Dragonian_Melee.h"
 NS_BEGIN(Engine)
 class CShader;
 class CModel;
@@ -17,6 +17,7 @@ public:
     {
         CTransform* pOwnerTransform = { nullptr };
         _float4x4* pSocketMatrix = { nullptr };
+        CDragonian_Melee::MONDATA* pData = { nullptr };
 
     }WEAPON_DESC;
 
@@ -34,10 +35,9 @@ public:
     virtual HRESULT			Render() override;
 
 public:
-    virtual void			Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-    virtual void			Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-    virtual void			Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
-
+    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
 private:
     HRESULT					Ready_Components();
@@ -49,12 +49,10 @@ private:
     CModel*                 m_pModelCom = { nullptr };
     CTransform*             m_pOwnerTransform = { nullptr };
 
-    _bool					m_isOnAttackCollision = { false };
     CBody*                  m_pBodyComp = { nullptr };
     _float4x4*              m_pSocketMatrix = { nullptr };
 
-    _float4                 m_vTipPos = {};
-
+    CDragonian_Melee::MONDATA*  m_pData = { nullptr };
 public:
     static CDragonian_Sword*    Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*        Clone(void* pArg) override;

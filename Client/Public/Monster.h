@@ -56,7 +56,8 @@ public:
     void                        Set_RequestRecoveryStamina(_bool isToggle) { m_isRequestRecoveryStamina = isToggle; }
     
     void						CheckMinDistanceWithPlayer(_float MinDist, _float fAnimRatio);
-
+    _bool                       Get_isSleep();
+    _bool                       Get_IsGroggy();
 
 public:
 	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction,CGameObject* pGameObject = nullptr) override;

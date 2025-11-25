@@ -38,7 +38,7 @@ HRESULT CIronGate_Part_L::Initialize_Clone(void* pArg)
 
     //m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vPos));
 
-    m_pTransformCom->Rotation(XMConvertToRadians(270.f), XMConvertToRadians(0.f), 0.f);
+    m_pTransformCom->Rotation(XMConvertToRadians(270.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f));
 
     return S_OK;
 }
@@ -125,9 +125,9 @@ HRESULT CIronGate_Part_L::Bind_Materials(_uint iMeshIndex)
         m_iMtrlFlags |= M_EMISSIVE;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
         m_iMtrlFlags |= M_SPECULAR;
-    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalicTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
         m_iMtrlFlags |= M_METALIC;
-    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
         m_iMtrlFlags |= M_ROUGHNESS;
 
     m_iMtrlFlags &= ~M_EMISSIVE;
