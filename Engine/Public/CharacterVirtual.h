@@ -103,7 +103,7 @@ public:
 	virtual HRESULT Initialize_Clone(void* pArg) override;
 	virtual void Sync_Update(class CTransform* pTransform) override;
 	virtual void Update(_float fTimeDelta, class CTransform* pTransform, _vector vGravity = XMVectorSet(0.f, g_fGravity, 0.f, 0.f));
-
+    void Update_Dive(_float fTimeDelta);
 
 public:
 	virtual void	Set_PosRot(_vector vPos, _vector vRot);
@@ -122,6 +122,8 @@ public:
     void Jump_ToTarget(_vector vTargetWorldPos,
         _float  fJumpApexHeight,
         _float  fDesiredHorizontalSpeed);
+
+    void Start_Dive(_vector vDivePos, _float fDiveSpeed);
 
 public:
 	_bool Get_isGround();
