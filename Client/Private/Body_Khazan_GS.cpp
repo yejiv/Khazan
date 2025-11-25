@@ -88,13 +88,27 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
 
     Check_Guarding(fTimeDelta);
 
-    Test_Attack(fTimeDelta);
+   // Test_Attack(fTimeDelta);
 
     if (m_isCollision)
     {
         m_isCollision = false;
-        //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), XMLoadFloat4(&m_fCollisionPos));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), XMLoadFloat4(&m_fCollisionPos));
     }
+
+    m_pMotionTrailCom->Update(fTimeDelta);
+
+    // TEST
+    //if (CKhazan_GSword::CHARGING_SPRINT & *m_pParentStatus)
+    //    m_pMotionTrailCom->Start_MotionTrail(0.5f);
+    //if (CKhazan_GSword::BACK_DODGE & *m_pParentStatus)
+    //    m_pMotionTrailCom->Start_MotionTrail(0.5f);
+    //if (CKhazan_GSword::CHARGING_STRONG_ATTACK & *m_pParentStatus)
+    //    m_pMotionTrailCom->Start_MotionTrail(2.5f);
+    //if (CKhazan_GSword::CHARGING_FAST_ATTACK & *m_pParentStatus)
+    //    m_pMotionTrailCom->Start_MotionTrail(2.5f);
+    m_pMotionTrailCom->Start_MotionTrail(fTimeDelta);
+
 }
 
 void CBody_Khazan_GS::Late_Update(_float fTimeDelta)
@@ -112,29 +126,6 @@ HRESULT CBody_Khazan_GS::Render()
 {
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
-
-    ///* After Image */
-    //for (size_t i = 0; i < 10; i++)
-    //{
-    //    if (m_pModelCom->Restore_Frame(i))
-    //    {
-    //        // 본 행렬 바인딩 (복원된 상태로)
-    //        _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-    //        for (_uint j = 0; j < iNumMeshes; j++)
-    //        {
-    //            if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", j)))
-    //                continue;
-    //        }
-
-    //        // 파츠 렌더링
-    //        Render_Part(m_pModelCom_Arm);
-    //        Render_Part(m_pModelCom_Face);
-    //        Render_Part(m_pModelCom_Hair);
-    //        Render_Part(m_pModelCom_Leg);
-    //        Render_Part(m_pModelCom_Shoes);
-    //        Render_Part(m_pModelCom_Torso);
-    //    }
-    //}
 
     if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableEdge", &m_isEnableEdge)))
         return E_FAIL;
@@ -286,7 +277,7 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
         /* 공격 콜라이더 */
-        if (m_isSpearTipActive)
+        if (m_isCollAttack_Active || m_isCollRangeAttack_Active || m_isCollBodyAttack_Active)
         {
             CCreature* pMonster = static_cast<CCreature*>(pDesc->pGameObject);
             if (pMonster == nullptr || pMonster->Get_CurrentHP() < 0.f)
@@ -298,6 +289,7 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
                 XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION)
                     - m_pParentTransform->Get_State(STATE::POSITION))
                 , 15.f, 50.f);
+            pMonster->Consume_Stamina(20.f);
             m_isCollision = true;
             CTransform* MonsterTransform = dynamic_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")));
             XMStoreFloat4(&m_fCollisionPos, MonsterTransform->Get_State(STATE::POSITION));
@@ -306,7 +298,7 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
         /*  탐지 */
         CGameObject* pObj = pDesc->pGameObject;
         if (!pObj || pObj->Get_IsDead()) return;
-        lock_guard <mutex> lock(m_CollMonsterMutex);
+        lock_guard<mutex> lock(m_CollMonsterMutex);
         if (pObj && (find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end()))
             m_CollMonsters.push_back(pObj);
 
@@ -315,7 +307,7 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK))
     {
         /* 방어 콜라이더  */
-        if (m_isSpearPoleActive)
+        if (m_isCollGuard_Active)
         {
             *m_pParentStatus |= CKhazan_GSword::GUARD;
 
@@ -343,7 +335,7 @@ void CBody_Khazan_GS::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLa
         CGameObject* pObj = pDesc->pGameObject;
 
         if (!pObj) return;
-        lock_guard <mutex> lock(m_CollMonsterMutex);
+        lock_guard<mutex> lock(m_CollMonsterMutex);
         auto it = remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
         if (it != m_CollMonsters.end()) m_CollMonsters.erase(it, m_CollMonsters.end());
 
@@ -353,11 +345,8 @@ void CBody_Khazan_GS::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLa
             {
                 if (m_pBrutalAttack && !m_pBrutalAttack->Get_IsDead()) {
                     m_pBrutalAttack->Off_BrutalAttack();
-                    // Safe_Release(m_pBrutalAttack);
                 }
 
-                // if (m_pBrutalmonster)
-                     //Safe_Release(m_pBrutalmonster);
                 Remove_Status(CKhazan_GSword::BRUTAL_BEGIN | CKhazan_GSword::BRUTAL_READY | CKhazan_GSword::BRUTAL_SUCCESS);
             }
         }
@@ -505,6 +494,31 @@ void CBody_Khazan_GS::Event_AttackTiming(_bool isAttackStart)
     }
 }
 
+const MOTIONTRAIL_CONFIG& CBody_Khazan_GS::Get_MotionTrailConfig()
+{
+    return m_pMotionTrailCom->Get_Config();
+}
+
+void CBody_Khazan_GS::Set_MotionTrailConfig(const MOTIONTRAIL_CONFIG& Config)
+{
+    m_pMotionTrailCom->Set_Config(Config);
+}
+
+void CBody_Khazan_GS::Set_EnableMotionTrail(_bool isEnable)
+{
+    m_pMotionTrailCom->Set_Enable(isEnable);
+}
+
+_bool CBody_Khazan_GS::isEnableMotionTrail()
+{
+    return m_pMotionTrailCom->isEnable();
+}
+
+void CBody_Khazan_GS::Start_MotionTrail(_float fDuration)
+{
+    m_pMotionTrailCom->Start_MotionTrail(fDuration);
+}
+
 void CBody_Khazan_GS::Update_Colliders(_float fTimeDelta)
 {
     _matrix matParent = XMLoadFloat4x4(m_pParentMatrix);
@@ -524,6 +538,7 @@ void CBody_Khazan_GS::Update_Colliders(_float fTimeDelta)
     XMStoreFloat3(reinterpret_cast<_float3*>(&m_matWorldGSwordBody._41), vOutPos2);
 
     m_pBodyCom_BodyAttack->Sync_Update(matParent);
+    m_pBodyCom_RangeAttack->Sync_Update(matParent);
     m_pBodyCom_Search->Sync_Update(matParent);
 
 }
@@ -573,65 +588,17 @@ void CBody_Khazan_GS::Start_GuardRotation(_float3 vContactPoint)
 
 }
 
-void CBody_Khazan_GS::Test_Attack(_float fTimeDelta)
+
+void CBody_Khazan_GS::Exception_Animaition()
 {
-    /* 약공 3타*/
-    if(m_pGameInstance->Key_Down(DIK_1))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_WeakAtk01"));
-    if (m_pGameInstance->Key_Pressing(DIK_Z,fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_WeakAtk02"));
-    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_WeakAtk03"));
-    if (m_pGameInstance->Key_Pressing(DIK_C, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_SpiningCharger_01"));
-
-    /* 차지 약공 */
-    if (m_pGameInstance->Key_Down(DIK_2))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_WeakAtk01_Charge"));
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_Gsword_WeakAtk01_ChargeAtk"));
-
-    /* 차지 강공 */
-    if (m_pGameInstance->Key_Down(DIK_3))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_StrongAtk01_Charge"));
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_StrongAtk03_Level0"));
-
-    /* 스킬 : 거센기세 */
-    if (m_pGameInstance->Key_Down(DIK_4))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_WeakAtk_FerociousMomentum"));
-
-    /* 스킬 : 강기 발현  */
-    if (m_pGameInstance->Key_Down(DIK_5))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_StrongAtk01_Charge_2"));
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_5))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_StrongAtk03_Level0"));
-
-
-    /* 스킬 : 거인 사냥 , 귀신 */
-    if (m_pGameInstance->Key_Down(DIK_6))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_SoulbringerGhostLiberation_Charge"));
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_6))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_SoulbringerGhostLiberation_ChargeAtk"));
-
-    /* 스킬 : 정면 돌파*/
-    if (m_pGameInstance->Key_Down(DIK_7))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_ChargeCrash_Charge"));
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_7))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_ChargeCrash_Atk"));
-
-
-    /* 스킬 : 거대한 포효 */
-    if (m_pGameInstance->Key_Down(DIK_9))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_WarDeclaration"));
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_9))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_WarDeclaration_Atk"));
-
-    /* 스킬 : 거대한 포효 */
-    if (m_pGameInstance->Key_Down(DIK_0))
-        m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_ChargeMaster_Frenzy_01"));
-
-
+    //if(m_pModelCom->Get_CurAnimIndex() == 120 && *m_pModelCom->Get_CurTrackPosition() < 10.f)
+    //{
+    //    _vector vPos = m_pParentTransform->Get_State(STATE::POSITION);
+    //    vPos.m128_f32[2] += 0.32f;
+    //    m_pParentTransform->Set_State(STATE::POSITION, vPos);
+    //
+    //}
+      
 }
 
 HRESULT CBody_Khazan_GS::Bind_ShaderResources()
@@ -696,6 +663,29 @@ HRESULT CBody_Khazan_GS::Ready_Components()
 
     m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
 
+    CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
+    MTDesc.pOwnerMasterModel = m_pModelCom;
+    MTDesc.HasPartModels = true;
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Arm);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Face);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Hair);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Leg);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Shoes);
+    MTDesc.OwnerPartModels.push_back(m_pModelCom_Torso);
+    MTDesc.Config.vLifeTime = { 0.f, 0.3f };
+    MTDesc.Config.vStartColor = { 1.f, 1.f, 1.f };
+    MTDesc.Config.vTargetColor = { 1.f, 1.f, 1.f };
+    MTDesc.Config.fRimPower = 2.f;
+    MTDesc.Config.fRimIntensity = 1.f;
+    MTDesc.Config.fEmissiveIntensity = 2.f;
+    MTDesc.Config.isIndividualColor = true;
+    MTDesc.Config.fColorUpdateSpeed = 1000.f;
+    MTDesc.Config.fInterval = 0.05f;
+    MTDesc.Config.iMaxFrames = 10.f;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
+        TEXT("Com_MotionTrail"), reinterpret_cast<CComponent**>(&m_pMotionTrailCom), &MTDesc)))
+        return E_FAIL;
+
     return S_OK;
 
 }
@@ -732,28 +722,33 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
             return E_FAIL;
 
     }
-    CBody::BODY_BOXSHAPE_DESC GuardDesc{};
-    {
-        GuardDesc.vExtent = _float3(0.4f, 1.8f, 0.4f);
-        GuardDesc.eMotion = EMotionType::Kinematic;
-        GuardDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
-        GuardDesc.eShapeType = SHAPE::BOX;
-        GuardDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
 
-        XMStoreFloat4x4(&m_matWorldGSwordBody, XMLoadFloat4x4(m_pMatGSwordBody) * XMLoadFloat4x4(m_pParentMatrix));
-        _vector vScale, vQuat, vTrans;
-        XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_matWorldGSwordBody));
-        GuardDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
-        GuardDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
-        GuardDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-        m_tAttackCollisionDesc.pGameObject = this;
-        m_tAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
-        m_tAttackCollisionDesc.strName = TEXT("Player_Guard");
-        GuardDesc.pCollisionDesc = &m_tAttackCollisionDesc;
-        GuardDesc.bIsTrigger = true;
+    CBody::BODY_SPHERESHAPE_DESC RangeAttackDesc{};
+    {
+        RangeAttackDesc.fRadius = 1.1f;
+        RangeAttackDesc.bIsTrigger = true;
+        RangeAttackDesc.bStartActive = true;
+        RangeAttackDesc.eMotion = EMotionType::Kinematic;
+        RangeAttackDesc.eQuality = EMotionQuality::Discrete;
+        RangeAttackDesc.eShapeType = SHAPE::SPHERE;
+        RangeAttackDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
+
+        XMStoreFloat3(&RangeAttackDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&RangeAttackDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+        RangeAttackDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        m_tRangeAttackCollisionDesc.pGameObject = this;
+        m_tRangeAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
+        m_tRangeAttackCollisionDesc.strName = TEXT("Player_Attack");
+        RangeAttackDesc.pCollisionDesc = &m_tRangeAttackCollisionDesc;
+
+        DAMAGEINFO DamageInfo = {};
+        DamageInfo.fDamage = 50.f;
+        DamageInfo.eHitreaction = HITREACTION::KNOCKBACK_NORMAL;
+        RangeAttackDesc.pCollisionDesc->pInfo = &DamageInfo;
+        RangeAttackDesc.bIsTrigger = true;
 
         if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-            TEXT("Com_Body2"), reinterpret_cast<CComponent**>(&m_pBodyCom_Guard), &GuardDesc)))
+            TEXT("Com_Body2"), reinterpret_cast<CComponent**>(&m_pBodyCom_RangeAttack), &RangeAttackDesc)))
             return E_FAIL;
 
     }
@@ -787,6 +782,30 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
             return E_FAIL;
     }
 
+    CBody::BODY_BOXSHAPE_DESC GuardDesc{};
+    {
+        GuardDesc.vExtent = _float3(0.4f, 1.8f, 0.4f);
+        GuardDesc.eMotion = EMotionType::Kinematic;
+        GuardDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
+        GuardDesc.eShapeType = SHAPE::BOX;
+        GuardDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
+
+        XMStoreFloat4x4(&m_matWorldGSwordBody, XMLoadFloat4x4(m_pMatGSwordBody) * XMLoadFloat4x4(m_pParentMatrix));
+        _vector vScale, vQuat, vTrans;
+        XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_matWorldGSwordBody));
+        GuardDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+        GuardDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
+        GuardDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        m_tAttackCollisionDesc.pGameObject = this;
+        m_tAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
+        m_tAttackCollisionDesc.strName = TEXT("Player_Guard");
+        GuardDesc.pCollisionDesc = &m_tAttackCollisionDesc;
+        GuardDesc.bIsTrigger = true;
+
+        if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+            TEXT("Com_Body4"), reinterpret_cast<CComponent**>(&m_pBodyCom_Guard), &GuardDesc)))
+            return E_FAIL;
+    }
 
     CBody::BODY_SPHERESHAPE_DESC SearchDesc{};
     {
@@ -807,7 +826,7 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
         SearchDesc.pCollisionDesc = &m_tSearchCollisionDesc;
 
         if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-            TEXT("Com_Body4"), reinterpret_cast<CComponent**>(&m_pBodyCom_Search), &SearchDesc)))
+            TEXT("Com_Body5"), reinterpret_cast<CComponent**>(&m_pBodyCom_Search), &SearchDesc)))
             return E_FAIL;
     }
     return S_OK;
