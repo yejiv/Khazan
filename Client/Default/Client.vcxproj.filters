@@ -1210,6 +1210,18 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate\Right">
       <UniqueIdentifier>{757d83e8-39dc-4b73-832e-c75247136376}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\NPC\Danjin">
+      <UniqueIdentifier>{441c8db2-0260-4ed1-ae66-ecddd2e7ca26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\Daphrona">
+      <UniqueIdentifier>{baef2e66-2a27-475e-885e-add8183878ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\Duimuk">
+      <UniqueIdentifier>{59ad105f-ecde-4776-bb0c-d6722cd00467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\Duimuk\Part">
+      <UniqueIdentifier>{59c52a17-c21a-419d-a90b-7f42db418fa0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2340,6 +2352,18 @@
     <ClInclude Include="..\Public\GiantGate_Part_R.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate\Right</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Duimuk_Part.h">
+      <Filter>02.GameObject\NPC\Duimuk\Part</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC_Danjin.h">
+      <Filter>02.GameObject\NPC\Danjin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC_Daphrona.h">
+      <Filter>02.GameObject\NPC\Daphrona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC_Duimuk.h">
+      <Filter>02.GameObject\NPC\Duimuk</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3449,6 +3473,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\GiantGate_Part_R.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate\Right</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Duimuk_Part.cpp">
+      <Filter>02.GameObject\NPC\Duimuk\Part</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Danjin.cpp">
+      <Filter>02.GameObject\NPC\Danjin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Daphrona.cpp">
+      <Filter>02.GameObject\NPC\Daphrona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Duimuk.cpp">
+      <Filter>02.GameObject\NPC\Duimuk</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

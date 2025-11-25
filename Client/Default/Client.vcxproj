@@ -260,6 +260,7 @@
     <ClInclude Include="..\public\Dragonian_Claw_L.h" />
     <ClInclude Include="..\public\Dragonian_Claw_R.h" />
     <ClInclude Include="..\public\Dragonian_Sword.h" />
+    <ClInclude Include="..\Public\Duimuk_Part.h" />
     <ClInclude Include="..\Public\ElevatorL.h" />
     <ClInclude Include="..\Public\Elevator_Inner.h" />
     <ClInclude Include="..\Public\Elevator_Mid.h" />
@@ -308,6 +309,9 @@
     <ClInclude Include="..\Public\LoadingObj_BN.h" />
     <ClInclude Include="..\public\Inven_State_Panel.h" />
     <ClInclude Include="..\public\Lantern_Khazan_Spear.h" />
+    <ClInclude Include="..\Public\NPC_Danjin.h" />
+    <ClInclude Include="..\Public\NPC_Daphrona.h" />
+    <ClInclude Include="..\Public\NPC_Duimuk.h" />
     <ClInclude Include="..\Public\Obelisk.h" />
     <ClInclude Include="..\Public\Pot.h" />
     <ClInclude Include="..\public\Popup_Item.h" />
@@ -575,6 +579,7 @@
     <ClCompile Include="..\private\Dragonian_Claw_L.cpp" />
     <ClCompile Include="..\private\Dragonian_Claw_R.cpp" />
     <ClCompile Include="..\private\Dragonian_Sword.cpp" />
+    <ClCompile Include="..\Private\Duimuk_Part.cpp" />
     <ClCompile Include="..\Private\ElevatorL.cpp" />
     <ClCompile Include="..\Private\Elevator_Inner.cpp" />
     <ClCompile Include="..\Private\Elevator_Mid.cpp" />
@@ -690,6 +695,9 @@
     <ClCompile Include="..\Private\LoadingObj_BN.cpp" />
     <ClCompile Include="..\private\Inven_State_Panel.cpp" />
     <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp" />
+    <ClCompile Include="..\Private\NPC_Danjin.cpp" />
+    <ClCompile Include="..\Private\NPC_Daphrona.cpp" />
+    <ClCompile Include="..\Private\NPC_Duimuk.cpp" />
     <ClCompile Include="..\Private\Obelisk.cpp" />
     <ClCompile Include="..\Private\Pot.cpp" />
     <ClCompile Include="..\private\Popup_Item.cpp" />

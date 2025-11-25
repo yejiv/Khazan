@@ -2772,6 +2772,18 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
 
             break;
         }
+        case INTERACTIVE_TYPE::DANJIN:
+        case INTERACTIVE_TYPE::DUIMUK:
+        case INTERACTIVE_TYPE::DAPHRONA:
+        {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
+                isDone = true;
+            }
+
+            break;
+        }
         default:
             break;
         }
@@ -2844,6 +2856,13 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         if (INTERACTIVE_TYPE::GIANTGATE == m_EventInteract.eInteractType)
         {
             GiantGate_Event(fTimeDelta);
+        }
+        // NPC 랑 상호 작용 시
+        if (INTERACTIVE_TYPE::DANJIN == m_EventInteract.eInteractType ||
+            INTERACTIVE_TYPE::DAPHRONA == m_EventInteract.eInteractType || 
+            INTERACTIVE_TYPE::DUIMUK == m_EventInteract.eInteractType)
+        {
+            NPC_Event(fTimeDelta);
         }
     }
 }
@@ -3064,6 +3083,17 @@ void CKhazan_Spear::GiantGate_Event(_float fTimeDelta)
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&GateEvent.vPlayerPosition));
     GateEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&GateEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::NPC_Event(_float fTimeDelta)
+{
+    EventNPC NPCEvent = m_EventInteract.NPCEvent;
+
+    // 플레이어가 NPC와 상호작용하는 애니메이션 ???
+
+    NPCEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&NPCEvent.vPosition));
 
     m_EventInteract.End_Event();
 }
