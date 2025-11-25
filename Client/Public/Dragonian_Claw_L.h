@@ -1,6 +1,7 @@
 #pragma once
 #include "Client_Defines.h"
 #include "PartObject.h"
+#include "Dragonian_Rampage.h"
 
 NS_BEGIN(Engine)
 class CShader;
@@ -17,6 +18,7 @@ public:
     {
         CTransform* pOwnerTransform = { nullptr };
         _float4x4* pSocketMatrix = { nullptr };
+        CDragonian_Rampage::MONDATA* pData = { nullptr };
 
     }WEAPON_DESC;
 
@@ -34,9 +36,9 @@ public:
     virtual HRESULT			    Render() override;
 
 public:
-    virtual void			    Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-    virtual void			    Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-    virtual void			    Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
 
 private:
@@ -48,13 +50,12 @@ private:
     CShader*                    m_pShaderCom = { nullptr };
     CModel*                     m_pModelCom = { nullptr };
     CTransform*                 m_pOwnerTransform = { nullptr };
+    CBody*                      m_pBodyComp = { nullptr };
 
     _bool					    m_isOnAttackCollision = { false };
-    CBody*                      m_pBodyComp = { nullptr };
     _float4x4*                  m_pSocketMatrix = { nullptr };
 
-    _float4                     m_vTipPos = {};
-
+    CDragonian_Rampage::MONDATA* m_pData = { nullptr };
 public:
     static CDragonian_Claw_L*    Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*        Clone(void* pArg) override;

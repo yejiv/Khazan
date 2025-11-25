@@ -6,6 +6,7 @@ NS_BEGIN(Engine)
 class CShader;
 class CModel;
 class CBody;
+class CMotionTrail;
 NS_END
 
 NS_BEGIN(Client)
@@ -23,6 +24,14 @@ public:
 
     }BODY_KHAZAN_GS_DESC;
 
+private:
+    enum GS_COLLISION
+    {
+        COLL_ATTACK = 1 << 0,
+        COLL_RANGEATTACK = 1 << 1,
+        COLL_BODYATTACK = 1 << 2,
+        COLL_GUARD = 1 << 3,
+    };
 
 private:
     CBody_Khazan_GS(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -44,9 +53,9 @@ public:
     void                Render_Part_Outline(CModel* pModel);
 
 public:
-    virtual void        Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-    virtual void        Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-    virtual void        Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
 public:
     _float4x4*          Get_BoneMatrix(const _char* pBoneName);
@@ -58,7 +67,6 @@ public:
     void                Set_IsGuarding(_bool* pIsGuarding) { m_pIsGuarding = pIsGuarding; }
     void                Set_GSword(class CGSword_Khazan_GS* pGS);
     void                Set_OutlineConfig(OUTLINE_CONFIG Config){ m_OutlineConfig.vColor = Config.vColor; m_OutlineConfig.fSize = Config.fSize; }
-    void                Set_EnableEdge(_bool isEnable) { m_isEnableEdge = isEnable; }
     void		        Set_matGSword(_float4x4* mat) { m_pGSword_Matrix = mat; }
 
 public:
@@ -68,12 +76,21 @@ public:
     void                Search_BrutalTarget(_float fTimeDelta);
     _bool               Check_BrutalAttack(_float fTimeDelta);
     void	            Event_AttackTiming(_bool isAttackStart);
+
+    /* Shader */
+    void                        Set_EnableEdge(_bool isEnable) { m_isEnableEdge = isEnable; }
+    const MOTIONTRAIL_CONFIG&   Get_MotionTrailConfig();
+    void                        Set_MotionTrailConfig(const MOTIONTRAIL_CONFIG& Config);
+    void                        Set_EnableMotionTrail(_bool isEnable);
+    _bool                       isEnableMotionTrail();
+    void                        Start_MotionTrail(_float fDuration);
   
 private:
     class CClientInstance*      m_pClientInstance = { nullptr };
     class CTransform*           m_pParentTransform = { nullptr };
     class CGSword_Khazan_GS*    m_pWSword = { nullptr };
     class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
+    CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
     CShader*                    m_pShaderCom = { nullptr };
     CModel*                     m_pModelCom = { nullptr };
@@ -84,13 +101,15 @@ private:
     CModel*                     m_pModelCom_Shoes = { nullptr };
     CModel*                     m_pModelCom_Torso = { nullptr };
 
-    CBody*                      m_pBodyCom_BodyAttack  = { nullptr }; //플레이어 바디에 붙이는 졸트바디 (공격용)
-    CBody*                      m_pBodyCom_Attack       = { nullptr }; //검 공격시 사용하는 졸트 바디
-    CBody*                      m_pBodyCom_Guard        = { nullptr }; //검 방어에 사용하는 졸트 바디
-    CBody*                      m_pBodyCom_Search        = { nullptr }; //몬스터 서치에 사용하는 졸트 바디 
+    CBody*                      m_pBodyCom_Attack = { nullptr };            //검 공격시 사용하는 졸트 바디
+    CBody*                      m_pBodyCom_RangeAttack = { nullptr };   //범위 공격에 졸트 바디
+    CBody*                      m_pBodyCom_BodyAttack = { nullptr };   //플레이어 바디에 붙이는 졸트바디 (공격용)
+    CBody*                      m_pBodyCom_Guard = { nullptr };         //검 방어에 사용하는 졸트 바디
+    CBody*                      m_pBodyCom_Search = { nullptr };        //몬스터 서치에 사용하는 졸트 바디 
 
     PLAYER_DATA*                m_pPlayerData;
     COLLISION_DESC				m_tAttackCollisionDesc = {};
+    COLLISION_DESC				m_tRangeAttackCollisionDesc = {};
     COLLISION_DESC				m_tBodyAttackCollisionDesc = {};
     COLLISION_DESC				m_tGuardCollisionDesc = {};
     COLLISION_DESC              m_tSearchCollisionDesc = {};
@@ -101,14 +120,13 @@ private:
     _uint*                      m_pParentStatus = { nullptr };
     _uint*                      m_pHitReaction = { nullptr };
     _uint				        m_iCurState = {  };
+    _uint                       m_iCollState = {};          //어떤 콜라이더가 켜질 것인가에대한 상태 
 
     _bool				        m_isFinishedAnimation = { false };
-    // _bool			        	m_isSetAnimation = { false };
     _uint				        m_iCurSetAnimIndex = { 0 };
     _bool                       m_isSpearFullExtension = { false }; //창을 완전히 뻗는 타이밍부터 true 
     _bool*                      m_pIsGuarding = { nullptr }; //가드중인지 체크
 
-    // const _uint			    m_iSetAnimation[3] = { 3,2,1 };
 
      /* 뼈 위치 */
     _float4x4*                  m_pMatGSwordBody = { nullptr }; // 칼 중앙 로컬행렬
@@ -124,8 +142,10 @@ private:
     _uint	                    EffectID_SpiralSpear;
 
 
-    _bool                       m_isSpearTipActive = { true };
-    _bool                       m_isSpearPoleActive = { true };
+    _bool                       m_isCollAttack_Active = { true };
+    _bool                       m_isCollRangeAttack_Active = { true };
+    _bool                       m_isCollBodyAttack_Active = { true };
+    _bool                       m_isCollGuard_Active = { true };
 
     /* 가드 */
     _bool                       m_isJustGuardOnce = { false };
@@ -152,6 +172,9 @@ private:
     _bool                       m_isEnableEdge = { true };
     OUTLINE_CONFIG              m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
 
+    /*  mutex */
+    mutex                       m_CollMonsterMutex;
+
 private :
     _uint                       m_iFXIdx_Spining;
     //_float                      m_SmokeSpawnTIme;
@@ -161,15 +184,18 @@ private:
     void            Check_Guarding(_float fTimeDelta);
     void            Update_GuardRotation(_float fTimeDelta);
     void            Start_GuardRotation(_float3 vContactPoint);
+    void            Exception_Animaition(); // 애니메이션 이상한 것들 처리 
 
-    void            Test_Attack(_float fTimeDelta);
+    /* notify */
+ private:
+        void	    Event_AttackTiming(_uint iCollState);
+
 
 private:
     HRESULT         Bind_ShaderResources();
     HRESULT         Ready_Components();
     HRESULT         Ready_Colliders();
     HRESULT         Ready_AnimationEvents();
-
 
 private:
     inline void		Add_State(_uint i) { *m_pParentState |= i; }
@@ -183,8 +209,16 @@ private:
     inline void		Remove_Status(_uint i) { *m_pParentStatus &= ~i; }
     inline _bool	Has_Status(_uint i) { return (*m_pParentStatus & i) != 0; }
 
+
+    inline void		Add_CollState(_uint i) { m_iCollState |= i; }
+    inline void		Toggle_CollState(_uint i) { m_iCollState ^= i; }
+    inline void		Remove_CollState(_uint i) { m_iCollState &= ~i; }
+    inline _bool	Has_CollState(_uint i) { return (m_iCollState & i) != 0; }
+    inline void		Clear_CollState() { m_iCollState = 0; }
+
 private: 
     _vector Decompose_Rotation(_matrix W, _vector offset = { 0.f, 0.f, 0.f, 1.f });
+
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -194,44 +228,3 @@ public:
 };
 
 NS_END
-
-
-
-
-/*  
-테스트 공격 키 
-약공 3타 
-    약공 1타       : 1
-    약공 2타       : 1 + z
-    약공 3타       : 1 + x
-
-차지 약공
-    차지          : 2
-    공격          : 2 + z
-
-차지 강공
-    차지          : 3
-    공격          : 3 + z
-
-스킬 : 거센 기세
-    모션          : 4
-
-스킬 : 강기 발현
-    차지          : 5 
-    공격          : 5 + z
-
-스킬 : 거인사냥 , 귀신  <-  비슷한 모션이 3가지 있는데 하실 때 같이 봅시당~ (일단 하나만 넣었음!)
-    차지          : 6
-    공격          : 6 + z
-
-스킬 : 정면 돌파
-    차지          : 7 
-    공격          : 7 + z
-
-스킬 : 거대한 포효
-    모션1         : 9
-    모션2         : 9 + ㅋ
-
-스킬 : 내재된 분노
-    모션          : 0
-*/

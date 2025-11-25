@@ -15,7 +15,7 @@
 #include "AS_5HitCombo_Viper.h"
 #include "AS_ThrowBlade_Viper.h"
 #include "AS_StingGrab_Viper.h"
-
+#include "AS_Groggy_Viper.h"
 
 CFSM_Viper::CFSM_Viper()
 {
@@ -60,6 +60,11 @@ HRESULT CFSM_Viper::Initialize()
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::STINGGRAB), CAS_StingGrab_Viper::Create())))
         return E_FAIL;
+
+
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::GROGGY), CAS_Groggy_Viper::Create())))
+        return E_FAIL;
+
 
  
 

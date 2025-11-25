@@ -23,7 +23,7 @@ HRESULT CLevel_Title::Initialize()
 
 	CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
 
-	m_pGameInstance->Subscribe_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), [&](const EVENT_LEVEL_CHANGE& e)
+    m_iEventID = m_pGameInstance->Subscribe_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), [&](const EVENT_LEVEL_CHANGE& e)
 		{
 			m_eNextLevel = static_cast<LEVEL>(e.iLevel);
 		});
@@ -238,6 +238,6 @@ CLevel_Title* CLevel_Title::Create(ID3D11Device* pDevice, ID3D11DeviceContext* p
 
 void CLevel_Title::Free()
 {
-
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), m_iEventID);
 	__super::Free();
 }

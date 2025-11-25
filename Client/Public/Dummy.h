@@ -35,10 +35,6 @@ private:
 	CBody* m_pBodyCom = { nullptr };
 	//class CCharacterVirtual* m_pCharVirCom = { nullptr };
 	
-public:
-	void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-	void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-
 private:
 	HRESULT Ready_Components();
 	HRESULT Bind_ShaderResources();

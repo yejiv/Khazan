@@ -60,6 +60,8 @@ private:
 	_bool m_isEnableEmissive = { true };
 	_bool m_isEnableBloom = { true };
 
+    _uint m_iEventID = { 0 };
+
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
@@ -71,10 +73,10 @@ private:
 	void Animation_Update(_float fTimeDelta);
 	void Animation_Change(_float fTimeDelta);
 
-private:
-	virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint	iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-	virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
-	virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+public:
+    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
 public:
 	static CTombStone* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

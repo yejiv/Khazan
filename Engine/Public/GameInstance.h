@@ -138,6 +138,8 @@ public:
 	void Set_LightEnable(const _wstring& strLightTag, _uint iLevelIndex, _bool isEnable);
 	_bool Is_LightEnable(const _wstring& strLightTag, _uint iLevelIndex);
 	HRESULT Render_Lights(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex);
+    const vector<_wstring>& Get_LightTags(_uint iLevelIndex);
+    void    Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc);
 #pragma endregion
 
 #pragma region FONT_MANAGER
@@ -227,7 +229,7 @@ public:
 	uint64 Find_BodyDesc(BodyID id);
 	void Remove_BodyDesc(BodyID id);
 
-    void Destroy_Body(BodyID id);
+    void Destroy_Body(BodyID& id);
 
 	void Set_Gravity(_vector vGravity);
 	void Reset_Gravity();
@@ -388,6 +390,7 @@ public:
 	HRESULT                 Render_Decals();
     CTexture*               Get_DecalTexture(DECALTYPE eType);
     void                    Batch_Decal(class CDecal* pDecal);
+    void                    Decal_Clear();
 #pragma endregion
 
 #pragma region EFFECT_MANAGER

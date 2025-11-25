@@ -645,9 +645,6 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Goblin_Melee/Imp_Sword/Imp_Sword.dat"))))
         return E_FAIL;
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_TwinBlade_Viper"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/TwinBlade_R/TwinBlade_R.dat")), E_FAIL);
-
 #pragma endregion
 
 #pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ 
@@ -1368,6 +1365,16 @@ HRESULT CLoader::Loading_For_Embars_Model()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_A/WP_BGQ_Elevator_Move_001_03/WP_BGQ_Elevator_Move_001_03.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 바이퍼 가는 문
+    /* Prototype_Component_Model_GiantGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_GiantGate"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_Base_GiantDoor_Open_001/WIP_Base_GiantDoor_Open_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_GiantGate_Part */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_GiantGate_Part"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_A/WIP_BGQ_Door_Wood_001/WIP_BGQ_Door_Wood_001.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거
@@ -1530,6 +1537,20 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     /* Prototype_GameObject_Prop_Elevator_Outer */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Elevator_Outer"),
         CElevator_Outer::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 바이퍼 가는 문
+    /* Prototype_GameObject_Prop_GiantGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_GiantGate"),
+        CGiantGate::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_GiantGate_Part_L */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_GiantGate_Part_L"),
+        CGiantGate_Part_L::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_GiantGate_Part_R */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_GiantGate_Part_R"),
+        CGiantGate_Part_R::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion
