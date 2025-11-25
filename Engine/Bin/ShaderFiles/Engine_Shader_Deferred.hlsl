@@ -697,8 +697,8 @@ PS_OUT_BACKBUFFER PS_MOTION_BLUR(PS_IN In)
         
             float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleUV).x;
         
-            if (abs(fSampleDepth - fCurDepth) > g_fMotionBlurBias)
-                break;
+            //  if (abs(fSampleDepth - fCurDepth) > g_fMotionBlurBias)
+            //      break;
         
             vFinalColor += g_CombinedTexture.Sample(ClampSampler, vSampleUV).rgb;
             fSampleCount += 1.f;
