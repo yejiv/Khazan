@@ -2762,6 +2762,16 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
 
             break;
         }
+        case INTERACTIVE_TYPE::GIANTGATE:
+        {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
+                isDone = true;
+            }
+
+            break;
+        }
         default:
             break;
         }
@@ -2829,6 +2839,11 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         if (INTERACTIVE_TYPE::UNLOCKGEAR == m_EventInteract.eInteractType)
         {
             UnLockGear_Event(fTimeDelta);
+        }
+        // 엘리베이터 가동 위한 잠금 장치 가동 시
+        if (INTERACTIVE_TYPE::GIANTGATE == m_EventInteract.eInteractType)
+        {
+            GiantGate_Event(fTimeDelta);
         }
     }
 }
@@ -3035,6 +3050,20 @@ void CKhazan_Spear::UnLockGear_Event(_float fTimeDelta)
     //m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&ULGearEvent.vPlayerPosition));
     ULGearEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&ULGearEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::GiantGate_Event(_float fTimeDelta)
+{
+    EventGiantGate GateEvent = m_EventInteract.GiantGateEvent;
+
+    // 플레이어가 잠금해제하고 문을 여는 애니메이션 실행
+
+    GateEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&GateEvent.vPlayerPosition));
+    GateEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&GateEvent.vPosition));
 
     m_EventInteract.End_Event();
 }

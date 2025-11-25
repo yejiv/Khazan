@@ -1,25 +1,25 @@
-#include "IronGate_Part_R.h"
+#include "GiantGate_Part_R.h"
 
 #include "GameInstance.h"
 
-CIronGate_Part_R::CIronGate_Part_R(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CPartObject { pDevice, pContext }
+CGiantGate_Part_R::CGiantGate_Part_R(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+    : CPartObject{ pDevice, pContext }
 {
 }
 
-CIronGate_Part_R::CIronGate_Part_R(const CIronGate_Part_R& Prototype)
-    : CPartObject { Prototype }
+CGiantGate_Part_R::CGiantGate_Part_R(const CGiantGate_Part_R& Prototype)
+    : CPartObject{ Prototype }
 {
 }
 
-HRESULT CIronGate_Part_R::Initialize_Prototype()
+HRESULT CGiantGate_Part_R::Initialize_Prototype()
 {
     return S_OK;
 }
 
-HRESULT CIronGate_Part_R::Initialize_Clone(void* pArg)
+HRESULT CGiantGate_Part_R::Initialize_Clone(void* pArg)
 {
-    IRONGATE_PART_RIGHT_DESC* pDesc = static_cast<IRONGATE_PART_RIGHT_DESC*>(pArg);
+    GIANTGATE_RIGHT_DESC* pDesc = static_cast<GIANTGATE_RIGHT_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
@@ -34,20 +34,20 @@ HRESULT CIronGate_Part_R::Initialize_Clone(void* pArg)
 
     _float4 vPos = {};
 
-    XMStoreFloat4(&vPos, m_pTransformCom->Get_State(STATE::POSITION) - m_pTransformCom->Get_State(STATE::UP) * 17.5f);
+    XMStoreFloat4(&vPos, m_pTransformCom->Get_State(STATE::POSITION) - m_pTransformCom->Get_State(STATE::UP) * 84.5f);
 
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vPos));
 
-    m_pTransformCom->Rotation(XMConvertToRadians(90.f), XMConvertToRadians(0.f), XMConvertToRadians(180.f));
+    m_pTransformCom->Rotation(XMConvertToRadians(270.f), XMConvertToRadians(180.f), XMConvertToRadians(180.f));
 
     return S_OK;
 }
 
-void CIronGate_Part_R::Priority_Update(_float fTimeDelta)
+void CGiantGate_Part_R::Priority_Update(_float fTimeDelta)
 {
 }
 
-void CIronGate_Part_R::Update(_float fTimeDelta)
+void CGiantGate_Part_R::Update(_float fTimeDelta)
 {
     _matrix     BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 
@@ -59,14 +59,17 @@ void CIronGate_Part_R::Update(_float fTimeDelta)
     XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
 }
 
-void CIronGate_Part_R::Late_Update(_float fTimeDelta)
+void CGiantGate_Part_R::Late_Update(_float fTimeDelta)
 {
     m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
 }
 
-HRESULT CIronGate_Part_R::Render()
+HRESULT CGiantGate_Part_R::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CIronGate_Part_R : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
+    if (m_pGameInstance->Key_Pressing(DIK_NUMPAD1, 0.f))
+        return S_OK;
+
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CGiantGate_Part_R : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -82,9 +85,9 @@ HRESULT CIronGate_Part_R::Render()
     return S_OK;
 }
 
-HRESULT CIronGate_Part_R::Ready_Components(void* pArg)
+HRESULT CGiantGate_Part_R::Ready_Components(void* pArg)
 {
-    IRONGATE_PART_RIGHT_DESC* pDesc = static_cast<IRONGATE_PART_RIGHT_DESC*>(pArg);
+    GIANTGATE_RIGHT_DESC* pDesc = static_cast<GIANTGATE_RIGHT_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
@@ -93,13 +96,13 @@ HRESULT CIronGate_Part_R::Ready_Components(void* pArg)
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 
-    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_IronGate_Part"),
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_GiantGate_Part"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
 
     return S_OK;
 }
 
-HRESULT CIronGate_Part_R::Bind_ShaderResources()
+HRESULT CGiantGate_Part_R::Bind_ShaderResources()
 {
     // 월드 행렬 쉐이더에 바인딩
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix), E_FAIL);
@@ -113,7 +116,7 @@ HRESULT CIronGate_Part_R::Bind_ShaderResources()
     return S_OK;
 }
 
-HRESULT CIronGate_Part_R::Bind_Materials(_uint iMeshIndex)
+HRESULT CGiantGate_Part_R::Bind_Materials(_uint iMeshIndex)
 {
     m_iMtrlFlags = 0;
 
@@ -134,33 +137,33 @@ HRESULT CIronGate_Part_R::Bind_Materials(_uint iMeshIndex)
     return S_OK;
 }
 
-CIronGate_Part_R* CIronGate_Part_R::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CGiantGate_Part_R* CGiantGate_Part_R::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-    CIronGate_Part_R* pInstance = new CIronGate_Part_R(pDevice, pContext);
+    CGiantGate_Part_R* pInstance = new CGiantGate_Part_R(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed To Created : CIronGate_Part_R"));
+        MSG_BOX(TEXT("Failed To Created : CGiantGate_Part_R"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-CGameObject* CIronGate_Part_R::Clone(void* pArg)
+CGameObject* CGiantGate_Part_R::Clone(void* pArg)
 {
-    CIronGate_Part_R* pInstance = new CIronGate_Part_R(*this);
+    CGiantGate_Part_R* pInstance = new CGiantGate_Part_R(*this);
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed To Cloned : CIronGate_Part_R"));
+        MSG_BOX(TEXT("Failed To Cloned : CGiantGate_Part_R"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CIronGate_Part_R::Free()
+void CGiantGate_Part_R::Free()
 {
     __super::Free();
 

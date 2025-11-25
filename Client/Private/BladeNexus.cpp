@@ -436,8 +436,15 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
     // 귀검 가동 끝나면 ( 첫 해금 O )
     if (ANIM_STATE::BEFORE_START == m_eAnimState)       // BEFORE_START 가 끝나면 BEFORE_LOOP ( 플레이어가 UI랑 상호 작용 )
     {
+        if (3 == m_iBladeNexus_ID)
         // 귀검 애니메이션 끝나면 귀검 UI 창 팝업
-        static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, m_szPlaceName);
+        {
+            static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::EMBARS, m_szPlaceName);
+        }
+        else
+        {
+            static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, m_szPlaceName);;
+        }
 
         // 처음 상호 작용 후 애니메이션 루프로 전환 및 이벤트 발생
         m_eAnimState = ANIM_STATE::BEFORE_LOOP;
