@@ -17,6 +17,10 @@ public:
 
 
 public:
+    virtual void OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
+
+
+public:
     static CAS_Quick2Hit_Viper* Create();
     virtual void                Free() override;
 

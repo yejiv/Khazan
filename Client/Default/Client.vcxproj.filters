@@ -1123,6 +1123,9 @@
     <Filter Include="92.AI\State\Viper\14.5HitCombo">
       <UniqueIdentifier>{8ec62639-19b8-4845-94bc-69ab15b162c5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Viper\15.StingGrab">
+      <UniqueIdentifier>{b9672729-3c7b-40dc-ae1f-65294ca5675c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2161,6 +2164,9 @@
     <ClInclude Include="..\Public\AS_ThrowBlade_Viper.h">
       <Filter>92.AI\State\Viper\13.ThrowBlade</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_StingGrab_Viper.h">
+      <Filter>92.AI\State\Viper\15.StingGrab</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3114,9 +3120,6 @@
     <ClCompile Include="..\Private\AS_ThrowBlade_Viper.cpp">
       <Filter>92.AI\State\Viper\13.ThrowBlade</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\.cpp">
-      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Ladder_Middle.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Middle</Filter>
     </ClCompile>
@@ -3176,6 +3179,10 @@
     </ClCompile>
     <ClCompile Include="..\Private\GearGate.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder.cpp" />
+    <ClCompile Include="..\Private\AS_StingGrab_Viper.cpp">
+      <Filter>92.AI\State\Viper\15.StingGrab</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -94,7 +94,7 @@ void CViper::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
 
-    if (m_fCurrentHP <= 0.f)
+    if (m_fCurrentHP >= 0.f)
     {
         if (m_isLookAt)
         {
@@ -102,7 +102,7 @@ void CViper::Update(_float fTimeDelta)
             if (nullptr == pModel)
                 return;
             _float fRatio = pModel->MakeRatio();
-            Look_Target_Lerp(fTimeDelta, fRatio, 3.f);
+            Look_Target_Lerp(fTimeDelta, fRatio, 8.f);
         }
     }
 
@@ -302,6 +302,48 @@ HRESULT CViper::Ready_Projectiles()
     return S_OK;
 }
 
+
+
+void CViper::Grab_Check_Begin()
+{
+  /*  CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    if (nullptr == pTargetTransform)
+        return;
+    _float4 vTemp = m_pWeapon->Get_GrabPos();
+    _vector vGrabPosition = XMLoadFloat4(&vTemp);
+    
+    _vector vOffset = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    pTargetTransform->Set_State(STATE::POSITION, vGrabPosition + vOffset);*/
+
+    CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    if (nullptr == pTargetTransform)
+        return;
+    _matrix BoneWorld = m_pBody->Get_BoneMatrix("Bone_Wp_Hold");
+
+    _vector vGrabPosition = BoneWorld.r[3];
+    _vector vOffset = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+    pTargetTransform->Set_State(STATE::POSITION, vGrabPosition + vOffset);
+
+}
+
+void CViper::Grab_Check_End()
+{
+    CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    if (nullptr == pTargetTransform)
+        return;
+
+    _vector vGrabPosition = {};
+
+    pTargetTransform->Set_State(STATE::POSITION, vGrabPosition);
+
+
+}
+
+
+
+
+
+
 HRESULT CViper::Ready_AnimEvent()
 {
 
@@ -324,6 +366,220 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma endregion
 
+#pragma region QUICK2HIT
+   
+    pModel->Register_Event("Quick2Hit_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            
+            m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("Quick2Hit_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+    pModel->Register_Event("Quick2Hit_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("Quick2Hit_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+#pragma endregion
+
+#pragma region SLOW2HIT
+
+    pModel->Register_Event("Slow2Hit_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("Slow2Hit_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+    pModel->Register_Event("Slow2Hit_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("Slow2Hit_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+
+#pragma endregion
+
+#pragma region SLOW3HIT
+
+    pModel->Register_Event("P1_Slow3Hit_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("P1_Slow3Hit_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+    pModel->Register_Event("P1_Slow3Hit_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("P1_Slow3Hit_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+    pModel->Register_Event("P1_Slow3Hit_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("P1_Slow3Hit_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+#pragma endregion
+
+#pragma region STINGSLASH
+
+    pModel->Register_Event("P1_Sting_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision_R(true);
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+        });
+
+    pModel->Register_Event("P1_Sting_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+    pModel->Register_Event("P1_Sting_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision_R(true);
+
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
+        });
+
+    pModel->Register_Event("P1_Sting_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
+
+        });
+
+    pModel->Register_Event("P1_StingSlash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("P1_StingSlash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+
+#pragma endregion
+
+#pragma region THROWBLADE
+
+    pModel->Register_Event("ThrowBlade_Start", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("ThrowBlade_Start", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+    pModel->Register_Event("ThrowBlade_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("ThrowBlade_End", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+
+#pragma endregion
+
+#pragma region TURNATTACk
+
+    pModel->Register_Event("TrunAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("TrunAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+#pragma endregion
 
 #pragma region BACKJUMPSLASH
 
@@ -340,12 +596,15 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("BackJumpAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-          // 콜라이더 키고 
+            m_pWeapon->Set_OnAttackCollision(true);
+
         });
 
     pModel->Register_Event("BackJumpAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             // 콜라이더 끄기  
+            m_pWeapon->Set_OnAttackCollision(false);
+
         });
 
 
@@ -358,7 +617,10 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("P1_JumpStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_JumpStart", true);
+            //m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_JumpStart", true);
+            CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            m_pCharVirCom->Jump_ToTarget(vTargetPos,350.f,10.f);
         });
 
     pModel->Register_Event("P1_JumpStart", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -386,8 +648,6 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma endregion
 
-
-
 #pragma region DEVOUR
 
     pModel->Register_Event("P1_SpinStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
@@ -403,7 +663,132 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma endregion
 
+#pragma region STINGGRAB
+
+    pModel->Register_Event("StingGrab_Start", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision_L(true);
+        });
+
+
+    pModel->Register_Event("StingGrab_Start", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision_L(false);
+        });
+
+    pModel->Register_Event("StingGrab_Hold", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
+        {
+            Grab_Check_Begin();
+        });
+
+    pModel->Register_Event("StingGrab_Hold", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+           // 플레이어 날리기
+        });
+
+
+#pragma endregion
+
+#pragma region THROWMAINTAIN
+    
+
+    pModel->Register_Event("ThrowMainTain", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+           
+        });
+
+
+    pModel->Register_Event("ThrowMainTain", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            
+        });
+
+
+#pragma endregion
   
+#pragma region 5HITCombo
+
+
+    pModel->Register_Event("5Hit_Slash_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
+            
+        });
+
+    pModel->Register_Event("5Hit_Slash_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+    pModel->Register_Event("5Hit_Slash_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+        });
+
+    pModel->Register_Event("5Hit_Slash_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+        });
+
+    pModel->Register_Event("5Hit_Slash_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+        });
+
+    pModel->Register_Event("5Hit_Slash_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+        });
+
+    pModel->Register_Event("5Hit_Slash_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+        });
+
+    pModel->Register_Event("5Hit_Slash_4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+        });
+
+    pModel->Register_Event("5Hit_Slash_5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+        });
+
+    pModel->Register_Event("5Hit_Slash_5", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+        });
+
+ 
+#pragma endregion
+
+
+
     return S_OK;
 
 }
