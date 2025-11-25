@@ -22,7 +22,6 @@ public:
 public:
 	// 오현형 저 테스트좀 해볼께요..
 	_float		MakeRatio();
-    void        Set_BlendTime(_float fBlendTime) { m_fBlendTime; }
 
 	/*  Info  */
 public:

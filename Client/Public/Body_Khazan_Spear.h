@@ -13,7 +13,6 @@ class CMotionTrail;
 NS_END
 
 NS_BEGIN(Client)
-
 class CBody_Khazan_Spear final : public CPartObject
 {
 public:
@@ -88,9 +87,10 @@ public:
     _bool       Get_IsAttackCollisionActive() { return m_isSpearTipActive; }
 
 private:
-    class CClientInstance* m_pClientInstance = { nullptr };
-	class CTransform*   m_pParentTransform = { nullptr };   
-    class CSpear_Khazan_Spear* m_pSpear = { nullptr };
+    class CClientInstance*      m_pClientInstance = { nullptr };
+	class CTransform*           m_pParentTransform = { nullptr };   
+    class CSpear_Khazan_Spear*  m_pSpear = { nullptr };
+    CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
     CShader*            m_pShaderCom = { nullptr };
     CModel*             m_pModelCom = { nullptr };
@@ -105,7 +105,6 @@ private:
     CBody*              m_pBodyCom_SpearPole = { nullptr };
     CBody*              m_pBodyCom_Search = { nullptr };
 
-    CMotionTrail*       m_pMotionTrailCom = { nullptr };
 
     _float4x4*          m_pSpearFX_Matrix = { nullptr };
     _matrix				m_SpearOffset_Matrix = {};
@@ -119,27 +118,22 @@ private:
 
 
     _bool				m_isFinishedAnimation = { false };
-   // _bool				m_isSetAnimation = { false };
     _uint				m_iCurSetAnimIndex = { 0 };
     _bool               m_isSpearFullExtension = { false }; //창을 완전히 뻗는 타이밍부터 true 
     _bool*              m_pIsGuarding = { nullptr }; //가드중인지 체크
 
-   // const _uint			m_iSetAnimation[3] = { 3,2,1 };
-
     /* 뼈 위치 */
-    //_float4x4*           m_LanternSocket_Matrix; //랜턴 소켓
-    //_float4x4*           m_BackPack_Matrix; //창 소켓 
     _float4x4*          m_pSpearTip1_Matrix = { nullptr };
     _float4x4			m_pSpearTip1_MatrixW;
     _float4x4*          m_pSpearPole_Matrix = { nullptr };
     _float4x4			m_pSpearPole_MatrixW;
-   // _float4x4			m_pSpearPole_MatrixW_AxisCorrection; // 축보정한 창대  
 
-    class CMeshTrail* m_pTrail = { nullptr };
-    _uint	EffectID_SpearWind;
-    _uint	EffectID_SpiralSpear;
 
+    class CMeshTrail*   m_pTrail = { nullptr };
+    _uint	            EffectID_SpearWind;
+    _uint	            EffectID_SpiralSpear;
     OUTLINE_CONFIG      m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
+
 
     _bool               m_isSpearTipActive = { true };
     _bool               m_isSpearPoleActive = { true };

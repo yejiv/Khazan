@@ -563,7 +563,7 @@ void CModel::Set_Animation(_uint iIndex)
     /*  루트 모션 옵션 설정 */
     Check_RootMotion();
 
-    /* 완료 대기 여부 체크*/
+    /* 완료 대기 여부 체크*/    
     Check_WaitForComplete();
 
     /* 이벤트 설정 */
@@ -575,6 +575,7 @@ void CModel::Set_Animation(_uint iIndex)
         cout << m_iCurrentAnimIndex << " : " << Get_CurAnimName() <<  endl;
 
     }
+
 }
 
 void CModel::Set_AnimationSet(const string& strKey)
@@ -1077,7 +1078,12 @@ void CModel::Apply_RootMotion_To_Transform()
     //델타 분해 
     _vector deltaScale, deltaRot, deltaPos;
     XMMatrixDecompose(&deltaScale, &deltaRot, &deltaPos, m_RootMotionInfo.matDeltaRootMotion);
-
+    //_vector pos = m_pOwnerTransform->Get_State(STATE::POSITION);
+    //if(/*XMVectorGetX(XMVector3Length(deltaPos)) > 0.1f &&*/ m_iCurrentAnimIndex ==120)
+    //if (m_strModelName == L"Khazan_Spear" || m_strModelName == L"Khazan_GSword") {
+    //    cout << "Before :" << pos .m128_f32[0]<< " ," << pos.m128_f32[1] << " ," << pos.m128_f32[2] << endl;
+    //}
+    /* trasnform 컴포넌트를 연결 시*/
     if (m_pOwnerTransform)
     {
         // 월드 분해
@@ -1088,6 +1094,9 @@ void CModel::Apply_RootMotion_To_Transform()
         //_vector newRot = XMQuaternionMultiply(m_vRootDeltaQuat, worldRot);
         //newRot = XMQuaternionNormalize(newRot);
 
+        //if (m_strModelName == L"Khazan_GSword" && m_iCurrentAnimIndex == 120 && m_fCurrentTrackPosition< 10.f )
+        //    deltaPos.m128_f32[2] = m_fCurrentTrackPosition < 10.f ? 0.32f : 0.f; // deltaPos.m128_f32[2] < -0.1f ? deltaPos.m128_f32[2] * -1.f : deltaPos.m128_f32[2];
+
         // 새로운 위치 = 기존 위치 + (델타 위치를 월드 회전으로 변환)
         _vector rotatedDeltaPos = XMVector3Rotate(deltaPos, worldRot);
         _vector newPos = worldPos + rotatedDeltaPos;
@@ -1095,6 +1104,7 @@ void CModel::Apply_RootMotion_To_Transform()
         _matrix newWorld = XMMatrixAffineTransformation(worldScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), worldRot, newPos);
         m_pOwnerTransform->Set_WorldMatrix(newWorld);
     }
+    /* 월드 행렬을 연결 시 */
     else if (m_pOwnerTransformMatrix)
     {
         _matrix matWorld = XMLoadFloat4x4(m_pOwnerTransformMatrix);
@@ -1109,6 +1119,14 @@ void CModel::Apply_RootMotion_To_Transform()
 
         XMStoreFloat4x4(m_pOwnerTransformMatrix, newWorld);
     }
+
+    //pos = m_pOwnerTransform->Get_State(STATE::POSITION);
+    //if (/*XMVectorGetX(XMVector3Length(deltaPos)) > 0.1f &&*/ m_iCurrentAnimIndex == 120)
+    //    if (m_strModelName == L"Khazan_Spear" || m_strModelName == L"Khazan_GSword") {
+    //        cout << "After :" << pos.m128_f32[0] << " ," << pos.m128_f32[1] << " ," << pos.m128_f32[2] << endl;
+    //        cout << "delta :" << deltaPos.m128_f32[0] << " ," << deltaPos.m128_f32[1] << " ," << deltaPos.m128_f32[2] << endl;
+    //        cout << "----------------------------------------------------------------------------------------------------------" << endl;
+    //    }
 
     //m_vRootDeltaQuat = XMQuaternionIdentity();
     m_RootMotionInfo.matDeltaRootMotion = XMMatrixIdentity();

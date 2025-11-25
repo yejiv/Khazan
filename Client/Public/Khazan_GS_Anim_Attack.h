@@ -44,6 +44,7 @@ public:
     void    Execute_DodgeAttack();     
 
     _bool	Try_GrappleAttack(); 
+    void    Execute_GappleAttack();
 
     _bool	Try_SkillAttack(_uint iSkill);
 
@@ -109,8 +110,9 @@ private:
     _bool               m_isDodgeChargedAttack = { false };  //차징 공격을 했는지? 
 
     /* Brutal */
-    _bool               m_isAutoComboBrutal = { false };
-
+    _bool               m_isBrutalStart = { false };        //첫번쨰 공격을 시작했는가?
+    _bool               m_isBrutalEnd = { false };          //첫 번째 공격이 끝났는가?
+    _bool               m_isBrutalSecondAttack = { false };  //두 번쨰 공격을 했는지? 
 
     /* SKill */
     _uint               m_iCurSkillIndex = { 0 };
@@ -143,6 +145,7 @@ private:
     void            Update_StrongAttackCharge();
     void            Update_SprintAttackCharge();
     void            Update_DodgeAttackCharge();
+    void            Update_BrutalAttack();
 
     void            Update_Skill_Single();
     void            Update_Skill_Breathaking();
