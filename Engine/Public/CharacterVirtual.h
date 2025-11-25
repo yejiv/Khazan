@@ -122,6 +122,7 @@ public:
     void Jump_ToTarget(_vector vTargetWorldPos,
         _float  fJumpApexHeight,
         _float  fDesiredHorizontalSpeed);
+    void Jump_Direction(_vector vDir, _float fHeight, _float fSpeed);
 
     void Start_Dive(_vector vDivePos, _float fDiveSpeed);
 

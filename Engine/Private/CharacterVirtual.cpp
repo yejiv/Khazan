@@ -579,6 +579,47 @@ void CCharacterVirtual::Jump_ToTarget(_vector vTargetWorldPos,
 
 }
 
+void CCharacterVirtual::Jump_Direction(_vector vDir, _float fHeight, _float fSpeed)
+{
+    if (!m_pCharVir)
+        return;
+
+    _float gy = m_vGravity.GetY();
+    if (!std::isfinite(gy) || gy >= 0.0f)
+        gy = g_fGravity;        
+
+    _float height = fHeight;
+    if (!std::isfinite(height) || height <= 0.0f)
+        height = 0.5f;   
+
+    _float v0Y = sqrtf(-2.0f * gy * height);
+
+    JPH::Vec3 horizDir = LoadVec3(vDir);
+    horizDir.SetY(0.0f);
+
+    JPH::Vec3 vHoriz = JPH::Vec3::sZero();
+
+    if (horizDir.LengthSq() > 1e-6f && fSpeed > 0.0f)
+    {
+        horizDir = horizDir.Normalized();
+        vHoriz = horizDir * fSpeed;
+    }
+
+    JPH::Vec3 v0 = vHoriz;
+    v0.SetY(v0Y);
+
+    if (!IsFiniteVec3(v0))
+        return;
+
+    m_isJump = true;
+    m_isDive = false;
+
+    m_vVelocity = v0;
+    m_pCharVir->SetLinearVelocity(m_vVelocity);
+
+    m_vGravity = JPH::Vec3(0.0f, gy, 0.0f);
+}
+
 void CCharacterVirtual::Start_Dive(_vector vDivePos, _float fDiveSpeed)
 {
     if (!m_pCharVir)
