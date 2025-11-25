@@ -62,6 +62,22 @@ HRESULT CLoadingObj_BN::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    _float fIntensity = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRatio = 0.7f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fColorRatio", &fRatio, sizeof(_float))))
+        return E_FAIL;
+
+    _float fEdgeIntensity = 1.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fShadeIntensity = 1.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
+
     // 0 칼손잡이 | 1 손 잘림 보호대 | 2 뭐 존나 작은 눈 | 3 밑에 작은 날카로운 | 4 밑에 큰 날카로운 | 5 눈
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
@@ -100,32 +116,22 @@ HRESULT CLoadingObj_BN::Ready_Components(void* pArg)
 
 HRESULT CLoadingObj_BN::Bind_Materials(_uint iMeshIndex)
 {
-    _bool isDiffuse = { false };
-    _bool isNormal = { false };
-    _bool isEmissive = { false };
-    _bool isSpecular = { false };
-    _bool isMetalic = { false };
-    _bool isRoughness = { false };
+    m_iMtrlFlags = 0;
 
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
-        isDiffuse = true;
+        m_iMtrlFlags |= M_DIFFUSE;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
-        isNormal = true;
+        m_iMtrlFlags |= M_NORMAL;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
-        isEmissive = true;
+        m_iMtrlFlags |= M_EMISSIVE;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
-        isSpecular = true;
+        m_iMtrlFlags |= M_SPECULAR;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalicTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
-        isMetalic = true;
+        m_iMtrlFlags |= M_METALIC;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
-        isRoughness = true;
+        m_iMtrlFlags |= M_ROUGHNESS;
 
-    m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isMetalic", &isMetalic, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isRoughness", &isRoughness, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 
     return S_OK;
 }

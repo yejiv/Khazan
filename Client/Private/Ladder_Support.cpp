@@ -7,7 +7,7 @@ CLadder_Support::CLadder_Support(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 {
 }
 
-CLadder_Support::CLadder_Support(const CPartObject& Prototype)
+CLadder_Support::CLadder_Support(const CLadder_Support& Prototype)
     : CPartObject{ Prototype }
 {
 }
@@ -94,27 +94,21 @@ HRESULT CLadder_Support::Bind_ShaderResources()
 
 HRESULT CLadder_Support::Bind_Materials(_uint iMeshIndex)
 {
-    _bool isDiffuse = { false };
-    _bool isNormal = { false };
-    _bool isEmissive = { false };
-    _bool isSpecular = { false };
+    m_iMtrlFlags = 0;
 
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
-        isDiffuse = true;
+        m_iMtrlFlags |= M_DIFFUSE;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
-        isNormal = true;
+        m_iMtrlFlags |= M_NORMAL;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
-        isEmissive = true;
+        m_iMtrlFlags |= M_EMISSIVE;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
-        isSpecular = true;
+        m_iMtrlFlags |= M_SPECULAR;
 
-    isEmissive = false;
-    isSpecular = false;
+    m_iMtrlFlags &= ~M_EMISSIVE;
+    m_iMtrlFlags &= ~M_SPECULAR;
 
-    m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 
     return S_OK;
 }

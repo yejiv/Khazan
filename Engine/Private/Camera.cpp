@@ -70,11 +70,11 @@ HRESULT CCamera::Render()
 void CCamera::Set_Animation(_wstring strAnimationTag)
 {
 	auto it = m_Animations.find(strAnimationTag);
-	if (it == m_Animations.end() || it->second.size() < 2) {
+	if (it == m_Animations.end() || it->second.KeyFrames.size() < 2) {
 		m_pCurrentAnimation = nullptr; m_isAnimation = false; return;
 	}
 
-	m_RuntimeKeys = it->second;
+	m_RuntimeKeys = it->second.KeyFrames;
 	m_pCurrentAnimation = &m_RuntimeKeys;
 
 	_vector vEntryPos = m_pTransformCom->Get_State(STATE::POSITION);
@@ -122,6 +122,7 @@ void CCamera::Set_Animation(_wstring strAnimationTag)
 	m_iSeg = 0;
 	m_fSegTime = 0.f;
 	m_isStarted = true;
+    m_isAniFix = it->second.isFix;
 }
 
 void CCamera::Play_Animation(_float fTimeDelta)
@@ -251,7 +252,7 @@ void CCamera::Create_Animation(_wstring strAnimationTag)
 
 	if (iter == m_Animations.end())
 	{
-		vector<CAMERA_KEYFRAME> Animations;
+		CAMERA_ANIMATION Animations;
 		m_Animations.emplace(strAnimationTag, Animations);
 	}
 }
@@ -275,14 +276,14 @@ void CCamera::Create_Animation_Item(_wstring strAnimationTag)
 		return;
 
 	CAMERA_KEYFRAME Desc{};
-	Desc.fTrackPosition = static_cast<_float>(iter->second.size());
+	Desc.fTrackPosition = static_cast<_float>(iter->second.KeyFrames.size());
 	_vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
 	_vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
 	Desc.vTranslation = _float3(vPos.m128_f32[0] , vPos.m128_f32[1], vPos.m128_f32[2]);
 	Desc.vLookAt = _float4(vLook.m128_f32[0], vLook.m128_f32[1], vLook.m128_f32[2], vLook.m128_f32[3]);
 	Desc.fSpeed = 3.f;
 
-	iter->second.push_back(Desc);
+	iter->second.KeyFrames.push_back(Desc);
 }
 
 void CCamera::Create_Event_Item(_wstring strAnimationTag)
@@ -301,17 +302,17 @@ void CCamera::Create_Event_Item(_wstring strAnimationTag)
 	iter->second.push_back(Desc);
 }
 
-void CCamera::Set_Animation_Item(_wstring strAnimationTag, CAMERA_KEYFRAME tAnimation, _uint iIndex)
+void CCamera::Set_Animation_Item(_wstring strAnimationTag, CAMERA_KEYFRAME tKeyFrame, _uint iIndex)
 {
 	auto iter = m_Animations.find(strAnimationTag);
 
 	if (iter == m_Animations.end())
 		return;
 
-	if (iter->second.size() < iIndex)
+	if (iter->second.KeyFrames.size() < iIndex)
 		return;
 
-	iter->second[iIndex] = tAnimation;
+	iter->second.KeyFrames[iIndex] = tKeyFrame;
 }
 
 void CCamera::Set_Event_Item(_wstring strAnimationTag, CAMERA_EVENT_DATA tEvent, _uint iIndex)
@@ -327,19 +328,22 @@ void CCamera::Set_Event_Item(_wstring strAnimationTag, CAMERA_EVENT_DATA tEvent,
 	iter->second[iIndex] = tEvent;
 }
 
-void CCamera::Add_Animation(_wstring strAnimationTag, CAMERA_KEYFRAME tAnimation)
+void CCamera::Add_Animation(_wstring strAnimationTag, CAMERA_KEYFRAME tKeyFrame)
 {
 	auto iter = m_Animations.find(strAnimationTag);
 
 	if (iter == m_Animations.end())
 	{
-		vector<CAMERA_KEYFRAME> Animations;
-		Animations.push_back(tAnimation);
+        CAMERA_ANIMATION Animations;
+        Animations.Name = strAnimationTag;
+		vector<CAMERA_KEYFRAME> KeyFrame;
+        KeyFrame.push_back(tKeyFrame);
+        Animations.KeyFrames = KeyFrame;
 		m_Animations.emplace(strAnimationTag, Animations);
 	}
 	else
 	{
-		iter->second.push_back(tAnimation);
+		iter->second.KeyFrames.push_back(tKeyFrame);
 	}
 }
 
@@ -361,15 +365,15 @@ void CCamera::Add_Event(_wstring strAnimationTag, CAMERA_EVENT_DATA tEvent)
 
 HRESULT CCamera::Remove_Animation(_wstring strAnimationTag, _uint iIndex)
 {
-	vector<CAMERA_KEYFRAME>* Animations = Get_Animations(strAnimationTag);
+	CAMERA_ANIMATION* Animations = Get_Animations(strAnimationTag);
 
-	if (Animations == nullptr || iIndex > Animations->size())
+	if (Animations == nullptr || iIndex > Animations->KeyFrames.size())
 		return E_FAIL;
 
-	if(iIndex >= 0 && iIndex < Animations->size())
-		Animations->erase(Animations->begin() + iIndex);
+	if(iIndex >= 0 && iIndex < Animations->KeyFrames.size())
+		Animations->KeyFrames.erase(Animations->KeyFrames.begin() + iIndex);
 
-	if (Animations->size() == 0)
+	if (Animations->KeyFrames.size() == 0)
 	{
 		m_Animations.erase(strAnimationTag);
 	}
@@ -426,7 +430,7 @@ CCamera::CAMERA_DESC CCamera::Get_CameraDesc()
 	return Desc;
 }
 
-vector<CAMERA_KEYFRAME>* CCamera::Get_Animations(_wstring strAnimationTag)
+CAMERA_ANIMATION* CCamera::Get_Animations(_wstring strAnimationTag)
 {
 	auto iter = m_Animations.find(strAnimationTag);
 
@@ -468,7 +472,7 @@ HRESULT CCamera::Set_DefaultData(CAMERA_DESC tDesc)
 	return S_OK;
 }
 
-HRESULT CCamera::Load(map<_wstring, vector<CAMERA_KEYFRAME>> Animations, map<_wstring, vector<CAMERA_EVENT_DATA>> Events)
+HRESULT CCamera::Load(map<_wstring, CAMERA_ANIMATION> Animations, map<_wstring, vector<CAMERA_EVENT_DATA>> Events)
 {
 	m_Animations = Animations;
 	m_Events = Events;
@@ -476,9 +480,18 @@ HRESULT CCamera::Load(map<_wstring, vector<CAMERA_KEYFRAME>> Animations, map<_ws
 	return S_OK;
 }
 
-HRESULT CCamera::Load_Animation(map<_wstring, vector<CAMERA_KEYFRAME>> Animations)
+HRESULT CCamera::Load_Animation(map<_wstring, CAMERA_ANIMATION> Animations)
 {
-	m_Animations = Animations;
+    if (m_Animations.size() <= 0)
+	    m_Animations = Animations;
+    else
+    {
+        for (auto& [key, value] : Animations)
+        {
+            m_Animations.emplace(key, value);
+        }
+    }
+    
 
 	return S_OK;
 }
@@ -490,8 +503,14 @@ void CCamera::Update_PipeLines(_float fTimeDelta)
 
 	Update_FOVChannel(fTimeDelta);
 
+    _float4x4 PrevViewMatrix = *m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW);
+    _float4x4 PrevProjMatrix = *m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ);
+
 	m_pGameInstance->Set_Transform(D3DTS::VIEW, m_pTransformCom->Get_WorldMatrix_Inverse());
 	m_pGameInstance->Set_Transform(D3DTS::PROJ, XMMatrixPerspectiveFovLH(m_fFovy, m_fAspect, m_fNear, m_fFar));
+
+    m_pGameInstance->Set_PrevTransform(D3DTS::VIEW, PrevViewMatrix);
+    m_pGameInstance->Set_PrevTransform(D3DTS::PROJ, PrevProjMatrix);
 }
 
 void CCamera::Shaking_Start(_float fPower, _float fDuration)

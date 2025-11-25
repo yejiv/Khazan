@@ -69,7 +69,7 @@ public:
     HRESULT Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex);
     HRESULT Bind_Materials(class CDeferredShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex);
     HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
-
+    HRESULT Bind_PrevBoneMatrices(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex);
 
 public:
     // 권성은 테스트
@@ -95,13 +95,10 @@ public:
 
     void				Set_RootBone(_uint iIndex) { m_iRootBoneIndex = iIndex; }
     void				Set_OwnerTransform(class CTransform** pTransform);
-    void				Set_OwnerTransform(_float4x4* pMatrix) {
-        m_pOwnerTransformMatrix = pMatrix;
-    }
-    _float4x4* Get_OwnerWorldMatrix() const {
-        return m_pOwnerTransformMatrix;
-    }
     void                Set_Transform(const _float4x4* pMat) { m_pTransformMatrix = pMat; }
+    void				Set_OwnerTransform(_float4x4* pMatrix) { m_pOwnerTransformMatrix = pMatrix;}
+    _float4x4*          Get_OwnerWorldMatrix() const {return m_pOwnerTransformMatrix;}
+    _bool               IsAnimationStart(_uint iAnimIndex) { return iAnimIndex == m_iCurrentAnimIndex && m_isAnimStart; }
 
     _vector Get_BoneWorldRotationQuat(_int iBone) const;
 
@@ -119,6 +116,7 @@ public:
     _bool			Check_MinAnimationTime();
     void            AnimationSetIndexIncrease(); //애니메이션세트 강제로 다음으로 넘기기
     void            Set_AnimationBlend(_bool isBlend) { m_isBlendEnable = isBlend; }      // 애니메이션 보간할건지 여부
+    void            AnimationLoop(_bool isLoop);
 
     /* rootBone Combined  */
     void			Update_BoneCombinedMatrices();
@@ -183,8 +181,10 @@ private:
 	/* 뼈 */
 	vector<class CBone*>				m_Bones;
     vector<_float4x4>                   m_CachedBoneMatrices;  // 캐싱용(애니메이션이 끝난 모든 뼈정보를 저장)
+    vector<_float4x4>                   m_CachedPrevBoneMatrices;
 
     /* 애니메이션 */
+    _bool                               m_isAnimStart = { false };          /* 해당 애니메이션이 시작되었는지  Set_Animation만 하고 아직 실행 안했을 수도 있음 */
     _bool								m_isFinished = { false };			/* 루프가 아닌 애니메이션이 끝났는지 여부  */
     _uint								m_iNumAnimations = { 0 };			/* 애니메이션 수 */
     _int								m_iCurrentAnimIndex = { 0 };		/* 현재 애니메이션 인덱스 */
@@ -226,6 +226,8 @@ private:
 
     /* 최적화용 */
     vector<_int>      m_PartToMasterIndex;     // [partBone] = masterBoneIndex or -1
+
+    _bool isChanged = {};
 
 private:
     /* 루트 모션 */

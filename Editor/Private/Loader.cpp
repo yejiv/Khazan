@@ -315,6 +315,30 @@ HRESULT CLoader::Loading_For_Map_Level()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Gear_Loop_001/WIP_BGQ_Gear_Loop_001.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 엘리베이터 잠금 해제 기어
+    /* Prototype_Component_Model_UnLockGear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_UnLockGear"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_ERM_Gear_Switch_001/WIP_ERM_Gear_Switch_001.dat")), E_FAIL);
+#pragma endregion
+
+#pragma region 엘리베이터 3단 합체 모델
+    /* Prototype_Component_Model_LargeElevator */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_LargeElevator"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Elevator_Move_001_a/WIP_BGQ_Elevator_Move_001_a.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Elevator_Inner */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Elevator_Inner"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_A/WP_BGQ_Elevator_Move_001_01/WP_BGQ_Elevator_Move_001_01.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Elevator_Mid */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Elevator_Mid"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_A/WP_BGQ_Elevator_Move_001_02/WP_BGQ_Elevator_Move_001_02.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Elevator_Outer */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Elevator_Outer"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_A/WP_BGQ_Elevator_Move_001_03/WP_BGQ_Elevator_Move_001_03.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거 모델 원형 ( 야매? )
@@ -497,6 +521,30 @@ HRESULT CLoader::Loading_For_Map_Level()
         CDoor_Gear::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
+#pragma region 엘리베이터 잠금 해제 기어
+    /* Prototype_GameObject_Prop_UnLockGear */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_UnLockGear"),
+        CUnLockGear::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 엘리베이터 3단 합체 모델
+    /* Prototype_GameObject_Prop_LargeElevator */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_LargeElevator"),
+        CElevatorL::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Elevator_Inner */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Elevator_Inner"),
+        CElevator_Inner::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Elevator_Mid */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Elevator_Mid"),
+        CElevator_Mid::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Elevator_Outer */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Elevator_Outer"),
+        CElevator_Outer::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 게임오브젝트 원형 로딩 ( 트리거 및 몬스터 )
@@ -556,17 +604,17 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_Texture_TestParticle
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Particle_Prototype"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/particle/particle%d.png"), 9))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/particle/particle%d.png"), 10))))
 		return E_FAIL;
 	
 	// Prototype_Component_Texture_TestSpriteImage
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Sprite_Effect"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Sprite/Sprite%d.png"), 8))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Sprite/Sprite%d.png"), 10))))
 		return E_FAIL;
 
 	// Prototype_Component_Texture_MeshEffect(Diffuse)
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Slash"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/SowardTrailTexture/Slash_%d.png"), 27))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/SowardTrailTexture/Slash_%d.png"), 28))))
 		return E_FAIL;
 
 	// Prototype_Component_Texture_MeshEffect(Masking)
@@ -580,7 +628,7 @@ HRESULT CLoader::Loading_For_Effect_Level()
 		return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_MeshEffect_Normal"),
-        CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Normal/Normal%d.png"), 2))))
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Normal/Normal%d.png"), 3))))
         return E_FAIL;
 
 	// Prototype_Component_Texture_Terrain_Texture
@@ -761,6 +809,11 @@ HRESULT CLoader::Loading_For_Shader_Level()
 		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 50, 50))))
 		return E_FAIL;
 
+    /* Prototype_Component_Model_BladeNexus */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_BladeNexus"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_DamagedTS/WIP_COM_DamagedTS.dat")), E_FAIL);
+
+
 	// Prototype_Component_Model_WP_WOD_Ground_Base_004
 	//	_matrix PreTransformMatrix = XMMatrixScaling(0.0001f, 0.0001f, 0.0001f);
 	//	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_Component_Model_WP_WOD_Ground_Base_004"),
@@ -791,6 +844,10 @@ HRESULT CLoader::Loading_For_Shader_Level()
 #pragma region 테스트용 ( 프로토타입 모델 생성 ) ( 박준영이 남기고간거 필요없으면 삭제 )
 	CHECK_FAILED(Loading_Prototype_MapObject_From_DAT(TEXT("Test"), LEVEL::SHADER), E_FAIL);
 	CHECK_FAILED(Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Test"), LEVEL::SHADER), E_FAIL);
+
+    /* Prototype_GameObject_Prop_BladeNexus */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::SHADER), TEXT("Prototype_GameObject_Prop_BladeNexus"),
+        CBladeNexus::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 	lstrcpy(m_szLoadingText, TEXT("쉐이더를 로딩중입니다."));

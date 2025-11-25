@@ -913,6 +913,8 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
     m_Prototypes_Inter.push_back("IronGate");
     m_Prototypes_Inter.push_back("Ladder");
     m_Prototypes_Inter.push_back("GearGate");
+    m_Prototypes_Inter.push_back("UnLockGear");
+    m_Prototypes_Inter.push_back("LargeElevator");
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -1181,6 +1183,36 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Ladder"), TIME_CHANNEL::WORLD, &LadderDesc), );
+                }
+                else if ("UnLockGear" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CUnLockGear::UNLOCK_GEAR_DESC UnLockGearDesc = {};
+
+                    UnLockGearDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    UnLockGearDesc.eLevel = LEVEL::MAP;
+                    memcpy(UnLockGearDesc.szModelName, strModelTag.c_str(), sizeof(UnLockGearDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&UnLockGearDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    UnLockGearDesc.eInteractiveType = INTERACTIVE_TYPE::UNLOCKGEAR;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_UnLockGear"), TIME_CHANNEL::WORLD, &UnLockGearDesc), );
+                }
+                else if ("LargeElevator" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CElevatorL::LARGE_ELEVATOR_DESC LargeElevatorDesc = {};
+
+                    LargeElevatorDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    LargeElevatorDesc.eLevel = LEVEL::MAP;
+                    memcpy(LargeElevatorDesc.szModelName, strModelTag.c_str(), sizeof(LargeElevatorDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&LargeElevatorDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    LargeElevatorDesc.eInteractiveType = INTERACTIVE_TYPE::LARGEELEVATOR;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_LargeElevator"), TIME_CHANNEL::WORLD, &LargeElevatorDesc), );
                 }
 #pragma endregion
 
@@ -1618,6 +1650,60 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
                 pLadder->Set_MiddlePosition_Y(m_fLadderMiddleHeight);
 
                 SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::UNLOCKGEAR == m_pFixPropObj->Get_InteractiveType())
+            {
+                CUnLockGear* pUnLockGear = static_cast<CUnLockGear*>(m_pFixPropObj);
+
+                ImGui::Text("== UNLOCK GEAR INFORMATION ==");
+                ImGui::Text("BEFORE EVENT ID : %d", m_iInteractEventID);
+                SEPARATOR;
+                ImGui::Text("FIX EVENT ID : "); SAMELINE;
+                ImGui::InputInt("##fix_event_id", &m_iFixEventID);
+
+                pUnLockGear->Set_EventID(m_iFixEventID);
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::LARGEELEVATOR == m_pFixPropObj->Get_InteractiveType())
+            {
+                CElevatorL* pElevator = static_cast<CElevatorL*>(m_pFixPropObj);
+
+                ImGui::Text("== LARGE ELEVATOR INFORMATION ==");
+
+                _float4 vElevatorUpPos = pElevator->Get_Elevator_UpPos();
+                _float4 vElevatorMidPos = pElevator->Get_Elevator_MidPos();
+                _float4 vElevatorDownPos = pElevator->Get_Elevator_DownPos();
+
+                ImGui::Text("UP POSITION");
+                ImGui::Text("X : %.4f | Y : %.4f | Z : %.4f", vElevatorUpPos.x, vElevatorUpPos.y, vElevatorUpPos.z);
+
+                ImGui::Text("MID POSITION");
+                ImGui::Text("X : %.4f | Y : %.4f | Z : %.4f", vElevatorMidPos.x, vElevatorMidPos.y, vElevatorMidPos.z);
+
+                ImGui::Text("DOWN POSITION");
+                ImGui::Text("X : %.4f | Y : %.4f | Z : %.4f", vElevatorDownPos.x, vElevatorDownPos.y, vElevatorDownPos.z);
+
+                if (ImGui::Button("UP SETTING"))
+                {
+                    _float4 vSetPos = {};
+                    XMStoreFloat4(&vSetPos, m_pFixTransformCom->Get_State(STATE::POSITION));
+
+                    pElevator->Set_Elevator_UpPos(vSetPos);
+                } SAMELINE;
+                if (ImGui::Button("MID SETTING"))
+                {
+                    _float4 vSetPos = {};
+                    XMStoreFloat4(&vSetPos, m_pFixTransformCom->Get_State(STATE::POSITION));
+
+                    pElevator->Set_Elevator_MidPos(vSetPos);
+                } SAMELINE;
+                if (ImGui::Button("DOWN SETTING"))
+                {
+                    _float4 vSetPos = {};
+                    XMStoreFloat4(&vSetPos, m_pFixTransformCom->Get_State(STATE::POSITION));
+
+                    pElevator->Set_Elevator_DownPos(vSetPos);
+                } SEPARATOR;
             }
 
 #pragma endregion
@@ -2182,6 +2268,22 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
                             m_fLadderTopHeightOffset = m_fLadderTopHeight = pLadder->Get_TopPosition_Y();
 
                             m_fLadderMiddleHeightOffset = m_fLadderMiddleHeight = pLadder->Get_MiddlePosition_Y();
+                        }
+
+                        if (INTERACTIVE_TYPE::UNLOCKGEAR == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            CUnLockGear* pUnLockGear = static_cast<CUnLockGear*>(m_pFixPropObj);
+
+                            m_iFixEventID = m_iInteractEventID = pUnLockGear->Get_EventID();
+                        }
+
+                        if (INTERACTIVE_TYPE::LARGEELEVATOR == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            CElevatorL* pElevator = static_cast<CElevatorL*>(m_pFixPropObj);
+
+                            m_vElevatorUpPos = pElevator->Get_Elevator_UpPos();
+                            m_vElevatorMidPos = pElevator->Get_Elevator_MidPos();
+                            m_vElevatorDownPos = pElevator->Get_Elevator_DownPos();
                         }
 
 						m_isFixInteractObjectWindow = true;
@@ -4450,6 +4552,22 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 
                 WriteFile(hObjectFile, &iSegmentCount, sizeof(_int), &dwByte, nullptr);
             }
+            if (INTERACTIVE_TYPE::UNLOCKGEAR == eType)
+            {
+                _int iEventID = static_cast<CProp_Interactive*>(pProp)->Get_EventID();
+
+                WriteFile(hObjectFile, &iEventID, sizeof(_int), &dwByte, nullptr);
+            }
+            if (INTERACTIVE_TYPE::LARGEELEVATOR == eType)
+            {
+                CElevatorL::LARGE_ELEVATOR_POS ElevatorPos = {};
+
+                ElevatorPos.vUp = static_cast<CElevatorL*>(pProp)->Get_Elevator_UpPos();
+                ElevatorPos.vMid = static_cast<CElevatorL*>(pProp)->Get_Elevator_MidPos();
+                ElevatorPos.vDown = static_cast<CElevatorL*>(pProp)->Get_Elevator_DownPos();
+
+                WriteFile(hObjectFile, &ElevatorPos, sizeof(CElevatorL::LARGE_ELEVATOR_POS), &dwByte, nullptr);
+            }
 		}
 	}
 
@@ -5174,6 +5292,41 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Ladder"), TIME_CHANNEL::WORLD, &LadderDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::UNLOCKGEAR == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CUnLockGear::UNLOCK_GEAR_DESC UnLockGearDesc = {};
+
+                UnLockGearDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                UnLockGearDesc.eLevel = LEVEL::MAP;
+                memcpy(UnLockGearDesc.szModelName, TEXT("Prototype_Component_Model_UnLockGear"), sizeof(UnLockGearDesc.szModelName));		// 프로토타입 태그명
+
+                UnLockGearDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                UnLockGearDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FALSE(ReadFile(hObjectFile, &UnLockGearDesc.iEventID, sizeof(_int), &dwByte, nullptr), false);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_UnLockGear"), TIME_CHANNEL::WORLD, &UnLockGearDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::LARGEELEVATOR == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CElevatorL::LARGE_ELEVATOR_DESC ElevatorDesc = {};
+
+                ElevatorDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                ElevatorDesc.eLevel = LEVEL::MAP;
+                memcpy(ElevatorDesc.szModelName, TEXT("Prototype_Component_Model_LargeElevator"), sizeof(ElevatorDesc.szModelName));		// 프로토타입 태그명
+
+                ElevatorDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                ElevatorDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                // 엘리베이터인 경우 위 위치, 아래 위치 가져오기
+                CHECK_FALSE(ReadFile(hObjectFile, &ElevatorDesc.ElevatorPos, sizeof(CElevatorL::LARGE_ELEVATOR_POS), &dwByte, nullptr), false);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_LargeElevator"), TIME_CHANNEL::WORLD, &ElevatorDesc), false);
             }
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));

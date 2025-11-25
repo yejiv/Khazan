@@ -119,14 +119,15 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     m_iStopMoveIndexTable[8] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_Stop_F");
 
 
-    /* 플레이어 데이터 연결  */
-    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();
-
+    /*  기본 셋팅*/
+    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData(); // 플레이어 데이터 연결  
+    m_pClientInstance->UsedSpear();
     m_pSpear->Set_Enble(false);
-
     m_strName = "Khazan";
 
     m_EffectTimeDelta = 0.f;
+
+    m_pCharVirCom->Set_Position(XMVectorSet(0.f, 10.f, 0.f, 1.f));
 #pragma region 3D UI 테스트
     //CUIObject::UIOBJECT_DESC Desc;
 
@@ -183,7 +184,8 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
         m_pCharVirCom->Set_Position(XMVectorSet(-23.183f, -29.5f, 153.584f, 1.f));
     }
 
-
+    // 이전 프레임 월드 행렬 저장
+    m_pTransformCom->Cache_PrevWorldMatrix();
 }
 
 void CKhazan_Spear::Update(_float fTimeDelta)
@@ -209,7 +211,7 @@ void CKhazan_Spear::Update(_float fTimeDelta)
             _bool isPicked = m_pGameInstance->isPicked(&vPickedPos);
             if (true == isPicked)
             {
-                m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
+                m_pCharVirCom->Set_Position(XMVectorSet(vPickedPos.x, vPickedPos.y, vPickedPos.z, 1.f));
                 m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));
             }
         }
@@ -2533,6 +2535,7 @@ HRESULT CKhazan_Spear::Ready_PartObjects()
     if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Body_Khazan_Spear"), &BodyDesc)))
         return E_FAIL;
     m_pBody = static_cast<CBody_Khazan_Spear*>(Find_PartObject(TEXT("Part_Body")));
+    Safe_AddRef(m_pBody);
     m_pWeaponR_Matrix = m_pBody->Get_BoneMatrix("Weapon_R");
     m_BackPack_Matrix = m_pBody->Get_BoneMatrix("Weapon_C_BackPack_Spear");
     m_LanternSocket_Matrix = m_pBody->Get_BoneMatrix("Lantern_Socket_L");
@@ -2545,6 +2548,7 @@ HRESULT CKhazan_Spear::Ready_PartObjects()
     if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Spear_Khazan_Spear"), &SpearDesc)))
         return E_FAIL;
     m_pSpear = static_cast<CSpear_Khazan_Spear*>(Find_PartObject(TEXT("Part_Weapon_Spear")));
+    Safe_AddRef(m_pSpear);
     m_pSpearFX_Matrix = m_pSpear->Get_BoneMatrix("FX");
     m_SpearOffset_Matrix = m_pSpear->Get_OffestMatrix();
 
@@ -2556,7 +2560,7 @@ HRESULT CKhazan_Spear::Ready_PartObjects()
     if (FAILED(__super::Add_PartObject(TEXT("Part_Lantern"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"), &LanternDesc)))
         return E_FAIL;
     m_pLantern = static_cast<CLantern_Khazan_Spear*>(Find_PartObject(TEXT("Part_Lantern")));
-
+    Safe_AddRef(m_pLantern);
 
     /* 넘겨주기  */
     m_pSpear->Set_matBackPack(m_BackPack_Matrix);
@@ -2748,6 +2752,16 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
 
             break;
         }
+        case INTERACTIVE_TYPE::UNLOCKGEAR:
+        {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
+                isDone = true;
+            }
+
+            break;
+        }
         default:
             break;
         }
@@ -2810,6 +2824,11 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         if (INTERACTIVE_TYPE::IRONGATE == m_EventInteract.eInteractType)
         {
             IronGate_Event(fTimeDelta);
+        }
+        // 엘리베이터 가동 위한 잠금 장치 가동 시
+        if (INTERACTIVE_TYPE::UNLOCKGEAR == m_EventInteract.eInteractType)
+        {
+            UnLockGear_Event(fTimeDelta);
         }
     }
 }
@@ -3002,6 +3021,20 @@ void CKhazan_Spear::IronGate_Event(_float fTimeDelta)
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&IronGateEvent.vPlayerPosition));
     IronGateEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&IronGateEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::UnLockGear_Event(_float fTimeDelta)
+{
+    EventUnLockGear ULGearEvent = m_EventInteract.UnLockGearEvent;
+
+    // 플레이어가 엘리베이터 잠금 장치를 조작하는 애니메이션 실행
+
+    //ULGearEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    //m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&ULGearEvent.vPlayerPosition));
+    ULGearEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&ULGearEvent.vPosition));
 
     m_EventInteract.End_Event();
 }
@@ -3598,15 +3631,15 @@ void CKhazan_Spear::Free()
 
     Safe_Release(m_pClientInstance);
     Safe_Release(m_pCamera);
-    //   Safe_Release(m_pBody);
-       //Safe_Release(m_pSpear);
+    Safe_Release(m_pBody);
+    Safe_Release(m_pSpear);
     Safe_Release(m_pAnimMove);
     Safe_Release(m_pAnimAttack);
     Safe_Release(m_pAnimGuard);
     Safe_Release(m_pAnimInteraction);
     Safe_Release(m_pAnimDamaged);
     Safe_Release(m_pAnimFall);
-
+    Safe_Release(m_pLantern);
      //Safe_Release(m_pASMachine);
     // Safe_Release(m_pASManager);
 }

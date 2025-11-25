@@ -98,7 +98,7 @@ void CCamera_Controller::Ready_ImGui_Create()
 		ifstream In(filePath);
 		if (!In.is_open())
 		{
-			MSG_BOX(TEXT("UI JSON 파일 불러오기 실패"));
+			MSG_BOX(TEXT("JSON 파일 불러오기 실패"));
 			In.close();
 		}
 		else
@@ -125,11 +125,15 @@ void CCamera_Controller::Ready_ImGui_Create()
 			CameraDesc.fMouseSensor = jsonData["MouseSensor"];
 			CameraDesc.iCameraType = jsonData["CameraType"];
 
-			map<_wstring, vector<CAMERA_KEYFRAME>> Animations;
+
+			map<_wstring, CAMERA_ANIMATION> Animations;
 			for (auto Animation : jsonData["Animation"])
 			{
-				vector<CAMERA_KEYFRAME> KeyFrames;
-				for (auto Ani : Animation["Animations"])
+                CAMERA_ANIMATION AnimationDesc;
+                AnimationDesc.Name = AnsiToWString(Animation["Name"]);
+                AnimationDesc.isFix = Animation["isFix"];
+				vector<CAMERA_KEYFRAME> KeyFrames;                
+				for (auto Ani : Animation["KeyFrame"])
 				{
 					CAMERA_KEYFRAME KeyFrame{};
 					KeyFrame.vTranslation.x = Ani["Translation"]["x"];
@@ -141,11 +145,12 @@ void CCamera_Controller::Ready_ImGui_Create()
 					KeyFrame.vLookAt.w = Ani["LookAt"]["w"];
 					KeyFrame.fSpeed = Ani["Speed"];
 					KeyFrame.fTrackPosition = Ani["TrackPosition"];
+                    KeyFrame.isCurPos = Ani["isCurPos"];
 
 					KeyFrames.push_back(KeyFrame);
 				}
-
-				Animations.emplace(AnsiToWString(Animation["Name"]), KeyFrames);
+                AnimationDesc.KeyFrames = KeyFrames;
+				Animations.emplace(AnsiToWString(Animation["Name"]), AnimationDesc);
 			}
 
 			map<_wstring, vector<CAMERA_EVENT_DATA>> Events;
@@ -305,7 +310,7 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation()
 			pCamera->Create_Animation(AnsiToWString(m_szCreate_AnimationName));
 		}
 
-		map<_wstring, vector<CAMERA_KEYFRAME>>* Animations = pCamera->Get_AllAnimations();
+		map<_wstring, CAMERA_ANIMATION>* Animations = pCamera->Get_AllAnimations();
 		ImGui::TextUnformatted("Animation List");
 		ImGui::BeginChild(string("##box_AnimationList").c_str(), ImVec2(0, 200), true);
 		for (auto Animation : *Animations)
@@ -324,6 +329,13 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation()
 			pCamera->Set_Animation(m_strListSelectAnimation);
 		}
 
+        auto iter = Animations->find(m_strListSelectAnimation);
+        if (iter != Animations->end())
+        {
+            ImGui::Checkbox("isFix", &(iter->second.isFix));
+            
+        }
+        
 
 		ImGui::InputText("AnimationSaveFilePath", m_szAnimationSaveFilePath, MAX_PATH);
 
@@ -359,7 +371,7 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation()
 			ifstream In(filePath);
 			if (!In.is_open())
 			{
-				MSG_BOX(TEXT("UI JSON 파일 불러오기 실패"));
+				MSG_BOX(TEXT("JSON 파일 불러오기 실패"));
 				In.close();
 			}
 			else
@@ -367,29 +379,32 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation()
 				nlohmann::json jsonData;
 				In >> jsonData;
 
-				map<_wstring, vector<CAMERA_KEYFRAME>> Animations;
-				for (auto Animation : jsonData["Animation"])
-				{
-					vector<CAMERA_KEYFRAME> KeyFrames;
-					for (auto Ani : Animation["Animations"])
-					{
-						CAMERA_KEYFRAME KeyFrame{};
-						KeyFrame.vTranslation.x = Ani["Translation"]["x"];
-						KeyFrame.vTranslation.y = Ani["Translation"]["y"];
-						KeyFrame.vTranslation.z = Ani["Translation"]["z"];
-						KeyFrame.vLookAt.x = Ani["LookAt"]["x"];
-						KeyFrame.vLookAt.y = Ani["LookAt"]["y"];
-						KeyFrame.vLookAt.z = Ani["LookAt"]["z"];
-						KeyFrame.vLookAt.w = Ani["LookAt"]["w"];
-						KeyFrame.fSpeed = Ani["Speed"];
-						KeyFrame.fTrackPosition = Ani["TrackPosition"];
-						KeyFrame.isCurPos = Ani["isCurPos"];
+                map<_wstring, CAMERA_ANIMATION> Animations;
+                for (auto Animation : jsonData["Animation"])
+                {
+                    CAMERA_ANIMATION AnimationDesc;
+                    AnimationDesc.Name = AnsiToWString(Animation["Name"]);
+                    AnimationDesc.isFix = Animation["isFix"];                  
+                    vector<CAMERA_KEYFRAME> KeyFrames;
+                    for (auto Ani : Animation["KeyFrame"])
+                    {
+                        CAMERA_KEYFRAME KeyFrame{};
+                        KeyFrame.vTranslation.x = Ani["Translation"]["x"];
+                        KeyFrame.vTranslation.y = Ani["Translation"]["y"];
+                        KeyFrame.vTranslation.z = Ani["Translation"]["z"];
+                        KeyFrame.vLookAt.x = Ani["LookAt"]["x"];
+                        KeyFrame.vLookAt.y = Ani["LookAt"]["y"];
+                        KeyFrame.vLookAt.z = Ani["LookAt"]["z"];
+                        KeyFrame.vLookAt.w = Ani["LookAt"]["w"];
+                        KeyFrame.fSpeed = Ani["Speed"];
+                        KeyFrame.fTrackPosition = Ani["TrackPosition"];
 
-						KeyFrames.push_back(KeyFrame);
-					}
-
-					Animations.emplace(AnsiToWString(Animation["Name"]), KeyFrames);
-				}
+                        KeyFrame.isCurPos = Ani["isCurPos"];                       
+                        KeyFrames.push_back(KeyFrame);
+                    }
+                    AnimationDesc.KeyFrames = KeyFrames;
+                    Animations.emplace(AnsiToWString(Animation["Name"]), AnimationDesc);
+                }
 
 				CCamera* pCamera = m_pClientInstance->Get_ActiveCamera();
 				pCamera->Set_IsActive(false);
@@ -410,22 +425,22 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation_Item()
 	CCamera* pCamera = m_pClientInstance->Get_ActiveCamera();
 	if (pCamera != nullptr)
 	{
-		vector<CAMERA_KEYFRAME>* pAnimations = pCamera->Get_Animations(m_strListSelectAnimation);
+		CAMERA_ANIMATION* pAnimations = pCamera->Get_Animations(m_strListSelectAnimation);
 
 		if (pAnimations != nullptr)
 		{
 			ImGui::Begin("Animation_Item");
 
-			for (size_t i = 0; i < pAnimations->size(); i++)
+			for (size_t i = 0; i < pAnimations->KeyFrames.size(); i++)
 			{
 				ImGui::PushID((int)i);
 				ImGui::BeginGroup();
 
-				ImGui::InputFloat("TrackPosition", &(*pAnimations)[i].fTrackPosition);
-				ImGui::InputFloat3("Translation", &(*pAnimations)[i].vTranslation.x);
-				ImGui::InputFloat4("LookAt", &(*pAnimations)[i].vLookAt.x);
-				ImGui::InputFloat("Speed", &(*pAnimations)[i].fSpeed);
-				ImGui::Checkbox("isCurPos", &(*pAnimations)[i].isCurPos);
+				ImGui::InputFloat("TrackPosition", &(pAnimations->KeyFrames[i].fTrackPosition));
+				ImGui::InputFloat3("Translation", &(pAnimations->KeyFrames[i].vTranslation.x));
+                ImGui::InputFloat4("LookAt", &(pAnimations->KeyFrames[i].vLookAt.x));
+                ImGui::InputFloat("Speed", &(pAnimations->KeyFrames[i].fSpeed));
+                ImGui::Checkbox("isCurPos", &(pAnimations->KeyFrames[i].isCurPos));
 				ImGui::EndGroup();
 
 				ImVec2 rect_min = ImGui::GetItemRectMin();
@@ -468,7 +483,7 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Event_Item()
 	if (pCamera != nullptr)
 	{
 		vector<CAMERA_EVENT_DATA>* Events = pCamera->Get_Events(m_strListSelectAnimation);
-		vector<CAMERA_KEYFRAME>* pAnimations = pCamera->Get_Animations(m_strListSelectAnimation);
+		CAMERA_ANIMATION* pAnimations = pCamera->Get_Animations(m_strListSelectAnimation);
 
 		if (pAnimations != nullptr)
 		{

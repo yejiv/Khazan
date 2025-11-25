@@ -653,6 +653,26 @@ void CGameInstance::Set_Transform(D3DTS eTransformState, const _float4x4& Matrix
 	m_pPipeLine->Set_Transform(eTransformState, Matrix);
 }
 
+_matrix CGameInstance::Get_PrevTransform_Matrix(D3DTS eTransformState) const
+{
+    return m_pPipeLine->Get_PrevTransform_Matrix(eTransformState);
+}
+
+const _float4x4* CGameInstance::Get_PrevTransform_Float4x4(D3DTS eTransformState) const
+{
+    return m_pPipeLine->Get_PrevTransform_Float4x4(eTransformState);
+}
+
+void CGameInstance::Set_PrevTransform(D3DTS eTransformState, _fmatrix Matrix)
+{
+    m_pPipeLine->Set_PrevTransform(eTransformState, Matrix);
+}
+
+void CGameInstance::Set_PrevTransform(D3DTS eTransformState, const _float4x4& Matrix)
+{
+    m_pPipeLine->Set_PrevTransform(eTransformState, Matrix);
+}
+
 #pragma endregion
 
 #pragma region LIGHT_MANAGER
@@ -1401,18 +1421,18 @@ void CGameInstance::Batch_Decal(CDecal* pDecal)
 #pragma region EFFECT_MANAGER
 
 void CGameInstance::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint iPoolSize)
-{
+{ 
 	m_pEffect_Manager->Add_Effect_ToPool(iLayerLevelIndex, strPrototypeTag, iPoolSize);
 }
 
 _uint CGameInstance::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpawnPos)
 {
-	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, SpawnPos);
+ 	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, SpawnPos);
 }
 
 _uint CGameInstance::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector Quaternion, _gvector Position)
 {
-	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, Quaternion, Position);
+ 	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, Quaternion, Position);
 }
 
 void CGameInstance::Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpawnPos)
@@ -1541,11 +1561,6 @@ void CGameInstance::Set_EnableMotionBlur(_bool isEnable)
     m_pMotionBlur->Set_EnableMotionBlur(isEnable);
 }
 
-void CGameInstance::Update_MotionBlur_PrevMatrices()
-{
-    m_pMotionBlur->Update_PrevMatrices();
-}
-
 void CGameInstance::Set_Gloval_Volume(_float fVolume)
 {
     m_pSound_Manager->Set_Gloval_Volume(fVolume);
@@ -1663,6 +1678,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pObject_Manager);
+    Safe_Release(m_pEffect_Manager);
 	Safe_Release(m_pPrototype_Manager);	
 	Safe_Release(m_pLevel_Manager);
     Safe_Release(m_pJolt_Manager);

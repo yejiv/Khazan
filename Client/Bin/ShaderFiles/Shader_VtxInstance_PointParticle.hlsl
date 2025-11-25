@@ -81,6 +81,7 @@ struct GS_OUT
     float bDead : TEXCOORD2;
     float4 vPrevPosition : TEXCOORD3;
     float4 vProjPos : TEXCOORD4;
+    float vFrame : TEXCOORD5;
 };
 
 [maxvertexcount(6)]
@@ -117,6 +118,8 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     
     matrix matrVP = mul(g_ViewMatrix, g_ProjMatrix);
     
+    float frame = (g_FrameIdx + 1) / (g_numCols * g_numRows);
+    
     Out[0].vPosition = mul(In[0].vPosition + vRight + vUp, matrVP);
     Out[0].vProjPos = Out[0].vPosition;;
     Out[0].vTexcoord = float2(0.f, 0.f);
@@ -124,6 +127,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     Out[0].vLifeTime = In[0].vLifeTime;
     Out[0].bDead = In[0].bDead;
     Out[0].vPrevPosition = In[0].vPrevPosition;
+    Out[0].vFrame = frame;
     
     Out[1].vPosition = mul(In[0].vPosition - vRight + vUp, matrVP);
     Out[1].vProjPos = Out[1].vPosition;
@@ -132,6 +136,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     Out[1].vLifeTime = In[0].vLifeTime;
     Out[1].bDead = In[0].bDead;
     Out[1].vPrevPosition = In[0].vPrevPosition;
+    Out[1].vFrame = frame;
     
     Out[2].vPosition = mul(In[0].vPosition - vRight - vUp, matrVP);
     Out[2].vProjPos = Out[2].vPosition;
@@ -140,6 +145,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     Out[2].vLifeTime = In[0].vLifeTime;
     Out[2].bDead = In[0].bDead;
     Out[2].vPrevPosition = In[0].vPrevPosition;
+    Out[2].vFrame = frame;
     
     Out[3].vPosition = mul(In[0].vPosition + vRight - vUp, matrVP);
     Out[3].vProjPos = Out[3].vPosition;
@@ -148,6 +154,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     Out[3].vLifeTime = In[0].vLifeTime;
     Out[3].bDead = In[0].bDead;
     Out[3].vPrevPosition = In[0].vPrevPosition; 
+    Out[3].vFrame = frame;
     
     Vertices.Append(Out[0]);
     Vertices.Append(Out[1]);
@@ -168,6 +175,7 @@ struct PS_DEFAULT_IN
     float bDead : TEXCOORD2;
     float4 vPrevPosition : TEXCOORD3;
     float4 vProjPos : TEXCOORD4;
+    float vFrame : TEXCOORD5;
 };
 
 struct PS_OUT
@@ -242,12 +250,13 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     if (g_MaskScrollSpeed)
         vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
      
-    float fDecreaseAlpha = 1.0f - abs((In.vLifeTime.x / In.vLifeTime.y) * 2.0f - 1.0f); 
-
+    float fDecreaseAlpha;  
     
-    if (g_IsDisolve == false && (g_numCols == 1 && g_numRows == 1))
+    fDecreaseAlpha = 1.0f - abs((In.vLifeTime.x / In.vLifeTime.y) * 2.0f - 1.0f); 
+    
+    if (g_IsDisolve == false) //스프라이트 중에서, 라이프타임이 적은 건 안한다.
         vFinalColor.a *= fDecreaseAlpha;
-    else if (g_IsDisolve == true)
+    else
         vFinalColor = Dissolve(vFinalColor, (In.vLifeTime.x / In.vLifeTime.y), In.vTexcoord);
     
     if (vFinalColor.a <= 0)
@@ -267,10 +276,8 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     float weight = max(1e-5, exp(-z * 0.75f));
     Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
     Out.vAccumAlpha.r = vFinalColor.a;
-    
-        //Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f);
 
-      
+    //Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f); 
     return Out;
 }
 
