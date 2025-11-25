@@ -26,11 +26,11 @@ public:
         CHARGING_SPRINT = 1 << 4,
         BACK_DODGE = 1 << 5,
         ROTATION = 1 << 6,
-        CHARGING_STRONG_ATTACK = 1 << 7,
+        CHARGING_FAST_ATTACK = 1 << 7, // 차징 공격
         SPRINT_AGAIN_REQUEST = 1 << 8, //스페이스바 유연하게 사용하도록 스프린트 제어
         LOCKON = 1 << 9,  // 락 온
-        READY_ASSAULT = 1 << 10, // 강습 스킬 준비 
-        INJURED = 1 << 11,  //하인마흐에서 걸을 때 
+        CHARGING_STRONG_ATTACK = 1 << 10, // 차징 공격
+        DODGING = 1 << 11,  //닷지할 때 
 
         /* 가드 */
         GUARD = 1 << 12,
@@ -53,6 +53,7 @@ public:
         BRUTAL_SUCCESS = 1 << 23,  //브루탈공격 함. 
 
 
+
         /* 회전 */
         //TURN180 = 1 << 20,
         //TURN180_REQUESTED = 1 << 21, 
@@ -61,9 +62,9 @@ public:
         //JUST_COMPLETED_TURN180 = 1 << 24,
 
 
-        STATUS_CLEARS = RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | SPRINT_AGAIN_REQUEST | READY_ASSAULT
+        STATUS_CLEARS = RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_FAST_ATTACK | SPRINT_AGAIN_REQUEST | CHARGING_STRONG_ATTACK
         | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST
-        | FALLING | FALLING_ATTACK | PRE_LAND
+        | FALLING | FALLING_ATTACK | PRE_LAND  | DODGING
 
         /*| TURN180| TURN180_REQUESTED | TURN180_COMPLETE| MOVE_AFTER_TURN*/,
 
@@ -149,10 +150,11 @@ private:
     _float						m_fRotateTime[2] = { 0.f,0.15f };
     _vector						m_vRotateStart;
     _float						m_fSprintTime = { 0.f };
-    uint						m_iStopMoveIndexTable[9];	/* 스탑 애니메이션일 때 움직임 x  */
+    uint						m_iStopMoveIndexTable[10];	/* 스탑 애니메이션일 때 움직임 x  */
 
     /* Attack  */
-    _float						m_fChargingStrongTime = { 0.f };
+    _float						m_fChargingFastAttackTime = { 0.f };
+    _float						m_fChargingStrongAttackTime = { 0.f };
     _uint                       m_iCurSkillIndex = {};
     DIR                         m_eHitNormalDir = {};               //맞은 방향  저장
     DIR                         m_eHitStrongDir = {};               //맞은 방향  저장
@@ -186,7 +188,7 @@ private:
     _float				        m_fSprintSpeed = { 15.4f };
 
     /*  Attack */
-    const _float				m_fChargingStrongIntervalTime = { 0.25f };
+    const _float				m_fChargingStartIntervalTime = { 0.25f }; // 차징 시작 시간
     const _float                m_fBrutalAttackSearchMaxDistance = { 2.f };
     const _float                m_fBrutalAttackMaxDistance = { 1.f };
 

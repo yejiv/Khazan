@@ -5,9 +5,6 @@
 #include "PlayerData_Manager.h"
 #include "Player_Manager.h"
 
-using CONTROL_BUTTON = CPlayer_Manager::CONTROL_BUTTON;
-using SPEARSKILL = CPlayerData_Manager::SPEARSKILL;
-//using GSWORDSKILL = CPlayerData_Manager::GSWORDSKILL;
 
 NS_BEGIN(Engine)
 class CUIObject;
@@ -16,6 +13,10 @@ class ISeqInstance;
 NS_END
 
 NS_BEGIN(Client)
+
+using CONTROL_BUTTON = CPlayer_Manager::CONTROL_BUTTON;
+using SPEARSKILL = CPlayerData_Manager::SPEARSKILL;
+using GSWORDSKILL = CPlayerData_Manager::GSWORDSKILL;
 
 class CClientInstance final : public CBase
 {
@@ -79,7 +80,7 @@ public:
 	_float4						Get_AtlasUV(const string pFrameName, _uint iTextureIndex);
 #pragma endregion
 
-#pragma region Player_Mager
+#pragma region Player_Manager
     PLAYER_DATA*                Get_pInitailizePlayerData();
     PLAYER_DATA&                Get_ptrPlayerData();
 	const PLAYER_DATA&			Get_PlayerData();
@@ -89,12 +90,28 @@ public:
     void                        UnBindSkillToButton(CONTROL_BUTTON eButton);
     _uint                       Get_ButtonSkill(CONTROL_BUTTON eButton);
     void                        Set_UsedSkill(_uint iSkill, _bool isUsed);
+    void                        Set_UsedSkills(_uint iSkill, _bool isUsed);
+    void                        Set_UnUsedAllSkills();                      //Unlock all currently used skills
     _bool                       Is_UsedSkill(_uint iSkill);
     
     /* 플레이어 입력 막기 */
     void                        Set_PlayerInput(_bool isInput) { m_isPlayerInput = isInput; }
     inline _bool                Get_PlayerInput() const { return m_isPlayerInput; }
 
+#pragma endregion
+
+#pragma region PlayerData
+public:
+    _bool   Check_Skill(_uint skill);		// Check if the skill exists
+    _bool   Check_Skills(_uint skill);		// Check if the skills exists
+	void    AllUnlock_Skill();				// Unlock all skills
+	void    Unlock_Skill(_uint skill);		// Unlock a single skill
+	void    Alllock_Skill();				// Lock all skills
+	void    Lock_Skill(_uint skill);		// Lock a single skill
+    void    UsedSpear();                    // Choose Spear 
+    void    UsedGSword();                   // Choose GSword 
+    _bool   Is_CurrentSpear();              // is picked Spear 
+    _bool   Is_CurrentGSword();             // is picked GSword 
 #pragma endregion
 
 #pragma region CAMERA_MANAGER
@@ -122,21 +139,6 @@ public:
 	void Save_Json_Animation(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 	void Clear_CameraManager(_uint iLevelIndex);
 #pragma endregion
-
-#pragma region PlayerData
-public:
-	_bool   Check_SpearSkill(_uint skill);		// Check if the skill exists
-	_bool   Check_GSwordSkill(_uint skill);
-	void    AllUnlock_SpearSkill();				// Unlock all skills
-	void    AllUnlock_GswordSkill( );
-	void    Unlock_SpearSkill(_uint skill);		// Unlock a single skill
-	void    Unlock_GswordSkill(_uint skill) ;
-	void    Alllock_SpearSkill();				// Lock all skills
-	void    Alllock_GswordSkill();
-	void    lock_SpearSkill(_uint skill);		// Lock a single skill
-	void    lock_GswordSkill(_uint skill);
-#pragma endregion
-
 
 #pragma region INTERACT_MANAGER
     void Add_BladeNexus(KHAZAN_MAP eMapName, INTER_BLADENEXUS_DESC* pDesc);
