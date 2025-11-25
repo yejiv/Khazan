@@ -19,10 +19,10 @@ HRESULT CMotionBlur::Initialize()
 HRESULT CMotionBlur::Bind_MotionBlur_ShaderResources(CShader* pShader)
 {
     // 이전 뷰 투영 행렬
-    if (FAILED(pShader->Bind_Matrix("g_PrevViewMatrix", &m_PrevViewMatrix)))
+    if (FAILED(pShader->Bind_Matrix("g_PrevViewMatrix", m_pGameInstance->Get_PrevTransform_Float4x4(D3DTS::VIEW))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_Matrix("g_PrevProjMatrix", &m_PrevProjMatrix)))
+    if (FAILED(pShader->Bind_Matrix("g_PrevProjMatrix", m_pGameInstance->Get_PrevTransform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
 
     // 모션 블러 정보
@@ -39,13 +39,6 @@ HRESULT CMotionBlur::Bind_MotionBlur_ShaderResources(CShader* pShader)
         return E_FAIL;
 
     return S_OK;
-}
-
-void CMotionBlur::Update_PrevMatrices()
-{
-    // 이전 행렬 갱신
-    m_PrevViewMatrix = *m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW);
-    m_PrevProjMatrix = *m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ);
 }
 
 CMotionBlur* CMotionBlur::Create()

@@ -1,5 +1,19 @@
 #include "Engine_Shader_Defines.hlsli"
 
+unsigned int g_MtrlFlags = { 0 };
+
+bool IsFlag(unsigned int iMask)
+{
+    return (g_MtrlFlags & iMask) != 0;
+}
+
+static const unsigned int M_DIFFUSE = (1 << 0);
+static const unsigned int M_NORMAL = (1 << 1);
+static const unsigned int M_EMISSIVE = (1 << 2);
+static const unsigned int M_SPECULAR = (1 << 3);
+static const unsigned int M_METALIC = (1 << 4);
+static const unsigned int M_ROUGHNESS = (1 << 5);
+
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 /*재질*/
@@ -214,13 +228,17 @@ PS_OUT PS_MAP(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐�
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
     if (vMtrlDiffuse.a <= 0.3f)
         discard;
         
     /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
-    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+        vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
     float2 xy = vNormalDesc.xy * 2.f - 1.f;
     float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
@@ -230,14 +248,12 @@ PS_OUT PS_MAP(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐�
     
     // Specular Test
     vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
-    
-    if (true == g_isSpecular)
+    if (IsFlag(M_SPECULAR))
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
     // Emissive Test
     vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
-    
-    if (true == g_isEmissive)
+    if (IsFlag(M_EMISSIVE))
         vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
         
     
@@ -256,9 +272,14 @@ PS_OUT PS_MAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽셀 
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+        vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
     float2 xy = vNormalDesc.xy * 2.f - 1.f;
     float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
@@ -280,14 +301,12 @@ PS_OUT PS_MAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽셀 
     
     // Specular Test
     vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
-    
-    if (true == g_isSpecular)
+    if (IsFlag(M_SPECULAR))
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
     // Emissive Test
     vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
-    
-    if (true == g_isEmissive)
+    if (IsFlag(M_EMISSIVE))
         vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
     Out.vDiffuse = float4(vFinalColor, fAlpha);
@@ -305,13 +324,17 @@ PS_OUT PS_SNOWMAP(PS_IN In)                       // 맵 오브젝트용 픽셀 
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
     if (vMtrlDiffuse.a <= 0.3f)
         discard;
         
     /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
-    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+        vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
     float2 xy = vNormalDesc.xy * 2.f - 1.f;
     float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
@@ -319,7 +342,8 @@ PS_OUT PS_SNOWMAP(PS_IN In)                       // 맵 오브젝트용 픽셀 
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
     
-    float3 vWorldNormal = normalize(In.vNormal.rgb);
+    //float3 vWorldNormal = normalize(In.vNormal.rgb);
+    float3 vWorldNormal = normalize(vNormal.xyz);
     float upFactor = saturate(dot(vWorldNormal, float3(0.f, 1.f, 0.f)));
     
     float fSnowMask = 0.8f;
@@ -332,14 +356,12 @@ PS_OUT PS_SNOWMAP(PS_IN In)                       // 맵 오브젝트용 픽셀 
     
     // Specular Test
     vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
-    
-    if (true == g_isSpecular)
+    if (IsFlag(M_SPECULAR))
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
     // Emissive Test
     vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
-    
-    if (true == g_isEmissive)
+    if (IsFlag(M_EMISSIVE))
         vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
     Out.vDiffuse = float4(vFinalColor, vMtrlDiffuse.a);
@@ -355,15 +377,20 @@ PS_OUT PS_SNOWMAP(PS_IN In)                       // 맵 오브젝트용 픽셀 
 
 PS_OUT PS_SNOWMAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
 {
-    PS_OUT Out = (PS_OUT)0;
+    PS_OUT Out = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+        vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
     float2 xy = vNormalDesc.xy * 2.f - 1.f;
     float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
-
+    
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
     
@@ -389,14 +416,12 @@ PS_OUT PS_SNOWMAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽
     
     // Specular Test
     vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
-    
-    if (true == g_isSpecular)
+    if (IsFlag(M_SPECULAR))
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
     // Emissive Test
     vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
-    
-    if (true == g_isEmissive)
+    if (IsFlag(M_EMISSIVE))
         vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
     Out.vDiffuse = float4(vFinalColor, fAlpha);

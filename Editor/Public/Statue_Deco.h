@@ -23,7 +23,7 @@ public:
 
 private:
     CStatue_Deco(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CStatue_Deco(const CPartObject& Prototype);
+    CStatue_Deco(const CStatue_Deco& Prototype);
     virtual ~CStatue_Deco() = default;
 
 public:

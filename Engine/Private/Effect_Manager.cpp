@@ -31,13 +31,13 @@ void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& 
 
 	if (Layer == nullptr)
 	{
-		//MSG_BOX(TEXT("Effect Layer ?놁쓬. ?놁쑝硫??덈릺?붾뜲?"));
+		//MSG_BOX(TEXT("Effect Layer NULL"));
 		return;
 	}
 
 	if (Pool == nullptr)
 	{
-		//MSG_BOX(TEXT("Effect Pool ?놁쓬. ?놁쑝硫??덈릺?붾뜲?"));
+		//MSG_BOX(TEXT("Effect Pool NULL"));
 		return;
 	}
 
@@ -47,7 +47,7 @@ void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& 
 
 		if (effect == nullptr)
 		{
-			//MSG_BOX(TEXT("EFFECT :: "));
+			//MSG_BOX(TEXT("EFFECT ::NULL"));
 			return;
 		}
 

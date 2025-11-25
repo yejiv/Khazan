@@ -10,6 +10,7 @@
 #include "Projectile_Breath_Yetuga.h"
 #include "BossHp.h"
 #include "Head_Yetuga.h"
+#include "Viper.h"
 
 CYetuga::CYetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -118,8 +119,9 @@ void CYetuga::Update(_float fTimeDelta)
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
 
     // Radial Blur Focus Update
-    m_pGameInstance->Set_RadialBlurCenter(m_pTransformCom->Get_State(STATE::POSITION), 5.f);
-
+    if (m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isDetected"))
+        m_pGameInstance->Set_RadialBlurCenter(m_pTransformCom->Get_State(STATE::POSITION), 5.f);
+    
 #ifdef _DEBUG
     //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 #endif // _DEBUG
@@ -262,6 +264,8 @@ void CYetuga::Update_Landing(_float fTimeDelta)
     pTransform->Set_State(STATE::POSITION, vNewPos);
     m_pCharVirCom->Set_Position(vNewPos);
 }
+
+
 
 
 

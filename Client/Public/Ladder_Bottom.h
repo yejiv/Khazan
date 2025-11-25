@@ -21,7 +21,7 @@ public:
 
 private:
     CLadder_Bottom(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CLadder_Bottom(const CPartObject& Prototype);
+    CLadder_Bottom(const CLadder_Bottom& Prototype);
     virtual ~CLadder_Bottom() = default;
 
 public:

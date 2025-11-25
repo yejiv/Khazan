@@ -94,7 +94,10 @@ void CBody::Update(_float fTimeDelta, class CTransform* pTransform)
     {
         _vector vScale{}, vRotation{}, vTranslation{};
 
-        XMMatrixDecompose(&vScale, &vRotation, &vTranslation, pTransform->Get_WorldMatrix());
+        if (!XMMatrixDecompose(&vScale, &vRotation, &vTranslation, pTransform->Get_WorldMatrix()))
+        {
+            MSG_BOX(TEXT("Decompose Failed in CBody::Update"));
+        }
 
         m_pBodyInterface->MoveKinematic(m_BodyID, LoadVec3(vTranslation), LoadQuat(vRotation), fTimeDelta);
 

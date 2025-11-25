@@ -223,7 +223,7 @@ HRESULT CVIBuffer_Point_Instance::Render()
 }
 
 _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
-{ 
+{
 	D3D11_MAPPED_SUBRESOURCE SubResource;
 	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
 	{
@@ -262,7 +262,7 @@ _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 }
 
 void CVIBuffer_Point_Instance::UpdateGravity(_float fTimeDelta)
-{ 
+{
 	COMPUTE_PASS_DESC PassDesc{};
     PassDesc.SRVs.push_back(m_pSRV);
     PassDesc.SRVs.push_back(m_pSRVNoise);
@@ -286,7 +286,7 @@ void CVIBuffer_Point_Instance::UpdateGravity(_float fTimeDelta)
 }
 
 void CVIBuffer_Point_Instance::UpdateTurbulence(_float fTimeDelta, _float fAccTime)
-{ 
+{
 	D3D11_MAPPED_SUBRESOURCE SubResource;
 	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
 	{
@@ -354,7 +354,6 @@ void CVIBuffer_Point_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
 
 void CVIBuffer_Point_Instance::Remove_Speed(SPEED_VALUE type)
 {
-
     D3D11_MAPPED_SUBRESOURCE SubResource;
     if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
     {

@@ -1,7 +1,10 @@
 #include "Player_Manager.h"
+#include "ClientInstance.h"
 
 CPlayer_Manager::CPlayer_Manager()
+    :m_pClientInstance{ CClientInstance::GetInstance() }
 {
+    Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CPlayer_Manager::Initialize()
@@ -35,12 +38,24 @@ HRESULT CPlayer_Manager::Initialize()
 
     m_Data.fWeight = { 0.f };
 
-    m_UsedSkill.assign(GetBitPosition(CPlayerData_Manager::SPEAR_END), false);
+    m_UsedSpearSkill.assign(GetBitPosition(CPlayerData_Manager::SPEAR_END), false);
+
+    m_UsedGSwordSkill.assign(GetBitPosition(CPlayerData_Manager::GSWORD_END), false);
 
     /* 임시  */
+    m_pClientInstance->UsedSpear();
     BindSkillToButton(Q, CPlayerData_Manager::FULL_MOON);
     BindSkillToButton(E, CPlayerData_Manager::SPIRAL_THRUST);
     BindSkillToButton(R, CPlayerData_Manager::SHADOW_CLEAVE);
+
+    /* 임시 */
+    m_pClientInstance->UsedGSword();
+    BindSkillToButton(Q, CPlayerData_Manager::GIANTHUNT);
+    BindSkillToButton(E, CPlayerData_Manager::PHANTOM_SHADOWOFDARKNESS);
+    BindSkillToButton(R, CPlayerData_Manager::BREAK_THROUGH);
+    BindSkillToButton(CTRL_LB, CPlayerData_Manager::WARCRY);
+    BindSkillToButton(CTRL_RB, CPlayerData_Manager::INNER_FURY);
+
 
 	return S_OK;
 }
@@ -84,35 +99,125 @@ _bool CPlayer_Manager::Add_SkillPoint(_int iPoint)
 
 void CPlayer_Manager::BindSkillToButton(CONTROL_BUTTON eButton, _uint iSkill)
 {
-    m_ButtonToSkill[eButton] = iSkill;
+    if(m_pClientInstance->Is_CurrentSpear())
+        m_ButtonToSpearSkill[eButton] = iSkill;
+    
+    if (m_pClientInstance->Is_CurrentGSword())
+        m_ButtonToGSwordSkill[eButton] = iSkill;
+
 }
 
 void CPlayer_Manager::UnBindSkillToButton(CONTROL_BUTTON eButton)
 {
-    m_ButtonToSkill.erase(eButton);
+    if (m_pClientInstance->Is_CurrentSpear())
+        m_ButtonToSpearSkill.erase(eButton);
+
+    if (m_pClientInstance->Is_CurrentGSword())
+        m_ButtonToGSwordSkill.erase(eButton);
 }
 
 _uint CPlayer_Manager::Get_ButtonSkill(CONTROL_BUTTON eButton)
 {
-    unordered_map<CONTROL_BUTTON, _uint>::iterator  it = m_ButtonToSkill.find(eButton);
-    if (it != m_ButtonToSkill.end())  return it->second;
-    return 0; // 바인딩된 스킬 없음
+    if (m_pClientInstance->Is_CurrentSpear())
+    {
+        unordered_map<CONTROL_BUTTON, _uint>::iterator  it = m_ButtonToSpearSkill.find(eButton);
+        if (it != m_ButtonToSpearSkill.end())  return it->second;
+        return 0; // 바인딩된 스킬 없음
+    }
+
+    if (m_pClientInstance->Is_CurrentGSword()) 
+    {
+        unordered_map<CONTROL_BUTTON, _uint>::iterator  it = m_ButtonToGSwordSkill.find(eButton);
+        if (it != m_ButtonToGSwordSkill.end())  return it->second;
+        return 0; // 바인딩된 스킬 없음
+    }
 }
 
 void CPlayer_Manager::Set_UsedSkill(_uint iSkill, _bool isUsed)
 {
-    if (0 >= iSkill && iSkill >= GetBitPosition(CPlayerData_Manager::SPEAR_END))
+    if (m_pClientInstance->Is_CurrentSpear())
+    {
+        if (0 >= iSkill || GetBitPosition(iSkill) >= GetBitPosition(CPlayerData_Manager::SPEAR_END))
+            return;
+        m_UsedSpearSkill[GetBitPosition(iSkill)] = isUsed;
+    }
+
+    if (m_pClientInstance->Is_CurrentGSword())
+    {
+        if (0 >= iSkill || GetBitPosition(iSkill) >= GetBitPosition(CPlayerData_Manager::GSWORD_END))
+            return;
+        m_UsedGSwordSkill[GetBitPosition(iSkill)] = isUsed;
+    }
+}
+
+
+void CPlayer_Manager::Set_UsedSkills(_uint iSkill, _bool isUsed)
+{
+    if (iSkill == 0)
         return;
 
-    m_UsedSkill[GetBitPosition(iSkill)] = isUsed;
+    // 스킬 비트 전체 체크 (0~31)
+    const _uint highest = GetHighestBitPosition(iSkill);
+
+    if (m_pClientInstance->Is_CurrentSpear())
+    {
+        const _uint spearEnd = GetBitPosition(CPlayerData_Manager::SPEAR_END);
+
+        for (_uint bit = 0; bit <= highest; ++bit)
+        {
+            if (iSkill & (1u << bit))
+            {
+                if (bit >= spearEnd)  continue; // 범위 밖이면 무시
+                m_UsedSpearSkill[bit] = isUsed;
+            }
+        }
+    }
+
+    if (m_pClientInstance->Is_CurrentGSword())
+    {
+        const _uint gsEnd = GetBitPosition(CPlayerData_Manager::GSWORD_END);
+
+        for (_uint bit = 0; bit <= highest; ++bit)
+        {
+            if (iSkill & (1u << bit))
+            {
+                if (bit >= gsEnd)   continue;
+                m_UsedGSwordSkill[bit] = isUsed;
+            }
+        }
+    }
+}
+
+void CPlayer_Manager::Set_UnUsedAllSkills()
+{
+    if (m_pClientInstance->Is_CurrentSpear())
+    {
+        for (_bool isUsed : m_UsedSpearSkill)
+            isUsed = false; 
+    }
+
+    if (m_pClientInstance->Is_CurrentGSword())
+    {
+        for (_bool isUsed : m_UsedGSwordSkill)
+            isUsed = false;
+    }
 }
 
 _bool CPlayer_Manager::Is_UsedSkill(_uint iSkill)
 {
-    if (0 >= iSkill && iSkill >= GetBitPosition(CPlayerData_Manager::SPEAR_END))
-        return false;
+    if (m_pClientInstance->Is_CurrentSpear()) 
+    {
+        if (0 >= iSkill && GetBitPosition(iSkill) >= GetBitPosition(CPlayerData_Manager::SPEAR_END))
+            return false;
+        return  m_UsedSpearSkill[GetBitPosition(iSkill)];
+    }
 
-    return  m_UsedSkill[GetBitPosition(iSkill)];
+    if (m_pClientInstance->Is_CurrentGSword())
+    {
+        if (0 >= iSkill && GetBitPosition(iSkill) >= GetBitPosition(CPlayerData_Manager::GSWORD_END))
+            return false;
+        return  m_UsedGSwordSkill[GetBitPosition(iSkill)];
+    }
 }
 
 CPlayer_Manager* CPlayer_Manager::Create()
@@ -129,4 +234,5 @@ CPlayer_Manager* CPlayer_Manager::Create()
 void CPlayer_Manager::Free()
 {
 	__super::Free();
+    Safe_Release(m_pClientInstance);
 }

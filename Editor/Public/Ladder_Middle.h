@@ -23,7 +23,7 @@ public:
 
 private:
     CLadder_Middle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CLadder_Middle(const CPartObject& Prototype);
+    CLadder_Middle(const CLadder_Middle& Prototype);
     virtual ~CLadder_Middle() = default;
 
 public:

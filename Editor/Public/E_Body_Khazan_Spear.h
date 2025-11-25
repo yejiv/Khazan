@@ -39,8 +39,10 @@ public:
 	virtual void        Late_Update(_float fTimeDelta);
 	virtual HRESULT     Render();
 	virtual HRESULT     Render_Shadow() override;
-	void			    Render_Part(CModel* pModel);
+    virtual HRESULT     Render_MotionVector() override;
+    void			    Render_Part(CModel* pModel);
 	void			    Render_Part_Shadow(CModel* pModel);
+    void                Render_Part_MotionVector(CModel* pModel);
 
 public:
 	CModel*                     Get_Model() { return m_pModelCom; }
@@ -59,6 +61,7 @@ private:
 	class CTransform*   m_pParentTransform = { nullptr };   
 
     CShader*            m_pShaderCom = { nullptr };
+    CShader*            m_pMotionVectorShaderCom = { nullptr };
 
     CModel*             m_pModelCom = { nullptr };
     CModel*             m_pModelCom_Arm = { nullptr };
@@ -92,6 +95,8 @@ private:
 
     // Motion Trail Test
     CMotionTrail*       m_pMotionTrailCom = { nullptr };
+
+    _float4x4           m_PrevCombinedMatrix = {};
 
 private:
     HRESULT				Ready_Components();

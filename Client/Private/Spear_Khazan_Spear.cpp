@@ -201,7 +201,7 @@ HRESULT CSpear_Khazan_Spear::Ready_Components()
     MTDesc.Config.fEmissiveIntensity = 2.f;
     MTDesc.Config.isIndividualColor = true;
     MTDesc.Config.fColorUpdateSpeed = 1000.f;
-    MTDesc.Config.fInterval = 0.05f;
+    MTDesc.Config.fInterval = 0.1f;
     MTDesc.Config.iMaxFrames = 10.f;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
         TEXT("Com_MotionTrail"), reinterpret_cast<CComponent**>(&m_pMotionTrailCom), &MTDesc)))
@@ -259,5 +259,6 @@ void CSpear_Khazan_Spear::Free()
     Safe_Release(m_pParentTransform);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
+    Safe_Release(m_pMotionTrailCom);
     //Safe_Release(m_pColliderCom);
 }

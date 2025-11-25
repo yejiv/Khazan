@@ -126,6 +126,7 @@ void CDebug_Manager::Ready_JoltDebug()
         Labels.push_back("MAP_MOVE_FLATFORM");
         Labels.push_back("MAP_DEST");
         Labels.push_back("MAP_CHUNK");
+        Labels.push_back("TEST");
 
 		for (size_t i = 0; i < Labels.size(); i++)
 		{

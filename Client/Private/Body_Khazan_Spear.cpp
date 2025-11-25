@@ -133,6 +133,8 @@ void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
         return;
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
         return;
+    //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::MOTIONVECTOR, this)))
+    //      return;
     //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::OUTLINE, this)))
     //      return;
 #ifdef _DEBUG
@@ -244,6 +246,50 @@ HRESULT CBody_Khazan_Spear::Render_Outline()
     return S_OK;
 }
 
+HRESULT CBody_Khazan_Spear::Render_MotionVector()
+{
+    //  if (FAILED(Bind_ShaderResources()))
+    //      return E_FAIL;
+    
+    // 이전 프레임 월드, 뷰, 투영 바인드 해줘야 함
+    if (FAILED(m_pTransformCom->Bind_PrevWorldMatrix(m_pShaderCom, "g_PrevWorldMatrix")))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_PrevViewMatrix", m_pGameInstance->Get_PrevTransform_Float4x4(D3DTS::VIEW))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_PrevProjMatrix", m_pGameInstance->Get_PrevTransform_Float4x4(D3DTS::PROJ))))
+        return E_FAIL;
+
+    _uint       iNumViewports = { 1 };
+    D3D11_VIEWPORT      ViewportDesc{};
+
+    m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
+    _float2 vScreenSize = _float2(ViewportDesc.Width, ViewportDesc.Height);
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
+        return E_FAIL;
+
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        if (FAILED(m_pModelCom->Bind_PrevBoneMatrices(m_pShaderCom, "g_PrevBoneMatrices", i)))
+            return E_FAIL;
+
+        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+            return E_FAIL;
+    }
+
+    Render_Part_MotionVector(m_pModelCom_Arm);
+    Render_Part_MotionVector(m_pModelCom_Face);
+    Render_Part_MotionVector(m_pModelCom_Hair);
+    Render_Part_MotionVector(m_pModelCom_Leg);
+    Render_Part_MotionVector(m_pModelCom_Shoes);
+    Render_Part_MotionVector(m_pModelCom_Torso);
+
+    return S_OK;
+}
+
 void CBody_Khazan_Spear::Render_Part(CModel* pModel)
 {
     if (nullptr == pModel)
@@ -301,6 +347,30 @@ void CBody_Khazan_Spear::Render_Part_Outline(CModel* pModel)
             continue;
 
         m_pShaderCom->Begin(3);
+        pModel->Render(i);
+    }
+}
+
+void CBody_Khazan_Spear::Render_Part_MotionVector(CModel* pModel)
+{
+    if (nullptr == pModel)
+        return;
+
+    pModel->Update_PartLocalBones();
+
+    _uint iNumMeshes = pModel->Get_NumMeshes();
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        // 마스터의 본을 자동으로 사용
+        if (FAILED(pModel->Bind_PrevBoneMatrices(m_pShaderCom, "g_PrevBoneMatrices", i)))
+            continue;
+
+        if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+            continue;
+
+        // 셰이더 바꿔야 함
+        //  m_pShaderCom->Begin(11);
         pModel->Render(i);
     }
 }
@@ -777,7 +847,7 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
     MTDesc.Config.fEmissiveIntensity = 2.f;
     MTDesc.Config.isIndividualColor = true;
     MTDesc.Config.fColorUpdateSpeed = 1000.f;
-    MTDesc.Config.fInterval = 0.05f;
+    MTDesc.Config.fInterval = 0.1f;
     MTDesc.Config.iMaxFrames = 10.f;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
         TEXT("Com_MotionTrail"), reinterpret_cast<CComponent**>(&m_pMotionTrailCom), &MTDesc)))
@@ -1299,7 +1369,7 @@ void CBody_Khazan_Spear::Free()
     __super::Free();
 
     Safe_Release(m_pMotionTrailCom);
-
+    
     Safe_Release(m_pBodyCom_Search);
     Safe_Release(m_pBodyCom_SpearPole);
     Safe_Release(m_pBodyCom_SpearTip1);
@@ -1311,7 +1381,7 @@ void CBody_Khazan_Spear::Free()
 
     Safe_Release(m_pSpear);
     Safe_Release(m_pClientInstance);
-
+    
     if (!m_isPrototype)
     {
         m_pModelCom->Detach_Part(m_pModelCom_Arm);
@@ -1321,7 +1391,7 @@ void CBody_Khazan_Spear::Free()
         m_pModelCom->Detach_Part(m_pModelCom_Shoes);
         m_pModelCom->Detach_Part(m_pModelCom_Torso);
     }
-
+    
     Safe_Release(m_pParentTransform);
     Safe_Release(m_pShaderCom);
 
@@ -1333,5 +1403,10 @@ void CBody_Khazan_Spear::Free()
     Safe_Release(m_pModelCom_Shoes);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
-    
+
+
+    for (auto pObj : m_CollMonsters)
+        Safe_Release(pObj);
+    m_CollMonsters.clear();
+
 }

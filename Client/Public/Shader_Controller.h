@@ -40,6 +40,7 @@ private:
 	_bool					m_isEnableToonShade = { true };
 	_bool					m_isEnableOutline = {};
     _bool                   m_isEnableLUT = { true };
+    _bool                   m_isEnableRadialBlur = {};
     _bool                   m_isEnableMotionBlur = { true };
     _bool                   m_isEnableEdge = { true };
     _bool                   m_isEnableRimLight = { true };
@@ -64,6 +65,9 @@ private:
 
     // LUT
     _float                  m_fLUTIntensity = { 0.2f };
+
+    // Radial Blur
+    RADIAL_BLUR_DESC        m_RadialBlurDesc = {};
 
     // Motion Blur
     MOTION_BLUR_DESC        m_MotionBlurDesc = {};

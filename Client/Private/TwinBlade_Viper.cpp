@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "AI_Controller.h"
 #include "Viper.h"
+#include "Body_Viper.h"
 
 
 _matrix CTwinBlade_Viper::Get_BoneMatrix(const _char* pBoneName)
@@ -43,12 +44,8 @@ HRESULT CTwinBlade_Viper::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components())) return E_FAIL;
     if (FAILED(Ready_Collision())) return E_FAIL;
 
-    //m_pTransformCom->Rotation(1.5, 1.5, 0.5f);
-    //m_vDebugRotation = _float3(-0, 3.22f, -2.6f);
-    //XMStoreFloat3(&m_vLocalWeaponOffset, XMVectorSet(-0.4f, -0.6f, -0.5f, 1.f)) ;
-    //m_vLocalWeaponOffset = {x=-0.400000006 y=-0.600000024 z=-0.500000000 }
-    m_OffsetMatrix = XMMatrixRotationX(XMConvertToRadians(-90.f));
-  
+    m_pTransformCom->Rotation(0.1f, 3.14f, 1.f);
+
     return S_OK;
 }
 
@@ -58,107 +55,45 @@ void CTwinBlade_Viper::Priority_Update(_float fTimeDelta)
 
 void CTwinBlade_Viper::Update(_float fTimeDelta)
 {
-
-    if (m_pGameInstance->Key_Down(DIK_J))   // X축 +90도
-    {
-        m_vDebugRotation.x += XMConvertToRadians(5.f);
-        cout << "Rotate X +90 : " << m_vDebugRotation.x << endl;
-    }
-
-    if (m_pGameInstance->Key_Down(DIK_K))   // Y축 +90도
-    {
-        m_vDebugRotation.y += XMConvertToRadians(5.f);
-        cout << "Rotate Y +90 : " << m_vDebugRotation.y << endl;
-    }
-
-    if (m_pGameInstance->Key_Down(DIK_L))   // Z축 +90도
-    {
-        m_vDebugRotation.z += XMConvertToRadians(5.f);
-        cout << "Rotate Z +90 : " << m_vDebugRotation.z << endl;
-    }
-
-    if (m_pGameInstance->Key_Down(DIK_B))   // X축 +90도
-    {
-        m_vDebugRotation.x -= XMConvertToRadians(5.f);
-        cout << "Rotate X +90 : " << m_vDebugRotation.x << endl;
-    }
-
-    if (m_pGameInstance->Key_Down(DIK_N))   // Y축 +90도
-    {
-        m_vDebugRotation.y -= XMConvertToRadians(5.f);
-        cout << "Rotate Y +90 : " << m_vDebugRotation.y << endl;
-    }
-
-    if (m_pGameInstance->Key_Down(DIK_M))   // Z축 +90도
-    {
-        m_vDebugRotation.z -= XMConvertToRadians(5.f);
-        cout << "Rotate Z +90 : " << m_vDebugRotation.z << endl;
-    }
-
-    // 누적된 각도를 TransformCom에 반영
-    //m_pTransformCom->Rotation(
-    //    m_vDebugRotation.x,
-    //    m_vDebugRotation.y,
-    //    m_vDebugRotation.z
-    //);
-
-
-
-    //if (m_pGameInstance->Key_Down(DIK_J))
-    //{
-    //    m_vLocalWeaponOffset.x += 0.1f;
-    //    cout << "Offset X: " << m_vLocalWeaponOffset.x << endl;
-    //}
-    //if (m_pGameInstance->Key_Down(DIK_B))
-    //{
-    //    m_vLocalWeaponOffset.x -= 0.1f;
-    //    cout << "Offset X: " << m_vLocalWeaponOffset.x << endl;
-    //}
-
-    //// Y축 이동
-    //if (m_pGameInstance->Key_Down(DIK_K))
-    //{
-    //    m_vLocalWeaponOffset.y += 0.1f;
-    //    cout << "Offset Y: " << m_vLocalWeaponOffset.y << endl;
-    //}
-    //if (m_pGameInstance->Key_Down(DIK_N))
-    //{
-    //    m_vLocalWeaponOffset.y -= 0.1f;
-    //    cout << "Offset Y: " << m_vLocalWeaponOffset.y << endl;
-    //}
-
-    //// Z축 이동
-    //if (m_pGameInstance->Key_Down(DIK_L))
-    //{
-    //    m_vLocalWeaponOffset.z += 0.1f;
-    //    cout << "Offset Z: " << m_vLocalWeaponOffset.z << endl;
-    //}
-    //if (m_pGameInstance->Key_Down(DIK_M))
-    //{
-    //    m_vLocalWeaponOffset.z -= 0.1f;
-    //    cout << "Offset Z: " << m_vLocalWeaponOffset.z << endl;
-    //}
-
-
+   
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
-    //_matrix OffsetMatrix = XMMatrixTranslationFromVector(XMLoadFloat3(&m_vLocalWeaponOffset));
 
     for (uint32_t i = 0; i < 3; i++)
         BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
-    m_pModelCom->Update_BoneCombinedMatrices();
-
     XMStoreFloat4x4(
         &m_CombinedWorldMatrix,
-        /*m_pTransformCom->Get_WorldMatrix() **/ m_OffsetMatrix * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
+        m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
     );
 
-
-  /*  _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
+    _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
 
     _vector vScale, vQuat, vPos;
     XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
-    XMStoreFloat4(&m_vTipPos, vPos);*/
+
+    if (m_isLOnAttackCollision)
+    {
+        m_pLeftBodyComp->Collision_Active(true);
+        m_pLeftBodyComp->Sync_Update(WeaponWorld);
+        m_pLeftBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
+        XMStoreFloat4(&m_vGrabPos, vPos);
+        
+    }
+    else if (m_isROnAttackCollision)
+    {
+        m_pRightBodyComp->Collision_Active(true);
+        m_pRightBodyComp->Sync_Update(WeaponWorld);
+        m_pRightBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
+    }
+    else
+    {
+        m_pRightBodyComp->Collision_Active(false);
+        m_pLeftBodyComp->Collision_Active(false);
+    }
+        
+  
+
+    XMStoreFloat4(&m_vTipPos, vPos);
 
 }
 
@@ -223,34 +158,66 @@ HRESULT CTwinBlade_Viper::Ready_Components()
 
 HRESULT CTwinBlade_Viper::Ready_Collision()
 {
-    //CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
-    //BodyDesc.fRadius = 0.05f;
-    //BodyDesc.eMotion = EMotionType::Kinematic;
-    //BodyDesc.eQuality = EMotionQuality::Discrete;
-    //BodyDesc.eShapeType = SHAPE::SPHERE;
-    //BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-    //BodyDesc.bIsTrigger = true;
+    CBody::BODY_SPHERESHAPE_DESC RigthBodyDesc{};
+    RigthBodyDesc.fRadius = 1.3f;
+    RigthBodyDesc.eMotion = EMotionType::Kinematic;
+    RigthBodyDesc.eQuality = EMotionQuality::Discrete;
+    RigthBodyDesc.eShapeType = SHAPE::SPHERE;
+    RigthBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    RigthBodyDesc.bIsTrigger = true;
 
-    //_matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+    _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 
-    //XMStoreFloat4x4(&m_CombinedWorldMatrix,
-    //    m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+    XMStoreFloat4x4(&m_CombinedWorldMatrix,
+        m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
 
-    //_vector vScale, vQuat, vPos;
-    //XMMatrixDecompose(&vScale, &vQuat, &vPos, XMLoadFloat4x4(&m_CombinedWorldMatrix));
+    _vector vScale, vQuat, vPos;
+    XMMatrixDecompose(&vScale, &vQuat, &vPos, XMLoadFloat4x4(&m_CombinedWorldMatrix));
 
-    //BodyDesc.vPos = _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
-    //BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
+    RigthBodyDesc.vPos = _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
+    RigthBodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
-    //BodyDesc.vShapeOffset = _float3(0.f, 0.75f, 0.f);
+    RigthBodyDesc.vShapeOffset = _float3(0.f, 1.5f, 0.f);
 
-    //m_tCollisionDesc.pGameObject = this;
-    //BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_tCollisionDesc.pGameObject = this;
+    RigthBodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    //if (FAILED(CGameObject::Add_Component(
-    //    ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-    //    TEXT("Com_Body_RH"), (CComponent**)&m_pBodyComp, &BodyDesc)))
-    //    return E_FAIL;
+    if (FAILED(CGameObject::Add_Component(
+        ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body_RH"), (CComponent**)&m_pRightBodyComp, &RigthBodyDesc)))
+        return E_FAIL;
+
+
+
+    CBody::BODY_SPHERESHAPE_DESC LeftBodyDesc{};
+    LeftBodyDesc.fRadius = 1.8f;
+    LeftBodyDesc.eMotion = EMotionType::Kinematic;
+    LeftBodyDesc.eQuality = EMotionQuality::Discrete;
+    LeftBodyDesc.eShapeType = SHAPE::SPHERE;
+    LeftBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    LeftBodyDesc.bIsTrigger = true;
+
+
+    XMStoreFloat4x4(&m_CombinedWorldMatrix,
+        m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+
+    XMMatrixDecompose(&vScale, &vQuat, &vPos, XMLoadFloat4x4(&m_CombinedWorldMatrix));
+
+    LeftBodyDesc.vPos = _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
+    LeftBodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
+
+    LeftBodyDesc.vShapeOffset = _float3(0.f, -1.8f, 0.f);
+
+    m_tCollisionDesc.pGameObject = this;
+    LeftBodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    if (FAILED(CGameObject::Add_Component(
+        ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body_LH"), (CComponent**)&m_pLeftBodyComp, &LeftBodyDesc)))
+        return E_FAIL;
+
+
+
 
     return S_OK;
 }
@@ -299,6 +266,10 @@ void CTwinBlade_Viper::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
+
+    Safe_Release(m_pRightBodyComp);
+    Safe_Release(m_pLeftBodyComp);
+
 
     __super::Free();
 }

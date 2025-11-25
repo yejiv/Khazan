@@ -23,7 +23,7 @@ public:
 
 private:
     CStatue_Plate(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CStatue_Plate(const CPartObject& Prototype);
+    CStatue_Plate(const CStatue_Plate& Prototype);
     virtual ~CStatue_Plate() = default;
 
 public:
