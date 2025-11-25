@@ -42,13 +42,13 @@ HRESULT CVerticalGate::Initialize_Clone(void* pArg)
     switch (m_iEventID)
     {
     case 0:
-        m_eEventType = EVENT_TYPE::STATUE_PUZZLE0;
+        m_eEventType = EVENT_TYPE::EMBARS_GIMMICK0;
         break;
     case 1:
-        m_eEventType = EVENT_TYPE::STATUE_PUZZLE1;
+        m_eEventType = EVENT_TYPE::EMBARS_GIMMICK1;
         break;
     case 2:
-        //m_eEventType = EVENT_TYPE::; 3단 엘리베이터 Down Pos 잡으면 문 열리는 신호
+        m_eEventType = EVENT_TYPE::EMBARS_GIMMICK2;
         break;
     default:
         m_eEventType = EVENT_TYPE::END;
@@ -56,7 +56,7 @@ HRESULT CVerticalGate::Initialize_Clone(void* pArg)
     }
 
     if (EVENT_TYPE::END != m_eEventType)
-        m_pGameInstance->Subscribe_Event<EventVerticalGate>(ENUM_CLASS(m_eEventType), [&](const EventVerticalGate& e) { m_EventVTGate = e; });
+        m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(m_eEventType), [&](const EventGimmick& e) { m_EventGimmick = e; });
 
     return S_OK;
 }
@@ -120,14 +120,14 @@ void CVerticalGate::Animation_Update(_float fTimeDelta)
 {
     CHECK_TRUE(m_isUnLock, );
 
-    if (m_EventVTGate.isUnLockGate(m_iEventID))
+    if (m_EventGimmick.isActiveGate())
     {
         switch (m_eAnimState)
         {
         case ANIM_STATE::IDLE1:
             m_eAnimState = ANIM_STATE::ACTIVATION;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-            m_pModelCom->Set_AnimationLoop(false);
+            m_pModelCom->AnimationLoop(false);
             break;
         case ANIM_STATE::IDLE2:
             m_eAnimState = ANIM_STATE::DEACTIVATION;
@@ -147,7 +147,7 @@ void CVerticalGate::Animation_Change(_float fTimeDelta)
     case ANIM_STATE::ACTIVATION:
         m_eAnimState = ANIM_STATE::IDLE2;
         m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-        m_pModelCom->Set_AnimationLoop(false);
+        m_pModelCom->AnimationLoop(false);
         break;
     case ANIM_STATE::DEACTIVATION:
         m_eAnimState = ANIM_STATE::IDLE1;
