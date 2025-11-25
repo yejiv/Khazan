@@ -625,7 +625,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	Desc.fDepth = 8.f;
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Interaction_Guide"),
-		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide"), &Desc, 15), E_FAIL);
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide"), &Desc, 25), E_FAIL);
 
 	Desc.vLocalSize = { 52.f, 52.f };
 	Desc.vLocalPos = { 0.f, 0.f };

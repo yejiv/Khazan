@@ -33,6 +33,7 @@ namespace Client
         MAP_MOVE_PLATFORM, 
         MAP_DEST, 
         MAP_CHUNK, 
+        TEST,
         END };
 
 	enum class KHAZAN_MAP { HEINMACH, CREVICE, EMBARS, VIPER, END };

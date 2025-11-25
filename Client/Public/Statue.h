@@ -60,7 +60,7 @@ private:
 
     EventObject m_Event = {};
 
-    EventVerticalGate m_EventVTGate = {};
+    EventGimmick m_EventGimmick = {};
 
     _float3 m_vCharacterPosition = {};
 

@@ -25,6 +25,7 @@ public:
 public:
 	HRESULT Bind_Shader_Resource(class CShader* pShader, const _char* pConstantName);
 	HRESULT Bind_Shader_Resource(class CDeferredShader* pShader, const _char* pConstantName);
+    HRESULT Bind_PrevWorldMatrix(class CShader* pShader, const _char* pConstantName);
 
 public:
 	_vector Get_State(STATE eState) const {
@@ -42,6 +43,10 @@ public:
 	_matrix Get_WorldMatrix() {
 		return XMLoadFloat4x4(&m_WorldMatrix);
 	}
+
+    _matrix Get_PrevWorldMatrix() {
+        return XMLoadFloat4x4(&m_PrevWorldMatrix);
+    }
 
 	const _float4x4* Get_WorldMatrixPtr() {
 		return &m_WorldMatrix;
@@ -72,6 +77,8 @@ public:
 	void	Set_RotationPerSec(_float fRotationPerSec) { m_fRotationPerSec = fRotationPerSec; }
 	void	Set_SpeedPerSec(_float fSpeedPerSec) { m_fSpeedPerSec = fSpeedPerSec; }
 
+    void    Cache_PrevWorldMatrix() { m_PrevWorldMatrix = m_WorldMatrix; }
+
 public:
 	void Scale(_float3 vScale);
 	void Scaling(_float3 vScale);
@@ -88,10 +95,11 @@ public:
 	void Chase(_fvector vTargetPos, _float fTimeDelta, _float fLimit = 0.f);
 	void AI_Chase(_fvector vTargetPos, _float fTimeDelta, _float SpeedPerSec ,_float fLimit = 0.f);
 	void Look_Dir(_fvector vDir);
-	
 
 private:
 	_float4x4				m_WorldMatrix = {};
+    _float4x4				m_PrevWorldMatrix = {};
+
 	_float					m_fSpeedPerSec = {};
 	_float					m_fRotationPerSec = {};
 	_float3					m_vAngles = {};	

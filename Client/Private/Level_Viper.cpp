@@ -32,98 +32,34 @@ HRESULT CLevel_Viper::Initialize()
 
    CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
-    m_pGameInstance->Add_FireTask([this]() {
-        CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
-        CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-        if (FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Viper"))))
-            return E_FAIL;
+    CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+    CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+    if (FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Viper"))))
+        return E_FAIL;
 
-        return S_OK;
-        });
     CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
     // 우선 맵 오브젝트 서브 레벨 로드
-    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-        CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"),
-            0, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-        return S_OK;
-        }));
+    
+    CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
-    // 조명, 스카이박스 설정
-    m_pGameInstance->Add_FireTask([this]() {
+    CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
-        CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-
-        CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-
-        CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-
-        return S_OK;
-        });
+    CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
     // 맵 오브젝트 서브 레벨 로드
-    m_pGameInstance->Add_FireTask([this]() {
-        for (_uint i = 0; i < VIPER_SUBLV; ++i)
-        {
-            if (0 == i)
-                continue;
-
-            CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-        }
-
-        return S_OK;
-        });
-
-    m_pGameInstance->Add_FireTask([this]() mutable {
-        //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-        CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-        return S_OK;
-        });
-
-
+    for (_uint i = 0; i < VIPER_SUBLV; ++i)
+    {
+        CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+    }
+    //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+    CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
     CClientInstance::GetInstance()->Fade_Out();
 
-    while (true) {
-        bool all_ready = true;
-
-        for (auto it = m_futures.begin(); it != m_futures.end(); /* no ++ here */) {
-            // 1) invalid면 지워버려서 다시는 접근하지 않게
-            if (!it->valid()) {
-                it = m_futures.erase(it);
-                continue;
-            }
-
-            // 2) 아직 준비 안됐으면 플래그만 내리기
-            if (it->wait_for(0ms) != std::future_status::ready) {
-                all_ready = false;
-            }
-            ++it;
-        }
-
-        if (all_ready) break;
-        // 너무 바쁘게 돌지 않도록 살짝 양보(필요시)
-        std::this_thread::sleep_for(1ms);
-    }
-
-    bool all_ok = true;
-    for (auto& f : m_futures) {
-        if (!f.valid()) continue; // 이미 소비/무효면 스킵
-        try {
-            HRESULT hr = f.get();          // get()은 딱 한번만!
-            if (FAILED(hr)) all_ok = false;
-        }
-        catch (const std::future_error& e) {
-            // e.code()가 no_state인지, broken_promise인지 로깅
-            all_ok = false;
-        }
-        catch (...) {
-            all_ok = false;
-        }
-    }
-
+    if (!Wait_All_Futures())
+        return E_FAIL;
 
     m_futures.clear();
-
 
     CClientInstance::GetInstance()->Fade_In();
 
@@ -357,116 +293,6 @@ HRESULT CLevel_Viper::Ready_Layer_Cloud(const _wstring& strLayerTag, const _tcha
 	return S_OK;
 }
 
-HRESULT CLevel_Viper::Ready_Layer_MapObject(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
-{
-	_wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
-
-	switch (eMap)
-	{
-	case KHAZAN_MAP::HEINMACH:
-		strDataFilePath += TEXT("HeinMach/");
-		break;
-	case KHAZAN_MAP::CREVICE:
-		strDataFilePath += TEXT("Crevice/");
-		break;
-	case KHAZAN_MAP::EMBARS:
-		strDataFilePath += TEXT("Embars/");
-		break;
-	case KHAZAN_MAP::VIPER:
-		strDataFilePath += TEXT("Viper/");
-		break;
-	default:
-		break;
-	}
-
-	strDataFilePath += pDataFileName;
-
-	// 동일한 파일명의 _objects.dat 불러오기
-	strDataFilePath += TEXT("_object.dat");
-
-	DWORD dwByte = {};
-
-	HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
-
-	// 1. 오브젝트의 총 개수
-	_uint iObjectCnt = {};
-	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
-
-	// 오브젝트 총 개수만큼 순회
-	for (_uint i = 0; i < iObjectCnt; ++i)
-	{
-		CProp_Object::PROP_OBJECT_DESC ObjectDesc = {};
-
-		ObjectDesc.eLevel = eCurrentLevel;
-
-		// 2. 프로토 타입 태그 길이 불러오기
-		_uint iPrototypeTagLen = {};
-		CHECK_FALSE(ReadFile(hFile, &iPrototypeTagLen, sizeof(_uint), &dwByte, nullptr), E_FAIL);
-
-		// 3. 프로토 타입 태그 이름 불러오기
-		_tchar szPrototypeTag[MAX_PATH] = {};
-		CHECK_FALSE(ReadFile(hFile, &szPrototypeTag, sizeof(_tchar) * iPrototypeTagLen, &dwByte, nullptr), E_FAIL);
-
-		// 불러온 태그 카피
-		memcpy(ObjectDesc.szModelName, szPrototypeTag, sizeof(ObjectDesc.szModelName));
-
-		// 4. 객체당 월드 행렬 때오기
-		_float4x4 WorldMatrix = {};
-		CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), E_FAIL);
-
-		ObjectDesc.WorldMatrix = WorldMatrix;
-
-		// 5. 객체의 속성 불러오기
-		MAPOBJECT_PROPERTIES PropProperties = {};
-		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
-
-		ObjectDesc.Properties = PropProperties;
-
-		// 일단 단일 오브젝트로 배치하고 추후에 인스턴스, 인터렉티브, 다이나믹 으로 나누겠습니다.
-		//m_pGameInstance->Add_FireTask([this, objDesc = ObjectDesc, curLevel = eCurrentLevel]() mutable {
-		//	CHECK_FAILED(
-		//		m_pGameInstance->Add_GameObject_ToLayer(
-		//			ENUM_CLASS(objDesc.eLevel),
-		//			TEXT("Layer_MapObject"),
-		//			ENUM_CLASS(curLevel),
-		//			TEXT("Prototype_GameObject_Prop_Object"),
-		//			&objDesc // 캡처된 값의 주소 -> 안전
-		//		),
-		//		E_FAIL
-		//	);
-		//	});
-		m_futures.push_back(m_pGameInstance->Add_Task([this, CurLevel = eCurrentLevel, Desc = ObjectDesc, WorldMat = WorldMatrix, LayerTag = strLayerTag]() mutable {
-			lock_guard<mutex> lock(m_Mutex);
-			CGameObject* pObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(CurLevel), TEXT("Prototype_GameObject_Prop_Object"), &Desc));
-			if (!pObject)
-				return E_FAIL;
-			_bool isAdd = m_pGameInstance->AddStaticObject(pObject, { WorldMat._41, WorldMat._42, WorldMat._43 }, 3.f);
-			//Safe_Release(pObject);
-			/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(CurLevel), LayerTag,
-				ENUM_CLASS(CurLevel), TEXT("Prototype_GameObject_Prop_Object"), &Desc), E_FAIL);*/
-			if (isAdd)
-				Safe_Release(pObject);
-			else
-				return E_FAIL;
-
-
-			return S_OK;
-			}));
-		CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
-			ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
-
-		//CGameObject* pObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc));
-
-		//m_pGameInstance->AddStaticObject(pObject, { WorldMatrix._41, WorldMatrix._42, WorldMatrix._43 }, 10.f);
-
-		//Safe_Release(pObject);
-	}
-
-	CloseHandle(hFile);
-
-	return S_OK;
-}
 
 HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, const _tchar* pDataFileName, _uint iSubLV, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {
@@ -543,31 +369,23 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
 
         if (wcscmp(ObjectDesc.szModelName, L"Prototype_Component_Model_WP_TDL_Bridge_Collision_004") == 0)
         {
-            m_pGameInstance->Add_FireTask([this, CurLevel = eCurrentLevel, WMat = WorldMatrix, strLayerTag = strLayerTag, iDestIndex = iDestIndex, pSeq = pSeq]() {
+            CProp_Destructible::PROP_DEST_DESC ObeliskDesc = {};
 
-                CProp_Destructible::PROP_DEST_DESC ObeliskDesc = {};
+            ObeliskDesc.eLevel = eCurrentLevel;
 
-                ObeliskDesc.eLevel = CurLevel;
+            MAPOBJECT_PROPERTIES PropProperties4 = {};
 
-                MAPOBJECT_PROPERTIES PropProperties4 = {};
+            ObeliskDesc.Properties = PropProperties4;
+            ObeliskDesc.WorldMatrix = WorldMatrix;
+            ObeliskDesc.WorldMatrix._42 -= 400.f;
+            ObeliskDesc.iIndex = iDestIndex;
+            CObelisk* pObelisk = dynamic_cast<CObelisk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Obelisk"), &ObeliskDesc));
+            pSeq->Push_Obelisk(pObelisk);
+            m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag, pObelisk);
 
-                ObeliskDesc.Properties = PropProperties4;
-                //XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
-                //WorldMatrix._43 = 10.f;
-                ObeliskDesc.WorldMatrix = WMat;
-                ObeliskDesc.WorldMatrix._42 -= 400.f;
-                ObeliskDesc.iIndex = iDestIndex;
-                CObelisk* pObelisk = dynamic_cast<CObelisk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_Obelisk"), &ObeliskDesc));
-                pSeq->Push_Obelisk(pObelisk);
-                m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pObelisk);
-
-                if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-                    ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_Obelisk"), TIME_CHANNEL::WORLD, &ObeliskDesc)))
-                    return E_FAIL;
-
-
-
-                });
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+                ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Obelisk"), TIME_CHANNEL::WORLD, &ObeliskDesc)))
+                return E_FAIL;
 
             iDestIndex++;
 
@@ -578,38 +396,32 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
 		{
 
 			// 일단 단일 오브젝트로 배치하고 추후에 인스턴스, 인터렉티브, 다이나믹 으로 나누겠습니다.
-			m_futures.push_back(m_pGameInstance->Add_Task([this, CurLevel = eCurrentLevel, Desc = ObjectDesc, WorldMat = WorldMatrix, LayerTag = strLayerTag]() mutable {
-				lock_guard<mutex> lock(m_Mutex);
-				CGameObject* pObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(CurLevel), TEXT("Prototype_GameObject_Prop_Object"), &Desc));
-				if (!pObject)
-					return E_FAIL;
-				_bool isAdd = m_pGameInstance->AddStaticObject(pObject, { WorldMat._41, WorldMat._42, WorldMat._43 }, 3.f);
-				//Safe_Release(pObject);
-				/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(CurLevel), LayerTag,
-					ENUM_CLASS(CurLevel), TEXT("Prototype_GameObject_Prop_Object"), &Desc), E_FAIL);*/
-				if (isAdd)
-					Safe_Release(pObject);
-				else
-					return E_FAIL;
-				return S_OK;
-				}));
+			lock_guard<mutex> lock(m_Mutex);
+			CGameObject* pObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc));
+			if (!pObject)
+				return E_FAIL;
+			_bool isAdd = m_pGameInstance->AddStaticObject(pObject, { WorldMatrix._41, WorldMatrix._42, WorldMatrix._43 }, 3.f);
+			//Safe_Release(pObject);
+			/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(CurLevel), LayerTag,
+				ENUM_CLASS(CurLevel), TEXT("Prototype_GameObject_Prop_Object"), &Desc), E_FAIL);*/
+			if (isAdd)
+				Safe_Release(pObject);
+			else
+				return E_FAIL;
 		}
 		else {
-			m_pGameInstance->Add_FireTask([this, CurLevel = eCurrentLevel, Desc = ObjectDesc, WorldMat = WorldMatrix, LayerTag = strLayerTag]() mutable {
-				lock_guard<mutex> lock(m_Mutex);
-				CGameObject* pObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(CurLevel), TEXT("Prototype_GameObject_Prop_Object"), &Desc));
-				if (!pObject)
-					return E_FAIL;
-				_bool isAdd = m_pGameInstance->AddStaticObject(pObject, { WorldMat._41, WorldMat._42, WorldMat._43 }, 3.f);
-				//Safe_Release(pObject);
-				/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(CurLevel), LayerTag,
-					ENUM_CLASS(CurLevel), TEXT("Prototype_GameObject_Prop_Object"), &Desc), E_FAIL);*/
-				if (isAdd)
-					Safe_Release(pObject);
-				else
-					return E_FAIL;
-				return S_OK;
-				});
+			lock_guard<mutex> lock(m_Mutex);
+			CGameObject* pObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Object"), &ObjectDesc));
+			if (!pObject)
+				return E_FAIL;
+			_bool isAdd = m_pGameInstance->AddStaticObject(pObject, { WorldMatrix._41, WorldMatrix._42, WorldMatrix._43 }, 3.f);
+			//Safe_Release(pObject);
+			/*CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(CurLevel), LayerTag,
+				ENUM_CLASS(CurLevel), TEXT("Prototype_GameObject_Prop_Object"), &Desc), E_FAIL);*/
+			if (isAdd)
+				Safe_Release(pObject);
+			else
+				return E_FAIL;
 		}
 
 	}
@@ -1014,6 +826,20 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, con
 
 HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
 {
+    // CMonster::MONSTER_DESC MonsterDesc{};
+    // MonsterDesc.fAttack = 10.f;
+    // MonsterDesc.fMaxHP = 100.f;
+    // MonsterDesc.fMaxStamina = 100.f;
+    // MonsterDesc.fMoveSpeed = 10.f;
+    // MonsterDesc.fSpeedPerSec = 3.f;
+    // MonsterDesc.fRotationPerSec = 180.f;
+    // XMStoreFloat4x4(&MonsterDesc.WorldMatrix,XMMatrixIdentity());
+    // MonsterDesc.strName = "Viper";
+    // MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
+    // if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
+    //     ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Viper"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+    //     return E_FAIL; 
+
     //CMonster::MONSTER_DESC MonsterDesc{};
     //MonsterDesc.fAttack = 10.f;
     //MonsterDesc.fMaxHP = 100.f;
@@ -1021,33 +847,18 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
     //MonsterDesc.fMoveSpeed = 10.f;
     //MonsterDesc.fSpeedPerSec = 3.f;
     //MonsterDesc.fRotationPerSec = 180.f;
-    //XMStoreFloat4x4(&MonsterDesc.WorldMatrix,XMMatrixIdentity());
-    //MonsterDesc.strName = "Viper";
+
+    //XMStoreFloat4x4(&MonsterDesc.WorldMatrix, XMMatrixIdentity());
+    //MonsterDesc.strName = "Dragonian_Melee";
     //MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
+
     //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-    //    ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Viper"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-    //    return E_FAIL; 
+    //    ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+    //    return E_FAIL;
+	// ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+	// return E_FAIL;
 
     CMonster::MONSTER_DESC MonsterDesc{};
-    MonsterDesc.fAttack = 10.f;
-    MonsterDesc.fMaxHP = 100.f;
-    MonsterDesc.fMaxStamina = 100.f;
-    MonsterDesc.fMoveSpeed = 10.f;
-    MonsterDesc.fSpeedPerSec = 3.f;
-    MonsterDesc.fRotationPerSec = 180.f;
-
-    XMStoreFloat4x4(&MonsterDesc.WorldMatrix, XMMatrixIdentity());
-    MonsterDesc.WorldMatrix.m[3][0] = -32.365f;   
-    MonsterDesc.WorldMatrix.m[3][1] = -29.5f;
-    MonsterDesc.WorldMatrix.m[3][2] = 198.409f;
-
-    MonsterDesc.strName = "Dragonian_Melee";
-    MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
-
-    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-        ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-        return E_FAIL;
-
     MonsterDesc.fAttack = 10.f;
     MonsterDesc.fMaxHP = 100.f;
     MonsterDesc.fMaxStamina = 100.f;
@@ -1066,7 +877,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
         ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
         return E_FAIL;
-    return S_OK;
+
     return S_OK;
 }
 
@@ -1104,7 +915,30 @@ HRESULT CLevel_Viper::Ready_Sequence()
     return S_OK;
 }
 
+_bool CLevel_Viper::Wait_All_Futures()
+{
+    bool all_ok = true;
 
+    for (auto& f : m_futures)
+    {
+        if (!f.valid())
+            continue;
+
+        try
+        {
+            const HRESULT hr = f.get(); // 딱 1번만
+            if (FAILED(hr))
+                all_ok = false;
+        }
+        catch (...)
+        {
+            all_ok = false;
+        }
+    }
+
+    m_futures.clear();
+    return all_ok;
+}
 
 CLevel_Viper* CLevel_Viper::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

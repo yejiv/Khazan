@@ -31,13 +31,13 @@ void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& 
 
 	if (Layer == nullptr)
 	{
-		//MSG_BOX(TEXT("Effect Layer ?놁쓬. ?놁쑝硫??덈릺?붾뜲?"));
+		//MSG_BOX(TEXT("Effect Layer NULL"));
 		return;
 	}
 
 	if (Pool == nullptr)
 	{
-		//MSG_BOX(TEXT("Effect Pool ?놁쓬. ?놁쑝硫??덈릺?붾뜲?"));
+		//MSG_BOX(TEXT("Effect Pool NULL"));
 		return;
 	}
 
@@ -47,7 +47,7 @@ void CEffect_Manager::Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& 
 
 		if (effect == nullptr)
 		{
-			//MSG_BOX(TEXT("EFFECT :: "));
+			//MSG_BOX(TEXT("EFFECT ::NULL"));
 			return;
 		}
 
@@ -110,7 +110,7 @@ void CEffect_Manager::Update_Effect_Position(_uint iLayerLevelIndex, const _wstr
 {
 	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
 
-    if (nullptr == Layer || nullptr ==  (*Layer)[ID])
+    if (nullptr == Layer || Layer->size() <= ID || nullptr == (*Layer)[ID])
         return;
 
 	(*Layer)[ID]->UpdatePosition(SpwanPos);
@@ -120,7 +120,7 @@ void CEffect_Manager::Update_Effect_World(_uint iLayerLevelIndex, const _wstring
 {
 	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
 
-    if (nullptr == Layer || nullptr == (*Layer)[ID])
+    if (nullptr == Layer || Layer->size() <= ID || nullptr == (*Layer)[ID])
         return;
 
 	(*Layer)[ID]->UpdateWorldMatrix(Quaternion, Position); 
@@ -130,7 +130,7 @@ void CEffect_Manager::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPro
 {
 	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
 
-    if (nullptr == Layer || nullptr == (*Layer)[ID])
+    if (nullptr == Layer || Layer->size() <= ID || nullptr == (*Layer)[ID])
         return;
 
 	(*Layer)[ID]->SetClose();

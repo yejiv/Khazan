@@ -54,7 +54,7 @@ void CLevel_Title::Update(_float fTimeDelta)
 	}
 	if (m_eNextLevel != LEVEL::END)
 	{
-        m_pGameInstance->StopAll();
+        //m_pGameInstance->StopAll();
 		if (!m_isOpenLevel) {
             m_pGameInstance->StopAll();
 			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel))))
