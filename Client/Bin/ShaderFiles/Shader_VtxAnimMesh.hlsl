@@ -215,7 +215,7 @@ PS_OUT PS_MAIN(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
     Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
-    Out.vSpecular.a = 1.f;
+    Out.vSpecular.a = 0.f;
     //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
     // Test
@@ -415,6 +415,15 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
     if (IsFlag(M_METALIC))
     {
         vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+        //  float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMtrlMetalic.r);
+        //  float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMtrlMetalic.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+        
+        float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMtrlMetalic.r);
+        float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMtrlMetalic.g);
+        
+        Out.vDiffuse *= fEdgeMask;
+        Out.vDiffuse *= fShadeMask;
     }
     
     vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
@@ -426,6 +435,7 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
     //  Out.vDiffuse = vMtrlDiffuse * vMtrlSpecular * g_fEmissiveIntensity;
     vMtrlDiffuse.g = 0.f;
     Out.vDiffuse = lerp(vMtrlDiffuse, vMtrlSpecular, g_fColorRatio) * g_fEmissiveIntensity;
+    //  Out.vDiffuse = vMtrlMetalic;
     // Out.vDiffuse = vMtrlSpecular * 10.f;
     
     Out.vNormal = vector(vMtrlNormal);
@@ -487,8 +497,9 @@ PS_OUT PS_MAP_ANIM(PS_IN In)
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
-    //Out.vSpecular = vMtrlSpecular;
-    //Out.vEmissive = vMtrlEmissive;
+    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.a = 0.f;
+    Out.vEmissive = vMtrlEmissive;
 
     return Out;
 }

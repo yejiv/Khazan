@@ -97,7 +97,7 @@ PS_OUT_LIGHT PS_DIRECTIONAL(PS_IN In)
     
     if (g_isEnableSSAO)
     {
-        float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
+        float fAO = g_SSAOTexture.Sample(PointClampSampler, In.vTexcoord).r;
         fToonShade *= fAO;
         fLightIntensity *= fAO;
         fAmbient *= fAO;
@@ -174,7 +174,7 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     
     if (g_isEnableSSAO)
     {
-        float fAO = g_SSAOTexture.Sample(PointSampler, In.vTexcoord).r;
+        float fAO = g_SSAOTexture.Sample(PointClampSampler, In.vTexcoord).r;
         fToonShade *= fAO;
         fLightIntensity *= fAO;
         fAmbient *= fAO;
@@ -367,7 +367,7 @@ PS_OUT_SSAO PS_SSAO(PS_IN In)
     vRandomVector = normalize(vRandomVector);
     
     // View Space Normal
-    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(PointClampSampler, In.vTexcoord);
     
     if (vNormalDesc.w >= 1.f)
         discard;
@@ -382,7 +382,7 @@ PS_OUT_SSAO PS_SSAO(PS_IN In)
     float3x3 TBNMatrix = float3x3(vTangent, vBinormal, vNormal);
     
     // Depth
-    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vDepthDesc = g_DepthTexture.Sample(PointClampSampler, In.vTexcoord);
 
     float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
     
@@ -404,7 +404,7 @@ PS_OUT_SSAO PS_SSAO(PS_IN In)
 
         float2 vSampleTexcoord = Compute_Texcoord_FromProjPos(vProjSamplePos.xy);
         
-        float fSampleDepth = g_DepthTexture.Sample(PointSampler, vSampleTexcoord).y;
+        float fSampleDepth = g_DepthTexture.Sample(PointClampSampler, vSampleTexcoord).y;
 
         float fRangeLerp = smoothstep(0.f, 1.f, g_fSSAORadius / abs(vViewPos.z - fSampleDepth));
 
