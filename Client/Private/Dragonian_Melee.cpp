@@ -317,15 +317,12 @@ CGameObject* CDragonian_Melee::Clone(void* pArg)
 
 void CDragonian_Melee::Free()
 {
-<<<<<<< HEAD
     if (m_pUI_HP != nullptr)
     {
         m_pUI_HP->Set_IsDead(true);
     }
     Safe_Release(m_Data.pOwner);
-=======
-    Safe_Release(m_pUI_HP);
->>>>>>> feature/kbs
+
     
     __super::Free();
     Safe_Release(m_pBody);

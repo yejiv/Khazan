@@ -120,6 +120,9 @@ void CBody_Khazan_GS::Late_Update(_float fTimeDelta)
 
     m_pTrail->Late_Update(fTimeDelta);
 
+    //test
+    //if (m_pGameInstance->Key_Down(DIK_L) && m_pGameInstance->Key_Down(DIK_K))
+    //    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);
 }
 
 HRESULT CBody_Khazan_GS::Render()
@@ -479,7 +482,7 @@ void CBody_Khazan_GS::Event_AttackTiming(_bool isAttackStart)
 {
     if (isAttackStart)
     {
-        m_isSpearTipActive = true;
+        //m_isSpearTipActive = true;
         m_isSpearFullExtension = false;
         m_iCurSetAnimIndex = m_pModelCom->Get_CurAnimIndex();
         m_pBodyCom_Attack->Collision_Active(true);
@@ -487,7 +490,7 @@ void CBody_Khazan_GS::Event_AttackTiming(_bool isAttackStart)
     }
     else
     {
-        m_isSpearTipActive = false;
+        //m_isSpearTipActive = false;
         m_isSpearFullExtension = true;
         // m_pBodyCom_Attack->Collision_Active(false);
         // m_pBodyCom_BodyAttack->Collision_Active(false);
@@ -545,7 +548,7 @@ void CBody_Khazan_GS::Update_Colliders(_float fTimeDelta)
 
 void CBody_Khazan_GS::Check_Guarding(_float fTimeDelta)
 {
-    if (m_isSpearPoleActive)
+    /*if (m_isSpearPoleActive)
         m_fJustGuardTime.x += fTimeDelta;
 
     if (*m_pIsGuarding == true && !m_isSpearPoleActive) {
@@ -557,7 +560,7 @@ void CBody_Khazan_GS::Check_Guarding(_float fTimeDelta)
     if (*m_pIsGuarding == false && m_isSpearPoleActive) {
 
         m_isSpearPoleActive = false;
-    }
+    }*/
 }
 
 void CBody_Khazan_GS::Update_GuardRotation(_float fTimeDelta)
@@ -833,9 +836,36 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
 }
 
 HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
-{
-
+{ 
 #pragma region Effect
+    m_pModelCom->Register_Event("GS_WeakAtk01_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust"), m_pParentTransform->Get_State(STATE::POSITION));
+        });
+
+    m_pModelCom->Register_Event("GS_WeakAtk01_Charge_Ground", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("FerociousMomentum0"), m_pParentTransform->Get_State(STATE::POSITION));
+        });
+
+    m_pModelCom->Register_Event("GS_WeakAtk02_SowardFX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_iFXIdx_Spining = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]); 
+        _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody)); 
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger1"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+        });
+
+    m_pModelCom->Register_Event("GS_WeakAtk02_SowardFX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody));
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), m_iFXIdx_Spining, rot, XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]); 
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]); 
+        });
+
+    m_pModelCom->Register_Event("GS_WeakAtk02_SowardFX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), m_iFXIdx_Spining);
+        });
+
+    m_pModelCom->Register_Event("GS_WeakAtk02_BloodTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Trail"), m_pParentTransform->Get_State(STATE::POSITION));
+        });
+
 
 #pragma endregion
 
@@ -851,6 +881,29 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
 #pragma endregion
 
     return S_OK;
+}
+
+_vector CBody_Khazan_GS::Decompose_Rotation(_matrix W, _vector offset)
+{
+    _vector S, Q, T;
+
+    if (!XMMatrixDecompose(&S, &Q, &T, W))
+    {
+        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
+        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+
+        _matrix RotationMatrix(
+            r0,
+            r1,
+            r2,
+            offset
+        );
+        Q = XMQuaternionRotationMatrix(RotationMatrix);
+    }
+
+    return Q;
 }
 
 CBody_Khazan_GS* CBody_Khazan_GS::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

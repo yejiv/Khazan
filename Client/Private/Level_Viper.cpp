@@ -151,6 +151,8 @@ HRESULT CLevel_Viper::Ready_Layer_Camera(const _wstring& strLayerTag)
     static_cast<CKhazan_Spear*>(pPlayer)->Set_Camera(pCamera_Player);
 
 	m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::PLAYER));
+
+    return S_OK;
 }
 
 HRESULT CLevel_Viper::Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
@@ -820,7 +822,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
          ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Viper"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
          return E_FAIL; 
 
-    CMonster::MONSTER_DESC MonsterDesc{};
+    //CMonster::MONSTER_DESC MonsterDesc{};
     //MonsterDesc.fAttack = 10.f;
     //MonsterDesc.fMaxHP = 100.f;
     //MonsterDesc.fMaxStamina = 100.f;
