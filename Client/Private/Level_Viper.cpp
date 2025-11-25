@@ -154,6 +154,8 @@ HRESULT CLevel_Viper::Ready_Layer_Camera(const _wstring& strLayerTag)
 
     m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pCamera_Player);
 
+    m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::PLAYER));
+
     return S_OK;
 }
 
