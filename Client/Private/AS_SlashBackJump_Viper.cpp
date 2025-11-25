@@ -4,7 +4,7 @@
 #include "BlackBoard.h"
 #include "AI_Controller.h"
 #include "GameInstance.h"
-
+#include "FSM_Viper.h"
 
 CAS_SlashBackJump_Viper::CAS_SlashBackJump_Viper()
 {
@@ -54,12 +54,30 @@ void CAS_SlashBackJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _
     if (pModel->Play_Animation(fTimeDelta))
     {
         pViper->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pViper->Get_Name(), "isP1_SlashBackJumpFinished", true);
+        pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pOwner);
     }
 
 }
 
 void CAS_SlashBackJump_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+}
+
+void CAS_SlashBackJump_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        if (nullptr == pOwnerTransform)
+            return;
+
+        _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+        pTarget->KnockBack(vLook, 20.f, 60.f);
+    }
 }
 
 CAS_SlashBackJump_Viper* CAS_SlashBackJump_Viper::Create()

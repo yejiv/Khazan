@@ -170,6 +170,7 @@ _uint CModel::Get_BoneIndex(const _char* pBoneName)
 _float4x4* CModel::Get_BoneMatrix(const _char* pBoneName)
 {
     auto    iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone) {
+       
         if (true == pBone->Compare_Name(pBoneName))
             return true;
         return false;
@@ -353,7 +354,7 @@ _bool CModel::Play_Animation(_float fTimeDelta)
     /* 파츠들은 애니메이션 안돌림 */
     //if (m_pMasterSkeleton != nullptr )
     //    return false;
-
+    m_isAnimStart = true;
     m_isFinished = false;
 
     /* 애니메이션 세트  */
@@ -374,6 +375,10 @@ _bool CModel::Play_Animation(_float fTimeDelta)
         Remove_State(CHANGE_ANIMATION);
         Add_State(FIRST_FRAME_ANIMATION);
     }
+    //if (sdfsdfsdfsd) { 
+    //    m_Animations[m_iCurrentAnimIndex]->OnAnimationBlend(move(m_Animations[m_iPrevAnimIndex]->Get_ChannelMatrices()));
+    //    Add_State(FIRST_FRAME_ANIMATION);
+    //}
 
     m_fPrevTrackPosition = m_fCurrentTrackPosition;
 
@@ -564,9 +569,12 @@ void CModel::Set_Animation(_uint iIndex)
     /* 이벤트 설정 */
     Setup_Events();
 
+    m_isAnimStart = false; 
 
-    if (m_strModelName == L"Khazan_Spear")
-        cout << m_iCurrentAnimIndex << " : " << Get_CurAnimName() << endl;
+    if (m_strModelName == L"Khazan_Spear" || m_strModelName == L"Khazan_GSword") {
+        cout << m_iCurrentAnimIndex << " : " << Get_CurAnimName() <<  endl;
+
+    }
 }
 
 void CModel::Set_AnimationSet(const string& strKey)
@@ -610,8 +618,11 @@ void CModel::Set_AnimationLoop(_bool isLoop)
 
 _bool CModel::Check_MinAnimationTime()
 {
-    if (m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime < 1.f)
+ 
+    if (m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime < 1.f )
         return true;
+    //if (m_fCurrentTrackPosition >= m_Animations[m_iCurrentAnimIndex]->Get_Duration())
+    //    return false;
     return m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime <= m_fCurrentTrackPosition;
 }
 
@@ -624,6 +635,13 @@ void CModel::AnimationSetIndexIncrease()
     {
         Remove_State(ANIMSET_PLAYING | ANIMSET_NEXT);
     }
+}
+
+void CModel::AnimationLoop(_bool isLoop)
+{
+    Add_State(USED_ANIM_LOOP);
+    
+    isLoop ? Add_State(ANIM_LOOP) : Remove_State(ANIM_LOOP);
 }
 
 

@@ -17,7 +17,7 @@ void CAS_Devour_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
 
-    m_fMinRange = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange") + 10.f;
+    m_fMinRange = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange") - 10.f;
     m_fMaxRange = m_fMinRange + 400.f;
     m_fMinSpeed = 5.f;
     m_fMaxSpeed = 30.f;
@@ -27,6 +27,9 @@ void CAS_Devour_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAS_Devour_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
+
+    m_fDevourAcc += fTimeDelta;
+
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
@@ -45,6 +48,17 @@ void CAS_Devour_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
 
         _float fSpeed = MakeDevourSpeed(fDist);
 
+        if (m_fDevourAcc >= 0.1f)
+        {
+            if (fDist < m_fMinRange + 10)
+            {
+                CCreature* pDamagedTarget = static_cast<CCreature*>(pTarget);
+                pDamagedTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+                m_fDevourAcc = 0.f;
+            }
+        }
+
+        
         _vector vNewPos = vTargetPos + (vDirection * fSpeed * fTimeDelta);
         pTargetTransform->Set_State(STATE::POSITION, vNewPos);
 

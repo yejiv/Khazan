@@ -26,7 +26,7 @@ public:
 
 private:
     CSlate_Switch(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CSlate_Switch(const CPartObject& Prototype);
+    CSlate_Switch(const CSlate_Switch& Prototype);
     virtual ~CSlate_Switch() = default;
 
 public:

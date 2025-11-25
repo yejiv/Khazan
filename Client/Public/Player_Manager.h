@@ -35,10 +35,14 @@ public:
     _bool						Add_SkillPoint(_int iPoint);            //스킬 포인트 사용/획득
 
     /* 조작키 관련 */
+    /* Spear : iWeapon == 0  */
+    /* GSword : iWeapon == 1  */
     void                        BindSkillToButton(CONTROL_BUTTON eButton, _uint iSkill);    //버튼에 스킬을 바인딩
     void                        UnBindSkillToButton(CONTROL_BUTTON eButton);                //버튼에 스킬을 언바인딩 
     _uint                       Get_ButtonSkill(CONTROL_BUTTON eButton);    //해당 키에 스킬이 없으면 반환값 0
-    void                        Set_UsedSkill(_uint iSkill, _bool isUsed);  //플레이어에서 갱신해드림!
+    void                        Set_UsedSkill(_uint iSkill, _bool isUsed);  //플레이어에서 갱신해드림! 스킬 사용시
+    void                        Set_UsedSkills(_uint iSkill, _bool isUsed);  //플레이어에서 갱신해드림! 여러 스킬 사용시
+    void                        Set_UnUsedAllSkills();                      //플레이어 사용되고 있는 모든 스킬 해제
     _bool                       Is_UsedSkill(_uint iSkill);                 //어떤 스킬이 사용됐는지
 
 public:
@@ -47,9 +51,13 @@ public:
 private:
     PLAYER_DATA					            m_Data = {};
     /* 조작키 관련 */
-    unordered_map<CONTROL_BUTTON, _uint>    m_ButtonToSkill;
-    vector<_bool>                           m_UsedSkill;
-    const   _uint                           m_iSpearSkillMaxIndex = { GetBitPosition(CPlayerData_Manager::SPEAR_END) };
+    unordered_map<CONTROL_BUTTON, _uint>    m_ButtonToSpearSkill;
+    vector<_bool>                           m_UsedSpearSkill;
+
+    unordered_map<CONTROL_BUTTON, _uint>    m_ButtonToGSwordSkill;
+    vector<_bool>                           m_UsedGSwordSkill;
+
+    class CClientInstance*                   m_pClientInstance = { nullptr };
 
 public:
 	static CPlayer_Manager*		Create();

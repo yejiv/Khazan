@@ -459,10 +459,6 @@ void CLever::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer)
     m_isCollision = false;
 }
 
-void CLever::Emit_LeverEvent()
-{
-}
-
 CLever* CLever::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CLever* pInstance = new CLever(pDevice, pContext);

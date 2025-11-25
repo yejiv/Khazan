@@ -23,7 +23,7 @@ public:
 
 private:
     CLadder_Top(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CLadder_Top(const CPartObject& Prototype);
+    CLadder_Top(const CLadder_Top& Prototype);
     virtual ~CLadder_Top() = default;
 
 public:

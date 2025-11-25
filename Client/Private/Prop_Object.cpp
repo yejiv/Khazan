@@ -234,33 +234,47 @@ HRESULT CProp_Object::Bind_DeferredShaderResources()
 
 HRESULT CProp_Object::Bind_Materials(_uint iMeshIndex)
 {
-    _bool isDiffuse = { false };
-    _bool isNormal = { false };
-    _bool isEmissive = { false };
-    _bool isSpecular = { false };
+    m_iMtrlFlags = 0;
 
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
-        isDiffuse = true;
+        m_iMtrlFlags |= M_DIFFUSE;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
-        isNormal = true;
+        m_iMtrlFlags |= M_NORMAL;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
-        isEmissive = true;
+        m_iMtrlFlags |= M_EMISSIVE;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
-        isSpecular = true;
+        m_iMtrlFlags |= M_SPECULAR;
 
-    isSpecular = false;
-    isEmissive = false;
+    m_iMtrlFlags &= ~M_EMISSIVE;
+    m_iMtrlFlags &= ~M_SPECULAR;
 
-    m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 
     return S_OK;
 }
 
 HRESULT CProp_Object::Deferred_Bind_Materials(_uint iMeshIndex)
 {
+    m_iMtrlFlags = 0;
+
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pDeferredShader, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+        m_iMtrlFlags |= M_DIFFUSE;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pDeferredShader, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
+        m_iMtrlFlags |= M_NORMAL;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pDeferredShader, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
+        m_iMtrlFlags |= M_EMISSIVE;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pDeferredShader, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
+        m_iMtrlFlags |= M_SPECULAR;
+
+    m_iMtrlFlags &= ~M_EMISSIVE;
+    m_iMtrlFlags &= ~M_SPECULAR;
+
+    m_pDeferredShader->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
+
+    return S_OK;
+
+#pragma region 기존
+    /*
     _bool isDiffuse = { false };
     _bool isNormal = { false };
     _bool isEmissive = { false };
@@ -284,6 +298,8 @@ HRESULT CProp_Object::Deferred_Bind_Materials(_uint iMeshIndex)
     m_pDeferredShader->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
 
     return S_OK;
+    */
+#pragma endregion
 }
 
 CProp_Object* CProp_Object::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

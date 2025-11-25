@@ -113,14 +113,16 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
 
 void CCamera_Compre::Priority_Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
+    {
+        m_isAniFix = false;
+    }
 
     if (m_fStartTime < 2.f)
     {
         m_fStartTime += fTimeDelta;
         m_pTransformCom->LookAt(XMLoadFloat4(&m_vAt));
     }
-
-    
     if (!m_isCollTime)
     {
         m_fCollTime += fTimeDelta;
@@ -133,9 +135,19 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
     if (!m_isActive)
         return;
 
+
+
+    //======================================================================================================
+
+
+
     if (m_isAnimation)
     {
         __super::Play_Animation(fTimeDelta);
+    }
+    else if (m_isAniFix && !m_isAnimation)
+    {
+
     }
     else
     {
@@ -183,8 +195,15 @@ void CCamera_Compre::Update(_float fTimeDelta)
     {
         if (!m_isPostFrameHold && !m_isPostForceFrameRight)
         {
+            if (m_isAnimation || m_isAniFix || m_isBlendBack ||
+                m_isForceOrbit || m_isYetuga_Holding ||
+                m_isPostForceFrameRight || m_isPostFrameHold)
+            {
+                return;
+            }
+
             m_pBody->Update(fTimeDelta, m_pTransformCom);
-            //m_pBody->Sync_Update(m_pTransformCom);
+            m_pBody->Sync_Update(m_pTransformCom);
         }
         
     }
@@ -249,6 +268,11 @@ void CCamera_Compre::Update_Spring(_float fTimeDelta)
 
     Spring(fTimeDelta);
     RayCast(fTimeDelta);
+}
+
+void CCamera_Compre::Switch_CameraMode(CAMERATYPE eType)
+{
+    m_iCameraType = ENUM_CLASS(eType);
 }
 
 HRESULT CCamera_Compre::Ready_Camera(void* pArg)

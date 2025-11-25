@@ -34,7 +34,7 @@ public:
 private:
     ANIM_STATE m_eAnimState = { ANIM_STATE::IDLE1 };
 
-    EventVerticalGate m_EventVTGate = {};
+    EventGimmick m_EventGimmick = {};
 
     _bool m_isUnLock = { false };
 

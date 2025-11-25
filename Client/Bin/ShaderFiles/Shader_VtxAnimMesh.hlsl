@@ -1,5 +1,19 @@
 #include "Engine_Shader_Defines.hlsli"
 
+unsigned int g_MtrlFlags = { 0 };
+
+bool IsFlag(unsigned int iMask)
+{
+    return (g_MtrlFlags & iMask) != 0;
+}
+
+static const unsigned int M_DIFFUSE       = (1 << 0);
+static const unsigned int M_NORMAL        = (1 << 1);
+static const unsigned int M_EMISSIVE      = (1 << 2);
+static const unsigned int M_SPECULAR      = (1 << 3);
+static const unsigned int M_METALIC       = (1 << 4);
+static const unsigned int M_ROUGHNESS     = (1 << 5);
+
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 matrix g_LightViewMatrix, g_LightProjMatrix;
@@ -364,13 +378,15 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
 
     if (vMtrlDiffuse.a < 0.3f)
         discard;
     
     vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
-    if (true == g_isNormal)
+    if (IsFlag(M_NORMAL))
     {
         vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
         
@@ -383,20 +399,20 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
     }
     
     vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
-    if (true == g_isEmissive)
+    if (IsFlag(M_EMISSIVE))
     {
         vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     }
     
     vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
-    if (true == g_isSpecular)
+    if (IsFlag(M_SPECULAR))
     {
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
         vMtrlSpecular.a = 0.f;
     }
     
     vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
-    if (true == g_isMetalic)
+    if (IsFlag(M_METALIC))
     {
         vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
         
@@ -411,7 +427,7 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
     }
     
     vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
-    if (true == g_isRoughness)
+    if (IsFlag(M_ROUGHNESS))
     {
         vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
     }
@@ -436,13 +452,15 @@ PS_OUT PS_MAP_ANIM(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
 
     if (vMtrlDiffuse.a < 0.3f)
         discard;
     
     vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
-    if (true == g_isNormal)
+    if (IsFlag(M_NORMAL))
     {
         vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     }
@@ -452,25 +470,25 @@ PS_OUT PS_MAP_ANIM(PS_IN In)
     vNormal = normalize(mul(vNormal, WorldMatrix));
     
     vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
-    if (true == g_isEmissive)
+    if (IsFlag(M_EMISSIVE))
     {
         vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     }
     
     vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
-    if (true == g_isSpecular)
+    if (IsFlag(M_SPECULAR))
     {
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     }
     
     vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
-    if (true == g_isMetalic)
+    if (IsFlag(M_METALIC))
     {
         vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
     }
     
     vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
-    if (true == g_isRoughness)
+    if (IsFlag(M_ROUGHNESS))
     {
         vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
     }

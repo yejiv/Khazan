@@ -43,6 +43,7 @@ using WEA_C = CKhazan_Spear_ASMachine::WEAPONCHANGE;
 using HOL = CKhazan_Spear_ASMachine::HOLD;
 using DAM = CKhazan_Spear_ASMachine::DAMAGED;
 using CONTROL_BUTTON = CPlayer_Manager::CONTROL_BUTTON;
+using GS_SKILL = CPlayerData_Manager::GSWORDSKILL;
 
 
 CKhazan_GSword::CKhazan_GSword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -102,25 +103,29 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
 
     m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
     m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
-    Add_Status(BAREHAND);
-    //Add_Status(GSWORD);
+    //Add_Status(BAREHAND);
+    Add_Status(GSWORD);
 
-    m_iStopMoveIndexTable[0] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Walk_Stop_F_RF");
-    m_iStopMoveIndexTable[1] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Run_Stop_F_RF");
-    m_iStopMoveIndexTable[2] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Walk_Stop_F_LF");
+    //m_iStopMoveIndexTable[0] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Walk_Stop_F_RF");
+    m_iStopMoveIndexTable[0] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Walk_Stop_F_RF");
+    m_iStopMoveIndexTable[1] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Walk_Stop_F_RF");
+    //m_iStopMoveIndexTable[2] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Walk_Stop_F_LF");
+    m_iStopMoveIndexTable[2] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Walk_Stop_F_LF");
     m_iStopMoveIndexTable[3] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Walk_Stop_F_LF");
-    m_iStopMoveIndexTable[4] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Run_Stop_F_RF");
+    //m_iStopMoveIndexTable[4] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Run_Stop_F_RF");
+    m_iStopMoveIndexTable[4] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Run_Stop_F_RF");
     m_iStopMoveIndexTable[5] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Run_Stop_F_RF");
-    m_iStopMoveIndexTable[6] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Run_Stop_F_LF");
+    //m_iStopMoveIndexTable[6] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Run_Stop_F_LF");
+    m_iStopMoveIndexTable[6] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Run_Stop_F_LF");
     m_iStopMoveIndexTable[7] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Run_Stop_F_LF");
-    m_iStopMoveIndexTable[8] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Sprint_Stop_F");
+    m_iStopMoveIndexTable[8] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_Stop_F");
+    m_iStopMoveIndexTable[9] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Sprint_Stop_F");
 
 
-    /* 플레이어 데이터 연결  */
-    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();
-
+    /* 기본셋팅  */
+    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();  //플레이어 데이터 연결
+    m_pClientInstance->UsedGSword();
     m_pGSword->Set_Enble(true);
-
     m_strName = "Khazan";
 
     m_EffectTimeDelta = 0.f;
@@ -160,7 +165,7 @@ void CKhazan_GSword::Update(_float fTimeDelta)
             _bool isPicked = m_pGameInstance->isPicked(&vPickedPos);
             if (true == isPicked)
             {
-                m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
+                m_pCharVirCom->Set_Position(XMVectorSet(vPickedPos.x, vPickedPos.y, vPickedPos.z, 1.f));
                 m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));
             }
         }
@@ -189,18 +194,6 @@ void CKhazan_GSword::Update(_float fTimeDelta)
     }
 
     __super::Update(fTimeDelta);
-
-   //XMStoreFloat4x4(&m_pGSword_WorldMatrix, m_Offset_Matrix * XMLoadFloat4x4(m_pGSword_Matrix) * m_pTransformCom->Get_WorldMatrix());
-
-
-    //if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
-    //{
-    //    m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_On"));
-    //}
-    //if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
-    //{
-    //    m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_Off"));
-    //}
 
     if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH) && m_EventInteract.isInCave() == false)
     {
@@ -342,7 +335,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         Clear_CycleState();
         Clear_SubState();
         Clear_State();
-        Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | SPRINT_AGAIN_REQUEST | READY_ASSAULT);
+        Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_FAST_ATTACK | SPRINT_AGAIN_REQUEST | CHARGING_STRONG_ATTACK);
         m_eDir.iDirFlag = 0;
         // m_eWorldDir.iDirFlag = 0;
         cout << "        KNOCKBACK_WEAK    " << endl;
@@ -360,7 +353,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         Clear_CycleState();
         Clear_SubState();
         Clear_State();
-        Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | SPRINT_AGAIN_REQUEST | READY_ASSAULT);
+        Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_FAST_ATTACK | SPRINT_AGAIN_REQUEST | CHARGING_STRONG_ATTACK);
         m_eDir.iDirFlag = 0;
         // m_eWorldDir.iDirFlag = 0;
 
@@ -377,7 +370,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         Clear_CycleState();
         Clear_SubState();
         Clear_State();
-        Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | SPRINT_AGAIN_REQUEST | READY_ASSAULT);
+        Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_FAST_ATTACK | SPRINT_AGAIN_REQUEST | CHARGING_STRONG_ATTACK);
         m_eDir.iDirFlag = 0;
         // m_eWorldDir.iDirFlag = 0;
 
@@ -490,6 +483,12 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
         return;  // 대미지 중에는 다른 모든 처리 차단
     }
 
+    /* 닷지만 따로 체크 */
+    if (Has_Status(DODGING) && m_pBody->Get_Model()->Check_MinAnimationTime())
+    {
+        Remove_Status(DODGING);
+    }
+
     /* 키 입력 */
     if (m_pClientInstance->Get_PlayerInput())
     {
@@ -511,8 +510,10 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
 
         if (Has_State(CAT::M_ATTACK | CAT::M_SKILL))
         {
-            if (Has_State(CAT::M_MOVE)) Clear_Step2();
-            if (Has_Status(LOCKON)) LockOn_Rotation(fTimeDelta);
+            if (Has_State(CAT::M_MOVE))
+                Clear_Step2();
+            if (Has_Status(LOCKON)) 
+                LockOn_Rotation(fTimeDelta);
         }
 
         if (Has_Status(GUARD_ROTATION_REQUEST)) Setting_Guard_Rotation();
@@ -534,11 +535,11 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
         Change_MoveIdle(fTimeDelta);
 
     /* 실제 이동값 주기 */
-    if (Has_State(CAT::M_MOVE | CAT::M_GUARD) &&
-        !Has_State(CAT::M_ATTACK | CAT::M_SKILL | CAT::M_DAMAGED | CAT::M_INTERACT) &&
-        !Has_SubState(MOV::MOVE_DODGE) &&
-        !m_pAnimMove->IsDodge() &&
-        !m_pAnimAttack->Is_Attacking())
+    if (Has_State(CAT::M_MOVE | CAT::M_GUARD)
+         && !Has_State(CAT::M_ATTACK | CAT::M_SKILL | CAT::M_DAMAGED | CAT::M_INTERACT)
+         && !Has_SubState(MOV::MOVE_DODGE) 
+         && !m_pAnimMove->IsDodge()
+         && !m_pAnimAttack->Is_Attacking())
     {
         Apply_PlayerMovement(fTimeDelta);
     }
@@ -621,7 +622,7 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
             if (!m_pAnimAttack->Is_Attacking())
             {
                 Remove_State(CAT::M_ATTACK);
-                Remove_Status(CHARGING_STRONG_ATTACK);
+                Remove_Status(CHARGING_FAST_ATTACK | CHARGING_STRONG_ATTACK);
                 Clear_SubState();
 
                 if (m_eDir.iDirFlag > 0)
@@ -710,14 +711,15 @@ _bool CKhazan_GSword::Fall_Input(_float fTimeDelta)
 
 void CKhazan_GSword::Move_Input(_float fTimeDelta)
 {
-    /*  공격중 닷지는 예외 처리*/
+    /*  공격중 닷지는 예외 처리 (공격중 빠른 타이밍에 닷지할 수 있도록) */
     if (m_pGameInstance->Key_Down(DIK_SPACE) &&/* m_pBody->Is_SpearFullExtension() &&*/ Has_State(CAT::M_ATTACK | CAT::M_SKILL))  // zzzz
     {
         Remove_State(CAT::M_ATTACK | CAT::M_SKILL);
-        Remove_Status(CHARGING_STRONG_ATTACK);
+        Remove_Status(CHARGING_FAST_ATTACK | CHARGING_STRONG_ATTACK);
         Clear_SubState();
         Add_State(CAT::M_MOVE);
         Add_SubState(MOV::MOVE_DODGE);
+        Add_Status(DODGING);
     }
 
     // 공격/가드 중일 때는 완전히 리턴
@@ -739,12 +741,22 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
     //Dodge 종료 체크
     if (isPrevDodge)
     {
-        Remove_SubState(MOV::MOVE_DODGE);
-        Remove_Status(CHARGING_SPRINT);
+        //Remove_SubState(MOV::MOVE_DODGE);
+        //Remove_Status(CHARGING_SPRINT);
+
+        //// 닷지 상태 유지 - 애니메이션이 진행 중이면 DODGING 상태 추가
+        //if (!m_pAnimMove->IsStopMoveAnimantionFinished())
+        //{
+        //    Add_Status(DODGING);  // 닷지 중 상태 플래그 설정
+        //}
 
         // Dodge 애니메이션이 끝났는지 확인
         if (m_pAnimMove->IsStopMoveAnimantionFinished())
         {
+
+            Remove_SubState(MOV::MOVE_DODGE);
+            Remove_Status(CHARGING_SPRINT);
+
             // 방향키만 눌려있으면 즉시 Run으로 전환
             if (!m_pGameInstance->Key_Pressing(DIK_SPACE, fTimeDelta) && m_eDir.iDirFlag > 0)
             {
@@ -769,7 +781,7 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
         }
         else
         {
-            //Dodge 애니메이션 재생 중이면 입력 무시
+            //Dodge 애니메이션 재생 중이면 입력 무시, 상태는 유지
             return;
         }
     }
@@ -814,8 +826,8 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
                 return;
 
             m_fSprintTime = 0.f;
-            Add_Status(CHARGING_SPRINT);
-            Add_SubState(MOV::MOVE_DODGE);
+            Add_Status(CHARGING_SPRINT | DODGING);
+            Add_SubState(MOV::MOVE_DODGE);               
             /* 백 닷지라면 */
             if (m_eDir.Check_Flag(DIR::B))
             {
@@ -921,81 +933,115 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
 
 _bool CKhazan_GSword::Skill_Input(_float fTimeDelta)
 {
-    //// 스킬이 끝났는지 체크
-    //if (Has_State(CAT::M_SKILL) && m_pAnimAttack && !m_pAnimAttack->Is_Skilling())
-    //{
-    //    m_pClientInstance->Set_UsedSkill(m_iCurSkillIndex, false);
-    //    Clear_Step1();
+    // 스킬이 끝났는지 체크
+    if (Has_State(CAT::M_SKILL) && m_pAnimAttack && !m_pAnimAttack->Is_Skilling())
+    {
+       // m_pClientInstance->Set_UsedSkill(m_iCurSkillIndex, false); //내부에서 해결 
+        Clear_Step1();
+        return false;
+    }
 
-    //    return false;
-    //}
+    ///* 투지, 스태미나  스탯 확인 - attack 안에서 검사 */
 
-    ///* 투지, 스태미나  스탯 확인 */
-    //if (m_pPlayerData->fCulDoggedness < 1.f && m_pPlayerData->fCulStamina < m_pPlayerData->fUsedStamina)
-    //    return false;
+    if (m_pGameInstance->Key_Down(DIK_Q))
+    {
+        m_iCurSkillIndex = m_pClientInstance->Get_ButtonSkill(CONTROL_BUTTON::Q);
+        if (m_iCurSkillIndex == 0) return false;
 
-    //if (m_pGameInstance->Key_Down(DIK_Q))
-    //{
-    //    m_iCurSkillIndex = m_pClientInstance->Get_ButtonSkill(CONTROL_BUTTON::Q);
-    //    if (m_iCurSkillIndex == 0) return false;
+        if (m_pAnimAttack->Try_SkillAttack(m_iCurSkillIndex)) {
+            Add_State(CAT::M_SKILL);
+            return true;
+        }
+        else if (m_pAnimAttack->Reserve_SkillAttack(m_iCurSkillIndex)) {
+            Add_State(CAT::M_SKILL);
+            return true;
+        }
+        return false;
 
-    //    if (!m_pAnimAttack->Try_SkillAttack(m_iCurSkillIndex))
-    //        m_pAnimAttack->Reserve_SkillAttack(m_iCurSkillIndex);
-    //    Add_State(CAT::M_SKILL);
-    //    return true;
+    }
+    if (m_pGameInstance->Key_Down(DIK_E))
+    {
+        m_iCurSkillIndex = m_pClientInstance->Get_ButtonSkill(CONTROL_BUTTON::E);
+        if (m_iCurSkillIndex == 0) return false;
 
-    //}
-    //if (m_pGameInstance->Key_Down(DIK_E))
-    //{
-    //    m_iCurSkillIndex = m_pClientInstance->Get_ButtonSkill(CONTROL_BUTTON::E);
-    //    if (m_iCurSkillIndex == 0) return false;
 
-    //    if (!m_pAnimAttack->Try_SkillAttack(m_iCurSkillIndex))
-    //        m_pAnimAttack->Reserve_SkillAttack(m_iCurSkillIndex);
-    //    Add_State(CAT::M_SKILL);
-    //    return true;
+        if (m_pAnimAttack->Try_SkillAttack(m_iCurSkillIndex)) {
+            Add_State(CAT::M_SKILL);
+            return true;
+        }
+        else if (m_pAnimAttack->Reserve_SkillAttack(m_iCurSkillIndex)) {
+            Add_State(CAT::M_SKILL);
+            return true;
+        }
+        return false;
 
-    //}
-    //if (m_pGameInstance->Key_Down(DIK_R))
-    //{
-    //    m_iCurSkillIndex = m_pClientInstance->Get_ButtonSkill(CONTROL_BUTTON::R);
-    //    if (m_iCurSkillIndex == 0) return false;
+    }
+    if (m_pGameInstance->Key_Down(DIK_R))
+    {
+        m_iCurSkillIndex = m_pClientInstance->Get_ButtonSkill(CONTROL_BUTTON::R);
+        if (m_iCurSkillIndex == 0) return false;
 
-    //    if (!m_pAnimAttack->Try_SkillAttack(m_iCurSkillIndex))
-    //        m_pAnimAttack->Reserve_SkillAttack(m_iCurSkillIndex);
-    //    Add_State(CAT::M_SKILL);
-    //    return true;
-    //}
-    //if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_F))
-    //{
-    //    m_iCurSkillIndex = m_pClientInstance->Get_ButtonSkill(CONTROL_BUTTON::CTRL_F);
-    //    if (m_iCurSkillIndex == 0) return false;
+        if (m_pAnimAttack->Try_SkillAttack(m_iCurSkillIndex)) {
+            Add_State(CAT::M_SKILL);
+            return true;
+        }
+        else if (m_pAnimAttack->Reserve_SkillAttack(m_iCurSkillIndex)) {
+            Add_State(CAT::M_SKILL);
+            return true;
+        }
+        return false;
 
-    //    if (!m_pAnimAttack->Try_SkillAttack(m_iCurSkillIndex))
-    //        m_pAnimAttack->Reserve_SkillAttack(m_iCurSkillIndex);
-    //    Add_State(CAT::M_SKILL);
-    //    return true;
-    //}
-    //if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
-    //{
-    //    m_iCurSkillIndex = m_pClientInstance->Get_ButtonSkill(CONTROL_BUTTON::CTRL_LB);
-    //    if (m_iCurSkillIndex == 0) return false;
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_F))
+    {
+        m_iCurSkillIndex = m_pClientInstance->Get_ButtonSkill(CONTROL_BUTTON::CTRL_F);
+        if (m_iCurSkillIndex == 0) return false;
 
-    //    if (!m_pAnimAttack->Try_SkillAttack(m_iCurSkillIndex))
-    //        m_pAnimAttack->Reserve_SkillAttack(m_iCurSkillIndex);
-    //    Add_State(CAT::M_SKILL);
-    //    return true;
-    //}
-    //if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
-    //{
-    //    m_iCurSkillIndex = m_pClientInstance->Get_ButtonSkill(CONTROL_BUTTON::CTRL_RB);
-    //    if (m_iCurSkillIndex == 0) return false;
 
-    //    if (!m_pAnimAttack->Try_SkillAttack(m_iCurSkillIndex))
-    //        m_pAnimAttack->Reserve_SkillAttack(m_iCurSkillIndex);
-    //    Add_State(CAT::M_SKILL);
-    //    return true;
-    //}
+        if (m_pAnimAttack->Try_SkillAttack(m_iCurSkillIndex)) {
+            Add_State(CAT::M_SKILL);
+            return true;
+        }
+        else if (m_pAnimAttack->Reserve_SkillAttack(m_iCurSkillIndex)) {
+            Add_State(CAT::M_SKILL);
+            return true;
+        }
+        return false;
+
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+    {
+        m_iCurSkillIndex = m_pClientInstance->Get_ButtonSkill(CONTROL_BUTTON::CTRL_LB);
+        if (m_iCurSkillIndex == 0) return false;
+
+
+        if (m_pAnimAttack->Try_SkillAttack(m_iCurSkillIndex)) {
+            Add_State(CAT::M_SKILL);
+            return true;
+        }
+        else if (m_pAnimAttack->Reserve_SkillAttack(m_iCurSkillIndex)) {
+            Add_State(CAT::M_SKILL);
+            return true;
+        }
+        return false;
+
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+    {
+        m_iCurSkillIndex = m_pClientInstance->Get_ButtonSkill(CONTROL_BUTTON::CTRL_RB);
+        if (m_iCurSkillIndex == 0) return false;
+
+
+        if (m_pAnimAttack->Try_SkillAttack(m_iCurSkillIndex)) {
+            Add_State(CAT::M_SKILL);
+            return true;
+        }
+        else if (m_pAnimAttack->Reserve_SkillAttack(m_iCurSkillIndex)) {
+            Add_State(CAT::M_SKILL);
+            return true;
+        }
+        return false;
+    }
 
     return false;
 }
@@ -1003,27 +1049,180 @@ _bool CKhazan_GSword::Skill_Input(_float fTimeDelta)
 _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
 {
 
-    ///* 예약중인 공격 대기가 있으면 true */
-    //if (Has_State(CAT::M_ATTACK) && m_pAnimAttack->Is_Reserve())
-    //    return true;
+    /* 스태미나 확인 */
+    if (m_pPlayerData->fCulStamina < m_pPlayerData->fUsedStamina) {
+        Clear_Step0();
+        return false;
+    }
 
-    //// 공격이 끝났는지 체크
-    //if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Is_Attacking())
-    //{
-    //    Clear_Step0();
-    //    return false;
-    //}
 
-    //if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Can_NextCombo() && !Has_Status(CHARGING_STRONG_ATTACK))
-    //    return false;
+    /* 강한 공격 1타  + 차징 + 스킬: 숨통끊기들 판별 */
+    if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+    {
+        m_fChargingStrongAttackTime = 0.f;
+        Remove_State(CAT::M_MOVE);
+        Remove_Status(CHARGING_STRONG_ATTACK);
+    }
+    else if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::RB))
+    {
+        if (!Has_Status(CHARGING_STRONG_ATTACK))
+        {
+            m_fChargingStrongAttackTime += fTimeDelta;
 
-    ///* 스태미나 확인 */
-    //if (m_pPlayerData->fCulStamina < m_pPlayerData->fUsedStamina) {
-    //    Clear_Step0();
-    //    return false;
-    //}
+            if (m_fChargingStrongAttackTime >= m_fChargingStartIntervalTime)
+            {
 
-    //_bool isAttack = { false };
+                /* 예약중인 공격 대기가 있으면 true */
+                if (Has_State(CAT::M_ATTACK) && m_pAnimAttack->Is_Reserve())
+                    return true;
+
+                /* 스킬 : 숨통끊기 : 선혈 */
+                if (m_pAnimAttack->Is_PossibleBreathtaking_BloodShed())
+                {
+                    _bool isTryAttack = false; 
+                    if (m_pAnimAttack->Try_SkillAttack(GS_SKILL::BREATHTAKING_BLOODSHED)) isTryAttack = true;
+                    else if (m_pAnimAttack->Reserve_SkillAttack(GS_SKILL::BREATHTAKING_BLOODSHED)) isTryAttack = true;
+                    
+                    if (isTryAttack)
+                    {
+                        Remove_State(CAT::M_MOVE);
+                        AllClear_CycleState();
+                        Clear_SubState();
+                        Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
+
+                        Add_Status(CHARGING_STRONG_ATTACK);
+                       // Add_SubState(ATT::ATK_CHARGE);
+                        Add_State(CAT::M_ATTACK);
+                        Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
+
+                        m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
+                        //Add_State(CAT::M_SKILL);
+                        return true;
+                    }
+                }
+
+     
+                // 공격이 끝났는지 체크
+                if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Is_Attacking())
+                {
+                    Clear_Step0();
+                    return false;
+                }
+                /* 콤보 공격 중인지 체크  */
+                if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Can_NextCombo() && !Has_Status(CHARGING_FAST_ATTACK))
+                    return false;
+
+                /* 강한 차징 공격 */
+                if (m_pAnimAttack->Try_ChageStrongAttack()) {
+                    Remove_State(CAT::M_MOVE);
+                    AllClear_CycleState();
+                    Clear_SubState();
+                    Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
+
+                    Add_Status(CHARGING_STRONG_ATTACK);
+                    Add_SubState(ATT::ATK_CHARGE);
+                    Add_State(CAT::M_ATTACK);
+                    Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
+
+                    m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
+                    return true;
+                }
+            }
+        }
+
+    }
+    else if (m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::RB))
+    {
+        _bool wasCharging = Has_Status(CHARGING_STRONG_ATTACK);
+        Remove_Status(CHARGING_STRONG_ATTACK);
+
+        // 차징 안했으면 일반 강공격
+        if (!wasCharging && m_fChargingFastAttackTime < m_fChargingStartIntervalTime)
+        {
+
+            /* 예약중인 공격 대기가 있으면 true */
+            if (Has_State(CAT::M_ATTACK) && m_pAnimAttack->Is_Reserve())
+                return true;
+
+            _bool isTryAttack = false;
+            /* 스킬 : 숨통끊기 */
+            if (m_pAnimAttack->Is_PossibleBreathtaking())
+            {
+                if (m_pAnimAttack->Try_SkillAttack(GS_SKILL::BREATHTAKING)) isTryAttack = true;
+                else if (m_pAnimAttack->Reserve_SkillAttack(GS_SKILL::BREATHTAKING)) isTryAttack = true;
+            }
+            /* 스킬 : 숨통끊기 : 태동 */
+            if (m_pAnimAttack->Is_PossibleBreathtaking_Embryonic())
+            {
+                if (m_pAnimAttack->Try_SkillAttack(GS_SKILL::BREATHTAKING_EMBRYONIC)) isTryAttack = true;
+                else if (m_pAnimAttack->Reserve_SkillAttack(GS_SKILL::BREATHTAKING_EMBRYONIC))isTryAttack = true;
+            }
+
+            if (isTryAttack)
+            {
+                Remove_State(CAT::M_MOVE);
+                Clear_SubState();
+                AllClear_CycleState();
+                Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
+
+                Add_State(CAT::M_ATTACK);
+                m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_NORMAL);
+                //Add_State(CAT::M_SKILL);
+                return true;
+            }
+
+            // 공격이 끝났는지 체크
+            if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Is_Attacking())
+            {
+                Clear_Step0();
+                return false;
+            }
+            /* 콤보 공격 중인지 체크  */
+            if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Can_NextCombo() && !Has_Status(CHARGING_FAST_ATTACK))
+                return false;
+
+            /* 일반 강공격  */
+            if (!Has_Status(CHARGING_STRONG_ATTACK) && m_pAnimAttack->Try_StrongAttack())
+            {
+
+                Remove_State(CAT::M_MOVE);
+                Clear_SubState();
+                AllClear_CycleState();
+                Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
+
+                Add_SubState(ATT::ATK_STRONG);
+                Add_State(CAT::M_ATTACK);
+
+                m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_NORMAL);
+                return true;
+            }
+        }
+        else if (wasCharging)
+        {
+            // 공격 상태 해제
+            if (m_pAnimAttack)
+            {
+                m_pAnimAttack->Exit();
+            }
+            Remove_State(CAT::M_ATTACK);
+            Clear_SubState();
+        }
+    }
+
+
+    /* 예약중인 공격 대기가 있으면 true */
+    if (Has_State(CAT::M_ATTACK) && m_pAnimAttack->Is_Reserve())
+        return true;
+    // 공격이 끝났는지 체크
+    if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Is_Attacking())
+    {
+        Clear_Step0();
+        return false;
+    }
+    /* 콤보 공격 중인지 체크  */
+    if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Can_NextCombo() && !Has_Status(CHARGING_FAST_ATTACK))
+        return false;
+
 
 
 
@@ -1040,177 +1239,106 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
     //}
 
 
-    ///* dodge 공격 */
-    //else if ((m_iPrevMainState & CAT::M_MOVE) && (m_iPrevSubState & MOV::MOVE_DODGE) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+    /* dodge 공격 */
+   // if ((m_iPrevMainState & CAT::M_MOVE) && (m_iPrevSubState & MOV::MOVE_DODGE) && (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB)))
+    if (Has_Status(DODGING) && (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB)))
+    {
+        _uint dodgeDir = m_eDir.iDirFlag > 0 ? m_eDir.iDirFlag : m_ePrevDir;
+
+        if (m_pAnimAttack->Try_DodgeAttack(dodgeDir))
+        {
+            Clear_Step2();
+            Add_State(CAT::M_ATTACK);
+            Add_SubState(ATT::ATK_DODGEATK);
+            m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_NORMAL);
+
+            Remove_Status(DODGING);
+
+            return true;
+        }
+    }
+
+    /* Sprint 공격  - 애니메이션 자체가 이상함. 한 프레임 순간에 순간이동함 - 사용 xxx */
+    //else if ((m_iPrevMainState & CAT::M_MOVE) && (m_iPrevSubState & MOV::MOVE_SPRINT) && (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB)))
     //{
-    //    if (m_pAnimAttack->Try_DodgeAttack(m_ePrevDir))
+    //    if (m_pAnimAttack->Try_SprintAttack())
     //    {
-    //        Clear_Step0();
+    //        Clear_Step2();
     //        Add_State(CAT::M_ATTACK);
-    //        Add_SubState(ATT::ATK_DODGEATK);
-    //        // Remove_State(CAT::M_MOVE);
-    //        m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_WEAK);
-
-    //        return true;
-    //    }
-    //}
-
-    ///* Sprint 공격  */
-    //else if ((m_iPrevMainState & CAT::M_MOVE) && (m_iPrevSubState & MOV::MOVE_SPRINT))
-    //{
-    //    /* 빠른 공격*/
-    //    if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
-    //    {
-    //        if (m_pAnimAttack->Try_SprintFastAttack())
-    //        {
-    //            Clear_Step0();
-
-    //            Add_State(CAT::M_ATTACK);
-    //            Add_SubState(ATT::ATK_SPRINTATK);
-
-    //            m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_WEAK);
-
-    //            return true;
-    //        }
-    //    }
-    //    /* 강한 공격 */
-    //    else if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
-    //    {
-    //        if (m_pAnimAttack->Try_SprintStrongAttack())
-    //        {
-    //            Clear_Step0();
-
-    //            Add_State(CAT::M_ATTACK);
-    //            Add_SubState(ATT::ATK_SPRINTATK);
-
-    //            if (m_pAnimAttack->Get_CurrentCombo() >= 2)
-    //                m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
-    //            else
-    //                m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_WEAK);
-
-
-    //            return true;
-    //        }
-    //    }
-    //}
-
-    ///* 스킬 : 강습  (빠른 공격 2단계까지만 가능)*/
-    //else if (Has_Status(READY_ASSAULT)
-    //    && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB)
-    //    && 0 < m_pAnimAttack->Get_CurrentCombo()
-    //    && m_pAnimAttack->Get_CurrentCombo() < 2
-    //    && m_pAnimAttack->Is_FastAttacking())
-    //{
-    //    Clear_Step0();
-    //    Add_State(CAT::M_ATTACK);
-    //    Add_SubState(SKI::ASSAULT);
-    //    cout << "READY_ASSAULT" << endl;
-
-    //    if (m_pAnimAttack->Try_SkillAttack(SKI::ASSAULT))
-    //    {
+    //        Add_SubState(ATT::ATK_SPRINTATK);
     //        m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
     //        return true;
     //    }
-    //    else
-    //    {
-    //        m_pAnimAttack->Reserve_SkillAttack(SKI::ASSAULT);
-    //        m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
-    //        return true;
-    //    }
-
     //}
 
-    ///* 빠른 공격 3연타 + 스킬 배우면 3타 바뀜 */
-    //else if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
-    //{
-    //    if (m_pAnimAttack->Try_FastAttack())
-    //    {
-    //        // Move 상태 완전 제거
-    //        Remove_State(CAT::M_MOVE);
-    //        Clear_SubState();
-    //        AllClear_CycleState();
-    //        Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
+    
 
-    //        Add_State(CAT::M_ATTACK);
-    //        Add_SubState(ATT::ATK_FAST);
-    //        Add_Status(READY_ASSAULT);
+    /* 빠른 공격 3연타 + 차징 */
+    if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+    {
+        m_fChargingFastAttackTime = 0.f;
+        Remove_State(CAT::M_MOVE);
+        Remove_Status(CHARGING_FAST_ATTACK);
+    }
+    else if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::LB))
+    {
+        if (!Has_Status(CHARGING_FAST_ATTACK))
+        {
+            m_fChargingFastAttackTime += fTimeDelta;
 
+            if (m_fChargingFastAttackTime >= m_fChargingStartIntervalTime)
+            {
+                /* 빠른 차징 공격 */
+                if (m_pAnimAttack->Try_ChageFastAttack()) {
+                    Remove_State(CAT::M_MOVE);
+                    AllClear_CycleState();
+                    Clear_SubState();
+                    Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
 
-    //        m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_WEAK);
+                    Add_Status(CHARGING_FAST_ATTACK);
+                    Add_SubState(ATT::ATK_CHARGE);
+                    Add_State(CAT::M_ATTACK);
 
-    //        return true;
-    //    }
-    //}
+                    m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
+                    return true;
+                }
+            }
+        }
 
-    ///* 강한 공격 3연타  차징 */
-    //else if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
-    //{
-    //    m_fChargingStrongTime = 0.f;
-    //    Remove_State(CAT::M_MOVE);
-    //    Remove_Status(CHARGING_STRONG_ATTACK);
-    //    Remove_Status(READY_ASSAULT);
-    //}
-    //else if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::RB))
-    //{
-    //    if (!Has_Status(CHARGING_STRONG_ATTACK))
-    //    {
-    //        m_fChargingStrongTime += fTimeDelta;
+    }
+    else if (!Has_Status(CHARGING_FAST_ATTACK) && m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::LB))
+    {
+        _bool wasCharging = Has_Status(CHARGING_FAST_ATTACK);
+        Remove_Status(CHARGING_FAST_ATTACK);
 
-    //        if (m_fChargingStrongTime >= m_fChargingStrongIntervalTime)
-    //        {
+        // 차징 안했으면 일반 공격
+        if (!wasCharging && m_fChargingFastAttackTime < m_fChargingStartIntervalTime)
+        {
+            if (m_pAnimAttack->Try_FastAttack())
+            {
+                Remove_State(CAT::M_MOVE);
+                Clear_SubState();
+                AllClear_CycleState();
+                Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
 
-    //            if (m_pAnimAttack->Try_ChageStrongAttack()) {
-    //                Remove_State(CAT::M_MOVE);
-    //                AllClear_CycleState();
-    //                Clear_SubState();
-    //                Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
+                Add_SubState(ATT::ATK_FAST);
+                Add_State(CAT::M_ATTACK);
 
-    //                Add_Status(CHARGING_STRONG_ATTACK);
-    //                Add_SubState(ATT::ATK_CHARGE);
-    //                Add_State(CAT::M_ATTACK);
-    //                Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
-
-    //                m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
-    //                return true;
-    //            }
-    //        }
-    //    }
-
-    //}
-    //else if (!Has_Status(CHARGING_STRONG_ATTACK) && m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::RB))
-    //{
-
-    //    _bool wasCharging = Has_Status(CHARGING_STRONG_ATTACK);
-    //    Remove_Status(CHARGING_STRONG_ATTACK);
-
-    //    // 차징 안했으면 일반 강공격
-    //    if (!wasCharging && m_fChargingStrongTime < m_fChargingStrongIntervalTime)
-    //    {
-    //        if (m_pAnimAttack->Try_StrongAttack())
-    //        {
-    //            Remove_State(CAT::M_MOVE);
-    //            Clear_SubState();
-    //            AllClear_CycleState();
-    //            Remove_Status(CHARGING_SPRINT | SPRINT_AGAIN_REQUEST);
-
-    //            Add_SubState(ATT::ATK_STRONG);
-    //            Add_State(CAT::M_ATTACK);
-
-    //            m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
-    //            return true;
-    //        }
-    //    }
-    //    else if (wasCharging)
-    //    {
-    //        // 공격 상태 해제
-    //        if (m_pAnimAttack)
-    //        {
-    //            m_pAnimAttack->Exit();
-    //        }
-    //        Remove_State(CAT::M_ATTACK);
-    //        Clear_SubState();
-    //    }
-    //}
+                m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
+                return true;
+            }
+        }
+        else if (wasCharging)
+        {
+            // 공격 상태 해제
+            if (m_pAnimAttack)
+            {
+                m_pAnimAttack->Exit();
+            }
+            Remove_State(CAT::M_ATTACK);
+            Clear_SubState();
+        }
+    }
 
     return false;
 }
@@ -1316,7 +1444,7 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
             info.iCycle = m_iCycle;
             info.eDir = m_eDir;
 
-            m_pAnimMove->Try_ChangeAnimation(info);
+     //       m_pAnimMove->Try_ChangeAnimation(info);
 
             m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
         }
@@ -1350,8 +1478,8 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
         info.iState = m_iCurSubState;
         info.iCycle = m_iCycle;
         info.eDir = m_eDir;
+
         m_pAnimMove->Reserve_Animation(info);
-        m_pAnimMove->Try_ChangeAnimation(info);
 
         Remove_Status(SPRINT_AGAIN_REQUEST);
     }
@@ -1381,10 +1509,10 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
     }
 
     /* Move  */
-    if (((Has_Status(LOCKON) && m_eDir.iDirFlag != m_ePrevDir && m_eDir.iDirFlag > 0)) || Has_State(CAT::M_MOVE) && !Has_State(CAT::M_ATTACK | CAT::M_GUARD))
+    if (((Has_Status(LOCKON) && m_eDir.iDirFlag != m_ePrevDir && m_eDir.iDirFlag > 0)) || Has_State(CAT::M_MOVE) && !Has_State(CAT::M_ATTACK | CAT::M_GUARD)|| !Has_SubState(MOV::MOVE_DODGE))
     {
         CKhazan_GS_Anim_Move::GS_MOVEINFO info;
-        info.iWeapon = Has_Status(WEA::GSWORD);
+        info.iWeapon = Has_Status(GSWORD);
         info.isLockOn = Has_Status(LOCKON);
         info.iState = m_iCurSubState;
         info.iCycle = m_iCycle;
@@ -1446,11 +1574,13 @@ void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
     /* 닷지 일때 이동하지 않음*/
     if (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_DODGE))
         return;
-    for (size_t i = 0; i < 9; i++)
+
+    for (size_t i = 0; i < 10; i++)
         if (m_iStopMoveIndexTable[i] == m_pBody->Get_Model()->Get_CurAnimIndex()) {
             Remove_State(CAT::M_MOVE);
             return;
         }
+
     _float4x4 CamWorldMatrix = *m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW);
     _vector vCamLook = XMLoadFloat3((_float3*)&CamWorldMatrix._31);
     _vector vRight = XMVector3Normalize(XMVectorSetW(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vCamLook), 0.f));
@@ -1790,7 +1920,7 @@ void CKhazan_GSword::Clear_Injured()
     Clear_SubState();
     Clear_CycleState();
 
-    Remove_Status(INJURED);
+    //Remove_Status(INJURED);
 }
 
 
@@ -1962,6 +2092,7 @@ HRESULT CKhazan_GSword::Ready_AnimationStateMachine()
     if (m_pAnimAttack == nullptr)
         return E_FAIL;
     m_pAnimAttack->Set_Model(m_pBody->Get_Model());
+    m_pAnimAttack->Initialize();
 
     m_pAnimGuard = CKhazan_GS_Anim_Guard::Create();
     if (m_pAnimGuard == nullptr)
@@ -2000,7 +2131,7 @@ void CKhazan_GSword::Clear_Step0()
     //m_ePrevDir = m_iPrevCycle = m_iPrevMainState = m_iPrevSubState = 0;
     m_fRotateTime[0] = 0.f;
     m_fSprintTime = 0.f;
-    m_fChargingStrongTime = 0.f;
+    m_fChargingFastAttackTime = 0.f;
     m_iCurSkillIndex = 0;
 
     // m_f180TurnTime = { 0.f, 0.f };
@@ -2022,13 +2153,13 @@ void CKhazan_GSword::Clear_Step1()
     Clear_CycleState();
     Clear_SubState();
     Clear_State();
-    Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | SPRINT_AGAIN_REQUEST | READY_ASSAULT | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST);
+    Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_FAST_ATTACK | CHARGING_STRONG_ATTACK | SPRINT_AGAIN_REQUEST  | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST);
     //m_eDir.iDirFlag = 0;
     //m_eWorldDir.iDirFlag = 0;
     //m_ePrevDir = m_iPrevCycle = m_iPrevMainState = m_iPrevSubState = 0;
     m_fRotateTime[0] = 0.f;
     m_fSprintTime = 0.f;
-    m_fChargingStrongTime = 0.f;
+    m_fChargingFastAttackTime = 0.f;
     m_iCurSkillIndex = 0;
 
     if (m_pAnimMove) m_pAnimMove->Clear();
@@ -2045,7 +2176,7 @@ void CKhazan_GSword::Clear_Step2()
         Clear_SubState();
         Remove_State(CAT::M_MOVE);
     }
-    Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | ROTATION | SPRINT_AGAIN_REQUEST | READY_ASSAULT);
+    Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | ROTATION | SPRINT_AGAIN_REQUEST | DODGING);
 
     m_eDir.iDirFlag = 0;
     m_eWorldDir.iDirFlag = 0;
@@ -2068,13 +2199,13 @@ void CKhazan_GSword::Clear_Step3()
     if (isGuard)
         Add_State(CAT::M_GUARD);
 
-    Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | SPRINT_AGAIN_REQUEST | READY_ASSAULT);
+    Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_FAST_ATTACK | SPRINT_AGAIN_REQUEST );
     m_eDir.iDirFlag = 0;
     m_eWorldDir.iDirFlag = 0;
     //m_ePrevDir = m_iPrevCycle = m_iPrevMainState = m_iPrevSubState = 0;
     m_fRotateTime[0] = 0.f;
     m_fSprintTime = 0.f;
-    m_fChargingStrongTime = 0.f;
+    m_fChargingFastAttackTime = 0.f;
     m_iCurSkillIndex = 0;
 
     if (m_pAnimMove) m_pAnimMove->Clear();
@@ -2214,7 +2345,7 @@ void CKhazan_GSword::Subscribe_Events()
             m_pGSword->Set_Enble(true);
             static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
             Add_Status(GSWORD);
-            Remove_Status(BAREHAND | INJURED);
+            Remove_Status(BAREHAND);
         }  });
 
 #pragma endregion
@@ -2617,23 +2748,29 @@ void CKhazan_GSword::Debug_Widget_States()
     SubStateFlag("Walk", MOV::MOVE_WALK);
     SubStateFlag("Run", MOV::MOVE_RUN);
     SubStateFlag("Sprint", MOV::MOVE_SPRINT);
+    SubStateFlag("Climb", MOV::MOVE_CLIMB);
+    SubStateFlag("Mirage Step", MOV::MOVE_MIRAGE_STEP);
+    SubStateFlag("GetUp", MOV::MOVE_GETUP);
+    SubStateFlag("Fall", MOV::MOVE_FALL);
     SubStateFlag("Dodge", MOV::MOVE_DODGE);
     SubStateFlag("Injured", MOV::MOVE_INJURED);
-    SubStateFlag("Climb", MOV::MOVE_CLIMB);
-    SubStateFlag("Fall", MOV::MOVE_FALL);
-    SubStateFlag("GetUp", MOV::MOVE_GETUP);
     ImGui::Unindent();
 
     // Attack
     ImGui::Text("Attack:");
     ImGui::Indent();
+    SubStateFlag("Fall", ATT::ATK_FALL);
     SubStateFlag("Fast", ATT::ATK_FAST);
-    SubStateFlag("Strong", ATT::ATK_STRONG);
-    SubStateFlag("Charge", ATT::ATK_CHARGE);
-    SubStateFlag("Sprint Attack", ATT::ATK_SPRINTATK);
-    SubStateFlag("Dodge Attack", ATT::ATK_DODGEATK);
-    SubStateFlag("Counter", ATT::ATK_COUNTER);
     SubStateFlag("Grapple", ATT::ATK_GRAPPLE);
+    SubStateFlag("Skill", ATT::ATK_SKILL);
+    SubStateFlag("Counter", ATT::ATK_COUNTER);
+    SubStateFlag("Dodge Attack", ATT::ATK_DODGEATK);
+    SubStateFlag("Reflection", ATT::ATK_REFLECTION);
+    SubStateFlag("Sprint Attack", ATT::ATK_SPRINTATK);
+    SubStateFlag("Strong", ATT::ATK_STRONG);
+    SubStateFlag("Javelin", ATT::ATK_JAVELIN);
+    SubStateFlag("Charge", ATT::ATK_CHARGE);
+
     ImGui::Unindent();
 
     // Skill
@@ -2682,27 +2819,29 @@ void CKhazan_GSword::Debug_Widget_States()
 
     StatusFlag("Barehand", BAREHAND);
     StatusFlag("Spear", SPEAR);
-    StatusFlag("LockOn", LOCKON);
-    StatusFlag("Injured", INJURED);
+    StatusFlag("GSWORD", GSWORD);
     StatusFlag("Reserved", RESERVED);
     StatusFlag("Charging Sprint", CHARGING_SPRINT);
     StatusFlag("Back Dodge", BACK_DODGE);
     StatusFlag("Rotation", ROTATION);
-    StatusFlag("Charging Strong", CHARGING_STRONG_ATTACK);
-    StatusFlag("Again Request", SPRINT_AGAIN_REQUEST);
-    StatusFlag("Ready Assault", READY_ASSAULT);
-    StatusFlag("GUARD", GUARD);
-    StatusFlag("GUARD_SUCCESS", GUARD_SUCCESS);
-    StatusFlag("RJUST_GUARD", JUST_GUARD);
-    StatusFlag("GUARD_ROTATION", GUARD_ROTATION);
-    StatusFlag("GUARD_ROTATION_REQUEST", GUARD_ROTATION_REQUEST);
-    StatusFlag("FALLING", FALLING);
-    StatusFlag("PRE_LAND", PRE_LAND);
-    StatusFlag("FALLING_ATTACK", FALLING_ATTACK);
-    StatusFlag("STAMINA_RECOVERY", STAMINA_RECOVERY);
-    StatusFlag("BRUTAL_BEGIN", BRUTAL_BEGIN);
-    StatusFlag("BRUTAL_READY", BRUTAL_READY);
-    StatusFlag("BRUTAL_SUCCESS", BRUTAL_SUCCESS);
+    StatusFlag("Charging Fast Attack", CHARGING_FAST_ATTACK);
+    StatusFlag("Sprint Again Request", SPRINT_AGAIN_REQUEST);
+    StatusFlag("LockOn", LOCKON);
+    StatusFlag("Charging Strong Attack", CHARGING_STRONG_ATTACK);
+    StatusFlag("Dodging", DODGING);
+    StatusFlag("Guard", GUARD);
+    StatusFlag("Guard Success", GUARD_SUCCESS);
+    StatusFlag("Just Guard", JUST_GUARD);
+    StatusFlag("Guard Rotation", GUARD_ROTATION);
+    StatusFlag("Guard Rotation Request", GUARD_ROTATION_REQUEST);
+    StatusFlag("Falling", FALLING);
+    StatusFlag("Pre Land", PRE_LAND);
+    StatusFlag("Falling Attack", FALLING_ATTACK);
+    StatusFlag("Stamina Recovery", STAMINA_RECOVERY);
+    StatusFlag("Brutal Begin", BRUTAL_BEGIN);
+    StatusFlag("Brutal Ready", BRUTAL_READY);
+    StatusFlag("Brutal Success", BRUTAL_SUCCESS);
+
 
     //StatusFlag("TURN180", TURN180);
     //StatusFlag("TURN180_REQUESTED", TURN180_REQUESTED);
@@ -2777,9 +2916,9 @@ void CKhazan_GSword::Debug_Widget_Combat()
         (std::to_string((_int)(m_fSprintTime * 100)) + "%").c_str());
 
     // Strong Attack Charge
-    ImGui::Text("Strong Attack Charge");
-    ImGui::ProgressBar(m_fChargingStrongTime / m_fChargingStrongIntervalTime, ImVec2(-1, 0),
-        (std::to_string((_int)(m_fChargingStrongTime * 100)) + "%").c_str());
+    ImGui::Text("Fast Attack Charge");
+    ImGui::ProgressBar(m_fChargingFastAttackTime / m_fChargingStartIntervalTime, ImVec2(-1, 0),
+        (std::to_string((_int)(m_fChargingFastAttackTime * 100)) + "%").c_str());
 
     ImGui::Separator();
 

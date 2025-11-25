@@ -7,7 +7,7 @@ CSlate_Switch::CSlate_Switch(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 {
 }
 
-CSlate_Switch::CSlate_Switch(const CPartObject& Prototype)
+CSlate_Switch::CSlate_Switch(const CSlate_Switch& Prototype)
     : CPartObject { Prototype }
 {
 }

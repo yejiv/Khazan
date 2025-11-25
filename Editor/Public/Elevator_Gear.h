@@ -27,7 +27,7 @@ public:
 
 private:
     CElevator_Gear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CElevator_Gear(const CPartObject& Prototype);
+    CElevator_Gear(const CElevator_Gear& Prototype);
     virtual ~CElevator_Gear() = default;
 
 public:

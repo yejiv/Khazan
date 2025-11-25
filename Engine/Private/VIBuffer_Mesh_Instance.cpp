@@ -53,12 +53,11 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
     m_sData.fOffset = pMeshDesc->fOffset;
     m_sData.bIsLoop = pMeshDesc->bIsLoop;
     m_bLoop = m_sData.bIsLoop;
-    m_sData.vRange = pMeshDesc->vRange;
-    m_sData.fTurbulenceSpeed = pMeshDesc->fTurbulenceSpeed;
-    m_sData.fTurbulenceSampleSize = pMeshDesc->fTurbulenceSampleSize;
-    m_sData.fRotation = pMeshDesc->fRotation;
-    memcpy(m_sData.pNoiseFilePath, pMeshDesc->pNoiseFilePath, sizeof(pMeshDesc->pNoiseFilePath));
-
+	m_sData.vRange = pMeshDesc->vRange;
+	m_sData.fTurbulenceSpeed = pMeshDesc->fTurbulenceSpeed;
+	m_sData.fTurbulenceSampleSize = pMeshDesc->fTurbulenceSampleSize;
+	m_sData.fRotation = pMeshDesc->fRotation;
+	memcpy(m_sData.pNoiseFilePath, pMeshDesc->pNoiseFilePath, sizeof(pMeshDesc->pNoiseFilePath)); 
 
     D3D11_BUFFER_DESC		VBDesc{};
     VBDesc.ByteWidth = m_iNumVertices * m_iVertexStride;
@@ -130,7 +129,7 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
         _float		fLifeTime = m_pGameInstance->Rand(pMeshDesc->vLifeTime.x, pMeshDesc->vLifeTime.y);
 
         XMVECTOR rotation;
-        if (m_sData.fRotation.x == 0.f && m_sData.fRotation.y == 0.f && m_sData.fRotation.z == 0.f && m_sData.iNumInstance > 1)
+        if (m_sData.fRotation.x == 0.f && m_sData.fRotation.y == 0.f && m_sData.fRotation.z == 0.f && m_iNumInstance > 8)
             rotation = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(m_pGameInstance->Rand(0, 360)),
                 XMConvertToRadians(m_pGameInstance->Rand(0, 360)),
                 XMConvertToRadians(m_pGameInstance->Rand(0, 360)));
@@ -184,12 +183,15 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
         return E_FAIL;
     }
 
+    m_isCloned = false;
 
     return S_OK;
 }
 
 HRESULT CVIBuffer_Mesh_Instance::Initialize_Clone(void* pArg)
 {
+    m_isCloned = true;
+    
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
@@ -202,7 +204,9 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Clone(void* pArg)
     if (FAILED(Ready_CB()))
         return E_FAIL;
 
-    return S_OK;
+
+
+	return S_OK;
 }
 
 _bool CVIBuffer_Mesh_Instance::Update(_float fTimeDelta)
@@ -343,8 +347,10 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_SRV(void* pSysmem)
     if (FAILED(m_pDevice->CreateShaderResourceView(pBuffer, &SRVDesc, &m_pSRV)))
         return E_FAIL;
 
+    Safe_Release(pBuffer);
 
-    return S_OK;
+	
+	return S_OK;
 }
 HRESULT CVIBuffer_Mesh_Instance::Ready_UAV()
 {
@@ -421,7 +427,7 @@ HRESULT CVIBuffer_Mesh_Instance::Ready_ComputeShader()
     if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::MOVE)])
         return E_FAIL;
 
-    m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Point_Instance_Compute.hlsl"), "CS_UPDATE_GRAVITY");
+    m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)] = CComputeShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Model_Instance_Compute.hlsl"), "CS_UPDATE_GRAVITY");
     if (nullptr == m_ComputeShaders[ENUM_CLASS(CS_PASS::GRAVITY)])
         return E_FAIL;
 

@@ -17,8 +17,10 @@ namespace Client {
         GATE_GEAR0,
         GATE_GEAR1,
         SKILL_RESET,
-        STATUE_PUZZLE0,
-        STATUE_PUZZLE1,
+        EMBARS_GIMMICK0,
+        EMBARS_GIMMICK1,
+        EMBARS_GIMMICK2,
+        HALL_ELEVATOR_UNLOCK,
 		END };
 
 	// Structs
@@ -122,50 +124,144 @@ namespace Client {
         XMFLOAT4 vPlayerPosition{};
     };
 
-    // 상호작용 오브젝트끼리의 이벤트 ( 조각상 -> 차단봉 )
-    struct EventVerticalGate
+    // 상호작용 오브젝트끼리의 이벤트 ( 조각상 -> 차단봉 | 엘리베이터 -> 차단봉 )
+    struct EventGimmick
     {
-        bool isActiveStatue[4] = { false, false, false, false };
+    private:
+        bool isStatueSolved[4] = { false, false, false, false };    // 석상
 
-        void SetActiveStatue(unsigned int iStatueIndex)
+        bool isUnLockGearAvailableFlag = { false };     // 잠금 해제 기어 상호작용 가능 여부
+
+        bool isUnLockGearActiveFlag = { false };        // 잠금 장치 활성화 여부
+
+        bool isVerticalGateActiveFlag = { false };      // 수직 차단봉 활성화 여부
+
+        bool isElevatorDone = { false };                // 엘리베이터완료 시 
+
+    public:
+        void Set_SolveStatue(unsigned int iStatueIndex)
         {
-            isActiveStatue[iStatueIndex] = true;
+            isStatueSolved[iStatueIndex] = true;
         }
 
-        void SetDeActiveStatue(unsigned int iStatueIndex)
+        void Reset_SolveStatue(unsigned int iStatueIndex)
         {
-            isActiveStatue[iStatueIndex] = false;
+            isStatueSolved[iStatueIndex] = false;
         }
 
-        bool isSection0()       // 4개 조각상
+        void Set_AvailableUnLockGear()              // 잠금 장치 상호작용 활성화
+        {
+            isUnLockGearAvailableFlag = true;
+        }
+
+        void Set_ActiveUnLockGear()                 // 잠금 장치 활성화
+        {
+            isUnLockGearActiveFlag = true;
+        }
+
+        void Set_ActiveGate()                       // 차단봉 활성화
+        {
+            isVerticalGateActiveFlag = true;
+        }
+
+        bool isStatueSection0()       // 4개 조각상
         {
             for (_uint i = 0; i < 4; ++i)
             {
-                if (false == isActiveStatue[i]) return false;
+                if (false == isStatueSolved[i]) return false;
             }
 
             return true;
         }
-        bool isSection1()       // 3개 조각상
+
+        bool isStatueSection1()       // 3개 조각상
         {
             for (_uint i = 0; i < 3; ++i)
             {
-                if (false == isActiveStatue[i]) return false;
+                if (false == isStatueSolved[i]) return false;
             }
 
             return true;
         }
 
-        bool isUnLockGate(unsigned int iGateEventID)
+        bool isUnLockGearAvailable(unsigned int iEventID)
         {
-            if (0 == iGateEventID)
-                return isSection0();
-            if (1 == iGateEventID)
-                return isSection1();
+            if (0 == iEventID)
+                return isStatueSection0();
+            if (1 == iEventID)
+                return isStatueSection1();
+
+            return false;
+        }
+
+        bool isActiveGate() { return isVerticalGateActiveFlag; }
+
+        void Set_GimmickClear()
+        {
+            for (_uint i = 0; i < 4; ++i)
+            {
+                isStatueSolved[i] = true;
+            }
+
+            isUnLockGearAvailableFlag = false;
+            isUnLockGearActiveFlag = false;
+            isVerticalGateActiveFlag = false;
+        }
+    };
+
+    // 상호작용 오브젝트끼리의 이벤트 ( 해제 기어 -> 홀 엘리베이터 )
+    struct EventHallElevator
+    {
+        enum UNLOCK_STATE { NONE, STEP_1, STEP_2, STEP_3, END};
+
+        UNLOCK_STATE eStep{};
+        bool isEventOn = {};
+
+        bool isEvent() { return isEventOn; }
+        void EventOn() { isEventOn = true; }
+        void EventOff() { isEventOn = false; }
+
+        void Set_UnLockState(bool isUnLock)
+        {
+            if (false == isUnLock)
+                return;
+
+            isEventOn = isUnLock;
+
+            if (UNLOCK_STATE::NONE == eStep)
+                eStep = STEP_1;
+            else if (UNLOCK_STATE::STEP_1 == eStep)
+                eStep = STEP_2;
+            else if (UNLOCK_STATE::STEP_2 == eStep)
+                eStep = STEP_3;
+        }
+
+        bool IsFirstStep() {
+            if (UNLOCK_STATE::STEP_1 == eStep)
+                return true;
+            return false;
+        }
+
+        bool IsSecondStep() {
+            if (UNLOCK_STATE::STEP_2 == eStep)
+                return true;
+            return false;
+        }
+
+        bool IsThirdStep() {
+            if (UNLOCK_STATE::STEP_3 == eStep)
+                return true;
+            return false;
         }
     };
 
     struct EventIronGate
+    {
+        XMFLOAT4 vPosition{};
+        XMFLOAT4 vPlayerPosition{};
+    };
+
+    struct EventUnLockGear
     {
         XMFLOAT4 vPosition{};
         XMFLOAT4 vPlayerPosition{};
@@ -185,6 +281,7 @@ namespace Client {
         EventLever LeverEvent{};
         EventStatue StatueEvent{};
         EventIronGate IronGateEvent{};
+        EventUnLockGear UnLockGearEvent{};
 
 		void End_Event() { isEvent = false; }
 
