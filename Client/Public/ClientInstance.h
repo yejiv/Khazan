@@ -4,6 +4,7 @@
 #include "DB_Manager.h"
 #include "PlayerData_Manager.h"
 #include "Player_Manager.h"
+#include "Sequence_Interface.h"
 
 
 NS_BEGIN(Engine)
@@ -138,6 +139,14 @@ public:
 	void Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 	void Save_Json_Animation(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
 	void Clear_CameraManager(_uint iLevelIndex);
+
+
+    void Camera_Set_ObjMatrix(_uint iLevelIndex, _wstring strCameraTag, _float4x4* ObjMatrix);
+    void Camera_Switch_CameraMode(CAMERATYPE eType);
+
+    void Camera_Set_FixEnd();
+    void Camera_Set_Animation(_wstring strAnimationTag);
+    HRESULT Camera_Set_Animation_Json(string strFilePath);
 #pragma endregion
 
 #pragma region INTERACT_MANAGER

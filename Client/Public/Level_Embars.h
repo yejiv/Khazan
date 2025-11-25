@@ -23,6 +23,8 @@ private:
     HRESULT Ready_Layer_Player(const _wstring& strLayerTag);
     HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 
+    HRESULT Ready_Layer_Effect(const _wstring& strLayerTag);
+
 #pragma region 맵 관련
 
     HRESULT Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);

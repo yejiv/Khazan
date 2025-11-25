@@ -8,6 +8,8 @@
 #include "Dragonian_Sword.h"
 #include "AI_Controller_Dragonian_Melee.h"
 
+#include "Mon_Hp.h"
+
 CDragonian_Melee::CDragonian_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
 {
@@ -16,6 +18,46 @@ CDragonian_Melee::CDragonian_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* p
 CDragonian_Melee::CDragonian_Melee(const CDragonian_Melee& Prototype)
     :CMonster( Prototype )
 {
+}
+
+CDragonian_Melee::MONDATA& CDragonian_Melee::Get_Data()
+{
+    return m_Data;
+}
+
+void CDragonian_Melee::Move_F()
+{
+    m_pTarget->Get_Position();
+    m_pTransformCom->LookAt(m_pTarget->Get_Position());
+
+    _float fWorkSpeed = m_Data.isSlowWalk ? 3.5f : 4.1f;
+
+    m_pTransformCom->AI_Chase(m_pTarget->Get_Position() , m_fTimeDelta, fWorkSpeed);
+}
+
+void CDragonian_Melee::Hp_Visivle(_bool isVisivle)
+{
+    m_pUI_HP->Update_Visible(isVisivle);
+}
+
+void CDragonian_Melee::Hp_Dead()
+{
+    m_pUI_HP->Set_IsDead(true);
+    Safe_Release(m_pUI_HP);
+}
+
+_bool CDragonian_Melee::Check_AttackRanage(string strKey)
+{
+    _float fDist = XMVectorGetX(XMVector3Length(m_pTarget->Get_Transform()->Get_State(STATE::POSITION) - m_pTransformCom->Get_State(STATE::POSITION)));
+    _float fAttackRanage = m_pBlackBoard->Get_Value<_float>(m_strName, strKey);
+
+    if (fAttackRanage <= 0)
+        return false;
+
+    if (fDist <= fAttackRanage)
+        return true;
+    else
+        return false;
 }
 
 HRESULT CDragonian_Melee::Initialize_Prototype(_int iLevel)
@@ -30,26 +72,48 @@ HRESULT CDragonian_Melee::Initialize_Prototype(_int iLevel)
 HRESULT CDragonian_Melee::Initialize_Clone(void* pArg)
 {
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
-    CHECK_FAILED(Ready_Components(),E_FAIL);
+
+    CHECK_FAILED(Ready_MonData(), E_FAIL);
+    CHECK_FAILED(Ready_ETC(), E_FAIL);
+
     CHECK_FAILED(Ready_PartObjects(),E_FAIL);
+    m_pHeadMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Head");
+
     CHECK_FAILED(Ready_AnimEvent(),E_FAIL);
+    CHECK_FAILED(Ready_Components(),E_FAIL);
+    
 
-    m_pController = CAI_Controller_Dragonian_Melee::Create(this);
-    CHECK_NULLPTR(m_pController, E_FAIL);
-
-    m_pController->Get_BlackBoard()->Set_Value<CGameObject*>(m_strName, "Target", m_pTarget);
     return S_OK;
 }
 
 void CDragonian_Melee::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
+
+    if (m_pGameInstance->Key_Down(DIK_M))
+    {
+        m_fCurrentHP = m_fMaxHP;
+        m_Data.isSleep = true;
+    }
+    else if (m_pGameInstance->Key_Down(DIK_V))
+        Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, m_pTarget);
+    else if (m_pGameInstance->Key_Down(DIK_B))
+        Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
+    else if (m_pGameInstance->Key_Down(DIK_N))
+        m_fCurrentStamina = 0;
+
 }
 
 void CDragonian_Melee::Update(_float fTimeDelta)
 {
+    m_fTimeDelta = fTimeDelta;
+
+    if (m_Data.fAttackCool >= 0.f)
+        m_Data.fAttackCool -= fTimeDelta;
+
     m_pController->Update(this, fTimeDelta);
     __super::Update(fTimeDelta);
+    Update_UIHp();
 }
 
 void CDragonian_Melee::Late_Update(_float fTimeDelta)
@@ -93,6 +157,24 @@ HRESULT CDragonian_Melee::Ready_Prototype()
     return S_OK;
 }
 
+HRESULT CDragonian_Melee::Ready_ETC()
+{
+    m_pUI_HP = static_cast<CMon_HP*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP")));
+    CHECK_NULLPTR(m_pUI_HP, E_FAIL);
+    Safe_AddRef(m_pUI_HP);
+    m_pUI_HP->Setting_HP(&m_vHpPos, { 0.f, 0.f }, &m_fCurrentHP, &m_fMaxHP, &m_fCurrentStamina, &m_fMaxStamina);
+    m_pGameInstance->Push_PoolObject_ToLayer(m_iPrototypeIndex, TEXT("Layer_UI"), m_pUI_HP);
+
+    m_pController = CAI_Controller_Dragonian_Melee::Create(this);
+    CHECK_NULLPTR(m_pController, E_FAIL);
+
+    m_pBlackBoard = m_pController->Get_BlackBoard();
+    Safe_AddRef(m_pBlackBoard);
+    m_pBlackBoard->Set_Value<CGameObject*>(m_strName, "Target", m_pTarget);
+
+    return S_OK;
+}
+
 HRESULT CDragonian_Melee::Ready_Components()
 {
     CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
@@ -125,6 +207,7 @@ HRESULT CDragonian_Melee::Ready_Components()
 HRESULT CDragonian_Melee::Ready_PartObjects()
 {
     CBody_Dragonian_Melee::BODY_DESC BodyDesc{};
+    BodyDesc.pData = &m_Data;
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pOwnerTransform = m_pTransformCom;
 
@@ -158,10 +241,42 @@ HRESULT CDragonian_Melee::Ready_PartObjects()
 
 HRESULT CDragonian_Melee::Ready_AnimEvent()
 {
+    CModel* pModel = m_pBody->Get_Model();
+
+    pModel->Register_Event("Walk1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isSlowWalk = false; });
+    pModel->Register_Event("Walk2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isSlowWalk = false; });
+    pModel->Register_Event("Walk3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isSlowWalk = false; });
+    pModel->Register_Event("Walk4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isSlowWalk = false; });
+    
+    pModel->Register_Event("Walk1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
+    pModel->Register_Event("Walk2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
+    pModel->Register_Event("Walk3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
+    pModel->Register_Event("Walk4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
+
     return S_OK;
 }
 
+HRESULT CDragonian_Melee::Ready_MonData()
+{
+    m_Data.pOwner = this;
+    Safe_AddRef(m_Data.pOwner);
 
+    m_Data.fGloggyTime = 3.f;
+    m_Data.pCulHp = &m_fCurrentHP;
+    m_Data.pMaxHp = &m_fMaxHP;
+
+    m_Data.pCulStamina = &m_fCurrentStamina;
+    m_Data.pMaxStamina = &m_fMaxStamina;
+
+    return S_OK;
+}
+
+void CDragonian_Melee::Update_UIHp()
+{
+    m_vHpPos = { m_pHeadMatrix->m[3][0], m_pHeadMatrix->m[3][1], m_pHeadMatrix->m[3][2], 1.f };
+    XMStoreFloat4(&m_vHpPos, XMVector4Transform(XMLoadFloat4(&m_vHpPos), m_pTransformCom->Get_WorldMatrix()));
+    m_vHpPos.y += 0.5f;
+}
 
 CDragonian_Melee* CDragonian_Melee::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
 {
@@ -187,7 +302,16 @@ CGameObject* CDragonian_Melee::Clone(void* pArg)
 
 void CDragonian_Melee::Free()
 {
+    if (m_pUI_HP != nullptr)
+    {
+        m_pUI_HP->Set_IsDead(true);
+        Safe_Release(m_pUI_HP);
+    }
+    Safe_Release(m_Data.pOwner);
+    
     __super::Free();
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
+    Safe_Release(m_pBlackBoard);
+    
 }

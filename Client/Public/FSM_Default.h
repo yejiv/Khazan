@@ -11,7 +11,7 @@ private:
 
 public:
     HRESULT				        Add_State(_uint iStateIndex, class CAI_State* pState);
-
+    HRESULT                     Set_CulState(_uint iStateIndex, CGameObject* pOwner);
 public:
     virtual HRESULT				Initialize(class CGameObject* pOwner);
     virtual void				Update(class CGameObject* pOwner, _float fTimeDelta) override;

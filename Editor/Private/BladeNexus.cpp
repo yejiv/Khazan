@@ -35,6 +35,7 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
 
 void CBladeNexus::Priority_Update(_float fTimeDelta)
 {
+    m_pModelCom->Set_AnimationBlend(true);
 }
 
 void CBladeNexus::Update(_float fTimeDelta)
@@ -45,6 +46,8 @@ void CBladeNexus::Update(_float fTimeDelta)
     // 7 > 9 > 8 > 9 > 8 > 9 >>> ...
 
     _bool isisisis = { false };
+
+    this;
 
     if (m_pGameInstance->Key_Down(DIK_7))
     {
@@ -123,6 +126,22 @@ HRESULT CBladeNexus::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    _float fIntensity = 7.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRatio = 0.8f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fColorRatio", &fRatio, sizeof(_float))))
+        return E_FAIL;
+
+    _float fEdgeIntensity = 1.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fShadeIntensity = 1.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
+
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
@@ -189,27 +208,25 @@ HRESULT CBladeNexus::Ready_Components(void* pArg)
 
 HRESULT CBladeNexus::Bind_Materials(_uint iMeshIndex)
 {
-    _bool isDiffuse = { false };
-    _bool isNormal = { false };
-    _bool isEmissive = { false };
-    _bool isSpecular = { false };
+    m_iMtrlFlags = 0;
 
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
-        isDiffuse = true;
+        m_iMtrlFlags |= M_DIFFUSE;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
-        isNormal = true;
+        m_iMtrlFlags |= M_NORMAL;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
-        isEmissive = true;
+        m_iMtrlFlags |= M_EMISSIVE;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
-        isSpecular = true;
+        m_iMtrlFlags |= M_SPECULAR;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
+        m_iMtrlFlags |= M_METALIC;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
+        m_iMtrlFlags |= M_ROUGHNESS;
 
-    isSpecular = false;
-    isEmissive = false;
+    m_iMtrlFlags &= ~M_EMISSIVE;
+    m_iMtrlFlags &= ~M_SPECULAR;
 
-    m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 
     return S_OK;
 }

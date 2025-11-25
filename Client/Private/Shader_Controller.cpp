@@ -27,6 +27,7 @@ HRESULT CShader_Controller::Initialize()
 	m_FogConfig = m_pGameInstance->Get_FogConfig();
 	//  m_iNumCascades = m_pGameInstance->Get_NumCascades();
     m_InitFogConfig = m_FogConfig;
+    m_RadialBlurDesc = m_pGameInstance->Get_RadialBlurDesc();
     m_MotionBlurDesc = m_pGameInstance->Get_MotionBlurDesc();
     m_RimLightDesc = m_pGameInstance->Get_RimLightDesc();
 
@@ -382,6 +383,46 @@ void CShader_Controller::Ready_Shader()
                     // LUT 강도
                     if (ImGui::SliderFloat("LUT Intensity", &m_fLUTIntensity, 0.f, 1.f, "%.2f"));
                     m_pGameInstance->Set_LUTIntensity(m_fLUTIntensity);
+                }
+
+                ImGui::Checkbox("Radial Blur", &m_isEnableRadialBlur);
+
+                if (m_isEnableRadialBlur)
+                {
+                    // 중심 UV
+                    ImGui::SliderFloat2("Radial Blur Center UV", reinterpret_cast<_float*>(&m_RadialBlurDesc.vCenterUV), 0.f, 1.f, "%.1f");
+
+                    // 반경
+                    ImGui::SliderFloat("Radial Blur Radius", &m_RadialBlurDesc.fSampleRadius, 0.01f, 1.5f, "%.2f");
+
+                    // 마스크 반경
+                    ImGui::SliderFloat("Radial Blur Mask Radius Iner", &m_RadialBlurDesc.vMaskRadius.x, 0.f, 1.f, "%.3f");
+                    ImGui::SliderFloat("Radial Blur Mask Radius Outer", &m_RadialBlurDesc.vMaskRadius.y, 0.f, 1.f, "%.3f");
+
+                    // 마스크 지수(곡선 강화)
+                    ImGui::SliderFloat("Radial Blur Mask Exponent", &m_RadialBlurDesc.fExponent, 1.f, 5.f, "%.2f");
+
+                    // 샘플 개수
+                    _int iNumSamples = static_cast<_int>(m_RadialBlurDesc.iNumSamples);
+                    if (ImGui::InputInt("Radial Blur Num Samples", &iNumSamples, 2, 4))
+                        m_RadialBlurDesc.iNumSamples = iNumSamples;
+
+                    // 감쇠
+                    ImGui::SliderFloat("Radial Blur Attenuation", &m_RadialBlurDesc.fAttenuation, 0.1f, 5.f, "%.2f");
+
+                    // 블러 강도
+                    ImGui::SliderFloat("Radial Blur Strength", &m_RadialBlurDesc.fStrength, 0.f, 1.f, "%.2f");
+
+                    // 지속 시간
+                    ImGui::SliderFloat("Radial Blur Duration", &m_RadialBlurDesc.fDuration, 0.f, 10.f, "%.2f");
+
+                    // 페이드 시간
+                    ImGui::SliderFloat2("Radial Blur Fade Time", reinterpret_cast<_float*>(&m_RadialBlurDesc.vFadeTime), 0.f, 5.f, "%.1f");
+
+                    if (ImGui::Button("Start Radial Blur Animation"))
+                        m_pGameInstance->Start_RadialBlur(m_RadialBlurDesc);
+
+                    ImGui::Separator();
                 }
 
                 // ===== Motion Blur =====

@@ -61,7 +61,7 @@ private:
 	CTexture*						m_pTextureCom = { nullptr };
 	CTexture*						m_pMaskTextureCom = { nullptr };
 	CTexture*						m_pDissolveTextureCom = { nullptr };
-    CTexture* m_pNormalTextureCom = { nullptr };
+    CTexture*                       m_pNormalTextureCom = { nullptr };
 	CVIBuffer_Mesh_Instance*		m_pVIBufferCom = { nullptr };
 
 private :

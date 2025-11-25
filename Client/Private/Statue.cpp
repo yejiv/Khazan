@@ -65,10 +65,10 @@ HRESULT CStatue::Initialize_Clone(void* pArg)
     switch (m_iEventID)
     {
     case 0:
-        m_eEventType = EVENT_TYPE::STATUE_PUZZLE0;
+        m_eEventType = EVENT_TYPE::EMBARS_GIMMICK0;
         break;
     case 1:
-        m_eEventType = EVENT_TYPE::STATUE_PUZZLE1;
+        m_eEventType = EVENT_TYPE::EMBARS_GIMMICK1;
         break;
     default:
         m_eEventType = EVENT_TYPE::END;
@@ -76,12 +76,12 @@ HRESULT CStatue::Initialize_Clone(void* pArg)
     }
 
     if (EVENT_TYPE::END != m_eEventType)
-        m_pGameInstance->Subscribe_Event<EventVerticalGate>(ENUM_CLASS(m_eEventType), [&](const EventVerticalGate& e) { m_EventVTGate = e; });
+        m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(m_eEventType), [&](const EventGimmick& e) { m_EventGimmick = e; });
 
     if (m_iUnLockRotation == m_iRotation)
     {
-        m_EventVTGate.SetActiveStatue(m_iStatueIndex);
-        m_pGameInstance->Emit_Event<EventVerticalGate>(ENUM_CLASS(m_eEventType), m_EventVTGate);
+        m_EventGimmick.Set_SolveStatue(m_iStatueIndex);
+        m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(m_eEventType), m_EventGimmick);
     }
 
     return S_OK;
@@ -439,13 +439,13 @@ void CStatue::Animation_Change(_float fTimeDelta)
 
     if (m_iUnLockRotation == m_iRotation)
     {
-        m_EventVTGate.SetActiveStatue(m_iStatueIndex);
-        m_pGameInstance->Emit_Event<EventVerticalGate>(ENUM_CLASS(m_eEventType), m_EventVTGate);
+        m_EventGimmick.Set_SolveStatue(m_iStatueIndex);
+        m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(m_eEventType), m_EventGimmick);
     }
     else
     {
-        m_EventVTGate.SetDeActiveStatue(m_iStatueIndex);
-        m_pGameInstance->Emit_Event<EventVerticalGate>(ENUM_CLASS(m_eEventType), m_EventVTGate);
+        m_EventGimmick.Reset_SolveStatue(m_iStatueIndex);
+        m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(m_eEventType), m_EventGimmick);
     }
 
     if (true == m_isCollision)
@@ -457,6 +457,9 @@ void CStatue::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
 
+    if (m_EventGimmick.isUnLockGearAvailable(m_iEventID))
+        return;
+
     if (true == isIdleState())
         m_pGuide->Update_Visible(true);
 
@@ -466,6 +469,9 @@ void CStatue::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _
 void CStatue::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
+    if (m_EventGimmick.isUnLockGearAvailable(m_iEventID))
         return;
 
     m_isCollision = true;

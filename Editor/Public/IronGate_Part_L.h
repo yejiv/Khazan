@@ -23,7 +23,7 @@ public:
 
 private:
     CIronGate_Part_L(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CIronGate_Part_L(const CPartObject& Prototype);
+    CIronGate_Part_L(const CIronGate_Part_L& Prototype);
     virtual ~CIronGate_Part_L() = default;
 
 public:
