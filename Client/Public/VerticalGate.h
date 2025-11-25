@@ -40,6 +40,8 @@ private:
 
     _float m_fTimeAcc = { 0.f };
 
+    _uint m_iEventID = { 0 };
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
 

@@ -293,6 +293,10 @@ private:
     _float                      m_fLerpTime_Event = { 0.f };
     _bool                       m_isInteractEventSetting = { false };
 
+    _uint                       m_iInteractTypeEventID = { };
+    _uint                       m_iObjectInteractEventID = { };
+
+
 private:
     void						Subscribe_Events();
     void						Event_Interact_Object(_float fTimeDelta);

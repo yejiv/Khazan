@@ -52,7 +52,7 @@ HRESULT CElevatorL::Initialize_Clone(void* pArg)
 
     m_pModelCom->Set_AnimationBlend(true);
 
-    m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(EVENT_TYPE::HALL_ELEVATOR_UNLOCK), [&](const EventHallElevator& e) { m_Event = e; });
+    m_iEventID = m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(EVENT_TYPE::HALL_ELEVATOR_UNLOCK), [&](const EventHallElevator& e) { m_Event = e; });
 
     return S_OK;
 }
@@ -463,6 +463,8 @@ CGameObject* CElevatorL::Clone(void* pArg)
 
 void CElevatorL::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::HALL_ELEVATOR_UNLOCK), m_iEventID);
+
     __super::Free();
 
     Safe_Release(m_pBodyCom);

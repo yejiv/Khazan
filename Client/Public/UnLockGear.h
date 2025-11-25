@@ -57,6 +57,9 @@ private:
     EventHallElevator m_EventHallElevator = {};
     EventGimmick m_EventGimmick = {};
 
+    _uint m_iObjectInteractEventID = {};
+    _uint m_iGimmickTypeEventID = {};
+    _uint m_iEventID = {};
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_Collision(void* pArg);

@@ -90,6 +90,8 @@ private:
 
     _bool m_isMidToUpMove = { false };
 
+    _uint m_iEventID = { 0 };
+
 private:
     void Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4 vTargetPos, _float fDuration);
 

@@ -48,6 +48,8 @@ private:
 
     _float m_fColTimeAcc = { 0.f };
 
+    _uint m_iEventID = { 0 };
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_PartObjects(void* pArg);

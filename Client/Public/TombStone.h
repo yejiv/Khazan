@@ -60,6 +60,8 @@ private:
 	_bool m_isEnableEmissive = { true };
 	_bool m_isEnableBloom = { true };
 
+    _uint m_iEventID = { 0 };
+
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);

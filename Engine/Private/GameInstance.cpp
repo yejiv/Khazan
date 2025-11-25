@@ -992,7 +992,7 @@ void CGameInstance::Remove_BodyDesc(BodyID id)
 	m_pJolt_Manager->Remove_BodyDesc(id);
 }
 
-void CGameInstance::Destroy_Body(BodyID id)
+void CGameInstance::Destroy_Body(BodyID& id)
 {
     m_pJolt_Manager->Destroy_Body(id);
 }
@@ -1414,6 +1414,11 @@ CTexture* CGameInstance::Get_DecalTexture(DECALTYPE eType)
 void CGameInstance::Batch_Decal(CDecal* pDecal)
 {
     m_pDecal_Manager->Batch_Decal(pDecal);
+}
+
+void CGameInstance::Decal_Clear()
+{
+    m_pDecal_Manager->Decal_Clear();
 }
 
 #pragma endregion

@@ -113,14 +113,14 @@ HRESULT CEmbars_Trigger::Ready_TriggerType(void* pArg)
         /*m_iEventID = 0;
         string filePath = "../../Client/Bin/Data/Camera/Animation/Statue1";
         m_pClientInstance->Camera_Set_Animation_Json(filePath);
-        m_pGameInstance->Subscribe_Event<EventVerticalGate>(ENUM_CLASS(EVENT_TYPE::STATUE_PUZZLE0), [&](const EventVerticalGate& e) { m_EventVTGate = e; });*/        
+        m_iEventID = m_pGameInstance->Subscribe_Event<EventVerticalGate>(ENUM_CLASS(EVENT_TYPE::STATUE_PUZZLE0), [&](const EventVerticalGate& e) { m_EventVTGate = e; });*/        
     }
     else if (m_strTriggerKey == "Puzzle_2")
     {
         /*m_iEventID = 1;
         string filePath = "../../Client/Bin/Data/Camera/Animation/Statue2";
         m_pClientInstance->Camera_Set_Animation_Json(filePath);
-        m_pGameInstance->Subscribe_Event<EventVerticalGate>(ENUM_CLASS(EVENT_TYPE::STATUE_PUZZLE1), [&](const EventVerticalGate& e) { m_EventVTGate = e; });*/
+        m_iEventID = m_pGameInstance->Subscribe_Event<EventVerticalGate>(ENUM_CLASS(EVENT_TYPE::STATUE_PUZZLE1), [&](const EventVerticalGate& e) { m_EventVTGate = e; });*/
     }
 
     /*
@@ -243,6 +243,16 @@ CGameObject* CEmbars_Trigger::Clone(void* pArg)
 
 void CEmbars_Trigger::Free()
 {
+    if (m_strTriggerKey == "Puzzle_1")
+    {
+        //m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::STATUE_PUZZLE0), m_iEventID);
+    }
+    else if (m_strTriggerKey == "Puzzle_2")
+    {
+        //m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::STATUE_PUZZLE1), m_iEventID);
+    }
+    
+
     __super::Free();
 
     Safe_Release(m_pClientInstance);

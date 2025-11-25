@@ -42,10 +42,10 @@ HRESULT CPlayer::Initialize_Clone(void* pArg)
         return E_FAIL;
 
 #pragma region 상호 작용 맵 오브젝트 임시 테스트용
-    m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e)
-        {
-            m_EventInteract = e;
-        });
+    //m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e)
+    //    {
+    //        m_EventInteract = e;
+    //    });
 #pragma endregion
     
     return S_OK;

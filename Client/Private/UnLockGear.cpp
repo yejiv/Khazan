@@ -48,7 +48,7 @@ HRESULT CUnLockGear::Initialize_Clone(void* pArg)
     m_pModelCom->Set_AnimationLoop(true);
     m_pModelCom->Set_AnimationBlend(true);
 
-    m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
+    m_iObjectInteractEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
             m_Event = e;
         });
@@ -65,14 +65,14 @@ HRESULT CUnLockGear::Initialize_Clone(void* pArg)
         m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK2;
         break;
     }
-    m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(m_eGimmickType), [&](const EventGimmick& e)
+    m_iGimmickTypeEventID =  m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(m_eGimmickType), [&](const EventGimmick& e)
         {
             m_EventGimmick = e;
         });
 
     m_eEventType = EVENT_TYPE::HALL_ELEVATOR_UNLOCK;
 
-    m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(m_eEventType), [&](const EventHallElevator& e) { m_EventHallElevator = e; });
+    m_iEventID = m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(m_eEventType), [&](const EventHallElevator& e) { m_EventHallElevator = e; });
 
     return S_OK;
 }
@@ -388,6 +388,10 @@ CGameObject* CUnLockGear::Clone(void* pArg)
 
 void CUnLockGear::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iObjectInteractEventID);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(m_eGimmickType), m_iGimmickTypeEventID);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(m_eEventType), m_iEventID);
+
     __super::Free();
 
     Safe_Release(m_pStaticCom);

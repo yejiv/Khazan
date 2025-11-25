@@ -54,6 +54,8 @@ private:
     FOG_CONFIG m_FogConfig = {};
     //EventVerticalGate m_EventVTGate = {};
 
+    _uint m_iEventID = { 0 };
+
 private:
     void Set_FogConfig(FOG_CONFIG FogConfig);
 

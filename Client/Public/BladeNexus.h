@@ -74,6 +74,8 @@ private:
     _bool m_isFinishedRadialBlur = {};
     _float m_fRadialBlurTimeAcc = {};
 
+    _uint m_iEventID = { 0 };
+
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
