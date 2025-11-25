@@ -50,7 +50,7 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
     m_pModelCom->Play_Animation(0.f);
     m_pModelCom->Set_AnimationBlend(true);
 
-    m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
+    m_iEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
             m_Event = e;
         });
@@ -187,8 +187,6 @@ HRESULT CBigChest::Ready_Interaction_Guide(void* pArg)
 {
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
-
-    Safe_AddRef(m_pGuide);
 
     m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("열기"), 1.f);
 
@@ -348,7 +346,7 @@ void CBigChest::Animation_Change(_float fTimeDelta)
     }
 }
 
-void CBigChest::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBigChest::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -359,7 +357,7 @@ void CBigChest::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, 
     m_isCollision = true;
 }
 
-void CBigChest::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBigChest::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -367,7 +365,7 @@ void CBigChest::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _
     m_isCollision = true;
 }
 
-void CBigChest::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CBigChest::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -405,6 +403,8 @@ CGameObject* CBigChest::Clone(void* pArg)
 
 void CBigChest::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iEventID);
+
     __super::Free();
 
     Safe_Release(m_pStaticCom);
@@ -413,6 +413,5 @@ void CBigChest::Free()
     if (nullptr != m_pGuide)
     {
         m_pGuide->Set_IsDead(true);
-        Safe_Release(m_pGuide);
     }
 }

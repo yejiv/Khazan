@@ -23,6 +23,9 @@ public:
     void                        Batch_Decal(class CDecal* pDecal) { m_Decals.push_back(pDecal); }
 #pragma endregion
 
+public:
+    void Decal_Clear();
+
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
 	ID3D11DeviceContext*		m_pContext = { nullptr };

@@ -190,12 +190,12 @@ HRESULT CProjectile_Boomarang::Bind_ShaderResources()
     return S_OK;
 }
 
-void CProjectile_Boomarang::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CProjectile_Boomarang::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CProjectile_Boomarang::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CProjectile_Boomarang::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
    
@@ -229,7 +229,7 @@ void CProjectile_Boomarang::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherOb
     }
 }
 
-void CProjectile_Boomarang::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CProjectile_Boomarang::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }

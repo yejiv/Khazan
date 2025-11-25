@@ -42,8 +42,6 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 			m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
 			if (nullptr == m_pBrutalAttack)
 				return;
-			Safe_AddRef(m_pBrutalAttack);
-			
 
 			m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
 			m_pBrutalAttack->Setting_BrutalAttack(m_vBonePosition, m_fGroggyTime);
@@ -113,6 +111,7 @@ void CAS_Groggy_Yetuga::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pBrutalAttack);
+    if (m_pBrutalAttack)
+        m_pBrutalAttack->Set_IsDead(true);
 
 }

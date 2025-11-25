@@ -92,31 +92,6 @@ HRESULT CDummy::Render()
     return S_OK;
 }
 
-void CDummy::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
-{
-    //m_pBodyCom->Add_Impulse(_float3(0.f, 100.f, 0.f));
-
-    if (ENUM_CLASS(COLLISION_LAYER::PLAYER) == iOtherObjectLayer)
-    {
-        CTransform* pTransform = dynamic_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")));
-
-        _vector vOtherPos = pTransform->Get_State(STATE::POSITION);
-        _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
-
-        _vector vDir = vPos - vOtherPos;
-        XMVector4Normalize(vDir);
-
-        m_pBodyCom->Set_Velocity(_float3(vDir.m128_f32[0] * 5, vDir.m128_f32[1] * 5, vDir.m128_f32[2] * 5));
-        m_pBodyCom->Add_Impulse(1);
-        m_pBodyCom->Add_Torque(1);
-        m_pBodyCom->Add_Force(1);
-    }
-}
-
-void CDummy::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
-{
-}
-
 HRESULT CDummy::Ready_Components()
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),

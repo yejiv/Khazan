@@ -113,7 +113,7 @@ void CProjectile_Rock_Yetuga::Reset()
 
 }
 
-void CProjectile_Rock_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CProjectile_Rock_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
     if (COLLISION_LAYER::PLAYER == eLayer)
@@ -128,12 +128,12 @@ void CProjectile_Rock_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOthe
     }
 }
 
-void CProjectile_Rock_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CProjectile_Rock_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CProjectile_Rock_Yetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CProjectile_Rock_Yetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }

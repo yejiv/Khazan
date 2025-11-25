@@ -60,8 +60,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
 
     if (FAILED(Ready_AnimationEvent()))
         return E_FAIL;
-
-
+    
     // m_pModelCom->Set_Animation(5);
      /* 부모 트랜스폼 연결 */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
@@ -375,7 +374,7 @@ void CBody_Khazan_Spear::Render_Part_MotionVector(CModel* pModel)
     }
 }
 
-void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
@@ -437,12 +436,12 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 
 }
 
-void CBody_Khazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBody_Khazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER)) {
         CGameObject* pObj = pDesc->pGameObject;
@@ -1333,7 +1332,7 @@ void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
     {
         m_isSpearTipActive = false;
         m_isSpearFullExtension = true;
-       // m_pBodyCom_SpearTip1->Collision_Active(false);
+        //m_pBodyCom_SpearTip1->Collision_Active(false);
     }
 
 }

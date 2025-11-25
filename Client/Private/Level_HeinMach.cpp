@@ -183,20 +183,14 @@ HRESULT CLevel_HeinMach::Initialize()
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_Q))
-	{
-		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
-	}
-
-	if (m_pGameInstance->Key_Down(DIK_F1))
-	{
-		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::FREE));
-	}
-	else if (m_pGameInstance->Key_Down(DIK_F2))
-	{
-		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::PLAYER));
-	}
-
+    if (m_pGameInstance->Key_Down(DIK_F1))
+    {
+        m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
+    }
+    else if (m_pGameInstance->Key_Down(DIK_F2))
+    {
+        m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
+    }
 
     if (m_pGameInstance->Key_Down(DIK_RETURN))
         if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
@@ -214,7 +208,6 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 
         m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
     }
-
 
 	return;
 }
@@ -256,65 +249,44 @@ HRESULT CLevel_HeinMach::Ready_Lights()
 
 HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 {
-	CCamera_Compre::CAMERA_COMPRE_DESC	CameraFreeDesc{};
+    CCamera_Compre::CAMERA_COMPRE_DESC	PlayerCameraDesc{};
 
-	CameraFreeDesc.vEye = _float4(0.39f, 3.97f, -1.79f, 1.f);
-	CameraFreeDesc.vAt = _float4(-0.26f, -0.1f, 0.96f, 1.f);
-	CameraFreeDesc.fFovy = XMConvertToRadians(60.0f);
-	CameraFreeDesc.fNear = 0.1f;
-	CameraFreeDesc.fFar = 6000.f;
-	CameraFreeDesc.fSpeedPerSec = 40.f;
-	CameraFreeDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-	CameraFreeDesc.fMouseSensor = 0.2f;
-	CameraFreeDesc.iCameraType = ENUM_CLASS(CAMERATYPE::FREE);
+    PlayerCameraDesc.vEye = _float4(0.51f, 2.08f, -3.94f, 1.f);
+    PlayerCameraDesc.vAt = _float4(-0.13f, -0.12f, 0.98f, 1.f);
+    PlayerCameraDesc.fFovy = XMConvertToRadians(60.0f);
+    PlayerCameraDesc.fNear = 0.1f;
+    PlayerCameraDesc.fFar = 6000.f;
+    PlayerCameraDesc.fSpeedPerSec = 10.f;
+    PlayerCameraDesc.fRotationPerSec = XMConvertToRadians(90.0f);
+    PlayerCameraDesc.fMouseSensor = 0.2f;
+    PlayerCameraDesc.iCameraType = ENUM_CLASS(CAMERATYPE::PLAYER);
 
-	CCamera_Compre* pCamera_Free = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Compre"), &CameraFreeDesc));
-	pCamera_Free->Set_IsActive(false);
-
-	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::HEINMACH), pCamera_Free);
-
-	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag, pCamera_Free);
-
-	CCamera_Compre::CAMERA_COMPRE_DESC	PlayerCameraDesc{};
-
-	PlayerCameraDesc.vEye = _float4(0.51f, 2.08f, -3.94f, 1.f);
-	PlayerCameraDesc.vAt = _float4(-0.13f, -0.12f, 0.98f, 1.f);
-	PlayerCameraDesc.fFovy = XMConvertToRadians(60.0f);
-	PlayerCameraDesc.fNear = 0.1f;
-	PlayerCameraDesc.fFar = 6000.f;
-	PlayerCameraDesc.fSpeedPerSec = 10.f;
-	PlayerCameraDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-	PlayerCameraDesc.fMouseSensor = 0.2f;
-	PlayerCameraDesc.iCameraType = ENUM_CLASS(CAMERATYPE::PLAYER);
-
-	CCamera_Compre* pCamera_Player = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Compre"), &PlayerCameraDesc));
-	pCamera_Player->Set_IsActive(false);
-	CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player"));
-	pCamera_Player->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
+    CCamera_Compre* pCamera_Player = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Camera_Compre"), &PlayerCameraDesc));
+    pCamera_Player->Set_IsActive(false);
+    CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player"));
+    pCamera_Player->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 
     static_cast<CKhazan_Spear*>(pPlayer)->Set_Camera(pCamera_Player);
 
-	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::HEINMACH), pCamera_Player);
+    m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::HEINMACH), pCamera_Player);
 
-	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag, pCamera_Player);
+    m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag, pCamera_Player);
 
-	m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::PLAYER));
-
-
+    m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::PLAYER));
 
 	return S_OK;
 }
 
 HRESULT CLevel_HeinMach::Ready_Layer_Player(const _wstring& strLayerTag)
 {
-	  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+	  /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
 	  	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
-	  	return E_FAIL;
+	  	return E_FAIL;*/
 
     // Motion Trail Test
-    //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-    //    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
-    //    return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
+        return E_FAIL;
 
 	return S_OK;
 }
