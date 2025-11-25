@@ -17,6 +17,154 @@ HRESULT CLight_Manager::Initialize(_uint iNumLevels)
 	return S_OK;
 }
 
+void CLight_Manager::Update(_float fTimeDelta)
+{
+    if (false == m_isTransition)
+        return;
+
+    m_fTransTimeAcc += fTimeDelta;
+
+    if (m_fTransTimeAcc >= m_TargetLightDesc.fDuration)
+    {
+        LIGHT_DESC FinalLightDesc = m_StartLightDesc;
+
+        if (true == m_TargetLightDesc.isReturnToStart)
+            m_pTransLight->Set_LightDesc(FinalLightDesc);
+        else
+        {
+            FinalLightDesc.vDiffuse = m_TargetLightDesc.vDiffuse;
+            FinalLightDesc.vAmbient = m_TargetLightDesc.vAmbient;
+            FinalLightDesc.vSpecular = m_TargetLightDesc.vSpecular;
+        }
+
+        m_pTransLight->Set_LightDesc(FinalLightDesc);
+
+        m_isTransition = false;
+        Safe_Release(m_pTransLight);
+        m_pTransLight = nullptr;
+        return;
+    }
+
+    // 보간 이전 정보 저장해놔야 함
+    // 보간 시작 함수에서 태그, 트랜지션 디스크립션 받고 해당 태그의 Light의 광원 구성 정보 가져와서 저장
+    
+    // Fade In
+    if (m_fTransTimeAcc <= m_TargetLightDesc.vFadeTime.x)
+    {
+        // D, A, S lerp
+        _float fRatio = m_fTransTimeAcc / m_TargetLightDesc.vFadeTime.x;
+
+        LIGHT_DESC CurLightDesc = m_StartLightDesc;
+        _vector vCurDiffuse, vCurAmbient, vCurSpecular;
+
+        // D, A, S lerp
+        _vector vStartDiffuse = XMLoadFloat4(&m_StartLightDesc.vDiffuse);
+        _vector vStartAmbient = XMLoadFloat4(&m_StartLightDesc.vAmbient);
+        _vector vStartSpecular = XMLoadFloat4(&m_StartLightDesc.vSpecular);
+
+        _vector vTargetDiffuse = XMLoadFloat4(&m_TargetLightDesc.vDiffuse);
+        _vector vTargetAmbient = XMLoadFloat4(&m_TargetLightDesc.vAmbient);
+        _vector vTargetSpecular = XMLoadFloat4(&m_TargetLightDesc.vSpecular);
+
+        vCurDiffuse = XMVectorLerp(vStartDiffuse, vTargetDiffuse, fRatio);
+        vCurAmbient = XMVectorLerp(vStartAmbient, vTargetAmbient, fRatio);
+        vCurSpecular = XMVectorLerp(vStartSpecular, vTargetSpecular, fRatio);
+
+        XMStoreFloat4(&CurLightDesc.vDiffuse, vCurDiffuse);
+        XMStoreFloat4(&CurLightDesc.vAmbient, vCurAmbient);
+        XMStoreFloat4(&CurLightDesc.vSpecular, vCurSpecular);
+
+        m_pTransLight->Set_LightDesc(CurLightDesc);
+    }
+    else if (true == m_TargetLightDesc.isReturnToStart && m_fTransTimeAcc >= m_TargetLightDesc.vFadeTime.y)
+    {
+        _float fFadeDuration = m_TargetLightDesc.fDuration - m_TargetLightDesc.vFadeTime.y;
+        _float fFadeTimeAcc = m_fTransTimeAcc - m_TargetLightDesc.vFadeTime.y;
+        _float fRatio = (fFadeTimeAcc / fFadeDuration);
+
+        LIGHT_DESC CurLightDesc = m_StartLightDesc;
+        _vector vCurDiffuse, vCurAmbient, vCurSpecular;
+
+        // D, A, S lerp
+        _vector vStartDiffuse = XMLoadFloat4(&m_StartLightDesc.vDiffuse);
+        _vector vStartAmbient = XMLoadFloat4(&m_StartLightDesc.vAmbient);
+        _vector vStartSpecular = XMLoadFloat4(&m_StartLightDesc.vSpecular);
+
+        _vector vTargetDiffuse = XMLoadFloat4(&m_TargetLightDesc.vDiffuse);
+        _vector vTargetAmbient = XMLoadFloat4(&m_TargetLightDesc.vAmbient);
+        _vector vTargetSpecular = XMLoadFloat4(&m_TargetLightDesc.vSpecular);
+
+        vCurDiffuse = XMVectorLerp(vTargetDiffuse, vStartDiffuse, fRatio);
+        vCurAmbient = XMVectorLerp(vTargetAmbient, vStartAmbient, fRatio);
+        vCurSpecular = XMVectorLerp(vTargetSpecular, vStartSpecular, fRatio);
+
+        XMStoreFloat4(&CurLightDesc.vDiffuse, vCurDiffuse);
+        XMStoreFloat4(&CurLightDesc.vAmbient, vCurAmbient);
+        XMStoreFloat4(&CurLightDesc.vSpecular, vCurSpecular);
+
+        m_pTransLight->Set_LightDesc(CurLightDesc);
+    }
+
+    //  // Fade Out
+    //  if (m_fTransTimeAcc > m_TargetLightDesc.vFadeTime.y)
+    //  {
+    //      _float fFadeDuration = m_TargetLightDesc.fDuration - m_TargetLightDesc.vFadeTime.y;
+    //      _float fFadeTimeAcc = m_fTransTimeAcc - m_TargetLightDesc.vFadeTime.y;
+    //      _float fRatio = (fFadeTimeAcc / fFadeDuration);
+    //  
+    //      LIGHT_DESC CurLightDesc = m_StartLightDesc;
+    //      _vector vCurDiffuse, vCurAmbient, vCurSpecular;
+    //  
+    //      // D, A, S lerp
+    //      _vector vStartDiffuse = XMLoadFloat4(&m_StartLightDesc.vDiffuse);
+    //      _vector vStartAmbient = XMLoadFloat4(&m_StartLightDesc.vAmbient);
+    //      _vector vStartSpecular = XMLoadFloat4(&m_StartLightDesc.vSpecular);
+    //  
+    //      _vector vTargetDiffuse = XMLoadFloat4(&m_TargetLightDesc.vDiffuse);
+    //      _vector vTargetAmbient = XMLoadFloat4(&m_TargetLightDesc.vAmbient);
+    //      _vector vTargetSpecular = XMLoadFloat4(&m_TargetLightDesc.vSpecular);
+    //  
+    //      vCurDiffuse = XMVectorLerp(vTargetDiffuse, vStartDiffuse, fRatio);
+    //      vCurAmbient = XMVectorLerp(vTargetAmbient, vStartAmbient, fRatio);
+    //      vCurSpecular = XMVectorLerp(vTargetSpecular, vStartSpecular, fRatio);
+    //      
+    //      XMStoreFloat4(&CurLightDesc.vDiffuse, vCurDiffuse);
+    //      XMStoreFloat4(&CurLightDesc.vAmbient, vCurAmbient);
+    //      XMStoreFloat4(&CurLightDesc.vSpecular, vCurSpecular);
+    //  
+    //      m_pTransLight->Set_LightDesc(CurLightDesc);
+    //  }
+    //  
+    //  // Fade In
+    //  if (m_fTransTimeAcc < m_TargetLightDesc.vFadeTime.x)
+    //  {
+    //      LIGHT_DESC CurLightDesc = m_StartLightDesc;
+    //      _vector vCurDiffuse, vCurAmbient, vCurSpecular;
+    //  
+    //      // D, A, S lerp
+    //      _float fRatio = m_fTransTimeAcc / m_TargetLightDesc.vFadeTime.x;
+    //      
+    //      // D, A, S lerp
+    //      _vector vStartDiffuse = XMLoadFloat4(&m_StartLightDesc.vDiffuse);
+    //      _vector vStartAmbient = XMLoadFloat4(&m_StartLightDesc.vAmbient);
+    //      _vector vStartSpecular = XMLoadFloat4(&m_StartLightDesc.vSpecular);
+    //  
+    //      _vector vTargetDiffuse = XMLoadFloat4(&m_TargetLightDesc.vDiffuse);
+    //      _vector vTargetAmbient = XMLoadFloat4(&m_TargetLightDesc.vAmbient);
+    //      _vector vTargetSpecular = XMLoadFloat4(&m_TargetLightDesc.vSpecular);
+    //  
+    //      vCurDiffuse = XMVectorLerp(vStartDiffuse, vTargetDiffuse, fRatio);
+    //      vCurAmbient = XMVectorLerp(vStartAmbient, vTargetAmbient, fRatio);
+    //      vCurSpecular = XMVectorLerp(vStartSpecular, vTargetSpecular, fRatio);
+    //  
+    //      XMStoreFloat4(&CurLightDesc.vDiffuse, vCurDiffuse);
+    //      XMStoreFloat4(&CurLightDesc.vAmbient, vCurAmbient);
+    //      XMStoreFloat4(&CurLightDesc.vSpecular, vCurSpecular);
+    //  
+    //      m_pTransLight->Set_LightDesc(CurLightDesc);
+    //  }
+}
+
 HRESULT CLight_Manager::Add_Light(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_DESC& LightDesc, _bool isEnable)
 {
 	if (nullptr != Find_Light(strLightTag, iLevelIndex))
@@ -91,6 +239,24 @@ void CLight_Manager::Clear(_uint iLevelIndex)
 	m_pLights[iLevelIndex].clear();
 }
 
+void CLight_Manager::Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc)
+{
+    CLight* pLight = Find_Light(strLightTag, iLevelIndex);
+    if (nullptr == pLight || nullptr != m_pTransLight)
+        return;
+
+    m_pTransLight = pLight;
+    Safe_AddRef(m_pTransLight);
+    
+    m_StartLightDesc = *pLight->Get_LightDesc();
+
+    m_isTransition = true;
+    m_fTransTimeAcc = 0.f;
+    m_TargetLightDesc = Desc;
+    // 페이드 아웃 시작 시간으로 변경
+    m_TargetLightDesc.vFadeTime.y = m_TargetLightDesc.fDuration - m_TargetLightDesc.vFadeTime.y;
+}
+
 const LIGHT_DESC* CLight_Manager::Get_LightDesc(const _wstring& strLightTag, _uint iLevelIndex)
 {
 	CLight* pLight = Find_Light(strLightTag, iLevelIndex);
@@ -98,6 +264,19 @@ const LIGHT_DESC* CLight_Manager::Get_LightDesc(const _wstring& strLightTag, _ui
 		return nullptr;
 
 	return pLight->Get_LightDesc();
+}
+
+const vector<_wstring>& CLight_Manager::Get_LightTags(_uint iLevelIndex)
+{
+    m_strLightTags.clear();
+
+    for (auto& Pair : m_pLights[iLevelIndex])
+    {
+        if (nullptr != Pair.second)
+            m_strLightTags.push_back(Pair.first);
+    }
+
+    return m_strLightTags;
 }
 
 CLight* CLight_Manager::Find_Light(const _wstring& strLightTag, _uint iLevelIndex)
@@ -108,6 +287,10 @@ CLight* CLight_Manager::Find_Light(const _wstring& strLightTag, _uint iLevelInde
 		return nullptr;
 
 	return iter->second;
+}
+
+void CLight_Manager::Lerp_LightProperties(_fvector vStart, _fvector vTarget)
+{
 }
 
 CLight_Manager* CLight_Manager::Create(_uint iNumLevels)
@@ -126,6 +309,8 @@ CLight_Manager* CLight_Manager::Create(_uint iNumLevels)
 void CLight_Manager::Free()
 {
 	__super::Free();
+
+    Safe_Release(m_pTransLight);
 
 	for (_uint i = 0; i < m_iNumLevels; ++i)
 	{

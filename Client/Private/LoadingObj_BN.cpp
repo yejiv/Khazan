@@ -34,7 +34,7 @@ HRESULT CLoadingObj_BN::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
     m_pModelCom->Set_AnimationLoop(true);
 
-    m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e) { m_Event = e; });
+    m_iEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e) { m_Event = e; });
 
     return S_OK;
 }
@@ -238,5 +238,7 @@ CGameObject* CLoadingObj_BN::Clone(void* pArg)
 
 void CLoadingObj_BN::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iEventID);
+
     __super::Free();
 }

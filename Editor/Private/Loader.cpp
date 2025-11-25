@@ -339,6 +339,34 @@ HRESULT CLoader::Loading_For_Map_Level()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_A/WP_BGQ_Elevator_Move_001_03/WP_BGQ_Elevator_Move_001_03.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 바이퍼 가는 문
+    /* Prototype_Component_Model_GiantGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_GiantGate"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_Base_GiantDoor_Open_001/WIP_Base_GiantDoor_Open_001.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_GiantGate_Part */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_GiantGate_Part"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_A/WIP_BGQ_Door_Wood_001/WIP_BGQ_Door_Wood_001.dat")), E_FAIL);
+#pragma endregion
+
+#pragma region NPC ( 야매 )
+    /* Prototype_Component_Model_NPC_Daphrona */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_NPC_Daphrona"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_NPC_Seona/C_NPC_Seona.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_NPC_Duimuk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_NPC_Duimuk"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_NPC_Duimuk/C_NPC_Duimuk.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_NPC_Duimuk_Part */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_NPC_Duimuk_Part"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_I_Duimuk_Abacus/C_I_Duimuk_Abacus.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_NPC_Danjin */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_NPC_Danjin"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_NPC_Danjin001/C_NPC_Danjin001.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거 모델 원형 ( 야매? )
@@ -545,6 +573,38 @@ HRESULT CLoader::Loading_For_Map_Level()
         CElevator_Outer::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
+#pragma region 바이퍼 가는 문
+    /* Prototype_GameObject_Prop_GiantGate */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_GiantGate"),
+        CGiantGate::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_GiantGate_Part_L */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_GiantGate_Part_L"),
+        CGiantGate_Part_L::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_GiantGate_Part_R */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_GiantGate_Part_R"),
+        CGiantGate_Part_R::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region NPC ( 야매 )
+    /* Prototype_GameObject_Prop_NPC_Daphrona */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Daphrona"),
+        CNPC_Daphrona::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Duimuk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Duimuk"),
+        CNPC_Duimuk::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Duimuk_Part */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Duimuk_Part"),
+        CDuimuk_Part::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Danjin */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Danjin"),
+        CNPC_Danjin::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 게임오브젝트 원형 로딩 ( 트리거 및 몬스터 )
@@ -614,7 +674,7 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_Texture_MeshEffect(Diffuse)
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Slash"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/SowardTrailTexture/Slash_%d.png"), 28))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/SowardTrailTexture/Slash_%d.png"), 33))))
 		return E_FAIL;
 
 	// Prototype_Component_Texture_MeshEffect(Masking)

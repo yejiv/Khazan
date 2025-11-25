@@ -38,6 +38,7 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
     m_pGameInstance->DeleteOctree();
 	m_pGameInstance->Destroy_Jolt();
 	m_pGameInstance->Initialize_Jolt(ENUM_CLASS(COLLISION_LAYER::END));
+    m_pGameInstance->Decal_Clear();
 	Ready_ObjectLayer();
 	
 	/* 현재 레벨을 구성해주기 위한 객체들을 생성한다. */

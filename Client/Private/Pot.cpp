@@ -88,7 +88,7 @@ HRESULT CPot::Render()
 }
 
 
-void CPot::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CPot::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK) ||
         iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK))
@@ -119,12 +119,12 @@ void CPot::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _floa
 
 }
 
-void CPot::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CPot::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CPot::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CPot::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }

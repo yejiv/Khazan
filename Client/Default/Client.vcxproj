@@ -275,6 +275,9 @@
     <ClInclude Include="..\Public\Fence.h" />
     <ClInclude Include="..\Public\FSM_Imp_Melee.h" />
     <ClInclude Include="..\Public\GearGate.h" />
+    <ClInclude Include="..\Public\GiantGate.h" />
+    <ClInclude Include="..\Public\GiantGate_Part_L.h" />
+    <ClInclude Include="..\Public\GiantGate_Part_R.h" />
     <ClInclude Include="..\Public\Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Sword.h" />
     <ClInclude Include="..\Public\IronGate.h" />
@@ -582,6 +585,9 @@
     <ClCompile Include="..\private\Dragonian_Rampage.cpp" />
     <ClCompile Include="..\Private\FSM_Viper.cpp" />
     <ClCompile Include="..\Private\GearGate.cpp" />
+    <ClCompile Include="..\Private\GiantGate.cpp" />
+    <ClCompile Include="..\Private\GiantGate_Part_L.cpp" />
+    <ClCompile Include="..\Private\GiantGate_Part_R.cpp" />
     <ClCompile Include="..\Private\GSword_Khazan_GS.cpp" />
     <ClCompile Include="..\Private\Collection_Info.cpp" />
     <ClCompile Include="..\Private\AI_Controller_Gomdol.cpp" />

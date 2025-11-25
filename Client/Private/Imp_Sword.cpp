@@ -74,7 +74,6 @@ void CImp_Sword::Priority_Update(_float fTimeDelta)
 
 void CImp_Sword::Update(_float fTimeDelta)
 {
-
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 
     for (uint32_t i = 0; i < 3; i++)
@@ -86,16 +85,19 @@ void CImp_Sword::Update(_float fTimeDelta)
     );
 
 
-    _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
+    m_pBodyComp->Collision_Active(m_isOnAttackCollision);
+    if (m_isOnAttackCollision)
+    {
+        _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
 
-    _vector vScale, vQuat, vPos;
-    XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
+        _vector vScale, vQuat, vPos;
+        XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
 
-    m_pBodyComp->Sync_Update(WeaponWorld);
-    m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
-
+        m_pBodyComp->Sync_Update(WeaponWorld);
+        m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
+    }
    
-    XMStoreFloat4(&m_vTipPos,vPos);
+    //XMStoreFloat4(&m_vTipPos,vPos);
     
 }
 
@@ -124,7 +126,7 @@ HRESULT CImp_Sword::Render()
     return S_OK;
 }
 
-void CImp_Sword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CImp_Sword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
     if (COLLISION_LAYER::PLAYER == eLayer)
@@ -135,11 +137,11 @@ void CImp_Sword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer,
 
 }
 
-void CImp_Sword::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CImp_Sword::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 }
 
-void CImp_Sword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CImp_Sword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 }
 

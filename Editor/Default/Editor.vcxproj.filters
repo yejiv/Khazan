@@ -328,6 +328,30 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL\Elevator_Outer">
       <UniqueIdentifier>{2ed6f907-2e61-4aea-a5ca-605b56de468c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate">
+      <UniqueIdentifier>{dfee662e-921b-49bf-a64b-efa3940783b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate\Right">
+      <UniqueIdentifier>{c6d6d37e-ad40-4c73-9835-f6550ca2efd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate\Left">
+      <UniqueIdentifier>{5027d2d0-5487-47e6-b7f8-02a5df67e1fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\14.NPC">
+      <UniqueIdentifier>{f7697513-8ee3-4170-b46d-b62f3c1bf31d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Danjin">
+      <UniqueIdentifier>{4bfd260c-69e1-439c-8733-fb68b3971f3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk">
+      <UniqueIdentifier>{eb3838f7-d129-4fa6-a44d-6211db7e63bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk\Part">
+      <UniqueIdentifier>{e7bc52f9-9edf-49a6-9625-d5592b3e8369}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Daphrona">
+      <UniqueIdentifier>{69e4adcd-7547-413d-9956-b394b20dd7be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -624,6 +648,27 @@
     <ClInclude Include="..\public\AnimationTool.h">
       <Filter>02.GameObject\Animation\00.Tool</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\GiantGate.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GiantGate_Part_L.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate\Left</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GiantGate_Part_R.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate\Right</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC_Daphrona.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Daphrona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC_Danjin.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Danjin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC_Duimuk.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Duimuk_Part.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk\Part</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -914,6 +959,27 @@
     </ClCompile>
     <ClCompile Include="..\Private\Elevator_Outer.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL\Elevator_Outer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GiantGate.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GiantGate_Part_L.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate\Left</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GiantGate_Part_R.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate\Right</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Daphrona.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Daphrona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Danjin.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Danjin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Duimuk.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Duimuk_Part.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk\Part</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

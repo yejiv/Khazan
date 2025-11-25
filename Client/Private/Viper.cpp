@@ -125,7 +125,7 @@ HRESULT CViper::Render()
     return S_OK;
 }
 
-void CViper::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CViper::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     //COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
 
@@ -183,12 +183,12 @@ void CViper::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _fl
     //}
 }
 
-void CViper::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CViper::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CViper::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CViper::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }

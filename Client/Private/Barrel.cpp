@@ -88,7 +88,7 @@ HRESULT CBarrel::Render()
 }
 
 
-void CBarrel::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBarrel::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK) ||
         iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK))
@@ -117,12 +117,12 @@ void CBarrel::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
 
 }
 
-void CBarrel::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBarrel::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CBarrel::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CBarrel::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }

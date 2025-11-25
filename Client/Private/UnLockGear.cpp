@@ -48,7 +48,7 @@ HRESULT CUnLockGear::Initialize_Clone(void* pArg)
     m_pModelCom->Set_AnimationLoop(true);
     m_pModelCom->Set_AnimationBlend(true);
 
-    m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
+    m_iObjectInteractEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
             m_Event = e;
         });
@@ -65,14 +65,14 @@ HRESULT CUnLockGear::Initialize_Clone(void* pArg)
         m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK2;
         break;
     }
-    m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(m_eGimmickType), [&](const EventGimmick& e)
+    m_iGimmickTypeEventID =  m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(m_eGimmickType), [&](const EventGimmick& e)
         {
             m_EventGimmick = e;
         });
 
     m_eEventType = EVENT_TYPE::HALL_ELEVATOR_UNLOCK;
 
-    m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(m_eEventType), [&](const EventHallElevator& e) { m_EventHallElevator = e; });
+    m_iEventID = m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(m_eEventType), [&](const EventHallElevator& e) { m_EventHallElevator = e; });
 
     return S_OK;
 }
@@ -203,8 +203,6 @@ HRESULT CUnLockGear::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    Safe_AddRef(m_pGuide);
-
     m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("해제해잇"), 1.f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_UI"), m_pGuide);
@@ -320,7 +318,7 @@ void CUnLockGear::Animation_Change(_float fTimeDelta)
     }
 }
 
-void CUnLockGear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CUnLockGear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -339,7 +337,7 @@ void CUnLockGear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer
     }
 }
 
-void CUnLockGear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CUnLockGear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -350,7 +348,7 @@ void CUnLockGear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer,
     }
 }
 
-void CUnLockGear::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer)
+void CUnLockGear::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -388,8 +386,14 @@ CGameObject* CUnLockGear::Clone(void* pArg)
 
 void CUnLockGear::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iObjectInteractEventID);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(m_eGimmickType), m_iGimmickTypeEventID);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(m_eEventType), m_iEventID);
+
     __super::Free();
 
     Safe_Release(m_pStaticCom);
     Safe_Release(m_pTriggerCom);
+    if (m_pGuide)
+        m_pGuide->Set_IsDead(true);
 }

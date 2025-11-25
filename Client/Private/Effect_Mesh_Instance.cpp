@@ -23,7 +23,7 @@ HRESULT CEffect_Mesh_Instance::Initialize_Prototype(void* pArg)
         return E_FAIL;
 
     m_sData = *static_cast<PARTICLE_DESC*>(pArg);
-    m_bIsNormal = (m_sData.sDissolveData.bIsDissolve == true && m_sData.sDissolveData.iDissolveTextureIdx > 4) ? 1 : 0;
+    m_bIsNormal = (m_sData.sDissolveData.bIsDissolve && m_sData.sDissolveData.iDissolveTextureIdx > 4) ? 1 : 0;
 
     const char* NoiseFormat = "../Bin/Resources/Effect/Noise/Noise%d.png";
 
@@ -90,7 +90,6 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
 
 void CEffect_Mesh_Instance::Late_Update(_float fTimeDelta)
 {
-    //__super::Late_Update(fTimeDelta);
     if (m_bIsNormal)
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
     else
@@ -163,6 +162,11 @@ void CEffect_Mesh_Instance::SetScrollData(void* pArg)
 {
     m_fScrollSpeed.x = *static_cast<_float*>(pArg);
     m_fScrollSpeed.y = *(static_cast<_float*>(pArg) + 1);
+}
+
+void CEffect_Mesh_Instance::SetStop()
+{
+    m_pVIBufferCom->Setting_Loop(false);
 }
 
 HRESULT CEffect_Mesh_Instance::Ready_Component()

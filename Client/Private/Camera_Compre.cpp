@@ -1187,7 +1187,7 @@ CCamera_Compre::CAMERA_COMPRE_DESC CCamera_Compre::Get_Desc()
     return tDesc;
 }
 
-void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
@@ -1204,7 +1204,7 @@ void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
     }
 }
 
-void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (!m_isLockOn)
     {
@@ -1233,7 +1233,7 @@ void CCamera_Compre::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLay
     }
 }
 
-void CCamera_Compre::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CCamera_Compre::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))

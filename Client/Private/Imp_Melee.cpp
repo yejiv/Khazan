@@ -98,8 +98,6 @@ void CImp_Melee::Late_Update(_float fTimeDelta)
 
             if (m_pUI_HP != nullptr)
             {
-                Safe_AddRef(m_pUI_HP);
-
                 m_pUI_HP->Setting_HP(m_vLockOnPosition, { 0.f, 50.f }, &m_fCurrentHP, &m_fMaxHP, &m_fCurrentStamina, &m_fMaxStamina);
                 m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pUI_HP);
             }
@@ -115,17 +113,17 @@ HRESULT CImp_Melee::Render()
     return S_OK;
 }
 
-void CImp_Melee::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CImp_Melee::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CImp_Melee::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CImp_Melee::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CImp_Melee::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CImp_Melee::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }
@@ -133,7 +131,6 @@ void CImp_Melee::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 void CImp_Melee::HPUI_Dead()
 {
     m_pUI_HP->Update_Visible(false);
-    Safe_Release(m_pUI_HP);
     m_pUI_HP->Set_IsDead(true);
 }
 
@@ -323,7 +320,9 @@ void CImp_Melee::Free()
 {
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
-    Safe_Release(m_pUI_HP);
+
+    if (m_pUI_HP)
+        m_pUI_HP->Set_IsDead(true);
 
     __super::Free();
 }

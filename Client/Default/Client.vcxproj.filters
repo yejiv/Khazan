@@ -1201,6 +1201,15 @@
     <Filter Include="92.AI\State\Viper\17.Hit">
       <UniqueIdentifier>{6559fa14-d2bf-4014-b8b1-984282d4e467}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate">
+      <UniqueIdentifier>{d31b73c6-3673-4519-947e-cb0755c60905}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate\Left">
+      <UniqueIdentifier>{aabc0b7a-01b0-4752-b96c-f08da3cb0c06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate\Right">
+      <UniqueIdentifier>{757d83e8-39dc-4b73-832e-c75247136376}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2322,6 +2331,15 @@
     <ClInclude Include="..\Public\AS_Hit_Viper.h">
       <Filter>92.AI\State\Viper\17.Hit</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\GiantGate.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GiantGate_Part_L.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate\Left</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GiantGate_Part_R.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate\Right</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3422,6 +3440,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Hit_Viper.cpp">
       <Filter>92.AI\State\Viper\17.Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GiantGate.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GiantGate_Part_L.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate\Left</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GiantGate_Part_R.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate\Right</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
