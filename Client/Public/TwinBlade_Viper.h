@@ -62,10 +62,14 @@ private:
     CTransform*             m_pOwnerTransform = { nullptr };
 
     _bool					m_isOnAttackCollision = { false };
-    //CBody*                  m_pBodyComp = { nullptr };
-    _float4x4*              m_pSocketMatrix = { nullptr };
-    _matrix                 m_OffsetMatrix = {};
 
+    CBody*                  m_pRightBodyComp = { nullptr };
+    CBody*                  m_pLeftBodyComp = { nullptr };
+    
+    _float4x4*              m_pSocketMatrix = { nullptr };
+
+    _float4x4               m_RightMatrix = {};
+    _float4x4               m_LeftMatrix = {};
 
     _float4                 m_vTipPos = {};
 
