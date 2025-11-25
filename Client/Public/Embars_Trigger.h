@@ -52,6 +52,7 @@ private:
 
     // FOG 구조체
     FOG_CONFIG m_FogConfig = {};
+    //EventVerticalGate m_EventVTGate = {};
 
 private:
     void Set_FogConfig(FOG_CONFIG FogConfig);

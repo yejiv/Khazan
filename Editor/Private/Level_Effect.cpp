@@ -179,8 +179,8 @@ void CLevel_Effect::Create_Element()
 			ImGui::Checkbox("Dissolve", &m_bIsDissolve);
 			if (m_bIsDissolve)
 			{
-				const char* DissolveTex[] = { "DissolveTexture0", "DissolveTexture1", "DissolveTexture2", "DissolveTexture3","DissolveTexture4", "Normal0", "Normal1" };
-				ImGui::Combo("Dissolve Texture", reinterpret_cast<int*>(&m_iDissolveTextureIdx), DissolveTex, IM_ARRAYSIZE(DissolveTex));
+                const char* DissolveTex[] = { "DissolveTexture0", "DissolveTexture1", "DissolveTexture2", "DissolveTexture3","DissolveTexture4", "Normal0", "Normal1", "RockNormal" };
+                ImGui::Combo("Dissolve Texture", reinterpret_cast<int*>(&m_iDissolveTextureIdx), DissolveTex, IM_ARRAYSIZE(DissolveTex));
 				ImGui::InputFloat("Dissolve Edge Width : ", reinterpret_cast<_float*>(&m_fDissolveEdgeWidth));
 				ImGui::ColorEdit4("Edge Color", (float*)&m_fDissolveEdgeColor);
 			}
@@ -228,7 +228,7 @@ void CLevel_Effect::Create_Element()
 			if (m_bIsDissolve)
 			{
 				ImGui::Indent();
-                const char* DissolveTex[] = { "DissolveTexture0", "DissolveTexture1", "DissolveTexture2", "DissolveTexture3","DissolveTexture4", "Normal0", "Normal1" };
+                const char* DissolveTex[] = { "DissolveTexture0", "DissolveTexture1", "DissolveTexture2", "DissolveTexture3","DissolveTexture4", "Normal0", "Normal1", "RockNormal" };
                 ImGui::Combo("Dissolve Texture", reinterpret_cast<int*>(&m_iDissolveTextureIdx), DissolveTex, IM_ARRAYSIZE(DissolveTex));
 				ImGui::InputFloat("Dissolve Edge Width : ", reinterpret_cast<_float*>(&m_fDissolveEdgeWidth));
 				ImGui::ColorEdit4("Edge Color", (float*)&m_fDissolveEdgeColor);
@@ -376,12 +376,12 @@ void CLevel_Effect::GetParticleColor()
 
 	if (m_EffectType == 0)
 	{
-		const char* textures[] = { "test0", "test1", "test2",  "test3",  "flare", "Fire_Sprite", "Fire_Sprite2",  "flare",  "blood" };
+		const char* textures[] = { "test0", "test1", "test2",  "test3",  "flare", "Fire_Sprite", "Fire_Sprite2",  "flare",  "blood", "BloomParticle"};
 		ImGui::Combo("Point Particles Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 	}
 	else if (m_EffectType == 1)
 	{
-		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "shock", "smoke", "cloud", "blood", "Ice1", "Ice2" };
+		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "shock", "smoke", "cloud", "blood", "Ice1", "Ice2", "Rock" };
 
 		ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
@@ -397,7 +397,7 @@ void CLevel_Effect::GetParticleColor()
 									"IN_Spiral_02", "Swirl_Spine_X", "SwirlHelix",
 									"FastAtk_1", "FastAtk_2L", "FastAtk_2R", "FastAtk_3L", "FastAtk_3R", "Grapple_Atk_2", "CounterATK", "DodgeATK", "FastATK1","FastATK2_L", "FastATK2_R",  "FastATK3_L" ,  "FastATK3_R", "FastATK4",
 									"StrongAtk0", "StrongAtk1", "FastAtk03_Slash", "GrappleAtk02_Slash", "StrongAtk03_Slash"
-									, "Cylinder_003", "Cylinder_003_02", "Cylinder_003_Noise" , "Spine", "Circle_002" ,"Sphere","CircleTwist", "CircleTwist2", "Plane" , "circle001", "circle002", "Ice" };
+									, "Cylinder_003", "Cylinder_003_02", "Cylinder_003_Noise" , "Spine", "Circle_002" ,"Sphere","CircleTwist", "CircleTwist2", "Plane" , "circle001", "circle002", "Ice",  "Rock", "Crystal" };
 		ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 	}
 

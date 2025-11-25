@@ -31,8 +31,27 @@ void CAS_TurnAttack_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _flo
 
 }
 
+
 void CAS_TurnAttack_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+
+}
+
+void CAS_TurnAttack_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG);
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        if (nullptr == pOwnerTransform)
+            return;
+
+        _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+        pTarget->KnockBack(vLook, 30.f, 60.f);
+    }
 }
 
 CAS_TurnAttack_Viper* CAS_TurnAttack_Viper::Create()

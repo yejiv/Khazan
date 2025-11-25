@@ -40,6 +40,9 @@ public:
     void Set_SocketMatrix(const _float4x4* pSocketMatrix) { m_pSocketMatrix = pSocketMatrix; }
 
 public:
+    void Switch_CameraMode(CAMERATYPE eType);
+
+public:
     HRESULT Ready_Camera(void* pArg);
     HRESULT Ready_Body();
 

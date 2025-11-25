@@ -64,6 +64,30 @@ void CElevatorL::Priority_Update(_float fTimeDelta)
 
 void CElevatorL::Update(_float fTimeDelta)
 {
+    if (m_Event.isEventOn) // m_pGameInstance->Key_Down(DIK_H) && ANIM_STATE::IDLE != m_eAnimState) // 어떤 조건이 들어오면 애니메이션 Loop 중단 후 슥슥 샥샥
+    {
+        m_Event.EventOff();
+
+        m_isAnimChange = true;
+        m_pModelCom->AnimationLoop(false);
+    }
+    else if (ANIM_STATE::IDLE == m_eAnimState)
+    {
+        if (m_Event.IsThirdStep()) // m_pGameInstance->Key_Down(DIK_L)) // 아이들 상태 되면 이제 슥슥 이동을 시작
+        {
+            switch (m_eMoveState)
+            {
+            case MOVE_STATE::MID:
+                m_eMoveState = MOVE_STATE::MIDTODOWN;
+                break;
+            case MOVE_STATE::DOWN:
+                m_eMoveState = MOVE_STATE::DOWNTOUP;
+                break;
+            default:
+                break;
+            }
+        }
+    }
 #pragma region TEST
     if (m_pGameInstance->Key_Pressing(DIK_NUMPAD7, 0.f) && m_pGameInstance->Key_Pressing(DIK_NUMPAD8, 0.f) && m_pGameInstance->Key_Down(DIK_NUMPAD9))
         m_isMidToUpMove = !m_isMidToUpMove;

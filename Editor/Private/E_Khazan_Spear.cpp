@@ -51,6 +51,8 @@ HRESULT CE_Khazan_Spear::Initialize_Clone(void* pArg)
 
 void CE_Khazan_Spear::Priority_Update(_float fTimeDelta)
 {
+    m_pTransformCom->Cache_PrevWorldMatrix();
+
     __super::Priority_Update(fTimeDelta);
 }
 

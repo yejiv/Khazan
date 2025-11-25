@@ -29,6 +29,7 @@ public:
 public:
 	//HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, const vector<class CBone*>& Bones);
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const _char* pConstantName, const vector<class CBone*>& Bones, const vector<_float4x4>* PartLocalBoneMatrices = nullptr);
+    HRESULT Bind_PrevBoneMatrices(class CShader* pShader, const _char* pConstantName, const vector<_float4x4>& PrevBoneMatrices, const vector<_float4x4>* PartLocalBoneMatrices = nullptr);
 
 private:
 	_wstring				m_strName;

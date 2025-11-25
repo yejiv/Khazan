@@ -45,9 +45,9 @@ public:
 	void Create_Event(_wstring strAnimationTag);
 	void Create_Animation_Item(_wstring strAnimationTag);
 	void Create_Event_Item(_wstring strAnimationTag);
-	void Set_Animation_Item(_wstring strAnimationTag, CAMERA_KEYFRAME tAnimation, _uint iIndex);
+	void Set_Animation_Item(_wstring strAnimationTag, CAMERA_KEYFRAME tKeyFrame, _uint iIndex);
 	void Set_Event_Item(_wstring strAnimationTag, CAMERA_EVENT_DATA tEvent, _uint iIndex);
-	void Add_Animation(_wstring strAnimationTag, CAMERA_KEYFRAME tAnimation);
+	void Add_Animation(_wstring strAnimationTag, CAMERA_KEYFRAME tKeyFrame);
 	void Add_Event(_wstring strAnimationTag, CAMERA_EVENT_DATA tEvent);
 
 public:
@@ -61,16 +61,19 @@ public:
 	_wstring Get_CameraTag() { return m_strCameraTag; }
 
 	CCamera::CAMERA_DESC Get_CameraDesc();
-	map<_wstring, vector<CAMERA_KEYFRAME>>* Get_AllAnimations() { return &m_Animations; }
+	map<_wstring, CAMERA_ANIMATION>* Get_AllAnimations() { return &m_Animations; }
 	map<_wstring, vector<CAMERA_EVENT_DATA>>* Get_AllEvents() { return &m_Events; }
 
-	vector<CAMERA_KEYFRAME>* Get_Animations(_wstring strAnimationTag);
+	CAMERA_ANIMATION* Get_Animations(_wstring strAnimationTag);
 	vector<CAMERA_EVENT_DATA>* Get_Events(_wstring strAnimationTag);
+
+    _bool Get_IsAniFix() { return m_isAniFix; }
+    void Set_IsAniFix(_bool isFix) { m_isAniFix = isFix; }
 
 public:
 	HRESULT Set_DefaultData(CAMERA_DESC tDesc);
-	HRESULT Load(map<_wstring, vector<CAMERA_KEYFRAME>> Animations, map<_wstring, vector<CAMERA_EVENT_DATA>> Events);
-	HRESULT Load_Animation(map<_wstring, vector<CAMERA_KEYFRAME>> Animations);
+	HRESULT Load(map<_wstring, CAMERA_ANIMATION> Animations, map<_wstring, vector<CAMERA_EVENT_DATA>> Events);
+	HRESULT Load_Animation(map<_wstring, CAMERA_ANIMATION> Animations);
 
 // 쉐이킹
 public:
@@ -106,7 +109,7 @@ protected:
     _float              m_iWinSizeX{};
     _float              m_iWinSizeY{};
 
-	map<_wstring, vector<CAMERA_KEYFRAME>> m_Animations;
+	map<_wstring, CAMERA_ANIMATION> m_Animations;
 	map<_wstring, vector<CAMERA_EVENT_DATA>> m_Events;
 
 
@@ -143,6 +146,7 @@ protected:
 	_vector m_vCurQ = XMQuaternionIdentity();
 	_bool m_isCurPos = { false };
 	_bool m_isStarted = { true };
+    _bool m_isAniFix = { false };
 
 	// Fov 관련
 	_float				m_fFovy = {};

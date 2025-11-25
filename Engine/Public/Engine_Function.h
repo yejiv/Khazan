@@ -248,6 +248,18 @@ namespace Engine
 		return static_cast<int>(floor(log10(value))) + 1;
 	}
 
+    /* 가장 높은 1의 비트 자리수를 리턴*/
+    inline constexpr unsigned int GetHighestBitPosition(unsigned int iIndex)
+    {
+        if (iIndex == 0) return static_cast<unsigned int>(-1);
+
+        unsigned int pos = 0;
+        while (iIndex >>= 1u)
+            ++pos;
+
+        return pos;
+    }
+
 	/* 오현 : const _char* -> _wstring */
 	inline std::wstring CharToWString(const char* pStr) {
 		if (!pStr || pStr[0] == '\0') return L"";

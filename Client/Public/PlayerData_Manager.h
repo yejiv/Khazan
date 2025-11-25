@@ -40,6 +40,30 @@ public:
         SPEAR_END = 1 << 24,
     };
 
+    enum GSWORDSKILL : _uint
+    {
+        MOMENTUM                        = 1 << 0,           //거센기세
+        BREATHTAKING                    = 1 << 1,           //숨통끊기
+        BREATHTAKING_EMBRYONIC          = 1 << 2,           //숨통끊기 : 태동
+        BREATHTAKING_BLOODSHED          = 1 << 3,           //숨통끊기 : 선혈
+        MANIFESTSTRENGTH                = 1 << 4,           //강기발현
+        GIANTHUNT                       = 1 << 5,           //거인사냥 command
+        WILLPOWER_UP                    = 1 << 6,           //투지증폭
+        PHANTOM_SHADOWOFDARKNESS        = 1 << 7,           //귀신 : 어둠의 그림자 command
+        LIMIT_BREAK                     = 1 << 8,           //한계극복
+        HEATOFBATTLEFIEDLD              = 1 << 9,           //전장의 열기
+        BREAK_THROUGH                   = 1 << 10,          //정면돌파 command
+        WARCRY                          = 1 << 11,          //거대한 포효 command
+        INNER_FURY                      = 1 << 12,          //내제된분노 command
+        BRIDLOFBATTLE                   = 1 << 13,          //전투의 굴레
+        DODGE_ENERGY                    = 1 << 14,          //회피 : 기력
+        COUNTER_OPPORTUNITY             = 1 << 15,          //역공의 기회
+        DEFENSE_ENERGY                  = 1 << 16,          //방어 : 기력
+        DEFENSE_FIGHT                   = 1 << 17,          //방어 : 투지
+
+        GSWORD_END                      = 1 << 18,
+    };
+
 
 private:
 	CPlayerData_Manager();
@@ -47,31 +71,68 @@ private:
 
 public:
     //해당 스킬이 있는지
-    _bool   Check_SpearSkill(_uint skill) { return m_iSpearSkill & skill; }
-   // _bool   Check_GSwordSkill(_uint skill) { return m_iGSwordSkill & skill; }
+    _bool   Check_Skill(_uint skill)
+    { 
+        if(m_isCurSpear)
+            return m_iSpearSkill & skill; 
+        if(m_isCurGSword)
+            return m_iGSwordSkill & skill;
+    }
+
+    _bool   Check_Skills(_uint skills)
+    {
+        if (m_isCurSpear)
+            return (m_iSpearSkill & skills) == skills;
+        if (m_isCurGSword)
+            return (m_iGSwordSkill & skills) == skills;
+    }
 
     //모든 스킬 잠금 해제
-    void    AllUnlock_SpearSkill() { m_iSpearSkill = m_iSpearSkill | (SPEAR_END - 1); }
-   //void    AllUnlock_GswordSkill( ){ m_iGSwordSkill = m_iGSwordSkill | (GSWORD_END - 1);}
+    void    AllUnlock_Skill() 
+    {
+        if (m_isCurSpear)
+            m_iSpearSkill = m_iSpearSkill | (SPEAR_END - 1);
+        if (m_isCurGSword)
+            m_iGSwordSkill = m_iGSwordSkill | (GSWORD_END - 1);
+    }
 
     // 단일 스킬 잠금 해제
-    void    Unlock_SpearSkill(_uint skill) { m_iSpearSkill = m_iSpearSkill | skill; }
-   // void    Unlock_GswordSkill(_uint skill) { m_iGSwordSkill = m_iGSwordSkill | skill; }
+    void    Unlock_Skill(_uint skill)
+    {
+        if (m_isCurSpear)
+            m_iSpearSkill = m_iSpearSkill | skill;
+        if (m_isCurGSword)
+            m_iGSwordSkill = m_iGSwordSkill | skill;
+    }
 
     // 모든 스킬 잠금
-    void    Alllock_SpearSkill() { m_iSpearSkill &= ~(SPEAR_END - 1); }
-    //void    Alllock_GswordSkill() { m_iGSwordSkill &= ~(GSWORD_END - 1); }
+    void    Alllock_Skill()
+    { 
+        if (m_isCurSpear)
+            m_iSpearSkill &= ~(SPEAR_END - 1);
+        if (m_isCurGSword)
+            m_iGSwordSkill &= ~(GSWORD_END - 1);
+    }
 
     // 단일 스킬 잠금 
-    void    lock_SpearSkill(_uint skill) { m_iSpearSkill &= ~skill; }
-    //void    lock_GswordSkill(_uint skill) { m_iGSwordSkill &= ~skill; }
+    void    Lock_Skill(_uint skill)
+    {
+        if (m_isCurSpear)
+            m_iSpearSkill &= ~skill;
+        if (m_isCurGSword)
+            m_iGSwordSkill &= ~skill;
+    }
 
-
+    void    UsedSpear() { m_isCurSpear = true; m_isCurGSword = false; }
+    void    UsedGSword() { m_isCurSpear = false; m_isCurGSword = true; }
+    _bool   Is_CurrentSpear() const { return m_isCurSpear; }
+    _bool   Is_CurrentGSword() const { return m_isCurGSword; }
 
 private:
     _uint   m_iSpearSkill = { };
     _uint   m_iGSwordSkill = { };
-
+    _bool   m_isCurSpear = { false };
+    _bool   m_isCurGSword = { false };
 
 public:
 	static CPlayerData_Manager* Create();

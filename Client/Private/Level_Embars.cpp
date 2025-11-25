@@ -8,7 +8,8 @@
 #include "Dummy.h"
 #include "Monster.h"
 #include "Khazan_Spear.h"
-#include "Sequence_HeinMach_Start.h"
+#include "Sequence_Embars_Puzzle_First.h"
+#include "Sequence_Embars_Puzzle_Second.h"
 
 #pragma region MAP OBJECT
 #include "MapObject_Header.h"
@@ -76,19 +77,13 @@ HRESULT CLevel_Embars::Initialize()
 
 void CLevel_Embars::Update(_float fTimeDelta)
 {
-	if (GetKeyState(VK_RETURN) & 0x8000)
-	{
-		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
-			return;
-	}
-
     if (m_pGameInstance->Key_Down(DIK_F1))
     {
-        m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::EMBARS), ENUM_CLASS(CAMERATYPE::FREE));
+        m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
     }
     else if (m_pGameInstance->Key_Down(DIK_F2))
     {
-        m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::EMBARS), ENUM_CLASS(CAMERATYPE::PLAYER));
+        m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
 
 	return;
@@ -127,25 +122,6 @@ HRESULT CLevel_Embars::Ready_Layer_Player(const _wstring& strLayerTag)
 
 HRESULT CLevel_Embars::Ready_Layer_Camera(const _wstring& strLayerTag)
 {
-    CCamera_Compre::CAMERA_COMPRE_DESC	CameraFreeDesc{};
-
-    CameraFreeDesc.vEye = _float4(0.39f, 3.97f, -1.79f, 1.f);
-    CameraFreeDesc.vAt = _float4(-0.26f, -0.1f, 0.96f, 1.f);
-    CameraFreeDesc.fFovy = XMConvertToRadians(60.0f);
-    CameraFreeDesc.fNear = 0.1f;
-    CameraFreeDesc.fFar = 6000.f;
-    CameraFreeDesc.fSpeedPerSec = 40.f;
-    CameraFreeDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-    CameraFreeDesc.fMouseSensor = 0.2f;
-    CameraFreeDesc.iCameraType = ENUM_CLASS(CAMERATYPE::FREE);
-
-    CCamera_Compre* pCamera_Free = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Camera_Compre"), &CameraFreeDesc));
-    pCamera_Free->Set_IsActive(false);
-
-    m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::EMBARS), pCamera_Free);
-
-    m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), strLayerTag, pCamera_Free);
-
     CCamera_Compre::CAMERA_COMPRE_DESC	PlayerCameraDesc{};
 
     PlayerCameraDesc.vEye = _float4(0.51f, 2.08f, -3.94f, 1.f);
