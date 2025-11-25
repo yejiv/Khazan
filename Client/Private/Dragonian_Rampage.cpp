@@ -97,8 +97,6 @@ void CDragonian_Rampage::Priority_Update(_float fTimeDelta)
         m_fCurrentHP = m_fMaxHP;
         m_Data.isSleep = true;
     }
-    else if (m_pGameInstance->Key_Down(DIK_V))
-        Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, m_pTarget);
     else if (m_pGameInstance->Key_Down(DIK_B))
         Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
     else if (m_pGameInstance->Key_Down(DIK_N))
@@ -140,29 +138,24 @@ void CDragonian_Rampage::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjec
 
 HRESULT CDragonian_Rampage::Ready_Prototype()
 {
-    if (FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_Rampage"),
-        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Dragonian_Rampage/Dragonian_Rampage/Dragonian_Rampage.dat"))))
-        return E_FAIL;
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_Rampage"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Dragonian_Rampage/Dragonian_Rampage/Dragonian_Rampage.dat")), E_FAIL);
 
-    if (FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_DragonClaw_R"),
-        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Dragonian_Rampage/DragonClaw_R/DragonClaw_R.dat"))))
-        return E_FAIL;
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_DragonClaw_R"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Dragonian_Rampage/DragonClaw_R/DragonClaw_R.dat")),E_FAIL);
 
-    if (FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_DragonClaw_L"),
-        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Dragonian_Rampage/DragonClaw_L/DragonClaw_L.dat"))))
-        return E_FAIL;
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_DragonClaw_L"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Dragonian_Rampage/DragonClaw_L/DragonClaw_L.dat")),E_FAIL);
 
-    if (FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Dragonian_Rampagee_Body"),
-        CBody_Dragonian_Rampage::Create(m_pDevice, m_pContext, m_iPrototypeIndex))))
-        return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Dragonian_Claw_L"),
-        CDragonian_Claw_L::Create(m_pDevice, m_pContext, m_iPrototypeIndex))))
-        return E_FAIL;
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Dragonian_Rampagee_Body"),
+        CBody_Dragonian_Rampage::Create(m_pDevice, m_pContext, m_iPrototypeIndex)),E_FAIL);
 
-    if (FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Dragonian_Claw_R"),
-        CDragonian_Claw_R::Create(m_pDevice, m_pContext, m_iPrototypeIndex))))
-        return E_FAIL;
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Dragonian_Claw_L"),
+        CDragonian_Claw_L::Create(m_pDevice, m_pContext, m_iPrototypeIndex)),E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Dragonian_Claw_R"),
+        CDragonian_Claw_R::Create(m_pDevice, m_pContext, m_iPrototypeIndex)),E_FAIL);
 
     return S_OK;
 }
@@ -196,20 +189,20 @@ HRESULT CDragonian_Rampage::Ready_Components()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.6f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 1.75f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-    tCharVirDesc.fRadius = 0.3f;
-    tCharVirDesc.fHeight = 0.7f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
-        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
-        return E_FAIL;
+    tCharVirDesc.fRadius = 1.6f;
+    tCharVirDesc.fHeight = 0.5f;
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
+        TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc), E_FAIL);
+
 
     return S_OK;
 }
@@ -220,46 +213,35 @@ HRESULT CDragonian_Rampage::Ready_PartObjects()
     BodyDesc.pData = &m_Data;
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pOwnerTransform = m_pTransformCom;
+    CHECK_FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body"), m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Dragonian_Rampagee_Body"), &BodyDesc), E_FAIL);
 
-    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body"), m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Dragonian_Rampagee_Body"), &BodyDesc)))
-        return E_FAIL;
-
-    CPartObject* pBody = Find_PartObject(TEXT("Part_Body"));
-    if (nullptr == pBody)
-        return E_FAIL;
-
-    m_pBody = dynamic_cast<CBody_Dragonian_Rampage*>(pBody);
+    m_pBody = dynamic_cast<CBody_Dragonian_Rampage*>(Find_PartObject(TEXT("Part_Body")));
+    CHECK_NULLPTR(m_pBody, E_FAIL);
     Safe_AddRef(m_pBody);
 
     CDragonian_Claw_L::WEAPON_DESC WeaponLDesc{};
+    WeaponLDesc.pData = &m_Data;
     WeaponLDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     WeaponLDesc.pOwnerTransform = m_pTransformCom;
-    WeaponLDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-L-Hand");
+    WeaponLDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-L-Forearm");
+    CHECK_FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon_L"), m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Dragonian_Claw_L"), &WeaponLDesc), E_FAIL);
 
-    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon_L"), m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Dragonian_Claw_L"), &WeaponLDesc)))
-        return E_FAIL;
-
-    CPartObject* pWeapon = Find_PartObject(TEXT("Part_Weapon_L"));
-    if (nullptr == pWeapon)
-        return E_FAIL;
-
-    m_pClaw_L = dynamic_cast<CDragonian_Claw_L*>(pWeapon);
+    m_pClaw_L = dynamic_cast<CDragonian_Claw_L*>(Find_PartObject(TEXT("Part_Weapon_L")));
+    CHECK_NULLPTR(m_pClaw_L, E_FAIL);
     Safe_AddRef(m_pClaw_L);
 
     CDragonian_Claw_R::WEAPON_DESC WeaponRDesc{};
+    WeaponRDesc.pData = &m_Data;
     WeaponRDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     WeaponRDesc.pOwnerTransform = m_pTransformCom;
-    WeaponRDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-R-Hand");
+    WeaponRDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-R-Forearm");
 
-    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon_R"), m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Dragonian_Claw_R"), &WeaponRDesc)))
-        return E_FAIL;
+    CHECK_FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon_R"), m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Dragonian_Claw_R"), &WeaponRDesc), E_FAIL);
 
-    pWeapon = Find_PartObject(TEXT("Part_Weapon_R"));
-    if (nullptr == pWeapon)
-        return E_FAIL;
+    m_pClaw_R = dynamic_cast<CDragonian_Claw_R*>(Find_PartObject(TEXT("Part_Weapon_R")));
+    CHECK_NULLPTR(m_pClaw_R, E_FAIL);
+    Safe_AddRef(m_pClaw_R);
 
-    m_pClaw_R = dynamic_cast<CDragonian_Claw_R*>(pWeapon);
-    Safe_AddRef(m_pClaw_L);
     return S_OK;
 }
 
@@ -283,8 +265,6 @@ HRESULT CDragonian_Rampage::Ready_AnimEvent()
 HRESULT CDragonian_Rampage::Ready_MonData()
 {
     m_Data.pOwner = this;
-    Safe_AddRef(m_Data.pOwner);
-
     m_Data.fGloggyTime = 3.f;
     m_Data.pCulHp = &m_fCurrentHP;
     m_Data.pMaxHp = &m_fMaxHP;
@@ -326,17 +306,11 @@ CGameObject* CDragonian_Rampage::Clone(void* pArg)
 
 void CDragonian_Rampage::Free()
 {
-    if (m_pUI_HP != nullptr)
-    {
-        m_pUI_HP->Set_IsDead(true);
-        Safe_Release(m_pUI_HP);
-    }
-    Safe_Release(m_Data.pOwner);
-
     __super::Free();
+    Safe_Release(m_pUI_HP);
     Safe_Release(m_pBody);
     Safe_Release(m_pBlackBoard);
     Safe_Release(m_pClaw_L);
     Safe_Release(m_pClaw_R);
-
+    m_Data.pOwner = nullptr;
 }
