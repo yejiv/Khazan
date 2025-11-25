@@ -164,6 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\public\AI_Controller_Dragonian_Melee.h" />
+    <ClInclude Include="..\public\AI_Controller_Dragonian_Rampage.h" />
     <ClInclude Include="..\Public\AI_Controller_Gomdol.h" />
     <ClInclude Include="..\Public\AI_Controller_Imp_Melee.h" />
     <ClInclude Include="..\Public\AI_Controller_Imp_Range.h" />
@@ -192,6 +193,9 @@
     <ClInclude Include="..\public\AS_Dr_Melee_LockOn.h" />
     <ClInclude Include="..\public\AS_Dr_Melee_Sleep.h" />
     <ClInclude Include="..\public\AS_Dr_Melee_Walk.h" />
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Brutal.h" />
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Dead.h" />
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Groggy.h" />
     <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h" />
     <ClInclude Include="..\Public\AS_Groggy_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Hit_Imp_Melee.h" />
@@ -232,16 +236,26 @@
     <ClInclude Include="..\Public\AS_Turn_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Walk_Viper.h" />
     <ClInclude Include="..\public\Atlas_RenderGroup.h" />
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Attack_Back.h" />
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Attack_Default.h" />
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Attack_Rush.h" />
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Damage.h" />
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Sleep.h" />
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Walk.h" />
+    <ClInclude Include="..\Public\AS_Dr_Rampage_LockOn.h" />
+    <ClInclude Include="..\public\AS_Dr_Rampage_Attack_Jump.h" />
     <ClInclude Include="..\Public\AttackState_Yetuga.h" />
     <ClInclude Include="..\Public\Barrel.h" />
     <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
     <ClInclude Include="..\public\Body_Dragonian_Melee.h" />
-    <ClInclude Include="..\public\Body_Dragonian_Rampage.h" />
+    <ClInclude Include="..\Public\Body_Dragonian_Rampage.h" />
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
     <ClInclude Include="..\Public\Body_Khazan_GS.h" />
     <ClInclude Include="..\Public\Body_Viper.h" />
+    <ClInclude Include="..\public\Dragonian_Claw_L.h" />
+    <ClInclude Include="..\public\Dragonian_Claw_R.h" />
     <ClInclude Include="..\public\Dragonian_Sword.h" />
     <ClInclude Include="..\Public\ElevatorL.h" />
     <ClInclude Include="..\Public\Elevator_Inner.h" />
@@ -522,6 +536,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\AI_Controller_Dragonian_Melee.cpp" />
+    <ClCompile Include="..\private\AI_Controller_Dragonian_Rampage.cpp" />
     <ClCompile Include="..\private\AS_Dr_Melee_Attack.cpp" />
     <ClCompile Include="..\private\AS_Dr_Melee_Brutal.cpp" />
     <ClCompile Include="..\private\AS_Dr_Melee_Damage.cpp" />
@@ -530,13 +545,26 @@
     <ClCompile Include="..\private\AS_Dr_Melee_LockOn.cpp" />
     <ClCompile Include="..\private\AS_Dr_Melee_Sleep.cpp" />
     <ClCompile Include="..\private\AS_Dr_Melee_Walk.cpp" />
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Attack_Back.cpp" />
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Attack_Default.cpp" />
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Attack_Rush.cpp" />
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Brutal.cpp" />
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Damage.cpp" />
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Dead.cpp" />
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Sleep.cpp" />
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Groggy.cpp" />
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Walk.cpp" />
+    <ClCompile Include="..\Private\AS_Dr_Rampage_LockOn.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Rampage_Attack_Jump.cpp" />
     <ClCompile Include="..\private\Body_Dragonian_Melee.cpp" />
-    <ClCompile Include="..\private\Body_Dragonian_Rampage.cpp" />
     <ClCompile Include="..\Private\AS_5HitCombo_Viper.cpp" />
     <ClCompile Include="..\Private\AS_Devour_Viper.cpp" />
     <ClCompile Include="..\Private\AS_SideMove_P1_Viper.cpp" />
     <ClCompile Include="..\Private\AS_ThrowBlade_Viper.cpp" />
+    <ClCompile Include="..\Private\Body_Dragonian_Rampage.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp" />
+    <ClCompile Include="..\private\Dragonian_Claw_L.cpp" />
+    <ClCompile Include="..\private\Dragonian_Claw_R.cpp" />
     <ClCompile Include="..\private\Dragonian_Sword.cpp" />
     <ClCompile Include="..\Private\ElevatorL.cpp" />
     <ClCompile Include="..\Private\Elevator_Inner.cpp" />

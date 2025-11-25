@@ -16,8 +16,6 @@ public:
     virtual void					        Update(CGameObject* pOwner, _float fTimeDelta) override;
 
 public:
-    void                                    Update_Aggro(CGameObject* pOwner, _float fTimeDelta);
-
     virtual HRESULT					        Ready_Perception(class CGameObject* pOwner, const AIPERCEPTION_DATA& Desc) override;
     virtual HRESULT					        Ready_BlackBoard(class CGameObject* pOwner) override;
     HRESULT							        Ready_BehaviorTree();
@@ -38,7 +36,6 @@ private:
     BTNODESTATE                             Attack(CGameObject* pOwner);
     BTNODESTATE                             Damage_Check(CGameObject* pOwner);
     BTNODESTATE                             Damage(CGameObject* pOwner);
-    BTNODESTATE                             LockOn_Check(CGameObject* pOwner);
     BTNODESTATE                             LockOn(CGameObject* pOwner);
     BTNODESTATE                             Chase(CGameObject* pOwner);
     BTNODESTATE                             Sleep(CGameObject* pOwner);

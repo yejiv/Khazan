@@ -63,9 +63,7 @@
 
 #pragma region MONSTER_KBS
 #include "Dragonian_Melee.h"
-
 #include "Dragonian_Rampage.h"
-#include "Body_Dragonian_Rampage.h"
 #pragma endregion
 
 #pragma region UI
@@ -1842,9 +1840,13 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 
 
 #pragma endregion
-#pragma region Dragonian_Melee
+#pragma region Dragonian
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"),
         CDragonian_Melee::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"),
+        CDragonian_Rampage::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
         return E_FAIL;
 
 #pragma endregion
