@@ -17,8 +17,9 @@ namespace Client {
         GATE_GEAR0,
         GATE_GEAR1,
         SKILL_RESET,
-        STATUE_PUZZLE0,
-        STATUE_PUZZLE1,
+        EMBARS_GIMMICK0,
+        EMBARS_GIMMICK1,
+        EMBARS_GIMMICK2,
         HALL_ELEVATOR_UNLOCK,
 		END };
 
@@ -124,54 +125,87 @@ namespace Client {
     };
 
     // 상호작용 오브젝트끼리의 이벤트 ( 조각상 -> 차단봉 | 엘리베이터 -> 차단봉 )
-    struct EventVerticalGate
+    struct EventGimmick
     {
-        bool isActiveStatue[4] = { false, false, false, false };
+    private:
+        bool isStatueSolved[4] = { false, false, false, false };    // 석상
 
-        bool isElevatorDownPos = { false };
+        bool isUnLockGearAvailableFlag = { false };     // 잠금 해제 기어 상호작용 가능 여부
 
-        void SetActiveStatue(unsigned int iStatueIndex)
+        bool isUnLockGearActiveFlag = { false };        // 잠금 장치 활성화 여부
+
+        bool isVerticalGateActiveFlag = { false };      // 수직 차단봉 활성화 여부
+
+        bool isElevatorDone = { false };                // 엘리베이터완료 시 
+
+    public:
+        void Set_SolveStatue(unsigned int iStatueIndex)
         {
-            isActiveStatue[iStatueIndex] = true;
+            isStatueSolved[iStatueIndex] = true;
         }
 
-        void SetDeActiveStatue(unsigned int iStatueIndex)
+        void Reset_SolveStatue(unsigned int iStatueIndex)
         {
-            isActiveStatue[iStatueIndex] = false;
+            isStatueSolved[iStatueIndex] = false;
         }
 
-        bool isSection0()       // 4개 조각상
+        void Set_AvailableUnLockGear()              // 잠금 장치 상호작용 활성화
+        {
+            isUnLockGearAvailableFlag = true;
+        }
+
+        void Set_ActiveUnLockGear()                 // 잠금 장치 활성화
+        {
+            isUnLockGearActiveFlag = true;
+        }
+
+        void Set_ActiveGate()                       // 차단봉 활성화
+        {
+            isVerticalGateActiveFlag = true;
+        }
+
+        bool isStatueSection0()       // 4개 조각상
         {
             for (_uint i = 0; i < 4; ++i)
             {
-                if (false == isActiveStatue[i]) return false;
+                if (false == isStatueSolved[i]) return false;
             }
 
             return true;
         }
 
-        bool isSection1()       // 3개 조각상
+        bool isStatueSection1()       // 3개 조각상
         {
             for (_uint i = 0; i < 3; ++i)
             {
-                if (false == isActiveStatue[i]) return false;
+                if (false == isStatueSolved[i]) return false;
             }
 
             return true;
         }
 
-        bool isSection2()
+        bool isUnLockGearAvailable(unsigned int iEventID)
         {
-            return isElevatorDownPos;
+            if (0 == iEventID)
+                return isStatueSection0();
+            if (1 == iEventID)
+                return isStatueSection1();
+
+            return false;
         }
 
-        bool isUnLockGate(unsigned int iGateEventID)
+        bool isActiveGate() { return isVerticalGateActiveFlag; }
+
+        void Set_GimmickClear()
         {
-            if (0 == iGateEventID)
-                return isSection0();
-            if (1 == iGateEventID)
-                return isSection1();
-            return false;
+            for (_uint i = 0; i < 4; ++i)
+            {
+                isStatueSolved[i] = true;
+            }
+
+            isUnLockGearAvailableFlag = false;
+            isUnLockGearActiveFlag = false;
+            isVerticalGateActiveFlag = false;
         }
     };
 
@@ -183,6 +217,8 @@ namespace Client {
         UNLOCK_STATE eStep{};
         bool isEventOn = {};
 
+        bool isEvent() { return isEventOn; }
+        void EventOn() { isEventOn = true; }
         void EventOff() { isEventOn = false; }
 
         void Set_UnLockState(bool isUnLock)

@@ -34,6 +34,8 @@ HRESULT CElevatorL::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_PartObjects(pArg), E_FAIL);
 
+    CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
+
     LARGE_ELEVATOR_POS* pElevatorPos = static_cast<LARGE_ELEVATOR_POS*>(pDesc->pOtherDesc);
     CHECK_NULLPTR(pElevatorPos, E_FAIL);
 
@@ -45,6 +47,8 @@ HRESULT CElevatorL::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
     m_pModelCom->Set_AnimationLoop(true);
     m_pModelCom->AnimationLoop(true);
+
+    m_pBodyCom->Collision_Active(false);
 
     m_pModelCom->Set_AnimationBlend(true);
 
@@ -83,57 +87,21 @@ void CElevatorL::Update(_float fTimeDelta)
                 break;
             }
         }
-
-        switch (m_eMoveState)
-        {
-        case MOVE_STATE::MIDTODOWN:
-            Lerp_ElevatorMove(fTimeDelta, m_vMidPos, m_vDownPos, 5.f);
-            break;
-        case MOVE_STATE::DOWNTOUP:
-            Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 5.f);
-            break;
-        default:
-            break;
-        }
     }
+#pragma region TEST
+    if (m_pGameInstance->Key_Pressing(DIK_NUMPAD7, 0.f) && m_pGameInstance->Key_Pressing(DIK_NUMPAD8, 0.f) && m_pGameInstance->Key_Down(DIK_NUMPAD9))
+        m_isMidToUpMove = true;
+#pragma endregion
+
+
+    Animation_Update(fTimeDelta);
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
     {
-        if (ANIM_STATE::INNER_STOPPING == m_eAnimState)
-        {
-            m_isAnimChange = false;
-            m_eAnimState = ANIM_STATE::OUTER_STOPPING;
-            m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-            m_pModelCom->AnimationLoop(true);
-        }
-        else if (true == m_isAnimChange)
-        {
-            m_isAnimChange = false;
-            switch (m_eAnimState)
-            {
-            case ANIM_STATE::ALL:
-                m_eAnimState = ANIM_STATE::MID_STOP;
-                m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-                m_pModelCom->AnimationLoop(true);
-                break;
-            case ANIM_STATE::MID_STOP:
-                m_eAnimState = ANIM_STATE::INNER_STOPPING;
-                m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-                m_pModelCom->AnimationLoop(false);
-                break;
-            case ANIM_STATE::OUTER_STOPPING:
-                m_eAnimState = ANIM_STATE::IDLE;
-                m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-                m_pModelCom->AnimationLoop(true);
-                break;
-            case ANIM_STATE::IDLE:
-                m_eAnimState = ANIM_STATE::ALL;
-                m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-                m_pModelCom->AnimationLoop(true);
-                break;
-            }
-        }
+        Animation_Change(fTimeDelta);
     }
+
+    VerticalOnTime_Update(fTimeDelta);
 
     __super::Update(fTimeDelta);
 }
@@ -184,8 +152,16 @@ void CElevatorL::Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4
         switch (m_eMoveState)
         {
         case MOVE_STATE::MIDTODOWN:
+        {
             m_eMoveState = MOVE_STATE::DOWN;
+            m_pBodyCom->Collision_Active(true);
+
+            EventGimmick Gimmick = {};
+            Gimmick.Set_GimmickClear();
+            Gimmick.Set_ActiveGate();
+            m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(m_eGimmickType), Gimmick);
             break;
+        }
         case MOVE_STATE::DOWNTOUP:
             m_eMoveState = MOVE_STATE::UP;
             break;
@@ -255,6 +231,201 @@ HRESULT CElevatorL::Ready_PartObjects(void* pArg)
     return S_OK;
 }
 
+HRESULT CElevatorL::Ready_Collision(void* pArg)
+{
+#pragma region 스태틱 몸체
+    CBody::BODY_BOXSHAPE_DESC StaticBodyDesc{};
+    StaticBodyDesc.vExtent = _float3(0.5f, 0.5f, 0.5f);
+    StaticBodyDesc.bIsTrigger = false;
+    StaticBodyDesc.bStartActive = true;
+    StaticBodyDesc.eMotion = EMotionType::Static;
+    StaticBodyDesc.eQuality = EMotionQuality::LinearCast;
+    StaticBodyDesc.eShapeType = SHAPE::BOX;
+    StaticBodyDesc.fFriction = 0.8f;
+    StaticBodyDesc.fMass = 1.0f;
+    StaticBodyDesc.fRestitution = 0.0f;
+    StaticBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_STATIC_TRIGGER);
+    _float3 vPos{};
+    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    vPos.y += StaticBodyDesc.vExtent.y;
+    _float4 vQuat{};
+    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
+    StaticBodyDesc.vPos = vPos;
+    StaticBodyDesc.vQuat = vQuat;
+    StaticBodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc.pGameObject = this;
+    //pCollDesc.pInfo = ?? // 작성하기
+    StaticBodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Static"), reinterpret_cast<CComponent**>(&m_pBodyCom), &StaticBodyDesc)))
+        return E_FAIL;
+#pragma endregion
+
+    return S_OK;
+}
+
+void CElevatorL::Animation_Update(_float fTimeDelta)
+{
+    if (true == m_Event.isEvent()) // m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_H) && ANIM_STATE::IDLE != m_eAnimState) // 어떤 조건이 들어오면 애니메이션 Loop 중단 후 슥슥 샥샥
+    {
+        if (ANIM_STATE::INNER_STOPPING == m_eAnimState)
+        {
+            m_isAnimChange = true;
+            m_pModelCom->AnimationLoop(false);
+        }
+        else
+        {
+            m_fLimitTimeAcc += fTimeDelta;
+
+            if (2.f < m_fLimitTimeAcc)
+            {
+                m_isAnimChange = true;
+                m_pModelCom->AnimationLoop(false);
+            }
+        }
+    }
+    else if (ANIM_STATE::IDLE == m_eAnimState)
+    {
+        if (true == m_isMidToUpMove)
+        {
+            if (MOVE_STATE::DOWN == m_eMoveState)
+            {
+                m_eMoveState = MOVE_STATE::DOWNTOUP;
+            }
+        }
+        else if (m_Event.IsThirdStep()) // m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_L)) // 아이들 상태 되면 이제 슥슥 이동을 시작
+        {
+            if (MOVE_STATE::MID == m_eMoveState)
+            {
+                m_eMoveState = MOVE_STATE::MIDTODOWN;
+            }
+        }
+
+        switch (m_eMoveState)
+        {
+        case MOVE_STATE::MIDTODOWN:
+            Lerp_ElevatorMove(fTimeDelta, m_vMidPos, m_vDownPos, 30.f);
+            break;
+        case MOVE_STATE::DOWNTOUP:
+            Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 30.f);
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void CElevatorL::Animation_Change(_float fTimeDelta)
+{
+    if (ANIM_STATE::INNER_STOPPING == m_eAnimState)
+    {
+        m_fLimitTimeAcc = 0.f;
+        m_Event.EventOff();
+
+        m_isAnimChange = false;
+
+        m_eAnimState = ANIM_STATE::OUTER_STOPPING;
+        m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+        m_pModelCom->AnimationLoop(true);
+
+        m_isVerticalActive = true;
+        m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK1;
+
+        EventGimmick Gimmick = {};
+        Gimmick.Set_GimmickClear();
+        m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK1), Gimmick);
+    }
+    else if (true == m_isAnimChange)
+    {
+        m_fLimitTimeAcc = 0.f;
+        m_Event.EventOff();
+
+        m_isAnimChange = false;
+
+        switch (m_eAnimState)
+        {
+        case ANIM_STATE::ALL:
+        {
+            m_eAnimState = ANIM_STATE::MID_STOP;
+            m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->AnimationLoop(true);
+
+            m_isVerticalActive = true;
+            m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK0;
+
+            EventGimmick Gimmick = {};
+            Gimmick.Set_GimmickClear();
+            m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK0), Gimmick);
+            break;
+        }
+        case ANIM_STATE::MID_STOP:
+        {
+            m_eAnimState = ANIM_STATE::INNER_STOPPING;
+            m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->AnimationLoop(false);
+            break;
+        }
+        case ANIM_STATE::OUTER_STOPPING:
+        {
+            m_eAnimState = ANIM_STATE::IDLE;
+            m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+            m_pModelCom->AnimationLoop(true);
+
+            m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK2;
+
+            EventGimmick Gimmick = {};
+            Gimmick.Set_GimmickClear();
+            m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK2), Gimmick);
+            break;
+        }
+        }
+    }
+}
+
+void CElevatorL::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
+
+}
+
+void CElevatorL::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+{
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
+
+}
+
+void CElevatorL::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer)
+{
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
+
+}
+
+void CElevatorL::VerticalOnTime_Update(_float fTimeDelta)
+{
+    if (true == m_isVerticalActive)
+    {
+        m_fVerticalTimeAcc += fTimeDelta;
+
+        if (4.f < m_fVerticalTimeAcc)
+        {
+            m_fVerticalTimeAcc = 0.f;
+            m_isVerticalActive = false;
+
+            EventGimmick Gimmick = {};
+            Gimmick.Set_GimmickClear();
+            Gimmick.Set_ActiveGate();
+            m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(m_eGimmickType), Gimmick);
+        }
+    }
+}
+
 CElevatorL* CElevatorL::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CElevatorL* pInstance = new CElevatorL(pDevice, pContext);
@@ -285,5 +456,5 @@ void CElevatorL::Free()
 {
     __super::Free();
 
-
+    Safe_Release(m_pBodyCom);
 }

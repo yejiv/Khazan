@@ -47,6 +47,7 @@ private:
 private:
     ANIM_STATE m_eAnimState = { ANIM_STATE::IDLE };
 
+    EVENT_TYPE m_eGimmickType = { EVENT_TYPE::END };
     EventObject m_Event = {};
 
     _float3 m_vCharacterPosition = {};
@@ -54,6 +55,7 @@ private:
     _float m_fColTimeAcc = { 0.f };
 
     EventHallElevator m_EventHallElevator = {};
+    EventGimmick m_EventGimmick = {};
 
 private:
     virtual HRESULT Ready_Components(void* pArg) override;

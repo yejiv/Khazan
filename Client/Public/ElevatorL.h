@@ -66,7 +66,12 @@ public:
     void Set_Elevator_DownPos(_float4 vDownPos) { m_vDownPos = vDownPos; }
 
 private:
+    class CBody* m_pBodyCom = { nullptr };
+
+private:
     EventHallElevator m_Event = {};
+
+    EVENT_TYPE m_eGimmickType = { EVENT_TYPE::END };
 
     ANIM_STATE m_eAnimState = { ANIM_STATE::ALL };
     MOVE_STATE m_eMoveState = { MOVE_STATE::MID };
@@ -78,6 +83,12 @@ private:
     _float4 m_vDownPos = {};
 
     _float m_fTimeAcc = { 0.f };
+    _float m_fLimitTimeAcc = { 0.f };
+
+    _bool m_isVerticalActive = { false };
+    _float m_fVerticalTimeAcc = { 0.f };
+
+    _bool m_isMidToUpMove = { false };
 
 private:
     void Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4 vTargetPos, _float fDuration);
@@ -85,6 +96,17 @@ private:
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_PartObjects(void* pArg);
+    HRESULT Ready_Collision(void* pArg);
+
+    void Animation_Update(_float fTimeDelta);
+    void Animation_Change(_float fTimeDelta);
+
+    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal) override;
+    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer) override;
+
+private:
+    void VerticalOnTime_Update(_float fTimeDelta);
 
 public:
     static CElevatorL* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

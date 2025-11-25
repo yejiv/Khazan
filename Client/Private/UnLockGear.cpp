@@ -46,11 +46,28 @@ HRESULT CUnLockGear::Initialize_Clone(void* pArg)
     m_eAnimState = ANIM_STATE::IDLE;
     m_pModelCom->Set_Animation(ANIM_STATE::IDLE);
     m_pModelCom->Set_AnimationLoop(true);
-    m_pModelCom->Set_AnimationBlend(false);
+    m_pModelCom->Set_AnimationBlend(true);
 
     m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
             m_Event = e;
+        });
+    
+    switch (m_iEventID)
+    {
+    case 0:
+        m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK0;
+        break;
+    case 1:
+        m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK1;
+        break;
+    case 2:
+        m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK2;
+        break;
+    }
+    m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(m_eGimmickType), [&](const EventGimmick& e)
+        {
+            m_EventGimmick = e;
         });
 
     m_eEventType = EVENT_TYPE::HALL_ELEVATOR_UNLOCK;
@@ -292,9 +309,14 @@ void CUnLockGear::Animation_Change(_float fTimeDelta)
         // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
         m_eAnimState = ANIM_STATE::STOP;
         m_pModelCom->Set_Animation(m_eAnimState);
-        m_pModelCom->Set_AnimationLoop(false);
+        m_pModelCom->AnimationLoop(false);
 
         m_pTriggerCom->Collision_Active(false);
+
+        m_EventHallElevator.EventOn();
+        m_EventHallElevator.Set_UnLockState(true);
+
+        m_pGameInstance->Emit_Event<EventHallElevator>(ENUM_CLASS(m_eEventType), m_EventHallElevator);
     }
 }
 
@@ -303,15 +325,18 @@ void CUnLockGear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
 
-    if (ANIM_STATE::IDLE == m_eAnimState)
+    if (m_EventGimmick.isUnLockGearAvailable(m_iEventID) || EVENT_TYPE::EMBARS_GIMMICK2 == m_eGimmickType)
     {
-        if (ANIM_STATE::IDLE == m_eAnimState && (EVENT_TYPE::GATE_GEAR0 == m_eEventType || EVENT_TYPE::GATE_GEAR1 == m_eEventType))
-            m_pGuide->Update_Visible(false);
-        else
-            m_pGuide->Update_Visible(true);
-    }
+        if (ANIM_STATE::IDLE == m_eAnimState)
+        {
+            if (EVENT_TYPE::GATE_GEAR0 == m_eEventType || EVENT_TYPE::GATE_GEAR1 == m_eEventType)
+                m_pGuide->Update_Visible(false);
+            else
+                m_pGuide->Update_Visible(true);
+        }
 
-    m_isCollision = true;
+        m_isCollision = true;
+    }
 }
 
 void CUnLockGear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
@@ -319,7 +344,10 @@ void CUnLockGear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer,
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
 
-    m_isCollision = true;
+    if (m_EventGimmick.isUnLockGearAvailable(m_iEventID) || EVENT_TYPE::EMBARS_GIMMICK2 == m_eGimmickType)
+    {
+        m_isCollision = true;
+    }
 }
 
 void CUnLockGear::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer)
