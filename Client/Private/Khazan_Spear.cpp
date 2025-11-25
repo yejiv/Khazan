@@ -119,11 +119,10 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     m_iStopMoveIndexTable[8] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_Stop_F");
 
 
-    /* 플레이어 데이터 연결  */
-    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();
-
+    /*  기본 셋팅*/
+    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData(); // 플레이어 데이터 연결  
+    m_pClientInstance->UsedSpear();
     m_pSpear->Set_Enble(false);
-
     m_strName = "Khazan";
 
     m_EffectTimeDelta = 0.f;

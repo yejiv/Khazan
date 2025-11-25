@@ -1854,7 +1854,6 @@
     <ClInclude Include="..\Public\Imp_Wand.h">
       <Filter>02.GameObject\Creature\Monster\Imp_Range\Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Projectile_Imp_MagicBall.h" />
     <ClInclude Include="..\Public\AI_Controller_Imp_Melee.h">
       <Filter>92.AI\Controller\Imp_Melee</Filter>
     </ClInclude>
@@ -2236,9 +2235,6 @@
     <ClInclude Include="..\Public\Sequence_Embars_Puzzle_Third.h">
       <Filter>04.Sequence\Embars\Puzzle_Thrid</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\FSM_Viper.h" />
-    <ClInclude Include="..\Public\GSword_Khazan_GS.h" />
-    <ClInclude Include="..\Public\Collection_Info.h" />
     <ClInclude Include="..\Public\ElevatorL.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL</Filter>
     </ClInclude>
@@ -3328,9 +3324,6 @@
     <ClCompile Include="..\Private\Sequence_Embars_Puzzle_Third.cpp">
       <Filter>04.Sequence\Embars\Puzzle_Thrid</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\FSM_Viper.cpp" />
-    <ClCompile Include="..\Private\GSword_Khazan_GS.cpp" />
-    <ClCompile Include="..\Private\Collection_Info.cpp" />
     <ClCompile Include="..\Private\ElevatorL.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL</Filter>
     </ClCompile>
@@ -3343,7 +3336,6 @@
     <ClCompile Include="..\Private\Elevator_Outer.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\12.ElevatorL\Outer</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Ladder.cpp" />
     <ClCompile Include="..\private\Dragonian_Claw_L.cpp">
       <Filter>02.GameObject\Creature\Monster\Dragonian_Rampage\Weapon</Filter>
     </ClCompile>
