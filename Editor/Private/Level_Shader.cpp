@@ -30,11 +30,11 @@ HRESULT CLevel_Shader::Initialize()
 		ENUM_CLASS(LEVEL::SHADER), TEXT("Pool_Decal"), nullptr, 10)))
 		return E_FAIL;
 
-	//  if (FAILED(Ready_Lights()))
-	//  	return E_FAIL;
+	if (FAILED(Ready_Lights()))
+		return E_FAIL;
 
 #pragma region 테스트용 ( 박준영이 남기고 간거 )
-	CHECK_FAILED(Ready_Lights(TEXT("Test"), LEVEL::SHADER), E_FAIL);
+	//  CHECK_FAILED(Ready_Lights(TEXT("Test"), LEVEL::SHADER), E_FAIL);
 	
 	CHECK_FAILED(Ready_Layer_MapObject(TEXT("Layer_MapObject"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
 	
@@ -645,7 +645,137 @@ HRESULT CLevel_Shader::Initialize()
             ImGui::Separator();
         }
 
+        if (ImGui::CollapsingHeader("Light Settings", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            _uint iCurrentLevelIndex = ENUM_CLASS(LEVEL::SHADER);
+
+            // 1. 현재 레벨의 조명 태그 목록 가져오기 (매 프레임 호출되지만 가벼운 복사)
+            vector<_wstring> CurrentLightTags = m_pGameInstance->Get_LightTags(iCurrentLevelIndex);
+
+            // 2. 캐시 업데이트 로직: 크기가 다를 때만 갱신 (조명 추가/삭제 시에만 진입)
+            if (m_wstrLightTags.size() != CurrentLightTags.size())
+            {
+                // 컨테이너 초기화
+                m_wstrLightTags.clear();
+                m_strLightTags.clear();
+                m_szLightTags.clear();
+
+                // 원본 태그 캐시 (Deep Copy)
+                m_wstrLightTags = CurrentLightTags;
+
+                // 문자열 변환 및 캐싱
+                for (const auto& Tag : m_wstrLightTags)
+                {
+                    _int iBufferSize = WideCharToMultiByte(CP_ACP, 0, Tag.c_str(), -1, nullptr, 0, nullptr, nullptr);
+                    string strLightTag(iBufferSize, 0);
+                    WideCharToMultiByte(CP_ACP, 0, Tag.c_str(), -1, &strLightTag[0], iBufferSize, nullptr, nullptr);
+
+                    m_strLightTags.push_back(strLightTag);
+                }
+
+                // ImGui용 포인터 배열 캐싱
+                for (const auto& narrowTag : m_strLightTags)
+                {
+                    m_szLightTags.push_back(narrowTag.c_str());
+                }
+            }
+
+            // 3. 조명이 없을 때 예외 처리
+            if (m_wstrLightTags.empty())
+            {
+                ImGui::Text("No light registered in this level");
+            }
+            else
+            {
+                // 현재 선택된 조명의 인덱스 찾기 (문자열 비교)
+                _int iCurrentLightIndex = -1;
+                for (_uint i = 0; i < m_wstrLightTags.size(); ++i)
+                {
+                    if (m_wstrLightTags[i] == m_strSelectedLightTag)
+                    {
+                        iCurrentLightIndex = static_cast<_int>(i);
+                        break;
+                    }
+                }
+
+                // 리스트 박스 렌더링 (캐시된 m_szLightTags 사용)
+                if (ImGui::ListBox("Light List", &iCurrentLightIndex, m_szLightTags.data(), static_cast<_int>(m_szLightTags.size())))
+                {
+                    if (iCurrentLightIndex >= 0 && iCurrentLightIndex < m_wstrLightTags.size())
+                    {
+                        m_strSelectedLightTag = m_wstrLightTags[iCurrentLightIndex];
+                    }
+                }
+
+                ImGui::Separator();
+
+                // 4. 선택된 조명 속성 편집
+                if (!m_strSelectedLightTag.empty())
+                {
+                    const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(m_strSelectedLightTag, iCurrentLevelIndex);
+                    m_isEnableLight = m_pGameInstance->Is_LightEnable(m_strSelectedLightTag, iCurrentLevelIndex);
+
+                    _bool isChanged = { false };
+
+                    if (pLightDesc)
+                    {
+                        ImGui::TextColored(ImVec4(0.2f, 1.f, 0.2f, 1.f), "Selected: %ws", m_strSelectedLightTag.c_str());
+
+                        if (ImGui::Checkbox("Light Enable", &m_isEnableLight))
+                        {
+                            m_pGameInstance->Set_LightEnable(m_strSelectedLightTag, iCurrentLevelIndex, m_isEnableLight);
+                        }
+
+                        // 데이터 수정을 위한 복사본 생성
+                        LIGHT_DESC EditedDesc = *pLightDesc;
+
+                        ImGui::Text("Type: %s", (EditedDesc.eType == LIGHT_DESC::DIRECTIONAL) ? "DIRECTIONAL" : "POINT");
+
+                        // ImGuiColorEditFlags_HDR: HDR 모드 활성화 (1.0 초과 값 허용)
+                        // ImGuiColorEditFlags_Float: 0~255가 아닌 실수형 입력
+                        ImGuiColorEditFlags HDRFlags = ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float;
+
+                        isChanged |= ImGui::ColorEdit4("Diffuse (HDR)", reinterpret_cast<_float*>(&EditedDesc.vDiffuse), HDRFlags);
+                        isChanged |= ImGui::ColorEdit4("Ambient (HDR)", reinterpret_cast<_float*>(&EditedDesc.vAmbient), HDRFlags);
+                        isChanged |= ImGui::ColorEdit4("Specular (HDR)", reinterpret_cast<_float*>(&EditedDesc.vSpecular), HDRFlags);
+
+                        // 유형별 속성
+                        if (EditedDesc.eType == LIGHT_DESC::DIRECTIONAL)
+                        {
+                            ImGui::Text("Direction : ");
+                            isChanged |= ImGui::SliderFloat3("Dir", reinterpret_cast<_float*>(&EditedDesc.vDirection), -1.f, 1.f);
+                        }
+                        else if (EditedDesc.eType == LIGHT_DESC::POINT)
+                        {
+                            isChanged |= ImGui::SliderFloat3("Pos", reinterpret_cast<_float*>(&EditedDesc.vPosition), -300.f, 300.f, "%.1f");
+
+                            isChanged |= ImGui::SliderFloat("Range", &EditedDesc.fRange, 0.0f, 100.f, "%.1f");
+                        }
+
+                        // 변경사항 적용
+                        if (true == isChanged)
+                            m_pGameInstance->Set_LightDesc(m_strSelectedLightTag, iCurrentLevelIndex, EditedDesc);
+
+                    }
+                    else
+                    {
+                        ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), "Light Desc Not Found!");
+                        // 존재하지 않는 조명이면 선택 해제
+                        m_strSelectedLightTag = TEXT("");
+                    }
+                }
+
+                ImGui::Separator();
+
+                // Light Transition
+
+            }
+
+            ImGui::Separator();
+        }
+
 		ImGui::End();
+
 	});
 
 	return S_OK;
@@ -690,24 +820,24 @@ HRESULT CLevel_Shader::Render()
 HRESULT CLevel_Shader::Ready_Lights()
 {
 	// Directional
-	//  LIGHT_DESC LightDesc = {};
-	//  LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
-	//  LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	//  LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	//  LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
-	//  LightDesc.vSpecular = LightDesc.vDiffuse;
-	//  if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional_Shader"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
-	//  	return E_FAIL;
+	LIGHT_DESC LightDesc = {};
+	LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
+	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+	LightDesc.vSpecular = LightDesc.vDiffuse;
+	if (FAILED(m_pGameInstance->Add_Light(TEXT("Shader_Directional"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+		return E_FAIL;
 
-    // Directional
-    LIGHT_DESC LightDesc = {};
+    // Point_Red
+    LightDesc = {};
     LightDesc.eType = LIGHT_DESC::POINT;
-    LightDesc.vPosition = _float4(0.f, 85.f, -10.f, 1.f);
+    LightDesc.vPosition = _float4(0.f, 10.f, -10.f, 1.f);
     LightDesc.vDiffuse = _float4(1.f, 0.f, 0.f, 1.f);
     LightDesc.vAmbient = _float4(0.6f, 0.f, 0.f, 1.f);
     LightDesc.vSpecular = LightDesc.vDiffuse;
     LightDesc.fRange = 10.f;
-    if (FAILED(m_pGameInstance->Add_Light(TEXT("Point_Shader"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Shader_Point_Red"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
         return E_FAIL;
 
 	return S_OK;
@@ -763,6 +893,16 @@ HRESULT CLevel_Shader::Ready_Layer_Player()
         return E_FAIL;
 
 	return S_OK;
+}
+
+HRESULT CLevel_Shader::Ready_Light_Window()
+{
+    return E_NOTIMPL;
+}
+
+_bool CLevel_Shader::Lights_Load_Binary()
+{
+    return _bool();
 }
 
 HRESULT CLevel_Shader::Ready_Layer_MapObject(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)

@@ -27,6 +27,13 @@ private:
 	HRESULT Ready_Layer_BackGround();
 	HRESULT Ready_Layer_Player();
 
+private:
+    // Light Settings
+    // Editor Light 세팅 윈도우
+    HRESULT Ready_Light_Window();
+    // Editor에서 조명 불러오기
+    _bool   Lights_Load_Binary();
+
 #ifdef _DEBUG
 private:
 	// Frame Check
@@ -102,6 +109,16 @@ private:
     MOTIONTRAIL_CONFIG      m_MotionTrailConfig = {};
     _int                    m_iCurrentGameObjectIndex = { -1 };
     _float                  m_fMotionTrailDuration = {};
+
+    // Light
+    _wstring                m_strSelectedLightTag = {};
+
+    vector<_wstring>        m_wstrLightTags;
+    vector<string>          m_strLightTags;
+    vector<const _char*>    m_szLightTags;
+    _bool                   m_isEnableLight = {};
+
+    LIGHT_TRANSITION_DESC   m_TargetLightDesc = {};
 
 private:
 	// 파라미터 ( 1. 등록할 레이어 태그 | 2. 데이터 파일 이름 | 3. 현재 로드할 레벨 | 4. 맵 타입 ( 안넣으면 폴더 내부 X ) )
