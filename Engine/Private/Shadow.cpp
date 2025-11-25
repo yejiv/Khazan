@@ -35,6 +35,7 @@ void CShadow::Update(_float fTimeDelta)
         m_fTransTimeAcc += fTimeDelta;
 
         _float fRatio = m_fTransTimeAcc / m_fDuration;
+
         if (1.f <= fRatio)
         {
             fRatio = 1.f;

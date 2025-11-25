@@ -81,7 +81,8 @@ private:
 	HRESULT Ready_Collision(void* pArg);
 	HRESULT Ready_Interaction_Guide(void* pArg);
 	HRESULT Ready_DefaultSetting(void* pArg);
-	virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
+    HRESULT	Ready_AnimationEvent();
+    virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
 
 	void Input_Interact_Event(_float fTimeDelta);
 	void Animation_Update(_float fTimeDelta);

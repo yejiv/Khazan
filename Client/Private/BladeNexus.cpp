@@ -36,6 +36,8 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_DefaultSetting(pArg), E_FAIL);
 
+    CHECK_FAILED(Ready_AnimationEvent(), E_FAIL);
+
     m_eAnimState = ANIM_STATE::BEFORE_IDLE;
     m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_IDLE);
     m_pModelCom->Set_AnimationLoop(true);
@@ -196,7 +198,8 @@ HRESULT CBladeNexus::Ready_Collision(void* pArg)
 HRESULT CBladeNexus::Ready_Interaction_Guide(void* pArg)
 {
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
-    CHECK_NULLPTR(m_pGuide, E_FAIL);;
+    CHECK_NULLPTR(m_pGuide, E_FAIL);
+
 
     m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("접촉"), 1.5f);
 
@@ -250,6 +253,28 @@ HRESULT CBladeNexus::Ready_DefaultSetting(void* pArg)
     return S_OK;
 }
 
+HRESULT CBladeNexus::Ready_AnimationEvent()
+{
+    m_pModelCom->Register_Event("Strong_RadialBlur", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        {
+            RADIAL_BLUR_DESC Desc{};
+            Desc.vCenterUV = _float2(0.5f, 0.5f);
+            Desc.fSampleRadius = 0.05f;
+            Desc.vMaskRadius = _float2(0.f, 0.3f);
+            Desc.fExponent = 1.f;
+            Desc.iNumSamples = 16;
+            Desc.fAttenuation = 0.1f;
+            Desc.fStrength = 1.f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
+            Desc.fDuration = 0.5f;
+            Desc.vFadeTime = _float2(0.05f, 0.25f);
+            m_pGameInstance->Start_RadialBlur(Desc);
+
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 0.5f);
+        });
+
+    return S_OK;
+}
+
 HRESULT CBladeNexus::Bind_Materials(_uint iMeshIndex)
 {
     m_iMtrlFlags = 0;
@@ -262,9 +287,9 @@ HRESULT CBladeNexus::Bind_Materials(_uint iMeshIndex)
         m_iMtrlFlags |= M_EMISSIVE;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
         m_iMtrlFlags |= M_SPECULAR;
-    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalicTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
         m_iMtrlFlags |= M_METALIC;
-    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
         m_iMtrlFlags |= M_ROUGHNESS;
 
     //m_iMtrlFlags &= ~M_EMISSIVE;
@@ -358,13 +383,13 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             RADIAL_BLUR_DESC Desc{};
             Desc.vCenterUV = _float2(0.5f, 0.5f);
             Desc.fSampleRadius = 0.05f;
-            Desc.vMaskRadius = _float2(0.f, 0.7f);
+            Desc.vMaskRadius = _float2(0.f, 0.5f);
             Desc.fExponent = 1.f;
             Desc.iNumSamples = 16;
             Desc.fAttenuation = 0.1f;
             Desc.fStrength = 0.8f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
-            Desc.fDuration = 8.f;
-            Desc.vFadeTime = _float2(3.5f, 0.2f);
+            Desc.fDuration = 7.5f;
+            Desc.vFadeTime = _float2(3.5f, 0.5f);
             m_pGameInstance->Start_RadialBlur(Desc);
         }
         // 해금 후 IDLE 상태
@@ -401,24 +426,6 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             m_eAnimState = ANIM_STATE::BEFORE_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
-
-            //  m_fRadialBlurTimeAcc += fTimeDelta;
-            //  
-            //  if (!m_isFinishedRadialBlur && m_fRadialBlurTimeAcc >= 8.f)
-            //  {
-            //      RADIAL_BLUR_DESC Desc{};
-            //      Desc.vCenterUV = _float2(0.5f, 0.5f);
-            //      Desc.fSampleRadius = 0.05f;
-            //      Desc.vMaskRadius = _float2(0.f, 0.7f);
-            //      Desc.fExponent = 1.f;
-            //      Desc.iNumSamples = 16;
-            //      Desc.fAttenuation = 0.1f;
-            //      Desc.fStrength = 1.f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
-            //      Desc.fDuration = 0.5f;
-            //      Desc.vFadeTime = _float2(0.2f, 0.2f);
-            //      m_pGameInstance->Start_RadialBlur(Desc);
-            //      m_isFinishedRadialBlur = true;
-            //  }
         }
         if (ANIM_STATE::AFTER_LOOP == m_eAnimState)
         {
@@ -534,7 +541,7 @@ void CBladeNexus::Find_Target()
     m_isFindTarget = true;
 }
 
-void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC*)
+void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
      if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -545,7 +552,7 @@ void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer
     m_isCollision = true;
 }
 
-void CBladeNexus::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC*)
+void CBladeNexus::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -553,7 +560,7 @@ void CBladeNexus::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer,
     m_isCollision = true;
 }
 
-void CBladeNexus::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC*)
+void CBladeNexus::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -603,3 +610,4 @@ void CBladeNexus::Free()
         m_pGuide->Set_IsDead(true);
     }
 }
+

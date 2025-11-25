@@ -34,11 +34,21 @@ namespace Engine
         float		fRange;
     }LIGHT_DESC;
 
-    typedef struct tagKeyFrame
+    typedef struct tagLightTransitionDesc
     {
-        XMFLOAT3	vScale;
-        XMFLOAT4	vRotation;
-        XMFLOAT3	vTranslation;
+        float       fDuration;
+        XMFLOAT2    vFadeTime;
+        XMFLOAT4    vDiffuse;
+        XMFLOAT4    vAmbient;
+        XMFLOAT4    vSpecular;
+        bool        isReturnToStart;
+    }LIGHT_TRANSITION_DESC;
+
+	typedef struct tagKeyFrame
+	{
+		XMFLOAT3	vScale;
+		XMFLOAT4	vRotation;
+		XMFLOAT3	vTranslation;
 
         float		fTrackPosition;
     }KEYFRAME;
