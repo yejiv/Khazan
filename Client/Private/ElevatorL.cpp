@@ -7,12 +7,12 @@
 #include "Elevator_Outer.h"
 
 CElevatorL::CElevatorL(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CProp_Interactive { pDevice, pContext }
+    : CProp_Interactive{ pDevice, pContext }
 {
 }
 
 CElevatorL::CElevatorL(const CElevatorL& Prototype)
-    : CProp_Interactive { Prototype }
+    : CProp_Interactive{ Prototype }
 {
 }
 
@@ -34,9 +34,12 @@ HRESULT CElevatorL::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_PartObjects(pArg), E_FAIL);
 
-    m_vUpPos = pDesc->ElevatorPos.vUp;
-    m_vMidPos = pDesc->ElevatorPos.vMid;
-    m_vDownPos = pDesc->ElevatorPos.vDown;
+    LARGE_ELEVATOR_POS* pElevatorPos = static_cast<LARGE_ELEVATOR_POS*>(pDesc->pOtherDesc);
+    CHECK_NULLPTR(pElevatorPos, E_FAIL);
+
+    m_vUpPos = pElevatorPos->vUp;
+    m_vMidPos = pElevatorPos->vMid;
+    m_vDownPos = pElevatorPos->vDown;
 
     m_eAnimState = ANIM_STATE::ALL;
     m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
@@ -44,6 +47,8 @@ HRESULT CElevatorL::Initialize_Clone(void* pArg)
     m_pModelCom->AnimationLoop(true);
 
     m_pModelCom->Set_AnimationBlend(true);
+
+    m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(EVENT_TYPE::HALL_ELEVATOR_UNLOCK), [&](const EventHallElevator& e) { m_Event = e; });
 
     return S_OK;
 }
@@ -55,14 +60,16 @@ void CElevatorL::Priority_Update(_float fTimeDelta)
 
 void CElevatorL::Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_H) && ANIM_STATE::IDLE != m_eAnimState)
+    if (m_Event.isEventOn) // m_pGameInstance->Key_Down(DIK_H) && ANIM_STATE::IDLE != m_eAnimState) // 어떤 조건이 들어오면 애니메이션 Loop 중단 후 슥슥 샥샥
     {
+        m_Event.EventOff();
+
         m_isAnimChange = true;
         m_pModelCom->AnimationLoop(false);
     }
     else if (ANIM_STATE::IDLE == m_eAnimState)
     {
-        if (m_pGameInstance->Key_Down(DIK_L))
+        if (m_Event.IsThirdStep()) // m_pGameInstance->Key_Down(DIK_L)) // 아이들 상태 되면 이제 슥슥 이동을 시작
         {
             switch (m_eMoveState)
             {
@@ -71,9 +78,6 @@ void CElevatorL::Update(_float fTimeDelta)
                 break;
             case MOVE_STATE::DOWN:
                 m_eMoveState = MOVE_STATE::DOWNTOUP;
-                break;
-            case MOVE_STATE::UP:
-                m_eMoveState = MOVE_STATE::UPTOMID;
                 break;
             default:
                 break;
@@ -87,9 +91,6 @@ void CElevatorL::Update(_float fTimeDelta)
             break;
         case MOVE_STATE::DOWNTOUP:
             Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 5.f);
-            break;
-        case MOVE_STATE::UPTOMID:
-            Lerp_ElevatorMove(fTimeDelta, m_vUpPos, m_vMidPos, 5.f);
             break;
         default:
             break;
@@ -125,11 +126,11 @@ void CElevatorL::Update(_float fTimeDelta)
                 m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
                 m_pModelCom->AnimationLoop(true);
                 break;
-            //case ANIM_STATE::IDLE:
-            //    m_eAnimState = ANIM_STATE::ALL;
-            //    m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-            //    m_pModelCom->AnimationLoop(true);
-            //    break;
+            case ANIM_STATE::IDLE:
+                m_eAnimState = ANIM_STATE::ALL;
+                m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+                m_pModelCom->AnimationLoop(true);
+                break;
             }
         }
     }
@@ -178,7 +179,6 @@ void CElevatorL::Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4
 
     if (0.1f > fDistance)
     {
-         //= false;
         m_fTimeAcc = 0.f;
 
         switch (m_eMoveState)
@@ -188,9 +188,6 @@ void CElevatorL::Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4
             break;
         case MOVE_STATE::DOWNTOUP:
             m_eMoveState = MOVE_STATE::UP;
-            break;
-        case MOVE_STATE::UPTOMID:
-            m_eMoveState = MOVE_STATE::MID;
             break;
         default:
             break;
@@ -234,7 +231,7 @@ HRESULT CElevatorL::Ready_PartObjects(void* pArg)
     InnerDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     InnerDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Dummy003");
 
-    CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Inner"), ENUM_CLASS(LEVEL::MAP),
+    CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Inner"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_Elevator_Inner"), &InnerDesc), E_FAIL);
 
     CElevator_Mid::ELEVATOR_MID_DESC MidDesc = {};
@@ -243,7 +240,7 @@ HRESULT CElevatorL::Ready_PartObjects(void* pArg)
     MidDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     MidDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Dummy002");
 
-    CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Mid"), ENUM_CLASS(LEVEL::MAP),
+    CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Mid"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_Elevator_Mid"), &MidDesc), E_FAIL);
 
     CElevator_Outer::ELEVATOR_OUTER_DESC OuterDesc = {};
@@ -252,7 +249,7 @@ HRESULT CElevatorL::Ready_PartObjects(void* pArg)
     OuterDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     OuterDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Dummy001");
 
-    CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Outer"), ENUM_CLASS(LEVEL::MAP),
+    CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Outer"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_Elevator_Outer"), &OuterDesc), E_FAIL);
 
     return S_OK;

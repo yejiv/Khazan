@@ -123,10 +123,12 @@ namespace Client {
         XMFLOAT4 vPlayerPosition{};
     };
 
-    // 상호작용 오브젝트끼리의 이벤트 ( 조각상 -> 차단봉 )
+    // 상호작용 오브젝트끼리의 이벤트 ( 조각상 -> 차단봉 | 엘리베이터 -> 차단봉 )
     struct EventVerticalGate
     {
         bool isActiveStatue[4] = { false, false, false, false };
+
+        bool isElevatorDownPos = { false };
 
         void SetActiveStatue(unsigned int iStatueIndex)
         {
@@ -147,6 +149,7 @@ namespace Client {
 
             return true;
         }
+
         bool isSection1()       // 3개 조각상
         {
             for (_uint i = 0; i < 3; ++i)
@@ -155,6 +158,11 @@ namespace Client {
             }
 
             return true;
+        }
+
+        bool isSection2()
+        {
+            return isElevatorDownPos;
         }
 
         bool isUnLockGate(unsigned int iGateEventID)
@@ -173,11 +181,16 @@ namespace Client {
         enum UNLOCK_STATE { NONE, STEP_1, STEP_2, STEP_3, END};
 
         UNLOCK_STATE eStep{};
+        bool isEventOn = {};
+
+        void EventOff() { isEventOn = false; }
 
         void Set_UnLockState(bool isUnLock)
         {
             if (false == isUnLock)
                 return;
+
+            isEventOn = isUnLock;
 
             if (UNLOCK_STATE::NONE == eStep)
                 eStep = STEP_1;
@@ -185,6 +198,18 @@ namespace Client {
                 eStep = STEP_2;
             else if (UNLOCK_STATE::STEP_2 == eStep)
                 eStep = STEP_3;
+        }
+
+        bool IsFirstStep() {
+            if (UNLOCK_STATE::STEP_1 == eStep)
+                return true;
+            return false;
+        }
+
+        bool IsSecondStep() {
+            if (UNLOCK_STATE::STEP_2 == eStep)
+                return true;
+            return false;
         }
 
         bool IsThirdStep() {

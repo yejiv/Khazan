@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Editor_Defines.h"
+#include "Client_Defines.h"
 #include "Prop_Interactive.h"
 
-NS_BEGIN(Editor)
+NS_BEGIN(Client)
 
 class CElevatorL final : public CProp_Interactive
 {
@@ -21,12 +21,11 @@ private:
 
     enum class MOVE_STATE
     {
-        MID,
-        MIDTODOWN,
-        DOWN,
-        DOWNTOUP,
-        UP,
-        UPTOMID,
+        MID,            // 회전 위치
+        MIDTODOWN,      // 회전 위치 -> 아래로 내려감
+        DOWN,           // 아래 위치
+        DOWNTOUP,       // 아래 -> 위 올라감
+        UP,             // 위 위치
         END
     };
 
@@ -67,6 +66,8 @@ public:
     void Set_Elevator_DownPos(_float4 vDownPos) { m_vDownPos = vDownPos; }
 
 private:
+    EventHallElevator m_Event = {};
+
     ANIM_STATE m_eAnimState = { ANIM_STATE::ALL };
     MOVE_STATE m_eMoveState = { MOVE_STATE::MID };
 

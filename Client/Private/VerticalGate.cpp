@@ -47,6 +47,9 @@ HRESULT CVerticalGate::Initialize_Clone(void* pArg)
     case 1:
         m_eEventType = EVENT_TYPE::STATUE_PUZZLE1;
         break;
+    case 2:
+        //m_eEventType = EVENT_TYPE::; 3단 엘리베이터 Down Pos 잡으면 문 열리는 신호
+        break;
     default:
         m_eEventType = EVENT_TYPE::END;
         break;
