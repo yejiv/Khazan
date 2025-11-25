@@ -88,7 +88,7 @@ HRESULT CFence::Render()
 }
 
 
-void CFence::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CFence::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK) ||
         iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK))
@@ -117,12 +117,12 @@ void CFence::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _fl
 
 }
 
-void CFence::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CFence::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CFence::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CFence::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }

@@ -1667,11 +1667,11 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pCSM);
 
 	Safe_Release(m_pComputeShader_Manager);
-	Safe_Release(m_pPool_Manager);
+	
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pFrustum);
-	Safe_Release(m_pEvent_Manager);
+	
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pInput_Manager);
@@ -1686,6 +1686,8 @@ void CGameInstance::Release_Engine()
     Safe_Release(m_pEffect_Manager);
 	Safe_Release(m_pPrototype_Manager);	
 	Safe_Release(m_pLevel_Manager);
+    Safe_Release(m_pPool_Manager);
+    Safe_Release(m_pEvent_Manager);
     Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pGraphic_Device);
     

@@ -133,16 +133,6 @@ HRESULT CPlayer::Render()
     return S_OK;
 }
 
-void CPlayer::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
-{
-    int a = 0;
-}
-
-void CPlayer::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
-{
-    int a = 0;
-}
-
 HRESULT CPlayer::Ready_Components()
 {
 

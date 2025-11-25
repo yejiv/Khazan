@@ -74,7 +74,6 @@ HRESULT CBody_Khazan_GS::Initialize_Clone(void* pArg)
 void CBody_Khazan_GS::Priority_Update(_float fTimeDelta)
 {
     m_pTrail->Priority_Update(fTimeDelta);
-
 }
 
 void CBody_Khazan_GS::Update(_float fTimeDelta)
@@ -282,7 +281,7 @@ void CBody_Khazan_GS::Render_Part_Outline(CModel* pModel)
     }
 }
 
-void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC*)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
@@ -307,6 +306,7 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
         /*  탐지 */
         CGameObject* pObj = pDesc->pGameObject;
         if (!pObj || pObj->Get_IsDead()) return;
+        lock_guard <mutex> lock(m_CollMonsterMutex);
         if (pObj && (find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end()))
             m_CollMonsters.push_back(pObj);
 
@@ -333,17 +333,17 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
 
 }
 
-void CBody_Khazan_GS::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CBody_Khazan_GS::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC*)
 {
 }
 
-void CBody_Khazan_GS::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CBody_Khazan_GS::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC*)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER)) {
         CGameObject* pObj = pDesc->pGameObject;
 
         if (!pObj) return;
-
+        lock_guard <mutex> lock(m_CollMonsterMutex);
         auto it = remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
         if (it != m_CollMonsters.end()) m_CollMonsters.erase(it, m_CollMonsters.end());
 
@@ -389,7 +389,7 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
     m_fOptimizationSearchTime.x = 0.f;
 
     _vector vPlayerPos = XMVectorSet(m_pParentMatrix->_41, m_pParentMatrix->_42, m_pParentMatrix->_43, 1.f);
-
+    lock_guard <mutex> lock(m_CollMonsterMutex);
     for (CGameObject* monster : m_CollMonsters)
     {
         if (!monster || monster->Get_IsDead())

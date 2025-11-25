@@ -122,7 +122,7 @@ HRESULT CTwinBlade_Viper::Render()
     return S_OK;
 }
 
-void CTwinBlade_Viper::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CTwinBlade_Viper::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
     if (COLLISION_LAYER::PLAYER == eLayer)
@@ -133,11 +133,11 @@ void CTwinBlade_Viper::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObject
 
 }
 
-void CTwinBlade_Viper::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CTwinBlade_Viper::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 }
 
-void CTwinBlade_Viper::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CTwinBlade_Viper::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 }
 

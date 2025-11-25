@@ -13,6 +13,8 @@
 
 
 #include "Player.h"
+#include "Khazan_Spear.h"
+#include "Khazan_GSword.h"
 #include "Camera_Compre.h"
 #include "Sequence_Viper_SecondPhase.h"
 
@@ -32,9 +34,8 @@ HRESULT CLevel_Viper::Initialize()
 
    CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
-
-    CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+    CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     if (FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Viper"))))
         return E_FAIL;
@@ -130,49 +131,32 @@ HRESULT CLevel_Viper::Ready_Layer_Player(const _wstring& strLayerTag)
 
 HRESULT CLevel_Viper::Ready_Layer_Camera(const _wstring& strLayerTag)
 {
-	CCamera_Compre::CAMERA_COMPRE_DESC	CameraFreeDesc{};
+    CCamera_Compre::CAMERA_COMPRE_DESC	PlayerCameraDesc{};
 
-	CameraFreeDesc.vEye = _float4(0.39f, 3.97f, -1.79f, 1.f);
-	CameraFreeDesc.vAt = _float4(-0.26f, -0.1f, 0.96f, 1.f);
-	CameraFreeDesc.fFovy = XMConvertToRadians(60.0f);
-	CameraFreeDesc.fNear = 0.1f;
-	CameraFreeDesc.fFar = 6000.f;
-	CameraFreeDesc.fSpeedPerSec = 40.f;
-	CameraFreeDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-	CameraFreeDesc.fMouseSensor = 0.2f;
-	CameraFreeDesc.iCameraType = ENUM_CLASS(CAMERATYPE::FREE);
+    PlayerCameraDesc.vEye = _float4(0.51f, 2.08f, -3.94f, 1.f);
+    PlayerCameraDesc.vAt = _float4(-0.13f, -0.12f, 0.98f, 1.f);
+    PlayerCameraDesc.fFovy = XMConvertToRadians(60.0f);
+    PlayerCameraDesc.fNear = 0.1f;
+    PlayerCameraDesc.fFar = 6000.f;
+    PlayerCameraDesc.fSpeedPerSec = 10.f;
+    PlayerCameraDesc.fRotationPerSec = XMConvertToRadians(90.0f);
+    PlayerCameraDesc.fMouseSensor = 0.2f;
+    PlayerCameraDesc.iCameraType = ENUM_CLASS(CAMERATYPE::PLAYER);
 
-	CCamera_Compre* pCamera_Free = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Camera_Compre"), &CameraFreeDesc));
-	pCamera_Free->Set_IsActive(false);
-    
-	m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::VIPER), pCamera_Free);
+    CCamera_Compre* pCamera_Player = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Camera_Compre"), &PlayerCameraDesc));
+    pCamera_Player->Set_IsActive(false);
+    CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player"));
+    pCamera_Player->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 
-	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pCamera_Free);
+    static_cast<CKhazan_Spear*>(pPlayer)->Set_Camera(pCamera_Player);
 
-    m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::FREE));
+    m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::VIPER), pCamera_Player);
 
-	//CCamera_Compre::CAMERA_COMPRE_DESC	CameraSpringDesc{};
+    m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pCamera_Player);
 
-	//CameraFreeDesc.vEye = _float4(0.39f, 3.97f, -1.79f, 1.f);
-	//CameraFreeDesc.vAt = _float4(-0.26f, -0.1f, 0.96f, 1.f);
-	//CameraSpringDesc.fFovy = XMConvertToRadians(60.0f);
-	//CameraSpringDesc.fNear = 0.1f;
-	//CameraSpringDesc.fFar = 6000.f;
-	//CameraSpringDesc.fSpeedPerSec = 10.f;
-	//CameraSpringDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-	//CameraSpringDesc.fMouseSensor = 0.2f;
-	//CameraSpringDesc.iCameraType = ENUM_CLASS(CAMERATYPE::PLAYER);
+    m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::PLAYER));
 
-
-	//CCamera_Compre* pCamera_Spring = dynamic_cast<CCamera_Compre*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Camera_Compre"), &CameraSpringDesc));
-	//pCamera_Spring->Set_IsActive(false);
-	//CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player"));
-	//pCamera_Spring->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
-	//m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::VIPER), pCamera_Spring);
-
-	//m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pCamera_Spring);
-
-	return S_OK;
+    return S_OK;
 }
 
 HRESULT CLevel_Viper::Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)

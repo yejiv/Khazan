@@ -200,8 +200,6 @@ HRESULT CLever::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    Safe_AddRef(m_pGuide);
-
     m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("가동"), 1.f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
@@ -425,7 +423,7 @@ void CLever::Animation_Change(_float fTimeDelta)
     }
 }
 
-void CLever::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CLever::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -441,7 +439,7 @@ void CLever::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _f
     m_isCollision = true;
 }
 
-void CLever::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CLever::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -449,7 +447,7 @@ void CLever::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _fl
     m_isCollision = true;
 }
 
-void CLever::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer)
+void CLever::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -498,6 +496,5 @@ void CLever::Free()
     if (nullptr != m_pGuide)
     {
         m_pGuide->Set_IsDead(true);
-        Safe_Release(m_pGuide);
     }
 }

@@ -392,7 +392,7 @@ void CElevatorL::Animation_Change(_float fTimeDelta)
     }
 }
 
-void CElevatorL::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CElevatorL::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -400,7 +400,7 @@ void CElevatorL::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer
 
 }
 
-void CElevatorL::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CElevatorL::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -408,7 +408,7 @@ void CElevatorL::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer,
 
 }
 
-void CElevatorL::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer)
+void CElevatorL::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;

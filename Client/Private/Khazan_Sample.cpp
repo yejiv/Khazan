@@ -200,13 +200,6 @@ HRESULT CKhazan_Sample::Render()
 
 }
 
-void CKhazan_Sample::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
-{
-}
-
-void CKhazan_Sample::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
-{
-}
 
 HRESULT CKhazan_Sample::RayCast(_float fTimeDelta)
 {

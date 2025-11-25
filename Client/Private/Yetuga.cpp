@@ -148,7 +148,7 @@ HRESULT CYetuga::Render()
     return S_OK;
 }
 
-void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
 
@@ -206,12 +206,12 @@ void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
     }
 }
 
-void CYetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal)
+void CYetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CYetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer)
+void CYetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }
@@ -280,7 +280,6 @@ void CYetuga::Pick_Stone()
     m_pHoldStone = static_cast<CProjectile_Yetuga*>(pGameObject);
     if (m_pHoldStone == nullptr)
         return;
-    Safe_AddRef(m_pHoldStone);
 
     _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
@@ -337,8 +336,6 @@ void CYetuga::Throw_Stone()
 
     CModel* pModel = static_cast<CModel*>(m_pHoldStone->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(1);
-
-    Safe_Release(m_pHoldStone);
 }
 
 void CYetuga::Grab_Check_Begin(const _char* pBoneName)
@@ -388,7 +385,6 @@ void CYetuga::Pick_Rock()
     m_pHoldRock = static_cast<CProjectile_Rock_Yetuga*>(pGameObject);
     if (m_pHoldRock == nullptr)
         return;
-    Safe_AddRef(m_pHoldRock);
 
     m_isRockPlay = true;
 
@@ -525,7 +521,6 @@ void CYetuga::Breath_Start()
     m_pBreath = static_cast<CProjectile_Breath_Yetuga*>(pGameObject);
     if (m_pBreath == nullptr)
         return;
-    Safe_AddRef(m_pBreath);
 
     _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
     _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
@@ -1824,5 +1819,16 @@ void CYetuga::Free()
 {
     Safe_Release(m_pBody);
     Safe_Release(m_pHead);
+
+    if (m_pHoldStone)
+        m_pHoldStone->Set_IsDead(true);
+
+    if (m_pHoldRock)
+        m_pHoldStone->Set_IsDead(true);
+
+    if (m_pBreath)
+        m_pBreath->Set_IsDead(true);
+
+
     __super::Free();
 }
