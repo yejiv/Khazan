@@ -19,6 +19,7 @@ enum class VIPER_STATE_P1
     DIVOUR,
     SIDEMOVE,
     COMBO5HIT,
+    STINGGRAB,
     HIT,
     GROGGY,
     DODGE,

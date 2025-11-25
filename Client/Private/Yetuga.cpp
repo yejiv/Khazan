@@ -10,6 +10,7 @@
 #include "Projectile_Breath_Yetuga.h"
 #include "BossHp.h"
 #include "Head_Yetuga.h"
+#include "Viper.h"
 
 CYetuga::CYetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -263,6 +264,8 @@ void CYetuga::Update_Landing(_float fTimeDelta)
     pTransform->Set_State(STATE::POSITION, vNewPos);
     m_pCharVirCom->Set_Position(vNewPos);
 }
+
+
 
 
 

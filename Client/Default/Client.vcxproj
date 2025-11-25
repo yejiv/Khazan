@@ -229,6 +229,7 @@
     <ClInclude Include="..\Public\AS_Slow2Hit_VIper.h" />
     <ClInclude Include="..\Public\AS_Slow3Hit_Viper.h" />
     <ClInclude Include="..\Public\AS_Smash_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_StingGrab_Viper.h" />
     <ClInclude Include="..\Public\AS_StingSlashCombo_Viper.h" />
     <ClInclude Include="..\Public\AS_ThrowBall_Yetuga.h" />
     <ClInclude Include="..\Public\AS_ThrowBlade_Viper.h" />
@@ -556,6 +557,7 @@
     <ClCompile Include="..\Private\AS_Dr_Rampage_Walk.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_LockOn.cpp" />
     <ClCompile Include="..\private\AS_Dr_Rampage_Attack_Jump.cpp" />
+    <ClCompile Include="..\Private\AS_StingGrab_Viper.cpp" />
     <ClCompile Include="..\private\Body_Dragonian_Melee.cpp" />
     <ClCompile Include="..\Private\AS_5HitCombo_Viper.cpp" />
     <ClCompile Include="..\Private\AS_Devour_Viper.cpp" />

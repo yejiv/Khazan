@@ -25,8 +25,15 @@ public:
     _float4* Get_BonePointEX(const _char* pBoneName);
     _matrix					Get_BoneMatrix(const _char* pBoneName);
     _float4x4               Get_CombinedMatrix() const { return m_CombinedWorldMatrix; }
-    void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
+    void					Set_OnAttackCollision_L(_bool isToggle) { m_isLOnAttackCollision = isToggle; }
+    void					Set_OnAttackCollision_R(_bool isToggle) { m_isROnAttackCollision = isToggle; }
+    void					Set_OnAttackCollision(_bool isToggle) 
+    { 
+        m_isROnAttackCollision = isToggle;
+        m_isLOnAttackCollision = isToggle;
+    }
     _float4                 Get_SwordTip() const { return m_vTipPos; }
+    _float4                 Get_GrabPos() const { return m_vGrabPos; }
 
 
 private:
@@ -61,7 +68,8 @@ private:
     CModel*                 m_pModelCom = { nullptr };
     CTransform*             m_pOwnerTransform = { nullptr };
 
-    _bool					m_isOnAttackCollision = { false };
+    _bool					m_isLOnAttackCollision = { false };
+    _bool                   m_isROnAttackCollision = { false };
 
     CBody*                  m_pRightBodyComp = { nullptr };
     CBody*                  m_pLeftBodyComp = { nullptr };
@@ -72,6 +80,7 @@ private:
     _float4x4               m_LeftMatrix = {};
 
     _float4                 m_vTipPos = {};
+    _float4                 m_vGrabPos = {};
 
 public:
     static CTwinBlade_Viper*    Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

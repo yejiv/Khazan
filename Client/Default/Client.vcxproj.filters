@@ -1192,6 +1192,9 @@
     <Filter Include="02.GameObject\Creature\Monster\Dragonian_Rampage\Weapon">
       <UniqueIdentifier>{3b14ece7-b2e3-47ba-aafb-e51ab8b5658f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Viper\15.StingGrab">
+      <UniqueIdentifier>{b9672729-3c7b-40dc-ae1f-65294ca5675c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2304,6 +2307,9 @@
     <ClInclude Include="..\Public\Imp_Range.h">
       <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_StingGrab_Viper.h">
+      <Filter>92.AI\State\Viper\15.StingGrab</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3395,6 +3401,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Imp_Range.cpp">
       <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_StingGrab_Viper.cpp">
+      <Filter>92.AI\State\Viper\15.StingGrab</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

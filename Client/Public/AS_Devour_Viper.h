@@ -24,7 +24,7 @@ private:
     _float                          m_fMaxSpeed = {};
     _float                          m_fMinRange = {};
     _float                          m_fMaxRange = {};
-
+    _float                          m_fDevourAcc = {};
 
 public:
     static CAS_Devour_Viper*        Create();
