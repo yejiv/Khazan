@@ -83,7 +83,7 @@ private:
 	_float									m_pannelLeftWidth = { 400.0f };
 	_float									m_pannelMiddleWidth = { 600.0f };
 
-	const _char* m_strRenderGroupNames[9] = { "PRIORITY", "SHADOW","STATIC", "DYNAMIC","MOTION", "OUTLINE","NONLIGHT", "BLEND", "UI"};
+	const _char* m_strRenderGroupNames[10] = { "PRIORITY", "SHADOW","STATIC", "DYNAMIC","MOTIONVECTOR", "OUTLINE","NONLIGHT", "MOTIONTRAIL","WEIGHT_BLEND","BLEND", "UI"};
 
 private:
 	// === 위젯 함수 ===

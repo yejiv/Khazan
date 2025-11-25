@@ -212,6 +212,14 @@ void CClientInstance::Set_UsedSkill(_uint iSkill, _bool isUsed)
 {
     return m_pPlayer_Manager->Set_UsedSkill(iSkill, isUsed);
 }
+void CClientInstance::Set_UsedSkills(_uint iSkill, _bool isUsed)
+{
+    return m_pPlayer_Manager->Set_UsedSkills(iSkill, isUsed);
+}
+void CClientInstance::Set_UnUsedAllSkills()
+{
+    return m_pPlayer_Manager->Set_UnUsedAllSkills();
+}
 _bool CClientInstance::Is_UsedSkill(_uint iSkill)
 {
     return m_pPlayer_Manager->Is_UsedSkill(iSkill);
@@ -301,47 +309,54 @@ void CClientInstance::Yetuga_Holding_End()
 {
     m_pCamera_Manager->Yetuga_Holding_End();
 }
-_bool CClientInstance::Check_SpearSkill(_uint skill)
+_bool CClientInstance::Check_Skill(_uint skill)
 {
-	return m_pPlayerData_Manager->Check_SpearSkill(skill);
+	return m_pPlayerData_Manager->Check_Skill(skill);
 }
-_bool CClientInstance::Check_GSwordSkill(_uint skill)
+
+_bool CClientInstance::Check_Skills(_uint skill)
 {
-	return false;
-	//return m_pPlayerData_Manager->Check_GSwordSkill(skill);
+    return m_pPlayerData_Manager->Check_Skills(skill);
 }
-void CClientInstance::AllUnlock_SpearSkill()
+
+void CClientInstance::AllUnlock_Skill()
 {
-	m_pPlayerData_Manager->AllUnlock_SpearSkill();
+	m_pPlayerData_Manager->AllUnlock_Skill();
 }
-void CClientInstance::AllUnlock_GswordSkill()
+void CClientInstance::Unlock_Skill(_uint skill)
 {
-	//m_pPlayerData_Manager->AllUnlock_GswordSkill();
+	m_pPlayerData_Manager->Unlock_Skill(skill);
 }
-void CClientInstance::Unlock_SpearSkill(_uint skill)
+void CClientInstance::Alllock_Skill()
 {
-	m_pPlayerData_Manager->Unlock_SpearSkill(skill);
+	m_pPlayerData_Manager->Alllock_Skill();
 }
-void CClientInstance::Unlock_GswordSkill(_uint skill)
+
+void CClientInstance::Lock_Skill(_uint skill)
 {
-	//m_pPlayerData_Manager->Unlock_GswordSkill(skill);
+	m_pPlayerData_Manager->Lock_Skill(skill);
 }
-void CClientInstance::Alllock_SpearSkill()
+
+void CClientInstance::UsedSpear()
 {
-	m_pPlayerData_Manager->Alllock_SpearSkill();
+    m_pPlayerData_Manager->UsedSpear();
 }
-void CClientInstance::Alllock_GswordSkill()
+
+void CClientInstance::UsedGSword()
 {
-	//m_pPlayerData_Manager->Alllock_GswordSkill();
+    m_pPlayerData_Manager->UsedGSword();
 }
-void CClientInstance::lock_SpearSkill(_uint skill)
+
+_bool CClientInstance::Is_CurrentSpear()
 {
-	m_pPlayerData_Manager->lock_SpearSkill(skill);
+    return m_pPlayerData_Manager->Is_CurrentSpear();
 }
-void CClientInstance::lock_GswordSkill(_uint skill)
+
+_bool CClientInstance::Is_CurrentGSword()
 {
-	//m_pPlayerData_Manager->lock_GswordSkill(skill);
+    return m_pPlayerData_Manager->Is_CurrentGSword();
 }
+
 #pragma endregion
 
 

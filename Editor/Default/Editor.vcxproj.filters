@@ -495,9 +495,6 @@
     <ClInclude Include="..\Public\BigChest.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\01.BigChest</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\AnimationTool.h">
-      <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\SkySphere.h">
       <Filter>02.GameObject\MapObject\Sky</Filter>
     </ClInclude>
@@ -593,6 +590,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\GearGate.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\10.GearGate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AnimationTool.h">
+      <Filter>02.GameObject\Animation\00.Tool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

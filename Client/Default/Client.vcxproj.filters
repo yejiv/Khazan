@@ -2155,6 +2155,11 @@
     <ClInclude Include="..\Public\AS_5HitCombo_Viper.h">
       <Filter>92.AI\State\Viper\13.5HitCombo</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\FSM_Viper.h" />
+    <ClInclude Include="..\Public\Collection_Info.h" />
+    <ClInclude Include="..\Public\GSword_Khazan_GS.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3167,6 +3172,11 @@
     </ClCompile>
     <ClCompile Include="..\Private\GearGate.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FSM_Viper.cpp" />
+    <ClCompile Include="..\Private\Collection_Info.cpp" />
+    <ClCompile Include="..\Private\GSword_Khazan_GS.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Weapon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
