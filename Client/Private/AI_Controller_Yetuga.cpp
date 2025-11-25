@@ -36,7 +36,8 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
     {
         CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
         CGameObject* pTarget =  m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        pYetuga->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+        //pYetuga->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+        pYetuga->Consume_Stamina(10.f);
     }
     
 

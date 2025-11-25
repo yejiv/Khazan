@@ -579,9 +579,6 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Goblin_Melee/Imp_Sword/Imp_Sword.dat"))))
         return E_FAIL;
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_TwinBlade_Viper"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/TwinBlade_R/TwinBlade_R.dat")), E_FAIL);
-
 #pragma endregion
 
 #pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ 

@@ -237,10 +237,10 @@ HRESULT CViper::Ready_Components()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.6f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.9f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-    tCharVirDesc.fRadius = 0.3f;
-    tCharVirDesc.fHeight = 0.7f;
+    tCharVirDesc.fRadius = 0.7f;
+    tCharVirDesc.fHeight = 0.8f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 
@@ -620,13 +620,9 @@ HRESULT CViper::Ready_AnimEvent()
             //m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_JumpStart", true);
             CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            m_pCharVirCom->Jump_ToTarget(vTargetPos,350.f,10.f);
+            m_pCharVirCom->Jump(70.f,10.f);
         });
 
-    pModel->Register_Event("P1_JumpStart", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-        {
-            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_JumpStart", false);
-        });
 
     pModel->Register_Event("P1_JumpStop", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {

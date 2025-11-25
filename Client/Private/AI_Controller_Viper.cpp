@@ -33,7 +33,8 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
     {
         CViper* pViper = static_cast<CViper*>(pOwner);
         CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+        //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+        pViper->Consume_Stamina(10.f);
     }
 
 
@@ -124,6 +125,24 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
                     return false;
             };
     }
+
+    else if ("Groggy" == name)
+    {
+    	return [pViper](CBlackBoard* BB)->_bool
+    		{
+    			HITREACTION eHitRection = static_cast<HITREACTION>(BB->Get_Value<_uint>(pViper->Get_Name(), "DamageType"));
+    			_float fCurrentStamina = pViper->Get_CurrentStamina();
+    		
+    			if (fCurrentStamina <= 0.1f && !BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+    			{
+    				eHitRection = HITREACTION::GROGGY;
+    				return true;
+    			}
+    			else
+    				return false;
+    		};
+    }
+
 
 
     else if ("Hit" == name)
@@ -295,36 +314,36 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
 
 
-    //else if ("P1_JumpSmash" == name)
-    //{
-    //    return [pViper, this](CBlackBoard* BB)->_bool
-    //        {
-    //            _float fHpRatio = pViper->Get_CurrentHP() / pViper->Get_MaxHP();
-    //            if (fHpRatio >= 0.6f)
-    //                return false;
-    //            // HP가 60퍼 밑으로 내려가면
-    //            _float fDiffScale = (0.6f - fHpRatio);
-    //            // 최소 확률
-    //            _float fMinChance = 0.15f;
-    //            _float fChance = fMinChance + fDiffScale * 0.6f; // 최소 확률 + 확률 보정치
-    //            // fDiffScale 이 커질 수록 확률이 증가 하게된다.
+    else if ("P1_JumpSmash" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fHpRatio = pViper->Get_CurrentHP() / pViper->Get_MaxHP();
+                if (fHpRatio >= 0.6f)
+                    return false;
+                // HP가 60퍼 밑으로 내려가면
+                _float fDiffScale = (0.6f - fHpRatio);
+                // 최소 확률
+                _float fMinChance = 0.15f;
+                _float fChance = fMinChance + fDiffScale * 0.6f; // 최소 확률 + 확률 보정치
+                // fDiffScale 이 커질 수록 확률이 증가 하게된다.
 
-    //            // 여기다가 확률 추가
-    //            if (m_pGameInstance->Rand(0, 1) > fChance)
-    //                return false;
+                // 여기다가 확률 추가
+                if (m_pGameInstance->Rand(0, 1) > fChance)
+                    return false;
 
-    //            _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
-    //            _float fRunRange = BB->Get_Value<_float>(pViper->Get_Name(), "RunRange");
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fRunRange = BB->Get_Value<_float>(pViper->Get_Name(), "RunRange");
 
-    //            _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_JumpSmashFinished");
-    //            if (fDist != 0 && fDist <= fRunRange + 10.f)
-    //            {
-    //                return true;
-    //            }
-    //            else
-    //                return false;
-    //        };
-    //}
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_JumpSmashFinished");
+                if (fDist != 0 && fDist <= fRunRange + 10.f)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
 
 
 
@@ -453,7 +472,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
 
                 _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_StingSlashFinished");
-                if (fDist != 0 && fDist <= fAttackRange + 10.f)
+                if (fDist != 0 && fDist <= fAttackRange)
                 {
                     return true;
                 }
@@ -471,7 +490,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
 
                 _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_Slow2HitFinished");
-                if (fDist != 0 && fDist <= fAttackRange + 5.f)
+                if (fDist != 0 && fDist <= fAttackRange + 10.f)
                 {
                     return true;
                 }
@@ -565,6 +584,27 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                     Change_State(ENUM_CLASS(VIPER_STATE_P1::DEAD), pViper);
                 return BTNODESTATE::RUNNING;
             };
+    }
+
+    else if ("Groggy" == name)
+    {
+    	return [pViper](CBlackBoard* BB)-> BTNODESTATE
+    		{
+
+    			if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggyFinished"))
+    			{
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "DamageInterrupt", false);
+    				return BTNODESTATE::SUCCESS;
+    			}
+
+    			BB->Set_Value(pViper->Get_Name(), "isGroggy", true);
+    			BB->Set_Value(pViper->Get_Name(), "isGroggyFinished", false);
+
+    			pViper->Get_Controller()->Get_State_Machine()->
+    				Change_State(ENUM_CLASS(VIPER_STATE_P1::GROGGY), pViper);
+    			return BTNODESTATE::RUNNING;
+
+    		};
     }
 
 
@@ -673,7 +713,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
             };
     }
 
-   /* else if ("P1_JumpSmash" == name)
+    else if ("P1_JumpSmash" == name)
     {
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
@@ -689,7 +729,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
                 return BTNODESTATE::RUNNING;
             };
-    }*/
+    }
 
     else if ("P1_LockOn" == name)
     {
@@ -960,6 +1000,24 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
             };
     }
 
+    else if ("Groggy" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isGroggy", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isGroggyFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+
     else if ("Hit" == name)
     {
         return [pViper](CBlackBoard* BB, BTNODESTATE eState)
@@ -1057,7 +1115,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
     }
 
 
-  /*  else if ("P1_JumpSmash" == name)
+    else if ("P1_JumpSmash" == name)
     {
         return [pViper](CBlackBoard* BB, BTNODESTATE eState)
             {
@@ -1073,7 +1131,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
-    }*/
+    }
 
 
 

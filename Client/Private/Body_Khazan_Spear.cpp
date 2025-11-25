@@ -451,10 +451,10 @@ void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjec
         {
             if (Has_Status(CKhazan_Spear::BRUTAL_BEGIN))
             {
-                if (m_pBrutalAttack && !m_pBrutalAttack->Get_IsDead()) {
-                    m_pBrutalAttack->Off_BrutalAttack();
-                   // Safe_Release(m_pBrutalAttack);
-                }
+                //if (m_pBrutalAttack && !m_pBrutalAttack->Get_IsDead()) {
+                //    m_pBrutalAttack->Off_BrutalAttack();
+                //   // Safe_Release(m_pBrutalAttack);
+                //}
 
                // if (m_pBrutalmonster)
                     //Safe_Release(m_pBrutalmonster);
@@ -482,7 +482,7 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
     lock_guard<mutex> lock(m_CollMonsterMutex);
     for (CGameObject* monster : m_CollMonsters)
     {
-        if (!monster || monster->Get_IsDead())
+        if (!monster || /*_CrtIsValidHeapPointer(monster) */ monster->Get_IsDead())
             return;
 
         _vector vMonsterPos = monster->Get_Position();
@@ -491,11 +491,11 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
         _float  fDistSq = XMVectorGetX(XMVector3LengthSq(vDiff));
 
         /* 일정 범위에 다가가면  */
-        if (fDistSq < 5.f * 5.f)
+        if (fDistSq < 15.f * 15.f)
         {
 
             /* 후방 */
-            _float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(monster->Get_Look()), XMVector3Normalize(vDiff)));
+          /*  _float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(monster->Get_Look()), XMVector3Normalize(vDiff)));
             if (fDot < 0.f)
             {
 
@@ -510,15 +510,34 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
                 Add_Status(CKhazan_Spear::BRUTAL_BEGIN);
 
                 return;
-            }
+            }*/
 
             /* 몬스터 그로기 상태*/
-            CCreature* pCreatureMoster = static_cast<CCreature*>(monster);
-            if (pCreatureMoster->Get_CurrentStamina() < 5.f)
+            //CCreature* pCreatureMoster = static_cast<CCreature*>(monster);
+            //if (pCreatureMoster->Get_CurrentStamina() < 5.f)
+            //{
+            //    m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+            //    m_pBrutalAttack->Setting_BrutalAttack(reinterpret_cast<const _float4*>(&monster->Get_Transform()->Get_WorldMatrixPtr()->_41), 5.f, { 0.f,8.f });
+            //    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
+
+
+            //    m_pBrutalmonster = monster;
+
+            //    m_isBackBrutal = false;
+            //    m_isGroggyBrutal = true;
+
+            //    Add_Status(CKhazan_Spear::BRUTAL_BEGIN);
+
+            //    return;
+            //}
+
+            CMonster* pCreatureMoster = static_cast<CMonster*>(monster);
+            if (pCreatureMoster->Get_IsGroggy())
             {
-                m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+              /*  m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
                 m_pBrutalAttack->Setting_BrutalAttack(reinterpret_cast<const _float4*>(&monster->Get_Transform()->Get_WorldMatrixPtr()->_41), 5.f, { 0.f,8.f });
-                m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
+                m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);*/
+
                 m_pBrutalmonster = monster;
 
                 m_isBackBrutal = false;
@@ -528,6 +547,7 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
 
                 return;
             }
+
 
         }
     }
@@ -543,22 +563,22 @@ _bool CBody_Khazan_Spear::Check_BrutalAttack(_float fTimeDelta)
     if (Has_Status(CKhazan_Spear::BRUTAL_SUCCESS))
     {
         Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
-        m_pBrutalAttack->Off_BrutalAttack();
+      //  m_pBrutalAttack->Off_BrutalAttack();
         return false;
     }
 
     /* 몬스터가 죽으면  */
     if (!m_pBrutalmonster || m_pBrutalmonster->Get_IsDead()) {
         Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
-        m_pBrutalAttack->Off_BrutalAttack();
+      //  m_pBrutalAttack->Off_BrutalAttack();
         return false;
     }
 
     /* 브루탈 가능 시간이 다 되면 */
-    if (m_pBrutalAttack->Get_IsDead()) {
-        Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
-        return false;
-    }
+    //if (m_pBrutalAttack->Get_IsDead()) {
+    //    Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
+    //    return false;
+    //}
 
     /* 브루탈 가능 범위인지 아닌지 체크 */
     _float  fDistSq = XMVectorGetX(XMVector3LengthSq(XMVectorSet(m_pParentMatrix->_41, m_pParentMatrix->_42, m_pParentMatrix->_43, 1.f) - m_pBrutalmonster->Get_Position()));
