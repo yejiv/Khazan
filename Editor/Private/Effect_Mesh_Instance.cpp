@@ -133,7 +133,9 @@ void CEffect_Mesh_Instance::Edit_Element()
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
-    const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",  "shock", "smoke", "cloud", "blood", "Ice1", "Ice2", "Rock" };
+    const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",
+        "shock", "smoke", "cloud", "blood", "Ice1", "Ice2", "Rock", "Slash28", "Slash29" , "Slash30" , "Slash31" , "Slash32" };
+
     ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
     const char* Meshes[] = { "Helix0", "Helix1", "Helix2", "Helix3",  "Helix4",  "Helix5",  "Helix6",  "Helix7",  "Helix8",  "Helix9",  "Helix10",  "Helix11",  "Helix12",  "Helix13",  "Helix14",  "Helix15",  "Helix16",  "Helix17",  "Helix18",  "Helix19",  "Helix20",
@@ -253,6 +255,11 @@ void CEffect_Mesh_Instance::SetScrollData(void* pArg)
 {
     m_fScrollSpeed.x = *static_cast<_float*>(pArg);
     m_fScrollSpeed.y = *(static_cast<_float*>(pArg) + 1);
+}
+
+void CEffect_Mesh_Instance::SetStop()
+{
+    m_pVIBufferCom->Setting_Loop(false);
 }
 
 HRESULT CEffect_Mesh_Instance::Ready_Component()
