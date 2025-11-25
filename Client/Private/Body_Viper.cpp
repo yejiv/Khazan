@@ -227,7 +227,7 @@ void CBody_Viper::Carculate_Matrix(_float fTimeDelta)
 
 HRESULT CBody_Viper::Ready_Colliders()
 {
-    CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
+   /* CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
     BodyDesc.fRadius = 2.f;
     BodyDesc.eMotion = EMotionType::Kinematic;
@@ -246,7 +246,7 @@ HRESULT CBody_Viper::Ready_Colliders()
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_RH"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
-        return E_FAIL;
+        return E_FAIL;*/
 
     return S_OK;
 }
@@ -281,7 +281,6 @@ void CBody_Viper::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
-    Safe_Release(m_pBodyCom);
 
     __super::Free();
 

@@ -63,7 +63,6 @@ private:
     CShader*                m_pShaderCom = { nullptr };
     CModel*                 m_pModelCom = { nullptr };
     CTransform*             m_pOwnerTransform = { nullptr };
-    CBody*                  m_pBodyCom = { nullptr };
 
 private:
     _float3					m_vThrowPoint = {};

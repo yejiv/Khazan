@@ -826,19 +826,19 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, con
 
 HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
 {
-    // CMonster::MONSTER_DESC MonsterDesc{};
-    // MonsterDesc.fAttack = 10.f;
-    // MonsterDesc.fMaxHP = 100.f;
-    // MonsterDesc.fMaxStamina = 100.f;
-    // MonsterDesc.fMoveSpeed = 10.f;
-    // MonsterDesc.fSpeedPerSec = 3.f;
-    // MonsterDesc.fRotationPerSec = 180.f;
-    // XMStoreFloat4x4(&MonsterDesc.WorldMatrix,XMMatrixIdentity());
-    // MonsterDesc.strName = "Viper";
-    // MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
-    // if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-    //     ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Viper"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-    //     return E_FAIL; 
+     CMonster::MONSTER_DESC MonsterDesc{};
+     MonsterDesc.fAttack = 10.f;
+     MonsterDesc.fMaxHP = 100.f;
+     MonsterDesc.fMaxStamina = 100.f;
+     MonsterDesc.fMoveSpeed = 10.f;
+     MonsterDesc.fSpeedPerSec = 3.f;
+     MonsterDesc.fRotationPerSec = 180.f;
+     XMStoreFloat4x4(&MonsterDesc.WorldMatrix,XMMatrixIdentity());
+     MonsterDesc.strName = "Viper";
+     MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
+     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
+         ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Viper"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+         return E_FAIL; 
 
     //CMonster::MONSTER_DESC MonsterDesc{};
     //MonsterDesc.fAttack = 10.f;
@@ -858,7 +858,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
 	// ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
 	// return E_FAIL;
 
-    CMonster::MONSTER_DESC MonsterDesc{};
+    /*CMonster::MONSTER_DESC MonsterDesc{};
     MonsterDesc.fAttack = 10.f;
     MonsterDesc.fMaxHP = 100.f;
     MonsterDesc.fMaxStamina = 100.f;
@@ -876,7 +876,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
 
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
         ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-        return E_FAIL;
+        return E_FAIL;*/
 
     return S_OK;
 }
