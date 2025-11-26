@@ -44,9 +44,12 @@ public:
 
 	void Save_Json_Animation(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData);
     HRESULT Set_Animation_Json(string strFilePath);
-    void Set_ObjMatrix(_uint iLevelIndex, _wstring strCameraTag, _float4x4* ObjMatrix);
+    void Set_ObjMatrix(_uint iLevelIndex, _wstring strCameraTag, _float4x4* ObjMatrix);    
     void Set_FixEnd();    
     void Set_Animation(_wstring strAnimationTag);
+
+
+    void Set_NpcTalk(_bool isNpcTalk, const _float4x4* pSubObjMatrix = nullptr, _float3 vNpcTalkOffset = _float3(0.f, 0.f, 0.f), _float4 vNpcTalkLookat = _float4(0.f, 1.f, 0.f, 0.f));
 
 public:
     void Switch_CameraMode(CAMERATYPE eType);

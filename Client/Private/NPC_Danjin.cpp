@@ -6,14 +6,20 @@
 
 #include "UI_Talk_Dangin.h"
 
+#include "ClientInstance.h"
+
 CNPC_Danjin::CNPC_Danjin(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
+    , m_pClientInstance{ CClientInstance::GetInstance()}
 {
+    Safe_AddRef(m_pClientInstance);
 }
 
 CNPC_Danjin::CNPC_Danjin(const CNPC_Danjin& Prototype)
     : CProp_Interactive{ Prototype }
+    , m_pClientInstance{ Prototype.m_pClientInstance }
 {
+    Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CNPC_Danjin::Initialize_Prototype()
@@ -303,6 +309,9 @@ void CNPC_Danjin::Animation_Update(_float fTimeDelta)
 
             // NPC를 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+                        
+            m_pClientInstance->Camera_Set_NpcTalk(true, m_pTransformCom->Get_WorldMatrixPtr(), _float3(0.f, 1.5f, 1.2f), _float4(0.53f, -0.09f, -0.84f, 0.f));
+
         }
     }
     else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
@@ -312,6 +321,8 @@ void CNPC_Danjin::Animation_Update(_float fTimeDelta)
             m_eAnimState = ANIM_STATE::TALK_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
+
+            m_pClientInstance->Camera_Set_NpcTalk(false);
         }
     }
 }
@@ -411,6 +422,8 @@ void CNPC_Danjin::Free()
     Safe_Release(m_pStaticCom);
     Safe_Release(m_pTriggerCom);
     Safe_Release(m_pDanginTalkUI);
+
+    Safe_Release(m_pClientInstance);
 
     if (nullptr != m_pGuide)
     {
