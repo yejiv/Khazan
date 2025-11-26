@@ -60,8 +60,6 @@ private:
 	_tchar m_szPlaceName[MAX_PATH] = {};
     _bool m_isUnLock = { false };                   // 귀검 해금 여부
 
-	_float3 m_vPlayerPosition = {};
-
 	EventObject m_Event = {};
 
 	_float m_fEmissiveIntensity = { 0.f };
