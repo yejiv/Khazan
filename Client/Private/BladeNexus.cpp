@@ -45,14 +45,14 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
     m_pModelCom->Play_Animation(0.f);
     m_pModelCom->Set_AnimationBlend(true);
 
-    m_iEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
+    m_iSubscribeEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
             m_Event = e;
         });
 
     if (BLADENEXUS_ID::HEINMACH_YETUGA == static_cast<BLADENEXUS_ID>(m_iBladeNexus_ID))
     {
-        m_pGameInstance->Subscribe_Event<EventPopBN>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), [&](const EventPopBN& e)
+        m_iPopEventID = m_pGameInstance->Subscribe_Event<EventPopBN>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), [&](const EventPopBN& e)
             {
                 m_BNPop = e;
             });
@@ -646,7 +646,8 @@ CGameObject* CBladeNexus::Clone(void* pArg)
 
 void CBladeNexus::Free()
 {
-    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iEventID);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iSubscribeEventID);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), m_iPopEventID);
 
     __super::Free();
 
