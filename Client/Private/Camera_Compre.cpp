@@ -526,60 +526,42 @@ void CCamera_Compre::Update_InteractFocus(_float fTimeDelta)
 
 void CCamera_Compre::Update_NpcTalk(_float fTimeDelta)
 {
-    if (!m_isNpcTalk || !m_pSubObjMatrix || !m_pTransformCom)
+    if (!m_isNpcTalk || !m_pTransformCom)
         return;
 
-    // ===== 1) NPC 기준 타겟 카메라 위치 / 방향 계산 =====
-    _matrix sub = XMLoadFloat4x4(m_pSubObjMatrix);
+    if (fTimeDelta <= 0.f)
+        return;
 
-    // NPC 기준 위치
-    _vector npcBasePos = XMVectorSet(
-        sub.r[3].m128_f32[0],
-        sub.r[3].m128_f32[1],
-        sub.r[3].m128_f32[2],
-        1.f
-    );
+    _vector vCamTargetPos = XMLoadFloat3(&m_vNpcCamTargetPos);
+    _vector vLookDir = XMLoadFloat3(&m_vNpcCamLookAt);
 
-    // 오프셋을 로컬 → 월드로 변환
-    _vector offsetLocal = XMLoadFloat3(&m_vNpcTalkOffset);
-    _vector offsetWorld = XMVector3TransformNormal(offsetLocal, sub);
-    _vector camTargetPos = XMVectorAdd(npcBasePos, offsetWorld);
-
-    // Look 방향 계산
-    _vector lookWorldDir;
-
-    _vector lookLocal = XMLoadFloat4(&m_vNpcTalkLookat);
-    // 거의 (0,0,0)이면 NPC forward로 대체
-    if (XMVectorGetX(XMVector3LengthSq(lookLocal)) < 1e-6f)
+    // 길이 체크 + fallback
+    float lenSq = XMVectorGetX(XMVector3LengthSq(vLookDir));
+    if (lenSq < 1e-6f)
     {
-        // NPC 정면 (z축) 사용
-        lookWorldDir = XMVector3Normalize(
-            XMVectorSet(sub.r[2].m128_f32[0],
-                sub.r[2].m128_f32[1],
-                sub.r[2].m128_f32[2], 0.f)
-        );
+        vLookDir = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
+        if (XMVectorGetX(XMVector3LengthSq(vLookDir)) < 1e-6f)
+            vLookDir = XMVectorSet(0.f, 0.f, 1.f, 0.f);
     }
     else
     {
-        // local look을 normal로 간주
-        lookWorldDir = XMVector3Normalize(
-            XMVector3TransformNormal(lookLocal, sub)
-        );
+        vLookDir = XMVector3Normalize(vLookDir);
     }
 
     _vector vRightTarget, vUpTarget, vLookTarget;
-    BuildSafeBasis(lookWorldDir, vRightTarget, vUpTarget, vLookTarget);
+    BuildSafeBasis(vLookDir, vRightTarget, vUpTarget, vLookTarget);
 
-    // ===== 2) 블렌드 비율 계산 (smoothstep) =====
+    // ===== 블렌드 비율(smoothstep) 계산 =====
     m_fNpcTalkBlendTime += fTimeDelta;
 
-    float t = 0.f;
-    if (m_fNpcTalkBlendDuration > 0.f)
-        t = Clamp(m_fNpcTalkBlendTime / m_fNpcTalkBlendDuration, 0.f, 1.f);
+    _float t = 0.f;
+    if (m_fNpcTalkBlendDuration <= 0.f)
+        m_fNpcTalkBlendDuration = 0.001f; // 방어
 
-    float s = t * t * (3.f - 2.f * t); // smoothstep
+    t = Clamp(m_fNpcTalkBlendTime / m_fNpcTalkBlendDuration, 0.f, 1.f);
+    _float s = t * t * (3.f - 2.f * t); // smoothstep
 
-    // ===== 3) 위치 / 방향 보간 =====
+    // ===== 포즈 보간 =====
     _vector vPos;
     _vector vRight;
     _vector vUp;
@@ -587,8 +569,7 @@ void CCamera_Compre::Update_NpcTalk(_float fTimeDelta)
 
     if (t < 1.f)
     {
-        // 현재 포즈 → 타겟 포즈로 부드럽게 보간
-        vPos = XMVectorLerp(m_vNpcTalkStartPos, camTargetPos, s);
+        vPos = XMVectorLerp(m_vNpcTalkStartPos, vCamTargetPos, s);
         vRight = XMVector3Normalize(
             XMVectorLerp(m_vNpcTalkStartRight, vRightTarget, s));
         vUp = XMVector3Normalize(
@@ -598,15 +579,13 @@ void CCamera_Compre::Update_NpcTalk(_float fTimeDelta)
     }
     else
     {
-        // 블렌드 완료 후에는 NPC 기준 포즈를 그대로 따라가게
-        vPos = camTargetPos;
+        vPos = vCamTargetPos;
         vRight = vRightTarget;
         vUp = vUpTarget;
         vLook = vLookTarget;
     }
 
-    // ===== 4) 실제 카메라에 적용 =====
-    m_pTransformCom->Set_State(STATE::POSITION, vPos);
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(vPos, 1.f));
     m_pTransformCom->Set_State(STATE::RIGHT, vRight);
     m_pTransformCom->Set_State(STATE::UP, vUp);
     m_pTransformCom->Set_State(STATE::LOOK, vLook);
@@ -1273,15 +1252,14 @@ CCamera_Compre::CAMERA_COMPRE_DESC CCamera_Compre::Get_Desc()
     return tDesc;
 }
 
-void CCamera_Compre::Set_NpcTalk(_bool isNpcTalk, const _float4x4* pSubObjMatrix, _float3 vNpcTalkOffset, _float4 vNpcTalkLookat)
+void CCamera_Compre::Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos, _float3 vLookAt)
 {
     m_isNpcTalk = isNpcTalk;
 
     if (m_isNpcTalk)
     {
-        m_pSubObjMatrix = pSubObjMatrix;
-        m_vNpcTalkOffset = vNpcTalkOffset;
-        m_vNpcTalkLookat = vNpcTalkLookat;
+        m_vNpcCamTargetPos = vTargetPos;
+        m_vNpcCamLookAt = vLookAt;
 
         m_fNpcTalkBlendTime = 0.f;
 
@@ -1301,16 +1279,12 @@ void CCamera_Compre::Set_NpcTalk(_bool isNpcTalk, const _float4x4* pSubObjMatrix
         m_vBlendStartLook = m_pTransformCom->Get_State(STATE::LOOK);
 
         _vector vLookN = XMVector3Normalize(m_vBlendStartLook);
-        _float x = XMVectorGetX(vLookN);
-        _float y = XMVectorGetY(vLookN);
-        _float z = XMVectorGetZ(vLookN);
+        float x = XMVectorGetX(vLookN);
+        float y = XMVectorGetY(vLookN);
+        float z = XMVectorGetZ(vLookN);
 
         m_fYaw = atan2f(z, x);
         m_fPitch = Clamp(asinf(Clamp(y, -1.f, 1.f)), m_fPitchMin, m_fPitchMax);
-
-        m_pSubObjMatrix = nullptr;
-        m_vNpcTalkOffset = _float3(0.f, 0.f, 0.f);
-        m_vNpcTalkLookat = _float4(0.f, 1.f, 0.f, 0.f);
     }
 }
 

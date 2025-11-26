@@ -356,14 +356,14 @@ void CCamera_Manager::Set_Animation(_wstring strAnimationTag)
     pCamera->Set_Animation(strAnimationTag);
 }
 
-void CCamera_Manager::Set_NpcTalk(_bool isNpcTalk, const _float4x4* pSubObjMatrix, _float3 vNpcTalkOffset, _float4 vNpcTalkLookat)
+void CCamera_Manager::Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos, _float3 vLookAt)
 {
     CCamera* pCamera = Get_ActiveCamera();
     if (pCamera == nullptr)
         return;
     
     CCamera_Compre* pCameraCompre = dynamic_cast<CCamera_Compre*>(pCamera);
-    pCameraCompre->Set_NpcTalk(isNpcTalk, pSubObjMatrix, vNpcTalkOffset, vNpcTalkLookat);
+    pCameraCompre->Set_NpcTalk(isNpcTalk, vTargetPos, vLookAt);
     
 }
 

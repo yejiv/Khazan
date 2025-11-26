@@ -570,5 +570,6 @@ void CStatue::Free()
     if (nullptr != m_pGuide)
     {
         m_pGuide->Set_IsDead(true);
+        m_pGuide = nullptr;
     }
 }

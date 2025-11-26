@@ -6,14 +6,20 @@
 
 #include "UI_Talk_Trader.h"
 
+#include "ClientInstance.h"
+
 CNPC_Duimuk::CNPC_Duimuk(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
+    , m_pClientInstance{ CClientInstance::GetInstance() }
 {
+    Safe_AddRef(m_pClientInstance);
 }
 
 CNPC_Duimuk::CNPC_Duimuk(const CNPC_Duimuk& Prototype)
     : CProp_Interactive{ Prototype }
+    , m_pClientInstance{ Prototype.m_pClientInstance }
 {
+    Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CNPC_Duimuk::Initialize_Prototype()
@@ -299,6 +305,8 @@ void CNPC_Duimuk::Animation_Update(_float fTimeDelta)
 
             // NPC를 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+            m_pClientInstance->Camera_Set_NpcTalk(true, _float3(12.42f, -94.11f, 29.88f), _float3(-0.98f, -0.1f, -0.16f));
         }
     }
     else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
@@ -308,6 +316,8 @@ void CNPC_Duimuk::Animation_Update(_float fTimeDelta)
             m_eAnimState = ANIM_STATE::TALK_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
+
+            m_pClientInstance->Camera_Set_NpcTalk(false);
         }
     }
 }
@@ -408,8 +418,11 @@ void CNPC_Duimuk::Free()
     Safe_Release(m_pTriggerCom);
     Safe_Release(m_pTraderTalkUI);
 
+    Safe_Release(m_pClientInstance);
+
     if (nullptr != m_pGuide)
     {
         m_pGuide->Set_IsDead(true);
+        m_pGuide = nullptr;
     }
 }

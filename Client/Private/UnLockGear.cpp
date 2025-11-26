@@ -432,5 +432,9 @@ void CUnLockGear::Free()
     Safe_Release(m_pStaticCom);
     Safe_Release(m_pTriggerCom);
     if (m_pGuide)
+    {
         m_pGuide->Set_IsDead(true);
+        m_pGuide = nullptr;
+    }
+        
 }
