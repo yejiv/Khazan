@@ -3,6 +3,7 @@
 
 namespace Engine
 {
+    enum class TARGET_DIR { F, B, L, R, FR, FL, BR, BL, END };
 	enum class MODELTYPE { NONANIM, ANIM };
 	enum class COLLIDER { AABB, OBB, SPHERE, END };
 	enum class SHAPE { CAPSULE, SPHERE, BOX, MESH, CONVEX, END };
