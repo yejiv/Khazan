@@ -237,7 +237,7 @@ CBladeNexus* CBladeNexus::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed to Created : CProp_Object"));
+        MSG_BOX(TEXT("Failed to Created : CBladeNexus"));
         Safe_Release(pInstance);
     }
 
@@ -250,7 +250,7 @@ CGameObject* CBladeNexus::Clone(void* pArg)
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Cloned : CProp_Object"));
+        MSG_BOX(TEXT("Failed to Cloned : CBladeNexus"));
         Safe_Release(pInstance);
     }
 

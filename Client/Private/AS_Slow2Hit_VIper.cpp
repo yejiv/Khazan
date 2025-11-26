@@ -16,7 +16,7 @@ void CAS_Slow2Hit_VIper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
 
-    pModel->Set_Animation(112);
+    pModel->Set_Animation(50);
 }
 
 void CAS_Slow2Hit_VIper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

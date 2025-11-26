@@ -383,7 +383,7 @@ CNPC_Danjin* CNPC_Danjin::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed to Created : CProp_Object"));
+        MSG_BOX(TEXT("Failed to Created : CNPC_Danjin"));
         Safe_Release(pInstance);
     }
 
@@ -396,7 +396,7 @@ CGameObject* CNPC_Danjin::Clone(void* pArg)
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Cloned : CProp_Object"));
+        MSG_BOX(TEXT("Failed to Cloned : CNPC_Danjin"));
         Safe_Release(pInstance);
     }
 

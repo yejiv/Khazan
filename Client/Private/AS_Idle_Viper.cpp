@@ -15,7 +15,7 @@ void CAS_Idle_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
     
-    pModel->Set_Animation(112);
+    pModel->Set_Animation(54);
 
 }
 

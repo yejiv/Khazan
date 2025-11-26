@@ -58,6 +58,7 @@
 #include "Viper.h"
 #include "Body_Viper.h"
 #include "TwinBlade_Viper.h"
+#include "Core_Viper.h"
 
 #pragma endregion
 
@@ -1157,21 +1158,27 @@ HRESULT CLoader::Loading_For_Embars_Level()
 {
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_For_Embars_Texture();
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_For_Embars_Model();
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_For_Embars_Shader();
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_For_Embars_GameObject();
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_Prototype_MapObject_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS);
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS);
+        return S_OK;
         }));
 
     return S_OK;
@@ -1780,6 +1787,8 @@ HRESULT CLoader::Loading_For_Viper_Model()
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_TwinBlade_Viper"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/TwinBlade_R/TwinBlade_R.dat")), E_FAIL);
 
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Core_Viper"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/TwinBlade_Core/TwinBlade_Core.dat")), E_FAIL);
 
 #pragma endregion
 
@@ -1960,10 +1969,10 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
         CTwinBlade_Viper::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
-
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Monster_Imp_Melee_Sword"),
-        CImp_Sword::Create(m_pDevice, m_pContext))))
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_Core"),
+        CCore_Viper::Create(m_pDevice, m_pContext))))
         return E_FAIL;
+
 
 
 #pragma endregion
