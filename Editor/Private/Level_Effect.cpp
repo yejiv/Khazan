@@ -382,7 +382,7 @@ void CLevel_Effect::GetParticleColor()
 	else if (m_EffectType == 1)
 	{
 		const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",
-            "shock", "smoke", "cloud", "blood", "Ice1", "Ice2", "Rock", "Slash28", "Slash29" , "Slash30" , "Slash31", "Slash32" };
+            "shock", "smoke", "cloud", "blood", "Ice1", "Ice2", "Rock", "Slash28", "Slash29" , "Slash30" , "Slash31", "Slash32", "Slash33" };
 
 		ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
