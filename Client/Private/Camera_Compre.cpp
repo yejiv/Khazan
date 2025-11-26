@@ -228,19 +228,19 @@ void CCamera_Compre::Update_Free(_float fTimeDelta)
     
     if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
     {
-        m_pTransformCom->Go_Straight(fTimeDelta);
+        m_pTransformCom->Go_Straight(fTimeDelta * 1.5f);
     }
     if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta))
     {
-        m_pTransformCom->Go_Backward(fTimeDelta);
+        m_pTransformCom->Go_Backward(fTimeDelta * 1.5);
     }
     if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta))
     {
-        m_pTransformCom->Go_Left(fTimeDelta);
+        m_pTransformCom->Go_Left(fTimeDelta * 1.5f);
     }
     if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta))
     {
-        m_pTransformCom->Go_Right(fTimeDelta);
+        m_pTransformCom->Go_Right(fTimeDelta * 1.5f);
     }
 
     _int    iMouseMove = {};
