@@ -16,15 +16,15 @@ void CAS_JumpSmash_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(15);
 
-    //// ½ÃÀÛ À§Ä¡ ÀúÀå
+    //// ì‹œì‘ ìœ„ì¹˜ ì €ì¥
     //CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     //XMStoreFloat3(&m_vStartPos, pOwnerTransform->Get_State(STATE::POSITION));
 
-    //// Á¤Á¡(»ó½Â ³¡ À§Ä¡)
+    //// ì •ì (ìƒìŠ¹ ë ìœ„ì¹˜)
     //m_vPeakPos = m_vStartPos;
     //m_vPeakPos.y += 350.f;
 
-    // ¸ñÇ¥ ÂøÁö À§Ä¡´Â Enter¿¡¼­ ÇÑ ¹ø¸¸ °è»ê (ÇÃ·¹ÀÌ¾î À§Ä¡ ÀúÀå)
+    // ëª©í‘œ ì°©ì§€ ìœ„ì¹˜ëŠ” Enterì—ì„œ í•œ ë²ˆë§Œ ê³„ì‚° (í”Œë ˆì´ì–´ ìœ„ì¹˜ ì €ì¥)
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
     CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
     CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
@@ -43,12 +43,12 @@ void CAS_JumpSmash_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
         _float fAnimRatio = pModel->MakeRatio() * 0.5f;
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
         _float t = fAnimRatio;
-        t = t * t * t; //Á¡Á¡ »¡¶óÁö¸ç ¶³¾îÁü
+        t = t * t * t; //ì ì  ë¹¨ë¼ì§€ë©° ë–¨ì–´ì§
 
         _vector vPeak = XMLoadFloat3(&m_vPeakPos);
         _vector vGoalPos = XMLoadFloat3(&m_vGoalPos);
 
-        // XZ¸¸ º¸°£ (°øÁß¿¡¼­ ¼öÁ÷ ³«ÇÏ º¸Á¤)
+        // XZë§Œ ë³´ê°„ (ê³µì¤‘ì—ì„œ ìˆ˜ì§ ë‚™í•˜ ë³´ì •)
         _vector vNew = XMVectorLerp(vPeak, vGoalPos, t);
         vNew.m128_f32[1] = vPeak.m128_f32[1] - (350.f * t);
 

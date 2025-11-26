@@ -195,7 +195,7 @@ void CJolt_Manager::Remove_CharacterVirtual(CharacterID id)
         BodyID innerId = pChar->GetInnerBodyID();
         Remove_BodyDesc(innerId);
 
-        Safe_Delete(pChar);            
+        pChar->Release();
         m_CharacterVirtuals.erase(iter);
     }
 }
