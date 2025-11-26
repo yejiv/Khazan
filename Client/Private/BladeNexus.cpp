@@ -50,12 +50,26 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
             m_Event = e;
         });
 
+    if (BLADENEXUS_ID::HEINMACH_YETUGA == static_cast<BLADENEXUS_ID>(m_iBladeNexus_ID))
+    {
+        m_pGameInstance->Subscribe_Event<EventPopBN>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), [&](const EventPopBN& e)
+            {
+                m_BNPop = e;
+            });
+    }
+
     m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_NextLevelID(), TEXT("GhostKnight_static"), m_pTransformCom->Get_State(STATE::POSITION));
     return S_OK;
 }
 
 void CBladeNexus::Priority_Update(_float fTimeDelta)
 {
+    if (BLADENEXUS_ID::HEINMACH_YETUGA == static_cast<BLADENEXUS_ID>(m_iBladeNexus_ID))
+    {
+        if (false == m_BNPop.isPop)
+            return;
+    }
+
     if (false == m_isCollision)
     {
         m_Event.None();
@@ -66,6 +80,12 @@ void CBladeNexus::Priority_Update(_float fTimeDelta)
 
 void CBladeNexus::Update(_float fTimeDelta)
 {
+    if (BLADENEXUS_ID::HEINMACH_YETUGA == static_cast<BLADENEXUS_ID>(m_iBladeNexus_ID))
+    {
+        if (false == m_BNPop.isPop)
+            return;
+    }
+
     Animation_Update(fTimeDelta);
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
@@ -74,6 +94,12 @@ void CBladeNexus::Update(_float fTimeDelta)
 
 void CBladeNexus::Late_Update(_float fTimeDelta)
 {
+    if (BLADENEXUS_ID::HEINMACH_YETUGA == static_cast<BLADENEXUS_ID>(m_iBladeNexus_ID))
+    {
+        if (false == m_BNPop.isPop)
+            return;
+    }
+
     CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
 }
 

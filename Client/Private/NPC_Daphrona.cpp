@@ -225,7 +225,7 @@ void CNPC_Daphrona::Input_Interact_Event(_float fTimeDelta)
 
         EventInteractType InteractType = {};
 
-        InteractType.eInteractType = INTERACTIVE_TYPE::DAPHRONA;
+        InteractType.eInteractType = INTERACTIVE_TYPE::DANJIN;
 
         InteractType.eState = EventInteractType::BEGIN;
 
@@ -260,7 +260,7 @@ void CNPC_Daphrona::Animation_Update(_float fTimeDelta)
 
             EventInteractType InteractType = {};
 
-            InteractType.eInteractType = INTERACTIVE_TYPE::DAPHRONA;
+            InteractType.eInteractType = INTERACTIVE_TYPE::DANJIN;
             InteractType.isEvent = true;
 
             EventNPC NPCEvent = {};
@@ -296,7 +296,7 @@ void CNPC_Daphrona::Animation_Change(_float fTimeDelta)
 
         EventInteractType InteractType = {};
 
-        InteractType.eInteractType = INTERACTIVE_TYPE::DAPHRONA;
+        InteractType.eInteractType = INTERACTIVE_TYPE::DANJIN;
         InteractType.isEvent = true;
 
         EventNPC NPCEvent = {};

@@ -4,6 +4,8 @@
 
 #include "Interaction_Guide.h"
 
+#include "UI_Talk_Dangin.h"
+
 CNPC_Danjin::CNPC_Danjin(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
 {
@@ -41,6 +43,25 @@ HRESULT CNPC_Danjin::Initialize_Clone(void* pArg)
             m_Event = e;
         });
 
+#pragma region 3D UI
+
+    CUIObject::UIOBJECT_DESC Desc;
+
+    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+    Desc.vLocalPos = { 0.f, 0.f };
+    Desc.vLocalSize = { 1.7f, 1.7f };
+    Desc.szName = "TalkUI";
+
+
+    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+    Desc.vLocalPos = { 0.f, 0.f };
+    Desc.vLocalSize = { 1.7f, 1.7f };
+    Desc.szName = "Dangin_TalkUI";
+    m_pDanginTalkUI = static_cast<CUI_Talk_Dangin*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Dangin"), &Desc));
+    CHECK_NULLPTR(m_pDanginTalkUI, E_FAIL);
+
+#pragma endregion
+
     return S_OK;
 }
 
@@ -50,6 +71,8 @@ void CNPC_Danjin::Priority_Update(_float fTimeDelta)
     {
         m_Event.None();
     }
+
+    m_pDanginTalkUI->Priority_Update(fTimeDelta);
 }
 
 void CNPC_Danjin::Update(_float fTimeDelta)
@@ -58,11 +81,17 @@ void CNPC_Danjin::Update(_float fTimeDelta)
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         Animation_Change(fTimeDelta);
+
+    m_pDanginTalkUI->Update(fTimeDelta);
 }
 
 void CNPC_Danjin::Late_Update(_float fTimeDelta)
 {
     CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
+
+    m_pDanginTalkUI->Late_Update(fTimeDelta);
+
+    m_pDanginTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
 }
 
 HRESULT CNPC_Danjin::Render()
@@ -258,6 +287,8 @@ void CNPC_Danjin::Animation_Update(_float fTimeDelta)
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
 
+            m_pDanginTalkUI->On_Panel();
+
             EventInteractType InteractType = {};
 
             InteractType.eInteractType = INTERACTIVE_TYPE::DANJIN;
@@ -293,20 +324,6 @@ void CNPC_Danjin::Animation_Change(_float fTimeDelta)
         m_eAnimState = ANIM_STATE::TALK_IDLE;
         m_pModelCom->Set_Animation(m_eAnimState);
         m_pModelCom->Set_AnimationLoop(true);
-
-        EventInteractType InteractType = {};
-
-        InteractType.eInteractType = INTERACTIVE_TYPE::DANJIN;
-        InteractType.isEvent = true;
-
-        EventNPC NPCEvent = {};
-
-        XMStoreFloat4(&NPCEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-
-        InteractType.NPCEvent = NPCEvent;
-
-        // NPC를 바라볼 수 있도록 포지션만 던짐 ( NPC 애니메이션 종료 O, UI 창 팝업? )
-        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
     }
     // NPC 상호 작용 종료 후 ( 첫 해금 O )
     if (ANIM_STATE::TALK_END == m_eAnimState)
@@ -334,7 +351,7 @@ void CNPC_Danjin::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer
     m_isCollision = true;
 }
 
-void CNPC_Danjin::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC * pMyDesc)
+void CNPC_Danjin::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
@@ -342,10 +359,18 @@ void CNPC_Danjin::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer
     m_isCollision = true;
 }
 
-void CNPC_Danjin::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, COLLISION_DESC * pMyDesc)
+void CNPC_Danjin::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
+
+    // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
+    if(ANIM_STATE::TALK_END != m_eAnimState && ANIM_STATE::IDLE != m_eAnimState)
+    {
+        m_eAnimState = ANIM_STATE::TALK_END;
+        m_pModelCom->Set_Animation(m_eAnimState);
+        m_pModelCom->Set_AnimationLoop(true);
+    }
 
     m_pGuide->Update_Visible(false);
 
@@ -384,6 +409,7 @@ void CNPC_Danjin::Free()
 
     Safe_Release(m_pStaticCom);
     Safe_Release(m_pTriggerCom);
+    Safe_Release(m_pDanginTalkUI);
 
     if (nullptr != m_pGuide)
     {
