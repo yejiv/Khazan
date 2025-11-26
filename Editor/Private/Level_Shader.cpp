@@ -768,7 +768,23 @@ HRESULT CLevel_Shader::Initialize()
                 ImGui::Separator();
 
                 // Light Transition
+                if (ImGui::CollapsingHeader("Light Transition"))
+                {
+                    ImGui::SliderFloat("Light Trans Duration", &m_TargetLightDesc.fDuration, 0.f, 20.f, "%.1f");
 
+                    ImGui::SliderFloat2("Light Trans FadeTime (In / Out)", reinterpret_cast<_float*>(&m_TargetLightDesc.vFadeTime), 0.1f, 10.f, "%.1f");
+
+                    ImGuiColorEditFlags HDRFlags = ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float;
+
+                    ImGui::ColorEdit4("Target Diffuse (HDR)", reinterpret_cast<_float*>(&m_TargetLightDesc.vDiffuse), HDRFlags);
+                    ImGui::ColorEdit4("Target Ambient (HDR)", reinterpret_cast<_float*>(&m_TargetLightDesc.vAmbient), HDRFlags);
+                    ImGui::ColorEdit4("Target Specular (HDR)", reinterpret_cast<_float*>(&m_TargetLightDesc.vSpecular), HDRFlags);
+
+                    ImGui::Checkbox("Return To Start", &m_TargetLightDesc.isReturnToStart);
+
+                    if (ImGui::Button("Start Light Transition"))
+                        m_pGameInstance->Start_LightTransition(m_strSelectedLightTag, iCurrentLevelIndex, m_TargetLightDesc);
+                }
             }
 
             ImGui::Separator();

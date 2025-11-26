@@ -68,7 +68,7 @@ HIT_DIR CAS_Hit_Viper::Convert_HitFlag(DIRECTION_INFO Info)
 
 _uint CAS_Hit_Viper::Make_AnimIndex(HITREACTION eHitreaction, HIT_DIR eHitDir)
 {
-    // static À¸·Î µÎ´Â ÀÌÀ¯´Â  ¸Å¹ø Enter·Î µé¾î¿À¸é º¯¼ö¸¦ ¸¸µé¾î¾ßÇØ¼­ µü Ã³À½ 1¹ø¸¸ ÃÊ±âÈ­ ÇÏµµ·ÏÇÏ±â À§ÇØ¼­
+    // static ìœ¼ë¡œ ë‘ëŠ” ì´ìœ ëŠ”  ë§¤ë²ˆ Enterë¡œ ë“¤ì–´ì˜¤ë©´ ë³€ìˆ˜ë¥¼ ë§Œë“¤ì–´ì•¼í•´ì„œ ë”± ì²˜ìŒ 1ë²ˆë§Œ ì´ˆê¸°í™” í•˜ë„ë¡í•˜ê¸° ìœ„í•´ì„œ
     static _uint table[ENUM_CLASS(HITREACTION::END)][ENUM_CLASS(HIT_DIR::END)] =
     {
         // WEAK

@@ -20,7 +20,7 @@ void CAS_Dr_Rampage_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
         if (m_pMonData->isAnimFinash)
         {
             m_eState = RELEASSE;
-            //ÀÛ¾÷ ¿Ï·á ÈÄ »ì·Á¾ßÇÔ
+            //ìž‘ì—… ì™„ë£Œ í›„ ì‚´ë ¤ì•¼í•¨
             //m_pMonData->pOwner->Hp_Dead();
         }
     }

@@ -31,6 +31,10 @@ protected:
 
 protected:
     _bool m_isJump = { false };
+    _bool m_isDive = { false };
+
+    Vec3 m_vDivePos = Vec3::sZero();
+    _float m_fDiveSpeed = { 25.f };
 
 public:
 	static CRigidBody* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
