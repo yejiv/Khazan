@@ -61,6 +61,12 @@
 #include "GiantGate_Part_L.h"            // 바이퍼 가는 문 왼쪽
 #include "GiantGate_Part_R.h"            // 바이퍼 가는 문 오른쪽
 
+// Interactive ( NPC )
+#include "NPC_Daphrona.h"                // 다프로나 ( 사실 서나 ) ( 귀석 )
+#include "NPC_Duimuk.h"                  // 두이무크 ( 상인 )
+#include "Duimuk_Part.h"                 // 두이무크 파츠
+#include "NPC_Danjin.h"                  // 단진 ( 랜턴 상인 )
+
 // Trigger
 #include "Trigger.h"
 #include "HeinMach_Trigger.h"

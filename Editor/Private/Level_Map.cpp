@@ -4676,9 +4676,9 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
             {
                 // 큰 문 일단 공백
             }
-            if (INTERACTIVE_TYPE::DAPHRONA == m_pFixPropObj->Get_InteractiveType() ||
-                INTERACTIVE_TYPE::DUIMUK == m_pFixPropObj->Get_InteractiveType() ||
-                INTERACTIVE_TYPE::DANJIN == m_pFixPropObj->Get_InteractiveType())
+            if (INTERACTIVE_TYPE::DAPHRONA == eType ||
+                INTERACTIVE_TYPE::DUIMUK == eType ||
+                INTERACTIVE_TYPE::DANJIN == eType)
             {
                 // NPC 일단 공백
             }

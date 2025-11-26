@@ -58,6 +58,7 @@
 #include "Viper.h"
 #include "Body_Viper.h"
 #include "TwinBlade_Viper.h"
+#include "Core_Viper.h"
 
 #pragma endregion
 
@@ -666,6 +667,12 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_Slate_Switch_001/WIP_BGQ_Slate_Switch_001.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region NPC ( 야매 )
+    /* Prototype_Component_Model_NPC_Danjin */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_NPC_Danjin"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_NPC_Danjin001/C_NPC_Danjin001.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region �� ���� : Ʈ����
@@ -870,6 +877,12 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
     /* Prototype_GameObject_Prop_Slate_Switch */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Slate_Switch"),
         CSlate_Switch::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region NPC ( 야매 )
+    /* Prototype_GameObject_Prop_NPC_Danjin */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_NPC_Danjin"),
+        CNPC_Danjin::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma region 파괴
@@ -1145,21 +1158,27 @@ HRESULT CLoader::Loading_For_Embars_Level()
 {
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_For_Embars_Texture();
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_For_Embars_Model();
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_For_Embars_Shader();
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_For_Embars_GameObject();
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_Prototype_MapObject_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS);
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS);
+        return S_OK;
         }));
 
     return S_OK;
@@ -1375,6 +1394,20 @@ HRESULT CLoader::Loading_For_Embars_Model()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_A/WIP_BGQ_Door_Wood_001/WIP_BGQ_Door_Wood_001.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region NPC ( 야매 )
+    /* Prototype_Component_Model_NPC_Daphrona */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_NPC_Daphrona"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_NPC_Seona/C_NPC_Seona.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_NPC_Duimuk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_NPC_Duimuk"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_NPC_Duimuk/C_NPC_Duimuk.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_NPC_Duimuk_Part */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_NPC_Duimuk_Part"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_I_Duimuk_Abacus/C_I_Duimuk_Abacus.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거
@@ -1551,6 +1584,20 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     /* Prototype_GameObject_Prop_GiantGate_Part_R */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_GiantGate_Part_R"),
         CGiantGate_Part_R::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region NPC ( 야매 )
+    /* Prototype_GameObject_Prop_NPC_Daphrona */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Daphrona"),
+        CNPC_Daphrona::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Duimuk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Duimuk"),
+        CNPC_Duimuk::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Duimuk_Part */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Duimuk_Part"),
+        CDuimuk_Part::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion
@@ -1740,6 +1787,8 @@ HRESULT CLoader::Loading_For_Viper_Model()
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_TwinBlade_Viper"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/TwinBlade_R/TwinBlade_R.dat")), E_FAIL);
 
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Core_Viper"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/TwinBlade_Core/TwinBlade_Core.dat")), E_FAIL);
 
 #pragma endregion
 
@@ -1920,10 +1969,10 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
         CTwinBlade_Viper::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
-
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Monster_Imp_Melee_Sword"),
-        CImp_Sword::Create(m_pDevice, m_pContext))))
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_Core"),
+        CCore_Viper::Create(m_pDevice, m_pContext))))
         return E_FAIL;
+
 
 
 #pragma endregion

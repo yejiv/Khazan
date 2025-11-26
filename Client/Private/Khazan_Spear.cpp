@@ -2650,12 +2650,25 @@ void CKhazan_Spear::Subscribe_Events()
     m_iObjectInteractEventID =  m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e) {
         if (e.isOff())
         {
-            m_pBody->Get_Model()->AnimationSetIndexIncrease();
-            m_pSpear->Set_Enble(true);
-            // m_pSpear->Equip();
-            static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
-            Add_Status(SPEAR);
-            Remove_Status(BAREHAND | INJURED);
+            if (m_EventInteract.isNPC())
+            {
+                m_pClientInstance->Set_PlayerInput(true);
+                m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed"));
+                m_pSpear->Set_Enble(true);
+                // m_pSpear->Equip();
+                static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+                Add_Status(SPEAR);
+                Remove_Status(BAREHAND | INJURED);
+            }
+            else
+            {
+                m_pBody->Get_Model()->AnimationSetIndexIncrease();
+                m_pSpear->Set_Enble(true);
+                // m_pSpear->Equip();
+                static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+                Add_Status(SPEAR);
+                Remove_Status(BAREHAND | INJURED);
+            }
         }  });
 
 #pragma endregion
@@ -2772,6 +2785,18 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
 
             break;
         }
+        case INTERACTIVE_TYPE::DANJIN:
+        case INTERACTIVE_TYPE::DUIMUK:
+        case INTERACTIVE_TYPE::DAPHRONA:
+        {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
+                isDone = true;
+            }
+
+            break;
+        }
         default:
             break;
         }
@@ -2844,6 +2869,11 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         if (INTERACTIVE_TYPE::GIANTGATE == m_EventInteract.eInteractType)
         {
             GiantGate_Event(fTimeDelta);
+        }
+        // NPC 랑 상호 작용 시
+        if (true == m_EventInteract.isNPC())
+        {
+            NPC_Event(fTimeDelta);
         }
     }
 }
@@ -3064,6 +3094,17 @@ void CKhazan_Spear::GiantGate_Event(_float fTimeDelta)
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&GateEvent.vPlayerPosition));
     GateEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&GateEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::NPC_Event(_float fTimeDelta)
+{
+    EventNPC NPCEvent = m_EventInteract.NPCEvent;
+
+    // 플레이어가 NPC와 상호작용하는 애니메이션 ???
+
+    NPCEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&NPCEvent.vPosition));
 
     m_EventInteract.End_Event();
 }
