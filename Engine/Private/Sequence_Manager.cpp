@@ -283,6 +283,32 @@ void CSequence_Manager::Emit_Ended(const SEQ_ID& tId, _bool isInterrupted)
 	m_pGameInstance->Emit_Event<SEQ_SIG_COMMON>(isInterrupted ? SEQ_SIG_INTERRUPTED : SEQ_SIG_ENDED, sig);
 }
 
+void CSequence_Manager::Clear()
+{
+    for (_uint token : m_SubscribeTokens)
+        m_pGameInstance->UnsubscribeAll_Event(token);
+    m_SubscribeTokens.clear();
+
+
+    for (auto& it : m_qAdopt)
+        Safe_Release(it.first);
+    m_qAdopt.clear();
+
+
+    for (auto& kv : m_MapInstances)
+        Safe_Release(kv.second);
+    m_MapInstances.clear();
+
+
+    m_qPlay.clear();
+    m_qStop.clear();
+    m_qPause.clear();
+    m_qResume.clear();
+    m_qJump.clear();
+
+    m_pFactory = nullptr;
+}
+
 CSequence_Manager* CSequence_Manager::Create()
 {
 	CSequence_Manager* pInstance = new CSequence_Manager();

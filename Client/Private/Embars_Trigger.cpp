@@ -49,7 +49,7 @@ void CEmbars_Trigger::Update(_float fTimeDelta)
 {
     __super::Update(fTimeDelta);
 
-    /*if (m_EventVTGate.isUnLockGate(m_iEventID))
+    if (m_EventGimmick.isUnLockGearAvailable(m_iEventID))
     {
         if (m_iEventID == 0)
         {
@@ -68,7 +68,7 @@ void CEmbars_Trigger::Update(_float fTimeDelta)
                 m_isDead = true;
             }
         }
-    }*/
+    }
 
 }
 
@@ -110,17 +110,17 @@ HRESULT CEmbars_Trigger::Ready_TriggerType(void* pArg)
 {
     if (m_strTriggerKey == "Puzzle_1")
     {
-        /*m_iEventID = 0;
+        m_iEventID = 0;
         string filePath = "../../Client/Bin/Data/Camera/Animation/Statue1";
         m_pClientInstance->Camera_Set_Animation_Json(filePath);
-        m_iEventID = m_pGameInstance->Subscribe_Event<EventVerticalGate>(ENUM_CLASS(EVENT_TYPE::STATUE_PUZZLE0), [&](const EventVerticalGate& e) { m_EventVTGate = e; });*/        
+        m_iLitEventId = m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK0), [&](const EventGimmick& e) { m_EventGimmick = e; });
     }
     else if (m_strTriggerKey == "Puzzle_2")
     {
-        /*m_iEventID = 1;
+        m_iEventID = 1;
         string filePath = "../../Client/Bin/Data/Camera/Animation/Statue2";
         m_pClientInstance->Camera_Set_Animation_Json(filePath);
-        m_iEventID = m_pGameInstance->Subscribe_Event<EventVerticalGate>(ENUM_CLASS(EVENT_TYPE::STATUE_PUZZLE1), [&](const EventVerticalGate& e) { m_EventVTGate = e; });*/
+        m_iLitEventId = m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK1), [&](const EventGimmick& e) { m_EventGimmick = e; });
     }
 
     /*
@@ -245,11 +245,11 @@ void CEmbars_Trigger::Free()
 {
     if (m_strTriggerKey == "Puzzle_1")
     {
-        //m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::STATUE_PUZZLE0), m_iEventID);
+        m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK0), m_iLitEventId);
     }
     else if (m_strTriggerKey == "Puzzle_2")
     {
-        //m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::STATUE_PUZZLE1), m_iEventID);
+        m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK1), m_iLitEventId);
     }
     
 

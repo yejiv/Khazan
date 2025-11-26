@@ -72,10 +72,56 @@ void CLayer::Late_Update(_float fTimeDelta)
 	}
 }
 
+void CLayer::PoolObject_Back()
+{
+    for (auto it = m_GameObjects.begin(); it != m_GameObjects.end(); )
+    {
+        if ((*it)->Get_IsPool())
+        {
+            m_pGameInstance->Reset_PoolObject((*it));
+            it = m_GameObjects.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+
+    }
+
+    for (auto it = m_DeadGameObjects.begin(); it != m_DeadGameObjects.end(); )
+    {
+        if ((*it)->Get_IsPool())
+        {
+            m_pGameInstance->Reset_PoolObject((*it));
+            it = m_GameObjects.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+
+    }
+}
+
 void CLayer::DeadObject_Clear()
 {
-	for (auto& pGameObject : m_DeadGameObjects)
-		Safe_Release(pGameObject);
+    for (auto it = m_DeadGameObjects.begin(); it != m_DeadGameObjects.end(); )
+    {
+        if ((*it)->Get_IsDead() && !(*it)->Get_IsPool())
+        {
+            Safe_Release(*it);
+        }
+        else if ((*it)->Get_IsDead() && (*it)->Get_IsPool())
+        {
+            m_pGameInstance->Reset_PoolObject((*it));
+            it = m_GameObjects.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+
+    }
 
 	m_DeadGameObjects.clear();
 }
@@ -94,9 +140,9 @@ void CLayer::Free()
 
 	m_DeadGameObjects.clear();
 
-	for (auto& pGameObject : m_GameObjects)
-		Safe_Release(pGameObject);
-
+    for (auto& pGameObject : m_GameObjects)
+        Safe_Release(pGameObject);
+	
 	m_GameObjects.clear();
 
 	Safe_Release(m_pGameInstance);

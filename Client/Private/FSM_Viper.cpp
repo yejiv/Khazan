@@ -16,6 +16,8 @@
 #include "AS_ThrowBlade_Viper.h"
 #include "AS_StingGrab_Viper.h"
 #include "AS_Groggy_Viper.h"
+#include "AS_Hit_Viper.h"
+#include "AS_CutScene_Start_Viper.h"
 
 CFSM_Viper::CFSM_Viper()
 {
@@ -23,6 +25,10 @@ CFSM_Viper::CFSM_Viper()
 
 HRESULT CFSM_Viper::Initialize()
 {
+
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), CAS_CutScene_Start_Viper::Create())))
+        return E_FAIL;
+
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), CAS_Idle_Viper::Create())))
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::WALK), CAS_Walk_Viper::Create())))
@@ -64,9 +70,12 @@ HRESULT CFSM_Viper::Initialize()
 
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::GROGGY), CAS_Groggy_Viper::Create())))
         return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::HIT), CAS_Hit_Viper::Create())))
+        return E_FAIL;
 
 
- 
+
+
 
     m_pCurrentState = m_States[ENUM_CLASS(VIPER_STATE_P1::IDLE)];
     Safe_AddRef(m_pCurrentState);

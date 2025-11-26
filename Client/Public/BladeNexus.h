@@ -60,8 +60,6 @@ private:
 	_tchar m_szPlaceName[MAX_PATH] = {};
     _bool m_isUnLock = { false };                   // 귀검 해금 여부
 
-	_float3 m_vPlayerPosition = {};
-
 	EventObject m_Event = {};
 
 	_float m_fEmissiveIntensity = { 0.f };
@@ -75,6 +73,10 @@ private:
     _float m_fRadialBlurTimeAcc = {};
 
     _uint m_iEventID = { 0 };
+
+    EventPopBN m_BNPop = {};
+
+    _uint m_iPopEventID = {};
 
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;

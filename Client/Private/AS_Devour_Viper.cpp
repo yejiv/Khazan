@@ -22,7 +22,7 @@ void CAS_Devour_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_fMinSpeed = 5.f;
     m_fMaxSpeed = 30.f;
 
-    pModel->Set_Animation(8);
+    pModel->Set_Animation(64);
 }
 
 void CAS_Devour_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

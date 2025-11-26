@@ -32,6 +32,9 @@ private:
 	void Emit_Started(const SEQ_ID& tId);
 	void Emit_Ended(const SEQ_ID& tId, _bool isInterrupted);
 
+public:
+    void Clear();
+
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };
 	ISeqFactory* m_pFactory = { nullptr }; // 소유X(필요시 외부에서 해제)

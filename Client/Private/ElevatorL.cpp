@@ -314,7 +314,7 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
         switch (m_eMoveState)
         {
         case MOVE_STATE::MIDTODOWN:
-            Lerp_ElevatorMove(fTimeDelta, m_vMidPos, m_vDownPos, 5.f);
+            Lerp_ElevatorMove(fTimeDelta, m_vMidPos, m_vDownPos, 20.f);
             break;
         case MOVE_STATE::DOWNTOUP:
             Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 30.f);

@@ -28,7 +28,7 @@ void CAS_SlashBackJump_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     XMStoreFloat3(&m_vGoalPos, vTargetPos + vDir * fJumpDist);
 
-    pModel->Set_Animation(108);
+    pModel->Set_Animation(46);
 }
 
 void CAS_SlashBackJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

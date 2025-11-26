@@ -59,6 +59,7 @@ HRESULT CLevel_HeinMach::Initialize()
         CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
         return S_OK;
+
         }));
 
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
@@ -87,6 +88,11 @@ HRESULT CLevel_HeinMach::Initialize()
         return E_FAIL;
 
     m_futures.clear();
+
+    m_iEventID = m_pGameInstance->Subscribe_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), [&](const EVENT_LEVEL_CHANGE& e)
+        {
+            m_eNextLevel = static_cast<LEVEL>(e.iLevel);
+        });
 
 #pragma endregion
 
@@ -192,9 +198,27 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
 
-    //if (m_pGameInstance->Key_Down(DIK_RETURN))
-    //    if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
-    //        return;
+    /*if (m_eNextLevel != LEVEL::END)
+    {      
+        if (!m_isOpenLevel) {
+            m_pGameInstance->StopAll();
+            if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel))))
+                return;
+            m_isOpenLevel = true;
+        }
+    }*/
+
+    if (m_pGameInstance->Key_Down(DIK_RETURN))
+    {
+        if (!m_isOpenLevel) {
+            if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
+                return;
+            m_isOpenLevel = true;
+        }
+        
+    }
+
+
 
    if (!m_isStart)
     {
@@ -279,14 +303,15 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 HRESULT CLevel_HeinMach::Ready_Layer_Player(const _wstring& strLayerTag)
 {
-	  /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	  	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
-	  	return E_FAIL;*/
+
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+	return E_FAIL;
 
     // Motion Trail Test
-    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+    /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
-        return E_FAIL;
+        return E_FAIL;*/
 
 	return S_OK;
 }
@@ -824,6 +849,11 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
             CHECK_FALSE(ReadFile(hFile, &ElevatorPos, sizeof(CElevatorS::ELEVATOR_POS), &dwByte, nullptr), E_FAIL);
             ObjectDesc.pOtherDesc = &ElevatorPos;
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_SmallElevator"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
+        case INTERACTIVE_TYPE::DANJIN:
+        {
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_NPC_Danjin"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
 		default:
@@ -1439,6 +1469,8 @@ CLevel_HeinMach* CLevel_HeinMach::Create(ID3D11Device* pDevice, ID3D11DeviceCont
 
 void CLevel_HeinMach::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), m_iEventID);
+
 	__super::Free();
 
 	Safe_Release(m_pClientInstance);

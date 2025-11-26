@@ -42,6 +42,7 @@ protected:
 
     EVENT_TYPE m_eEventType = {};
 
+    _uint m_iSubscribeEventID = {};
     _int m_iEventID = {};
 
 	_bool m_isCollision = { false };

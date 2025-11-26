@@ -269,7 +269,7 @@ _bool CKhazan_GS_Anim_Attack::Try_ChageStrongAttack()
         if(!isLimitBreak)
             m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_StrongAtk01_Charge");
         else
-            m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_ChargeMaster_Apocalypse_Charge");
+            m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_ChargeMaster_Apocalypse_Charge_02");
 
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 

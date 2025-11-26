@@ -21,6 +21,7 @@ namespace Client {
         EMBARS_GIMMICK1,
         EMBARS_GIMMICK2,
         HALL_ELEVATOR_UNLOCK,
+        BLADENEXUS_POP,
 		END };
 
 	// Structs
@@ -73,6 +74,9 @@ namespace Client {
         }
 	};
 
+    struct EventPopBN {
+        bool isPop{ false };
+    };
 
 	struct EventBladeNexus {
 		XMFLOAT4 vPosition{};
@@ -273,6 +277,11 @@ namespace Client {
         XMFLOAT4 vPlayerPosition{};
     };
 
+    struct EventNPC
+    {
+        XMFLOAT4 vPosition{};
+    };
+
     //상호작용 오브젝트 어떤 종류인지 받아오는 이벤트 구조체(오브젝트->플레이어)
 	struct EventInteractType {
 		enum EVENT_STATE { BEGIN, END, NONE };
@@ -289,12 +298,19 @@ namespace Client {
         EventIronGate IronGateEvent{};
         EventUnLockGear UnLockGearEvent{};
         EventGiantGate GiantGateEvent{};
+        EventNPC NPCEvent{};
 
 		void End_Event() { isEvent = false; }
 
         bool isInCave() { return CaveEvent.isInCave; }
         void CaveIn() { CaveEvent.isInCave = true; }
         void CaveOut() { CaveEvent.isInCave = false; }
+
+        bool isNPC() {
+            return (INTERACTIVE_TYPE::DANJIN == eInteractType ||
+                INTERACTIVE_TYPE::DAPHRONA == eInteractType ||
+                INTERACTIVE_TYPE::DUIMUK == eInteractType);
+        }
 	};
 
 	struct EventBigChest {

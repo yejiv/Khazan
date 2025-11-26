@@ -340,7 +340,7 @@ void CUI_Logo::Update_MenuState(_float fTimeDelta)
 
 void CUI_Logo::Event_NewGame()
 {
-	m_pGameInstance->Emit_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), { m_iLevel });
+	m_pGameInstance->Emit_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), { m_iLevel });    
 }
 
 CUI_Logo* CUI_Logo::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
