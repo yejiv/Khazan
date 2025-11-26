@@ -148,6 +148,13 @@ namespace Client {
             isStatueSolved[iStatueIndex] = true;
         }
 
+        static EventGimmick Set_InitSolve(unsigned int iStatueIndex)
+        {
+            EventGimmick e = {};
+            e.Set_SolveStatue(iStatueIndex);
+            return e;
+        }
+
         void Reset_SolveStatue(unsigned int iStatueIndex)
         {
             isStatueSolved[iStatueIndex] = false;
