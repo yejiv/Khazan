@@ -14,10 +14,12 @@ class CNPC_Duimuk final : public CProp_Interactive
 private:
     enum ANIM_STATE
     {
-        IDLE,
+        IDLE1,
         TALK_END,
         TALK_IDLE,
         TALK_START,
+        IDLE2,
+        IDLE3,
         END
     };
 
@@ -47,15 +49,18 @@ private:
 
     class CInteraction_Guide* m_pGuide = { nullptr };
 
+    class CUI_Talk_Trader* m_pTraderTalkUI = { nullptr };
+
 private:
     EventObject m_Event = {};
 
-    ANIM_STATE m_eAnimState = { ANIM_STATE::IDLE };
+    ANIM_STATE m_eAnimState = { ANIM_STATE::IDLE1 };
 
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_Collision(void* pArg);
     HRESULT Ready_Interaction_Guide(void* pArg);
+    HRESULT Ready_3D_Talk_UI(void* pArg);
     HRESULT Ready_DefaultSetting(void* pArg);
     virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
 

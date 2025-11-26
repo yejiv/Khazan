@@ -33,6 +33,8 @@ HRESULT CNPC_Danjin::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
+    CHECK_FAILED(Ready_3D_Talk_UI(pArg), E_FAIL);
+
     m_eAnimState = ANIM_STATE::IDLE;
     m_pModelCom->Set_Animation(m_eAnimState);
     m_pModelCom->Set_AnimationLoop(true);
@@ -44,21 +46,6 @@ HRESULT CNPC_Danjin::Initialize_Clone(void* pArg)
         });
 
 #pragma region 3D UI
-
-    CUIObject::UIOBJECT_DESC Desc;
-
-    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
-    Desc.vLocalPos = { 0.f, 0.f };
-    Desc.vLocalSize = { 1.7f, 1.7f };
-    Desc.szName = "TalkUI";
-
-
-    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
-    Desc.vLocalPos = { 0.f, 0.f };
-    Desc.vLocalSize = { 1.7f, 1.7f };
-    Desc.szName = "Dangin_TalkUI";
-    m_pDanginTalkUI = static_cast<CUI_Talk_Dangin*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Dangin"), &Desc));
-    CHECK_NULLPTR(m_pDanginTalkUI, E_FAIL);
 
 #pragma endregion
 
@@ -202,6 +189,20 @@ HRESULT CNPC_Danjin::Ready_Interaction_Guide(void* pArg)
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 
     m_pGuide->Update_Visible(false);
+
+    return S_OK;
+}
+
+HRESULT CNPC_Danjin::Ready_3D_Talk_UI(void* pArg)
+{
+    CUIObject::UIOBJECT_DESC Desc;
+
+    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+    Desc.vLocalPos = { 0.f, 0.f };
+    Desc.vLocalSize = { 1.7f, 1.7f };
+    Desc.szName = "Dangin_TalkUI";
+    m_pDanginTalkUI = static_cast<CUI_Talk_Dangin*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Dangin"), &Desc));
+    CHECK_NULLPTR(m_pDanginTalkUI, E_FAIL);
 
     return S_OK;
 }
