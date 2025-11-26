@@ -24,7 +24,8 @@ enum class VIPER_STATE_P1
     GROGGY,
     DODGE,
     DEAD,
-    CUTSCENE,
+    CUTSCENE_START,
+    CUTSCENE_PHASE2,
     END,
 };
 

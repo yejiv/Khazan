@@ -28,27 +28,36 @@ HRESULT CAI_Controller_Viper::Initialize(CCreature* pOwner)
 
 void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 {
-
+    // T누르면 컷신 모드 AS_CutScene_Start
     if (m_pGameInstance->Key_Down(DIK_T))
     {
         CViper* pViper = static_cast<CViper*>(pOwner);
-        CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-        pViper->Consume_Stamina(10.f);
+        //CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+        ////pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+        //pViper->Consume_Stamina(10.f);
+        
+        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START),pViper);
+
     }
 
+    if(m_pGameInstance->Key_Down(DIK_J))
+        Set_ActiveAIController(true); // 이거 하면 실행됩니다.
 
-    m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
-    _float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
-
-    if (m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected"))
+    if (m_isActiveController)
     {
-        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
-    }
-    else
-        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+        m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
+        _float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
 
-    m_pBT->Update();
+        if (m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected"))
+        {
+            m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
+        }
+        else
+            m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+
+        m_pBT->Update();
+    }
+
     m_pFSM->Update(pOwner, fTimeDelta);
 }
 

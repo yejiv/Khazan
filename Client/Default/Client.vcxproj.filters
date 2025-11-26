@@ -1210,6 +1210,15 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate\Right">
       <UniqueIdentifier>{757d83e8-39dc-4b73-832e-c75247136376}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Weapon\Core">
+      <UniqueIdentifier>{ef73178a-d94c-4fea-a3a4-6bae051a6576}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\18.CutScene_Start">
+      <UniqueIdentifier>{6316920a-8748-43b7-966e-6789f6561e6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\19.CutScene_2P">
+      <UniqueIdentifier>{2eeed706-6c07-4422-aefc-8e5e77c2a220}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2340,6 +2349,15 @@
     <ClInclude Include="..\Public\GiantGate_Part_R.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate\Right</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Core_Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper\Weapon\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_CutScene_2Phase_Viper.h">
+      <Filter>92.AI\State\Viper\19.CutScene_2P</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_CutScene_Start_Viper.h">
+      <Filter>92.AI\State\Viper\18.CutScene_Start</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3449,6 +3467,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\GiantGate_Part_R.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate\Right</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Core_Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper\Weapon\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_CutScene_2Phase_Viper.cpp">
+      <Filter>92.AI\State\Viper\19.CutScene_2P</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_CutScene_Start_Viper.cpp">
+      <Filter>92.AI\State\Viper\18.CutScene_Start</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
