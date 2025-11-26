@@ -108,7 +108,7 @@ void CViper::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
-    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Lacirma_ExpGained");
+    m_vLockOnPosition = m_pBody->Get_BonePointEX("Bip001-Spine2");
 
 }
 
