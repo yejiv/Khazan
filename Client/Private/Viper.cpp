@@ -607,10 +607,6 @@ HRESULT CViper::Ready_AnimEvent()
 
         });
 
-
-
-
-
 #pragma endregion
 
 #pragma region JUMPSMASH

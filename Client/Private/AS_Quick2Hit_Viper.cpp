@@ -16,7 +16,7 @@ void CAS_Quick2Hit_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
 
-    pModel->Set_Animation(111);
+    pModel->Set_Animation(49);
      
 }
 

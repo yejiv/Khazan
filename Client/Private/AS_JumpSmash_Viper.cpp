@@ -14,7 +14,7 @@ void CAS_JumpSmash_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
-    pModel->Set_Animation(15);
+    pModel->Set_Animation(34);
 
     //// 시작 위치 저장
     //CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));

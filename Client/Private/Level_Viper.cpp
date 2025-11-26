@@ -812,8 +812,8 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
 {
      CMonster::MONSTER_DESC MonsterDesc{};
      MonsterDesc.fAttack = 10.f;
-     MonsterDesc.fMaxHP = 100.f;
-     MonsterDesc.fMaxStamina = 100.f;
+     MonsterDesc.fMaxHP = 1000.f;
+     MonsterDesc.fMaxStamina = 250.f;
      MonsterDesc.fMoveSpeed = 10.f;
      MonsterDesc.fSpeedPerSec = 3.f;
      MonsterDesc.fRotationPerSec = 180.f;

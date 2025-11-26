@@ -23,7 +23,7 @@ void CAS_StingGrab_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     pTransform->LookAt(vTargetLoc);
 
 
-    pModel->Set_Animation(120);
+    pModel->Set_Animation(58);
     m_eState = VIPERGRAB_STATE::NONE;
 
 }
@@ -39,7 +39,7 @@ void CAS_StingGrab_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
     if (isGrabbed && !m_isGrabbed)
     {
-        pModel->Set_Animation(121);
+        pModel->Set_Animation(59);
         m_eState = VIPERGRAB_STATE::SUCCESS;
         m_isGrabbed = true;
     }
@@ -55,7 +55,7 @@ void CAS_StingGrab_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
         }
         else if (m_eState == VIPERGRAB_STATE::NONE)
         {
-            pModel->Set_Animation(118);
+            pModel->Set_Animation(56);
             m_eState = VIPERGRAB_STATE::FAIL;
         }
     }

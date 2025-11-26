@@ -15,7 +15,7 @@ void CAS_Walk_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
 
-    pModel->Set_Animation(0);
+    pModel->Set_Animation(72);
     m_fSpeed = pViper->Get_Controller()->Get_BlackBoard()->Get_Value<_float>(pViper->Get_Name(), "WalkSpeed");
 }
 

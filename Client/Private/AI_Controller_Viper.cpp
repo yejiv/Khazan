@@ -144,7 +144,6 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
     }
 
 
-
     else if ("Hit" == name)
     {
         return [pViper](CBlackBoard* BB) -> _bool
@@ -593,12 +592,12 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
     			if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggyFinished"))
     			{
-                    BB->Set_Value<_bool>(pViper->Get_Name(), "DamageInterrupt", false);
     				return BTNODESTATE::SUCCESS;
     			}
 
     			BB->Set_Value(pViper->Get_Name(), "isGroggy", true);
     			BB->Set_Value(pViper->Get_Name(), "isGroggyFinished", false);
+                BB->Set_Value(pViper->Get_Name(),"DamageInterrupt", false);
 
     			pViper->Get_Controller()->Get_State_Machine()->
     				Change_State(ENUM_CLASS(VIPER_STATE_P1::GROGGY), pViper);
@@ -612,7 +611,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB) -> BTNODESTATE
             {
-
+                
                 if (true == BB->Get_Value<_bool>(pViper->Get_Name(), "isHitFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -1011,7 +1010,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                 {
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isGroggy", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isGroggyFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -1316,20 +1315,17 @@ INTERRUPTCONDITION CAI_Controller_Viper::GetCallbackInterruptCondition(CGameObje
     if (nullptr == pViper)
         return nullptr;
 
-
     if ("Root_Interrupt" == name)
     {
         return [pViper](CBlackBoard* BB)
             {
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isDead"))
                     return true;
-                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
-                    return true;
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "DamageInterrupt"))
                 {
-                    _bool isSuperArmor = BB->Get_Value<_bool>(pViper->Get_Name(), "isSuperArmor");
+                   /* _bool isSuperArmor = BB->Get_Value<_bool>(pViper->Get_Name(), "isSuperArmor");
                     if (isSuperArmor)
-                        return false;
+                        return false;*/
 
                     return true;
 

@@ -72,13 +72,13 @@ _uint CAS_Hit_Viper::Make_AnimIndex(HITREACTION eHitreaction, HIT_DIR eHitDir)
     static _uint table[ENUM_CLASS(HITREACTION::END)][ENUM_CLASS(HIT_DIR::END)] =
     {
         // WEAK
-        {81,84,82,83},
+        {19,22,20,21},
         // NORMAL
-        {40,37,38,39},
+        {8,7,9,10},
         // STRONG
-        {76,43,44,45},
+        {14,18,16,17},
         // PARRY
-        {54,54,54,54},
+        {13,13,13,13},
     };
 
     return table[ENUM_CLASS(eHitreaction)][ENUM_CLASS(eHitDir)];
