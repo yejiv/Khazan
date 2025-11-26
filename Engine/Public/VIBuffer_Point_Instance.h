@@ -47,6 +47,7 @@ public:
     bool                        isLoop() { return m_bLoop; }
      
 private:
+    HRESULT						Ready_IB();
 	HRESULT						Ready_SRV(void* pSysmem);
 	HRESULT						Ready_UAV();
 	HRESULT						Ready_CB();
