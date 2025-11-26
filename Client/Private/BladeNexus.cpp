@@ -500,8 +500,19 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
     // 귀검 가동 끝나면 ( 첫 해금 X )
     if (ANIM_STATE::AFTER_START == m_eAnimState)
     {
-        // 귀검 애니메이션 끝나면 귀검 UI 창 팝업
-        static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, TEXT("하인마흐 구석진 으슥한 어떠한 곳"));
+        CUI_BladeNexus::ONTYPE eUIType = {};
+
+        switch (m_iBladeNexus_ID)
+        {
+        case static_cast<_int>(BLADENEXUS_ID::HEINMACH_YETUGA):
+            eUIType = CUI_BladeNexus::ONTYPE::EMBARS;
+            break;
+        default:
+            eUIType = CUI_BladeNexus::ONTYPE::DEFAULT;
+            break;
+        }
+
+        static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(eUIType, m_szPlaceName);
 
         // 다회 상호 작용 후 애니메이션 루프로 전환
         m_eAnimState = ANIM_STATE::AFTER_LOOP;
