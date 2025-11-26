@@ -107,7 +107,7 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     //    m_pMotionTrailCom->Start_MotionTrail(2.5f);
     //if (CKhazan_GSword::CHARGING_FAST_ATTACK & *m_pParentStatus)
     //    m_pMotionTrailCom->Start_MotionTrail(2.5f);
-    m_pMotionTrailCom->Start_MotionTrail(fTimeDelta);
+    //m_pMotionTrailCom->Start_MotionTrail(fTimeDelta);
 
 }
 
@@ -843,7 +843,8 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         });
 
     m_pModelCom->Register_Event("GS_WeakAtk01_Charge_Ground", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("FerociousMomentum0"), m_pParentTransform->Get_State(STATE::POSITION));
+        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("FerociousMomentum0"), rot, m_pParentTransform->Get_State(STATE::POSITION));
         });
 
     m_pModelCom->Register_Event("GS_WeakAtk02_SowardFX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -863,9 +864,46 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         });
 
     m_pModelCom->Register_Event("GS_WeakAtk02_BloodTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Trail"), m_pParentTransform->Get_State(STATE::POSITION));
+        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Trail"), rot, m_pParentTransform->Get_State(STATE::POSITION));
         });
 
+    //강기발현
+
+        //Strong Charge - 해금
+    m_pModelCom->Register_Event("GS_StrongAtk01_Charge_Unlock_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust8"), m_pParentTransform->Get_State(STATE::POSITION));
+        //상황에 따라 켜고 끄기!
+        //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust9"), m_pParentTransform->Get_State(STATE::POSITION));
+        //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("DarkShadow_Land_1"), m_pParentTransform->Get_State(STATE::POSITION));
+        //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("DarkShadow_Land_2"), m_pParentTransform->Get_State(STATE::POSITION));
+        });
+
+        //Strong Charge - 해금 X
+    //m_pModelCom->Register_Event("GS_StrongAtk01_Charge_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { });
+
+    m_pModelCom->Register_Event("GS_StrongAtk01_Charge_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Trail_V"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+        });
+
+    m_pModelCom->Register_Event("GS_StrongAtk01_Charge_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { 
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke_Red"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);
+        });
+
+    m_pModelCom->Register_Event("GS_StrongAtk01_Charge_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {        
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Manifest_Strength_Land"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]); 
+        });
+
+    //거인사냥
+    m_pModelCom->Register_Event("GS_Soulbringer_Land_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Giant_Hunt_Land"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);
+        });
+
+    //거대한 포효
+    m_pModelCom->Register_Event("GS_WarDeclaration_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Giant_Roar"), m_pParentTransform->Get_State(STATE::POSITION));
+        });
 
 #pragma endregion
 
@@ -968,6 +1006,8 @@ void CBody_Khazan_GS::Free()
     Safe_Release(m_pModelCom_Leg);
     Safe_Release(m_pModelCom_Shoes);
     Safe_Release(m_pModelCom);
+
+    Safe_Release(m_pMotionTrailCom);
 
     Safe_Release(m_pTrail);
 }

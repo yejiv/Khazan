@@ -28,27 +28,36 @@ HRESULT CAI_Controller_Viper::Initialize(CCreature* pOwner)
 
 void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 {
-
+    // T누르면 컷신 모드 AS_CutScene_Start
     if (m_pGameInstance->Key_Down(DIK_T))
     {
         CViper* pViper = static_cast<CViper*>(pOwner);
-        CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-        pViper->Consume_Stamina(10.f);
+        //CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+        ////pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+        //pViper->Consume_Stamina(10.f);
+        
+        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START),pViper);
+
     }
 
+    if(m_pGameInstance->Key_Down(DIK_J))
+        Set_ActiveAIController(true); // 이거 하면 실행됩니다.
 
-    m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
-    _float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
-
-    if (m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected"))
+    if (m_isActiveController)
     {
-        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
-    }
-    else
-        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+        m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
+        _float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
 
-    m_pBT->Update();
+        if (m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected"))
+        {
+            m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
+        }
+        else
+            m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+
+        m_pBT->Update();
+    }
+
     m_pFSM->Update(pOwner, fTimeDelta);
 }
 
@@ -142,7 +151,6 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
     				return false;
     		};
     }
-
 
 
     else if ("Hit" == name)
@@ -593,12 +601,12 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
     			if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggyFinished"))
     			{
-                    BB->Set_Value<_bool>(pViper->Get_Name(), "DamageInterrupt", false);
     				return BTNODESTATE::SUCCESS;
     			}
 
     			BB->Set_Value(pViper->Get_Name(), "isGroggy", true);
     			BB->Set_Value(pViper->Get_Name(), "isGroggyFinished", false);
+                BB->Set_Value(pViper->Get_Name(),"DamageInterrupt", false);
 
     			pViper->Get_Controller()->Get_State_Machine()->
     				Change_State(ENUM_CLASS(VIPER_STATE_P1::GROGGY), pViper);
@@ -612,7 +620,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB) -> BTNODESTATE
             {
-
+                
                 if (true == BB->Get_Value<_bool>(pViper->Get_Name(), "isHitFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -1011,7 +1019,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                 {
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isGroggy", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isGroggyFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -1316,20 +1324,17 @@ INTERRUPTCONDITION CAI_Controller_Viper::GetCallbackInterruptCondition(CGameObje
     if (nullptr == pViper)
         return nullptr;
 
-
     if ("Root_Interrupt" == name)
     {
         return [pViper](CBlackBoard* BB)
             {
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isDead"))
                     return true;
-                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
-                    return true;
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "DamageInterrupt"))
                 {
-                    _bool isSuperArmor = BB->Get_Value<_bool>(pViper->Get_Name(), "isSuperArmor");
+                   /* _bool isSuperArmor = BB->Get_Value<_bool>(pViper->Get_Name(), "isSuperArmor");
                     if (isSuperArmor)
-                        return false;
+                        return false;*/
 
                     return true;
 

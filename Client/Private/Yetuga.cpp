@@ -610,7 +610,7 @@ HRESULT CYetuga::Ready_Components()
     tCharVirDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
     tCharVirDesc.fRadius = 0.8f;
-    tCharVirDesc.fHeight = 0.5f;
+    tCharVirDesc.fHeight = 0.4f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.fMass = 70.f;
     tCharVirDesc.fMaxStrength = 30.f;

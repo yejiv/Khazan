@@ -16,7 +16,7 @@ void CAS_5HitCombo_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
 
-    pModel->Set_Animation(109);
+    pModel->Set_Animation(47);
 }
 
 void CAS_5HitCombo_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

@@ -80,6 +80,16 @@ private:
     _int                    m_iCurrentGameObjectIndex = { -1 };
     _float                  m_fMotionTrailDuration = {};
 
+    // Light
+    _wstring                m_strSelectedLightTag = {};
+
+    vector<_wstring>        m_wstrLightTags;
+    vector<string>          m_strLightTags;
+    vector<const _char*>    m_szLightTags;
+    _bool                   m_isEnableLight = {};
+
+    LIGHT_TRANSITION_DESC   m_TargetLightDesc = {};
+
 	LEVEL                   m_eCurrentLevel = { LEVEL::TITLE };
 	_bool                   m_isSelectLevel[ENUM_CLASS(LEVEL::END)];
 

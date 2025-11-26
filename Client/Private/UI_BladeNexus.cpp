@@ -504,9 +504,11 @@ void CUI_BladeNexus::Next_Event()
 	}
 	else if (m_eNextEvent == MENULIST::CREVICE)
 	{
-		m_eNextEvent = MENULIST::END;
-		m_eAnimState = UIANIMSTATE::OFF;
-		m_fAccTime = 1.f;
+		//m_eNextEvent = MENULIST::END;
+		//m_eAnimState = UIANIMSTATE::OFF;
+		//m_fAccTime = 1.f;
+
+        m_pGameInstance->Emit_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), { ENUM_CLASS(LEVEL::EMBARS) });
 
 		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 	}

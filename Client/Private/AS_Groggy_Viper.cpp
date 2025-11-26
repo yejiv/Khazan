@@ -45,7 +45,7 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
                 return;
             Safe_AddRef(m_pBrutalAttack);
 
-            m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
+            m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_UI"), m_pBrutalAttack);
             m_pBrutalAttack->Setting_BrutalAttack(m_vBonePosition, m_fGroggyTime);
         }
         break;
@@ -85,7 +85,7 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
                 m_pBrutalAttack->Off_BrutalAttack();
                 Safe_Release(m_pBrutalAttack);
                 m_isBrutalAttackSuccess = false;
-                pModel->Set_Animation(86);
+                pModel->Set_Animation(24);
                 pViper->Set_RequestRecoveryStamina(true);
             }
         }
@@ -96,13 +96,14 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
         if (pModel->Play_Animation(fTimeDelta))
         {
             m_eState = GROGGY::END;
-            pModel->Set_Animation(6);
+            pModel->Set_Animation(42);
             pViper->Set_RequestRecoveryStamina(true);
         }
         break;
 
     case GROGGY::END:
         pViper->Recovery_Stamina(fTimeDelta * 10.f);
+
         if (pModel->Play_Animation(fTimeDelta))
         {
             pViper->Set_RequestRecoveryStamina(false);

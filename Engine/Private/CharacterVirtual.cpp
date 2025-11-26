@@ -212,6 +212,79 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
     );
 }
 
+void CCharacterVirtual::Update_Dive(_float fTimeDelta)
+{
+    const RVec3 curPosR = m_pCharVir->GetPosition();
+    JPH::Vec3   vCurPos(
+        (float)curPosR.GetX(),
+        (float)curPosR.GetY(),
+        (float)curPosR.GetZ()
+    );
+
+    JPH::Vec3 vToTarget = m_vDivePos - vCurPos;
+    float     fDistSq = vToTarget.LengthSq();
+
+    if (m_pCharVir->IsSupported() || fDistSq < 0.05f)
+    {
+        m_isDive = false;
+        m_isJump = false;
+
+        m_vVelocity = m_pCharVir->GetLinearVelocity();
+        if (m_vVelocity.GetY() < 0.0f)
+            m_vVelocity.SetY(0.0f);
+
+        m_pCharVir->SetLinearVelocity(m_vVelocity);
+        return;
+    }
+
+    float fDist = sqrtf(fDistSq);
+    if (fDist > 0.0001f)
+    {
+        vToTarget /= fDist;
+
+        if (vToTarget.GetY() > -0.3f)
+            vToTarget.SetY(-0.3f);
+
+        vToTarget = vToTarget.Normalized();
+    }
+    else
+    {
+        vToTarget = JPH::Vec3(0.0f, -1.0f, 0.0f);
+    }
+
+    float fDiveSpeed = m_fDiveSpeed;
+    if (!std::isfinite(fDiveSpeed) || fDiveSpeed <= 0.0f)
+        fDiveSpeed = 25.0f;
+
+    m_vVelocity = vToTarget * fDiveSpeed;
+
+    const float fMaxDiveSpeed = 80.0f;
+    float fLenSq = m_vVelocity.LengthSq();
+    if (fLenSq > fMaxDiveSpeed * fMaxDiveSpeed)
+    {
+        float fLen = sqrtf(fLenSq);
+        m_vVelocity *= (fMaxDiveSpeed / fLen);
+    }
+
+    if (!IsFiniteVec3(m_vVelocity))
+        m_vVelocity = JPH::Vec3::sZero();
+
+    m_pCharVir->SetLinearVelocity(m_vVelocity);
+
+    m_pGameInstance->CharVir_ExtendedUpdate(
+        fTimeDelta,
+        m_pCharVir,
+        m_vGravity,
+        m_iNumObjectLayer,
+        m_pBodyFilter,
+        m_pShapeFilter,
+        m_tEXUpdateSetting
+    );
+
+    m_vVelocity = m_pCharVir->GetLinearVelocity();
+
+}
+
 
 void CCharacterVirtual::Set_PosRot(_vector vPos, _vector vRot)
 {
@@ -225,6 +298,12 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
 {
     if (!m_pCharVir)
         return;
+
+    if (m_isDive)
+    {
+        Update_Dive(fTimeDelta);
+        return;
+    }
 
     if (!m_pCharVir->IsSupported())
     {
@@ -348,7 +427,7 @@ void CCharacterVirtual::Jump(_float fHeightUp, _float fHorizontalSpeed)
         fGravity = g_fGravity;
 
     _float fHeight = fHeightUp;
-    if (isfinite(fHeight) || fHeight <= 0.f)
+    if (!isfinite(fHeight) || fHeight <= 0.f)
         fHeight = 0.5f;
 
     _float v0Y = sqrtf(-2.f * fGravity * fHeight);
@@ -366,7 +445,7 @@ void CCharacterVirtual::Jump(_float fHeightUp, _float fHorizontalSpeed)
     Vec3 v0 = vHoriz;
     v0.SetY(v0Y);
 
-    if (IsFiniteVec3(v0))
+    if (!IsFiniteVec3(v0))
         return;
 
     m_isJump = true;
@@ -498,6 +577,90 @@ void CCharacterVirtual::Jump_ToTarget(_vector vTargetWorldPos,
 
     m_vGravity = JPH::Vec3(0.0f, fGravityY, 0.0f);
 
+}
+
+void CCharacterVirtual::Jump_Direction(_vector vDir, _float fHeight, _float fSpeed)
+{
+    if (!m_pCharVir)
+        return;
+
+    _float gy = m_vGravity.GetY();
+    if (!std::isfinite(gy) || gy >= 0.0f)
+        gy = g_fGravity;        
+
+    _float height = fHeight;
+    if (!std::isfinite(height) || height <= 0.0f)
+        height = 0.5f;   
+
+    _float v0Y = sqrtf(-2.0f * gy * height);
+
+    JPH::Vec3 horizDir = LoadVec3(vDir);
+    horizDir.SetY(0.0f);
+
+    JPH::Vec3 vHoriz = JPH::Vec3::sZero();
+
+    if (horizDir.LengthSq() > 1e-6f && fSpeed > 0.0f)
+    {
+        horizDir = horizDir.Normalized();
+        vHoriz = horizDir * fSpeed;
+    }
+
+    JPH::Vec3 v0 = vHoriz;
+    v0.SetY(v0Y);
+
+    if (!IsFiniteVec3(v0))
+        return;
+
+    m_isJump = true;
+    m_isDive = false;
+
+    m_vVelocity = v0;
+    m_pCharVir->SetLinearVelocity(m_vVelocity);
+
+    m_vGravity = JPH::Vec3(0.0f, gy, 0.0f);
+}
+
+void CCharacterVirtual::Start_Dive(_vector vDivePos, _float fDiveSpeed)
+{
+    if (!m_pCharVir)
+        return;
+
+    const RVec3 curPosR = m_pCharVir->GetPosition();
+    JPH::Vec3   vStartPos(
+        (float)curPosR.GetX(),
+        (float)curPosR.GetY(),
+        (float)curPosR.GetZ()
+    );
+
+    m_vDivePos = LoadVec3(vDivePos);
+
+    if (!std::isfinite(fDiveSpeed) || fDiveSpeed <= 0.0f)
+        m_fDiveSpeed = 25.0f; 
+    else
+        m_fDiveSpeed = fDiveSpeed;
+
+    JPH::Vec3 vToTarget = m_vDivePos - vStartPos;
+
+    if (vToTarget.LengthSq() < 0.0001f)
+        return;
+
+    if (vToTarget.GetY() > -0.2f)
+        vToTarget.SetY(-0.2f);
+
+    vToTarget = vToTarget.Normalized();
+
+    JPH::Vec3 vInitialVel = vToTarget * m_fDiveSpeed;
+
+    if (!IsFiniteVec3(vInitialVel))
+        return;
+
+    m_isJump = true;
+    m_isDive = true;
+
+    m_vVelocity = vInitialVel;
+    m_pCharVir->SetLinearVelocity(m_vVelocity);
+
+    m_vGravity = JPH::Vec3(0.0f, m_vGravity.GetY(), 0.0f);
 }
 
 _bool CCharacterVirtual::Get_isGround()
