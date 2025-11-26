@@ -81,6 +81,10 @@ public:
     void                        Set_EnableMotionTrail(_bool isEnable);
     _bool                       isEnableMotionTrail();
     void                        Start_MotionTrail(_float fDuration);
+    void                        Set_MotionTrailCallBack(function<void(const _wstring&, _bool)> callback) { m_OnMotionTrailCallBack = callback; }
+    void                        Trigger_MotionTrail(const _wstring& strKey, _bool isActive) { if (m_OnMotionTrailCallBack)m_OnMotionTrailCallBack(strKey, isActive); }
+    void                        On_MotionTrail(const _wstring strKey, _bool isActive) { m_pMotionTrailCom->Set_Config(strKey); m_isActiveMotionTrail = isActive; }
+
 
     _bool       Is_SpearFullExtension() const { return m_isSpearFullExtension; }
 
@@ -93,18 +97,14 @@ private:
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
     CShader*            m_pShaderCom = { nullptr };
-    CModel*             m_pModelCom = { nullptr };
-    CModel*             m_pModelCom_Arm = { nullptr };
-    CModel*             m_pModelCom_Face = { nullptr };
-    CModel*             m_pModelCom_Hair = { nullptr };
-    CModel*             m_pModelCom_Leg = { nullptr };
-    CModel*             m_pModelCom_Shoes = { nullptr };
-    CModel*             m_pModelCom_Torso = { nullptr };
+    CModel*             m_pModelCom = { nullptr }; // 매쉬없는 전체 모델
+    unordered_map<_wstring, CModel*> m_AllParts; // 모든 모델 파츠 모음 <파츠이름, 모델클래스>
+    unordered_map<EQUIPMENTTYPE, _wstring> m_EquippedParts;   // 현재 파츠 <파츠종류, 파츠 이름>
+    vector<CModel*>     m_RenderParts;    // 빠른 렌더링을 위한 캐시 (렌더링할 파츠들만)
 
     CBody*              m_pBodyCom_SpearTip1 = { nullptr };
     CBody*              m_pBodyCom_SpearPole = { nullptr };
     CBody*              m_pBodyCom_Search = { nullptr };
-
 
     _float4x4*          m_pSpearFX_Matrix = { nullptr };
     _matrix				m_SpearOffset_Matrix = {};
@@ -133,7 +133,8 @@ private:
     _uint	            EffectID_SpearWind;
     _uint	            EffectID_SpiralSpear;
     OUTLINE_CONFIG      m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
-
+    function<void(const _wstring&, _bool)>  m_OnMotionTrailCallBack;
+    _bool               m_isActiveMotionTrail = { false };
 
     _bool               m_isSpearTipActive = { true };
     _bool               m_isSpearPoleActive = { true };
@@ -186,6 +187,10 @@ private:
     HRESULT				Ready_AnimationEvent();
     HRESULT				Ready_Collider();
     HRESULT				Bind_ShaderResources();
+    HRESULT             Initialize_Equipment();
+    void                Equip_Part(EQUIPMENTTYPE eType, const _wstring& strPartName); //파츠 갈아 입기
+    void                Update_QuickRenderCache();  //빠른 랜더용 파츠모음 (모션트레일도 여기서 랜더용 파츠 갈아끼우기)
+
 
 private:
     void	FX_Trail();

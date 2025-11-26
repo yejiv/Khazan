@@ -40,6 +40,7 @@ public:
 public:
     const MOTIONTRAIL_CONFIG&   Get_Config() { return m_Config; }
     void                        Set_Config(const MOTIONTRAIL_CONFIG& Config) { m_Config = Config; }
+    void                        Set_Config(_wstring strConfig);
     void                        Set_Enable(_bool isEnable) { m_isEnable = isEnable; }
     _bool                       isEnable() { return m_isEnable; }
 
@@ -49,6 +50,7 @@ private:
     _bool                       m_HasPartModels;
     vector<class CModel*>       m_OwnerPartModels;
     MOTIONTRAIL_CONFIG          m_Config = {};
+
 
     deque<FRAME_SNAPSHOT>       m_FrameHistory = {};
 
@@ -60,8 +62,12 @@ private:
     _float                      m_fDurationTimeAcc = {};
     _float                      m_fDuration = {};
 
+    /* 자주 쓰는 모션트레일 구조체 저장 - 키값으로 관리  */
+    unordered_map<_wstring, MOTIONTRAIL_CONFIG>     m_CachedConfig; 
+
 private:
     HRESULT                     Render_PartModel(class CModel* pModel);
+    HRESULT                     Ready_CachedConfig();
 
 public:
     static CMotionTrail*        Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
