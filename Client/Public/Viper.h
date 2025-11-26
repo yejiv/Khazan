@@ -41,6 +41,8 @@ public:
     void                            Grab_Check_Begin();
     void                            Grab_Check_End();
 
+    void                            Set_ViperPosition(_fvector vPosition);
+
 private:
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();
@@ -51,6 +53,7 @@ private:
 private:
     class CBody_Viper*              m_pBody = { nullptr };
     class CTwinBlade_Viper*         m_pWeapon = { nullptr };
+    class CCore_Viper*              m_pCore = { nullptr };
 
     _bool							m_isLookAt = { false };
     _float							m_fTurnSpeed = { 3.f };

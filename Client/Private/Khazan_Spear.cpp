@@ -2650,12 +2650,25 @@ void CKhazan_Spear::Subscribe_Events()
     m_iObjectInteractEventID =  m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e) {
         if (e.isOff())
         {
-            m_pBody->Get_Model()->AnimationSetIndexIncrease();
-            m_pSpear->Set_Enble(true);
-            // m_pSpear->Equip();
-            static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
-            Add_Status(SPEAR);
-            Remove_Status(BAREHAND | INJURED);
+            if (m_EventInteract.isNPC())
+            {
+                m_pClientInstance->Set_PlayerInput(true);
+                m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed"));
+                m_pSpear->Set_Enble(true);
+                // m_pSpear->Equip();
+                static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+                Add_Status(SPEAR);
+                Remove_Status(BAREHAND | INJURED);
+            }
+            else
+            {
+                m_pBody->Get_Model()->AnimationSetIndexIncrease();
+                m_pSpear->Set_Enble(true);
+                // m_pSpear->Equip();
+                static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+                Add_Status(SPEAR);
+                Remove_Status(BAREHAND | INJURED);
+            }
         }  });
 
 #pragma endregion
@@ -2858,9 +2871,7 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
             GiantGate_Event(fTimeDelta);
         }
         // NPC 랑 상호 작용 시
-        if (INTERACTIVE_TYPE::DANJIN == m_EventInteract.eInteractType ||
-            INTERACTIVE_TYPE::DAPHRONA == m_EventInteract.eInteractType || 
-            INTERACTIVE_TYPE::DUIMUK == m_EventInteract.eInteractType)
+        if (true == m_EventInteract.isNPC())
         {
             NPC_Event(fTimeDelta);
         }

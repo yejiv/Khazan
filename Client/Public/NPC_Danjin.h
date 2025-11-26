@@ -47,6 +47,8 @@ private:
 
     class CInteraction_Guide* m_pGuide = { nullptr };
 
+    class CUI_Talk_Dangin* m_pDanginTalkUI = { nullptr };
+
 private:
     EventObject m_Event = {};
 

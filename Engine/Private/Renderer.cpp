@@ -67,17 +67,17 @@ HRESULT CRenderer::Initialize()
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Combined"), 1050.0f, 450.0f, 300.f, 300.f)))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_StaticVelocity"), 1350.f, 150.f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Velocity"), 1350.f, 450.f, 300.f, 300.f)))
-        return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_StaticVelocity"), 1350.f, 150.f, 300.f, 300.f)))
+    //      return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Velocity"), 1350.f, 450.f, 300.f, 300.f)))
+    //      return E_FAIL;
 
-    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Brightness"), 1350.0f, 150.0f, 300.f, 300.f)))
-    //      return E_FAIL;
-    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_BlurX"), 1350.0f, 450.0f, 300.f, 300.f)))
-    //      return E_FAIL;
-    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Bloom"), 1350.0f, 750.0f, 300.f, 300.f)))
-    //      return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Brightness"), 1350.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_BlurX"), 1350.0f, 450.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Bloom"), 1350.0f, 750.0f, 300.f, 300.f)))
+        return E_FAIL;
 
     //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_AccumColor"), 1350.0f, 150.0f, 300.f, 300.f)))
     //      return E_FAIL;
@@ -991,7 +991,7 @@ HRESULT CRenderer::Ready_RenderTargets()
         return E_FAIL;
 
     /* RT_Shade */
-    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Shade"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+    if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("RT_Shade"), m_fViewportWidth, m_fViewportHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
         return E_FAIL;
 
     /* RT_SSAO */

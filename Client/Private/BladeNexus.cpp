@@ -45,10 +45,18 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
     m_pModelCom->Play_Animation(0.f);
     m_pModelCom->Set_AnimationBlend(true);
 
-    m_iEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
+    m_iSubscribeEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
             m_Event = e;
         });
+
+    if (BLADENEXUS_ID::HEINMACH_YETUGA == static_cast<BLADENEXUS_ID>(m_iBladeNexus_ID))
+    {
+        m_iPopEventID = m_pGameInstance->Subscribe_Event<EventPopBN>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), [&](const EventPopBN& e)
+            {
+                m_BNPop = e;
+            });
+    }
 
     m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_NextLevelID(), TEXT("GhostKnight_static"), m_pTransformCom->Get_State(STATE::POSITION));
     return S_OK;
@@ -56,6 +64,12 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
 
 void CBladeNexus::Priority_Update(_float fTimeDelta)
 {
+    if (BLADENEXUS_ID::HEINMACH_YETUGA == static_cast<BLADENEXUS_ID>(m_iBladeNexus_ID))
+    {
+        if (false == m_BNPop.isPop)
+            return;
+    }
+
     if (false == m_isCollision)
     {
         m_Event.None();
@@ -66,6 +80,12 @@ void CBladeNexus::Priority_Update(_float fTimeDelta)
 
 void CBladeNexus::Update(_float fTimeDelta)
 {
+    if (BLADENEXUS_ID::HEINMACH_YETUGA == static_cast<BLADENEXUS_ID>(m_iBladeNexus_ID))
+    {
+        if (false == m_BNPop.isPop)
+            return;
+    }
+
     Animation_Update(fTimeDelta);
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
@@ -74,6 +94,12 @@ void CBladeNexus::Update(_float fTimeDelta)
 
 void CBladeNexus::Late_Update(_float fTimeDelta)
 {
+    if (BLADENEXUS_ID::HEINMACH_YETUGA == static_cast<BLADENEXUS_ID>(m_iBladeNexus_ID))
+    {
+        if (false == m_BNPop.isPop)
+            return;
+    }
+
     CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
 }
 
@@ -500,8 +526,19 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
     // 귀검 가동 끝나면 ( 첫 해금 X )
     if (ANIM_STATE::AFTER_START == m_eAnimState)
     {
-        // 귀검 애니메이션 끝나면 귀검 UI 창 팝업
-        static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, TEXT("하인마흐 구석진 으슥한 어떠한 곳"));
+        CUI_BladeNexus::ONTYPE eUIType = {};
+
+        switch (m_iBladeNexus_ID)
+        {
+        case static_cast<_int>(BLADENEXUS_ID::HEINMACH_YETUGA):
+            eUIType = CUI_BladeNexus::ONTYPE::EMBARS;
+            break;
+        default:
+            eUIType = CUI_BladeNexus::ONTYPE::DEFAULT;
+            break;
+        }
+
+        static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(eUIType, m_szPlaceName);
 
         // 다회 상호 작용 후 애니메이션 루프로 전환
         m_eAnimState = ANIM_STATE::AFTER_LOOP;
@@ -609,7 +646,8 @@ CGameObject* CBladeNexus::Clone(void* pArg)
 
 void CBladeNexus::Free()
 {
-    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iEventID);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iSubscribeEventID);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), m_iPopEventID);
 
     __super::Free();
 
