@@ -418,17 +418,17 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             Desc.vFadeTime = _float2(3.5f, 0.5f);
             m_pGameInstance->Start_RadialBlur(Desc);
 
-            // Light Manager Backup_LightDesc 함수 호출
-            // Before End 시점에 Start_LightTransition 마지막 인자 true 넣어서 기존 색으로 보간하도록 하기
+            // Main Light 백업
+            m_pGameInstance->Backup_LightDesc(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()));
 
-            //  LIGHT_TRANSITION_DESC LightDesc{};
-            //  LightDesc.fDuration = 7.f;
-            //  LightDesc.vFadeTime = _float2(7.f, 0.f);
-            //  LightDesc.vDiffuse = _float4(0.2f, 0.2f, 0.2f, 0.2f);
-            //  LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 0.2f);
-            //  LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 0.2f);
-            //  LightDesc.isReturnToStart = false;
-            //  m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+            LIGHT_TRANSITION_DESC LightDesc{};
+            LightDesc.fDuration = 7.f;
+            LightDesc.vFadeTime = _float2(7.f, 0.f);
+            LightDesc.vDiffuse = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+            LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+            LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+            LightDesc.isReturnToStart = false;
+            m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
         }
         // 해금 후 IDLE 상태
         else if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
@@ -534,6 +534,12 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 
         // 첫 해금 후 접촉 -> 결속 으로 변경
         m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("결속"), 1.5f);
+    
+        LIGHT_TRANSITION_DESC LightDesc{};
+        LightDesc.fDuration = 2.f;
+        LightDesc.vFadeTime = _float2(2.f, 0.f);
+        LightDesc.isReturnToStart = false;
+        m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc, true);
     }
     // 귀검 가동 끝나면 ( 첫 해금 X )
     if (ANIM_STATE::AFTER_START == m_eAnimState)

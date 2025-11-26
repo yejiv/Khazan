@@ -751,8 +751,13 @@ void CShader_Controller::Ready_Shader()
 
                         ImGui::Checkbox("Return To Start", &m_TargetLightDesc.isReturnToStart);
 
+                        if (ImGui::Button("Backup Selected Light"))
+                            m_pGameInstance->Backup_LightDesc(m_strSelectedLightTag, iCurrentLevelIndex);
+
+                        ImGui::Checkbox("Restore Light", &m_isRestoreLight);
+
                         if (ImGui::Button("Start Light Transition"))
-                            m_pGameInstance->Start_LightTransition(m_strSelectedLightTag, iCurrentLevelIndex, m_TargetLightDesc);
+                            m_pGameInstance->Start_LightTransition(m_strSelectedLightTag, iCurrentLevelIndex, m_TargetLightDesc, m_isRestoreLight);
                     }
                 }
 
