@@ -4,6 +4,8 @@
 
 #include "Interaction_Guide.h"
 
+#include "UI_Talk_Trader.h"
+
 CNPC_Duimuk::CNPC_Duimuk(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
 {
@@ -31,7 +33,9 @@ HRESULT CNPC_Duimuk::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
-    m_eAnimState = ANIM_STATE::IDLE;
+    CHECK_FAILED(Ready_3D_Talk_UI(pArg), E_FAIL);
+
+    m_eAnimState = ANIM_STATE::IDLE1;
     m_pModelCom->Set_Animation(m_eAnimState);
     m_pModelCom->Set_AnimationLoop(true);
     m_pModelCom->Set_AnimationBlend(true);
@@ -50,6 +54,8 @@ void CNPC_Duimuk::Priority_Update(_float fTimeDelta)
     {
         m_Event.None();
     }
+
+    m_pTraderTalkUI->Priority_Update(fTimeDelta);
 }
 
 void CNPC_Duimuk::Update(_float fTimeDelta)
@@ -58,11 +64,17 @@ void CNPC_Duimuk::Update(_float fTimeDelta)
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         Animation_Change(fTimeDelta);
+
+    m_pTraderTalkUI->Update(fTimeDelta);
 }
 
 void CNPC_Duimuk::Late_Update(_float fTimeDelta)
 {
     CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
+
+    m_pTraderTalkUI->Late_Update(fTimeDelta);
+
+    m_pTraderTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
 }
 
 HRESULT CNPC_Duimuk::Render()
@@ -177,6 +189,20 @@ HRESULT CNPC_Duimuk::Ready_Interaction_Guide(void* pArg)
     return S_OK;
 }
 
+HRESULT CNPC_Duimuk::Ready_3D_Talk_UI(void* pArg)
+{
+    CUIObject::UIOBJECT_DESC Desc;
+
+    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+    Desc.vLocalPos = { 0.f, 0.f };
+    Desc.vLocalSize = { 1.7f, 1.7f };
+    Desc.szName = "Duimuk_TalkUI";
+    m_pTraderTalkUI = static_cast<CUI_Talk_Trader*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Trader"), &Desc));
+    CHECK_NULLPTR(m_pTraderTalkUI, E_FAIL);
+
+    return S_OK;
+}
+
 HRESULT CNPC_Duimuk::Ready_DefaultSetting(void* pArg)
 {
     return S_OK;
@@ -249,7 +275,7 @@ void CNPC_Duimuk::Animation_Update(_float fTimeDelta)
     if (m_Event.isOn())               // 켠다는 신호
     {
         // 해금 전 IDLE 상태
-        if (ANIM_STATE::IDLE == m_eAnimState)
+        if (ANIM_STATE::IDLE1 == m_eAnimState)
         {
             m_pGuide->Update_Visible(false);
 
@@ -257,6 +283,8 @@ void CNPC_Duimuk::Animation_Update(_float fTimeDelta)
             m_eAnimState = ANIM_STATE::TALK_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
+
+            m_pTraderTalkUI->On_Panel();
 
             EventInteractType InteractType = {};
 
@@ -293,20 +321,6 @@ void CNPC_Duimuk::Animation_Change(_float fTimeDelta)
         m_eAnimState = ANIM_STATE::TALK_IDLE;
         m_pModelCom->Set_Animation(m_eAnimState);
         m_pModelCom->Set_AnimationLoop(true);
-
-        EventInteractType InteractType = {};
-
-        InteractType.eInteractType = INTERACTIVE_TYPE::DUIMUK;
-        InteractType.isEvent = true;
-
-        EventNPC NPCEvent = {};
-
-        XMStoreFloat4(&NPCEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-
-        InteractType.NPCEvent = NPCEvent;
-
-        // NPC를 바라볼 수 있도록 포지션만 던짐 ( NPC 애니메이션 종료 O, UI 창 팝업? )
-        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
     }
     // NPC 상호 작용 종료 후 ( 첫 해금 O )
     if (ANIM_STATE::TALK_END == m_eAnimState)
@@ -315,7 +329,7 @@ void CNPC_Duimuk::Animation_Change(_float fTimeDelta)
             m_pGuide->Update_Visible(true);
 
         // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
-        m_eAnimState = ANIM_STATE::IDLE;
+        m_eAnimState = ANIM_STATE::IDLE1;
         m_pModelCom->Set_Animation(m_eAnimState);
         m_pModelCom->Set_AnimationLoop(true);
 
@@ -328,7 +342,7 @@ void CNPC_Duimuk::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
 
-    if (ANIM_STATE::IDLE == m_eAnimState)
+    if (ANIM_STATE::IDLE1 == m_eAnimState)
         m_pGuide->Update_Visible(true);
 
     m_isCollision = true;
@@ -346,6 +360,14 @@ void CNPC_Duimuk::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer,
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
+
+    // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
+    if (ANIM_STATE::TALK_END != m_eAnimState && ANIM_STATE::IDLE1 != m_eAnimState)
+    {
+        m_eAnimState = ANIM_STATE::TALK_END;
+        m_pModelCom->Set_Animation(m_eAnimState);
+        m_pModelCom->Set_AnimationLoop(true);
+    }
 
     m_pGuide->Update_Visible(false);
 
@@ -384,6 +406,7 @@ void CNPC_Duimuk::Free()
 
     Safe_Release(m_pStaticCom);
     Safe_Release(m_pTriggerCom);
+    Safe_Release(m_pTraderTalkUI);
 
     if (nullptr != m_pGuide)
     {
