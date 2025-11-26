@@ -31,6 +31,9 @@ public:
 	void Late_Update(_float fTimeDelta);
 
 
+    void PoolObject_Back();
+
+
 	void DeadObject_Clear();
 
 private:

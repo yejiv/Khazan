@@ -393,7 +393,7 @@ void CJolt_Manager::Free()
         if (m_pCharVsCharCollision)
             m_pCharVsCharCollision->Remove(pChar);
 
-        Safe_Delete(pChar);
+        pChar->Release();       
     }
     m_CharacterVirtuals.clear();
     BodyInterface& bi = m_pPhysics->GetBodyInterface();

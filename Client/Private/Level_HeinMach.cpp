@@ -88,6 +88,11 @@ HRESULT CLevel_HeinMach::Initialize()
 
     m_futures.clear();
 
+    m_iEventID = m_pGameInstance->Subscribe_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), [&](const EVENT_LEVEL_CHANGE& e)
+        {
+            m_eNextLevel = static_cast<LEVEL>(e.iLevel);
+        });
+
 #pragma endregion
 
 #pragma region 기존 코드
@@ -192,9 +197,17 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
 
-    //if (m_pGameInstance->Key_Down(DIK_RETURN))
-    //    if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
-    //        return;
+    if (m_eNextLevel != LEVEL::END)
+    {      
+        if (!m_isOpenLevel) {
+            m_pGameInstance->StopAll();
+            if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel))))
+                return;
+            m_isOpenLevel = true;
+        }
+    }
+
+
 
    if (!m_isStart)
     {
@@ -1444,6 +1457,8 @@ CLevel_HeinMach* CLevel_HeinMach::Create(ID3D11Device* pDevice, ID3D11DeviceCont
 
 void CLevel_HeinMach::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), m_iEventID);
+
 	__super::Free();
 
 	Safe_Release(m_pClientInstance);
