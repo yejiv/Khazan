@@ -76,6 +76,10 @@ private:
 
     _bool m_isStart = { false };
 
+    LEVEL	m_eNextLevel = { LEVEL::END };
+    _bool	m_isOpenLevel = { false };
+    _uint m_iEventID = { 0 };
+
 public:
 	static CLevel_HeinMach* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

@@ -7,6 +7,7 @@
 #include "BossHp.h"
 #include "Body_Viper.h"
 #include "TwinBlade_Viper.h"
+#include "Core_Viper.h"
 
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -38,8 +39,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
      if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-32.365f, -29.5f, 198.409f, 1.f));
-    m_pCharVirCom->Set_Position(XMVectorSet(-32.365f, -29.5f, 198.409f, 1.f));
+    //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
+    //m_pCharVirCom->Set_Position(XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
 
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
@@ -108,7 +109,7 @@ void CViper::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
-    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Lacirma_ExpGained");
+    m_vLockOnPosition = m_pBody->Get_BonePointEX("Bip001-Spine2");
 
 }
 
@@ -293,6 +294,30 @@ HRESULT CViper::Ready_PartObjects()
         return E_FAIL;
 
 
+    CTwinBlade_Viper::WEAPON_DESC CoreDesc{};
+    CoreDesc.pOwner = this;
+    CoreDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    CoreDesc.pOwnerTransform = m_pTransformCom;
+    CoreDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bone_Wp");
+
+    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Core"), ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_Core"), &CoreDesc)))
+        return E_FAIL;
+
+    CPartObject* pCore = Find_PartObject(TEXT("Part_Core"));
+    if (nullptr == pCore)
+        return E_FAIL;
+
+    m_pCore = dynamic_cast<CCore_Viper*>(pCore);
+    Safe_AddRef(m_pCore);
+    if (nullptr == pCore)
+        return E_FAIL;
+
+
+
+
+
+
+
     return S_OK;
 }
 
@@ -339,8 +364,10 @@ void CViper::Grab_Check_End()
 
 }
 
-
-
+void CViper::Set_ViperPosition(_fvector vPosition)
+{
+    m_pCharVirCom->Set_Position(vPosition);
+}
 
 
 
@@ -607,10 +634,6 @@ HRESULT CViper::Ready_AnimEvent()
 
         });
 
-
-
-
-
 #pragma endregion
 
 #pragma region JUMPSMASH
@@ -815,5 +838,6 @@ void CViper::Free()
 {
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
+    Safe_Release(m_pCore);
     __super::Free();
 }

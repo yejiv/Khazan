@@ -197,7 +197,7 @@ CDoor_Gear* CDoor_Gear::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed to Created : CProp_Object"));
+        MSG_BOX(TEXT("Failed to Created : CDoor_Gear"));
         Safe_Release(pInstance);
     }
 
@@ -210,7 +210,7 @@ CGameObject* CDoor_Gear::Clone(void* pArg)
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Cloned : CProp_Object"));
+        MSG_BOX(TEXT("Failed to Cloned : CDoor_Gear"));
         Safe_Release(pInstance);
     }
 

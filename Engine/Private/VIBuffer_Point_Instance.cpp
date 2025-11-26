@@ -8,20 +8,20 @@ CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(ID3D11Device* pDevice, ID3D11
 }
 
 CVIBuffer_Point_Instance::CVIBuffer_Point_Instance(const CVIBuffer_Point_Instance& Prototype)
-	: CVIBuffer_Instance { Prototype }
+    : CVIBuffer_Instance{ Prototype }
     , m_pSRVNoise{ Prototype.m_pSRVNoise } //나중에 필요하면 상수버퍼로 넘기기
-    , m_pParticleParams{ Prototype.m_pParticleParams }
+    //, m_pParticleParams{ Prototype.m_pParticleParams }
     , m_sData{ Prototype.m_sData }
     , m_pLinearWrapSampler{ Prototype.m_pLinearWrapSampler }
 
 {
-    for (_uint i = 0; i < CS_PASS::END; ++i) 
-        m_ComputeShaders[i] = Prototype.m_ComputeShaders[i];  
+    for (_uint i = 0; i < CS_PASS::END; ++i)
+        m_ComputeShaders[i] = Prototype.m_ComputeShaders[i];
 }
 
 void CVIBuffer_Point_Instance::Reset()
 {
-	COMPUTE_PASS_DESC PassDesc{};
+    COMPUTE_PASS_DESC PassDesc{};
     PassDesc.SRVs.push_back(m_pSRV);
     PassDesc.SRVs.push_back(m_pSRVNoise);
     PassDesc.UAVs.push_back(m_pUAV);
@@ -38,9 +38,9 @@ void CVIBuffer_Point_Instance::Reset()
     JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET)];
     JobDesc.PassDesc = PassDesc;
 
-    m_bLoop = m_sData.bIsLoop; 
+    m_bLoop = m_sData.bIsLoop;
 
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+    m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
 
     m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 }
@@ -56,13 +56,7 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
     m_iNumVertexBuffers = 2;
     m_ePrimitiveType = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
 
-    m_sData.IsCircle = pPointDesc->IsCircle;
-    m_sData.fOffset = pPointDesc->fOffset;
-    m_sData.vRange = pPointDesc->vRange;
-    m_sData.fTurbulenceSpeed = pPointDesc->fTurbulenceSpeed;
-    m_sData.fTurbulenceSampleSize = pPointDesc->fTurbulenceSampleSize;
-    m_sData.bIsLoop = pPointDesc->bIsLoop;
-    m_bLoop = m_sData.bIsLoop;
+    m_sData = *pPointDesc;
     memcpy(m_sData.pNoiseFilePath, pPointDesc->pNoiseFilePath, sizeof(pPointDesc->pNoiseFilePath));
 
     D3D11_BUFFER_DESC		VBDesc{};
@@ -83,59 +77,14 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
     if (FAILED(m_pDevice->CreateBuffer(&VBDesc, &VBInitialData, &m_pVB)))
         return E_FAIL;
 
-	Safe_Delete_Array(pVertices);
+    Safe_Delete_Array(pVertices);
 
-	m_VBInstanceDesc.ByteWidth = m_iNumInstance * m_iInstanceVertexStride;
-	m_VBInstanceDesc.Usage = D3D11_USAGE_DYNAMIC;
-	m_VBInstanceDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	m_VBInstanceDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	m_VBInstanceDesc.MiscFlags = 0;
-	m_VBInstanceDesc.StructureByteStride = m_iInstanceVertexStride;
-
-    m_pInstanceVertices = new IB_POINTINSTANCE_EFFECT[m_iNumInstance];
-    m_pParticleParams = new POINT_INSTANCE_PARAMS[m_iNumInstance];
-
-    for (size_t i = 0; i < m_iNumInstance; i++)
-    {
-        IB_POINTINSTANCE_EFFECT* pInstanceVertices = static_cast<IB_POINTINSTANCE_EFFECT*>(m_pInstanceVertices);
-
-        _float		fScale = m_pGameInstance->Rand(pPointDesc->vSize.x, pPointDesc->vSize.y);
-        _float		fLifeTime = m_pGameInstance->Rand(pPointDesc->vLifeTime.x, pPointDesc->vLifeTime.y);
-
-        if (m_sData.IsCircle)
-        {
-            _vector Dir = XMVectorSet(m_pGameInstance->Rand(-1.f, 1.f), 0.f, m_pGameInstance->Rand(-1.f, 1.f), 0.f);
-            XMStoreFloat4(&pInstanceVertices[i].vTranslation, XMVectorSetW(XMVector4Normalize(Dir) * m_sData.fOffset, 1.f));
-        }
-        else
-        {
-            pInstanceVertices[i].vTranslation = _float4(
-                m_pGameInstance->Rand(pPointDesc->vCenter.x - pPointDesc->vRange.x * 0.5f, pPointDesc->vCenter.x + pPointDesc->vRange.x * 0.5f),
-                m_pGameInstance->Rand(pPointDesc->vCenter.y - pPointDesc->vRange.y * 0.5f, pPointDesc->vCenter.y + pPointDesc->vRange.y * 0.5f),
-                m_pGameInstance->Rand(pPointDesc->vCenter.z - pPointDesc->vRange.z * 0.5f, pPointDesc->vCenter.z + pPointDesc->vRange.z * 0.5f),
-                1.f
-            );
-        }
-
-        _vector vDir = XMVectorSetW(XMVector3Normalize(XMVectorSubtract(XMLoadFloat4(&pInstanceVertices[i].vTranslation), XMLoadFloat3(&m_vPivot))), 0.f);
-
-        pInstanceVertices[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
-        pInstanceVertices[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
-        pInstanceVertices[i].vLook = _float4(0.f, 0.f, fScale, 0.f);
-
-        if (XMVectorGetX(XMVector3Length(vDir)) >= 0.1f)
-        {
-            _vector vLook = XMVector3Normalize(XMVectorSetW(XMVectorSubtract(XMLoadFloat4(m_pGameInstance->Get_CamPosition()), XMLoadFloat4(&pInstanceVertices[i].vTranslation)), 0.f));
-
-            XMStoreFloat4(&pInstanceVertices[i].vUp, XMVectorScale(vDir, fScale));
-            XMStoreFloat4(&pInstanceVertices[i].vRight, XMVectorScale(XMVector3Normalize(XMVector3Cross(XMVector3Normalize(XMLoadFloat4(&pInstanceVertices[i].vUp)), vLook)), fScale));
-            XMStoreFloat4(&pInstanceVertices[i].vLook, XMVectorScale(XMVector3Normalize(XMVector3Cross(XMVector3Normalize(XMLoadFloat4(&pInstanceVertices[i].vUp)), XMLoadFloat4(&pInstanceVertices[i].vRight))), fScale));
-        }
-
-        pInstanceVertices[i].vLifeTime = _float2(0.f, fLifeTime);
-        m_pParticleParams[i].vInitTranslation = pInstanceVertices[i].vTranslation;
-        m_pParticleParams[i].fSize = fScale;
-    }
+    m_VBInstanceDesc.ByteWidth = m_iNumInstance * m_iInstanceVertexStride;
+    m_VBInstanceDesc.Usage = D3D11_USAGE_DYNAMIC;
+    m_VBInstanceDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    m_VBInstanceDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    m_VBInstanceDesc.MiscFlags = 0;
+    m_VBInstanceDesc.StructureByteStride = m_iInstanceVertexStride;
 
     if (FAILED(Ready_ComputeShader()))
         return E_FAIL;
@@ -156,18 +105,21 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Prototype(const INSTANCE_DESC* pDes
         MSG_BOX(TEXT("Noise Texture :: Create Error!"));
         return E_FAIL;
     }
-	 
+
     m_isCloned = false;
 
-	return S_OK;
+    return S_OK;
 }
 
 HRESULT CVIBuffer_Point_Instance::Initialize_Clone(void* pArg)
 {
     m_isCloned = true;
 
-	if (FAILED(__super::Initialize_Clone(pArg)))
-		return E_FAIL;
+    if (FAILED(Ready_IB()))
+        return E_FAIL;
+
+    if (FAILED(__super::Initialize_Clone(pArg)))
+        return E_FAIL;
 
     if (FAILED(Ready_SRV(m_pParticleParams)))
         return E_FAIL;
@@ -175,10 +127,10 @@ HRESULT CVIBuffer_Point_Instance::Initialize_Clone(void* pArg)
     if (FAILED(Ready_UAV()))
         return E_FAIL;
 
-	if (FAILED(Ready_CB()))
-		return E_FAIL;
+    if (FAILED(Ready_CB()))
+        return E_FAIL;
 
-	return S_OK;
+    return S_OK;
 }
 
 HRESULT CVIBuffer_Point_Instance::Bind_Resources()
@@ -224,46 +176,46 @@ HRESULT CVIBuffer_Point_Instance::Render()
 
 _bool CVIBuffer_Point_Instance::Update(_float fTimeDelta)
 {
-	D3D11_MAPPED_SUBRESOURCE SubResource;
-	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
-	{
-		POINT_INSTANCE_CB* pPointInstanceCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
-		pPointInstanceCB->vPivot = m_vPivot;
-		pPointInstanceCB->fTimeDelta = fTimeDelta;
-		pPointInstanceCB->iNumInstances = m_iNumInstance;
-		pPointInstanceCB->bIsLoop = m_bLoop;
-		pPointInstanceCB->vSpawnRange = m_sData.vRange; 
-		m_pContext->Unmap(m_pCB, 0);
-	}
-	
-	COMPUTE_PASS_DESC PassDesc{};
-	PassDesc.SRVs.push_back(m_pSRV);
-	PassDesc.SRVs.push_back(m_pSRVNoise);
-	PassDesc.UAVs.push_back(m_pUAV);
-	PassDesc.UAVs.push_back(m_pUAVSpeed);
-	PassDesc.ConstantBuffers.push_back(m_pCB);
-    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
-	_uint iNumThreadPerGroup = 256;
-	_uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
-	PassDesc.x = iNumGroups;
-	PassDesc.y = 1;
-	PassDesc.z = 1;
-	
-	CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
-	JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::MOVE)];
-	JobDesc.PassDesc = PassDesc;
-	
+    D3D11_MAPPED_SUBRESOURCE SubResource;
+    if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
+    {
+        POINT_INSTANCE_CB* pPointInstanceCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
+        pPointInstanceCB->vPivot = m_vPivot;
+        pPointInstanceCB->fTimeDelta = fTimeDelta;
+        pPointInstanceCB->iNumInstances = m_iNumInstance;
+        pPointInstanceCB->bIsLoop = m_bLoop;
+        pPointInstanceCB->vSpawnRange = m_sData.vRange;
+        m_pContext->Unmap(m_pCB, 0);
+    }
 
-	m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
-	
-	m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
+    COMPUTE_PASS_DESC PassDesc{};
+    PassDesc.SRVs.push_back(m_pSRV);
+    PassDesc.SRVs.push_back(m_pSRVNoise);
+    PassDesc.UAVs.push_back(m_pUAV);
+    PassDesc.UAVs.push_back(m_pUAVSpeed);
+    PassDesc.ConstantBuffers.push_back(m_pCB);
+    m_pContext->CSSetSamplers(0, 1, &m_pLinearWrapSampler);
+    _uint iNumThreadPerGroup = 256;
+    _uint iNumGroups = (m_iNumInstance + iNumThreadPerGroup - 1) / iNumThreadPerGroup;
+    PassDesc.x = iNumGroups;
+    PassDesc.y = 1;
+    PassDesc.z = 1;
+
+    CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
+    JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::MOVE)];
+    JobDesc.PassDesc = PassDesc;
+
+
+    m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
+
+    m_pContext->CopyResource(m_pVBInstance, m_pStructuredBuffer);
 
     return  m_bLoop ? false : IsFinish();	//다 끝나면 true 반환
 }
 
 void CVIBuffer_Point_Instance::UpdateGravity(_float fTimeDelta)
 {
-	COMPUTE_PASS_DESC PassDesc{};
+    COMPUTE_PASS_DESC PassDesc{};
     PassDesc.SRVs.push_back(m_pSRV);
     PassDesc.SRVs.push_back(m_pSRVNoise);
     PassDesc.UAVs.push_back(m_pUAV);
@@ -287,17 +239,17 @@ void CVIBuffer_Point_Instance::UpdateGravity(_float fTimeDelta)
 
 void CVIBuffer_Point_Instance::UpdateTurbulence(_float fTimeDelta, _float fAccTime)
 {
-	D3D11_MAPPED_SUBRESOURCE SubResource;
-	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
-	{
-		POINT_INSTANCE_CB* pPointInstanceCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
-		pPointInstanceCB->fTotalTime = fAccTime;
-		pPointInstanceCB->fTimeDelta = fTimeDelta;
-		pPointInstanceCB->iNumInstances = m_iNumInstance;
-		pPointInstanceCB->fTurbulenceSpeed = m_sData.fTurbulenceSpeed;
-		pPointInstanceCB->fTurbulenceSampleSize = m_sData.fTurbulenceSampleSize;
-		m_pContext->Unmap(m_pCB, 0);
-	}
+    D3D11_MAPPED_SUBRESOURCE SubResource;
+    if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
+    {
+        POINT_INSTANCE_CB* pPointInstanceCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
+        pPointInstanceCB->fTotalTime = fAccTime;
+        pPointInstanceCB->fTimeDelta = fTimeDelta;
+        pPointInstanceCB->iNumInstances = m_iNumInstance;
+        pPointInstanceCB->fTurbulenceSpeed = m_sData.fTurbulenceSpeed;
+        pPointInstanceCB->fTurbulenceSampleSize = m_sData.fTurbulenceSampleSize;
+        m_pContext->Unmap(m_pCB, 0);
+    }
 
     COMPUTE_PASS_DESC PassDesc{};
     PassDesc.SRVs.push_back(m_pSRV);
@@ -322,17 +274,17 @@ void CVIBuffer_Point_Instance::UpdateTurbulence(_float fTimeDelta, _float fAccTi
 
 void CVIBuffer_Point_Instance::Setting_Speed(SPEED_VALUE type, _float2 range)
 {
-	D3D11_MAPPED_SUBRESOURCE SubResource;
-	if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
-	{
-		POINT_INSTANCE_CB* pInstanceSpeedCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
-		pInstanceSpeedCB->iSpeedType = static_cast<_uint>(type);
-		pInstanceSpeedCB->fSpeedRange = range;
-		pInstanceSpeedCB->iNumInstances = m_iNumInstance;
-		m_pContext->Unmap(m_pCB, 0);
-	}
-	
-	COMPUTE_PASS_DESC PassDesc{};
+    D3D11_MAPPED_SUBRESOURCE SubResource;
+    if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
+    {
+        POINT_INSTANCE_CB* pInstanceSpeedCB = reinterpret_cast<POINT_INSTANCE_CB*>(SubResource.pData);
+        pInstanceSpeedCB->iSpeedType = static_cast<_uint>(type);
+        pInstanceSpeedCB->fSpeedRange = range;
+        pInstanceSpeedCB->iNumInstances = m_iNumInstance;
+        m_pContext->Unmap(m_pCB, 0);
+    }
+
+    COMPUTE_PASS_DESC PassDesc{};
     PassDesc.SRVs.push_back(m_pSRV);
     PassDesc.SRVs.push_back(m_pSRVNoise);
     PassDesc.UAVs.push_back(m_pUAV);
@@ -385,7 +337,7 @@ void CVIBuffer_Point_Instance::Remove_Speed(SPEED_VALUE type)
 }
 
 void CVIBuffer_Point_Instance::Remove_Speed()
-{ 
+{
     D3D11_MAPPED_SUBRESOURCE SubResource;
     if (SUCCEEDED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource)))
     {
@@ -422,6 +374,56 @@ void CVIBuffer_Point_Instance::Setting_Pivot(_float3 pivot)
     m_vPivot = pivot;
 }
 
+HRESULT CVIBuffer_Point_Instance::Ready_IB()
+{
+    m_pInstanceVertices = new IB_POINTINSTANCE_EFFECT[m_iNumInstance];
+    m_pParticleParams = new POINT_INSTANCE_PARAMS[m_iNumInstance];
+
+    for (size_t i = 0; i < m_iNumInstance; i++)
+    {
+        IB_POINTINSTANCE_EFFECT* pInstanceVertices = static_cast<IB_POINTINSTANCE_EFFECT*>(m_pInstanceVertices);
+
+        _float		fScale = m_pGameInstance->Rand(m_sData.vSize.x, m_sData.vSize.y);
+        _float		fLifeTime = m_pGameInstance->Rand(m_sData.vLifeTime.x, m_sData.vLifeTime.y);
+
+        if (m_sData.IsCircle)
+        {
+            _vector Dir = XMVectorSet(m_pGameInstance->Rand(-1.f, 1.f), 0.f, m_pGameInstance->Rand(-1.f, 1.f), 0.f);
+            XMStoreFloat4(&pInstanceVertices[i].vTranslation, XMVectorSetW(XMVector4Normalize(Dir) * m_sData.fOffset, 1.f));
+        }
+        else
+        {
+            pInstanceVertices[i].vTranslation = _float4(
+                m_pGameInstance->Rand(m_sData.vCenter.x - m_sData.vRange.x * 0.5f, m_sData.vCenter.x + m_sData.vRange.x * 0.5f),
+                m_pGameInstance->Rand(m_sData.vCenter.y - m_sData.vRange.y * 0.5f, m_sData.vCenter.y + m_sData.vRange.y * 0.5f),
+                m_pGameInstance->Rand(m_sData.vCenter.z - m_sData.vRange.z * 0.5f, m_sData.vCenter.z + m_sData.vRange.z * 0.5f),
+                1.f
+            );
+        }
+
+        _vector vDir = XMVectorSetW(XMVector3Normalize(XMVectorSubtract(XMLoadFloat4(&pInstanceVertices[i].vTranslation), XMLoadFloat3(&m_vPivot))), 0.f);
+
+        pInstanceVertices[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
+        pInstanceVertices[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
+        pInstanceVertices[i].vLook = _float4(0.f, 0.f, fScale, 0.f);
+
+        if (XMVectorGetX(XMVector3Length(vDir)) >= 0.1f)
+        {
+            _vector vLook = XMVector3Normalize(XMVectorSetW(XMVectorSubtract(XMLoadFloat4(m_pGameInstance->Get_CamPosition()), XMLoadFloat4(&pInstanceVertices[i].vTranslation)), 0.f));
+
+            XMStoreFloat4(&pInstanceVertices[i].vUp, XMVectorScale(vDir, fScale));
+            XMStoreFloat4(&pInstanceVertices[i].vRight, XMVectorScale(XMVector3Normalize(XMVector3Cross(XMVector3Normalize(XMLoadFloat4(&pInstanceVertices[i].vUp)), vLook)), fScale));
+            XMStoreFloat4(&pInstanceVertices[i].vLook, XMVectorScale(XMVector3Normalize(XMVector3Cross(XMVector3Normalize(XMLoadFloat4(&pInstanceVertices[i].vUp)), XMLoadFloat4(&pInstanceVertices[i].vRight))), fScale));
+        }
+
+        pInstanceVertices[i].vLifeTime = _float2(0.f, fLifeTime);
+        m_pParticleParams[i].vInitTranslation = pInstanceVertices[i].vTranslation;
+        m_pParticleParams[i].fSize = fScale;
+    }
+
+    return S_OK;
+}
+
 HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
 {
     ID3D11Buffer* pBuffer = { nullptr };
@@ -446,22 +448,22 @@ HRESULT CVIBuffer_Point_Instance::Ready_SRV(void* pSysmem)
     SRVDesc.Buffer.FirstElement = 0;
     SRVDesc.Buffer.NumElements = m_iNumInstance;
 
-	if (FAILED(m_pDevice->CreateShaderResourceView(pBuffer, &SRVDesc, &m_pSRV)))
-		return E_FAIL; 
+    if (FAILED(m_pDevice->CreateShaderResourceView(pBuffer, &SRVDesc, &m_pSRV)))
+        return E_FAIL;
 
     Safe_Release(pBuffer);
 
-	//  //Debug
-	//  //여기서 Instance Buffer를 깔 수 있는 Staging Buffer를 만들어야됨
-	//  //m_pVBInstance 이 내용을 system으로 넣어주는 Staing버퍼 만들기
-	//  D3D11_BUFFER_DESC DebugStaingBufferDesc{};
-	//  DebugStaingBufferDesc = m_VBInstanceDesc;
-	//  DebugStaingBufferDesc.Usage = D3D11_USAGE_STAGING;
-	//  DebugStaingBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-	//  DebugStaingBufferDesc.BindFlags = 0;
-	//  if (FAILED(m_pDevice->CreateBuffer(&DebugStaingBufferDesc, nullptr, &m_pDebugStagingBuffer)))
-	//  	return E_FAIL;
-	//  //Debug End
+    //  //Debug
+    //  //여기서 Instance Buffer를 깔 수 있는 Staging Buffer를 만들어야됨
+    //  //m_pVBInstance 이 내용을 system으로 넣어주는 Staing버퍼 만들기
+    //  D3D11_BUFFER_DESC DebugStaingBufferDesc{};
+    //  DebugStaingBufferDesc = m_VBInstanceDesc;
+    //  DebugStaingBufferDesc.Usage = D3D11_USAGE_STAGING;
+    //  DebugStaingBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+    //  DebugStaingBufferDesc.BindFlags = 0;
+    //  if (FAILED(m_pDevice->CreateBuffer(&DebugStaingBufferDesc, nullptr, &m_pDebugStagingBuffer)))
+    //  	return E_FAIL;
+    //  //Debug End
 
 
     return S_OK;
@@ -565,7 +567,7 @@ HRESULT CVIBuffer_Point_Instance::Ready_ComputeShader()
 
     m_pDevice->CreateSamplerState(&samplerDesc, &m_pLinearWrapSampler);
 
-	return S_OK;
+    return S_OK;
 }
 
 _bool CVIBuffer_Point_Instance::IsFinish()
@@ -635,26 +637,28 @@ CComponent* CVIBuffer_Point_Instance::Clone(void* pArg)
 
 void CVIBuffer_Point_Instance::Free()
 {
-	__super::Free();
+    __super::Free();
 
     Safe_Release(m_pSRV);
     Safe_Release(m_pUAV);
     Safe_Release(m_pUAVSpeed);
 
-	Safe_Release(m_pCB);
-	Safe_Release(m_pStructuredBuffer);
-	Safe_Release(m_pSpeedBuffer);
-	Safe_Release(m_pStagingBuffer);
+    Safe_Release(m_pCB);
+    Safe_Release(m_pStructuredBuffer);
+    Safe_Release(m_pSpeedBuffer);
+    Safe_Release(m_pStagingBuffer);
 
-	//Safe_Release(m_pDebugStagingBuffer); 
+    Safe_Delete_Array(m_pParticleParams);
+    Safe_Delete_Array(m_pInstanceVertices);
+    //Safe_Release(m_pDebugStagingBuffer); 
 
-	if (false == m_isCloned)
-	{
+    if (false == m_isCloned)
+    {
         Safe_Release(m_pSRVNoise);
-        Safe_Delete_Array(m_pParticleParams);
+        //Safe_Delete_Array(m_pParticleParams);
         Safe_Release(m_pLinearWrapSampler);
 
         for (_uint i = 0; i < CS_PASS::END; ++i)
             Safe_Release(m_ComputeShaders[i]);
-	}
+    }
 }

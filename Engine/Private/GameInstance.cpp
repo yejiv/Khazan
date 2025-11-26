@@ -277,6 +277,8 @@ HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 
 	m_pEffect_Manager->Clear(iClearLevelID);
 
+    m_pSequence_Manager->Clear();
+
 	return S_OK;
 }
 
