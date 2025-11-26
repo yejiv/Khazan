@@ -254,6 +254,7 @@
     <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
+    <ClInclude Include="..\Public\Body_Cinematic_Viper.h" />
     <ClInclude Include="..\public\Body_Dragonian_Melee.h" />
     <ClInclude Include="..\Public\Body_Dragonian_Rampage.h" />
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
@@ -574,6 +575,7 @@
     <ClCompile Include="..\Private\AS_Groggy_Viper.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Viper.cpp" />
     <ClCompile Include="..\Private\AS_StingGrab_Viper.cpp" />
+    <ClCompile Include="..\Private\Body_Cinematic_Viper.cpp" />
     <ClCompile Include="..\private\Body_Dragonian_Melee.cpp" />
     <ClCompile Include="..\Private\AS_5HitCombo_Viper.cpp" />
     <ClCompile Include="..\Private\AS_Devour_Viper.cpp" />

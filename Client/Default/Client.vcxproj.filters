@@ -1231,6 +1231,15 @@
     <Filter Include="92.AI\State\Viper\19.CutScene_2P">
       <UniqueIdentifier>{2eeed706-6c07-4422-aefc-8e5e77c2a220}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Body\Phase1">
+      <UniqueIdentifier>{8df013d5-a76e-4052-bfb1-cbad80df099d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Body\Cinematic">
+      <UniqueIdentifier>{13204ac2-1ae5-4fbd-8b26-f4f5b2af84f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Body\Phase2">
+      <UniqueIdentifier>{0625b37c-3910-4e34-a359-5626f29af45b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2151,9 +2160,6 @@
     <ClInclude Include="..\Public\Body_Khazan_GS.h">
       <Filter>02.GameObject\Creature\Khazan\GSword\Body</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Body_Viper.h">
-      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\VerticalGate.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\07.VerticalGate</Filter>
     </ClInclude>
@@ -2381,6 +2387,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\AS_CutScene_Start_Viper.h">
       <Filter>92.AI\State\Viper\18.CutScene_Start</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body\Phase1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Cinematic_Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body\Cinematic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3282,9 +3294,6 @@
     <ClCompile Include="..\Private\Body_Khazan_GS.cpp">
       <Filter>02.GameObject\Creature\Khazan\GSword\Body</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Body_Viper.cpp">
-      <Filter>02.GameObject\Creature\Monster\Viper\Body</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\VerticalGate.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\07.VerticalGate</Filter>
     </ClCompile>
@@ -3512,6 +3521,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_CutScene_Start_Viper.cpp">
       <Filter>92.AI\State\Viper\18.CutScene_Start</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body\Phase1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Cinematic_Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body\Cinematic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

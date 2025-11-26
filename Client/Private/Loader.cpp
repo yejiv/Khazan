@@ -58,6 +58,7 @@
 #include "Viper.h"
 #include "Body_Viper.h"
 #include "TwinBlade_Viper.h"
+#include "Body_Cinematic_Viper.h"
 #include "Core_Viper.h"
 
 #pragma endregion
@@ -1790,6 +1791,10 @@ HRESULT CLoader::Loading_For_Viper_Model()
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Core_Viper"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/TwinBlade_Core/TwinBlade_Core.dat")), E_FAIL);
 
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Viper_Cinematic"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Viper_Cinematic/Viper_Cinematic.dat")), E_FAIL);
+
 #pragma endregion
 
 
@@ -1968,6 +1973,11 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_TwinBlade"),
         CTwinBlade_Viper::Create(m_pDevice, m_pContext))))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Body_Cinematic_Viper"),
+        CBody_Cinematic_Viper::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_Core"),
         CCore_Viper::Create(m_pDevice, m_pContext))))
