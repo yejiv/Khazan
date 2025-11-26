@@ -178,6 +178,8 @@
     <ClInclude Include="..\Public\AS_Attack_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Boomarang_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_ChainSmash_Imp_Melee.h" />
+    <ClInclude Include="..\Public\AS_CutScene_2Phase_Viper.h" />
+    <ClInclude Include="..\Public\AS_CutScene_Start_Viper.h" />
     <ClInclude Include="..\Public\AS_CutScene_Yetuga.h" />
     <ClInclude Include="..\Public\AS_DashAttack_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Dead_Imp_Melee.h" />
@@ -257,6 +259,7 @@
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
     <ClInclude Include="..\Public\Body_Khazan_GS.h" />
     <ClInclude Include="..\Public\Body_Viper.h" />
+    <ClInclude Include="..\Public\Core_Viper.h" />
     <ClInclude Include="..\public\Dragonian_Claw_L.h" />
     <ClInclude Include="..\public\Dragonian_Claw_R.h" />
     <ClInclude Include="..\public\Dragonian_Sword.h" />
@@ -547,6 +550,8 @@
   <ItemGroup>
     <ClCompile Include="..\private\AI_Controller_Dragonian_Melee.cpp" />
     <ClCompile Include="..\private\AI_Controller_Dragonian_Rampage.cpp" />
+    <ClCompile Include="..\Private\AS_CutScene_2Phase_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_CutScene_Start_Viper.cpp" />
     <ClCompile Include="..\private\AS_Dr_Melee_Attack.cpp" />
     <ClCompile Include="..\private\AS_Dr_Melee_Brutal.cpp" />
     <ClCompile Include="..\private\AS_Dr_Melee_Damage.cpp" />
@@ -576,6 +581,7 @@
     <ClCompile Include="..\Private\AS_ThrowBlade_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Dragonian_Rampage.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp" />
+    <ClCompile Include="..\Private\Core_Viper.cpp" />
     <ClCompile Include="..\private\Dragonian_Claw_L.cpp" />
     <ClCompile Include="..\private\Dragonian_Claw_R.cpp" />
     <ClCompile Include="..\private\Dragonian_Sword.cpp" />
