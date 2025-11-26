@@ -1157,21 +1157,27 @@ HRESULT CLoader::Loading_For_Embars_Level()
 {
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_For_Embars_Texture();
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_For_Embars_Model();
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_For_Embars_Shader();
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_For_Embars_GameObject();
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_Prototype_MapObject_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS);
+        return S_OK;
         }));
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
         return Loading_Prototype_MapObject_Inst_From_DAT(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS);
+        return S_OK;
         }));
 
     return S_OK;

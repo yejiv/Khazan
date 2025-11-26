@@ -126,6 +126,7 @@ void CObject_Manager::Clear(_uint iLevelIndex)
 
 	for (auto& Pair : m_pLayers[iLevelIndex])
 	{		
+        Pair.second->PoolObject_Back();
 		Safe_Release(Pair.second);
 	}
 	m_pLayers[iLevelIndex].clear();
@@ -134,7 +135,7 @@ void CObject_Manager::Clear(_uint iLevelIndex)
 void CObject_Manager::Static_Clear()
 {
 	for (auto& Pair : m_pLayers[m_pGameInstance->Get_StaticLevel()])
-	{
+	{     
 		Pair.second->DeadObject_Clear();
 	}
 }
