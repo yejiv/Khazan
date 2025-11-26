@@ -78,12 +78,6 @@ HRESULT CStatue::Initialize_Clone(void* pArg)
     if (EVENT_TYPE::END != m_eEventType)
         m_iSubscribeEventID = m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(m_eEventType), [&](const EventGimmick& e) { m_EventGimmick = e; });
 
-    if (m_iUnLockRotation == m_iRotation)
-    {
-        m_EventGimmick.Set_SolveStatue(m_iStatueIndex);
-        m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(m_eEventType), m_EventGimmick);
-    }
-
     return S_OK;
 }
 
@@ -93,6 +87,8 @@ void CStatue::Priority_Update(_float fTimeDelta)
     {
         m_Event.None();
     }
+
+    Check_Solved();
 
     __super::Priority_Update(fTimeDelta);
 }
@@ -289,6 +285,18 @@ HRESULT CStatue::Ready_Interaction_Guide(void* pArg)
     m_pGuide->Update_Visible(false);
 
     return S_OK;
+}
+
+void CStatue::Check_Solved()
+{
+    CHECK_TRUE(m_isLateInit, );
+
+    m_isLateInit = true;
+
+    if (m_iUnLockRotation == m_iRotation)
+    {
+        m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(m_eEventType), { EventGimmick::Set_InitSolve(m_iStatueIndex) });
+    }
 }
 
 void CStatue::Input_Interact_Event(_float fTimeDelta)
