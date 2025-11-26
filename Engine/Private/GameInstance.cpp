@@ -718,9 +718,14 @@ const vector<_wstring>& CGameInstance::Get_LightTags(_uint iLevelIndex)
     return m_pLight_Manager->Get_LightTags(iLevelIndex);
 }
 
-void CGameInstance::Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc)
+void CGameInstance::Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc, _bool isRestore)
 {
-    m_pLight_Manager->Start_LightTransition(strLightTag, iLevelIndex, Desc);
+    m_pLight_Manager->Start_LightTransition(strLightTag, iLevelIndex, Desc, isRestore);
+}
+
+void CGameInstance::Backup_LightDesc(const _wstring& strLightTag, _uint iLevelIndex)
+{
+    m_pLight_Manager->Backup_LightDesc(strLightTag, iLevelIndex);
 }
 
 #pragma endregion

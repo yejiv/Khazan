@@ -109,7 +109,7 @@ HRESULT CBladeNexus::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    _float fIntensity = 7.f;
+    _float fIntensity = 5.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fIntensity, sizeof(_float))))
         return E_FAIL;
 
@@ -417,6 +417,18 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             Desc.fDuration = 7.5f;
             Desc.vFadeTime = _float2(3.5f, 0.5f);
             m_pGameInstance->Start_RadialBlur(Desc);
+
+            // Light Manager Backup_LightDesc 함수 호출
+            // Before End 시점에 Start_LightTransition 마지막 인자 true 넣어서 기존 색으로 보간하도록 하기
+
+            //  LIGHT_TRANSITION_DESC LightDesc{};
+            //  LightDesc.fDuration = 7.f;
+            //  LightDesc.vFadeTime = _float2(7.f, 0.f);
+            //  LightDesc.vDiffuse = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+            //  LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+            //  LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+            //  LightDesc.isReturnToStart = false;
+            //  m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
         }
         // 해금 후 IDLE 상태
         else if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
