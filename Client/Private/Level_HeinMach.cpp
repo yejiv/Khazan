@@ -198,7 +198,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
 
-    if (m_eNextLevel != LEVEL::END)
+    /*if (m_eNextLevel != LEVEL::END)
     {      
         if (!m_isOpenLevel) {
             m_pGameInstance->StopAll();
@@ -206,6 +206,16 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
                 return;
             m_isOpenLevel = true;
         }
+    }*/
+
+    if (m_pGameInstance->Key_Down(DIK_RETURN))
+    {
+        if (!m_isOpenLevel) {
+            if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
+                return;
+            m_isOpenLevel = true;
+        }
+        
     }
 
 
@@ -294,14 +304,14 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 HRESULT CLevel_HeinMach::Ready_Layer_Player(const _wstring& strLayerTag)
 {
 
-	  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	  	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
-	  	return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+	return E_FAIL;
 
     // Motion Trail Test
-    //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-    //    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
-    //    return E_FAIL;
+    /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
+        return E_FAIL;*/
 
 	return S_OK;
 }
