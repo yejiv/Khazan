@@ -40,7 +40,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
-    m_pCharVirCom->Set_Position(XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
+    //m_pCharVirCom->Set_Position(XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
 
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;

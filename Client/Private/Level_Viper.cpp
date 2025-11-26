@@ -37,8 +37,7 @@ HRESULT CLevel_Viper::Initialize()
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
     CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-    if (FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Viper"))))
-        return E_FAIL;
+   
 
     
     // 우선 맵 오브젝트 서브 레벨 로드
@@ -53,6 +52,7 @@ HRESULT CLevel_Viper::Initialize()
     for (_uint i = 0; i < VIPER_SUBLV; ++i)
     {
         CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     }
     //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
@@ -785,16 +785,16 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, con
         _float4x4 WorldMatrix = {};
         memcpy(&WorldMatrix, &MonsterData.WorldMatrix[i], sizeof(_float4x4));
 
-        if ("Viper_Phase1" == MonsterData.MonsterKey[i])
+        if ("Viper" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMaxHP = 1000.f;
+            MonsterDesc.fMaxStamina = 1000.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
-
+            MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
             MonsterDesc.WorldMatrix = WorldMatrix;
             MonsterDesc.strName = MonsterData.MonsterKey[i];
 
