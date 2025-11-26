@@ -72,7 +72,7 @@ HRESULT CUnLockGear::Initialize_Clone(void* pArg)
 
     m_eEventType = EVENT_TYPE::HALL_ELEVATOR_UNLOCK;
 
-    m_iEventID = m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(m_eEventType), [&](const EventHallElevator& e) { m_EventHallElevator = e; });
+    m_iSubscribeEventID = m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(m_eEventType), [&](const EventHallElevator& e) { m_EventHallElevator = e; });
 
     return S_OK;
 }
@@ -388,7 +388,7 @@ void CUnLockGear::Free()
 {
     m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iObjectInteractEventID);
     m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(m_eGimmickType), m_iGimmickTypeEventID);
-    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(m_eEventType), m_iEventID);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(m_eEventType), m_iSubscribeEventID);
 
     __super::Free();
 

@@ -72,6 +72,7 @@ private:
     _float m_fColTimeAcc = { 0.f };
 
     _uint m_iObjectInteractEventID = { 0 };
+
     _uint m_iEventID = { 0 };
 
 private:

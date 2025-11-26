@@ -76,6 +76,8 @@ private:
 
     EventPopBN m_BNPop = {};
 
+    _uint m_iPopEventID = {};
+
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
