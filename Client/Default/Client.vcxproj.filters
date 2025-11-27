@@ -3339,9 +3339,6 @@
     <ClCompile Include="..\Private\Ladder_Top.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Top</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Dragonian_Melee.cpp">
-      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\Body_Dragonian_Melee.cpp">
       <Filter>02.GameObject\Creature\Monster\Dragonian_Melee\Body</Filter>
     </ClCompile>
@@ -3512,6 +3509,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_CutScene_Start_Viper.cpp">
       <Filter>92.AI\State\Viper\18.CutScene_Start</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Dragonian_Melee.cpp">
+      <Filter>02.GameObject\Creature\Monster\Dragonian_Melee</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -22,10 +22,15 @@ public:
         _bool               isStateFiash = {false};
         _bool               isSlowWalk = {false};
 
+        _float              fQuat = {};
         //BT
+        _bool               isChase = { false };
         _bool               isDamage = { false };
         _bool               isAttack = { false };
+        _bool               isTurn = { false };
+        _bool               isLockOn = { false };
         _float              fAttackCool = {};
+        _float              fAnimDeley = {};
         
         HITREACTION         eHitType = { HITREACTION::END };
         //ETC
@@ -40,7 +45,9 @@ public:
         _float*             pMaxStamina = { nullptr };
         _float*             pCulStamina = { nullptr };
 
+        _float              fWarkSpeed = { 10.f };
         CDragonian_Melee*   pOwner = { nullptr };
+ 
     }MONDATA;
 private:
     CDragonian_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -49,11 +56,15 @@ private:
 
 public:
     MONDATA&                        Get_Data();
-    void                            Move_F();
+    void                            LockOnLerp(_float fTimeDetla);
+    void                            LockOn();
     void                            Hp_Visivle(_bool isVisivle);
     void                            Hp_Dead();
-    _bool                           Check_AttackRanage(string strKey);
 
+    void                            LookAt_Lerp(_float fTimeDelta);
+    _bool                           Check_AttackRanage(string strKey);
+    _bool                           Check_Ranage(_float fRange);
+    TARGET_DIR                      Get_DIR();
 public:
     virtual HRESULT					Initialize_Prototype(_int iLevel);
     virtual HRESULT					Initialize_Clone(void* pArg) override;
@@ -77,6 +88,9 @@ private:
     HRESULT							Ready_MonData();
 
     void                            Update_UIHp();
+    void                            Update_WalkSpeed();
+
+    void                            Attack_Move();
 private:
     class CBody_Dragonian_Melee*    m_pBody = { nullptr };
     class CBlackBoard*              m_pBlackBoard = { nullptr };
