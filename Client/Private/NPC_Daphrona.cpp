@@ -264,6 +264,7 @@ void CNPC_Daphrona::Input_Interact_Event(_float fTimeDelta)
 
         XMStoreFloat4(&NPCEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
 
+        NPCEvent.vPlayerPosition = _float4(5.02557755f, -90.4880981f, 7.59874153f, 1.f);
         InteractType.NPCEvent = NPCEvent;
 
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
@@ -300,6 +301,7 @@ void CNPC_Daphrona::Animation_Update(_float fTimeDelta)
 
             XMStoreFloat4(&NPCEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
 
+            NPCEvent.vPlayerPosition = _float4(5.02557755f, -90.4880981f, 7.59874153f, 1.f);
             InteractType.NPCEvent = NPCEvent;
 
             // NPC를 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )

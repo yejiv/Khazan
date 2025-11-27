@@ -15,7 +15,10 @@ class CDragonian_Rampage final : public CMonster
 public:
     enum class MONSTATE { ATTACK_DEFAULT, ATTACK_BACK, ATTACK_JUMP, ATTACK_RUSH, DEAD, GRORRY, BRUTAL, DAMAGE, LOCKON, SLEEP, WALK, END };
     enum class ATTACKSTATE { DEFAULT, JUMP, RUSH, BACK, END};
-    enum ATTACK_BODY : _uint {HAND_L = 1 << 0, HAND_R = 1 << 1, TAIL = 1 << 2, END = 1 << 3};
+    enum ATTACK_BODY : _uint {  HAND_L = 1 << 0,
+                                HAND_R = 1 << 1,
+                                TAIL = 1 << 2,
+                                END = 1 << 3};
     typedef struct TagMonData_Rampage{
         //애니메이션 관련
         _int                iAnimIndex = {};
