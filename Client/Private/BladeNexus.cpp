@@ -109,7 +109,7 @@ HRESULT CBladeNexus::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    _float fIntensity = 5.f;
+    _float fIntensity = 10.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fIntensity, sizeof(_float))))
         return E_FAIL;
 
