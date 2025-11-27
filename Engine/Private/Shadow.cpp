@@ -16,14 +16,14 @@ HRESULT CShadow::Initialize()
 	if (FAILED(Ready_ShaderResources()))
 		return E_FAIL;
 
-    m_fSplit = 35.f;
+    m_Desc.fSplit = 35.f;
 
     m_fCameraNear = 0.1f;
     m_fCameraFar = 6000.f;
 
-	m_vLightDir = { 1.f, -1.f, 1.f };
-	m_fBias = 0.001f;
-	m_fIntensity = 0.6f;
+	m_Desc.vLightDir = { 1.f, -1.f, 1.f };
+	m_Desc.fBias = 0.001f;
+	m_Desc.fIntensity = 0.6f;
 
     return S_OK;
 }
@@ -42,13 +42,13 @@ void CShadow::Update(_float fTimeDelta)
             m_isTransition = false;
         }
 
-        m_fIntensity = Lerp(m_fIntensity, m_fTargetIntensity, fRatio);
+        m_Desc.fIntensity = Lerp(m_Desc.fIntensity, m_fTargetIntensity, fRatio);
     }
 
     m_pGameInstance->Get_Frustum_WorldPoints(m_vFrustumCorners);
 
     _float fNearRatio = (m_fCameraNear - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
-    _float fFarRatio = (m_fSplit - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
+    _float fFarRatio = (m_Desc.fSplit - m_fCameraNear) / (m_fCameraFar - m_fCameraNear);
 
     // 1. 코너 비율로 나누기
     for (_uint j = 0; j < 4; ++j)
@@ -87,7 +87,7 @@ void CShadow::Update(_float fTimeDelta)
     _vector vMaxExtents = XMVectorSet(fRadius, fRadius, fRadius, 1.f);
     _vector vMinExtents = -vMaxExtents;
 
-    _vector vShadowCamPos = vCenter - XMVector3Normalize(XMVectorSetW(XMLoadFloat3(&m_vLightDir), 0.f)) * fRadius;
+    _vector vShadowCamPos = vCenter - XMVector3Normalize(XMVectorSetW(XMLoadFloat3(&m_Desc.vLightDir), 0.f)) * fRadius;
 
     _matrix LightViewMatrix = XMMatrixLookAtLH(vShadowCamPos, vCenter, XMVectorSet(0.f, 1.f, 0.f, 0.f));
 
@@ -143,13 +143,13 @@ HRESULT CShadow::Bind_Shadow_ShaderResources(CShader* pShader)
 	if (FAILED(pShader->Bind_SRV("g_ShadowTexture", m_pShadowSRV)))
 		return E_FAIL;
 
-	if (FAILED(pShader->Bind_RawValue("g_fShadowBias", &m_fBias, sizeof(_float))))
+	if (FAILED(pShader->Bind_RawValue("g_fShadowBias", &m_Desc.fBias, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(pShader->Bind_RawValue("g_fShadowIntensity", &m_fIntensity, sizeof(_float))))
+	if (FAILED(pShader->Bind_RawValue("g_fShadowIntensity", &m_Desc.fIntensity, sizeof(_float))))
 		return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fSplitFar", &m_fSplit, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fSplitFar", &m_Desc.fSplit, sizeof(_float))))
         return E_FAIL;
 
 	_float2 vShadowMapSize = _float2(g_iMaxWidth, g_iMaxHeight);

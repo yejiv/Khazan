@@ -47,6 +47,8 @@ private:
     HRESULT Ready_Layer_Monster_Viper(const _wstring& strLayerTag);
     HRESULT Ready_Layer_Effect(const _wstring& strLayerTag);
 
+    HRESULT Ready_Shader_Settings();
+
     _bool Wait_All_Futures();
 
 

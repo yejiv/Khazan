@@ -33,6 +33,9 @@ private:
 	_float					m_fShadowTransDuration = {};
 	_float					m_fTargetShadowIntensity = {};
 
+    // Shadow
+    SHADOW_DESC             m_ShadowDesc = {};
+
 	// Render Flag
 	_bool					m_isRenderShadow = { true };
 	_bool					m_isRenderSSAO = { true };
@@ -89,7 +92,6 @@ private:
     _bool                   m_isEnableLight = {};
 
     LIGHT_TRANSITION_DESC   m_TargetLightDesc = {};
-
     _bool                   m_isRestoreLight = {};
 
 	LEVEL                   m_eCurrentLevel = { LEVEL::TITLE };
