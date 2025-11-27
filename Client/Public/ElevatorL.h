@@ -3,6 +3,8 @@
 #include "Client_Defines.h"
 #include "Prop_Interactive.h"
 
+// 회전중일때 사용하는 조명 태그 : ElevatorLight
+
 NS_BEGIN(Client)
 
 class CElevatorL final : public CProp_Interactive
