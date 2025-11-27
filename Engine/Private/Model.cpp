@@ -48,7 +48,7 @@ CModel::CModel(const CModel& Prototype)
 }
 
 
-HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath)
+HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath, _bool isSRVCache)
 {
     _char currentDir[MAX_PATH];
     GetCurrentDirectoryA(MAX_PATH, currentDir);
@@ -89,7 +89,7 @@ HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath)
     if (FAILED(Ready_Meshes(data)))
         return E_FAIL;
 
-    if (FAILED(Ready_Materials(data)))
+    if (FAILED(Ready_Materials(data, isSRVCache)))
         return E_FAIL;
 
     if (FAILED(Ready_Animations(data)))
@@ -1327,12 +1327,12 @@ HRESULT CModel::Ready_Meshes(MODEL_DATA& data)
     return S_OK;
 }
 
-HRESULT CModel::Ready_Materials(MODEL_DATA& data)
+HRESULT CModel::Ready_Materials(MODEL_DATA& data, _bool isSRVCache)
 {
 
     for (size_t i = 0; i < m_iNumMaterials; i++)
     {
-        CMeshMaterial* pMeshMaterial = CMeshMaterial::Create(m_pDevice, m_pContext, data.vecMaterials[i]);
+        CMeshMaterial* pMeshMaterial = CMeshMaterial::Create(m_pDevice, m_pContext, data.vecMaterials[i], isSRVCache);
         if (nullptr == pMeshMaterial)
             return E_FAIL;
 
@@ -1422,11 +1422,11 @@ inline vector<vector<_int>> CModel::BuildChainsFromRoot(_int rootBone, _int maxD
 
 }
 
-CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath)
+CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, _bool isSRVCache)
 {
     CModel* pInstance = new CModel(pDevice, pContext);
 
-    if (FAILED(pInstance->Initialize_Prototype(pModelFilePath)))
+    if (FAILED(pInstance->Initialize_Prototype(pModelFilePath, isSRVCache)))
     {
         MSG_BOX(TEXT("Failed to Created : CModel"));
         Safe_Release(pInstance);
