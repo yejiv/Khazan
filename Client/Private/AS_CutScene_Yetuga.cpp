@@ -64,6 +64,32 @@ void CAS_CutScene_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 
 }
 
+void CAS_CutScene_Yetuga::YetugaScene_Jump(CYetuga* pYetuga)
+{
+    CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    Change_CutSceneState(CUTSCENE_STATE::JUMP, pModel, pYetuga);
+
+}
+
+void CAS_CutScene_Yetuga::YetugaScene_Land(CYetuga* pYetuga)
+{
+    CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    Change_CutSceneState(CUTSCENE_STATE::LAND, pModel, pYetuga);
+}
+
+void CAS_CutScene_Yetuga::YetugaScene_Roar1(CYetuga* pYetuga)
+{
+    CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    Change_CutSceneState(CUTSCENE_STATE::ROAR1, pModel, pYetuga);
+}
+
+void CAS_CutScene_Yetuga::YetugaScene_Roar2(CYetuga* pYetuga)
+{
+    CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    Change_CutSceneState(CUTSCENE_STATE::ROAR2, pModel, pYetuga);
+}
+
+
 void CAS_CutScene_Yetuga::Change_CutSceneState(CUTSCENE_STATE eNextState, CModel* pModel, CYetuga* pYetuga)
 {
     if (m_eState == eNextState)

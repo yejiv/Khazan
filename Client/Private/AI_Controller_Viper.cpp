@@ -48,6 +48,18 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
     }
 
+    if (m_pGameInstance->Key_Down(DIK_Z))
+    {
+
+        CViper* pViper = static_cast<CViper*>(pOwner);
+        CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+        //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+        //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+         pViper->Consume_Stamina(10.f);
+
+    }
+
+
 
 
     if(m_pGameInstance->Key_Down(DIK_J))
@@ -155,6 +167,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
     			if (fCurrentStamina <= 0.1f && !BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
     			{
     				eHitRection = HITREACTION::GROGGY;
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isGroggy", false);
     				return true;
     			}
     			else
@@ -670,8 +683,6 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                 return BTNODESTATE::RUNNING;
             };
     }
-
-
 
 
     else if ("P1_5HitCombo" == name)
@@ -1340,6 +1351,10 @@ INTERRUPTCONDITION CAI_Controller_Viper::GetCallbackInterruptCondition(CGameObje
             {
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isDead"))
                     return true;
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return true;
+                
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "DamageInterrupt"))
                 {
                    /* _bool isSuperArmor = BB->Get_Value<_bool>(pViper->Get_Name(), "isSuperArmor");
