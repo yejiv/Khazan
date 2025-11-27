@@ -131,6 +131,35 @@ void CMotionTrail::Start_MotionTrail(_float fDuration)
     m_fDurationTimeAcc = 0.f;
 }
 
+void CMotionTrail::Update_PartModels(const vector<class CModel*>& NewPartModels)
+{
+    if (NewPartModels.empty())
+        return;
+
+    // 기존 파트 모델들 클리어
+    for (auto& pModel : m_OwnerPartModels)
+        Safe_Release(pModel);
+    m_OwnerPartModels.clear();
+
+    // 데이터 복사
+    m_OwnerPartModels = NewPartModels;
+    
+    // 참조 카운트 증가
+    for (auto& pModel : m_OwnerPartModels)
+        Safe_AddRef(pModel);
+}
+
+void CMotionTrail::Update_MasterModel(CModel* pModel)
+{
+    if (nullptr == pModel)
+        return;
+
+    Safe_Release(m_pOwnerMasterModel);
+
+    m_pOwnerMasterModel = pModel;
+    Safe_AddRef(m_pOwnerMasterModel);
+}
+
 void CMotionTrail::Set_Config(_wstring strConfig)
 {
     auto it = m_CachedConfig.find(strConfig);

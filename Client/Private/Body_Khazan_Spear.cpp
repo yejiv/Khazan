@@ -58,20 +58,21 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
+    /* 부모 트랜스폼 연결 */
+    m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
+
+    if (FAILED(Initialize_Equipment()))
+        return E_FAIL;
+
     if (FAILED(Ready_AnimationEvent()))
         return E_FAIL;
 
     /* 파츠 자동 업데이트  */
     m_pClientInstance->Set_ChangePlayerEquipmentCallBack([this](EQUIPMENTTYPE type, const _wstring& strPartName) {Equip_Part(type, strPartName); });
 
-     /* 부모 트랜스폼 연결 */
-    m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
-
     /* 뼈 행렬 가지고오기 */
     m_pSpearTip1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip");
     m_pSpearPole_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R");
-
-    
 
     if (FAILED(Ready_Collider()))
         return E_FAIL;
@@ -812,10 +813,6 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
         m_AllParts[info.strPartName] = pModel;
     }
 
-
-    if (FAILED(Initialize_Equipment()))
-        return E_FAIL;
-
     CMeshTrail::TRAIL_DESC MeshDsc;
     MeshDsc.iTextureIdx = 9;
     MeshDsc.fLifeTime = .25f;
@@ -1163,7 +1160,12 @@ void CBody_Khazan_Spear::Update_QuickRenderCache()
     }
 
     /* todo !! 여기에 모션트레일컴포넌트에  랜더용 파츠모델 바꼈다고 넘겨주기. */
+    
+    // Part Model이 있는 경우!!
+    m_pMotionTrailCom->Update_PartModels(m_RenderParts);
 
+    // Part Model이 없고 Master Model만 있는 경우!! (무기)
+    //  m_pMotionTrailCom->Update_MasterModel(m_pModelCom);
 }
 
 void CBody_Khazan_Spear::FX_Trail()
