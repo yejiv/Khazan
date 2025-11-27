@@ -69,6 +69,11 @@ HRESULT CLevel_Shader::Initialize()
 
 	m_iNumCascades = m_pGameInstance->Get_NumCascades();
 
+    // Test Blink Desc
+    m_TargetLightDesc.vDiffuse = _float4(10.f, 9.f, 8.f, 1.f);
+    m_TargetLightDesc.vAmbient = _float4(1.f, 0.9f, 0.8f, 1.f);
+    m_TargetLightDesc.vSpecular = m_TargetLightDesc.vDiffuse;
+
     // Fog, Shadow Off
     m_pGameInstance->Set_EnableFog(m_isEnableFog);
     m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
@@ -756,6 +761,8 @@ HRESULT CLevel_Shader::Initialize()
                         if (true == isChanged)
                             m_pGameInstance->Set_LightDesc(m_strSelectedLightTag, iCurrentLevelIndex, EditedDesc);
 
+                        if (ImGui::Button("Backup Selected Light"))
+                            m_pGameInstance->Backup_LightDesc(m_strSelectedLightTag, iCurrentLevelIndex);
                     }
                     else
                     {
@@ -780,10 +787,16 @@ HRESULT CLevel_Shader::Initialize()
                     ImGui::ColorEdit4("Target Ambient (HDR)", reinterpret_cast<_float*>(&m_TargetLightDesc.vAmbient), HDRFlags);
                     ImGui::ColorEdit4("Target Specular (HDR)", reinterpret_cast<_float*>(&m_TargetLightDesc.vSpecular), HDRFlags);
 
+                    ImGui::SliderInt("Light Blink Count", reinterpret_cast<_int*>(&m_TargetLightDesc.iBlinkCount), 0, 10);
+                    
                     ImGui::Checkbox("Return To Start", &m_TargetLightDesc.isReturnToStart);
+                    
+                    ImGui::SameLine();
+
+                    ImGui::Checkbox("Restore Light", &m_isRestoreLight);
 
                     if (ImGui::Button("Start Light Transition"))
-                        m_pGameInstance->Start_LightTransition(m_strSelectedLightTag, iCurrentLevelIndex, m_TargetLightDesc);
+                        m_pGameInstance->Start_LightTransition(m_strSelectedLightTag, iCurrentLevelIndex, m_TargetLightDesc, m_isRestoreLight);
                 }
             }
 
@@ -839,10 +852,10 @@ HRESULT CLevel_Shader::Ready_Lights()
 	LIGHT_DESC LightDesc = {};
 	LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.6f, 0.6f, 0.6f, 1.f);
+	LightDesc.vDiffuse = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 0.2f);
 	LightDesc.vSpecular = LightDesc.vDiffuse;
-	if (FAILED(m_pGameInstance->Add_Light(TEXT("Shader_Directional"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+	if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
 		return E_FAIL;
 
     // Point_Red
@@ -853,8 +866,30 @@ HRESULT CLevel_Shader::Ready_Lights()
     LightDesc.vAmbient = _float4(0.6f, 0.f, 0.f, 1.f);
     LightDesc.vSpecular = LightDesc.vDiffuse;
     LightDesc.fRange = 10.f;
-    if (FAILED(m_pGameInstance->Add_Light(TEXT("Shader_Point_Red"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Point_Red"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
         return E_FAIL;
+
+    // Point_HDR
+    LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 10.f, -60.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.9f, 0.8f, 0.7f, 1.f);
+    LightDesc.vAmbient = _float4(0.8f, 0.6f, 0.4f, 1.f);    
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 60.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Point_HDR"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+        return E_FAIL;
+
+    // Point_HDR_Blink
+    //  LightDesc = {};
+    //  LightDesc.eType = LIGHT_DESC::POINT;
+    //  LightDesc.vPosition = _float4(0.f, 10.f, -60.f, 1.f);
+    //  LightDesc.vDiffuse = _float4(10.f, 9.f, 8.f, 1.f);
+    //  LightDesc.vAmbient = _float4(1.f, 0.9f, 0.8f, 1.f);
+    //  LightDesc.vSpecular = LightDesc.vDiffuse;
+    //  LightDesc.fRange = 60.f;
+    //  if (FAILED(m_pGameInstance->Add_Light(TEXT("Point_HDR"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+    //      return E_FAIL;
 
 	return S_OK;
 }

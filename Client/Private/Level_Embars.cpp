@@ -63,6 +63,8 @@ HRESULT CLevel_Embars::Initialize()
 
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
+    CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
+
     CClientInstance::GetInstance()->Fade_In();
 
     if (!Wait_All_Futures())
@@ -178,6 +180,27 @@ HRESULT CLevel_Embars::Ready_Layer_Effect(const _wstring& strLayerTag)
     return S_OK;
 }
 
+HRESULT CLevel_Embars::Ready_Shader_Settings()
+{
+    // 그림자
+    SHADOW_DESC ShadowDesc{};
+    ShadowDesc.fSplit = 35.f;
+    ShadowDesc.vLightDir = _float3(-0.1f, -1.f, -0.1f);
+    ShadowDesc.fBias = 0.001f;
+    ShadowDesc.fIntensity = 0.8f;
+    m_pGameInstance->Set_ShadowDesc(ShadowDesc);
+
+    // 초기 Fog
+    FOG_TRANSITION_DESC FogDesc{};
+    FogDesc.fDensity = 0.05f;
+    FogDesc.fBias = 0.8f;
+    FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
+    FogDesc.isUseHeight = false;
+    FogDesc.isUseNoise = false;
+    m_pGameInstance->Start_FogTransition(0.f, FogDesc);
+
+    return S_OK;
+}
 
 HRESULT CLevel_Embars::Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {

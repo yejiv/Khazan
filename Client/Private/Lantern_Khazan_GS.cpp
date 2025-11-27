@@ -126,7 +126,7 @@ void CLantern_Khazan_GS::Set_Equipped(bool equip)
         m_isEnble = m_isEquip = true;
         m_fEquipTime1.x = 0.f;
         m_isEquiping = true;
-        m_pGameInstance->Start_ShadowTransition(1.5f, 1.f);
+        //  m_pGameInstance->Start_ShadowTransition(1.5f, 1.f);
         m_pGameInstance->Set_LightEnable(TEXT("Lantern"), ENUM_CLASS(m_eCurrentLevel), true);
     }
     else {

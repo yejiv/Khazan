@@ -28,7 +28,8 @@ void CLight_Manager::Update(_float fTimeDelta)
     {
         LIGHT_DESC FinalLightDesc = m_StartLightDesc;
 
-        if (true == m_TargetLightDesc.isReturnToStart)
+        if (true == m_TargetLightDesc.isReturnToStart) 
+            //  || (0.f < m_fBlinkPeriod && 0 < m_TargetLightDesc.iBlinkCount))
             m_pTransLight->Set_LightDesc(FinalLightDesc);
         else
         {
@@ -39,6 +40,7 @@ void CLight_Manager::Update(_float fTimeDelta)
 
         m_pTransLight->Set_LightDesc(FinalLightDesc);
 
+        m_fBlinkPeriod = 0.f;
         m_isTransition = false;
         Safe_Release(m_pTransLight);
         m_pTransLight = nullptr;
@@ -48,8 +50,37 @@ void CLight_Manager::Update(_float fTimeDelta)
     // 보간 이전 정보 저장해놔야 함
     // 보간 시작 함수에서 태그, 트랜지션 디스크립션 받고 해당 태그의 Light의 광원 구성 정보 가져와서 저장
     
+    if (m_TargetLightDesc.iBlinkCount > 0 && m_fBlinkPeriod > 0.f)
+    {
+        _float fBlinkTimeAcc = fmod(m_fTransTimeAcc, m_fBlinkPeriod);
+        _float fBlinkPeriodRatio = fBlinkTimeAcc / m_fBlinkPeriod;
+
+        _float fRatio = (1.f - cosf(XM_2PI * fBlinkPeriodRatio)) * 0.5f;
+
+        LIGHT_DESC CurLightDesc = m_StartLightDesc;
+        _vector vCurDiffuse, vCurAmbient, vCurSpecular;
+
+        // D, A, S lerp
+        _vector vStartDiffuse = XMLoadFloat4(&m_StartLightDesc.vDiffuse);
+        _vector vStartAmbient = XMLoadFloat4(&m_StartLightDesc.vAmbient);
+        _vector vStartSpecular = XMLoadFloat4(&m_StartLightDesc.vSpecular);
+
+        _vector vTargetDiffuse = XMLoadFloat4(&m_TargetLightDesc.vDiffuse);
+        _vector vTargetAmbient = XMLoadFloat4(&m_TargetLightDesc.vAmbient);
+        _vector vTargetSpecular = XMLoadFloat4(&m_TargetLightDesc.vSpecular);
+
+        vCurDiffuse = XMVectorLerp(vStartDiffuse, vTargetDiffuse, fRatio);
+        vCurAmbient = XMVectorLerp(vStartAmbient, vTargetAmbient, fRatio);
+        vCurSpecular = XMVectorLerp(vStartSpecular, vTargetSpecular, fRatio);
+
+        XMStoreFloat4(&CurLightDesc.vDiffuse, vCurDiffuse);
+        XMStoreFloat4(&CurLightDesc.vAmbient, vCurAmbient);
+        XMStoreFloat4(&CurLightDesc.vSpecular, vCurSpecular);
+
+        m_pTransLight->Set_LightDesc(CurLightDesc);
+    }
     // Fade In
-    if (m_fTransTimeAcc <= m_TargetLightDesc.vFadeTime.x)
+    else if (m_fTransTimeAcc <= m_TargetLightDesc.vFadeTime.x)
     {
         // D, A, S lerp
         _float fRatio = m_fTransTimeAcc / m_TargetLightDesc.vFadeTime.x;
@@ -76,6 +107,7 @@ void CLight_Manager::Update(_float fTimeDelta)
 
         m_pTransLight->Set_LightDesc(CurLightDesc);
     }
+    // Fade Out
     else if (true == m_TargetLightDesc.isReturnToStart && m_fTransTimeAcc >= m_TargetLightDesc.vFadeTime.y)
     {
         _float fFadeDuration = m_TargetLightDesc.fDuration - m_TargetLightDesc.vFadeTime.y;
@@ -211,6 +243,9 @@ void CLight_Manager::Start_LightTransition(const _wstring& strLightTag, _uint iL
         }
     }
     
+    if (0 < m_TargetLightDesc.iBlinkCount)
+        m_fBlinkPeriod = m_TargetLightDesc.fDuration / m_TargetLightDesc.iBlinkCount;
+
     // 페이드 아웃 시작 시간으로 변경
     m_TargetLightDesc.vFadeTime.y = m_TargetLightDesc.fDuration - m_TargetLightDesc.vFadeTime.y;
 }

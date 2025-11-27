@@ -297,6 +297,12 @@ public:
 	class CModel* Clone_Model(_wstring strModelTag);
 	class CTexture* Get_Texture(_wstring strTextureTag);
 	class CModel* Get_Model(_wstring strModelTag);
+
+
+    _bool Push_MeshMetrial_SRV(string strFileName, ID3D11ShaderResourceView* pResource);
+    _bool Exist_MeshMetrial_SRV_InCache(string strFileName);
+    string Convert_FullPath(string strFullPath);
+    ID3D11ShaderResourceView* Get_MeshMetrial_SRVFromCache(string strFileName);
 #pragma endregion
 
 #pragma region COMPUTESHADER_MANAGER
@@ -339,6 +345,8 @@ public:
     void                Start_ShadowTransition(_float fDuration, _float fTargetIntensity);
     void                Clear_ShadowDSV();
 
+    const SHADOW_DESC&  Get_ShadowDesc() const;
+    void                Set_ShadowDesc(const SHADOW_DESC& Desc);
 #ifdef _DEBUG
     HRESULT				Ready_Shadow_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
     HRESULT				Render_Shadow_Debug(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);

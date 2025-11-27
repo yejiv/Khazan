@@ -267,6 +267,7 @@ void CNPC_Danjin::Input_Interact_Event(_float fTimeDelta)
 
         EventNPC NPCEvent = {};
 
+        NPCEvent.vPlayerPosition = _float4(246.201050f, 3.54587889f, 142.734695f, 1.f);
         XMStoreFloat4(&NPCEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
 
         InteractType.NPCEvent = NPCEvent;
@@ -303,6 +304,7 @@ void CNPC_Danjin::Animation_Update(_float fTimeDelta)
 
             EventNPC NPCEvent = {};
 
+            NPCEvent.vPlayerPosition = _float4(246.201050f, 3.54587889f, 142.734695f, 1.f);
             XMStoreFloat4(&NPCEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
 
             InteractType.NPCEvent = NPCEvent;

@@ -34,6 +34,7 @@ HRESULT CShader_Controller::Initialize()
     m_RadialBlurDesc = m_pGameInstance->Get_RadialBlurDesc();
     m_MotionBlurDesc = m_pGameInstance->Get_MotionBlurDesc();
     m_RimLightDesc = m_pGameInstance->Get_RimLightDesc();
+    m_ShadowDesc = m_pGameInstance->Get_ShadowDesc();
 
 	Ready_Level();
 	Ready_Shader();
@@ -101,6 +102,21 @@ void CShader_Controller::Ready_Shader()
 
 			if (ImGui::Checkbox("Shadow", &m_isRenderShadow))
 				m_pGameInstance->Set_EnableShadow(m_isRenderShadow);
+
+            if (m_isRenderShadow)
+            {
+                if (ImGui::SliderFloat("Shadow Light Split", &m_ShadowDesc.fSplit, 0.1f, 100.f))
+                    m_pGameInstance->Set_ShadowDesc(m_ShadowDesc);
+
+                if (ImGui::SliderFloat3("Shadow Light Direction", reinterpret_cast<_float*>(&m_ShadowDesc.vLightDir), -1.f, 1.f))
+                    m_pGameInstance->Set_ShadowDesc(m_ShadowDesc);
+
+                if (ImGui::SliderFloat("Shadow Light Bias", &m_ShadowDesc.fBias, 0.001f, 0.01f))
+                    m_pGameInstance->Set_ShadowDesc(m_ShadowDesc);
+
+                if (ImGui::SliderFloat("Shadow Intensity", &m_ShadowDesc.fIntensity, 0.f, 1.f))
+                    m_pGameInstance->Set_ShadowDesc(m_ShadowDesc);
+            }
 
 			//  if (m_isRenderShadow)
 			//  {
@@ -226,11 +242,18 @@ void CShader_Controller::Ready_Shader()
 					if (ImGui::ColorEdit4("Fog Color", reinterpret_cast<_float*>(&m_FogConfig.vColor)))
 						m_pGameInstance->Set_FogConfig(m_FogConfig);
 
-					if (ImGui::SliderFloat("Fog Base Height", &m_FogConfig.fBaseHeight, -1000.f, 3000.f))
-						m_pGameInstance->Set_FogConfig(m_FogConfig);
+                    // Use Height
+                    if (ImGui::Checkbox("Use Height Fog", &m_FogConfig.isUseHeight))
+                        m_pGameInstance->Set_FogConfig(m_FogConfig);
 
-					if (ImGui::SliderFloat("Fog Height Density", &m_FogConfig.fHeightDensity, 0.001f, 1.f))
-						m_pGameInstance->Set_FogConfig(m_FogConfig);
+                    if (true == m_FogConfig.isUseHeight)
+                    {
+                        if (ImGui::SliderFloat("Fog Base Height", &m_FogConfig.fBaseHeight, -1000.f, 3000.f))
+                            m_pGameInstance->Set_FogConfig(m_FogConfig);
+
+                        if (ImGui::SliderFloat("Fog Height Density", &m_FogConfig.fHeightDensity, 0.001f, 1.f))
+                            m_pGameInstance->Set_FogConfig(m_FogConfig);
+                    }
 
 					ImGui::Separator();
 					ImGui::Text("Fog Transition Lerp");
@@ -783,6 +806,8 @@ void CShader_Controller::Ready_Shader()
                             if (true == isChanged)
                                 m_pGameInstance->Set_LightDesc(m_strSelectedLightTag, iCurrentLevelIndex, EditedDesc);
 
+                            if (ImGui::Button("Backup Selected Light"))
+                                m_pGameInstance->Backup_LightDesc(m_strSelectedLightTag, iCurrentLevelIndex);
                         }
                         else
                         {
@@ -807,11 +832,10 @@ void CShader_Controller::Ready_Shader()
                         ImGui::ColorEdit4("Target Ambient (HDR)", reinterpret_cast<_float*>(&m_TargetLightDesc.vAmbient), HDRFlags);
                         ImGui::ColorEdit4("Target Specular (HDR)", reinterpret_cast<_float*>(&m_TargetLightDesc.vSpecular), HDRFlags);
 
+                        ImGui::SliderInt("Light Blink Count", reinterpret_cast<_int*>(&m_TargetLightDesc.iBlinkCount), 0, 10);
+
                         ImGui::Checkbox("Return To Start", &m_TargetLightDesc.isReturnToStart);
-
-                        if (ImGui::Button("Backup Selected Light"))
-                            m_pGameInstance->Backup_LightDesc(m_strSelectedLightTag, iCurrentLevelIndex);
-
+                        ImGui::SameLine();
                         ImGui::Checkbox("Restore Light", &m_isRestoreLight);
 
                         if (ImGui::Button("Start Light Transition"))
