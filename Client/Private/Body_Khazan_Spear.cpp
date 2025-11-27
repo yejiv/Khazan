@@ -60,8 +60,10 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
 
     if (FAILED(Ready_AnimationEvent()))
         return E_FAIL;
-    
-    // m_pModelCom->Set_Animation(5);
+
+    /* 파츠 자동 업데이트  */
+    m_pClientInstance->Set_ChangePlayerEquipmentCallBack([this](EQUIPMENTTYPE type, const _wstring& strPartName) {Equip_Part(type, strPartName); });
+
      /* 부모 트랜스폼 연결 */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
 
@@ -69,7 +71,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     m_pSpearTip1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip");
     m_pSpearPole_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R");
 
-
+    
 
     if (FAILED(Ready_Collider()))
         return E_FAIL;
@@ -100,7 +102,6 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
     m_pTrail->Update(fTimeDelta);
 
     Check_Guarding(fTimeDelta);
-    //Update_GuardRotation(fTimeDelta);
 
     if (m_isCollision)
     {
@@ -109,14 +110,25 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
     }
 
     m_pMotionTrailCom->Update(fTimeDelta);
+    if (m_isActiveMotionTrail) 
+        m_pMotionTrailCom->Start_MotionTrail(fTimeDelta);
 
-    // TEST
-    if (CKhazan_Spear::CHARGING_SPRINT & *m_pParentStatus)
-        m_pMotionTrailCom->Start_MotionTrail(0.5f);
-    if (CKhazan_Spear::BACK_DODGE & *m_pParentStatus)
-        m_pMotionTrailCom->Start_MotionTrail(0.5f);
-    if (CKhazan_Spear::CHARGING_STRONG_ATTACK & *m_pParentStatus)
-        m_pMotionTrailCom->Start_MotionTrail(2.5f);
+    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
+        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
+    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
+        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
+        Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), true);
+    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
+        Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), false);
+    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
+        Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), true);
+    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
+        Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), false);
+    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
+        Trigger_MotionTrail(TEXT("MT_Common_Avoid"), true);
+    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
+        Trigger_MotionTrail(TEXT("MT_Common_Avoid"), false);
 
 }
 
@@ -136,10 +148,6 @@ void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
     //      return;
     //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::OUTLINE, this)))
     //      return;
-#ifdef _DEBUG
-
-
-#endif
 
     m_pTrail->Late_Update(fTimeDelta);
 
@@ -165,25 +173,13 @@ HRESULT CBody_Khazan_Spear::Render()
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
-        //m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-
-        /*if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_DIFFUSE, 0)
-            return E_FAIL;        */
-
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
-
-        //  m_pShaderCom->Begin(1);
-
-        //  m_pModelCom->Render(i);
     }
 
-    Render_Part(m_pModelCom_Arm);
-    Render_Part(m_pModelCom_Face);
-    Render_Part(m_pModelCom_Hair);
-    Render_Part(m_pModelCom_Leg);
-    Render_Part(m_pModelCom_Shoes);
-    Render_Part(m_pModelCom_Torso);
+    for (auto pModel : m_RenderParts)
+        Render_Part(pModel);
+
 
     return S_OK;
 }
@@ -207,12 +203,9 @@ HRESULT CBody_Khazan_Spear::Render_Shadow()
             return E_FAIL;
     }
 
-    Render_Part_Shadow(m_pModelCom_Arm);
-    Render_Part_Shadow(m_pModelCom_Face);
-    Render_Part_Shadow(m_pModelCom_Hair);
-    Render_Part_Shadow(m_pModelCom_Leg);
-    Render_Part_Shadow(m_pModelCom_Shoes);
-    Render_Part_Shadow(m_pModelCom_Torso);
+    for (auto pModel : m_RenderParts)
+        Render_Part_Shadow(pModel);
+
 
     return S_OK;
 }
@@ -235,12 +228,8 @@ HRESULT CBody_Khazan_Spear::Render_Outline()
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
     }
 
-    Render_Part_Outline(m_pModelCom_Arm);
-    Render_Part_Outline(m_pModelCom_Face);
-    Render_Part_Outline(m_pModelCom_Hair);
-    Render_Part_Outline(m_pModelCom_Leg);
-    Render_Part_Outline(m_pModelCom_Shoes);
-    Render_Part_Outline(m_pModelCom_Torso);
+    for (auto pModel : m_RenderParts)
+        Render_Part_Outline(pModel);
 
     return S_OK;
 }
@@ -279,12 +268,9 @@ HRESULT CBody_Khazan_Spear::Render_MotionVector()
             return E_FAIL;
     }
 
-    Render_Part_MotionVector(m_pModelCom_Arm);
-    Render_Part_MotionVector(m_pModelCom_Face);
-    Render_Part_MotionVector(m_pModelCom_Hair);
-    Render_Part_MotionVector(m_pModelCom_Leg);
-    Render_Part_MotionVector(m_pModelCom_Shoes);
-    Render_Part_MotionVector(m_pModelCom_Torso);
+    for (auto pModel : m_RenderParts)
+        Render_Part_MotionVector(pModel);
+
 
     return S_OK;
 }
@@ -661,8 +647,6 @@ void CBody_Khazan_Spear::Check_Guarding(_float fTimeDelta)
         m_isSpearPoleActive = false;
     }
 
-
-
 }
 
 void CBody_Khazan_Spear::Update_GuardRotation(_float fTimeDelta)
@@ -792,34 +776,45 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm1"),
-        TEXT("Com_Mode2"), reinterpret_cast<CComponent**>(&m_pModelCom_Arm), nullptr)))
-        return E_FAIL;
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_Prisoner_Face1"),
-        TEXT("Com_Mode3"), reinterpret_cast<CComponent**>(&m_pModelCom_Face), nullptr)))
-        return E_FAIL;
-    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_Prisoner_Hair1"),
-    //    TEXT("Com_Mode4"), reinterpret_cast<CComponent**>(&m_pModelCom_Hair), nullptr)))
-    //    return E_FAIL;
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
-        TEXT("Com_Mode4"), reinterpret_cast<CComponent**>(&m_pModelCom_Hair), nullptr)))
-        return E_FAIL;
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg3"),
-        TEXT("Com_Mode5"), reinterpret_cast<CComponent**>(&m_pModelCom_Leg), nullptr)))
-        return E_FAIL;
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1"),
-        TEXT("Com_Mode6"), reinterpret_cast<CComponent**>(&m_pModelCom_Shoes), nullptr)))
-        return E_FAIL;
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso3"),
-        TEXT("Com_Mode7"), reinterpret_cast<CComponent**>(&m_pModelCom_Torso), nullptr)))
-        return E_FAIL;
 
-    m_pModelCom->Attach_Part(m_pModelCom_Arm);
-    m_pModelCom->Attach_Part(m_pModelCom_Face);
-    m_pModelCom->Attach_Part(m_pModelCom_Hair);
-    m_pModelCom->Attach_Part(m_pModelCom_Leg);
-    m_pModelCom->Attach_Part(m_pModelCom_Shoes);
-    m_pModelCom->Attach_Part(m_pModelCom_Torso);
+    struct PartInfo {
+        wstring strPartName;
+        wstring strPrototype;
+    };
+
+    vector<PartInfo> partInfos = {
+        /* Injured Set */
+        { TEXT("Prisoner_Face1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Face1") },
+        { TEXT("Prisoner_Hair1"), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair") },
+        { TEXT("Prisoner_Torso1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso3") },
+        { TEXT("Prisoner_Arm1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm1") },
+        { TEXT("Prisoner_Leg3"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg3") },
+        { TEXT("Prisoner_Shoes1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1") },
+
+        /* Thief Set */
+        //{ TEXT("Thief_Head"), TEXT("Prototype_Component_Model_Khazan_Thief_Head") },
+        //{ TEXT("Thief_Torso"), TEXT("Prototype_Component_Model_Khazan_Thief_Torso") },
+        //{ TEXT("Thief_Arm"), TEXT("Prototype_Component_Model_Khazan_Thief_Arm") },
+        //{ TEXT("Thief_Leg"), TEXT("Prototype_Component_Model_Khazan_Thief_Leg") },
+        //{ TEXT("Thief_Shoes"), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes") },
+    };
+
+    // 모든 파츠 로드
+    for (const auto& info : partInfos)
+    {
+        CModel* pModel = nullptr;
+        wstring strComponentTag = TEXT("Com_PartModel_") + info.strPartName;
+
+        if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel),info.strPrototype,
+            strComponentTag,  reinterpret_cast<CComponent**>(&pModel), nullptr)))
+            return E_FAIL;
+
+        m_AllParts[info.strPartName] = pModel;
+    }
+
+
+    if (FAILED(Initialize_Equipment()))
+        return E_FAIL;
 
     CMeshTrail::TRAIL_DESC MeshDsc;
     MeshDsc.iTextureIdx = 9;
@@ -831,12 +826,10 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
     MTDesc.pOwnerMasterModel = m_pModelCom;
     MTDesc.HasPartModels = true;
-    MTDesc.OwnerPartModels.push_back(m_pModelCom_Arm);
-    MTDesc.OwnerPartModels.push_back(m_pModelCom_Face);
-    MTDesc.OwnerPartModels.push_back(m_pModelCom_Hair);
-    MTDesc.OwnerPartModels.push_back(m_pModelCom_Leg);
-    MTDesc.OwnerPartModels.push_back(m_pModelCom_Shoes);
-    MTDesc.OwnerPartModels.push_back(m_pModelCom_Torso);
+
+    for (auto pModel : m_RenderParts)
+        MTDesc.OwnerPartModels.push_back(pModel);
+
     MTDesc.Config.vLifeTime = { 0.f, 0.3f };
     MTDesc.Config.vStartColor = { 1.f, 1.f, 1.f };
     MTDesc.Config.vTargetColor = { 1.f, 1.f, 1.f };
@@ -1070,6 +1063,106 @@ HRESULT CBody_Khazan_Spear::Bind_ShaderResources()
 
 
     return S_OK;
+}
+
+HRESULT CBody_Khazan_Spear::Initialize_Equipment()
+{
+
+    const auto& equipData = m_pClientInstance->Get_PlayerEquipment();
+
+    // 각 슬롯별 초기 장비 설정
+    struct SlotMapping {
+        EQUIPMENTTYPE type;
+        _uint equipIndex;
+    };
+
+    vector<SlotMapping> slots = {
+        { EQUIPMENTTYPE::HEAD, equipData.iHead },
+        { EQUIPMENTTYPE::TORSO, equipData.iTorso },
+        { EQUIPMENTTYPE::ARM, equipData.iArm },
+        { EQUIPMENTTYPE::LEG, equipData.iLeg },
+        { EQUIPMENTTYPE::SHOES, equipData.iShoes },
+        { EQUIPMENTTYPE::FACE, equipData.iFace },
+    };
+
+    for (const auto& slot : slots)
+    {
+        if (slot.equipIndex != 0)
+        {
+            Equip_Part(slot.type, m_pClientInstance->Get_EquipmentName(slot.equipIndex));
+        }
+    }
+    return S_OK;
+}
+
+void CBody_Khazan_Spear::Equip_Part(EQUIPMENTTYPE eType, const _wstring& strPartName)
+{
+    if (eType == EQUIPMENTTYPE::SPEAR
+        || eType == EQUIPMENTTYPE::GSWORD
+        || eType == EQUIPMENTTYPE::NONE)
+        return;
+
+    // 기존 장착 파츠 해제
+    auto iter = m_EquippedParts.find(eType);
+    if (iter != m_EquippedParts.end())
+    {
+        auto partIter = m_AllParts.find(iter->second);
+        if (partIter != m_AllParts.end())
+        {
+            m_pModelCom->Detach_Part(partIter->second);
+            Safe_Release(partIter->second);
+        }
+        m_EquippedParts.erase(iter);
+    }
+
+    // 새 파츠 장착
+    if (!strPartName.empty())
+    {
+        auto partIter = m_AllParts.find(strPartName);
+        if (partIter != m_AllParts.end())
+        {
+            m_pModelCom->Attach_Part(partIter->second);
+            m_EquippedParts[eType] = strPartName;
+            Safe_AddRef(partIter->second);
+        }
+    }
+
+    // 빠른 렌더용 
+    Update_QuickRenderCache();
+}
+
+void CBody_Khazan_Spear::Update_QuickRenderCache()
+{
+    for(auto pModel : m_RenderParts)
+        Safe_Release(pModel);
+    m_RenderParts.clear();
+
+    /* 렌더 순서 적용 가능 */
+    static const vector<EQUIPMENTTYPE> renderOrder = {
+        EQUIPMENTTYPE::SHOES,
+        EQUIPMENTTYPE::LEG,
+        EQUIPMENTTYPE::TORSO,
+        EQUIPMENTTYPE::ARM,
+        EQUIPMENTTYPE::HEAD,
+        EQUIPMENTTYPE::FACE,
+    };
+
+    for (EQUIPMENTTYPE type : renderOrder)
+    {
+        auto iter = m_EquippedParts.find(type);
+        if (iter != m_EquippedParts.end())
+        {
+            auto partIter = m_AllParts.find(iter->second);
+            if (partIter != m_AllParts.end())
+            {
+                m_RenderParts.push_back(partIter->second);
+                Safe_AddRef(partIter->second);
+            }
+        }
+    }
+
+    /* todo !! 여기에 모션트레일컴포넌트에  랜더용 파츠모델 바꼈다고 넘겨주기. */
+
 }
 
 void CBody_Khazan_Spear::FX_Trail()
@@ -1379,23 +1472,21 @@ void CBody_Khazan_Spear::Free()
     
     if (!m_isPrototype)
     {
-        m_pModelCom->Detach_Part(m_pModelCom_Arm);
-        m_pModelCom->Detach_Part(m_pModelCom_Face);
-        m_pModelCom->Detach_Part(m_pModelCom_Hair);
-        m_pModelCom->Detach_Part(m_pModelCom_Leg);
-        m_pModelCom->Detach_Part(m_pModelCom_Shoes);
-        m_pModelCom->Detach_Part(m_pModelCom_Torso);
+        for (auto pModel : m_RenderParts)
+            m_pModelCom->Detach_Part(pModel);
     }
     
     Safe_Release(m_pParentTransform);
     Safe_Release(m_pShaderCom);
 
-    Safe_Release(m_pModelCom_Torso);
-    Safe_Release(m_pModelCom_Arm);
-    Safe_Release(m_pModelCom_Face);
-    Safe_Release(m_pModelCom_Hair);
-    Safe_Release(m_pModelCom_Leg);
-    Safe_Release(m_pModelCom_Shoes);
+    for (auto pModel : m_RenderParts)
+        Safe_Release(pModel);
+    m_RenderParts.clear();
+
+    for (auto partIter : m_AllParts)
+        Safe_Release(partIter.second);
+    m_AllParts.clear();
+
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
 

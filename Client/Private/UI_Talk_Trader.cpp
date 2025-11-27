@@ -198,6 +198,8 @@ void CUI_Talk_Trader::Update(_float fTimeDelta)
             m_isUIOpen = false;
             m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_close (SFX).wav"));
             m_pGameInstance->StopByChannel(&m_pChannel);
+
+            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), EventObject::OffEvent());
         }
 
         Setting_Talk();

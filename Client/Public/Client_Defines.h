@@ -61,6 +61,7 @@ namespace Client
         END
     };
 
+    enum class EQUIPMENTTYPE { NONE, SPEAR, GSWORD, HEAD, TORSO, ARM, LEG, SHOES, FACE, END };
 
     typedef struct tagDamageInfo 
     {

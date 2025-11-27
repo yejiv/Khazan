@@ -90,6 +90,8 @@ private:
 
     LIGHT_TRANSITION_DESC   m_TargetLightDesc = {};
 
+    _bool                   m_isRestoreLight = {};
+
 	LEVEL                   m_eCurrentLevel = { LEVEL::TITLE };
 	_bool                   m_isSelectLevel[ENUM_CLASS(LEVEL::END)];
 

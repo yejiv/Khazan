@@ -135,11 +135,7 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
     if (!m_isActive)
         return;
 
-
-
     //======================================================================================================
-
-
 
     if (m_isAnimation)
     {
@@ -169,6 +165,8 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
                     Update_Cinematic(fTimeDelta);
                 else if (m_isYetuga_Holding)
                     Update_Yetuga_Holding(fTimeDelta);
+                else if (m_isNpcTalk)
+                    Update_NpcTalk(fTimeDelta);
                 else
                     Update_Spring(fTimeDelta);
             }
@@ -197,7 +195,7 @@ void CCamera_Compre::Update(_float fTimeDelta)
         {
             if (m_isAnimation || m_isAniFix || m_isBlendBack ||
                 m_isForceOrbit || m_isYetuga_Holding ||
-                m_isPostForceFrameRight || m_isPostFrameHold)
+                m_isPostForceFrameRight || m_isPostFrameHold || m_isNpcTalk)
             {
                 return;
             }
@@ -226,32 +224,32 @@ HRESULT CCamera_Compre::Render()
 void CCamera_Compre::Update_Free(_float fTimeDelta)
 {
     
-    if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
+    if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta, INPUT_TYPE::FORCE))
     {
-        m_pTransformCom->Go_Straight(fTimeDelta);
+        m_pTransformCom->Go_Straight(fTimeDelta * 1.5f);
     }
-    if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta))
+    if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta, INPUT_TYPE::FORCE))
     {
-        m_pTransformCom->Go_Backward(fTimeDelta);
+        m_pTransformCom->Go_Backward(fTimeDelta * 1.5);
     }
-    if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta))
+    if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta, INPUT_TYPE::FORCE))
     {
-        m_pTransformCom->Go_Left(fTimeDelta);
+        m_pTransformCom->Go_Left(fTimeDelta * 1.5f);
     }
-    if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta))
+    if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta, INPUT_TYPE::FORCE))
     {
-        m_pTransformCom->Go_Right(fTimeDelta);
+        m_pTransformCom->Go_Right(fTimeDelta * 1.5f);
     }
 
     _int    iMouseMove = {};
-    if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::RB))
+    if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::RB, INPUT_TYPE::FORCE))
     {
-        if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X))
+        if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X, INPUT_TYPE::FORCE))
         {
             m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * iMouseMove * m_fMouseSensor);
         }
 
-        if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y))
+        if (iMouseMove = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y, INPUT_TYPE::FORCE))
         {
             m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * iMouseMove * m_fMouseSensor);
         }
@@ -524,6 +522,73 @@ void CCamera_Compre::Update_InteractFocus(_float fTimeDelta)
         m_isPostForceFrameRight = false; // 프레이밍 종료 (원하면 유지해도 됨)
     }
 
+}
+
+void CCamera_Compre::Update_NpcTalk(_float fTimeDelta)
+{
+    if (!m_isNpcTalk || !m_pTransformCom)
+        return;
+
+    if (fTimeDelta <= 0.f)
+        return;
+
+    _vector vCamTargetPos = XMLoadFloat3(&m_vNpcCamTargetPos);
+    _vector vLookDir = XMLoadFloat3(&m_vNpcCamLookAt);
+
+    // 길이 체크 + fallback
+    float lenSq = XMVectorGetX(XMVector3LengthSq(vLookDir));
+    if (lenSq < 1e-6f)
+    {
+        vLookDir = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
+        if (XMVectorGetX(XMVector3LengthSq(vLookDir)) < 1e-6f)
+            vLookDir = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+    }
+    else
+    {
+        vLookDir = XMVector3Normalize(vLookDir);
+    }
+
+    _vector vRightTarget, vUpTarget, vLookTarget;
+    BuildSafeBasis(vLookDir, vRightTarget, vUpTarget, vLookTarget);
+
+    // ===== 블렌드 비율(smoothstep) 계산 =====
+    m_fNpcTalkBlendTime += fTimeDelta;
+
+    _float t = 0.f;
+    if (m_fNpcTalkBlendDuration <= 0.f)
+        m_fNpcTalkBlendDuration = 0.001f; // 방어
+
+    t = Clamp(m_fNpcTalkBlendTime / m_fNpcTalkBlendDuration, 0.f, 1.f);
+    _float s = t * t * (3.f - 2.f * t); // smoothstep
+
+    // ===== 포즈 보간 =====
+    _vector vPos;
+    _vector vRight;
+    _vector vUp;
+    _vector vLook;
+
+    if (t < 1.f)
+    {
+        vPos = XMVectorLerp(m_vNpcTalkStartPos, vCamTargetPos, s);
+        vRight = XMVector3Normalize(
+            XMVectorLerp(m_vNpcTalkStartRight, vRightTarget, s));
+        vUp = XMVector3Normalize(
+            XMVectorLerp(m_vNpcTalkStartUp, vUpTarget, s));
+        vLook = XMVector3Normalize(
+            XMVectorLerp(m_vNpcTalkStartLook, vLookTarget, s));
+    }
+    else
+    {
+        vPos = vCamTargetPos;
+        vRight = vRightTarget;
+        vUp = vUpTarget;
+        vLook = vLookTarget;
+    }
+
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(vPos, 1.f));
+    m_pTransformCom->Set_State(STATE::RIGHT, vRight);
+    m_pTransformCom->Set_State(STATE::UP, vUp);
+    m_pTransformCom->Set_State(STATE::LOOK, vLook);
 }
 
 void CCamera_Compre::LockOn_Check(_float fTimeDelta)
@@ -1185,6 +1250,42 @@ CCamera_Compre::CAMERA_COMPRE_DESC CCamera_Compre::Get_Desc()
     XMStoreFloat4(&tDesc.vAt, m_pTransformCom->Get_State(STATE::LOOK));
 
     return tDesc;
+}
+
+void CCamera_Compre::Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos, _float3 vLookAt)
+{
+    m_isNpcTalk = isNpcTalk;
+
+    if (m_isNpcTalk)
+    {
+        m_vNpcCamTargetPos = vTargetPos;
+        m_vNpcCamLookAt = vLookAt;
+
+        m_fNpcTalkBlendTime = 0.f;
+
+        m_vNpcTalkStartPos = m_pTransformCom->Get_State(STATE::POSITION);
+        m_vNpcTalkStartRight = m_pTransformCom->Get_State(STATE::RIGHT);
+        m_vNpcTalkStartUp = m_pTransformCom->Get_State(STATE::UP);
+        m_vNpcTalkStartLook = m_pTransformCom->Get_State(STATE::LOOK);
+    }
+    else
+    {
+        m_isBlendBack = true;
+        m_fBlendBackTime = 0.f;
+
+        m_vBlendStartPos = m_pTransformCom->Get_State(STATE::POSITION);
+        m_vBlendStartRight = m_pTransformCom->Get_State(STATE::RIGHT);
+        m_vBlendStartUp = m_pTransformCom->Get_State(STATE::UP);
+        m_vBlendStartLook = m_pTransformCom->Get_State(STATE::LOOK);
+
+        _vector vLookN = XMVector3Normalize(m_vBlendStartLook);
+        float x = XMVectorGetX(vLookN);
+        float y = XMVectorGetY(vLookN);
+        float z = XMVectorGetZ(vLookN);
+
+        m_fYaw = atan2f(z, x);
+        m_fPitch = Clamp(asinf(Clamp(y, -1.f, 1.f)), m_fPitchMin, m_fPitchMax);
+    }
 }
 
 void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)

@@ -53,6 +53,13 @@ CGameObject* CPool_Manager::Pop_PoolObject(_uint iLayerLevelIndex, const _wstrin
 
 	CGameObject* pGameObject = pPool->front();
 
+    if (pGameObject->Get_IsDead() || !pGameObject->Get_IsActive())
+    {
+        pGameObject->Set_IsDead(false);
+        pGameObject->Set_IsActive(true);
+        pGameObject->Reset();
+    }
+
 	pPool->pop_front();
 
 	return pGameObject;
@@ -61,9 +68,9 @@ CGameObject* CPool_Manager::Pop_PoolObject(_uint iLayerLevelIndex, const _wstrin
 
 HRESULT CPool_Manager::Reset_PoolObject(CGameObject* pGameObject)
 {
-
 	pGameObject->Set_IsPool(true);
 	pGameObject->Set_IsDead(false);
+    pGameObject->Set_IsActive(true);
 	pGameObject->Reset();
 
 	deque<CGameObject*>* pPool = Find_Pool(pGameObject->Get_Layer(), pGameObject->Get_Tag());

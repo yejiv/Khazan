@@ -48,16 +48,25 @@ public:
 public:
 	CModel* Get_Model() { return m_pModelCom; }
     void    Set_Enble(_bool isEnble) { m_isEnble = isEnble; }
+
+    /*  Motion Trail */
     const MOTIONTRAIL_CONFIG&   Get_MotionTrailConfig();
     void                        Set_MotionTrailConfig(const MOTIONTRAIL_CONFIG& Config);
     void                        Set_EnableMotionTrail(_bool isEnable);
     _bool                       isEnableMotionTrail();
     void                        Start_MotionTrail(_float fDuration);
+    void                        Set_MotionTrailCallBack(function<void(const _wstring&, _bool)> callback) { m_OnMotionTrailCallBack = callback; }
+    void                        On_MotionTrail(const _wstring strKey, _bool isActive) { m_pMotionTrailCom->Set_Config(strKey); m_isActiveMotionTrail = isActive; }
 
 private:
 	CShader*					m_pShaderCom = { nullptr };
-	CModel*						m_pModelCom = { nullptr };
+    CModel*                     m_pModelCom = { nullptr }; //ÇöÀç ¸ðµ¨
+    CModel*                     m_pModelCom_Punish_Spear = { nullptr };
+    CModel*                     m_pModelCom_Flash_Spear = { nullptr };
+    CModel*                     m_pModelCom_Meteor_GSword = { nullptr };
+    CModel*						m_pModelCom_Execution_GSword = { nullptr };
 	class CTransform*			m_pParentTransform = { nullptr };
+    class CClientInstance*      m_pClientInstance = { nullptr };
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
 	_uint*						m_pParentState = { nullptr };
@@ -67,6 +76,13 @@ private:
 	_matrix						m_matOffset;
     _bool                       m_isEnble = { true };
     _bool                       m_isEquip = { true };
+
+    /* Motion Trail */
+    function<void(const _wstring&, _bool)>  m_OnMotionTrailCallBack;
+    _bool                       m_isActiveMotionTrail = { false };
+
+private:
+    void        Change_Weapon(EQUIPMENTTYPE type, const _wstring& strPartName);
 
 private:
 	HRESULT Ready_Components();

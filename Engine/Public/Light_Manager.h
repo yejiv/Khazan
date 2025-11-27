@@ -24,7 +24,8 @@ public:
 	void    Clear(_uint iLevelIndex);
 
 public:
-    void    Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc);
+    void    Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc, _bool isRestore);
+    void    Backup_LightDesc(const _wstring& strLightTag, _uint iLevelIndex);
 
 public:
 	const LIGHT_DESC*       Get_LightDesc(const _wstring& strLightTag, _uint iLevelIndex);
@@ -43,6 +44,9 @@ private:
     _bool                                   m_isTransition = {};
     class CLight*                           m_pTransLight = { nullptr };
     LIGHT_DESC                              m_StartLightDesc;
+
+    // Backup
+    map<_wstring, LIGHT_DESC>               m_OriginalLightDesc;
 
 private:
 	class CLight*           Find_Light(const _wstring& strLightTag, _uint iLevelIndex);

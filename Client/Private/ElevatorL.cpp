@@ -5,6 +5,7 @@
 #include "Elevator_Inner.h"
 #include "Elevator_Mid.h"
 #include "Elevator_Outer.h"
+#include "Slate_Switch.h"
 
 CElevatorL::CElevatorL(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
@@ -56,7 +57,7 @@ HRESULT CElevatorL::Initialize_Clone(void* pArg)
 
     return S_OK;
 }
-
+ 
 void CElevatorL::Priority_Update(_float fTimeDelta)
 {
     __super::Priority_Update(fTimeDelta);
@@ -70,6 +71,7 @@ void CElevatorL::Update(_float fTimeDelta)
 
         m_isAnimChange = true;
         m_pModelCom->AnimationLoop(false);
+        *m_pModelCom->Get_CurTrackPosition() = 50.f;
     }
     else if (ANIM_STATE::IDLE == m_eAnimState)
     {
@@ -238,6 +240,15 @@ HRESULT CElevatorL::Ready_PartObjects(void* pArg)
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Outer"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_Elevator_Outer"), &OuterDesc), E_FAIL);
 
+    //CSlate_Switch::SLATE_SWITCH_DESC SlateDesc = {};
+
+    //SlateDesc.eLevel = eLevel;
+    //SlateDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    //SlateDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Point_Elevator_Button");
+
+    //CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Button"), ENUM_CLASS(eLevel),
+    //    TEXT("Prototype_GameObject_Prop_Slate_Switch"), &OuterDesc), E_FAIL);
+
     return S_OK;
 }
 
@@ -278,21 +289,10 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
 {
     if (true == m_Event.isEvent()) // m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_H) && ANIM_STATE::IDLE != m_eAnimState) // 어떤 조건이 들어오면 애니메이션 Loop 중단 후 슥슥 샥샥
     {
-        if (ANIM_STATE::INNER_STOPPING == m_eAnimState)
-        {
-            m_isAnimChange = true;
-            m_pModelCom->AnimationLoop(false);
-        }
-        else
-        {
-            m_fLimitTimeAcc += fTimeDelta;
-
-            if (2.f < m_fLimitTimeAcc)
-            {
-                m_isAnimChange = true;
-                m_pModelCom->AnimationLoop(false);
-            }
-        }
+        m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+        *m_pModelCom->Get_CurTrackPosition() = 0.f;
+        m_isAnimChange = true;
+        m_pModelCom->AnimationLoop(false);
     }
     else if (ANIM_STATE::IDLE == m_eAnimState)
     {

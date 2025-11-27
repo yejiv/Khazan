@@ -26,28 +26,28 @@ void CSequence_Embars_Puzzle_Third::Update(_float fTimeDelta)
 {
     m_fTime += fTimeDelta;
 
-    if (m_fTime >= 0.f && !m_isElevatorFadeOut)
+    if (m_fTime >= 2.f && !m_isElevatorFadeOut)
     {
         CClientInstance::GetInstance()->Fade_Out();
         m_isElevatorFadeOut = true;
     }
-    else if (m_fTime >= 1.f && !m_isElevatorCamera)
+    else if (m_fTime >= 3.f && !m_isElevatorCamera)
     {
         CClientInstance::GetInstance()->Fade_In();
         m_pClientInstance->Camera_Set_Animation(TEXT("Turn_Elevator"));
         m_isElevatorCamera = true;
     }
-    else if (m_fTime >= 4.f && !m_isMovePlayerFadeOut)
+    else if (m_fTime >= 11.f && !m_isMovePlayerFadeOut)
     {
         CClientInstance::GetInstance()->Fade_Out();
         m_isMovePlayerFadeOut = true;
     }
-    else if (m_fTime > 5.f && !m_isMovePlayer)
+    else if (m_fTime > 12.f && !m_isMovePlayer)
     {
         m_pClientInstance->Camera_Set_FixEnd();
         m_isMovePlayer = true;
     }
-    else if (m_fTime >= 7.f)
+    else if (m_fTime >= 13.f)
     {
         CClientInstance::GetInstance()->Fade_In();
         m_isEnd = true;

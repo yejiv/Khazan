@@ -51,7 +51,7 @@ void CInput_Manager::Update()
 
 _bool CInput_Manager::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, INPUT_TYPE eType, _float* pPressingTime)
 {
-    if (m_eInputType != eType) return false;
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return false;
 
     const _byte* curr = m_pInput_Device->GetKeyCurr();
     if (IsPressing(curr, byKeyID)) {
@@ -69,20 +69,20 @@ _bool CInput_Manager::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, INPUT_TYPE
 
 _bool CInput_Manager::Key_Down(_ubyte byKeyID, INPUT_TYPE eType)
 {
-    if (m_eInputType != eType) return false;
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return false;
     return IsDownEdge(m_pInput_Device->GetKeyPrev(), m_pInput_Device->GetKeyCurr(), byKeyID);
 }
 
 _bool CInput_Manager::Key_Up(_ubyte byKeyID, INPUT_TYPE eType)
 {
-    if (m_eInputType != eType) return false;
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return false;
     return IsUpEdge(m_pInput_Device->GetKeyPrev(), m_pInput_Device->GetKeyCurr(), byKeyID);
 
 }
 
 _bool CInput_Manager::Mouse_Pressing(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-    if (m_eInputType != eType) return false;
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return false;
     return MouseIsPressing(m_pInput_Device->GetMouseCurr(), ENUM_CLASS(eMouse));
 
     return false;
@@ -90,19 +90,19 @@ _bool CInput_Manager::Mouse_Pressing(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 
 _bool CInput_Manager::Mouse_Down(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-    if (m_eInputType != eType) return false;
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return false;
     return MouseIsDownEdge(m_pInput_Device->GetMousePrev(), m_pInput_Device->GetMouseCurr(), ENUM_CLASS(eMouse));
 }
 
 _bool CInput_Manager::Mouse_Up(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-    if (m_eInputType != eType) return false;
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return false;
     return MouseIsUpEdge(m_pInput_Device->GetMousePrev(), m_pInput_Device->GetMouseCurr(), ENUM_CLASS(eMouse));
 }
 
 _long CInput_Manager::Mouse_Move(MOUSEMOVESTATE eMouseState, INPUT_TYPE eType)
 {
-    if (m_eInputType != eType) return 0;
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return 0;
     const auto& ms = m_pInput_Device->GetMouseCurr();
     switch (eMouseState) {
     case MOUSEMOVESTATE::X: return ms.lX;

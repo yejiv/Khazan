@@ -28,6 +28,8 @@ HRESULT CSlate_Switch::Initialize_Clone(void* pArg)
 
     m_pActive = pDesc->pActive;
 
+    m_pSocketMatrix = pDesc->pSocketMatrix;
+
     m_eAnimState = ANIM_STATE::IDLE;
     m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
     m_pModelCom->Set_AnimationBlend(false);
