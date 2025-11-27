@@ -529,7 +529,6 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_GSword/Khazan_GSword.dat"))))
         return E_FAIL;
 
-
     /* Prototype_Component_Model_Spear_Punish*/
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Spear_Punish"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Spear_Fragment/Spear_Fragment.dat"))))

@@ -40,9 +40,6 @@ HRESULT CViper::Initialize_Clone(void* pArg)
      if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
-    //m_pCharVirCom->Set_Position(XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
-
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
 
@@ -60,7 +57,6 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     if (nullptr != m_pController)
     {
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
-        //m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "Phase", ENUM_CLASS(PHASE::PHASE1));
     }
 
     m_ePhase = PHASE::PHASE1;
@@ -73,7 +69,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
 
 void CViper::Priority_Update(_float fTimeDelta)
 {
-  /*  CBlackBoard* pBB = m_pController->Get_BlackBoard();
+    CBlackBoard* pBB = m_pController->Get_BlackBoard();
     if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
     {
         CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
@@ -86,7 +82,7 @@ void CViper::Priority_Update(_float fTimeDelta)
 
 
         CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
-    }*/
+    }
 
     CContainerObject::Priority_Update(fTimeDelta);
 }
@@ -651,28 +647,34 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("P1_JumpStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            //m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_JumpStart", true);
             CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            m_pCharVirCom->Jump(70.f,10.f);
+            m_pCharVirCom->Jump(50.f,7.f);
         });
 
 
     pModel->Register_Event("P1_JumpStop", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.3f, 0.5f, 2.f);
-
+            m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 1.f, 0.1f, 0.25f);
         });
 
 
     pModel->Register_Event("P1_Landing", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_LandStart", true);
+            CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            m_pCharVirCom->Start_Dive(vTargetPos,80.f);
+
+            m_pWeapon->Set_OnAttackCollision(true);
+
+
         });
+
 
     pModel->Register_Event("P1_Landing", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_LandStart", false);
+            m_pWeapon->Set_OnAttackCollision(false);
+
         });
 
 
@@ -710,34 +712,12 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("StingGrab_Hold", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
         {
+            m_isLookAt = false;
             Grab_Check_Begin();
         });
 
-    pModel->Register_Event("StingGrab_Hold", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-        {
-           // 플레이어 날리기
-        });
-
-
 #pragma endregion
 
-#pragma region THROWMAINTAIN
-    
-
-    pModel->Register_Event("ThrowMainTain", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-        {
-           
-        });
-
-
-    pModel->Register_Event("ThrowMainTain", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-        {
-            
-        });
-
-
-#pragma endregion
-  
 #pragma region 5HITCombo
 
 
@@ -747,8 +727,6 @@ HRESULT CViper::Ready_AnimEvent()
             m_pWeapon->Set_OnAttackCollision(true);
             _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
             m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
-
-            
         });
 
     pModel->Register_Event("5Hit_Slash_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()

@@ -1,5 +1,8 @@
 #pragma once
 #include "StateMachine.h"
+#include "Client_Defines.h"
+
+NS_BEGIN(Client)
 
 enum class YETUGA_STATE
 {
@@ -34,6 +37,10 @@ private:
 	virtual ~CFSM_Yetuga() = default;
 
 public:
+    class CAS_CutScene_Yetuga* Get_CutScene_Yetuga();
+
+
+public:
 	virtual HRESULT				Initialize();
 	virtual void				Update(class CGameObject* pOwner, _float fTimeDelta) override;
 
@@ -42,3 +49,4 @@ public:
 	virtual void				Free() override;
 };
 
+NS_END

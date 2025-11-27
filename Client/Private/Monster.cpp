@@ -96,7 +96,7 @@ void CMonster::Consume_Stamina(_float fAmout)
     if (m_fCurrentStamina <= 0.f)
     {
         CBlackBoard* pBB = m_pController->Get_BlackBoard();
-        pBB->Set_Value<_bool>(m_strName, "DamageInterrupt",true);
+        pBB->Set_Value<_bool>(m_strName, "isGroggy", true);
     }
 }
 
