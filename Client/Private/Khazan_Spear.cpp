@@ -86,6 +86,8 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
 
+    Ready_MotionTrailCallback();
+
     if (FAILED(Ready_Collision()))
         return E_FAIL;
 
@@ -1178,6 +1180,7 @@ _bool CKhazan_Spear::Attack_Input(_float fTimeDelta)
             Add_State(CAT::M_ATTACK);
             Add_SubState(ATT::ATK_GRAPPLE);
             Add_Status(BRUTAL_SUCCESS);
+            m_eHitReaction = ENUM_CLASS(HITREACTION::BRUTAL_ATTACK);
         }
     }
 
@@ -2423,6 +2426,14 @@ HRESULT CKhazan_Spear::Ready_AnimationStateMachine()
 
 
     return S_OK;
+}
+
+void CKhazan_Spear::Ready_MotionTrailCallback()
+{
+    m_pBody->Set_MotionTrailCallBack([this](const _wstring& strKey, _bool isActive) {
+        m_pBody->On_MotionTrail(strKey, isActive);
+        m_pSpear->On_MotionTrail(strKey, isActive);
+        });
 }
 
 void CKhazan_Spear::Clear_Step0()

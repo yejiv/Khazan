@@ -25,14 +25,14 @@ CDragonian_Melee::MONDATA& CDragonian_Melee::Get_Data()
     return m_Data;
 }
 
-void CDragonian_Melee::Move_F()
+void CDragonian_Melee::LockOnLerp(_float fTimeDetla)
 {
-    m_pTarget->Get_Position();
+    m_pTransformCom->LookAt_Lerp(m_pTarget->Get_Position(), fTimeDetla, 1.5f);
+}
+
+void CDragonian_Melee::LockOn()
+{
     m_pTransformCom->LookAt(m_pTarget->Get_Position());
-
-    _float fWorkSpeed = m_Data.isSlowWalk ? 3.5f : 4.1f;
-
-    m_pTransformCom->AI_Chase(m_pTarget->Get_Position() , m_fTimeDelta, fWorkSpeed);
 }
 
 void CDragonian_Melee::Hp_Visivle(_bool isVisivle)
@@ -44,6 +44,12 @@ void CDragonian_Melee::Hp_Dead()
 {
     m_pUI_HP->Set_IsDead(true);
     Safe_Release(m_pUI_HP);
+}
+
+void CDragonian_Melee::LookAt_Lerp(_float fTimeDelta)
+{
+    m_pTransformCom->LookAt_Lerp(m_pTarget->Get_Position(), fTimeDelta, 0.8f);
+
 }
 
 _bool CDragonian_Melee::Check_AttackRanage(string strKey)
@@ -60,6 +66,24 @@ _bool CDragonian_Melee::Check_AttackRanage(string strKey)
         return false;
 }
 
+_bool CDragonian_Melee::Check_Ranage(_float fRange)
+{
+    _float fDist = XMVectorGetX(XMVector3Length(m_pTarget->Get_Transform()->Get_State(STATE::POSITION) - m_pTransformCom->Get_State(STATE::POSITION)));
+
+    if (fRange <= 0)
+        return true;
+
+    if (fDist <= fRange)
+        return true;
+    else
+        return false;
+}
+
+TARGET_DIR CDragonian_Melee::Get_DIR()
+{
+    return Check_Dir(m_pTransformCom->Get_WorldMatrix(), m_pTarget->Get_Transform()->Get_State(STATE::POSITION));
+}
+
 HRESULT CDragonian_Melee::Initialize_Prototype(_int iLevel)
 {
 
@@ -72,6 +96,7 @@ HRESULT CDragonian_Melee::Initialize_Prototype(_int iLevel)
 
 HRESULT CDragonian_Melee::Initialize_Clone(void* pArg)
 {
+
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
     CHECK_FAILED(Ready_MonData(), E_FAIL);
@@ -95,12 +120,16 @@ void CDragonian_Melee::Priority_Update(_float fTimeDelta)
         m_fCurrentHP = m_fMaxHP;
         m_Data.isSleep = true;
     }
+    else if (m_pGameInstance->Key_Down(DIK_V) && m_pGameInstance->Key_Pressing(DIK_LCONTROL, 0.f))
+        Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG, m_pTarget);
+    else if (m_pGameInstance->Key_Down(DIK_V) && m_pGameInstance->Key_Pressing(DIK_LSHIFT, 0.f))
+        Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK, m_pTarget);
     else if (m_pGameInstance->Key_Down(DIK_V))
-        Ready_Components();
+        Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, m_pTarget);
+    else if (m_pGameInstance->Key_Down(DIK_B) && m_pGameInstance->Key_Pressing(DIK_LCONTROL, 0.f))
+        m_fCurrentStamina = 0;
     else if (m_pGameInstance->Key_Down(DIK_B))
         Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
-    else if (m_pGameInstance->Key_Down(DIK_N))
-        m_fCurrentStamina = 0;
 
 }
 
@@ -111,9 +140,13 @@ void CDragonian_Melee::Update(_float fTimeDelta)
     if (m_Data.fAttackCool >= 0.f)
         m_Data.fAttackCool -= fTimeDelta;
 
+    if (m_Data.fAnimDeley >= 0.f)
+        m_Data.fAnimDeley -= fTimeDelta;
+
     m_pController->Update(this, fTimeDelta);
     __super::Update(fTimeDelta);
     Update_UIHp();
+    Update_WalkSpeed();
 }
 
 void CDragonian_Melee::Late_Update(_float fTimeDelta)
@@ -248,27 +281,35 @@ HRESULT CDragonian_Melee::Ready_AnimEvent()
     pModel->Register_Event("Walk2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isSlowWalk = false; });
     pModel->Register_Event("Walk3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isSlowWalk = false; });
     pModel->Register_Event("Walk4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isSlowWalk = false; });
-    
+
     pModel->Register_Event("Walk1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
     pModel->Register_Event("Walk2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
     pModel->Register_Event("Walk3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
     pModel->Register_Event("Walk4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
 
-    pModel->Register_Event("Attack_DoubleSwing1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
-    pModel->Register_Event("Attack_DoubleSwing2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
-    pModel->Register_Event("Attack_DoubleSwing3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
-    pModel->Register_Event("Attack_DoubleSwing4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+    pModel->Register_Event("DoubleSwing_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+    pModel->Register_Event("DoubleSwing_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+    pModel->Register_Event("DoubleSwing_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+    pModel->Register_Event("DoubleSwing_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
 
-    pModel->Register_Event("Attack_DoubleSwing1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
-    pModel->Register_Event("Attack_DoubleSwing2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
-    pModel->Register_Event("Attack_DoubleSwing3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
-    pModel->Register_Event("Attack_DoubleSwing4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
+    pModel->Register_Event("DoubleSwing_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); });
+    pModel->Register_Event("DoubleSwing_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); });
+    pModel->Register_Event("DoubleSwing_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); });
+    pModel->Register_Event("DoubleSwing_4", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); });
 
-    pModel->Register_Event("Attack_HardSmash1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
-    pModel->Register_Event("Attack_HardSmash2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+    pModel->Register_Event("DoubleSwing_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
+    pModel->Register_Event("DoubleSwing_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
+    pModel->Register_Event("DoubleSwing_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
+    pModel->Register_Event("DoubleSwing_4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
 
-    pModel->Register_Event("Attack_HardSmash1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
-    pModel->Register_Event("Attack_HardSmash2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
+    pModel->Register_Event("HardSmash_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+    pModel->Register_Event("HardSmash_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+
+    pModel->Register_Event("HardSmash_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); });
+    pModel->Register_Event("HardSmash_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); });
+
+    pModel->Register_Event("HardSmash_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
+    pModel->Register_Event("HardSmash_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
 
     return S_OK;
 }
@@ -291,6 +332,20 @@ void CDragonian_Melee::Update_UIHp()
     m_vHpPos = { m_pHeadMatrix->m[3][0], m_pHeadMatrix->m[3][1], m_pHeadMatrix->m[3][2], 1.f };
     XMStoreFloat4(&m_vHpPos, XMVector4Transform(XMLoadFloat4(&m_vHpPos), m_pTransformCom->Get_WorldMatrix()));
     m_vHpPos.y += 0.5f;
+}
+
+void CDragonian_Melee::Update_WalkSpeed()
+{
+    if (m_Data.isSlowWalk)
+        m_Data.fWarkSpeed = 0.7f;
+    else
+        m_Data.fWarkSpeed = 1.6f;
+}
+
+void CDragonian_Melee::Attack_Move()
+{
+    LockOnLerp(m_fTimeDelta);
+    Get_Transform()->Go_Straight(m_fTimeDelta);
 }
 
 CDragonian_Melee* CDragonian_Melee::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
@@ -317,17 +372,14 @@ CGameObject* CDragonian_Melee::Clone(void* pArg)
 
 void CDragonian_Melee::Free()
 {
+    m_Data.pOwner = nullptr;
     if (m_pUI_HP != nullptr)
     {
         m_pUI_HP->Set_IsDead(true);
     }
-    Safe_Release(m_Data.pOwner);
-
-    
     __super::Free();
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
     Safe_Release(m_pBlackBoard);
-    m_Data.pOwner = nullptr;
     
 }

@@ -3,6 +3,9 @@
 #include "GameInstance.h"
 
 #include "Interaction_Guide.h"
+#include "Sequence_Embars_Puzzle_First.h"
+#include "Sequence_Embars_Puzzle_Second.h"
+#include "Sequence_Embars_Puzzle_Third.h"
 
 CUnLockGear::CUnLockGear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
@@ -52,7 +55,7 @@ HRESULT CUnLockGear::Initialize_Clone(void* pArg)
         {
             m_Event = e;
         });
-    
+     
     switch (m_iEventID)
     {
     case 0:
@@ -290,7 +293,41 @@ void CUnLockGear::Animation_Update(_float fTimeDelta)
             XMStoreFloat4(&UnLockGearEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
             XMStoreFloat4(&UnLockGearEvent.vPlayerPosition, OffSetMatrix.r[3]);
 
-            InteractType.UnLockGearEvent = UnLockGearEvent;
+            InteractType.UnLockGearEvent = UnLockGearEvent;            
+
+            if (m_iEventID == 0)
+            {
+                CSequence_Embars_Puzzle_First* pSequence = CSequence_Embars_Puzzle_First::Create();
+
+                SEQ_REQ_PLAY_DESC tPlayDesc{};
+                tPlayDesc.tId.iSeq = 110000;
+                tPlayDesc.pAsset = L"Puzzle_First";
+                tPlayDesc.fStartTime = 0.f;
+
+                m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
+            }
+            else if (m_iEventID == 1)
+            {
+                CSequence_Embars_Puzzle_Second* pSequence = CSequence_Embars_Puzzle_Second::Create();
+
+                SEQ_REQ_PLAY_DESC tPlayDesc{};
+                tPlayDesc.tId.iSeq = 110001;
+                tPlayDesc.pAsset = L"Puzzle_Second";
+                tPlayDesc.fStartTime = 0.f;
+
+                m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
+            }
+            else if (m_iEventID == 2)
+            {
+                CSequence_Embars_Puzzle_Third* pSequence = CSequence_Embars_Puzzle_Third::Create();
+
+                SEQ_REQ_PLAY_DESC tPlayDesc{};
+                tPlayDesc.tId.iSeq = 110002;
+                tPlayDesc.pAsset = L"Puzzle_Third";
+                tPlayDesc.fStartTime = 0.f;
+
+                m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
+            }
 
             // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
@@ -395,5 +432,9 @@ void CUnLockGear::Free()
     Safe_Release(m_pStaticCom);
     Safe_Release(m_pTriggerCom);
     if (m_pGuide)
+    {
         m_pGuide->Set_IsDead(true);
+        m_pGuide = nullptr;
+    }
+        
 }

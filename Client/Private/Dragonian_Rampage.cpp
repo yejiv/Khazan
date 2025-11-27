@@ -80,7 +80,9 @@ HRESULT CDragonian_Rampage::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_PartObjects(), E_FAIL);
     m_pHeadMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Head");
-
+    m_pBodySocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Spine2");
+    m_pTailSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Tail4");
+    
     CHECK_FAILED(Ready_AnimEvent(), E_FAIL);
     CHECK_FAILED(Ready_Components(), E_FAIL);
 
@@ -102,6 +104,37 @@ void CDragonian_Rampage::Priority_Update(_float fTimeDelta)
     else if (m_pGameInstance->Key_Down(DIK_N))
         m_fCurrentStamina = 0;
 
+    if (m_pGameInstance->Key_Down(DIK_V))
+    {
+        Safe_Release(m_pHitBodyCom);
+        this->Remove_Component(TEXT("Com_HitBody"));
+        m_pHitBodyCom = nullptr;
+
+        _vector vMatScale{}, vMatQuat{}, vMatPos{};
+
+        CBody::BODY_BOXSHAPE_DESC BodyDesc{};
+        BodyDesc.vExtent = { 2.2f, 1.f, 1.f };
+        BodyDesc.eMotion = EMotionType::Kinematic;
+        BodyDesc.eQuality = EMotionQuality::Discrete;
+        BodyDesc.eShapeType = SHAPE::BOX;
+        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
+        BodyDesc.bIsTrigger = true;
+
+        _matrix BodyMat = XMLoadFloat4x4(m_pBodySocketMatrix) * m_pTransformCom->Get_WorldMatrix();
+        for (uint32_t i = 0; i < 3; i++)
+            BodyMat.r[i] = XMVector3Normalize(BodyMat.r[i]);
+
+        XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, BodyMat);
+
+        XMStoreFloat3(&BodyDesc.vPos, vMatPos);
+        XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
+
+        BodyDesc.vShapeOffset = _float3(-0.5f, -0.f, 0.f);
+        BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+        CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_HitBody"), (CComponent**)&m_pHitBodyCom, &BodyDesc);
+
+    }
 }
 
 void CDragonian_Rampage::Update(_float fTimeDelta)
@@ -114,6 +147,8 @@ void CDragonian_Rampage::Update(_float fTimeDelta)
     m_pController->Update(this, fTimeDelta);
     __super::Update(fTimeDelta);
     Update_UIHp();
+    Update_Body(fTimeDelta);
+
 }
 
 void CDragonian_Rampage::Late_Update(_float fTimeDelta)
@@ -194,8 +229,9 @@ HRESULT CDragonian_Rampage::Ready_Components()
     tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 
     m_tCollisionDesc.pGameObject = this;
+    m_isGhost = true;
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
-
+    
     tCharVirDesc.fRadius = 1.6f;
     tCharVirDesc.fHeight = 0.5f;
 
@@ -203,6 +239,51 @@ HRESULT CDragonian_Rampage::Ready_Components()
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc), E_FAIL);
 
 
+    _vector vMatScale{}, vMatQuat{}, vMatPos{};
+
+    CBody::BODY_BOXSHAPE_DESC BodyDesc{};
+    BodyDesc.vExtent = { 1.2f, 0.7f, 0.7f };
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete;
+    BodyDesc.eShapeType = SHAPE::BOX;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    BodyDesc.bIsTrigger = true;
+
+    _matrix TailMat = XMLoadFloat4x4(m_pTailSocketMatrix) * m_pTransformCom->Get_WorldMatrix();
+    for (uint32_t i = 0; i < 3; i++)
+        TailMat.r[i] = XMVector3Normalize(TailMat.r[i]);
+
+    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, TailMat);
+
+    XMStoreFloat3(&BodyDesc.vPos, vMatPos);
+    XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
+
+    BodyDesc.vShapeOffset = _float3(0.f, -0.f, 0.f);
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_TailBody"), (CComponent**)&m_pTaileCom, &BodyDesc);
+
+    BodyDesc.vExtent = { 2.2f, 1.f, 1.f };
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete;
+    BodyDesc.eShapeType = SHAPE::BOX;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
+    BodyDesc.bIsTrigger = true;
+
+    _matrix BodyMat = XMLoadFloat4x4(m_pBodySocketMatrix) * m_pTransformCom->Get_WorldMatrix();
+    for (uint32_t i = 0; i < 3; i++)
+        BodyMat.r[i] = XMVector3Normalize(BodyMat.r[i]);
+
+    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, BodyMat);
+
+    XMStoreFloat3(&BodyDesc.vPos, vMatPos);
+    XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
+
+    BodyDesc.vShapeOffset = _float3(-0.5f, -0.f, 0.f);
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_HitBody"), (CComponent**)&m_pHitBodyCom, &BodyDesc);
+    m_pHitBodyCom->Activate(true);
     return S_OK;
 }
 
@@ -279,6 +360,36 @@ void CDragonian_Rampage::Update_UIHp()
     m_vHpPos = { m_pHeadMatrix->m[3][0], m_pHeadMatrix->m[3][1], m_pHeadMatrix->m[3][2], 1.f };
     XMStoreFloat4(&m_vHpPos, XMVector4Transform(XMLoadFloat4(&m_vHpPos), m_pTransformCom->Get_WorldMatrix()));
     m_vHpPos.y += 0.5f;
+}
+
+void CDragonian_Rampage::Update_Body(_float fTimeDelta)
+{
+    _vector vMatScale{}, vMatQuat{}, vMatPos{};
+    _matrix HitMat = XMLoadFloat4x4(m_pBodySocketMatrix);
+    for (uint32_t i = 0; i < 3; i++)
+        HitMat.r[i] = XMVector3Normalize(HitMat.r[i]);
+    HitMat *= m_pTransformCom->Get_WorldMatrix();
+
+    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, HitMat);
+    m_pHitBodyCom->Sync_Update(HitMat);
+    m_pHitBodyCom->Update(fTimeDelta, HitMat, vMatQuat, vMatPos);
+
+
+    _bool isAttack = m_Data.iAttack_State & CDragonian_Rampage::ATTACK_BODY::TAIL;
+    m_pTaileCom->Activate(isAttack);
+
+    if (!isAttack)
+        return;
+
+    _matrix TailMat = XMLoadFloat4x4(m_pTailSocketMatrix);
+    for (uint32_t i = 0; i < 3; i++)
+        TailMat.r[i] = XMVector3Normalize(TailMat.r[i]);
+    TailMat *= m_pTransformCom->Get_WorldMatrix();
+
+    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, TailMat);
+    m_pTaileCom->Sync_Update(TailMat);
+    m_pTaileCom->Update(fTimeDelta, TailMat, vMatQuat, vMatPos);
+
 }
 
 CDragonian_Rampage* CDragonian_Rampage::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)

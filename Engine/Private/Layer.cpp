@@ -79,6 +79,8 @@ void CLayer::PoolObject_Back()
         if ((*it)->Get_IsPool())
         {
             m_pGameInstance->Reset_PoolObject((*it));
+            if ((*it)->Get_IsDead())
+                int a = 0;
             it = m_GameObjects.erase(it);
         }
         else
@@ -93,6 +95,8 @@ void CLayer::PoolObject_Back()
         if ((*it)->Get_IsPool())
         {
             m_pGameInstance->Reset_PoolObject((*it));
+            if ((*it)->Get_IsDead())
+                int a = 0;
             it = m_GameObjects.erase(it);
         }
         else
@@ -111,9 +115,11 @@ void CLayer::DeadObject_Clear()
         {
             Safe_Release(*it);
         }
-        else if ((*it)->Get_IsDead() && (*it)->Get_IsPool())
+        else if ((*it)->Get_IsPool())
         {
             m_pGameInstance->Reset_PoolObject((*it));
+            if ((*it)->Get_IsDead())
+                int a = 0;
             it = m_GameObjects.erase(it);
         }
         else

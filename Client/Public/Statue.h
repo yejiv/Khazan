@@ -75,11 +75,15 @@ private:
 
     _uint m_iEventID = { 0 };
 
+    _bool m_isLateInit = { false };
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_PartObjects(void* pArg);
     HRESULT Ready_Collision(void* pArg);
     HRESULT Ready_Interaction_Guide(void* pArg);
+
+    void Check_Solved();
 
     void Input_Interact_Event(_float fTimeDelta);
     void Animation_Update(_float fTimeDelta);

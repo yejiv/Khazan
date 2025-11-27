@@ -30,8 +30,21 @@ _float4* CYetuga::Get_LockOnPosition()
     return m_vLockOnPosition;
 }
 
+void CYetuga::Yetuga_Jump(_fvector vGoalPos, _float fHeight, _float fSpeed)
+{
+    m_pCharVirCom->Jump_ToTarget(vGoalPos, fHeight, fSpeed);
+    //m_pCharVirCom->Jump(fHeight,fSpeed);
+
+}
+
+void CYetuga::Yetuga_Land(_fvector vGoalPosition, _float fSpeed)
+{
+    m_pCharVirCom->Start_Dive(vGoalPosition, fSpeed);
+}
+
 HRESULT CYetuga::Initialize_Prototype()
 {
+
     return S_OK;
 }
 
@@ -43,8 +56,8 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
 
     if (FAILED(Ready_Components()))
         return E_FAIL;
-   
-    //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(513.f, -11.f, 225.f,1.f));
+
+    m_pCharVirCom->Set_Position(XMVectorSet(537.354f, 18.684f, 221.961f, 1.f));
 
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
@@ -107,13 +120,7 @@ void CYetuga::Update(_float fTimeDelta)
         Update_Landing(fTimeDelta);
     }
 
-    //if (m_pGameInstance->Key_Down(DIK_Z))
-    //{
-    //    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.947f, -11.952f, 226.f, 1.f));
-    //    m_pCharVirCom->Set_Position(XMVectorSet(516.947f, -11.952f, 226.f, 1.f));
-    //}
-
-
+  
     __super::Update(fTimeDelta);
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
@@ -560,15 +567,6 @@ void CYetuga::Breath_Loop()
     m_pBreath->Set_SpanwPoint(vSpawnPoint);
 
     m_pBreath->Reset();
-
-   /* _float3 dbgPos;
-    XMStoreFloat3(&dbgPos, vPosition);
-    _float3 WorldPos;
-    _vector vTemp = m_pTransformCom->Get_State(STATE::POSITION);
-    XMStoreFloat3(&WorldPos, vTemp);
-    std::cout << "Head Pos : " << dbgPos.x << " , " << dbgPos.y << " , " << dbgPos.z << std::endl;
-    std::cout << "WorldPos : " << WorldPos.x << " , " << WorldPos.y << " , " << dbgPos.z << std::endl;
-    std::cout << "Spawn Pos : " << vSpawnPoint.x << " , " << vSpawnPoint.y << " , " << vSpawnPoint.z << std::endl;*/
 
 }
 
