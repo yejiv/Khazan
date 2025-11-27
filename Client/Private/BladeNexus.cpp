@@ -108,8 +108,7 @@ HRESULT CBladeNexus::Render()
     CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-    _float fIntensity = 10.f;
+    _float fIntensity = 15.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fIntensity, sizeof(_float))))
         return E_FAIL;
 
@@ -418,9 +417,9 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             LIGHT_TRANSITION_DESC LightDesc{};
             LightDesc.fDuration = 7.f;
             LightDesc.vFadeTime = _float2(7.f, 0.f);
-            LightDesc.vDiffuse = _float4(0.2f, 0.2f, 0.2f, 0.2f);
-            LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 0.2f);
-            LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+            LightDesc.vDiffuse = _float4(0.1f, 0.1f, 0.1f, 0.1f);
+            LightDesc.vAmbient = _float4(0.1f, 0.1f, 0.1f, 0.1f);
+            LightDesc.vSpecular = _float4(0.1f, 0.1f, 0.1f, 0.1f);
             LightDesc.isReturnToStart = false;
             m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
         }
