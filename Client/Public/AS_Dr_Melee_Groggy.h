@@ -5,7 +5,7 @@
 class CAS_Dr_Melee_Groggy : public CAI_State
 {
 private:
-    enum FSMSTATE { START, LOOP, END };
+    enum FSMSTATE { START, LOOP, STAMIN, DAMAGE, END };
 
 private:
     CAS_Dr_Melee_Groggy();

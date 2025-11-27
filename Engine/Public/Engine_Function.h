@@ -398,6 +398,46 @@ namespace Engine
 		return XMQuaternionNormalize(XMQuaternionRotationMatrix(R));
 	}
 
+    static TARGET_DIR Check_Dir(XMMATRIX MyMatrix, XMVECTOR vTargetPos) {
+
+        _vector vPos = MyMatrix.r[3];
+
+        _vector vDir = XMVector3Normalize(vTargetPos - vPos);
+
+        _vector vRight = XMVector3Normalize(MyMatrix.r[0]);
+        _vector vLock = XMVector3Normalize(MyMatrix.r[2]);
+
+
+        float dotRight = XMVectorGetX(XMVector3Dot(vDir, vRight)); 
+        float dotLook = XMVectorGetX(XMVector3Dot(vDir, vLock)); 
+
+        if (dotLook > 0.382f)
+        {
+            if (dotRight > 0.382f)          
+                return TARGET_DIR::FR;
+            else if (dotRight < -0.382f)
+                return TARGET_DIR::FL;
+            else
+                return TARGET_DIR::F;
+
+        }
+        else if (dotLook < -0.382f)
+        {
+            if (dotRight > 0.382f)
+                return TARGET_DIR::BL;
+            else if (dotRight < -0.382f)
+                return TARGET_DIR::BR;
+            else
+                return TARGET_DIR::B;
+        }
+        else
+        {
+            if (dotRight > 0.f)
+                return TARGET_DIR::R;
+            else
+                return TARGET_DIR::L;
+        }
+    }
 }
 
 #endif // Engine_Function_h__

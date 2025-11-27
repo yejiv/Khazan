@@ -29,7 +29,8 @@ HRESULT CDragonian_Claw_R::Initialize_Clone(void* pArg)
     Safe_AddRef(m_pOwnerTransform);
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
-    m_pTransformCom->Rotation(XMConvertToRadians(0.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
+    m_pTransformCom->Rotation(XMConvertToRadians(90.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
+
     CHECK_FAILED(Ready_Components(), E_FAIL);
     CHECK_FAILED(Ready_Collision(), E_FAIL);
 
@@ -42,19 +43,18 @@ void CDragonian_Claw_R::Priority_Update(_float fTimeDelta)
 
 void CDragonian_Claw_R::Update(_float fTimeDelta)
 {
-    m_pTransformCom->Rotation(XMConvertToRadians(90.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
-
-
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 
     for (uint32_t i = 0; i < 3; i++)
         BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
+    
     XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
-    m_pBodyComp->Collision_Active(true);
+    _bool isAttakc = m_pData->iAttack_State & CDragonian_Rampage::ATTACK_BODY::HAND_R;
+    m_pBodyComp->Collision_Active(isAttakc);
 
-//    if (!m_pData->isAttack_Collision)
-//        return;
+    if (!isAttakc)
+        return;
 
     _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
 

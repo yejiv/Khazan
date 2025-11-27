@@ -2500,12 +2500,27 @@ HRESULT CLevel_Map::Ready_Light_Window()
                     ImGui::ColorPicker4("##direct_dif_light", reinterpret_cast<_float*>(&m_FixLightDesc.vDiffuse.x));
 					SEPARATOR;
 
-					ImGui::Text("AMBIENT");
-                    ImGui::ColorPicker4("##direct_amb_light", reinterpret_cast<_float*>(&m_FixLightDesc.vAmbient.x));
+                    ImGui::Text("AMBIENT R : "); SAMELINE;
+                    ImGui::InputFloat("##fix_dir_amb_light_r", &m_FixLightDesc.vAmbient.x);
+                    ImGui::Text("AMBIENT G : "); SAMELINE;
+                    ImGui::InputFloat("##fix_dir_amb_light_g", &m_FixLightDesc.vAmbient.y);
+                    ImGui::Text("AMBIENT B : "); SAMELINE;
+                    ImGui::InputFloat("##fix_dir_amb_light_b", &m_FixLightDesc.vAmbient.z);
+                    ImGui::Text("AMBIENT A : "); SAMELINE;
+                    ImGui::InputFloat("##fix_dir_amb_light_a", &m_FixLightDesc.vAmbient.w);
+                    //ImGui::ColorPicker4("##direct_amb_light", reinterpret_cast<_float*>(&m_FixLightDesc.vAmbient.x));
                     SEPARATOR;
 
-					ImGui::Text("SPECULAR");
-                    ImGui::ColorPicker4("##direct_spec_light", reinterpret_cast<_float*>(&m_FixLightDesc.vSpecular.x));
+                    ImGui::Text("SPECULAR R : "); SAMELINE;
+                    ImGui::InputFloat("##fix_dir_spe_light_r", &m_FixLightDesc.vSpecular.x);
+                    ImGui::Text("SPECULAR G : "); SAMELINE;
+                    ImGui::InputFloat("##fix_dir_spe_light_g", &m_FixLightDesc.vSpecular.y);
+                    ImGui::Text("SPECULAR B : "); SAMELINE;
+                    ImGui::InputFloat("##fix_dir_spe_light_b", &m_FixLightDesc.vSpecular.z);
+                    ImGui::Text("SPECULAR A : "); SAMELINE;
+                    ImGui::InputFloat("##fix_dir_spe_light_a", &m_FixLightDesc.vSpecular.w);
+                    //ImGui::ColorPicker4("##direct_spec_light", reinterpret_cast<_float*>(&m_FixLightDesc.vSpecular.x));
+
                     SEPARATOR;
 				}
 				else if (LIGHT_DESC::POINT == m_FixLightDesc.eType)
@@ -2539,12 +2554,26 @@ HRESULT CLevel_Map::Ready_Light_Window()
                     ImGui::ColorPicker4("##point_dif_light", reinterpret_cast<_float*>(&m_FixLightDesc.vDiffuse.x));
                     SEPARATOR;
 
-                    ImGui::Text("AMBIENT");
-                    ImGui::ColorPicker4("##point_amb_light", reinterpret_cast<_float*>(&m_FixLightDesc.vAmbient.x));
+                    ImGui::Text("AMBIENT R : "); SAMELINE;
+                    ImGui::InputFloat("##fix_pt_amb_light_r", &m_FixLightDesc.vAmbient.x);
+                    ImGui::Text("AMBIENT G : "); SAMELINE;
+                    ImGui::InputFloat("##fix_pt_amb_light_g", &m_FixLightDesc.vAmbient.y);
+                    ImGui::Text("AMBIENT B : "); SAMELINE;
+                    ImGui::InputFloat("##fix_pt_amb_light_b", &m_FixLightDesc.vAmbient.z);
+                    ImGui::Text("AMBIENT A : "); SAMELINE;
+                    ImGui::InputFloat("##fix_pt_amb_light_a", &m_FixLightDesc.vAmbient.w);
+                    //ImGui::ColorPicker4("##point_amb_light", reinterpret_cast<_float*>(&m_FixLightDesc.vAmbient.x));
                     SEPARATOR;
 
-                    ImGui::Text("SPECULAR");
-                    ImGui::ColorPicker4("##point_spec_light", reinterpret_cast<_float*>(&m_FixLightDesc.vSpecular.x));
+                    ImGui::Text("SPECULAR R : "); SAMELINE;
+                    ImGui::InputFloat("##fix_pt_spe_light_r", &m_FixLightDesc.vSpecular.x);
+                    ImGui::Text("SPECULAR G : "); SAMELINE;
+                    ImGui::InputFloat("##fix_pt_spe_light_g", &m_FixLightDesc.vSpecular.y);
+                    ImGui::Text("SPECULAR B : "); SAMELINE;
+                    ImGui::InputFloat("##fix_pt_spe_light_b", &m_FixLightDesc.vSpecular.z);
+                    ImGui::Text("SPECULAR A : "); SAMELINE;
+                    ImGui::InputFloat("##fix_pt_spe_light_a", &m_FixLightDesc.vSpecular.w);
+                    //ImGui::ColorPicker4("##point_spec_light", reinterpret_cast<_float*>(&m_FixLightDesc.vSpecular.x));
                     SEPARATOR;
 				}
 
