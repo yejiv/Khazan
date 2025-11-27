@@ -57,6 +57,8 @@ HRESULT CLevel_Viper::Initialize()
     //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
+    CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
+
     //CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
     CClientInstance::GetInstance()->Fade_Out();
 
@@ -890,6 +892,28 @@ HRESULT CLevel_Viper::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("GhostKnight"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("GhostKnight_static"), 4);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("GhostKnight_static_connect"), 4);
+
+    return S_OK;
+}
+
+HRESULT CLevel_Viper::Ready_Shader_Settings()
+{
+    // 그림자
+    SHADOW_DESC ShadowDesc{};
+    ShadowDesc.fSplit = 35.f;
+    ShadowDesc.vLightDir = _float3(0.1f, -1.f, -0.9f);
+    ShadowDesc.fBias = 0.001f;
+    ShadowDesc.fIntensity = 0.75f;
+    m_pGameInstance->Set_ShadowDesc(ShadowDesc);
+
+    // 초기 Fog
+    FOG_TRANSITION_DESC FogDesc{};
+    FogDesc.fDensity = 0.05f;
+    FogDesc.fBias = 0.9f;
+    FogDesc.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
+    FogDesc.isUseHeight = false;
+    FogDesc.isUseNoise = false;
+    m_pGameInstance->Start_FogTransition(0.f, FogDesc);
 
     return S_OK;
 }
