@@ -285,10 +285,9 @@ void CSequence_Manager::Emit_Ended(const SEQ_ID& tId, _bool isInterrupted)
 
 void CSequence_Manager::Clear()
 {
-    for (_uint token : m_SubscribeTokens)
-        m_pGameInstance->UnsubscribeAll_Event(token);
-    m_SubscribeTokens.clear();
-
+    //for (_uint token : m_SubscribeTokens)
+    //    m_pGameInstance->UnsubscribeAll_Event(token);
+    //m_SubscribeTokens.clear();
 
     for (auto& it : m_qAdopt)
         Safe_Release(it.first);
