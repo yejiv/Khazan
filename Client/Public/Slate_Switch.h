@@ -13,16 +13,28 @@ NS_BEGIN(Client)
 class CSlate_Switch final : public CPartObject
 {
 private:
-    enum ANIM_STATE { DIE, IDLE, SPAWN, END };
+    enum ANIM_STATE
+    {
+        DIE,            // 눌림
+        IDLE,           // 아이들
+        SPAWN,          // 올라옴
+        END
+    };
 
 public:
+    enum class ELEVATOR_TYPE { SMALL, LARGE, END };
+
     typedef struct tagSlateSwitchDesc : public CPartObject::PARTOBJECT_DESC
     {
         LEVEL eLevel{ LEVEL::END };
 
+        ELEVATOR_TYPE eType{ ELEVATOR_TYPE::END };
+
         _float4x4* pSocketMatrix = { nullptr };
 
-        _bool* pActive{ nullptr };
+        _bool* pActiveElevator{ nullptr };          // 엘리베이터 가동중인지 아닌지
+        _bool* pAvailableSwitch{ nullptr };         // 스위치의 애니메이션이 끝나서 상호 작용 가능해야 할 때 ( 스위치에서 다룰 것 )
+        _bool* pSwitchPressed{ nullptr };           // 스위치가 눌렸는지 안눌렸는지
 
     }SLATE_SWITCH_DESC;
 
@@ -47,11 +59,15 @@ private:
     CModel* m_pModelCom = { nullptr };
     CShader* m_pShaderCom = { nullptr };
 
-    ANIM_STATE m_eAnimState = ANIM_STATE::END;
+    ANIM_STATE m_eAnimState = { ANIM_STATE::END };
+
+    ELEVATOR_TYPE m_eElevatorType = { ELEVATOR_TYPE::END };
 
     _float4x4* m_pSocketMatrix = { nullptr };
 
-    _bool* m_pActive = { nullptr };
+    _bool* m_pActiveElevator = { nullptr };
+    _bool* m_pAvailableSwitch = { nullptr };
+    _bool* m_pSwitchPressed = { nullptr };
 
     _bool m_isSocket = { false };
 

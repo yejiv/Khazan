@@ -65,6 +65,15 @@ void CElevatorL::Priority_Update(_float fTimeDelta)
 
 void CElevatorL::Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Pressing(DIK_NUMPAD7, fTimeDelta) && m_pGameInstance->Key_Pressing(DIK_NUMPAD8, fTimeDelta) && m_pGameInstance->Key_Down(DIK_NUMPAD9))
+    {
+        m_eAnimState = ANIM_STATE::IDLE;
+        m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+        m_pModelCom->AnimationLoop(false);
+
+        m_eMoveState = MOVE_STATE::MIDTODOWN;
+    }
+
     if (m_Event.isEventOn) // m_pGameInstance->Key_Down(DIK_H) && ANIM_STATE::IDLE != m_eAnimState) // 어떤 조건이 들어오면 애니메이션 Loop 중단 후 슥슥 샥샥
     {
         m_Event.EventOff();
@@ -77,32 +86,23 @@ void CElevatorL::Update(_float fTimeDelta)
     {
         if (m_Event.IsThirdStep()) // m_pGameInstance->Key_Down(DIK_L)) // 아이들 상태 되면 이제 슥슥 이동을 시작
         {
-            switch (m_eMoveState)
+            if (MOVE_STATE::DOWNTOUP == m_eMoveState)
             {
-            case MOVE_STATE::MID:
-                m_eMoveState = MOVE_STATE::MIDTODOWN;
-                break;
-            case MOVE_STATE::DOWN:
-                m_eMoveState = MOVE_STATE::DOWNTOUP;
-                break;
-            default:
-                break;
+
+            }
+            else
+            {
+                switch (m_eMoveState)
+                {
+                case MOVE_STATE::MID:
+                    m_eMoveState = MOVE_STATE::MIDTODOWN;
+                    break;
+                default:
+                    break;
+                }
             }
         }
     }
-#pragma region TEST
-    if (m_pGameInstance->Key_Pressing(DIK_NUMPAD7, 0.f) && m_pGameInstance->Key_Pressing(DIK_NUMPAD8, 0.f) && m_pGameInstance->Key_Down(DIK_NUMPAD9))
-        m_isMidToUpMove = !m_isMidToUpMove;
-    if (m_pGameInstance->Key_Pressing(DIK_NUMPAD4, 0.f) && m_pGameInstance->Key_Pressing(DIK_NUMPAD5, 0.f) && m_pGameInstance->Key_Down(DIK_NUMPAD6))
-    {
-        m_eAnimState = ANIM_STATE::IDLE;
-        m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-        m_pModelCom->AnimationLoop(false);
-
-        m_eMoveState = MOVE_STATE::MIDTODOWN;
-    }
-#pragma endregion
-
 
     Animation_Update(fTimeDelta);
 
@@ -115,7 +115,10 @@ void CElevatorL::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
     m_pBodyCom->Sync_Update(m_pTransformCom);
+    m_pTriggerCom->Sync_Update(m_pTransformCom);
+
     m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
+    m_pTriggerCom->Update(fTimeDelta, m_pTransformCom);
 }
 
 void CElevatorL::Late_Update(_float fTimeDelta)
@@ -176,6 +179,10 @@ void CElevatorL::Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4
         }
         case MOVE_STATE::DOWNTOUP:
             m_eMoveState = MOVE_STATE::UP;
+
+            m_isActiveElevator = false;
+
+            m_isAvailableSwitch = true;
             break;
         default:
             break;
@@ -240,14 +247,18 @@ HRESULT CElevatorL::Ready_PartObjects(void* pArg)
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Outer"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_Elevator_Outer"), &OuterDesc), E_FAIL);
 
-    //CSlate_Switch::SLATE_SWITCH_DESC SlateDesc = {};
+    CSlate_Switch::SLATE_SWITCH_DESC SlateDesc = {};
 
-    //SlateDesc.eLevel = eLevel;
-    //SlateDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
-    //SlateDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Point_Elevator_Button");
+    SlateDesc.eLevel = eLevel;
+    SlateDesc.eType = CSlate_Switch::ELEVATOR_TYPE::LARGE;
+    SlateDesc.pActiveElevator = &m_isActiveElevator;
+    SlateDesc.pAvailableSwitch = &m_isAvailableSwitch;
+    SlateDesc.pSwitchPressed = &m_isSwitchPressed;
+    SlateDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    SlateDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Point_Elevator_Button");
 
-    //CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Button"), ENUM_CLASS(eLevel),
-    //    TEXT("Prototype_GameObject_Prop_Slate_Switch"), &OuterDesc), E_FAIL);
+    CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Button"), ENUM_CLASS(eLevel),
+        TEXT("Prototype_GameObject_Prop_Slate_Switch"), &SlateDesc), E_FAIL);
 
     return S_OK;
 }
@@ -282,6 +293,34 @@ HRESULT CElevatorL::Ready_Collision(void* pArg)
         return E_FAIL;
 #pragma endregion
 
+#pragma region 트리거 영역
+    CBody::BODY_BOXSHAPE_DESC TriggerDesc{};
+    TriggerDesc.vExtent = _float3(0.5f, 1.2f, 0.5f);
+    TriggerDesc.bIsTrigger = true;
+    TriggerDesc.bStartActive = true;
+    TriggerDesc.eMotion = EMotionType::Kinematic;
+    TriggerDesc.eQuality = EMotionQuality::LinearCast;
+    TriggerDesc.eShapeType = SHAPE::BOX;
+    TriggerDesc.fFriction = 0.8f;
+    TriggerDesc.fMass = 1.0f;
+    TriggerDesc.fRestitution = 0.0f;
+    TriggerDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT);
+
+    XMStoreFloat3(&TriggerDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
+
+    XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+
+    TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc.pGameObject = this;
+    //pCollDesc.pInfo = ?? // 작성하기
+    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
+        return E_FAIL;
+#pragma endregion
+
     return S_OK;
 }
 
@@ -296,28 +335,32 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
     }
     else if (ANIM_STATE::IDLE == m_eAnimState)
     {
-        if (true == m_isMidToUpMove)
+        if (m_eMoveState == MOVE_STATE::MID)
         {
-            if (MOVE_STATE::DOWN == m_eMoveState)
-            {
-                m_eMoveState = MOVE_STATE::DOWNTOUP;
-            }
+            m_eMoveState = MOVE_STATE::MIDTODOWN;
         }
-        else if (m_Event.IsThirdStep()) // m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_L)) // 아이들 상태 되면 이제 슥슥 이동을 시작
+
+        if (m_isSwitchPressed && m_eMoveState == MOVE_STATE::DOWN)
+        {
+            m_isSwitchPressed = false;
+            m_eMoveState = MOVE_STATE::DOWNTOUP;
+        }
+
+        if (m_Event.IsThirdStep()) // m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_L)) // 아이들 상태 되면 이제 슥슥 이동을 시작
         {
             if (MOVE_STATE::MID == m_eMoveState)
             {
                 m_eMoveState = MOVE_STATE::MIDTODOWN;
             }
         }
-
         switch (m_eMoveState)
         {
         case MOVE_STATE::MIDTODOWN:
             Lerp_ElevatorMove(fTimeDelta, m_vMidPos, m_vDownPos, 20.f);
             break;
         case MOVE_STATE::DOWNTOUP:
-            Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 30.f);
+            if (true == m_isActiveElevator)
+                Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 30.f);
             break;
         default:
             break;
@@ -397,7 +440,16 @@ void CElevatorL::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
 
+    if (pMyDesc->iObjectLayer == ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT))
+    {
+        if (MOVE_STATE::UP == m_eMoveState)
+            return;
 
+        if (false == m_isSwitchPressed)
+        {
+            m_isSwitchPressed = true;
+        }
+    }
 }
 
 void CElevatorL::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -413,7 +465,7 @@ void CElevatorL::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer,
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
 
-
+    m_isCollision = false;
 }
 
 void CElevatorL::VerticalOnTime_Update(_float fTimeDelta)
@@ -468,4 +520,5 @@ void CElevatorL::Free()
     __super::Free();
 
     Safe_Release(m_pBodyCom);
+    Safe_Release(m_pTriggerCom);
 }

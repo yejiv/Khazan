@@ -48,9 +48,9 @@ HRESULT CElevatorS::Initialize_Clone(void* pArg)
     _float fDownLength = XMVectorGetX(XMVector4Length(XMLoadFloat4(&m_vDownPos) - m_pTransformCom->Get_State(STATE::POSITION)));
 
     if (fUpLength > fDownLength)
-        m_eState = ELEVATOR_STATE::IDLE_DOWN;
+        m_eState = ELEVATOR_STATE::DOWN;
     else
-        m_eState = ELEVATOR_STATE::IDLE_UP;
+        m_eState = ELEVATOR_STATE::UP;
 
     return S_OK;
 }
@@ -64,27 +64,25 @@ void CElevatorS::Update(_float fTimeDelta)
 {
     m_pModelCom->Play_Animation(fTimeDelta);
 
-    if (m_pGameInstance->Key_Down(DIK_6))
+    if (true == m_isActiveElevator)
     {
-        if (false == m_isActive)
-            m_isActive = true;
-    }
-
-    if (true == m_isActive)
-    {
-        if (ELEVATOR_STATE::IDLE_UP == m_eState)
+        if (ELEVATOR_STATE::UP == m_eState)
         {
             Lerp_ElevatorMove(fTimeDelta, m_vUpPos, m_vDownPos, 15.f);
         }
-        if (ELEVATOR_STATE::IDLE_DOWN == m_eState)
+        else if (ELEVATOR_STATE::DOWN == m_eState)
         {
             Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 15.f);
         }
     }
 
     __super::Update(fTimeDelta);
+
     m_pBodyCom->Sync_Update(m_pTransformCom);
     m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
+
+    m_pTriggerCom->Sync_Update(m_pTransformCom);
+    m_pTriggerCom->Update(fTimeDelta, m_pTransformCom);
 }
 
 void CElevatorS::Late_Update(_float fTimeDelta)
@@ -128,13 +126,16 @@ void CElevatorS::Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4
 
     if (0.1f > fDistance)
     {
-        m_isActive = false;
+        m_isActiveElevator = false;
+
         m_fTimeAcc = 0.f;
 
-        if (ELEVATOR_STATE::IDLE_UP == m_eState)
-            m_eState = ELEVATOR_STATE::IDLE_DOWN;
+        m_isAvailableSwitch = true;
+
+        if (ELEVATOR_STATE::UP == m_eState)
+            m_eState = ELEVATOR_STATE::DOWN;
         else
-            m_eState = ELEVATOR_STATE::IDLE_UP;
+            m_eState = ELEVATOR_STATE::UP;
     }
     else
     {
@@ -172,7 +173,10 @@ HRESULT CElevatorS::Ready_PartObjects(void* pArg)
     CSlate_Switch::SLATE_SWITCH_DESC SlateDesc = {};
 
     SlateDesc.eLevel = eLevel;
-    SlateDesc.pActive = &m_isActive;
+    SlateDesc.eType = CSlate_Switch::ELEVATOR_TYPE::SMALL;
+    SlateDesc.pActiveElevator = &m_isActiveElevator;
+    SlateDesc.pAvailableSwitch = &m_isAvailableSwitch;
+    SlateDesc.pSwitchPressed = &m_isSwitchPressed;
     SlateDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
 
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Switch"), ENUM_CLASS(eLevel),
@@ -181,8 +185,8 @@ HRESULT CElevatorS::Ready_PartObjects(void* pArg)
     CElevator_Gear::ELEVATOR_GEAR_DESC GearDesc = {};
 
     GearDesc.eLevel = eLevel;
-    GearDesc.pActive = &m_isActive;
     GearDesc.fOffsetRotation = XMConvertToRadians(45.f);
+    GearDesc.pActiveElevator = &m_isActiveElevator;
     GearDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
 
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Gear_0"), ENUM_CLASS(eLevel),
@@ -234,7 +238,63 @@ HRESULT CElevatorS::Ready_Collision(void* pArg)
         TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
         return E_FAIL;
 
+#pragma region 트리거 영역
+    CBody::BODY_BOXSHAPE_DESC TriggerDesc{};
+    TriggerDesc.vExtent = _float3(0.5f, 0.5f, 0.5f);
+    TriggerDesc.bIsTrigger = true;
+    TriggerDesc.bStartActive = true;
+    TriggerDesc.eMotion = EMotionType::Kinematic;
+    TriggerDesc.eQuality = EMotionQuality::LinearCast;
+    TriggerDesc.eShapeType = SHAPE::BOX;
+    TriggerDesc.fFriction = 0.8f;
+    TriggerDesc.fMass = 1.0f;
+    TriggerDesc.fRestitution = 0.0f;
+    TriggerDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT);
+
+    XMStoreFloat3(&TriggerDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
+
+    XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+
+    TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc.pGameObject = this;
+    //pCollDesc.pInfo = ?? // 작성하기
+    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
+        return E_FAIL;
+#pragma endregion
+
     return S_OK;
+}
+
+void CElevatorS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
+{
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
+    if (pMyDesc->iObjectLayer == ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT))
+    {
+        if (false == m_isSwitchPressed)
+        {
+            m_isSwitchPressed = true;
+        }
+    }
+}
+
+void CElevatorS::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC * pMyDesc)
+{
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+}
+
+void CElevatorS::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, COLLISION_DESC * pMyDesc)
+{
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+        return;
+
+    m_isCollision = false;
 }
 
 CElevatorS* CElevatorS::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -268,4 +328,5 @@ void CElevatorS::Free()
     __super::Free();
 
     Safe_Release(m_pBodyCom);
+    Safe_Release(m_pTriggerCom);
 }
