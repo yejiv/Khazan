@@ -198,6 +198,8 @@
     <ClInclude Include="..\Public\AS_Dr_Rampage_Brutal.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Dead.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Groggy.h" />
+    <ClInclude Include="..\public\AS_Dr_Rampage_Page2.h" />
+    <ClInclude Include="..\public\AS_Dr_Rampage_Turn.h" />
     <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h" />
     <ClInclude Include="..\Public\AS_Groggy_Viper.h" />
     <ClInclude Include="..\Public\AS_Groggy_Yetuga.h" />
@@ -248,7 +250,6 @@
     <ClInclude Include="..\Public\AS_Dr_Rampage_Sleep.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Walk.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_LockOn.h" />
-    <ClInclude Include="..\public\AS_Dr_Rampage_Attack_Jump.h" />
     <ClInclude Include="..\Public\AttackState_Yetuga.h" />
     <ClInclude Include="..\Public\Barrel.h" />
     <ClInclude Include="..\Public\BigChest.h" />
@@ -567,11 +568,12 @@
     <ClCompile Include="..\Private\AS_Dr_Rampage_Brutal.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Damage.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Dead.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Rampage_Page2.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Sleep.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Groggy.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Rampage_Turn.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Walk.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_LockOn.cpp" />
-    <ClCompile Include="..\private\AS_Dr_Rampage_Attack_Jump.cpp" />
     <ClCompile Include="..\Private\AS_Groggy_Viper.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Viper.cpp" />
     <ClCompile Include="..\Private\AS_StingGrab_Viper.cpp" />

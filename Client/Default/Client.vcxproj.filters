@@ -1099,9 +1099,6 @@
     <Filter Include="92.AI\State\Dragonian_Rampage\Walk">
       <UniqueIdentifier>{015a53e8-1999-40e7-afc2-263af22654d4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Dragonian_Rampage\Attack_Jump">
-      <UniqueIdentifier>{ced11d04-7b3e-4cf0-8cf7-6791412c7d31}</UniqueIdentifier>
-    </Filter>
     <Filter Include="92.AI\State\Dragonian_Rampage\Attack_Back">
       <UniqueIdentifier>{d39b2609-4e39-4304-8b4b-a4fe3ad17cb0}</UniqueIdentifier>
     </Filter>
@@ -1239,6 +1236,12 @@
     </Filter>
     <Filter Include="02.GameObject\Creature\Monster\Viper\Body\Phase2">
       <UniqueIdentifier>{0625b37c-3910-4e34-a359-5626f29af45b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage\Turn">
+      <UniqueIdentifier>{a535e22e-dbd8-43ed-ab7a-e9554d399a27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Rampage\Page_2">
+      <UniqueIdentifier>{96765157-c7f0-4431-a78c-7b22b7670c33}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2304,9 +2307,6 @@
     <ClInclude Include="..\public\AI_Controller_Dragonian_Rampage.h">
       <Filter>92.AI\Controller\Dragonian_Rampage</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\AS_Dr_Rampage_Attack_Jump.h">
-      <Filter>92.AI\State\Dragonian_Rampage\Attack_Jump</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\AS_Dr_Rampage_Attack_Back.h">
       <Filter>92.AI\State\Dragonian_Rampage\Attack_Back</Filter>
     </ClInclude>
@@ -2393,6 +2393,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Body_Cinematic_Viper.h">
       <Filter>02.GameObject\Creature\Monster\Viper\Body\Cinematic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Dr_Rampage_Turn.h">
+      <Filter>92.AI\State\Dragonian_Rampage\Turn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Dr_Rampage_Page2.h">
+      <Filter>92.AI\State\Dragonian_Rampage\Page_2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3432,9 +3438,6 @@
     <ClCompile Include="..\private\AI_Controller_Dragonian_Rampage.cpp">
       <Filter>92.AI\Controller\Dragonian_Rampage</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\AS_Dr_Rampage_Attack_Jump.cpp">
-      <Filter>92.AI\State\Dragonian_Rampage\Attack_Jump</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\AS_Dr_Rampage_Attack_Back.cpp">
       <Filter>92.AI\State\Dragonian_Rampage\Attack_Back</Filter>
     </ClCompile>
@@ -3527,6 +3530,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Body_Cinematic_Viper.cpp">
       <Filter>02.GameObject\Creature\Monster\Viper\Body\Cinematic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Dr_Rampage_Turn.cpp">
+      <Filter>92.AI\State\Dragonian_Rampage\Turn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Dr_Rampage_Page2.cpp">
+      <Filter>92.AI\State\Dragonian_Rampage\Page_2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
