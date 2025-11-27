@@ -242,11 +242,18 @@ void CShader_Controller::Ready_Shader()
 					if (ImGui::ColorEdit4("Fog Color", reinterpret_cast<_float*>(&m_FogConfig.vColor)))
 						m_pGameInstance->Set_FogConfig(m_FogConfig);
 
-					if (ImGui::SliderFloat("Fog Base Height", &m_FogConfig.fBaseHeight, -1000.f, 3000.f))
-						m_pGameInstance->Set_FogConfig(m_FogConfig);
+                    // Use Height
+                    if (ImGui::Checkbox("Use Height Fog", &m_FogConfig.isUseHeight))
+                        m_pGameInstance->Set_FogConfig(m_FogConfig);
 
-					if (ImGui::SliderFloat("Fog Height Density", &m_FogConfig.fHeightDensity, 0.001f, 1.f))
-						m_pGameInstance->Set_FogConfig(m_FogConfig);
+                    if (true == m_FogConfig.isUseHeight)
+                    {
+                        if (ImGui::SliderFloat("Fog Base Height", &m_FogConfig.fBaseHeight, -1000.f, 3000.f))
+                            m_pGameInstance->Set_FogConfig(m_FogConfig);
+
+                        if (ImGui::SliderFloat("Fog Height Density", &m_FogConfig.fHeightDensity, 0.001f, 1.f))
+                            m_pGameInstance->Set_FogConfig(m_FogConfig);
+                    }
 
 					ImGui::Separator();
 					ImGui::Text("Fog Transition Lerp");
