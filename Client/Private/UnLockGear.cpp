@@ -293,7 +293,7 @@ void CUnLockGear::Animation_Update(_float fTimeDelta)
             XMStoreFloat4(&UnLockGearEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
             XMStoreFloat4(&UnLockGearEvent.vPlayerPosition, OffSetMatrix.r[3]);
 
-            InteractType.UnLockGearEvent = UnLockGearEvent;
+            InteractType.UnLockGearEvent = UnLockGearEvent;            
 
             if (m_iEventID == 0)
             {
