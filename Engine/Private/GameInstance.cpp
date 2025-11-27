@@ -264,14 +264,14 @@ HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 #ifdef _DEBUG
 	//m_pImgui_Manager->ClearGizmoObject();
 #endif
-	m_pPool_Manager->Clear(iClearLevelID);
-
 	/* 기존레벨용 자원들을 날린다. */
 	m_pPrototype_Manager->Clear(iClearLevelID);
 
 	m_pObject_Manager->Clear(iClearLevelID);
 
 	m_pObject_Manager->Static_Clear();
+
+    m_pPool_Manager->Clear(iClearLevelID);
 
 	m_pLight_Manager->Clear(iClearLevelID);
 
@@ -718,9 +718,14 @@ const vector<_wstring>& CGameInstance::Get_LightTags(_uint iLevelIndex)
     return m_pLight_Manager->Get_LightTags(iLevelIndex);
 }
 
-void CGameInstance::Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc)
+void CGameInstance::Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc, _bool isRestore)
 {
-    m_pLight_Manager->Start_LightTransition(strLightTag, iLevelIndex, Desc);
+    m_pLight_Manager->Start_LightTransition(strLightTag, iLevelIndex, Desc, isRestore);
+}
+
+void CGameInstance::Backup_LightDesc(const _wstring& strLightTag, _uint iLevelIndex)
+{
+    m_pLight_Manager->Backup_LightDesc(strLightTag, iLevelIndex);
 }
 
 #pragma endregion

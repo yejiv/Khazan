@@ -57,7 +57,7 @@ HRESULT CElevatorL::Initialize_Clone(void* pArg)
 
     return S_OK;
 }
-
+ 
 void CElevatorL::Priority_Update(_float fTimeDelta)
 {
     __super::Priority_Update(fTimeDelta);
@@ -71,6 +71,7 @@ void CElevatorL::Update(_float fTimeDelta)
 
         m_isAnimChange = true;
         m_pModelCom->AnimationLoop(false);
+        *m_pModelCom->Get_CurTrackPosition() = 50.f;
     }
     else if (ANIM_STATE::IDLE == m_eAnimState)
     {

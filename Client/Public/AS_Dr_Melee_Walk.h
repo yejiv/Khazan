@@ -17,6 +17,9 @@ public:
 private:
     CDragonian_Melee::MONDATA* m_pMonData = { nullptr };
     FSMSTATE                    m_eState = { FSMSTATE::END };
+
+    _bool                       m_isRange = { false };
+
 public:
     static CAS_Dr_Melee_Walk*   Create();
     virtual void				Free() override;

@@ -53,33 +53,33 @@ void CCore_Viper::Priority_Update(_float fTimeDelta)
 void CCore_Viper::Update(_float fTimeDelta)
 {
 
-    if (!m_isActive)
-        return;
+    if (CViper::PHASE::PHASE1 == m_pOwner->Get_Phase() && m_isActive)
+    {
+       
+        _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 
-    _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+        for (uint32_t i = 0; i < 3; i++)
+            BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
-    for (uint32_t i = 0; i < 3; i++)
-        BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
+        XMStoreFloat4x4(
+            &m_CombinedWorldMatrix,
+            m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
+        );
 
-    XMStoreFloat4x4(
-        &m_CombinedWorldMatrix,
-        m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
-    );
+        _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
 
-    _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
-
-    _vector vScale, vQuat, vPos;
-    XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
-
+        _vector vScale, vQuat, vPos;
+        XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
+    }
 }
 
 void CCore_Viper::Late_Update(_float fTimeDelta)
 {
-    if (!m_isActive)
-        return;
-
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
-        return;
+    if (CViper::PHASE::PHASE1 == m_pOwner->Get_Phase() && m_isActive)
+    {
+        if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
+            return;
+    }
 }
 
 HRESULT CCore_Viper::Render()

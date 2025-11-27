@@ -23,7 +23,7 @@ void CAS_JumpAttack_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     pTransform->LookAt(vTargetLoc);
 
-    pModel->Set_Animation(60);
+    pModel->Set_Animation(34);
 }
 
 void CAS_JumpAttack_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

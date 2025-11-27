@@ -58,6 +58,7 @@
 #include "Viper.h"
 #include "Body_Viper.h"
 #include "TwinBlade_Viper.h"
+#include "Body_Cinematic_Viper.h"
 #include "Core_Viper.h"
 
 #pragma endregion
@@ -528,9 +529,22 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_GSword/Khazan_GSword.dat"))))
         return E_FAIL;
 
+
+    /* Prototype_Component_Model_Spear_Punish*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Spear_Punish"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Spear_Fragment/Spear_Fragment.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Spear_Flash*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Spear_Flash"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Spear_Flash/Spear_Flash.dat"))))
+        return E_FAIL;
     /* Prototype_Component_Model_GSword_Meteor*/
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_GSword_Meteor"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/GSword_Meteor/GSword_Meteor.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_GSword_Execution*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_GSword_Execution"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/GSword_Blessing/GSword_Blessing.dat"))))
         return E_FAIL;
 
 	/* Prototype_Component_Model_Khazan_Prisoner_Torso1*/
@@ -1053,20 +1067,114 @@ HRESULT CLoader::Loading_For_Crevice_Texture()
 
 HRESULT CLoader::Loading_For_Crevice_Model()
 {
+
+#pragma region KHAZAN
+    /* Prototype_Component_Model_Khazan_Lantern*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Lantern"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Lantern/Lantern.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Spear_Khazan_Sample*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Spear*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Spear"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_GSword*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_GSword"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_GSword/Khazan_GSword.dat"))))
+        return E_FAIL;
+
+
+    /* Prototype_Component_Model_Spear_Punish*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Spear_Punish"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Spear_Fragment/Spear_Fragment.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Spear_Flash*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Spear_Flash"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Spear_Flash/Spear_Flash.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_GSword_Meteor*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_GSword_Meteor"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/GSword_Meteor/GSword_Meteor.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_GSword_Execution*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_GSword_Execution"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/GSword_Blessing/GSword_Blessing.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Torso1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso1/Prisoner_Torso1.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Torso2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso2/Prisoner_Torso2.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Torso3*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso3"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso3/Prisoner_Torso3.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Shoes1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes1/Prisoner_Shoes1.dat"))))
+        return E_FAIL;
+    ///* Prototype_Component_Model_Khazan_Prisoner_Shoes2*/
+    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes2"),
+    //	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes2/Prisoner_Shoes2.dat"))))
+    //	return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Leg1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg1/Prisoner_Leg1.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Leg2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg2/Prisoner_Leg2.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Leg3*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg3"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg3/Prisoner_Leg3.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Hair1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Prisoner_Hair1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Prisoner_Hair1/Prisoner_Hair1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Face1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Prisoner_Face1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Prisoner_Face1/Prisoner_Face1.dat"))))
+        return E_FAIL;
+
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Arm1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm1/Prisoner_Arm1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Arm2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm2/Prisoner_Arm2.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_DanJin_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
+        return E_FAIL;
+#pragma endregion
+
 	/* Prototype_Component_Model_Khazan_Sample*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Sample"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Sample"),
+	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
+	//	return E_FAIL;
 
-	/* Prototype_Component_Model_Spear_Khazan_Sample*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
-		return E_FAIL;
 
-	/* Prototype_Component_Model_Khazan_Spear*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Spear"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
-		return E_FAIL;
 
 #pragma region �� ���� : ��ȣ �ۿ� �� ������Ʈ
 	/* Prototype_Component_Model_BladeNexus */
@@ -1124,25 +1232,46 @@ HRESULT CLoader::Loading_For_Crevice_GameObject()
 
 
 #pragma region Khazan
-	/* Prototype_GameObject_Khazan_Spear */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Khazan_Spear"),
-		CKhazan_Spear::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+    /* Prototype_GameObject_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Khazan_Spear"),
+        CKhazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 
-	/* Prototype_GameObject_Body_Khazan_Spear */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
-		CBody_Khazan_Spear::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+    /* Prototype_GameObject_Body_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
+        CBody_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 
-	/* Prototype_GameObject_Spear_Khazan_Spear */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
-		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+    /* Prototype_GameObject_Spear_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
+        CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 
     /* Prototype_GameObject_Lantern_Khazan_Spear */
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"),
         CLantern_Khazan_Spear::Create(m_pDevice, m_pContext))))
         return E_FAIL;
+
+    /* Prototype_GameObject_Khazan_GSword */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Khazan_GSword"),
+        CKhazan_GSword::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Body_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Body_Khazan_GS"),
+        CBody_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_GSword_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_GSword_Khazan_GS"),
+        CGSword_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Lantern_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_GameObject_Lantern_Khazan_GS"),
+        CLantern_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
 #pragma endregion
 
 #pragma region ����Ʈ �׽�Ʈ ��!
@@ -1191,6 +1320,7 @@ HRESULT CLoader::Loading_For_Embars_Texture()
 
 HRESULT CLoader::Loading_For_Embars_Model()
 {
+
 #pragma region KHAZAN
     /* Prototype_Component_Model_Khazan_Lantern*/
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Lantern"),
@@ -1205,6 +1335,29 @@ HRESULT CLoader::Loading_For_Embars_Model()
     /* Prototype_Component_Model_Khazan_Spear*/
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Spear"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_GSword*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_GSword"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_GSword/Khazan_GSword.dat"))))
+        return E_FAIL;
+
+
+    /* Prototype_Component_Model_Spear_Punish*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Spear_Punish"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Spear_Fragment/Spear_Fragment.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Spear_Flash*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Spear_Flash"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Spear_Flash/Spear_Flash.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_GSword_Meteor*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_GSword_Meteor"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/GSword_Meteor/GSword_Meteor.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_GSword_Execution*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_GSword_Execution"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/GSword_Blessing/GSword_Blessing.dat"))))
         return E_FAIL;
 
     /* Prototype_Component_Model_Khazan_Prisoner_Torso1*/
@@ -1268,6 +1421,7 @@ HRESULT CLoader::Loading_For_Embars_Model()
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
         return E_FAIL;
 #pragma endregion
+
 
 #pragma region 상호작용 오브젝
     /* Prototype_Component_Model_BigChest */
@@ -1426,6 +1580,49 @@ HRESULT CLoader::Loading_For_Embars_Shader()
 
 HRESULT CLoader::Loading_For_Embars_GameObject()
 {
+#pragma region Khazan
+    /* Prototype_GameObject_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_Spear"),
+        CKhazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Body_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
+        CBody_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Spear_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
+        CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Lantern_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"),
+        CLantern_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Khazan_GSword */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_GSword"),
+        CKhazan_GSword::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Body_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Body_Khazan_GS"),
+        CBody_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_GSword_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_GSword_Khazan_GS"),
+        CGSword_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Lantern_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Lantern_Khazan_GS"),
+        CLantern_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+#pragma endregion
+
     /* Prototype_GameObject_Camera_Compre */
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Camera_Compre"),
         CCamera_Compre::Create(m_pDevice, m_pContext))))
@@ -1620,26 +1817,6 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
         CEmbars_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
-    /* Prototype_GameObject_Khazan_Spear */
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_Spear"),
-        CKhazan_Spear::Create(m_pDevice, m_pContext))))
-        return E_FAIL;
-
-    /* Prototype_GameObject_Body_Khazan_Spear */
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
-        CBody_Khazan_Spear::Create(m_pDevice, m_pContext))))
-        return E_FAIL;
-
-    /* Prototype_GameObject_Spear_Khazan_Spear */
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
-        CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
-        return E_FAIL;
-
-    /* Prototype_GameObject_Lantern_Khazan_Spear */
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"),
-        CLantern_Khazan_Spear::Create(m_pDevice, m_pContext))))
-        return E_FAIL;
-     
 #pragma region EFFECT
     Loading_For_Effect_Static(ENUM_CLASS(LEVEL::EMBARS));
 #pragma endregion
@@ -1678,89 +1855,108 @@ HRESULT CLoader::Loading_For_Viper_Texture()
 
 HRESULT CLoader::Loading_For_Viper_Model()
 {
-#pragma region KHAZAN
 
+#pragma region KHAZAN
     /* Prototype_Component_Model_Khazan_Lantern*/
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Lantern"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Lantern/Lantern.dat"))))
         return E_FAIL;
 
+    /* Prototype_Component_Model_Spear_Khazan_Sample*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
+        return E_FAIL;
 
-	/* Prototype_Component_Model_Khazan_Sample*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Sample"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Khazan_Sample.dat"))))
-		return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Spear*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Spear"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
+        return E_FAIL;
 
-	/* Prototype_Component_Model_Spear_Khazan_Sample*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Sample/Spear/Spear.dat"))))
-		return E_FAIL;
-
-	/* Prototype_Component_Model_Khazan_Spear*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Spear"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Spear/Khazan_Spear.dat"))))
-		return E_FAIL;
-
-	/* Prototype_Component_Model_Khazan_Prisoner_Torso1*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso1"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso1/Prisoner_Torso1.dat"))))
-		return E_FAIL;
-	/* Prototype_Component_Model_Khazan_Prisoner_Torso2*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso2"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso2/Prisoner_Torso2.dat"))))
-		return E_FAIL;
-	/* Prototype_Component_Model_Khazan_Prisoner_Torso3*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso3"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso3/Prisoner_Torso3.dat"))))
-		return E_FAIL;
-
-	/* Prototype_Component_Model_Khazan_Prisoner_Shoes1*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes1/Prisoner_Shoes1.dat"))))
-		return E_FAIL;
-
-	/* Prototype_Component_Model_Khazan_Prisoner_Leg1*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg1"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg1/Prisoner_Leg1.dat"))))
-		return E_FAIL;
-	/* Prototype_Component_Model_Khazan_Prisoner_Leg2*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg2"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg2/Prisoner_Leg2.dat"))))
-		return E_FAIL;
-	/* Prototype_Component_Model_Khazan_Prisoner_Leg3*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg3"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg3/Prisoner_Leg3.dat"))))
-		return E_FAIL;
-
-	/* Prototype_Component_Model_Khazan_Prisoner_Hair1*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Hair1"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Prisoner_Hair1/Prisoner_Hair1.dat"))))
-		return E_FAIL;
-
-	/* Prototype_Component_Model_Khazan_Prisoner_Face1*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Face1"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Prisoner_Face1/Prisoner_Face1.dat"))))
-		return E_FAIL;
+    /* Prototype_Component_Model_Khazan_GSword*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_GSword"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_GSword/Khazan_GSword.dat"))))
+        return E_FAIL;
 
 
-	/* Prototype_Component_Model_Khazan_Prisoner_Arm1*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm1"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm1/Prisoner_Arm1.dat"))))
-		return E_FAIL;
+    /* Prototype_Component_Model_Spear_Punish*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Spear_Punish"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Spear_Fragment/Spear_Fragment.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Spear_Flash*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Spear_Flash"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/Spear_Flash/Spear_Flash.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_GSword_Meteor*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_GSword_Meteor"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/GSword_Meteor/GSword_Meteor.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_GSword_Execution*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_GSword_Execution"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/APC/GSword_Blessing/GSword_Blessing.dat"))))
+        return E_FAIL;
 
-	/* Prototype_Component_Model_Khazan_Prisoner_Arm2*/
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm2"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm2/Prisoner_Arm2.dat"))))
-		return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Torso1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso1/Prisoner_Torso1.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Torso2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso2/Prisoner_Torso2.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Torso3*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso3"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Prisoner_Torso3/Prisoner_Torso3.dat"))))
+        return E_FAIL;
 
+    /* Prototype_Component_Model_Khazan_Prisoner_Shoes1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes1/Prisoner_Shoes1.dat"))))
+        return E_FAIL;
+    ///* Prototype_Component_Model_Khazan_Prisoner_Shoes2*/
+    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes2"),
+    //	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Prisoner_Shoes2/Prisoner_Shoes2.dat"))))
+    //	return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Leg1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg1/Prisoner_Leg1.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Leg2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg2/Prisoner_Leg2.dat"))))
+        return E_FAIL;
+    /* Prototype_Component_Model_Khazan_Prisoner_Leg3*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg3"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Prisoner_Leg3/Prisoner_Leg3.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Hair1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Hair1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Prisoner_Hair1/Prisoner_Hair1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Face1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Face1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Prisoner_Face1/Prisoner_Face1.dat"))))
+        return E_FAIL;
+
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Arm1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm1/Prisoner_Arm1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Prisoner_Arm2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm2/Prisoner_Arm2.dat"))))
+        return E_FAIL;
 
     /* Prototype_Component_Model_Khazan_DanJin_Hair*/
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
         return E_FAIL;
-
-
 #pragma endregion
+
 
 #pragma region 상호작용 오브젝
 	/* Prototype_Component_Model_BladeNexus */
@@ -1789,6 +1985,10 @@ HRESULT CLoader::Loading_For_Viper_Model()
 
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Core_Viper"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/TwinBlade_Core/TwinBlade_Core.dat")), E_FAIL);
+
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Viper_Cinematic"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Viper_Cinematic/Viper_Cinematic.dat")), E_FAIL);
 
 #pragma endregion
 
@@ -1933,26 +2133,48 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 		CHeinMach_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
-	/* Prototype_GameObject_Khazan_Spear */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_Spear"),
-		CKhazan_Spear::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+#pragma region Khazan
+    /* Prototype_GameObject_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_Spear"),
+        CKhazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 
-	/* Prototype_GameObject_Body_Khazan_Spear */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
-		CBody_Khazan_Spear::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+    /* Prototype_GameObject_Body_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Body_Khazan_Spear"),
+        CBody_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 
-	/* Prototype_GameObject_Spear_Khazan_Spear */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
-		CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+    /* Prototype_GameObject_Spear_Khazan_Spear */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Spear_Khazan_Spear"),
+        CSpear_Khazan_Spear::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 
     /* Prototype_GameObject_Lantern_Khazan_Spear */
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Lantern_Khazan_Spear"),
         CLantern_Khazan_Spear::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
+    /* Prototype_GameObject_Khazan_GSword */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_GSword"),
+        CKhazan_GSword::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Body_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Body_Khazan_GS"),
+        CBody_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_GSword_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_GSword_Khazan_GS"),
+        CGSword_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_GameObject_Lantern_Khazan_GS */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Lantern_Khazan_GS"),
+        CLantern_Khazan_GS::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+#pragma endregion
 
 #pragma region VIPER
 
@@ -1968,6 +2190,11 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_TwinBlade"),
         CTwinBlade_Viper::Create(m_pDevice, m_pContext))))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Body_Cinematic_Viper"),
+        CBody_Cinematic_Viper::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_Core"),
         CCore_Viper::Create(m_pDevice, m_pContext))))

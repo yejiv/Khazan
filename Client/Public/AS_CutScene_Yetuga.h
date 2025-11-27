@@ -4,6 +4,8 @@
 
 NS_BEGIN(Client)
 
+enum class  CUTSCENE_STATE { RUN, JUMP = 52, LAND = 54, ROAR1 = 23, ROAR2 = 22, END };
+
 class CAS_CutScene_Yetuga final : public CAI_State
 {
 private:
@@ -16,10 +18,16 @@ public:
     virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
 
+private:
+    void                                Change_CutSceneState(CUTSCENE_STATE eNextState, class CModel* pModel, class CYetuga* pViper);
+
+
+private:
+    CUTSCENE_STATE                      m_eState = { CUTSCENE_STATE::END };
 
 public:
-    static CAS_CutScene_Yetuga* Create();
-    virtual void				Free() override;
+    static CAS_CutScene_Yetuga*         Create();
+    virtual void				        Free() override;
 
 };
 

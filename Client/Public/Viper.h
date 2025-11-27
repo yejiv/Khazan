@@ -13,14 +13,17 @@ private:
     virtual ~CViper() = default;
 
 public:
-    enum class PHASE                { PHASE1, PHASE2, END };
+    enum class PHASE                { PHASE1,CINEMATIC,PHASE2, END };
 
 
 public:
     class CBody_Viper*              Get_Body() const { return m_pBody; }
+    class CBody_Cinematic_Viper*    Get_Cinematic_Body() const { return m_pCinematicBody; }
     virtual _float4*                Get_LockOnPosition();
     PHASE                           Get_Phase() const { return m_ePhase; }
 
+    void                            Set_Phase(PHASE ePhase)  { m_ePhase = ePhase; }
+    
 
 public:
     virtual HRESULT					Initialize_Prototype() override;
@@ -52,6 +55,7 @@ private:
 
 private:
     class CBody_Viper*              m_pBody = { nullptr };
+    class CBody_Cinematic_Viper*    m_pCinematicBody = { nullptr };
     class CTwinBlade_Viper*         m_pWeapon = { nullptr };
     class CCore_Viper*              m_pCore = { nullptr };
 

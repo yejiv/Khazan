@@ -31,10 +31,10 @@ void CAS_SideMove_P1_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     _float fDot = XMVectorGetX(XMVector3Dot(vOwnerRight,vTargetLook));
     if (fDot < -0.1f)
-        pModel->Set_Animation(106);
+        pModel->Set_Animation(44);
     
     else
-        pModel->Set_Animation(107);
+        pModel->Set_Animation(45);
        
 }
 

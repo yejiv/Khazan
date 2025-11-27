@@ -48,9 +48,11 @@ public:
     virtual HRESULT     Render();
     virtual HRESULT     Render_Shadow() override;
     virtual HRESULT     Render_Outline() override;
+    virtual HRESULT     Render_MotionVector() override;
     void			    Render_Part(CModel* pModel);
     void			    Render_Part_Shadow(CModel* pModel);
     void                Render_Part_Outline(CModel* pModel);
+    void                Render_Part_MotionVector(CModel* pModel);
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
@@ -70,12 +72,12 @@ public:
     void		        Set_matGSword(_float4x4* mat) { m_pGSword_Matrix = mat; }
 
 public:
-    _bool               Is_SpearFullExtension() const { return m_isSpearFullExtension; }
+   // _bool               Is_SpearFullExtension() const { return m_isSpearFullExtension; }
 
 public:
-    void                Search_BrutalTarget(_float fTimeDelta);
-    _bool               Check_BrutalAttack(_float fTimeDelta);
-    void	            Event_AttackTiming(_bool isAttackStart);
+    void                Search_BrutalTarget(_float fTimeDelta); //부르탈 타겟 찾기 
+    _bool               Check_BrutalAttack(_float fTimeDelta);  //부르탈 체크
+    void                AllAttackCollisionActive_Off();         //어택 콜리젼 다 끄기 
 
     /* Shader */
     void                        Set_EnableEdge(_bool isEnable) { m_isEnableEdge = isEnable; }
@@ -84,7 +86,10 @@ public:
     void                        Set_EnableMotionTrail(_bool isEnable);
     _bool                       isEnableMotionTrail();
     void                        Start_MotionTrail(_float fDuration);
-  
+    void                        Set_MotionTrailCallBack(function<void(const _wstring&, _bool)> callback) { m_OnMotionTrailCallBack = callback; }
+    void                        Trigger_MotionTrail(const _wstring& strKey, _bool isActive) { if (m_OnMotionTrailCallBack)m_OnMotionTrailCallBack(strKey, isActive); }
+    void                        On_MotionTrail(const _wstring strKey, _bool isActive) { m_pMotionTrailCom->Set_Config(strKey); m_isActiveMotionTrail = isActive; }
+
 private:
     class CClientInstance*      m_pClientInstance = { nullptr };
     class CTransform*           m_pParentTransform = { nullptr };
@@ -93,13 +98,11 @@ private:
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
     CShader*                    m_pShaderCom = { nullptr };
-    CModel*                     m_pModelCom = { nullptr };
-    CModel*                     m_pModelCom_Arm = { nullptr };
-    CModel*                     m_pModelCom_Face = { nullptr };
-    CModel*                     m_pModelCom_Hair = { nullptr };
-    CModel*                     m_pModelCom_Leg = { nullptr };
-    CModel*                     m_pModelCom_Shoes = { nullptr };
-    CModel*                     m_pModelCom_Torso = { nullptr };
+
+    CModel*                                 m_pModelCom = { nullptr }; // 매쉬없는 전체 모델
+    unordered_map<_wstring, CModel*>        m_AllParts; // 모든 모델 파츠 모음 <파츠이름, 모델클래스>
+    unordered_map<EQUIPMENTTYPE, _wstring>  m_EquippedParts;   // 현재 파츠 <파츠종류, 파츠 이름>
+    vector<CModel*>                         m_RenderParts;    // 빠른 렌더링을 위한 캐시 (렌더링할 파츠들만)
 
     CBody*                      m_pBodyCom_Attack = { nullptr };            //검 공격시 사용하는 졸트 바디
     CBody*                      m_pBodyCom_RangeAttack = { nullptr };   //범위 공격에 졸트 바디
@@ -124,7 +127,7 @@ private:
 
     _bool				        m_isFinishedAnimation = { false };
     _uint				        m_iCurSetAnimIndex = { 0 };
-    _bool                       m_isSpearFullExtension = { false }; //창을 완전히 뻗는 타이밍부터 true 
+   // _bool                       m_isSpearFullExtension = { false }; //창을 완전히 뻗는 타이밍부터 true 
     _bool*                      m_pIsGuarding = { nullptr }; //가드중인지 체크
 
 
@@ -171,6 +174,8 @@ private:
     // Shader
     _bool                       m_isEnableEdge = { true };
     OUTLINE_CONFIG              m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
+    function<void(const _wstring&, _bool)>  m_OnMotionTrailCallBack;
+    _bool                       m_isActiveMotionTrail = { false };
 
     /*  mutex */
     mutex                       m_CollMonsterMutex;
@@ -181,21 +186,25 @@ private :
 
 private:
     void			Update_Colliders(_float fTimeDelta);
-    void            Check_Guarding(_float fTimeDelta);
-    void            Update_GuardRotation(_float fTimeDelta);
-    void            Start_GuardRotation(_float3 vContactPoint);
+    void            Check_Guarding(_float fTimeDelta);              //부모클래스가 가드를 했다고 알려줌
+    void            Update_GuardRotation(_float fTimeDelta);        //가드시 충돌방향으로 회전
+    void            Start_GuardRotation(_float3 vContactPoint);     //가드시 충돌방향으로 회전을 위한 초기화
     void            Exception_Animaition(); // 애니메이션 이상한 것들 처리 
 
     /* notify */
  private:
-        void	    Event_AttackTiming(_uint iCollState);
+     void	        Event_AttackTiming(GS_COLLISION eColl, _bool isAttackStart);
 
 
 private:
-    HRESULT         Bind_ShaderResources();
-    HRESULT         Ready_Components();
-    HRESULT         Ready_Colliders();
-    HRESULT         Ready_AnimationEvents();
+    HRESULT             Bind_ShaderResources();
+    HRESULT             Ready_Components();
+    HRESULT             Ready_Colliders();
+    HRESULT             Ready_AnimationEvents();
+    HRESULT             Initialize_Equipment();
+    void                Equip_Part(EQUIPMENTTYPE eType, const _wstring& strPartName); //파츠 갈아 입기
+    void                Update_QuickRenderCache();  //빠른 랜더용 파츠모음 (모션트레일도 여기서 랜더용 파츠 갈아끼우기)
+
 
 private:
     inline void		Add_State(_uint i) { *m_pParentState |= i; }

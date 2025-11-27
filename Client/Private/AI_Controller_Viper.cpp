@@ -28,7 +28,7 @@ HRESULT CAI_Controller_Viper::Initialize(CCreature* pOwner)
 
 void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 {
-    // T누르면 컷신 모드 AS_CutScene_Start
+    // 누르면 컷신 모드 AS_CutScene_Start
     if (m_pGameInstance->Key_Down(DIK_T))
     {
         CViper* pViper = static_cast<CViper*>(pOwner);
@@ -39,6 +39,16 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START),pViper);
 
     }
+
+    if (m_pGameInstance->Key_Down(DIK_Y))
+    {
+
+        CViper* pViper = static_cast<CViper*>(pOwner);
+        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
+
+    }
+
+
 
     if(m_pGameInstance->Key_Down(DIK_J))
         Set_ActiveAIController(true); // 이거 하면 실행됩니다.

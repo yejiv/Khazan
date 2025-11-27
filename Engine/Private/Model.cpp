@@ -645,6 +645,11 @@ void CModel::AnimationLoop(_bool isLoop)
     isLoop ? Add_State(ANIM_LOOP) : Remove_State(ANIM_LOOP);
 }
 
+void CModel::Set_AnimBlendTime(_uint iAnimIndex, _float fBlendTime)
+{
+    m_Animations[iAnimIndex]->Set_AnimBlendTime(fBlendTime);
+}
+
 
 void CModel::Update_BoneCombinedMatrices()
 {
@@ -1087,23 +1092,23 @@ void CModel::Apply_RootMotion_To_Transform()
     if (m_pOwnerTransform)
     {
         // 월드 분해
-        _vector worldScale, worldRot, worldPos;
-        XMMatrixDecompose(&worldScale, &worldRot, &worldPos, m_pOwnerTransform->Get_WorldMatrix());
+            _vector worldScale, worldRot, worldPos;
+            XMMatrixDecompose(&worldScale, &worldRot, &worldPos, m_pOwnerTransform->Get_WorldMatrix());
 
-        // 새로운 회전 = 기존 회전 * 델타 회전 (쿼터니언 곱셈)
-        //_vector newRot = XMQuaternionMultiply(m_vRootDeltaQuat, worldRot);
-        //newRot = XMQuaternionNormalize(newRot);
+            // 새로운 회전 = 기존 회전 * 델타 회전 (쿼터니언 곱셈)
+            //_vector newRot = XMQuaternionMultiply(m_vRootDeltaQuat, worldRot);
+            //newRot = XMQuaternionNormalize(newRot);
 
-        //if (m_strModelName == L"Khazan_GSword" && m_iCurrentAnimIndex == 120 && m_fCurrentTrackPosition< 10.f )
-        //    deltaPos.m128_f32[2] = m_fCurrentTrackPosition < 10.f ? 0.32f : 0.f; // deltaPos.m128_f32[2] < -0.1f ? deltaPos.m128_f32[2] * -1.f : deltaPos.m128_f32[2];
+            //if (m_strModelName == L"Khazan_GSword" && m_iCurrentAnimIndex == 120 && m_fCurrentTrackPosition< 10.f )
+            //    deltaPos.m128_f32[2] = m_fCurrentTrackPosition < 10.f ? 0.32f : 0.f; // deltaPos.m128_f32[2] < -0.1f ? deltaPos.m128_f32[2] * -1.f : deltaPos.m128_f32[2];
 
-        // 새로운 위치 = 기존 위치 + (델타 위치를 월드 회전으로 변환)
-        _vector rotatedDeltaPos = XMVector3Rotate(deltaPos, worldRot);
-        _vector newPos = worldPos + rotatedDeltaPos;
+            // 새로운 위치 = 기존 위치 + (델타 위치를 월드 회전으로 변환)
+            _vector rotatedDeltaPos = XMVector3Rotate(deltaPos, worldRot);
+            _vector newPos = worldPos + rotatedDeltaPos;
 
-        _matrix newWorld = XMMatrixAffineTransformation(worldScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), worldRot, newPos);
-        m_pOwnerTransform->Set_WorldMatrix(newWorld);
-    }
+            _matrix newWorld = XMMatrixAffineTransformation(worldScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), worldRot, newPos);
+            m_pOwnerTransform->Set_WorldMatrix(newWorld);
+   }
     /* 월드 행렬을 연결 시 */
     else if (m_pOwnerTransformMatrix)
     {

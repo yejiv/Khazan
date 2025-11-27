@@ -91,7 +91,7 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
    if (FAILED(Ready_AnimationEvent()))
        return E_FAIL;
 
-    m_pTransformCom->Scale(_float3(1.3f,1.3f,1.3f));
+   // m_pTransformCom->Scale(_float3(1.3f,1.3f,1.3f));
     
     m_pLH_BodyCom->Collision_Active(false);
     m_pRH_BodyCom->Collision_Active(false);
