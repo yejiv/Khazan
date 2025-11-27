@@ -1623,6 +1623,20 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
 
 #pragma endregion
 
+#pragma region MONSTER
+
+#pragma region Dragonian
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"),
+        CDragonian_Melee::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"),
+        CDragonian_Rampage::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
+        return E_FAIL;
+#pragma endregion
+
+#pragma endregion
+
     /* Prototype_GameObject_Camera_Compre */
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Camera_Compre"),
         CCamera_Compre::Create(m_pDevice, m_pContext))))
@@ -2211,7 +2225,6 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"),
         CDragonian_Rampage::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
         return E_FAIL;
-
 #pragma endregion
 
 #pragma region EFFECT
