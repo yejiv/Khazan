@@ -41,7 +41,7 @@ CModel_Instance::CModel_Instance(const CModel_Instance& Prototype)
         Safe_AddRef(pMaterial);
 }
 
-HRESULT CModel_Instance::Initialize_Prototype(const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc)
+HRESULT CModel_Instance::Initialize_Prototype(const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc, _bool isSRVCache)
 {
     MODEL_DATA Data = {};
 
@@ -70,7 +70,7 @@ HRESULT CModel_Instance::Initialize_Prototype(const _char* pModelFilePath, const
 
     CHECK_FAILED(Ready_Meshes(Data, pDesc), E_FAIL);
 
-    CHECK_FAILED(Ready_Materials(Data), E_FAIL);
+    CHECK_FAILED(Ready_Materials(Data, isSRVCache), E_FAIL);
 
     CHECK_FAILED(Ready_Animations(Data), E_FAIL);
 
@@ -200,11 +200,11 @@ HRESULT CModel_Instance::Ready_Meshes(MODEL_DATA& Data, const CModelMesh_Instanc
     return S_OK;
 }
 
-HRESULT CModel_Instance::Ready_Materials(MODEL_DATA& Data)
+HRESULT CModel_Instance::Ready_Materials(MODEL_DATA& Data, _bool isSRVCache)
 {
     for (_uint i = 0; i < m_iNumMaterials; ++i)
     {
-        CMeshMaterial* pMeshMaterial = CMeshMaterial::Create(m_pDevice, m_pContext, Data.vecMaterials[i]);
+        CMeshMaterial* pMeshMaterial = CMeshMaterial::Create(m_pDevice, m_pContext, Data.vecMaterials[i], isSRVCache);
         CHECK_NULLPTR(pMeshMaterial, E_FAIL);
 
         m_Materials.push_back(pMeshMaterial);
@@ -242,11 +242,11 @@ HRESULT CModel_Instance::Ready_Animations(MODEL_DATA& Data)
     return S_OK;
 }
 
-CModel_Instance* CModel_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc)
+CModel_Instance* CModel_Instance::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc, _bool isSRVCache)
 {
     CModel_Instance* pInstance = new CModel_Instance(pDevice, pContext);
 
-    if (FAILED(pInstance->Initialize_Prototype(pModelFilePath, pDesc)))
+    if (FAILED(pInstance->Initialize_Prototype(pModelFilePath, pDesc, isSRVCache)))
     {
         MSG_BOX(TEXT("Failed to Created : CModel_Instance"));
         Safe_Release(pInstance);

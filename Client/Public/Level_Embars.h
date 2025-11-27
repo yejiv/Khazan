@@ -24,6 +24,7 @@ private:
     HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 
     HRESULT Ready_Layer_Effect(const _wstring& strLayerTag);
+    HRESULT Ready_Shader_Settings();
 
 #pragma region 맵 관련
 
