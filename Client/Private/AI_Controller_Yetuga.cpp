@@ -34,15 +34,25 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
      
     if (m_pGameInstance->Key_Down(DIK_T))
     {
-        CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-        CGameObject* pTarget =  m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        //pYetuga->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-        pYetuga->Consume_Stamina(10.f);
+        //CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+        //CGameObject* pTarget =  m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+        ////pYetuga->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+        //pYetuga->Consume_Stamina(10.f);
+
+        //m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::CUTSCENE), pOwner);
+        m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::CUTSCENE), pOwner);
+    }
+
+
+
+    if (m_pGameInstance->Key_Down(DIK_J))
+    {
+        Set_ActiveAIController(true);
     }
     
 
-    //if (m_isActiveController)
-    //{
+    if (m_isActiveController)
+    {
         m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
         _float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
 
@@ -53,10 +63,8 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
         else
             m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-
-
         m_pBT->Update();
-    //}
+    }
 
 	
     m_pFSM->Update(pOwner, fTimeDelta * 1.2f);

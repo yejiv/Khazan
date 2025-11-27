@@ -7,6 +7,7 @@
 #include "BossHp.h"
 #include "Body_Viper.h"
 #include "TwinBlade_Viper.h"
+#include "Body_Cinematic_Viper.h"
 #include "Core_Viper.h"
 
 
@@ -64,9 +65,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
 
     m_ePhase = PHASE::PHASE1;
 
-    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Lacirma_ExpGained");
-
     m_fRecoveryPerSec = 5.f;
+
 
     return S_OK;
 }
@@ -106,6 +106,10 @@ void CViper::Update(_float fTimeDelta)
             Look_Target_Lerp(fTimeDelta, fRatio, 8.f);
         }
     }
+
+    if (m_pGameInstance->Key_Down(DIK_U))
+        m_ePhase = PHASE::CINEMATIC;
+
 
     __super::Update(fTimeDelta);
 
@@ -294,6 +298,22 @@ HRESULT CViper::Ready_PartObjects()
         return E_FAIL;
 
 
+    CBody_Cinematic_Viper::BODY_DESC CinematicBodyDesc{};
+    CinematicBodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    CinematicBodyDesc.pOwnerTransform = m_pTransformCom;
+    CinematicBodyDesc.pOwner = this;
+
+    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body_Cinematic"), ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Body_Cinematic_Viper"), &CinematicBodyDesc)))
+        return E_FAIL;
+
+    CPartObject* pCinematicBody = Find_PartObject(TEXT("Part_Body_Cinematic"));
+    if (nullptr == pCinematicBody)
+        return E_FAIL;
+
+    m_pCinematicBody = dynamic_cast<CBody_Cinematic_Viper*>(pCinematicBody);
+    Safe_AddRef(m_pCinematicBody);
+
+
     CTwinBlade_Viper::WEAPON_DESC CoreDesc{};
     CoreDesc.pOwner = this;
     CoreDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
@@ -331,15 +351,6 @@ HRESULT CViper::Ready_Projectiles()
 
 void CViper::Grab_Check_Begin()
 {
-  /*  CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
-    if (nullptr == pTargetTransform)
-        return;
-    _float4 vTemp = m_pWeapon->Get_GrabPos();
-    _vector vGrabPosition = XMLoadFloat4(&vTemp);
-    
-    _vector vOffset = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-    pTargetTransform->Set_State(STATE::POSITION, vGrabPosition + vOffset);*/
-
     CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
     if (nullptr == pTargetTransform)
         return;
@@ -837,6 +848,7 @@ CGameObject* CViper::Clone(void* pArg)
 void CViper::Free()
 {
     Safe_Release(m_pBody);
+    Safe_Release(m_pCinematicBody);
     Safe_Release(m_pWeapon);
     Safe_Release(m_pCore);
     __super::Free();
