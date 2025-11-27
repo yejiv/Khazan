@@ -11,8 +11,9 @@ CSpear_Khazan_Spear::CSpear_Khazan_Spear(ID3D11Device* pDevice, ID3D11DeviceCont
 
 CSpear_Khazan_Spear::CSpear_Khazan_Spear(const CSpear_Khazan_Spear& Prototype)
     : CPartObject{ Prototype }
+    , m_pClientInstance{CClientInstance::GetInstance()}
 {
-
+    Safe_AddRef(m_pClientInstance);
 }
 
 _float4x4* CSpear_Khazan_Spear::Get_BoneMatrix(const _char* pBoneName)
@@ -40,7 +41,7 @@ HRESULT CSpear_Khazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-
+    m_pClientInstance->Set_ChangePlayerEquipmentCallBack([this](EQUIPMENTTYPE type, const _wstring& strPartName) {Change_Weapon(type, strPartName); });
 
     m_matOffset = XMMatrixRotationX(XMConvertToRadians(-90.0f));
     int a = m_pModelCom->Get_BoneIndex("Weapon_R");
@@ -77,13 +78,9 @@ void CSpear_Khazan_Spear::Update(_float fTimeDelta)
 
     m_pMotionTrailCom->Update(fTimeDelta);
 
-    // TEST
-    //  if (CKhazan_Spear::CHARGING_SPRINT & *m_pParentStatus)
-    //      m_pMotionTrailCom->Start_MotionTrail(0.5f);
-    //  if (CKhazan_Spear::BACK_DODGE & *m_pParentStatus)
-    //      m_pMotionTrailCom->Start_MotionTrail(0.5f);
-    //  if (CKhazan_Spear::CHARGING_STRONG_ATTACK & *m_pParentStatus)
-    //      m_pMotionTrailCom->Start_MotionTrail(2.5f);
+    if (m_isActiveMotionTrail)
+        m_pMotionTrailCom->Start_MotionTrail(fTimeDelta);
+
 }
 
 void CSpear_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -178,6 +175,19 @@ void CSpear_Khazan_Spear::Start_MotionTrail(_float fDuration)
     m_pMotionTrailCom->Start_MotionTrail(fDuration);
 }
 
+void CSpear_Khazan_Spear::Change_Weapon(EQUIPMENTTYPE type, const _wstring& strPartName)
+{
+    if (m_pModelCom)
+        Safe_Release(m_pModelCom);
+
+    if (strPartName == TEXT("Meteor_GSword")) m_pModelCom = m_pModelCom_Meteor_GSword;
+    else if (strPartName == TEXT("Execution_GSword")) m_pModelCom = m_pModelCom_Execution_GSword;
+    else if (strPartName == TEXT("Flash_Spear")) m_pModelCom = m_pModelCom_Flash_Spear;
+    else if (strPartName == TEXT("Punish_Spear")) m_pModelCom = m_pModelCom_Punish_Spear;
+    Safe_AddRef(m_pModelCom);
+
+}
+
 HRESULT CSpear_Khazan_Spear::Ready_Components()
 {
     LEVEL eCurrentLevel = CClientInstance::GetInstance()->Get_CurrLevel();
@@ -186,9 +196,25 @@ HRESULT CSpear_Khazan_Spear::Ready_Components()
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Spear_Khazan_Sample"),
-        TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Spear_Punish"),
+        TEXT("Com_Model1"), reinterpret_cast<CComponent**>(&m_pModelCom_Punish_Spear), nullptr)))
         return E_FAIL;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_Spear_Flash"),
+        TEXT("Com_Model2"), reinterpret_cast<CComponent**>(&m_pModelCom_Flash_Spear), nullptr)))
+        return E_FAIL;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_GSword_Meteor"),
+        TEXT("Com_Model3"), reinterpret_cast<CComponent**>(&m_pModelCom_Meteor_GSword), nullptr)))
+        return E_FAIL;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_GSword_Execution"),
+        TEXT("Com_Model4"), reinterpret_cast<CComponent**>(&m_pModelCom_Execution_GSword), nullptr)))
+        return E_FAIL;
+
+    CPlayerData_Manager::PLAYER_EQUIPMENT equipment =  m_pClientInstance->Get_PlayerEquipment();
+    if (equipment.isSpear)
+         m_pModelCom = equipment.iSpear == 4011 ? m_pModelCom_Punish_Spear : m_pModelCom_Flash_Spear;
+    if (equipment.isGSword)
+        m_pModelCom = equipment.iGSword == 4001 ? m_pModelCom_Meteor_GSword : m_pModelCom_Execution_GSword;
+    Safe_AddRef(m_pModelCom);
 
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
     MTDesc.pOwnerMasterModel = m_pModelCom;
@@ -256,8 +282,13 @@ void CSpear_Khazan_Spear::Free()
 {
     __super::Free();
 
+    Safe_Release(m_pClientInstance);
     Safe_Release(m_pParentTransform);
     Safe_Release(m_pModelCom);
+    Safe_Release(m_pModelCom_Punish_Spear);
+    Safe_Release(m_pModelCom_Flash_Spear);
+    Safe_Release(m_pModelCom_Meteor_GSword);
+    Safe_Release(m_pModelCom_Execution_GSword);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pMotionTrailCom);
     //Safe_Release(m_pColliderCom);

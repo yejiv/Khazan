@@ -64,10 +64,30 @@ public:
         GSWORD_END                      = 1 << 18,
     };
 
+    typedef struct tagPlayerEquipmentDesc
+    {
+        _uint   iSpear;
+        _uint   iGSword;
+        _uint   iHead;
+        _uint   iTorso;
+        _uint   iArm;
+        _uint   iLeg;
+        _uint   iShoes;
+        _uint   iFace;
+        _bool   isSpear = { false };
+        _bool   isGSword = { false };
+    }PLAYER_EQUIPMENT;
+
+   // enum    EQUIPMENTTYPE { NONE, SPEAR, GSWORD, HEAD, TORSO, ARM, LEG, SHOES, FACE, /*END*/ };
+
+    
 
 private:
 	CPlayerData_Manager();
 	virtual ~CPlayerData_Manager() = default;
+
+public:
+    HRESULT Initialize();
 
 public:
     //해당 스킬이 있는지
@@ -128,12 +148,24 @@ public:
     _bool   Is_CurrentSpear() const { return m_isCurSpear; }
     _bool   Is_CurrentGSword() const { return m_isCurGSword; }
 
-private:
-    _uint   m_iSpearSkill = { };
-    _uint   m_iGSwordSkill = { };
-    _bool   m_isCurSpear = { false };
-    _bool   m_isCurGSword = { false };
+    /* Equipment */
+    void                        Set_ChangePlayerEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback) { m_OnChangePlayerEquipment = callback; }
+    void                        Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex);  // ui 장착버튼같은거 누를 시 사용해주세요 EQUIPMENTTYPE  enum class로 뺐음!!
+    const PLAYER_EQUIPMENT&     Get_PlayerEquipment() const { return m_ePlayerEquipment; }
+    void                        Set_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex);  // 테스트용 Setter 
+    const _wstring&             Get_EquipmentName(_uint iEquipmentIndex) const;
 
+private:
+    /* Skill */
+    _uint                                       m_iSpearSkill = { };
+    _uint                                       m_iGSwordSkill = { };
+    _bool                                       m_isCurSpear = { false };
+    _bool                                       m_isCurGSword = { false };
+
+    /* Equipment */
+    PLAYER_EQUIPMENT                            m_ePlayerEquipment{};
+    unordered_map<_uint, _wstring>              m_CachedEquipments;
+    function<void(EQUIPMENTTYPE, const _wstring&)>      m_OnChangePlayerEquipment;   
 public:
 	static CPlayerData_Manager* Create();
 	virtual void Free() override;

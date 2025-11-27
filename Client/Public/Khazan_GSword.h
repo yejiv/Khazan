@@ -62,9 +62,10 @@ public:
         //JUST_COMPLETED_TURN180 = 1 << 24,
 
 
-        STATUS_CLEARS = RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_FAST_ATTACK | SPRINT_AGAIN_REQUEST | CHARGING_STRONG_ATTACK
+        STATUS_CLEARS = RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_FAST_ATTACK | SPRINT_AGAIN_REQUEST | LOCKON | CHARGING_STRONG_ATTACK
         | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST
         | FALLING | FALLING_ATTACK | PRE_LAND  | DODGING
+        | BRUTAL_BEGIN | BRUTAL_READY | BRUTAL_SUCCESS
 
         /*| TURN180| TURN180_REQUESTED | TURN180_COMPLETE| MOVE_AFTER_TURN*/,
 
@@ -98,6 +99,7 @@ public:
 
     void	Set_Camera(class CCamera_Compre* pCamera);
     void    Set_Position(_float4 vPos);
+
 
 private:
     class CBody_Khazan_GS*              m_pBody = { nullptr };
@@ -245,7 +247,8 @@ private:
     HRESULT			Ready_PartObjects();
     HRESULT			Ready_Collision();
     HRESULT			Ready_AnimationStateMachine();
-    //HRESULT			Ready_PlayerData();
+    //HRESULT			Ready_PlayerData();/
+    void            Ready_MotionTrailCallback();
 
     void            Clear_Step0();  // 이전 상태 빼고 다 클리어
     void            Clear_Step1();  //이전 상태 , lockOn, dir,worldDir 빼고 다 클리어

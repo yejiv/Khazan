@@ -318,6 +318,7 @@ namespace Engine
         float           fColorUpdateSpeed;
         float           fInterval;
         unsigned int    iMaxFrames;
+
     }MOTIONTRAIL_CONFIG;
 
     struct HitStopState

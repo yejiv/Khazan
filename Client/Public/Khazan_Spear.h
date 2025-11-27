@@ -254,6 +254,8 @@ private:
 	HRESULT			Ready_Collision();
     HRESULT			Ready_AnimationStateMachine();
     //HRESULT			Ready_PlayerData();
+    void            Ready_MotionTrailCallback();
+
 
     void            Clear_Step0();  // 이전 상태 빼고 다 클리어
     void            Clear_Step1();  //이전 상태 , lockOn, dir,worldDir 빼고 다 클리어
