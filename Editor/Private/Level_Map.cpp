@@ -527,6 +527,32 @@ HRESULT CLevel_Map::Ready_Main_Window()
                     SEPARATOR;
 				}
 
+                if (ImGui::Button("EMBARS FOG 1 ON"))
+                {
+                    // 1층 Fog
+                    FOG_TRANSITION_DESC FogDesc{};
+                    FogDesc.fDensity = 0.05f;
+                    FogDesc.fBias = 0.8f;
+                    FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
+                    FogDesc.isUseHeight = false;
+                    FogDesc.isUseNoise = false;
+                    m_pGameInstance->Start_FogTransition(1.f, FogDesc);
+                }
+
+                if (ImGui::Button("EMBARS FOG B1 ON"))
+                {
+                    // 지하 포그
+                    FOG_TRANSITION_DESC Desc{};
+                    Desc.fDensity = 0.05f;
+                    Desc.fBias = 0.8f;
+                    Desc.vColor = _float4(0.f, 0.058f, 0.117f, 1.f);
+                    Desc.isUseHeight = false;
+                    Desc.isUseNoise = false;
+                    m_pGameInstance->Start_FogTransition(1.f, Desc);
+                }
+
+                SEPARATOR;
+
 				ImGui::Text("SPHERE");
 				if (ImGui::Button("SKY ON/OFF"))
 					m_isSkySphereWindow = !m_isSkySphereWindow;
