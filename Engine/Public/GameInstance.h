@@ -339,6 +339,8 @@ public:
     void                Start_ShadowTransition(_float fDuration, _float fTargetIntensity);
     void                Clear_ShadowDSV();
 
+    const SHADOW_DESC&  Get_ShadowDesc() const;
+    void                Set_ShadowDesc(const SHADOW_DESC& Desc);
 #ifdef _DEBUG
     HRESULT				Ready_Shadow_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
     HRESULT				Render_Shadow_Debug(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);

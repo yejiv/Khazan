@@ -1268,6 +1268,16 @@ void CGameInstance::Clear_ShadowDSV()
     m_pShadow->Clear_DSV();
 }
 
+const SHADOW_DESC& CGameInstance::Get_ShadowDesc() const
+{
+    return m_pShadow->Get_ShadowDesc();
+}
+
+void CGameInstance::Set_ShadowDesc(const SHADOW_DESC& Desc)
+{
+    m_pShadow->Set_ShadowDesc(Desc);
+}
+
 #ifdef _DEBUG
 HRESULT CGameInstance::Ready_Shadow_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
 {

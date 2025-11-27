@@ -117,6 +117,7 @@ private:
     vector<string>          m_strLightTags;
     vector<const _char*>    m_szLightTags;
     _bool                   m_isEnableLight = {};
+    _bool                   m_isRestoreLight = {};
 
     LIGHT_TRANSITION_DESC   m_TargetLightDesc = {};
 

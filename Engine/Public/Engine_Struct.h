@@ -36,12 +36,14 @@ namespace Engine
 
     typedef struct tagLightTransitionDesc
     {
-        float       fDuration;
-        XMFLOAT2    vFadeTime;
-        XMFLOAT4    vDiffuse;
-        XMFLOAT4    vAmbient;
-        XMFLOAT4    vSpecular;
-        bool        isReturnToStart;
+        float           fDuration;
+        XMFLOAT2        vFadeTime;
+        XMFLOAT4        vDiffuse;
+        XMFLOAT4        vAmbient;
+        XMFLOAT4        vSpecular;
+        bool            isReturnToStart;
+
+        unsigned int    iBlinkCount;
     }LIGHT_TRANSITION_DESC;
 
 	typedef struct tagKeyFrame
@@ -179,6 +181,14 @@ namespace Engine
         XMFLOAT4		vLightDir;
         float			fIntensity;
     }CASCADE_CONFIG;
+
+    typedef struct tagShadowDesc
+    {
+        float	        fSplit;
+        XMFLOAT3		vLightDir;
+        float			fBias;
+        float			fIntensity;
+    }SHADOW_DESC;
 
     typedef struct tagSSAOConfig
     {

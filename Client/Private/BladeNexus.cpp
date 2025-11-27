@@ -109,7 +109,7 @@ HRESULT CBladeNexus::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    _float fIntensity = 5.f;
+    _float fIntensity = 15.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fIntensity, sizeof(_float))))
         return E_FAIL;
 
@@ -418,9 +418,9 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             LIGHT_TRANSITION_DESC LightDesc{};
             LightDesc.fDuration = 7.f;
             LightDesc.vFadeTime = _float2(7.f, 0.f);
-            LightDesc.vDiffuse = _float4(0.2f, 0.2f, 0.2f, 0.2f);
-            LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 0.2f);
-            LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+            LightDesc.vDiffuse = _float4(0.1f, 0.1f, 0.1f, 0.1f);
+            LightDesc.vAmbient = _float4(0.1f, 0.1f, 0.1f, 0.1f);
+            LightDesc.vSpecular = _float4(0.1f, 0.1f, 0.1f, 0.1f);
             LightDesc.isReturnToStart = false;
             m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
         }
