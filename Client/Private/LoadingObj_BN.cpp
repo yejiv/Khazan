@@ -62,11 +62,11 @@ HRESULT CLoadingObj_BN::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    _float fIntensity = 1.f;
+    _float fIntensity = 10.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fIntensity, sizeof(_float))))
         return E_FAIL;
 
-    _float fRatio = 0.7f;
+    _float fRatio = 0.8f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fColorRatio", &fRatio, sizeof(_float))))
         return E_FAIL;
 
