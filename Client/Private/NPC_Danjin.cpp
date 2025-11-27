@@ -6,14 +6,20 @@
 
 #include "UI_Talk_Dangin.h"
 
+#include "ClientInstance.h"
+
 CNPC_Danjin::CNPC_Danjin(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
+    , m_pClientInstance{ CClientInstance::GetInstance()}
 {
+    Safe_AddRef(m_pClientInstance);
 }
 
 CNPC_Danjin::CNPC_Danjin(const CNPC_Danjin& Prototype)
     : CProp_Interactive{ Prototype }
+    , m_pClientInstance{ Prototype.m_pClientInstance }
 {
+    Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CNPC_Danjin::Initialize_Prototype()
@@ -33,6 +39,8 @@ HRESULT CNPC_Danjin::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
+    CHECK_FAILED(Ready_3D_Talk_UI(pArg), E_FAIL);
+
     m_eAnimState = ANIM_STATE::IDLE;
     m_pModelCom->Set_Animation(m_eAnimState);
     m_pModelCom->Set_AnimationLoop(true);
@@ -44,21 +52,6 @@ HRESULT CNPC_Danjin::Initialize_Clone(void* pArg)
         });
 
 #pragma region 3D UI
-
-    CUIObject::UIOBJECT_DESC Desc;
-
-    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
-    Desc.vLocalPos = { 0.f, 0.f };
-    Desc.vLocalSize = { 1.7f, 1.7f };
-    Desc.szName = "TalkUI";
-
-
-    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
-    Desc.vLocalPos = { 0.f, 0.f };
-    Desc.vLocalSize = { 1.7f, 1.7f };
-    Desc.szName = "Dangin_TalkUI";
-    m_pDanginTalkUI = static_cast<CUI_Talk_Dangin*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Dangin"), &Desc));
-    CHECK_NULLPTR(m_pDanginTalkUI, E_FAIL);
 
 #pragma endregion
 
@@ -206,6 +199,20 @@ HRESULT CNPC_Danjin::Ready_Interaction_Guide(void* pArg)
     return S_OK;
 }
 
+HRESULT CNPC_Danjin::Ready_3D_Talk_UI(void* pArg)
+{
+    CUIObject::UIOBJECT_DESC Desc;
+
+    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+    Desc.vLocalPos = { 0.f, 0.f };
+    Desc.vLocalSize = { 1.7f, 1.7f };
+    Desc.szName = "Dangin_TalkUI";
+    m_pDanginTalkUI = static_cast<CUI_Talk_Dangin*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Dangin"), &Desc));
+    CHECK_NULLPTR(m_pDanginTalkUI, E_FAIL);
+
+    return S_OK;
+}
+
 HRESULT CNPC_Danjin::Ready_DefaultSetting(void* pArg)
 {
     return S_OK;
@@ -302,6 +309,8 @@ void CNPC_Danjin::Animation_Update(_float fTimeDelta)
 
             // NPC를 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+            m_pClientInstance->Camera_Set_NpcTalk(true, _float3(247.15f, 5.01f, 143.43), _float3(0.59f, -0.11f, -0.80f));
         }
     }
     else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
@@ -311,6 +320,8 @@ void CNPC_Danjin::Animation_Update(_float fTimeDelta)
             m_eAnimState = ANIM_STATE::TALK_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
+
+            m_pClientInstance->Camera_Set_NpcTalk(false, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f));
         }
     }
 }
@@ -411,8 +422,11 @@ void CNPC_Danjin::Free()
     Safe_Release(m_pTriggerCom);
     Safe_Release(m_pDanginTalkUI);
 
+    Safe_Release(m_pClientInstance);
+
     if (nullptr != m_pGuide)
     {
         m_pGuide->Set_IsDead(true);
+        m_pGuide = nullptr;
     }
 }

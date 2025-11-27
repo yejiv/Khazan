@@ -309,6 +309,10 @@ HRESULT CClientInstance::Camera_Set_Animation_Json(string strAnimationTag)
 {
     return m_pCamera_Manager->Set_Animation_Json(strAnimationTag);
 }
+void CClientInstance::Camera_Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos, _float3 vLookAt)
+{
+    m_pCamera_Manager->Set_NpcTalk(isNpcTalk, vTargetPos, vLookAt);
+}
 void CClientInstance::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
 {
     m_pCamera_Manager->Start_ForceOrbit(eForceDir);
@@ -375,6 +379,31 @@ _bool CClientInstance::Is_CurrentSpear()
 _bool CClientInstance::Is_CurrentGSword()
 {
     return m_pPlayerData_Manager->Is_CurrentGSword();
+}
+
+void CClientInstance::Set_ChangePlayerEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback)
+{
+    m_pPlayerData_Manager->Set_ChangePlayerEquipmentCallBack(callback);
+}
+
+void CClientInstance::Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex)
+{
+    m_pPlayerData_Manager->Change_PlayerEquipment(eType, iEquipmentIndex);
+}
+
+const CPlayerData_Manager::PLAYER_EQUIPMENT& CClientInstance::Get_PlayerEquipment() const
+{
+    return m_pPlayerData_Manager->Get_PlayerEquipment();
+}
+
+void CClientInstance::Set_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex)
+{
+    m_pPlayerData_Manager->Set_PlayerEquipment(eType, iEquipmentIndex);
+}
+
+const _wstring& CClientInstance::Get_EquipmentName(_uint iEquipmentIndex) const
+{
+    return m_pPlayerData_Manager->Get_EquipmentName(iEquipmentIndex);
 }
 
 #pragma endregion

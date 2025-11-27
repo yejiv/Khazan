@@ -120,7 +120,7 @@ HRESULT CDragonian_Sword::Ready_Collision()
     m_tCollisionDesc.pGameObject = this;
 
     CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-    BodyDesc.vExtent = { 0.7f, 1.f, 0.5f };
+    BodyDesc.vExtent = { 0.8f, 1.f, 0.8f };
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::BOX;

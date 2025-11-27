@@ -109,7 +109,7 @@ HRESULT CBladeNexus::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    _float fIntensity = 7.f;
+    _float fIntensity = 5.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fIntensity, sizeof(_float))))
         return E_FAIL;
 
@@ -361,13 +361,7 @@ void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
 
 void CBladeNexus::Animation_Update(_float fTimeDelta)
 {
-    if (ANIM_STATE::BEFORE_IDLE != m_eAnimState && ANIM_STATE::BEFORE_START != m_eAnimState)
-    {
-        _vector vPos = m_pTargetCom->Get_State(STATE::POSITION);
-        vPos.m128_f32[1] = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-
-        m_pTransformCom->LookAt_Lerp(vPos, fTimeDelta, 2.f);
-    }
+    Chase_Target(fTimeDelta);
 
     if (false == m_isCollision)
         return;
@@ -417,6 +411,18 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             Desc.fDuration = 7.5f;
             Desc.vFadeTime = _float2(3.5f, 0.5f);
             m_pGameInstance->Start_RadialBlur(Desc);
+
+            // Main Light 백업
+            m_pGameInstance->Backup_LightDesc(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()));
+
+            LIGHT_TRANSITION_DESC LightDesc{};
+            LightDesc.fDuration = 7.f;
+            LightDesc.vFadeTime = _float2(7.f, 0.f);
+            LightDesc.vDiffuse = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+            LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+            LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+            LightDesc.isReturnToStart = false;
+            m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
         }
         // 해금 후 IDLE 상태
         else if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
@@ -522,6 +528,12 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 
         // 첫 해금 후 접촉 -> 결속 으로 변경
         m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("결속"), 1.5f);
+    
+        LIGHT_TRANSITION_DESC LightDesc{};
+        LightDesc.fDuration = 2.f;
+        LightDesc.vFadeTime = _float2(2.f, 0.f);
+        LightDesc.isReturnToStart = false;
+        m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc, true);
     }
     // 귀검 가동 끝나면 ( 첫 해금 X )
     if (ANIM_STATE::AFTER_START == m_eAnimState)
@@ -587,6 +599,30 @@ void CBladeNexus::Find_Target()
     CHECK_NULLPTR(m_pTargetCom, );
 
     m_isFindTarget = true;
+}
+
+void CBladeNexus::Chase_Target(_float fTimeDelta)
+{
+    if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
+        return;
+    
+    _vector vPos = {};
+
+    if (ANIM_STATE::BEFORE_START == m_eAnimState || ANIM_STATE::BEFORE_LOOP == m_eAnimState ||
+        ANIM_STATE::AFTER_START == m_eAnimState || ANIM_STATE::AFTER_LOOP == m_eAnimState)
+    {
+        vPos = XMLoadFloat4(m_pGameInstance->Get_CamPosition());
+        vPos.m128_f32[1] = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+
+        m_pTransformCom->LookAt_Lerp(vPos, fTimeDelta, 2.f);
+    }
+    else
+    {
+        vPos = m_pTargetCom->Get_State(STATE::POSITION);
+        vPos.m128_f32[1] = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+
+        m_pTransformCom->LookAt_Lerp(vPos, fTimeDelta, 2.f);
+    }
 }
 
 void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -657,5 +693,6 @@ void CBladeNexus::Free()
     if (nullptr != m_pGuide)
     {
         m_pGuide->Set_IsDead(true);
+        m_pGuide = nullptr;
     }
 }

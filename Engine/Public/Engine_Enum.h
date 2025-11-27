@@ -3,6 +3,7 @@
 
 namespace Engine
 {
+    enum class TARGET_DIR { F, B, L, R, FR, FL, BR, BL, END };
 	enum class MODELTYPE { NONANIM, ANIM };
 	enum class COLLIDER { AABB, OBB, SPHERE, END };
 	enum class SHAPE { CAPSULE, SPHERE, BOX, MESH, CONVEX, END };
@@ -19,7 +20,7 @@ namespace Engine
 	enum class MOUSEMOVESTATE {	X, Y, WHEEL, END };
 	enum class POOLSTATUS { WAIT, RESET, END};
 	enum class COMPUTEJOB { UPDATE, POSTPROCESS, END };
-    enum class INPUT_TYPE { GAMEPLAY, UI, POPUP, WORLD_UI, END };
+    enum class INPUT_TYPE { GAMEPLAY, UI, POPUP, WORLD_UI, FORCE, END };
 	enum class TEXT_ALIGN { LEFT_TOP, CENTER_TOP, RIGHT_TOP, LEFT_CENTER, CENTER, RIGHT_CENTER, LEFT_BOTTOM, CENTER_BOTTOM, RIGHT_BOTTOM, END };
 	enum class TIME_CHANNEL : unsigned int { WORLD, PLAYER, ENEMY, EFFECT, MAP, END };
 	enum class DEFERRED_CONTEXT { MAP, END }; 

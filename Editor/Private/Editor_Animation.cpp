@@ -129,7 +129,7 @@ void CEditor_Animation::Set_RootBoneIndex(_uint iRootBoneIndex)
 void CEditor_Animation::OnAnimationBlend(map<_uint, _matrix>&& outChannelMatrices)
 {
     *m_fCurrentTrackPosition = 0.f;
-    fill(m_CurrentKeyFrameIndices.begin(), m_CurrentKeyFrameIndices.end(), 0);
+    fill(m_CurrentKeyFrameIndices.begin(), m_CurrentKeyFrameIndices.end(), 0);  
     m_isAnimationBlend = true;
     m_fCurBlendTime = 0.f;
     m_PreAnimationChannelMatrices = move(outChannelMatrices);

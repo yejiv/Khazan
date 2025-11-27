@@ -356,6 +356,17 @@ void CCamera_Manager::Set_Animation(_wstring strAnimationTag)
     pCamera->Set_Animation(strAnimationTag);
 }
 
+void CCamera_Manager::Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos, _float3 vLookAt)
+{
+    CCamera* pCamera = Get_ActiveCamera();
+    if (pCamera == nullptr)
+        return;
+    
+    CCamera_Compre* pCameraCompre = dynamic_cast<CCamera_Compre*>(pCamera);
+    pCameraCompre->Set_NpcTalk(isNpcTalk, vTargetPos, vLookAt);
+    
+}
+
 void CCamera_Manager::Switch_CameraMode(CAMERATYPE eType)
 {
     CCamera* pCamera = Get_ActiveCamera();

@@ -84,6 +84,8 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
 
+    Ready_MotionTrailCallback();
+
     if (FAILED(Ready_Collision()))
         return E_FAIL;
 
@@ -268,12 +270,13 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         m_pClientInstance->Set_PlayerInput(false);
 
         /* 상태 초기화 */
-        Clear_CycleState();
-        Clear_SubState();
-        Clear_State();
-        m_eDir.iDirFlag = 0;
-        //m_eWorldDir.iDirFlag = 0;
-        m_iStatus = 0;
+        //Clear_CycleState();
+        //Clear_SubState();
+        //Clear_State();
+        //m_eDir.iDirFlag = 0;
+        ////m_eWorldDir.iDirFlag = 0;
+        //m_iStatus = 0;
+        Clear_Step0();
 
         /* 상태 DIE로 재정비 */
         if (Has_Status(BAREHAND)) m_iStatus = BAREHAND;
@@ -527,7 +530,7 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
 
     /* 공격 상태가 아닐 때 공격 콜리더 끄기  */
     if (!m_pAnimAttack->Is_Attacking() && !m_pAnimFall->Is_FallAttacking())
-        m_pBody->Event_AttackTiming(false);
+        m_pBody->AllAttackCollisionActive_Off();
 
 
     /* (move , idle 애니메이션 재생 시도 */
@@ -1229,10 +1232,11 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
     {
         if (m_pAnimAttack->Try_GrappleAttack())
         {
-            Clear_Step0();
+            Clear_Step2();
             Add_State(CAT::M_ATTACK);
             Add_SubState(ATT::ATK_GRAPPLE);
             Add_Status(BRUTAL_SUCCESS);
+            m_eHitReaction = ENUM_CLASS(HITREACTION::BRUTAL_ATTACK);
         }
     }
 
@@ -1540,7 +1544,7 @@ void CKhazan_GSword::ExecuteAnimationExit()
     if ((m_iCurMainState != m_iPrevMainState) && m_iPrevMainState & CAT::M_GUARD) m_pAnimGuard->Exit();
     if ((m_iCurMainState != m_iPrevMainState) && m_iPrevMainState & CAT::M_ATTACK) {
         m_pAnimAttack->Exit();
-        m_pBody->Event_AttackTiming(false);
+        m_pBody->AllAttackCollisionActive_Off();
     }
     if ((m_iCurMainState != m_iPrevMainState) && m_iPrevMainState & CAT::M_MOVE) m_pAnimMove->Exit();
     //if(m_iPrevMainState &   CAT::M_LOCKON           )
@@ -2114,6 +2118,15 @@ HRESULT CKhazan_GSword::Ready_AnimationStateMachine()
 
     return S_OK;
 }
+
+void CKhazan_GSword::Ready_MotionTrailCallback()
+{
+    m_pBody->Set_MotionTrailCallBack([this](const _wstring& strKey, _bool isActive) {
+        m_pBody->On_MotionTrail(strKey, isActive);
+        m_pGSword->On_MotionTrail(strKey, isActive);
+        });
+}
+
 
 void CKhazan_GSword::Clear_Step0()
 {
