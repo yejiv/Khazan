@@ -4,13 +4,19 @@
 
 #include "Interaction_Guide.h"
 
+#include "UI_Talk_Daphrona.h"
+
+#include "ClientInstance.h"
+
 CNPC_Daphrona::CNPC_Daphrona(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
+    , m_pClientInstance{ CClientInstance::GetInstance() }
 {
 }
 
 CNPC_Daphrona::CNPC_Daphrona(const CNPC_Daphrona& Prototype)
     : CProp_Interactive{ Prototype }
+    , m_pClientInstance{ Prototype.m_pClientInstance }
 {
 }
 
@@ -31,6 +37,8 @@ HRESULT CNPC_Daphrona::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
+    CHECK_FAILED(Ready_3D_Talk_UI(pArg), E_FAIL);
+
     m_eAnimState = ANIM_STATE::IDLE;
     m_pModelCom->Set_Animation(m_eAnimState);
     m_pModelCom->Set_AnimationLoop(true);
@@ -50,6 +58,8 @@ void CNPC_Daphrona::Priority_Update(_float fTimeDelta)
     {
         m_Event.None();
     }
+
+    m_pDaphronaTalkUI->Priority_Update(fTimeDelta);
 }
 
 void CNPC_Daphrona::Update(_float fTimeDelta)
@@ -58,11 +68,17 @@ void CNPC_Daphrona::Update(_float fTimeDelta)
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         Animation_Change(fTimeDelta);
+
+    m_pDaphronaTalkUI->Update(fTimeDelta);
 }
 
 void CNPC_Daphrona::Late_Update(_float fTimeDelta)
 {
     CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
+
+    m_pDaphronaTalkUI->Late_Update(fTimeDelta);
+
+    m_pDaphronaTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
 }
 
 HRESULT CNPC_Daphrona::Render()
@@ -87,7 +103,7 @@ HRESULT CNPC_Daphrona::Render()
 
 HRESULT CNPC_Daphrona::Ready_Components(void* pArg)
 {
-    DANJIN_DESC* pDesc = static_cast<DANJIN_DESC*>(pArg);
+    DAPHRONA_DESC* pDesc = static_cast<DAPHRONA_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
@@ -177,6 +193,21 @@ HRESULT CNPC_Daphrona::Ready_Interaction_Guide(void* pArg)
     return S_OK;
 }
 
+HRESULT CNPC_Daphrona::Ready_3D_Talk_UI(void* pArg)
+{
+    CUIObject::UIOBJECT_DESC Desc;
+
+    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+    Desc.vLocalPos = { 0.f, 0.f };
+    Desc.vLocalSize = { 1.7f, 1.7f };
+    Desc.szName = "Daphrone_TalkUI";
+
+    m_pDaphronaTalkUI = static_cast<CUI_Talk_Daphrona*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Daphrona"), &Desc));
+    CHECK_NULLPTR(m_pDaphronaTalkUI, E_FAIL);
+    
+    return S_OK;
+}
+
 HRESULT CNPC_Daphrona::Ready_DefaultSetting(void* pArg)
 {
     return S_OK;
@@ -225,7 +256,7 @@ void CNPC_Daphrona::Input_Interact_Event(_float fTimeDelta)
 
         EventInteractType InteractType = {};
 
-        InteractType.eInteractType = INTERACTIVE_TYPE::DANJIN;
+        InteractType.eInteractType = INTERACTIVE_TYPE::DAPHRONA;
 
         InteractType.eState = EventInteractType::BEGIN;
 
@@ -258,9 +289,11 @@ void CNPC_Daphrona::Animation_Update(_float fTimeDelta)
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
 
+            m_pDaphronaTalkUI->On_Panel();
+
             EventInteractType InteractType = {};
 
-            InteractType.eInteractType = INTERACTIVE_TYPE::DANJIN;
+            InteractType.eInteractType = INTERACTIVE_TYPE::DAPHRONA;
             InteractType.isEvent = true;
 
             EventNPC NPCEvent = {};
@@ -271,6 +304,8 @@ void CNPC_Daphrona::Animation_Update(_float fTimeDelta)
 
             // NPC를 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+            m_pClientInstance->Camera_Set_NpcTalk(true, _float3(4.33f, -88.86f, 8.21), _float3(0.35f, -0.16f, 0.92f));
         }
     }
     else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
@@ -280,6 +315,8 @@ void CNPC_Daphrona::Animation_Update(_float fTimeDelta)
             m_eAnimState = ANIM_STATE::TALK_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
+
+            m_pClientInstance->Camera_Set_NpcTalk(false);
         }
     }
 }
@@ -293,20 +330,6 @@ void CNPC_Daphrona::Animation_Change(_float fTimeDelta)
         m_eAnimState = ANIM_STATE::TALK_IDLE;
         m_pModelCom->Set_Animation(m_eAnimState);
         m_pModelCom->Set_AnimationLoop(true);
-
-        EventInteractType InteractType = {};
-
-        InteractType.eInteractType = INTERACTIVE_TYPE::DANJIN;
-        InteractType.isEvent = true;
-
-        EventNPC NPCEvent = {};
-
-        XMStoreFloat4(&NPCEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-
-        InteractType.NPCEvent = NPCEvent;
-
-        // NPC를 바라볼 수 있도록 포지션만 던짐 ( NPC 애니메이션 종료 O, UI 창 팝업? )
-        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
     }
     // NPC 상호 작용 종료 후 ( 첫 해금 O )
     if (ANIM_STATE::TALK_END == m_eAnimState)
@@ -347,6 +370,14 @@ void CNPC_Daphrona::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLaye
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
 
+    // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
+    if (ANIM_STATE::TALK_END != m_eAnimState && ANIM_STATE::IDLE != m_eAnimState)
+    {
+        m_eAnimState = ANIM_STATE::TALK_END;
+        m_pModelCom->Set_Animation(m_eAnimState);
+        m_pModelCom->Set_AnimationLoop(true);
+    }
+
     m_pGuide->Update_Visible(false);
 
     m_isCollision = false;
@@ -384,9 +415,13 @@ void CNPC_Daphrona::Free()
 
     Safe_Release(m_pStaticCom);
     Safe_Release(m_pTriggerCom);
+    Safe_Release(m_pDaphronaTalkUI);
+
+    Safe_Release(m_pClientInstance);
 
     if (nullptr != m_pGuide)
     {
         m_pGuide->Set_IsDead(true);
+        m_pGuide = nullptr;
     }
 }

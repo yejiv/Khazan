@@ -309,6 +309,10 @@ HRESULT CClientInstance::Camera_Set_Animation_Json(string strAnimationTag)
 {
     return m_pCamera_Manager->Set_Animation_Json(strAnimationTag);
 }
+void CClientInstance::Camera_Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos, _float3 vLookAt)
+{
+    m_pCamera_Manager->Set_NpcTalk(isNpcTalk, vTargetPos, vLookAt);
+}
 void CClientInstance::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
 {
     m_pCamera_Manager->Start_ForceOrbit(eForceDir);

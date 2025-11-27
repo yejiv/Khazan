@@ -361,13 +361,7 @@ void CBladeNexus::Input_Interact_Event(_float fTimeDelta)
 
 void CBladeNexus::Animation_Update(_float fTimeDelta)
 {
-    if (ANIM_STATE::BEFORE_IDLE != m_eAnimState && ANIM_STATE::BEFORE_START != m_eAnimState)
-    {
-        _vector vPos = m_pTargetCom->Get_State(STATE::POSITION);
-        vPos.m128_f32[1] = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-
-        m_pTransformCom->LookAt_Lerp(vPos, fTimeDelta, 2.f);
-    }
+    Chase_Target(fTimeDelta);
 
     if (false == m_isCollision)
         return;
@@ -589,6 +583,30 @@ void CBladeNexus::Find_Target()
     m_isFindTarget = true;
 }
 
+void CBladeNexus::Chase_Target(_float fTimeDelta)
+{
+    if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
+        return;
+    
+    _vector vPos = {};
+
+    if (ANIM_STATE::BEFORE_START == m_eAnimState || ANIM_STATE::BEFORE_LOOP == m_eAnimState ||
+        ANIM_STATE::AFTER_START == m_eAnimState || ANIM_STATE::AFTER_LOOP == m_eAnimState)
+    {
+        vPos = XMLoadFloat4(m_pGameInstance->Get_CamPosition());
+        vPos.m128_f32[1] = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+
+        m_pTransformCom->LookAt_Lerp(vPos, fTimeDelta, 2.f);
+    }
+    else
+    {
+        vPos = m_pTargetCom->Get_State(STATE::POSITION);
+        vPos.m128_f32[1] = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+
+        m_pTransformCom->LookAt_Lerp(vPos, fTimeDelta, 2.f);
+    }
+}
+
 void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
@@ -657,5 +675,6 @@ void CBladeNexus::Free()
     if (nullptr != m_pGuide)
     {
         m_pGuide->Set_IsDead(true);
+        m_pGuide = nullptr;
     }
 }

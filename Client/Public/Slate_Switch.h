@@ -20,6 +20,8 @@ public:
     {
         LEVEL eLevel{ LEVEL::END };
 
+        _float4x4* pSocketMatrix = { nullptr };
+
         _bool* pActive{ nullptr };
 
     }SLATE_SWITCH_DESC;
@@ -37,13 +39,21 @@ public:
     virtual void Late_Update(_float fTimeDelta) override;
     virtual HRESULT Render() override;
 
+    _bool IsDeActiveState() {
+        return ANIM_STATE::IDLE == m_eAnimState;
+    }
+
 private:
     CModel* m_pModelCom = { nullptr };
     CShader* m_pShaderCom = { nullptr };
 
     ANIM_STATE m_eAnimState = ANIM_STATE::END;
 
+    _float4x4* m_pSocketMatrix = { nullptr };
+
     _bool* m_pActive = { nullptr };
+
+    _bool m_isSocket = { false };
 
 private:
     HRESULT Ready_Components(void* pArg);

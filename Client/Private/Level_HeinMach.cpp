@@ -189,11 +189,11 @@ HRESULT CLevel_HeinMach::Initialize()
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_F1))
+    if (m_pGameInstance->Key_Down(DIK_F1, INPUT_TYPE::FORCE))
     {
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
     }
-    else if (m_pGameInstance->Key_Down(DIK_F2))
+    else if (m_pGameInstance->Key_Down(DIK_F2, INPUT_TYPE::FORCE))
     {
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
