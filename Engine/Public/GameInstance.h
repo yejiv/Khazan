@@ -139,7 +139,8 @@ public:
 	_bool Is_LightEnable(const _wstring& strLightTag, _uint iLevelIndex);
 	HRESULT Render_Lights(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex);
     const vector<_wstring>& Get_LightTags(_uint iLevelIndex);
-    void    Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc);
+    void    Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc, _bool isRestore = false);
+    void    Backup_LightDesc(const _wstring& strLightTag, _uint iLevelIndex);
 #pragma endregion
 
 #pragma region FONT_MANAGER

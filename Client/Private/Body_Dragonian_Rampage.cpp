@@ -38,7 +38,6 @@ HRESULT CBody_Dragonian_Rampage::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_pModelCom->Set_OwnerTransform(&m_CombinedWorldMatrix);
-
     return S_OK;
 }
 

@@ -18,6 +18,7 @@
 #include "AS_Groggy_Viper.h"
 #include "AS_Hit_Viper.h"
 #include "AS_CutScene_Start_Viper.h"
+#include "AS_CutScene_2Phase_Viper.h"
 
 CFSM_Viper::CFSM_Viper()
 {
@@ -73,8 +74,8 @@ HRESULT CFSM_Viper::Initialize()
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::HIT), CAS_Hit_Viper::Create())))
         return E_FAIL;
 
-
-
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), CAS_CutScene_2Phase_Viper::Create())))
+        return E_FAIL;
 
 
     m_pCurrentState = m_States[ENUM_CLASS(VIPER_STATE_P1::IDLE)];

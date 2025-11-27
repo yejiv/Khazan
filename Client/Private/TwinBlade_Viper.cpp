@@ -55,52 +55,59 @@ void CTwinBlade_Viper::Priority_Update(_float fTimeDelta)
 
 void CTwinBlade_Viper::Update(_float fTimeDelta)
 {
-   
-    _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
-
-    for (uint32_t i = 0; i < 3; i++)
-        BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
-
-    XMStoreFloat4x4(
-        &m_CombinedWorldMatrix,
-        m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
-    );
-
-    _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
-
-    _vector vScale, vQuat, vPos;
-    XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
-
-    if (m_isLOnAttackCollision)
+ 
+    if (CViper::PHASE::PHASE1 == m_pOwner->Get_Phase() && m_isActive)
     {
-        m_pLeftBodyComp->Collision_Active(true);
-        m_pLeftBodyComp->Sync_Update(WeaponWorld);
-        m_pLeftBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
-        XMStoreFloat4(&m_vGrabPos, vPos);
-        
-    }
-    else if (m_isROnAttackCollision)
-    {
-        m_pRightBodyComp->Collision_Active(true);
-        m_pRightBodyComp->Sync_Update(WeaponWorld);
-        m_pRightBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
-    }
-    else
-    {
-        m_pRightBodyComp->Collision_Active(false);
-        m_pLeftBodyComp->Collision_Active(false);
-    }
-        
-  
+        _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 
-    XMStoreFloat4(&m_vTipPos, vPos);
+        for (uint32_t i = 0; i < 3; i++)
+            BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
+
+        XMStoreFloat4x4(
+            &m_CombinedWorldMatrix,
+            m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
+        );
+
+        _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
+
+        _vector vScale, vQuat, vPos;
+        XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
+
+        if (m_isLOnAttackCollision)
+        {
+            m_pLeftBodyComp->Collision_Active(true);
+            m_pLeftBodyComp->Sync_Update(WeaponWorld);
+            m_pLeftBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
+            XMStoreFloat4(&m_vGrabPos, vPos);
+
+        }
+        else if (m_isROnAttackCollision)
+        {
+            m_pRightBodyComp->Collision_Active(true);
+            m_pRightBodyComp->Sync_Update(WeaponWorld);
+            m_pRightBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
+        }
+        else
+        {
+            m_pRightBodyComp->Collision_Active(false);
+            m_pLeftBodyComp->Collision_Active(false);
+        }
+
+
+
+        XMStoreFloat4(&m_vTipPos, vPos);
+    }
+
 
 }
 
 void CTwinBlade_Viper::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
-        return;
+    if (CViper::PHASE::PHASE1 == m_pOwner->Get_Phase() && m_isActive)
+    {
+        if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
+            return;
+    }
 }
 
 HRESULT CTwinBlade_Viper::Render()
@@ -215,9 +222,6 @@ HRESULT CTwinBlade_Viper::Ready_Collision()
         ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_LH"), (CComponent**)&m_pLeftBodyComp, &LeftBodyDesc)))
         return E_FAIL;
-
-
-
 
     return S_OK;
 }

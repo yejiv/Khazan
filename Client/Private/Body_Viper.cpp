@@ -106,17 +106,20 @@ void CBody_Viper::Priority_Update(_float fTimeDelta)
 
 void CBody_Viper::Update(_float fTimeDelta)
 {
-
-    Update_CombinedMatrix();
+    if (CViper::PHASE::PHASE1 == m_pOwner->Get_Phase())
+    {
+        Update_CombinedMatrix();
+    }
 
 }
 
 void CBody_Viper::Late_Update(_float fTimeDelta)
 {
-
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
-        return;
-
+    if (CViper::PHASE::PHASE1 == m_pOwner->Get_Phase())
+    {
+        if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
+            return;
+    }
 }
 
 HRESULT CBody_Viper::Render()

@@ -38,7 +38,6 @@ public:
 public:
     void Set_ObjMatrix(const _float4x4* pObjMatrix) { m_pObjMatrix = pObjMatrix; }
     void Set_SocketMatrix(const _float4x4* pSocketMatrix) { m_pSocketMatrix = pSocketMatrix; }
-
 public:
     void Switch_CameraMode(CAMERATYPE eType);
 
@@ -52,6 +51,7 @@ public:
     HRESULT LockOn(_float fTimeDelta);
     void Update_BlendBack(_float fTimeDelta);
     void Update_InteractFocus(_float fTimeDelta);
+    void Update_NpcTalk(_float fTimeDelta);
 
 public:
     void LockOn_Check(_float fTimeDelta);
@@ -76,7 +76,6 @@ public:
 public:
     void Update_Cinematic(_float fTimeDelta);
 
-
 public:
     void Yetuga_Holding_Start();
     void Yetuga_Holding_End();
@@ -90,6 +89,9 @@ public:
     CAMERA_COMPRE_DESC  Get_Desc();
     _bool               Get_IsLockOn() const { return m_isLockOn; }
     _float4* Get_LockOnPosition() { return m_pLockOnPos; }
+
+public:
+    void Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos = _float3(0.f, 0.f, 0.f), _float3 vLookAt = _float3(0.f, 0.f, 0.f));
 private:
     CBody* m_pBody = { nullptr };
 
@@ -108,7 +110,7 @@ private:
 
     const _float4x4* m_pObjMatrix = { nullptr };
     const _float4x4* m_pSocketMatrix = { nullptr };
-
+    
     _bool m_isLockOn = { false };
     _float m_fLockOnDelay = {};
     vector<class CGameObject*> m_CollMonsters;
@@ -205,8 +207,20 @@ private:
     _float m_fPostFrameEyeOffsetY = 1.5f;  // 캐릭터 눈높이
     _float m_fPostFrameMinDist = 0.5f;  // 너무 가까울 때 안정화용
 
-
     _float m_fStartTime = {};
+
+    // NPC 대화전용
+    _float  m_fNpcTalkBlendTime = 0.f;
+    _float  m_fNpcTalkBlendDuration = 0.5f;
+
+    _vector m_vNpcTalkStartPos;
+    _vector m_vNpcTalkStartRight;
+    _vector m_vNpcTalkStartUp;
+    _vector m_vNpcTalkStartLook;
+
+    _bool m_isNpcTalk = { false };
+    _float3 m_vNpcCamTargetPos = _float3(0.f, 0.f, 0.f);
+    _float3 m_vNpcCamLookAt = _float3(0.f, 0.f, 0.f);
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;

@@ -51,18 +51,19 @@ void CDragonian_Claw_L::Update(_float fTimeDelta)
         BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
     XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
-    m_pBodyComp->Collision_Active(false);
+    _bool isAttakc = m_pData->iAttack_State & CDragonian_Rampage::ATTACK_BODY::HAND_L;
+    m_pBodyComp->Collision_Active(isAttakc);
 
-    //    if (!m_pData->isAttack_Collision)
-    //        return;
+    if (!isAttakc)
+        return;
 
-    //_matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
-    //
-    //_vector vScale, vQuat, vPos;
-    //XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
-    //
-    //m_pBodyComp->Sync_Update(WeaponWorld);
-    //m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
+    _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
+    
+    _vector vScale, vQuat, vPos;
+    XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
+    
+    m_pBodyComp->Sync_Update(WeaponWorld);
+    m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
 
 }
 
@@ -120,7 +121,7 @@ HRESULT CDragonian_Claw_L::Ready_Collision()
     m_tCollisionDesc.pGameObject = this;
 
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
-    BodyDesc.fRadius = 1.f;
+    BodyDesc.fRadius = 1.5f;
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::SPHERE;
@@ -131,7 +132,7 @@ HRESULT CDragonian_Claw_L::Ready_Collision()
     BodyDesc.vPos = { m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43 };
     XMStoreFloat4(&BodyDesc.vQuat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&m_CombinedWorldMatrix)));
 
-    BodyDesc.vShapeOffset = _float3(-0.3f, -0.3f, 0.f);
+    BodyDesc.vShapeOffset = _float3(-1.f, -0.f, 0.f);
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_Body"), (CComponent**)&m_pBodyComp, &BodyDesc), E_FAIL);
