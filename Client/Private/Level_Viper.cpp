@@ -32,7 +32,7 @@ HRESULT CLevel_Viper::Initialize()
 
     // 플레이어, 카메라, 트리거
 
-   //CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
+    CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
     CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
@@ -57,7 +57,7 @@ HRESULT CLevel_Viper::Initialize()
     //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
-    //CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
+    CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
     CClientInstance::GetInstance()->Fade_Out();
 
     if (!Wait_All_Futures())
