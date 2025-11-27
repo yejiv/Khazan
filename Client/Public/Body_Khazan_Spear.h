@@ -194,7 +194,7 @@ private:
 
 private:
     void	FX_Trail();
-    void	UpdateSpearWind();
+    void	UpdateSpearWind(_bool isEnableRadialBlur);
     void	SpawnSpearWind();
     void	FX_StrongAtk_Charge_Blust1(_fvector pos);
     void	FX_StrongAtk_Charge_Blust2(_fvector pos);
