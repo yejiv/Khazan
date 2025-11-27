@@ -17,7 +17,7 @@ private:
 	virtual ~CModel_Instance() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc);
+	virtual HRESULT Initialize_Prototype(const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc, _bool isSRVCache = false);
 	virtual HRESULT Initialize_Clone(void* pArg);
 	virtual HRESULT Render(_uint iMeshIndex);
 	virtual HRESULT Deferred_Render(_uint iMeshIndex, ID3D11DeviceContext* pDeferredContext);
@@ -74,12 +74,12 @@ private:
 
 private:
 	HRESULT Ready_Meshes(MODEL_DATA& Data, const CModelMesh_Instance::INSTANCE_DESC* pDesc);
-	HRESULT Ready_Materials(MODEL_DATA& Data);
+	HRESULT Ready_Materials(MODEL_DATA& Data, _bool isSRVCache = false);
 	HRESULT Ready_Bones(MODEL_DATA& Data);
 	HRESULT Ready_Animations(MODEL_DATA& Data);
 
 public:
-	static CModel_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc);
+	static CModel_Instance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _char* pModelFilePath, const CModelMesh_Instance::INSTANCE_DESC* pDesc, _bool isSRVCache = false);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 

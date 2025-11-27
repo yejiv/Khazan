@@ -39,14 +39,14 @@ void CUI_Talk_Trader::Off_Panel()
 
 void CUI_Talk_Trader::Update_UITransform(_vector vPos)
 {
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetZ(XMVectorSetX(XMVectorSetY(vPos, XMVectorGetY(vPos) + m_vLocalSize.y * 0.87f), XMVectorGetX(vPos) - 0.5f), XMVectorGetZ(vPos) - 0.8f));
-    
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetZ(XMVectorSetX(XMVectorSetY(vPos, XMVectorGetY(vPos) + m_vLocalSize.y * 0.87f), XMVectorGetX(vPos) - 0.f), XMVectorGetZ(vPos) - 1.f));
+//    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetZ(XMVectorSetX(XMVectorSetY(vPos, XMVectorGetY(vPos) + m_vLocalSize.y * 0.87f), XMVectorGetX(vPos) + 0.9f), XMVectorGetZ(vPos) + 0.6f));
     _float offsetY = sin(m_fSpeedWeight * 2.f) * 1.f * 0.5f
         + sin(m_fSpeedWeight * 2.f * 0.5f) * 1.f * 0.5f;
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetY(m_pTransformCom->Get_State(STATE::POSITION), XMVectorGetY(m_pTransformCom->Get_State(STATE::POSITION)) + offsetY * 0.02f));
 
     m_pTransformCom->Scale({ 1.15f, 1.f, 1.f });
-    m_pTransformCom->Rotation(XMConvertToRadians(20.f), XMConvertToRadians(140.f), XMConvertToRadians(0.f));
+    m_pTransformCom->Rotation(XMConvertToRadians(20.f), XMConvertToRadians(-120.f), XMConvertToRadians(3.f));
     m_vColor = { 1.f,1.f, 1.f, 0.8f };
 
     m_pName->Update_UITransform(m_pTransformCom->Get_WorldMatrix());
@@ -482,8 +482,8 @@ CGameObject* CUI_Talk_Trader::Clone(void* pArg)
 
 void CUI_Talk_Trader::Free()
 {
-    if (m_szName != "")
-        CClientInstance::GetInstance()->Release_RootUI(AnsiToWString(m_szName));
+    //if (m_szName != "")
+    //    CClientInstance::GetInstance()->Release_RootUI(AnsiToWString(m_szName));
 
     __super::Free();
     Safe_Release(m_pShaderCom);

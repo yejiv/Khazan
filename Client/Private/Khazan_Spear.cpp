@@ -2803,6 +2803,7 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
             isDone = false;
 
             if (m_pBody->Get_Model()->IsFinished()) {
+                static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
                 isDone = true;
             }
 
@@ -3114,6 +3115,9 @@ void CKhazan_Spear::NPC_Event(_float fTimeDelta)
 
     // 플레이어가 NPC와 상호작용하는 애니메이션 ???
 
+    NPCEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&NPCEvent.vPlayerPosition));
     NPCEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&NPCEvent.vPosition));
 

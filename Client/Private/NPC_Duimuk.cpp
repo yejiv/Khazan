@@ -263,6 +263,7 @@ void CNPC_Duimuk::Input_Interact_Event(_float fTimeDelta)
 
         EventNPC NPCEvent = {};
 
+        NPCEvent.vPlayerPosition = _float4(12.4737f, -95.7249527f, 30.6575832f, 1.f);
         XMStoreFloat4(&NPCEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
 
         InteractType.NPCEvent = NPCEvent;
@@ -301,6 +302,7 @@ void CNPC_Duimuk::Animation_Update(_float fTimeDelta)
 
             XMStoreFloat4(&NPCEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
 
+            NPCEvent.vPlayerPosition = _float4(12.4737f, -95.7249527f, 30.6575832f, 1.f);
             InteractType.NPCEvent = NPCEvent;
 
             // NPC를 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )
