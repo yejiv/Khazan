@@ -32,7 +32,7 @@ HRESULT CLevel_Viper::Initialize()
 
     // 플레이어, 카메라, 트리거
 
-   //CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
+    CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
     CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
@@ -52,11 +52,12 @@ HRESULT CLevel_Viper::Initialize()
     for (_uint i = 0; i < VIPER_SUBLV; ++i)
     {
         CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-  //      CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     }
     //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
+    //CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
     CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
 
     //CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
@@ -815,21 +816,25 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, con
 
 HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
 {
-  /*   CMonster::MONSTER_DESC MonsterDesc{};
+     CMonster::MONSTER_DESC MonsterDesc{};
      MonsterDesc.fAttack = 10.f;
      MonsterDesc.fMaxHP = 1000.f;
      MonsterDesc.fMaxStamina = 250.f;
      MonsterDesc.fMoveSpeed = 10.f;
      MonsterDesc.fSpeedPerSec = 3.f;
      MonsterDesc.fRotationPerSec = 180.f;
-     XMStoreFloat4x4(&MonsterDesc.WorldMatrix,XMMatrixIdentity());
+     //XMStoreFloat4x4(&MonsterDesc.WorldMatrix,XMMatrixIdentity());
+     XMStoreFloat4x4(&MonsterDesc.WorldMatrix, XMMatrixIdentity());
+     MonsterDesc.WorldMatrix.m[3][0] = -32.365f;
+     MonsterDesc.WorldMatrix.m[3][1] = -26.5f;
+     MonsterDesc.WorldMatrix.m[3][2] = 182.409f;
      MonsterDesc.strName = "Viper";
      MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
      if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
          ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Viper"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-         return E_FAIL; */
+         return E_FAIL;
 
-    CMonster::MONSTER_DESC MonsterDesc{};
+   /* CMonster::MONSTER_DESC MonsterDesc{};
     MonsterDesc.fAttack = 10.f;
     MonsterDesc.fMaxHP = 100.f;
     MonsterDesc.fMaxStamina = 100.f;
@@ -847,7 +852,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
 
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
         ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"), TIME_CHANNEL::WORLD, &MonsterDesc)))
-        return E_FAIL;
+        return E_FAIL;*/
 
     //MonsterDesc.fAttack = 10.f;
     //MonsterDesc.fMaxHP = 100.f;

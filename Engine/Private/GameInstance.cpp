@@ -1162,6 +1162,26 @@ CModel* CGameInstance::Get_Model(_wstring strModelTag)
 {
 	return m_pResource_Manager->Get_Model(strModelTag);
 }
+
+_bool CGameInstance::Push_MeshMetrial_SRV(string strFileName, ID3D11ShaderResourceView* pResource)
+{
+    return m_pResource_Manager->Push_MeshMetrial_SRV(strFileName, pResource);
+}
+
+_bool CGameInstance::Exist_MeshMetrial_SRV_InCache(string strFileName)
+{
+    return m_pResource_Manager->Exist_MeshMetrial_SRV_InCache(strFileName);
+}
+
+string CGameInstance::Convert_FullPath(string strFullPath)
+{
+    return m_pResource_Manager->Convert_FullPath(strFullPath);
+}
+
+ID3D11ShaderResourceView* CGameInstance::Get_MeshMetrial_SRVFromCache(string strFileName)
+{
+    return m_pResource_Manager->Get_MeshMetrial_SRVFromCache(strFileName);
+}
 #pragma endregion
 
 #pragma region COMPUTESHADER_MANAGER

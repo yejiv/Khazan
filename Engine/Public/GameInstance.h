@@ -297,6 +297,12 @@ public:
 	class CModel* Clone_Model(_wstring strModelTag);
 	class CTexture* Get_Texture(_wstring strTextureTag);
 	class CModel* Get_Model(_wstring strModelTag);
+
+
+    _bool Push_MeshMetrial_SRV(string strFileName, ID3D11ShaderResourceView* pResource);
+    _bool Exist_MeshMetrial_SRV_InCache(string strFileName);
+    string Convert_FullPath(string strFullPath);
+    ID3D11ShaderResourceView* Get_MeshMetrial_SRVFromCache(string strFileName);
 #pragma endregion
 
 #pragma region COMPUTESHADER_MANAGER
