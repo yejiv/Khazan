@@ -113,8 +113,9 @@ ACTION CAI_Controller_Dragonian_Melee::GetCallbackAction(CGameObject* pOwner, co
     else if ("Attack_Change" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Attack(pOwner); };
     else if ("Damage_Check" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Damage_Check(pOwner); };
     else if ("Damage_Change" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Damage(pOwner); };
-    else if ("LockOn_Change" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->LockOn(pOwner); };
+    else if ("Chase_Check" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Chase_Check(pOwner); };
     else if ("Chase_Change" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Chase(pOwner); };
+    else if ("LockOn_Change" == name)  return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->LockOn(pOwner); };
     else if ("Sleep_Change" == name) return [this, pOwner](CBlackBoard* BB)-> BTNODESTATE {return this->Sleep(pOwner); };
 
     return nullptr;
@@ -245,13 +246,11 @@ BTNODESTATE CAI_Controller_Dragonian_Melee::Damage(CGameObject* pOwner)
     return BTNODESTATE::FAILURE;
 }
 
-BTNODESTATE CAI_Controller_Dragonian_Melee::LockOn(CGameObject* pOwner)
+BTNODESTATE CAI_Controller_Dragonian_Melee::Chase_Check(CGameObject* pOwner)
 {
-    if (!m_pMonData->isSleep && m_pMonData->pOwner->Check_AttackRanage("WalkRange"))
+    if (((!m_pMonData->isSleep && !m_pMonData->pOwner->Check_AttackRanage("WalkRange")) || (!m_pMonData->isSleep && m_pMonData->fAttackCool <= 0.f)))
     {
-        if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Melee::MONSTATE::LOCKON)))
-            m_pFSM->Change_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::LOCKON), pOwner);
-
+        m_pMonData->isChase = true;
         return BTNODESTATE::SUCCESS;
     }
 
@@ -260,13 +259,30 @@ BTNODESTATE CAI_Controller_Dragonian_Melee::LockOn(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Melee::Chase(CGameObject* pOwner)
 {
-    if (m_pMonData->isSleep)
-        return BTNODESTATE::FAILURE;
-
-    if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Melee::MONSTATE::WALK)))
-        m_pFSM->Change_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::WALK), pOwner);
+   if (m_pMonData->isChase && m_pMonData->eHitType == HITREACTION::END)
+   {
+       if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Melee::MONSTATE::WALK)))
+           m_pFSM->Change_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::WALK), pOwner);
+       return BTNODESTATE::RUNNING;
+   }
 
     return BTNODESTATE::SUCCESS;
+}
+
+BTNODESTATE CAI_Controller_Dragonian_Melee::LockOn(CGameObject* pOwner)
+{
+    if (!m_pMonData->isSleep && m_pMonData->eHitType == HITREACTION::END)
+    {
+        if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Melee::MONSTATE::LOCKON)))
+            m_pFSM->Change_State(ENUM_CLASS(CDragonian_Melee::MONSTATE::LOCKON), pOwner);
+
+        if(m_pMonData->isTurn || m_pMonData->isLockOn)
+            return BTNODESTATE::RUNNING;
+        else
+            return BTNODESTATE::SUCCESS;
+    }
+
+    return BTNODESTATE::FAILURE;
 }
 
 BTNODESTATE CAI_Controller_Dragonian_Melee::Sleep(CGameObject* pOwner)

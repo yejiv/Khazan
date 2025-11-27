@@ -381,6 +381,31 @@ _bool CClientInstance::Is_CurrentGSword()
     return m_pPlayerData_Manager->Is_CurrentGSword();
 }
 
+void CClientInstance::Set_ChangePlayerEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback)
+{
+    m_pPlayerData_Manager->Set_ChangePlayerEquipmentCallBack(callback);
+}
+
+void CClientInstance::Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex)
+{
+    m_pPlayerData_Manager->Change_PlayerEquipment(eType, iEquipmentIndex);
+}
+
+const CPlayerData_Manager::PLAYER_EQUIPMENT& CClientInstance::Get_PlayerEquipment() const
+{
+    return m_pPlayerData_Manager->Get_PlayerEquipment();
+}
+
+void CClientInstance::Set_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex)
+{
+    m_pPlayerData_Manager->Set_PlayerEquipment(eType, iEquipmentIndex);
+}
+
+const _wstring& CClientInstance::Get_EquipmentName(_uint iEquipmentIndex) const
+{
+    return m_pPlayerData_Manager->Get_EquipmentName(iEquipmentIndex);
+}
+
 #pragma endregion
 
 

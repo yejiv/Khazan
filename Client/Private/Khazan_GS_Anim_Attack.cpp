@@ -176,6 +176,11 @@ _bool CKhazan_GS_Anim_Attack::Try_ChageFastAttack()
     m_isFastChargeEnd = false;
     m_iReserveSkillIndex = 0;
 
+    /* 콤보 리셋*/
+    m_iCurrentCombo = 0;
+    m_isFastCombo = false;
+    m_isCanNextCombo = false;
+
     m_isInFastCombo = m_isFastCombo;
     if (m_isInFastCombo)
     {
@@ -232,6 +237,11 @@ _bool CKhazan_GS_Anim_Attack::Try_StrongAttack()
     m_isAttacking = true;
     m_iReserveSkillIndex = 0;
 
+    /* 콤보 리셋*/
+    m_iCurrentCombo = 0;
+    m_isFastCombo = false;
+    m_isCanNextCombo = false;
+
     m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_StrongAtk03_Level0");
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
@@ -265,6 +275,11 @@ _bool CKhazan_GS_Anim_Attack::Try_ChageStrongAttack()
         m_isStrongChargeStart = true;
         m_isFastChargeEnd = false;
         m_iReserveSkillIndex = 0;
+
+        /* 콤보 리셋*/
+        m_iCurrentCombo = 0;
+        m_isFastCombo = false;
+        m_isCanNextCombo = false;
 
         if(!isLimitBreak)
             m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_StrongAtk01_Charge");
@@ -315,6 +330,11 @@ _bool CKhazan_GS_Anim_Attack::Try_SprintAttack()
     m_isSprintChargeEnd = false;
     m_iReserveSkillIndex = 0;
 
+    /* 콤보 리셋*/
+    m_iCurrentCombo = 0;
+    m_isFastCombo = false;
+    m_isCanNextCombo = false;
+
     m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_SprintAtk_Charge");
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
@@ -347,6 +367,11 @@ _bool CKhazan_GS_Anim_Attack::Try_DodgeAttack(_uint iDir)
     m_iReserveSkillIndex = 0;
     m_iDodgeDirection = iDir;
 
+    /* 콤보 리셋*/
+    m_iCurrentCombo = 0;
+    m_isFastCombo = false;
+    m_isCanNextCombo = false;
+
     m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_DodgeAtk_F_Charge");
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
@@ -378,6 +403,11 @@ _bool CKhazan_GS_Anim_Attack::Try_GrappleAttack()
     m_isBrutalStart = true;
     m_isBrutalEnd = false;
     m_iReserveSkillIndex = 0;
+
+    /* 콤보 리셋*/
+    m_iCurrentCombo = 0;
+    m_isFastCombo = false;
+    m_isCanNextCombo = false;
 
     m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_Grapple_Atk_01");
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
@@ -536,6 +566,11 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
 
     m_isAttacking = true;
     m_isSkilling = true;
+
+    /* 콤보 리셋*/
+    m_iCurrentCombo = 0;
+    m_isFastCombo = false;
+    m_isCanNextCombo = false;
 
     m_iCurSkillIndex = iSkill;
     m_pClientInstance->Set_UsedSkill(iSkill, true);

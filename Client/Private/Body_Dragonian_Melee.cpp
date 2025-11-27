@@ -19,6 +19,7 @@ _float4x4* CBody_Dragonian_Melee::Get_BoneMatrix_Ptr(const _char* pBoneName)
 HRESULT CBody_Dragonian_Melee::Initialize_Prototype(_int iLevel)
 {
     m_iPrototypeIndex = iLevel;
+
     return S_OK;
 }
 
@@ -38,7 +39,6 @@ HRESULT CBody_Dragonian_Melee::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_pModelCom->Set_OwnerTransform(&m_CombinedWorldMatrix);
-
     return S_OK;
 }
 
@@ -52,6 +52,19 @@ void CBody_Dragonian_Melee::Update(_float fTimeDelta)
     {
         m_pModelCom->Set_Animation(m_pData->iAnimIndex);
         m_iPreAnim = m_pData->iAnimIndex;
+
+        if (m_pData->fQuat != 0.f)
+        {
+            m_pModelCom->Set_BlendTime(0.f);
+            _vector vQuat = m_pData->pOwner->Get_Transform()->Get_Rotation_Quat();
+            _vector vAddQuat = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(m_pData->fQuat));
+            vQuat = XMQuaternionNormalize(XMQuaternionMultiply(vAddQuat, vQuat));
+            m_pData->pOwner->Get_Transform()->Set_Quaternion(vQuat);
+            m_pData->fQuat = 0.f;
+            m_pModelCom->Set_BlendTime(0.f);
+        }
+        else
+            m_pModelCom->Set_BlendTime(0.25f);
     }
 
     Update_CombinedMatrix();

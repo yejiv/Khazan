@@ -103,16 +103,21 @@ public:
 
 #pragma region PlayerData
 public:
-    _bool   Check_Skill(_uint skill);		// Check if the skill exists
-    _bool   Check_Skills(_uint skill);		// Check if the skills exists
-	void    AllUnlock_Skill();				// Unlock all skills
-	void    Unlock_Skill(_uint skill);		// Unlock a single skill
-	void    Alllock_Skill();				// Lock all skills
-	void    Lock_Skill(_uint skill);		// Lock a single skill
-    void    UsedSpear();                    // Choose Spear 
-    void    UsedGSword();                   // Choose GSword 
-    _bool   Is_CurrentSpear();              // is picked Spear 
-    _bool   Is_CurrentGSword();             // is picked GSword 
+    _bool                                           Check_Skill(_uint skill);		// Check if the skill exists
+    _bool                                           Check_Skills(_uint skill);		// Check if the skills exists
+	void                                            AllUnlock_Skill();				// Unlock all skills
+	void                                            Unlock_Skill(_uint skill);		// Unlock a single skill
+	void                                            Alllock_Skill();				// Lock all skills
+	void                                            Lock_Skill(_uint skill);		// Lock a single skill
+    void                                            UsedSpear();                    // Choose Spear 
+    void                                            UsedGSword();                   // Choose GSword 
+    _bool                                           Is_CurrentSpear();              // is picked Spear 
+    _bool                                           Is_CurrentGSword();             // is picked GSword 
+    void                                            Set_ChangePlayerEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback);
+    void                                            Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex);  // ui 장착버튼같은거 누를 시 사용해주세요 
+    const CPlayerData_Manager::PLAYER_EQUIPMENT&    Get_PlayerEquipment() const;
+    void                                            Set_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex);  // 테스트용 Setter 
+    const _wstring&                                 Get_EquipmentName(_uint iEquipmentIndex) const;
 #pragma endregion
 
 #pragma region CAMERA_MANAGER
