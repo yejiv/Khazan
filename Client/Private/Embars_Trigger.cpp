@@ -165,18 +165,27 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
         {
             m_pClientInstance->Camera_Set_Animation(TEXT("Statue2"));
         }
-        else if (m_strTriggerKey == "포그 바뀌는")
+        else if (m_strTriggerKey == "B1_Entry")
         {
+            // 지하 포그
             FOG_TRANSITION_DESC Desc{};
-            Desc.fDensity = 0.035f;
-            Desc.fBias = 1.f;
-            Desc.vColor = _float4(0.031f, 0.137f, 0.200f, 1.f);
+            Desc.fDensity = 0.05f;
+            Desc.fBias = 0.8f;
+            Desc.vColor = _float4(0.f, 0.058f, 0.117f, 1.f);
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
-            m_pGameInstance->Start_FogTransition(5.f, Desc);
-
-            // 그림자 보간 추가
-            m_pGameInstance->Start_ShadowTransition(5.f, 1.f);
+            m_pGameInstance->Start_FogTransition(1.5f, Desc);
+        }
+        else if (m_strTriggerKey == "B1_Exit")
+        {
+            // 1층 포그
+            FOG_TRANSITION_DESC FogDesc{};
+            FogDesc.fDensity = 0.05f;
+            FogDesc.fBias = 0.8f;
+            FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
+            FogDesc.isUseHeight = false;
+            FogDesc.isUseNoise = false;
+            m_pGameInstance->Start_FogTransition(1.5f, FogDesc);
         }
         /*
         else if (m_strTriggerKey == "Talk_03")

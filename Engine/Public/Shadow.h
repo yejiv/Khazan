@@ -16,6 +16,8 @@ public:
 
 public:
     const _float4x4*    Get_ShadowLightMatrix(D3DTS eTransformState) const;
+    const SHADOW_DESC&  Get_ShadowDesc() const { return m_Desc; }
+    void                Set_ShadowDesc(const SHADOW_DESC& Desc) { m_Desc = Desc; }
 
 public:
     HRESULT             Bind_Shadow_ShaderResources(class CShader* pShader);
@@ -40,10 +42,7 @@ private:
     _float4x4                           m_LightMatrices[ENUM_CLASS(D3DTS::END)] = {};
     _float4                             m_vFrustumCorners[8] = {};
     _float                              m_fCameraNear{}, m_fCameraFar{};
-    _float                              m_fSplit = {};
-    _float3                             m_vLightDir = {};
-    _float                              m_fBias = {};
-    _float                              m_fIntensity = {};
+    SHADOW_DESC                         m_Desc = {};
 
 	_bool								m_isTransition = {};
 	_float								m_fTransTimeAcc = {};

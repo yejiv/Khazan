@@ -63,6 +63,8 @@ HRESULT CLevel_Embars::Initialize()
 
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
+    CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
+
     CClientInstance::GetInstance()->Fade_In();
 
     if (!Wait_All_Futures())
@@ -178,6 +180,27 @@ HRESULT CLevel_Embars::Ready_Layer_Effect(const _wstring& strLayerTag)
     return S_OK;
 }
 
+HRESULT CLevel_Embars::Ready_Shader_Settings()
+{
+    // 그림자
+    SHADOW_DESC ShadowDesc{};
+    ShadowDesc.fSplit = 35.f;
+    ShadowDesc.vLightDir = _float3(-0.1f, -1.f, -0.1f);
+    ShadowDesc.fBias = 0.001f;
+    ShadowDesc.fIntensity = 0.8f;
+    m_pGameInstance->Set_ShadowDesc(ShadowDesc);
+
+    // 초기 Fog
+    FOG_TRANSITION_DESC FogDesc{};
+    FogDesc.fDensity = 0.05f;
+    FogDesc.fBias = 0.8f;
+    FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
+    FogDesc.isUseHeight = false;
+    FogDesc.isUseNoise = false;
+    m_pGameInstance->Start_FogTransition(0.f, FogDesc);
+
+    return S_OK;
+}
 
 HRESULT CLevel_Embars::Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {
@@ -451,8 +474,8 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
     {
         _float4x4 WorldMatrix = {};
         memcpy(&WorldMatrix, &MonsterData.WorldMatrix[i], sizeof(_float4x4));
-        /*
-        if ("Yetuga" == MonsterData.MonsterKey[i])
+
+        if ("Dragonian_Melee" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
@@ -463,13 +486,14 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
             MonsterDesc.fRotationPerSec = 180.f;
 
             MonsterDesc.WorldMatrix = WorldMatrix;
-            MonsterDesc.strName = MonsterData.MonsterKey[i];
+            MonsterDesc.strName = "Dragonian_Melee";
+            MonsterDesc.iLevelIndex = ENUM_CLASS(eCurrentLevel);
 
-            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-                ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+                ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
-        else if ("ImpRange" == MonsterData.MonsterKey[i])
+        else if ("Dragonian_Claw" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
@@ -480,30 +504,13 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
             MonsterDesc.fRotationPerSec = 180.f;
 
             MonsterDesc.WorldMatrix = WorldMatrix;
-            MonsterDesc.strName = MonsterData.MonsterKey[i];
+            MonsterDesc.strName = "Dragonian_Rampage";
+            MonsterDesc.iLevelIndex = ENUM_CLASS(eCurrentLevel);
 
-            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-                ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+                ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
-        else if ("ImpMelee" == MonsterData.MonsterKey[i])
-        {
-            CMonster::MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
-            MonsterDesc.fMoveSpeed = 10.f;
-            MonsterDesc.fSpeedPerSec = 3.f;
-            MonsterDesc.fRotationPerSec = 180.f;
-
-            MonsterDesc.WorldMatrix = WorldMatrix;
-            MonsterDesc.strName = MonsterData.MonsterKey[i];
-
-            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-                ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
-                return E_FAIL;
-        }
-        */
     }
 
     _tchar szDone[MAX_PATH] = {};
