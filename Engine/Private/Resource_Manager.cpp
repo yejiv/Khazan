@@ -110,6 +110,46 @@ void CResource_Manager::Switch_Texture(_wstring strTextureTag, CGameObject* pGam
     *pTexture = Clone_Texture(strTextureTag);
 }
 
+_bool CResource_Manager::Push_MeshMetrial_SRV(string strFileName, ID3D11ShaderResourceView* pResource)
+{
+    if (Exist_MeshMetrial_SRV_InCache(strFileName))
+        return false;
+
+    m_pMetrialSRVCache.emplace(strFileName, pResource);
+
+    return true;
+}
+
+_bool CResource_Manager::Exist_MeshMetrial_SRV_InCache(string strFileName)
+{
+    auto iter = m_pMetrialSRVCache.find(strFileName);
+    if (iter != m_pMetrialSRVCache.end())
+        return true;
+
+    return false;
+}
+
+string CResource_Manager::Convert_FullPath(string strFullPath)
+{
+    std::filesystem::path path(strFullPath);
+
+    auto parent = path.parent_path().string();
+    auto filename = path.filename().string();
+    auto stem = path.stem().string();
+    auto ext = path.extension().string();
+
+    return filename;
+}
+
+ID3D11ShaderResourceView* CResource_Manager::Get_MeshMetrial_SRVFromCache(string strFileName)
+{
+    auto iter = m_pMetrialSRVCache.find(strFileName);
+    if (iter == m_pMetrialSRVCache.end())
+        return nullptr;
+
+    return iter->second;    
+}
+
 CResource_Manager* CResource_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CResource_Manager* pInstance = new CResource_Manager(pDevice, pContext);
@@ -146,6 +186,12 @@ void CResource_Manager::Free()
         Safe_Release(pModel.second);
     }
     m_pModels.clear();
+
+    for (auto pSRV : m_pMetrialSRVCache)
+    {
+        Safe_Release(pSRV.second);
+    }
+    m_pMetrialSRVCache.clear();
 
 }
 

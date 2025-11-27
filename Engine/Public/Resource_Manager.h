@@ -44,6 +44,12 @@ public:
 public:
     void Switch_Texture(_wstring strTextureTag, class CGameObject* pGameObject, class CTexture** pTexture, _wstring strComponentTag);
 
+public:
+    _bool Push_MeshMetrial_SRV(string strFileName, ID3D11ShaderResourceView* pResource);
+    _bool Exist_MeshMetrial_SRV_InCache(string strFileName);
+    string Convert_FullPath(string strFullPath);
+    ID3D11ShaderResourceView* Get_MeshMetrial_SRVFromCache(string strFileName);
+
 private:
     class CGameInstance* m_pGameInstance = { nullptr };
     ID3D11Device* m_pDevice = { nullptr };
@@ -53,6 +59,9 @@ private:
 
     map<_wstring, MODEL_DESC> m_pModelDescs;
     map<_wstring, class CModel*> m_pModels;
+
+
+    map<string, ID3D11ShaderResourceView*> m_pMetrialSRVCache;
 
 public:
     static CResource_Manager* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

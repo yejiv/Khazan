@@ -44,6 +44,7 @@ private:
     _bool                                   m_isTransition = {};
     class CLight*                           m_pTransLight = { nullptr };
     LIGHT_DESC                              m_StartLightDesc;
+    _float                                  m_fBlinkPeriod = {};
 
     // Backup
     map<_wstring, LIGHT_DESC>               m_OriginalLightDesc;

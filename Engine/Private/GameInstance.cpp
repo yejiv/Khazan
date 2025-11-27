@@ -1162,6 +1162,26 @@ CModel* CGameInstance::Get_Model(_wstring strModelTag)
 {
 	return m_pResource_Manager->Get_Model(strModelTag);
 }
+
+_bool CGameInstance::Push_MeshMetrial_SRV(string strFileName, ID3D11ShaderResourceView* pResource)
+{
+    return m_pResource_Manager->Push_MeshMetrial_SRV(strFileName, pResource);
+}
+
+_bool CGameInstance::Exist_MeshMetrial_SRV_InCache(string strFileName)
+{
+    return m_pResource_Manager->Exist_MeshMetrial_SRV_InCache(strFileName);
+}
+
+string CGameInstance::Convert_FullPath(string strFullPath)
+{
+    return m_pResource_Manager->Convert_FullPath(strFullPath);
+}
+
+ID3D11ShaderResourceView* CGameInstance::Get_MeshMetrial_SRVFromCache(string strFileName)
+{
+    return m_pResource_Manager->Get_MeshMetrial_SRVFromCache(strFileName);
+}
 #pragma endregion
 
 #pragma region COMPUTESHADER_MANAGER
@@ -1266,6 +1286,16 @@ void CGameInstance::Start_ShadowTransition(_float fDuration, _float fTargetInten
 void CGameInstance::Clear_ShadowDSV()
 {
     m_pShadow->Clear_DSV();
+}
+
+const SHADOW_DESC& CGameInstance::Get_ShadowDesc() const
+{
+    return m_pShadow->Get_ShadowDesc();
+}
+
+void CGameInstance::Set_ShadowDesc(const SHADOW_DESC& Desc)
+{
+    m_pShadow->Set_ShadowDesc(Desc);
 }
 
 #ifdef _DEBUG
