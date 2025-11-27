@@ -164,10 +164,9 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
     			HITREACTION eHitRection = static_cast<HITREACTION>(BB->Get_Value<_uint>(pViper->Get_Name(), "DamageType"));
     			_float fCurrentStamina = pViper->Get_CurrentStamina();
     		
-    			if (fCurrentStamina <= 0.1f && !BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+    			if (fCurrentStamina <= 0.1f)
     			{
     				eHitRection = HITREACTION::GROGGY;
-                    BB->Set_Value<_bool>(pViper->Get_Name(), "isGroggy", false);
     				return true;
     			}
     			else
@@ -627,9 +626,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     				return BTNODESTATE::SUCCESS;
     			}
 
-    			BB->Set_Value(pViper->Get_Name(), "isGroggy", true);
-    			BB->Set_Value(pViper->Get_Name(), "isGroggyFinished", false);
-                BB->Set_Value(pViper->Get_Name(),"DamageInterrupt", false);
+    			BB->Set_Value(pViper->Get_Name(), "isGroggy", false);
 
     			pViper->Get_Controller()->Get_State_Machine()->
     				Change_State(ENUM_CLASS(VIPER_STATE_P1::GROGGY), pViper);
@@ -646,12 +643,12 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                 
                 if (true == BB->Get_Value<_bool>(pViper->Get_Name(), "isHitFinished"))
                 {
+                    BB->Set_Value(pViper->Get_Name(), "DamageInterrupt", false);
                     return BTNODESTATE::SUCCESS;
                 }
 
                 BB->Set_Value(pViper->Get_Name(), "isHit", true);
                 BB->Set_Value(pViper->Get_Name(), "isHitFinished", false);
-
 
                 pViper->Get_Controller()->Get_State_Machine()->Change_State(
                     ENUM_CLASS(VIPER_STATE_P1::HIT), pViper);
@@ -670,6 +667,11 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_StingGrabFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -690,6 +692,10 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_5HitComboFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -710,6 +716,10 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
+                
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_SideMoveFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -728,6 +738,10 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_DevourFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -746,6 +760,10 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_JumpSmashFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -762,8 +780,13 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
     else if ("P1_LockOn" == name)
     {
+
         return [pViper](CBlackBoard* BB) ->BTNODESTATE
             {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_LockOn_Finished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -781,6 +804,10 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_TurnAttackFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -803,6 +830,10 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_SlashBackJumpFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -824,6 +855,10 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_Slow3HitFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -844,6 +879,10 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_ThrowBladeFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -863,8 +902,13 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
     else if ("P1_StingSlash" == name)
     {
+
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_StingSlashFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -885,6 +929,10 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_Slow2HitFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -905,6 +953,10 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_Quick2HitFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -922,18 +974,21 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
 #pragma endregion
 
-
-
 #pragma region NONCOMBAT
 
     else if ("P1_Walk" == name)
     {
         return [pViper](CBlackBoard* BB) ->BTNODESTATE
             {
+                _bool isGroggy = BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy");
+                if (isGroggy) 
+                    return BTNODESTATE::FAILURE;
+
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fWalkRange = BB->Get_Value<_float>(pViper->Get_Name(), "WalkRange");
                 _uint iStepCnt =  BB->Get_Value<_uint>(pViper->Get_Name(), "WalkStepCount");
 
+             
                 if (iStepCnt >= 4)
                 {
                     pViper->Get_Controller()->Get_State_Machine()->Change_State(
@@ -956,6 +1011,11 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB) ->BTNODESTATE
             {
+
+                _bool isGroggy = BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy");
+                if (isGroggy) 
+                    return BTNODESTATE::FAILURE;
+
 
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
@@ -1357,9 +1417,9 @@ INTERRUPTCONDITION CAI_Controller_Viper::GetCallbackInterruptCondition(CGameObje
                 
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "DamageInterrupt"))
                 {
-                   /* _bool isSuperArmor = BB->Get_Value<_bool>(pViper->Get_Name(), "isSuperArmor");
+                    _bool isSuperArmor = BB->Get_Value<_bool>(pViper->Get_Name(), "isSuperArmor");
                     if (isSuperArmor)
-                        return false;*/
+                        return false;
 
                     return true;
 

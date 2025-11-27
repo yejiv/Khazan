@@ -46,13 +46,6 @@ CAS_CutScene_Yetuga* CYetuga::Get_Yetuga_CutSceneState()
 {
     CFSM_Yetuga* pFSM = static_cast<CFSM_Yetuga*>(m_pController->Get_State_Machine());
     CAS_CutScene_Yetuga* pCutSceneState = pFSM->Get_CutScene_Yetuga();
-
-
-    //pCutSceneState->YetugaScene_Jump(this);
-    //pCutSceneState->YetugaScene_Land(this);
-    //pCutSceneState->YetugaScene_Roar1(this);
-    //pCutSceneState->YetugaScene_Roar2(this);
-
     return pCutSceneState;
 }
 
