@@ -40,6 +40,13 @@
 #include "AS_P2_BackJump_Viper.h"
 #include "AS_P2_SideMove_Viper.h"
 #include "AS_P2_JumpAttack_Viper.h"
+#include "AS_P2_SwingCombo_VIper.h"
+#include "AS_P2_ThrowRock_VIper.h"
+#include "AS_P2_DashDrift_Viper.h"
+#include "AS_P2_SwingRound_Viper.h"
+#include "AS_P2_Roar_Viper.h"
+#include "AS_P2_LockOn_Viper.h"
+
 #pragma endregion
 
 
@@ -101,7 +108,6 @@ HRESULT CFSM_Viper::Initialize()
 
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_RUN), CAS_P2_Run_Viper::Create())))
         return E_FAIL;
-
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDSTOMP), CAS_P2_HandStomp_Viper::Create())))
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDSTOMPSTR), CAS_P2_HandStompStr_Viper::Create())))
@@ -128,12 +134,21 @@ HRESULT CFSM_Viper::Initialize()
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_JUMPATTACK), CAS_P2_JumpAttack_Viper::Create())))
         return E_FAIL;
-
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGCOMBO), CAS_SwingCombo_VIper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_THROWROCK), CAS_P2_ThrowRock_VIper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHDRIFT), CAS_P2_DashDrift_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGROUND), CAS_P2_SwingRound_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_ROAR), CAS_P2_Roar_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_LOCKON), CAS_P2_LockOn_Viper::Create())))
+        return E_FAIL;
 
 #pragma endregion
 
-
-  
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::GROGGY), CAS_Groggy_Viper::Create())))
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::HIT), CAS_Hit_Viper::Create())))

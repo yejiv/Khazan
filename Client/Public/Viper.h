@@ -26,6 +26,7 @@ public:
 
     void                            Set_Phase(PHASE ePhase)  { m_ePhase = ePhase; }
     void                            Set_PhaseWeapon_Cinematic();
+    void                            Set_PhaseWeapon_Phase2();
 
 
 public:
@@ -46,7 +47,6 @@ public:
                     
     void                            Grab_Check_Begin();
     void                            Grab_Check_End();
-
     void                            Set_ViperPosition(_fvector vPosition);
 
 private:
@@ -62,9 +62,10 @@ private:
     class CBody_Phase2_Viper*       m_pPahse2Body = { nullptr };
     class CTwinBlade_Viper*         m_pWeapon = { nullptr };
     class CCore_Viper*              m_pCore = { nullptr };
+    class CTwinBlade_R_Viper*       m_pP2Weapon = { nullptr };
 
     _bool							m_isLookAt = { false };
-    _float							m_fTurnSpeed = { 3.f };
+    _float							m_fTurnSpeed = { 8.f };
     _bool							m_isGrab = { false };
 
 
