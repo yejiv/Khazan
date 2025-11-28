@@ -40,6 +40,7 @@ HRESULT CSkipButton::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Children(), E_FAIL);
 
     CClientInstance::GetInstance()->Add_RootUI(TEXT("SkipButton"), this);
+    m_IsUpdate = false;
     return S_OK;
 }
 

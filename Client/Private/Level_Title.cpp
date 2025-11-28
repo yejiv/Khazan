@@ -32,14 +32,7 @@ HRESULT CLevel_Title::Initialize()
 
 	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
 	CClientInstance::GetInstance()->Fade_In();
-    CSkipButton::SKIPBUTTON_DESC Desc = {};
-    Desc.isOpen = true;
-    Desc.Event = [this]() {	CClientInstance::GetInstance()->Fade_Out(); };
-    CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkipButton"), &Desc);
 
-    //CSkipButton::SKIPBUTTON_DESC Desc = {};
-    //Desc.isOpen = false;
-    //CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkipButton"), &Desc);
 	return S_OK;
 }
 
