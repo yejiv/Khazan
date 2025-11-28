@@ -1,8 +1,6 @@
 #ifndef Engine_Struct_h__
 #define Engine_Struct_h__
 
-
-
 namespace Engine
 {
     typedef struct tagEngineDesc
@@ -263,14 +261,26 @@ namespace Engine
         float		fMaxIntensity;
     }VIGNETTE_CONFIG;
 
+    typedef struct tagDecalEmissiveDesc
+    {
+        XMFLOAT3    vBaseColor;
+        XMFLOAT3    vEmissiveColor;
+        XMFLOAT3    vBorderColor;
+        float       fEmissiveMaskPower;
+        float       fEmissiveIntensity;
+    }DECAL_EMISSIVE_DESC;
+
     typedef struct tagDecalDesc
     {
-        float		fLifeTime;
-        XMFLOAT2	vFadeTime;
-        DECALTYPE	eType;
-        XMFLOAT3	vPosition;
-        XMFLOAT3	vScale;
-        XMFLOAT3	vColor;
+        float		            fLifeTime;
+        XMFLOAT2	            vFadeTime;
+        DECALTYPE	            eType;
+        XMFLOAT3	            vPosition;
+        XMFLOAT3	            vScale;
+        XMFLOAT3	            vColor;
+        DECAL_EMISSIVE_DESC     EmissiveDesc;
+        bool                    isRandomTexture;
+        unsigned int            iTextureIndex;
     }DECAL_DESC;
 
     typedef struct tagDistortionDesc
@@ -787,6 +797,5 @@ namespace Engine
     }DIRECTION_INFO;
 
 }
-
 
 #endif // Engine_Struct_h__

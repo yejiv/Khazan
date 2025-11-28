@@ -1457,6 +1457,16 @@ CTexture* CGameInstance::Get_DecalTexture(DECALTYPE eType)
     return m_pDecal_Manager->Get_DecalTexture(eType);
 }
 
+ID3D11ShaderResourceView* CGameInstance::Get_DecalTexture(DECALTYPE eType, _uint iIndex)
+{
+    return m_pDecal_Manager->Get_DecalTexture(eType, iIndex);
+}
+
+_uint CGameInstance::Get_NumDecalTextures(DECALTYPE eType)
+{
+    return m_pDecal_Manager->Get_NumDecalTextures(eType);
+}
+
 void CGameInstance::Batch_Decal(CDecal* pDecal)
 {
     m_pDecal_Manager->Batch_Decal(pDecal);
