@@ -103,6 +103,8 @@ private:
 
     _float                          m_fTimeDelta = {};
 
+    _float4x4*                      m_pLockOnSocketMatrix = { nullptr };
+    _float4                         m_vLockOnPos = {};
 public:
     static CDragonian_Melee*        Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;

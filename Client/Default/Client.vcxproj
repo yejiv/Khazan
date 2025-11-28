@@ -262,7 +262,6 @@
     <ClInclude Include="..\Public\AS_Dr_Rampage_Sleep.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Walk.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_LockOn.h" />
-    <ClInclude Include="..\public\AS_Dr_Rampage_Attack_Jump.h" />
     <ClInclude Include="..\Public\AttackState_Yetuga.h" />
     <ClInclude Include="..\Public\Barrel.h" />
     <ClInclude Include="..\Public\BigChest.h" />
@@ -562,6 +561,11 @@
     <ClInclude Include="..\Public\FSM_Viper.h" />
     <ClInclude Include="..\Public\GSword_Khazan_GS.h" />
     <ClInclude Include="..\Public\Collection_Info.h" />
+    <ClInclude Include="..\public\AS_Dr_Rampage_Page2.h" />
+    <ClInclude Include="..\public\AS_Dr_Rampage_Turn.h" />
+    <ClInclude Include="..\Public\Sequence_Yetuga_CutScene.h" />
+    <ClInclude Include="..\public\SkipButton.h" />
+    <ClInclude Include="..\public\SkipButton_Progress.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\AI_Controller_Dragonian_Melee.cpp" />
@@ -586,7 +590,6 @@
     <ClCompile Include="..\Private\AS_Dr_Rampage_Groggy.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Walk.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_LockOn.cpp" />
-    <ClCompile Include="..\private\AS_Dr_Rampage_Attack_Jump.cpp" />
     <ClCompile Include="..\Private\AS_Groggy_Viper.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Viper.cpp" />
     <ClCompile Include="..\Private\AS_P2_BackJump_Viper.cpp" />
@@ -952,6 +955,11 @@
     <ClCompile Include="..\Private\Viper_Trigger.cpp" />
     <ClCompile Include="..\Private\Yetuga.cpp" />
     <ClCompile Include="..\Public\AS_P2_HandStompStr_Viper.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Rampage_Page2.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Rampage_Turn.cpp" />
+    <ClCompile Include="..\Private\Sequence_Yetuga_CutScene.cpp" />
+    <ClCompile Include="..\private\SkipButton.cpp" />
+    <ClCompile Include="..\private\SkipButton_Progress.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

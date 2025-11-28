@@ -37,7 +37,7 @@ void CUI_Panel::Update(_float fTimeDelta)
 }
 
 void CUI_Panel::Late_Update(_float fTimeDelta)
-{
+ {
 	__super::Late_Update(fTimeDelta);
 }
 

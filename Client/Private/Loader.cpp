@@ -1004,6 +1004,13 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice_Disappear"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Ice_Disappear"))))
         return E_FAIL;
+
+        
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"),
+
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Smoke"))))
+
+        return E_FAIL;
 #pragma endregion
 
 #pragma region Shader

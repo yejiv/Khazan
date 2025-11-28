@@ -12,6 +12,7 @@ x64/
 *.exp
 *.pskx
 *.jpg
+*.json
 
 Client.exp
 Client.exe

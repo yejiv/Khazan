@@ -78,6 +78,8 @@ private:
 
     _uint m_iPopEventID = {};
 
+    _bool m_isPop = { false };
+
 private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);

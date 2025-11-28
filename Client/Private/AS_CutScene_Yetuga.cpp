@@ -28,7 +28,7 @@ void CAS_CutScene_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     CTransform* pOwnerTransform = static_cast<CTransform*>(pYetuga->Get_Component(TEXT("Com_Transform")));
     CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
     _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-    pOwnerTransform->LookAt(vTargetPos);
+    //pOwnerTransform->LookAt(vTargetPos);
 
     if (m_pGameInstance->Key_Down(DIK_0))
         Change_CutSceneState(CUTSCENE_STATE::JUMP, pModel, pYetuga);
@@ -47,12 +47,12 @@ void CAS_CutScene_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     {
         if (CUTSCENE_STATE::ROAR2 == m_eState)
         {
-            pModel->Set_Animation(6); // ¶Ù±â
+            pModel->Set_Animation(6); // ë›°ê¸°
             m_eState = CUTSCENE_STATE::RUN;
         }
 
 
-        /* ½ºÇÁ¸°Æ®  
+        /* ìŠ¤í”„ë¦°íŠ¸  
          pModel->Set_Animation(7);*/
         
     }
@@ -109,8 +109,8 @@ void CAS_CutScene_Yetuga::Change_CutSceneState(CUTSCENE_STATE eNextState, CModel
     case Client::CUTSCENE_STATE::LAND:
     {
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::LAND));
-        _vector vGoalPos = XMVectorSet(516.947f, -11.952f, 226.435f, 1.f);
-        pYetuga->Yetuga_Land(vGoalPos, 10.f);
+        _vector vGoalPos = XMVectorSet(518.58f, -11.952f, 234.48f, 1.f);
+        pYetuga->Yetuga_Land(vGoalPos, 20.f);
     }
         break;
     case Client::CUTSCENE_STATE::ROAR1:

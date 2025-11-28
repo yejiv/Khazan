@@ -51,7 +51,7 @@ void CDragonian_Claw_L::Update(_float fTimeDelta)
         BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
     XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
-    _bool isAttakc = m_pData->iAttack_State & CDragonian_Rampage::ATTACK_BODY::HAND_L;
+    _bool isAttakc = m_pData->iAttackBody_State & (_uint)CDragonian_Rampage::ATTACK_BODY::HAND_L;
     m_pBodyComp->Collision_Active(isAttakc);
 
     if (!isAttakc)

@@ -19,10 +19,10 @@ public:
         CTransform* pOwnerTransform = { nullptr };
         CDragonian_Rampage::MONDATA* pData = { nullptr };
     }BODY_DESC;
-
 public:
     _float4x4*              Get_BoneMatrix_Ptr(const _char* pBoneName);
     CModel*                 Get_Model() { return m_pModelCom; }
+    _float                  Get_CulTrack();
 private:
     CBody_Dragonian_Rampage(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CBody_Dragonian_Rampage(const CBody_Dragonian_Rampage& Prototype);

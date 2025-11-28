@@ -527,6 +527,32 @@ HRESULT CLevel_Map::Ready_Main_Window()
                     SEPARATOR;
 				}
 
+                if (ImGui::Button("EMBARS FOG 1 ON"))
+                {
+                    // 1층 Fog
+                    FOG_TRANSITION_DESC FogDesc{};
+                    FogDesc.fDensity = 0.05f;
+                    FogDesc.fBias = 0.8f;
+                    FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
+                    FogDesc.isUseHeight = false;
+                    FogDesc.isUseNoise = false;
+                    m_pGameInstance->Start_FogTransition(1.f, FogDesc);
+                }
+
+                if (ImGui::Button("EMBARS FOG B1 ON"))
+                {
+                    // 지하 포그
+                    FOG_TRANSITION_DESC Desc{};
+                    Desc.fDensity = 0.05f;
+                    Desc.fBias = 0.8f;
+                    Desc.vColor = _float4(0.f, 0.058f, 0.117f, 1.f);
+                    Desc.isUseHeight = false;
+                    Desc.isUseNoise = false;
+                    m_pGameInstance->Start_FogTransition(1.f, Desc);
+                }
+
+                SEPARATOR;
+
 				ImGui::Text("SPHERE");
 				if (ImGui::Button("SKY ON/OFF"))
 					m_isSkySphereWindow = !m_isSkySphereWindow;
@@ -2602,6 +2628,12 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 					ImGui::EndListBox();
 				} SEPARATOR;
+                _bool isEnable = m_pGameInstance->Is_LightEnable(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP));
+                if (true == isEnable)
+                    ImGui::Text("ENABLE");
+                else
+                    ImGui::Text("DISABLE");
+                SEPARATOR;
 				if (0 != m_LightTags.size() && ImGui::Button("TURN ON"))
 				{
 					m_isFixLight = false;
@@ -2610,16 +2642,33 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 					m_pGameInstance->Set_LightEnable(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), true);
 
-				} SAMELINE;;
-				if (0 != m_LightTags.size() && ImGui::Button("TURN OFF"))
-				{
-					m_isFixLight = false;
-					m_isAddLight = false;
-					m_LightDesc.eType = LIGHT_DESC::END;
+				} SAMELINE;
+                if (0 != m_LightTags.size() && ImGui::Button("TURN OFF"))
+                {
+                    m_isFixLight = false;
+                    m_isAddLight = false;
+                    m_LightDesc.eType = LIGHT_DESC::END;
 
-					m_pGameInstance->Set_LightEnable(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), false);
+                    m_pGameInstance->Set_LightEnable(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), false);
 
-				} SEPARATOR;
+                } SAMELINE;
+                if (0 != m_LightTags.size() && ImGui::Button("REVERSE ON/OFF"))
+                {
+                    _uint iSize = m_LightTags.size();
+
+                    for (_uint i = 0; i < iSize; ++i)
+                    {
+                        wstring strLightTag = AnsiToWString(m_LightTags[i]);
+
+                        _bool isAble = m_pGameInstance->Is_LightEnable(strLightTag, ENUM_CLASS(LEVEL::MAP));
+
+                        if (true == isAble)
+                            m_pGameInstance->Set_LightEnable(strLightTag, ENUM_CLASS(LEVEL::MAP), false);
+                        else
+                            m_pGameInstance->Set_LightEnable(strLightTag, ENUM_CLASS(LEVEL::MAP), true);
+                    }
+
+                } SEPARATOR;
 				if (ImGui::Button("ADD LIGHT"))
 				{
 					m_isAddLight = !m_isAddLight;
@@ -3020,6 +3069,14 @@ OutputDebugStringA("단일 오브젝트 정보 바이너리 불러오기 실패"
                 m_strMapInfoFilePath += m_szMapInfoFileName;
 
                 Monster_objects_Load_Json();
+            }
+
+            if (ImGui::Button("LIGHT LOAD"))
+            {
+                m_strMapInfoFilePath = m_szMapInfoFilePath;
+                m_strMapInfoFilePath += m_szMapInfoFileName;
+
+                Lights_Load_Binary();
             }
 
 			ImGui::End();
@@ -5673,6 +5730,22 @@ _bool CLevel_Map::Lights_Load_Binary()
 		// 4. 조명 구조체 불러오기
 		CHECK_FALSE(ReadFile(hFile, &LightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr), false);
 
+        _wstring strLightTag = szLightTag;
+
+        _bool isRegistered = { false };
+
+        for (_uint i = 0; i < m_LightTags.size(); ++i)
+        {
+            if (AnsiToWString(m_LightTags[i]) == strLightTag)
+            {
+                isRegistered = true;
+                break;
+            }
+        }
+
+        if (true == isRegistered)
+            continue;
+
 		m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(LEVEL::MAP), LightDesc, true);
 
         CMap_Light::MAP_LIGHT_DESC MapLightDesc = {};
@@ -5682,7 +5755,6 @@ _bool CLevel_Map::Lights_Load_Binary()
         CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_PointLight"), ENUM_CLASS(LEVEL::MAP),
             TEXT("Prototype_GameObject_Prop_Light"), TIME_CHANNEL::WORLD, &MapLightDesc), false);
 
-		_wstring strLightTag = szLightTag;
 		m_LightTags.push_back(WStringToAnsi(strLightTag));
 
 		m_iLightTagIndex = m_LightTags.size() - 1;
