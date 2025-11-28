@@ -539,6 +539,7 @@
     <ClInclude Include="..\Public\VerticalGate.h" />
     <ClInclude Include="..\Public\Viper_Trigger.h" />
     <ClInclude Include="..\Public\Yetuga.h" />
+    <ClInclude Include="..\Public\Sequence_Yetuga_CutScene.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientPch.h" />
     <ClInclude Include="framework.h" />
@@ -922,6 +923,7 @@
     <ClCompile Include="..\Private\VerticalGate.cpp" />
     <ClCompile Include="..\Private\Viper_Trigger.cpp" />
     <ClCompile Include="..\Private\Yetuga.cpp" />
+    <ClCompile Include="..\Private\Sequence_Yetuga_CutScene.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
