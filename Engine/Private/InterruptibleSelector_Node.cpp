@@ -10,8 +10,10 @@ BTNODESTATE CInterruptibleSelector_Node::Tick(CBlackBoard* BB)
 {
     if (m_pInterruptCondition && m_pInterruptCondition(BB))
     {
-        if (m_iCurrentIndex < m_Children.size())
-            m_Children[m_iCurrentIndex]->Abort(BB);
+        /*if (m_iCurrentIndex < m_Children.size())
+            m_Children[m_iCurrentIndex]->Abort(BB);*/
+        for (auto& pChild : m_Children)
+            pChild->Abort(BB);
 
         m_iCurrentIndex = 0;
         return BTNODESTATE::FAILURE; // 인터룹트 발생시 현재 노드는 FAIL처리한다.

@@ -198,8 +198,6 @@
     <ClInclude Include="..\Public\AS_Dr_Rampage_Brutal.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Dead.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Groggy.h" />
-    <ClInclude Include="..\public\AS_Dr_Rampage_Page2.h" />
-    <ClInclude Include="..\public\AS_Dr_Rampage_Turn.h" />
     <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h" />
     <ClInclude Include="..\Public\AS_Groggy_Viper.h" />
     <ClInclude Include="..\Public\AS_Groggy_Yetuga.h" />
@@ -223,6 +221,20 @@
     <ClInclude Include="..\Public\AS_Move_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Move_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_NonStopAttack_Imp_Melee.h" />
+    <ClInclude Include="..\Public\AS_P2_BackJump_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_DashUpperStr_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_DashUpper_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_FakeRunAttack_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_HandStompStr_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_HandStomp_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_HandSwing2Hit_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_HandSwing3Hit.h" />
+    <ClInclude Include="..\Public\AS_P2_HandUpper_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_JumpAttack_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_Run_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_SideMove_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_SlashDobule_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_SlashStomp_Viper.h" />
     <ClInclude Include="..\Public\AS_Quick2Hit_Viper.h" />
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Run_Viper.h" />
@@ -260,6 +272,7 @@
     <ClInclude Include="..\Public\Body_Dragonian_Rampage.h" />
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
     <ClInclude Include="..\Public\Body_Khazan_GS.h" />
+    <ClInclude Include="..\Public\Body_Phase2_Viper.h" />
     <ClInclude Include="..\Public\Body_Viper.h" />
     <ClInclude Include="..\Public\Core_Viper.h" />
     <ClInclude Include="..\public\Dragonian_Claw_L.h" />
@@ -332,8 +345,6 @@
     <ClInclude Include="..\Public\Sequence_Viper_SecondPhase.h" />
     <ClInclude Include="..\public\Skill_BG_Smoke.h" />
     <ClInclude Include="..\public\Skill_Slot_Flag.h" />
-    <ClInclude Include="..\public\SkipButton.h" />
-    <ClInclude Include="..\public\SkipButton_Progress.h" />
     <ClInclude Include="..\Public\Slate_Switch.h" />
     <ClInclude Include="..\Public\Statue.h" />
     <ClInclude Include="..\Public\Statue_Deco.h" />
@@ -550,6 +561,11 @@
     <ClInclude Include="..\Public\FSM_Viper.h" />
     <ClInclude Include="..\Public\GSword_Khazan_GS.h" />
     <ClInclude Include="..\Public\Collection_Info.h" />
+    <ClInclude Include="..\public\AS_Dr_Rampage_Page2.h" />
+    <ClInclude Include="..\public\AS_Dr_Rampage_Turn.h" />
+    <ClInclude Include="..\Public\Sequence_Yetuga_CutScene.h" />
+    <ClInclude Include="..\public\SkipButton.h" />
+    <ClInclude Include="..\public\SkipButton_Progress.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\AI_Controller_Dragonian_Melee.cpp" />
@@ -570,14 +586,25 @@
     <ClCompile Include="..\Private\AS_Dr_Rampage_Brutal.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Damage.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Dead.cpp" />
-    <ClCompile Include="..\private\AS_Dr_Rampage_Page2.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Sleep.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Groggy.cpp" />
-    <ClCompile Include="..\private\AS_Dr_Rampage_Turn.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Walk.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_LockOn.cpp" />
     <ClCompile Include="..\Private\AS_Groggy_Viper.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_BackJump_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_DashUpperStr_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_DashUpper_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_FakeRunAttack_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_HandStomp_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_HandSwing2Hit_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_HandSwing3Hit.cpp" />
+    <ClCompile Include="..\Private\AS_P2_HandUpper_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_JumpAttack_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_Run_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_SideMove_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_SlashDobule_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_SlashStomp_Viper.cpp" />
     <ClCompile Include="..\Private\AS_StingGrab_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Cinematic_Viper.cpp" />
     <ClCompile Include="..\private\Body_Dragonian_Melee.cpp" />
@@ -586,6 +613,7 @@
     <ClCompile Include="..\Private\AS_SideMove_P1_Viper.cpp" />
     <ClCompile Include="..\Private\AS_ThrowBlade_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Dragonian_Rampage.cpp" />
+    <ClCompile Include="..\Private\Body_Phase2_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp" />
     <ClCompile Include="..\Private\Core_Viper.cpp" />
     <ClCompile Include="..\private\Dragonian_Claw_L.cpp" />
@@ -725,8 +753,6 @@
     <ClCompile Include="..\Private\Sequence_Viper_SecondPhase.cpp" />
     <ClCompile Include="..\private\Skill_BG_Smoke.cpp" />
     <ClCompile Include="..\private\Skill_Slot_Flag.cpp" />
-    <ClCompile Include="..\private\SkipButton.cpp" />
-    <ClCompile Include="..\private\SkipButton_Progress.cpp" />
     <ClCompile Include="..\Private\Slate_Switch.cpp" />
     <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\Statue_Deco.cpp" />
@@ -928,6 +954,12 @@
     <ClCompile Include="..\Private\VerticalGate.cpp" />
     <ClCompile Include="..\Private\Viper_Trigger.cpp" />
     <ClCompile Include="..\Private\Yetuga.cpp" />
+    <ClCompile Include="..\Public\AS_P2_HandStompStr_Viper.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Rampage_Page2.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Rampage_Turn.cpp" />
+    <ClCompile Include="..\Private\Sequence_Yetuga_CutScene.cpp" />
+    <ClCompile Include="..\private\SkipButton.cpp" />
+    <ClCompile Include="..\private\SkipButton_Progress.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

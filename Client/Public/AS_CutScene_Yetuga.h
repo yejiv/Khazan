@@ -18,6 +18,13 @@ public:
     virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
 
+public:
+    void                                YetugaScene_Jump(class CYetuga* pYetuga);
+    void                                YetugaScene_Land(class CYetuga* pYetuga);
+    void                                YetugaScene_Roar1(class CYetuga* pYetuga);
+    void                                YetugaScene_Roar2(class CYetuga* pYetuga);
+
+
 private:
     void                                Change_CutSceneState(CUTSCENE_STATE eNextState, class CModel* pModel, class CYetuga* pViper);
 

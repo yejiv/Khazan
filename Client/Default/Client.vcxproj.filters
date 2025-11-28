@@ -892,24 +892,6 @@
     <Filter Include="92.AI\State\Viper">
       <UniqueIdentifier>{2d02213e-d5bf-4f39-b143-aeae92b5fe90}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Viper\00.Idle">
-      <UniqueIdentifier>{b74d1d1a-619f-4cc7-bbcd-412004cbe8cb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\01.Walk">
-      <UniqueIdentifier>{07c9ae3d-8478-4902-b800-d05b2aa800d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\02.RUN">
-      <UniqueIdentifier>{6f992bce-94df-4889-8419-e9f054150a12}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\05.LockOn">
-      <UniqueIdentifier>{3dbd6f2b-e898-4a0c-8f20-195892dd7aab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\04.Slow2Hit">
-      <UniqueIdentifier>{fc7051b0-2885-437c-a3ae-f998f6e67801}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\03.Quick2Hit">
-      <UniqueIdentifier>{2ca3a299-6a24-4f79-9d10-0e26b20274ff}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\MapObject\00.Prop\05.Destructible\03.Obelisk">
       <UniqueIdentifier>{a76472b6-094c-4637-8e48-f1a4b47f53f8}</UniqueIdentifier>
     </Filter>
@@ -1026,33 +1008,6 @@
     </Filter>
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\10.GearGate">
       <UniqueIdentifier>{0b2d171c-7a2b-4cc9-9976-4831e2bb9379}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\06.StingAttackCombo">
-      <UniqueIdentifier>{7510c446-c4fb-4db2-abe9-ea06a2255c0b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\07.Slow3Hit">
-      <UniqueIdentifier>{dcf9e46d-4781-481c-874f-1f83609bf5bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\08.SlashBackJump">
-      <UniqueIdentifier>{8e406fb0-7aec-4705-aa6d-c9f2f838bd82}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\09.TurnAttack">
-      <UniqueIdentifier>{21946a99-19a3-43b5-98db-b05635dabe11}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\10.JumpSmash">
-      <UniqueIdentifier>{4dbd0b02-eeb7-4f37-a262-fd730ddca2ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\11.Devour">
-      <UniqueIdentifier>{d57af63a-bd37-40c8-a4d8-f13d78e6e24e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\12.SideMove">
-      <UniqueIdentifier>{2b13d4b9-d3f4-4d52-81f5-b487c954f472}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\13.ThrowBlade">
-      <UniqueIdentifier>{884ad459-082d-47b6-a199-7b158249e56e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\14.5HitCombo">
-      <UniqueIdentifier>{8ec62639-19b8-4845-94bc-69ab15b162c5}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\MapObject\01.Trigger\01.Embars\Embars_Trigger">
       <UniqueIdentifier>{4a4c48b1-c1ef-47ea-a805-8864a198e555}</UniqueIdentifier>
@@ -1189,15 +1144,6 @@
     <Filter Include="02.GameObject\Creature\Monster\Dragonian_Rampage\Weapon">
       <UniqueIdentifier>{3b14ece7-b2e3-47ba-aafb-e51ab8b5658f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Viper\15.StingGrab">
-      <UniqueIdentifier>{b9672729-3c7b-40dc-ae1f-65294ca5675c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\16.Groggy">
-      <UniqueIdentifier>{866f7ef1-47f6-4e4e-ba03-2222a67a888e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\17.Hit">
-      <UniqueIdentifier>{6559fa14-d2bf-4014-b8b1-984282d4e467}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate">
       <UniqueIdentifier>{d31b73c6-3673-4519-947e-cb0755c60905}</UniqueIdentifier>
     </Filter>
@@ -1222,12 +1168,6 @@
     <Filter Include="02.GameObject\Creature\Monster\Viper\Weapon\Core">
       <UniqueIdentifier>{ef73178a-d94c-4fea-a3a4-6bae051a6576}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Viper\18.CutScene_Start">
-      <UniqueIdentifier>{6316920a-8748-43b7-966e-6789f6561e6c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Viper\19.CutScene_2P">
-      <UniqueIdentifier>{2eeed706-6c07-4422-aefc-8e5e77c2a220}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\Creature\Monster\Viper\Body\Phase1">
       <UniqueIdentifier>{8df013d5-a76e-4052-bfb1-cbad80df099d}</UniqueIdentifier>
     </Filter>
@@ -1237,12 +1177,123 @@
     <Filter Include="02.GameObject\Creature\Monster\Viper\Body\Phase2">
       <UniqueIdentifier>{0625b37c-3910-4e34-a359-5626f29af45b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1">
+      <UniqueIdentifier>{c900db27-8f2e-4cdb-b9d0-7cc42b5c9607}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\00.Idle">
+      <UniqueIdentifier>{b74d1d1a-619f-4cc7-bbcd-412004cbe8cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\01.Walk">
+      <UniqueIdentifier>{07c9ae3d-8478-4902-b800-d05b2aa800d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\02.RUN">
+      <UniqueIdentifier>{6f992bce-94df-4889-8419-e9f054150a12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\03.Quick2Hit">
+      <UniqueIdentifier>{2ca3a299-6a24-4f79-9d10-0e26b20274ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\04.Slow2Hit">
+      <UniqueIdentifier>{fc7051b0-2885-437c-a3ae-f998f6e67801}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\05.LockOn">
+      <UniqueIdentifier>{3dbd6f2b-e898-4a0c-8f20-195892dd7aab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\06.StingAttackCombo">
+      <UniqueIdentifier>{7510c446-c4fb-4db2-abe9-ea06a2255c0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\07.Slow3Hit">
+      <UniqueIdentifier>{dcf9e46d-4781-481c-874f-1f83609bf5bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\08.SlashBackJump">
+      <UniqueIdentifier>{8e406fb0-7aec-4705-aa6d-c9f2f838bd82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\09.TurnAttack">
+      <UniqueIdentifier>{21946a99-19a3-43b5-98db-b05635dabe11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\10.JumpSmash">
+      <UniqueIdentifier>{4dbd0b02-eeb7-4f37-a262-fd730ddca2ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\11.Devour">
+      <UniqueIdentifier>{d57af63a-bd37-40c8-a4d8-f13d78e6e24e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\12.SideMove">
+      <UniqueIdentifier>{2b13d4b9-d3f4-4d52-81f5-b487c954f472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\13.ThrowBlade">
+      <UniqueIdentifier>{884ad459-082d-47b6-a199-7b158249e56e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\14.5HitCombo">
+      <UniqueIdentifier>{8ec62639-19b8-4845-94bc-69ab15b162c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\15.StingGrab">
+      <UniqueIdentifier>{b9672729-3c7b-40dc-ae1f-65294ca5675c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\16.Groggy">
+      <UniqueIdentifier>{866f7ef1-47f6-4e4e-ba03-2222a67a888e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\17.Hit">
+      <UniqueIdentifier>{6559fa14-d2bf-4014-b8b1-984282d4e467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\18.CutScene_Start">
+      <UniqueIdentifier>{6316920a-8748-43b7-966e-6789f6561e6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase1\19.CutScene_2P">
+      <UniqueIdentifier>{2eeed706-6c07-4422-aefc-8e5e77c2a220}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2">
+      <UniqueIdentifier>{40a34c2c-1118-454f-a257-6efa81b18a5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\00.Run">
+      <UniqueIdentifier>{db9a3e69-d483-43f0-90d5-8a8a9f2ed8da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\01.HandStomp">
+      <UniqueIdentifier>{087d2634-2cf4-4372-90d5-c2b7744f65fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\02.HandStompSTR">
+      <UniqueIdentifier>{af40870a-90e9-489e-b66f-f2b54bd641c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\03.HandSwing2Hit">
+      <UniqueIdentifier>{21c9403f-4be5-437b-bb7f-769d642435e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\04.HandUpper">
+      <UniqueIdentifier>{0b523ebe-2f46-4c64-8dab-4bc952289bc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\05.SlashDouble">
+      <UniqueIdentifier>{4ace93ad-4c47-4caf-9469-ef281ab32636}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\06.SlashStomp">
+      <UniqueIdentifier>{e7736371-7d7a-4047-b9f2-ffc057e2d1b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\07.HandSwing3Hit">
+      <UniqueIdentifier>{9a84f888-ddef-4e36-b088-0202f019fa6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\08.FakeRunAttack">
+      <UniqueIdentifier>{00dfbf3d-5a01-4a92-937d-6f664c198888}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\09.DashUpper">
+      <UniqueIdentifier>{29023324-d19c-4134-9595-0c53502745f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\10.DashUpperStr">
+      <UniqueIdentifier>{0047eb0d-ce7e-4132-978c-b02ba615f19c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\11.BackJump">
+      <UniqueIdentifier>{1bd87561-5cac-46b5-b0dd-66532d794330}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\12.JumpAttack">
+      <UniqueIdentifier>{581fef36-d309-47a1-9635-b4666806d191}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\13.SideMove">
+      <UniqueIdentifier>{bd031096-2888-4935-8aae-3f9fd87c26b7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="92.AI\State\Dragonian_Rampage\Turn">
       <UniqueIdentifier>{a535e22e-dbd8-43ed-ab7a-e9554d399a27}</UniqueIdentifier>
     </Filter>
     <Filter Include="92.AI\State\Dragonian_Rampage\Page_2">
       <UniqueIdentifier>{96765157-c7f0-4431-a78c-7b22b7670c33}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.Sequence\HeinMach\Yetuga\CutScene">
+      <UniqueIdentifier>{1bffd182-9a09-49c3-bb28-36325e0076c1}</UniqueIdentifier>
+    </Filter>    
     <Filter Include="02.GameObject\UI\SkipButton">
       <UniqueIdentifier>{f7cce5d5-01f2-4e50-9e86-2c023488c0d2}</UniqueIdentifier>
     </Filter>
@@ -2089,25 +2140,25 @@
       <Filter>92.AI\Controller\Viper</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Idle_Viper.h">
-      <Filter>92.AI\State\Viper\00.Idle</Filter>
+      <Filter>92.AI\State\Viper\Phase1\00.Idle</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Quick2Hit_Viper.h">
-      <Filter>92.AI\State\Viper\03.Quick2Hit</Filter>
+      <Filter>92.AI\State\Viper\Phase1\03.Quick2Hit</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Slow2Hit_VIper.h">
-      <Filter>92.AI\State\Viper\04.Slow2Hit</Filter>
+      <Filter>92.AI\State\Viper\Phase1\04.Slow2Hit</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_LockOn_Viper.h">
-      <Filter>92.AI\State\Viper\05.LockOn</Filter>
+      <Filter>92.AI\State\Viper\Phase1\05.LockOn</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_LockOn_Yetuga.h">
       <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Run_Viper.h">
-      <Filter>92.AI\State\Viper\02.RUN</Filter>
+      <Filter>92.AI\State\Viper\Phase1\02.RUN</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Walk_Viper.h">
-      <Filter>92.AI\State\Viper\01.Walk</Filter>
+      <Filter>92.AI\State\Viper\Phase1\01.Walk</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Obelisk.h">
       <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\03.Obelisk</Filter>
@@ -2248,31 +2299,31 @@
       <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBlade</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_StingSlashCombo_Viper.h">
-      <Filter>92.AI\State\Viper\06.StingAttackCombo</Filter>
+      <Filter>92.AI\State\Viper\Phase1\06.StingAttackCombo</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Slow3Hit_Viper.h">
-      <Filter>92.AI\State\Viper\07.Slow3Hit</Filter>
+      <Filter>92.AI\State\Viper\Phase1\07.Slow3Hit</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_SlashBackJump_Viper.h">
-      <Filter>92.AI\State\Viper\08.SlashBackJump</Filter>
+      <Filter>92.AI\State\Viper\Phase1\08.SlashBackJump</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_TurnAttack_Viper.h">
-      <Filter>92.AI\State\Viper\09.TurnAttack</Filter>
+      <Filter>92.AI\State\Viper\Phase1\09.TurnAttack</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_JumpSmash_Viper.h">
-      <Filter>92.AI\State\Viper\10.JumpSmash</Filter>
+      <Filter>92.AI\State\Viper\Phase1\10.JumpSmash</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Devour_Viper.h">
-      <Filter>92.AI\State\Viper\11.Devour</Filter>
+      <Filter>92.AI\State\Viper\Phase1\11.Devour</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_SideMove_P1_Viper.h">
-      <Filter>92.AI\State\Viper\12.SideMove</Filter>
+      <Filter>92.AI\State\Viper\Phase1\12.SideMove</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_5HitCombo_Viper.h">
-      <Filter>92.AI\State\Viper\14.5HitCombo</Filter>
+      <Filter>92.AI\State\Viper\Phase1\14.5HitCombo</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_ThrowBlade_Viper.h">
-      <Filter>92.AI\State\Viper\13.ThrowBlade</Filter>
+      <Filter>92.AI\State\Viper\Phase1\13.ThrowBlade</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Embars_Trigger.h">
       <Filter>02.GameObject\MapObject\01.Trigger\01.Embars\Embars_Trigger</Filter>
@@ -2356,13 +2407,13 @@
       <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_StingGrab_Viper.h">
-      <Filter>92.AI\State\Viper\15.StingGrab</Filter>
+      <Filter>92.AI\State\Viper\Phase1\15.StingGrab</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Groggy_Viper.h">
-      <Filter>92.AI\State\Viper\16.Groggy</Filter>
+      <Filter>92.AI\State\Viper\Phase1\16.Groggy</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Hit_Viper.h">
-      <Filter>92.AI\State\Viper\17.Hit</Filter>
+      <Filter>92.AI\State\Viper\Phase1\17.Hit</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\GiantGate.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate</Filter>
@@ -2389,10 +2440,10 @@
       <Filter>02.GameObject\Creature\Monster\Viper\Weapon\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_CutScene_2Phase_Viper.h">
-      <Filter>92.AI\State\Viper\19.CutScene_2P</Filter>
+      <Filter>92.AI\State\Viper\Phase1\19.CutScene_2P</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_CutScene_Start_Viper.h">
-      <Filter>92.AI\State\Viper\18.CutScene_Start</Filter>
+      <Filter>92.AI\State\Viper\Phase1\18.CutScene_Start</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Body_Viper.h">
       <Filter>02.GameObject\Creature\Monster\Viper\Body\Phase1</Filter>
@@ -2400,11 +2451,59 @@
     <ClInclude Include="..\Public\Body_Cinematic_Viper.h">
       <Filter>02.GameObject\Creature\Monster\Viper\Body\Cinematic</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\AS_Dr_Rampage_Turn.h">
+    <ClInclude Include="..\Public\Body_Phase2_Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body\Phase2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_Run_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\00.Run</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_HandStomp_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\01.HandStomp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_HandStompStr_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\02.HandStompSTR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_HandSwing2Hit_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\03.HandSwing2Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_HandUpper_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\04.HandUpper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_SlashDobule_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\05.SlashDouble</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_SlashStomp_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\06.SlashStomp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_HandSwing3Hit.h">
+      <Filter>92.AI\State\Viper\Phase2\07.HandSwing3Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_FakeRunAttack_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\08.FakeRunAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_DashUpper_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\09.DashUpper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_DashUpperStr_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\10.DashUpperStr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_BackJump_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\11.BackJump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_JumpAttack_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\12.JumpAttack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_SideMove_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\13.SideMove</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Dr_Rampage_Turn.h">
       <Filter>92.AI\State\Dragonian_Rampage\Turn</Filter>
     </ClInclude>
     <ClInclude Include="..\public\AS_Dr_Rampage_Page2.h">
       <Filter>92.AI\State\Dragonian_Rampage\Page_2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Yetuga_CutScene.h">
+      <Filter>04.Sequence\HeinMach\Yetuga\CutScene</Filter>
     </ClInclude>
     <ClInclude Include="..\public\SkipButton.h">
       <Filter>02.GameObject\UI\SkipButton</Filter>
@@ -3232,28 +3331,28 @@
       <Filter>92.AI\Controller\Viper</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Idle_Viper.cpp">
-      <Filter>92.AI\State\Viper\00.Idle</Filter>
+      <Filter>92.AI\State\Viper\Phase1\00.Idle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Viper.cpp">
       <Filter>02.GameObject\Creature\Monster\Viper</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Quick2Hit_Viper.cpp">
-      <Filter>92.AI\State\Viper\03.Quick2Hit</Filter>
+      <Filter>92.AI\State\Viper\Phase1\03.Quick2Hit</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Slow2Hit_VIper.cpp">
-      <Filter>92.AI\State\Viper\04.Slow2Hit</Filter>
+      <Filter>92.AI\State\Viper\Phase1\04.Slow2Hit</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_LockOn_Viper.cpp">
-      <Filter>92.AI\State\Viper\05.LockOn</Filter>
+      <Filter>92.AI\State\Viper\Phase1\05.LockOn</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_LockOn_Yetuga.cpp">
       <Filter>92.AI\State\Yetuga\17.LOCKON</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Run_Viper.cpp">
-      <Filter>92.AI\State\Viper\02.RUN</Filter>
+      <Filter>92.AI\State\Viper\Phase1\02.RUN</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Walk_Viper.cpp">
-      <Filter>92.AI\State\Viper\01.Walk</Filter>
+      <Filter>92.AI\State\Viper\Phase1\01.Walk</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Obelisk.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\05.Destructible\03.Obelisk</Filter>
@@ -3328,31 +3427,31 @@
       <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBlade</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_StingSlashCombo_Viper.cpp">
-      <Filter>92.AI\State\Viper\06.StingAttackCombo</Filter>
+      <Filter>92.AI\State\Viper\Phase1\06.StingAttackCombo</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Slow3Hit_Viper.cpp">
-      <Filter>92.AI\State\Viper\07.Slow3Hit</Filter>
+      <Filter>92.AI\State\Viper\Phase1\07.Slow3Hit</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_SlashBackJump_Viper.cpp">
-      <Filter>92.AI\State\Viper\08.SlashBackJump</Filter>
+      <Filter>92.AI\State\Viper\Phase1\08.SlashBackJump</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_TurnAttack_Viper.cpp">
-      <Filter>92.AI\State\Viper\09.TurnAttack</Filter>
+      <Filter>92.AI\State\Viper\Phase1\09.TurnAttack</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_JumpSmash_Viper.cpp">
-      <Filter>92.AI\State\Viper\10.JumpSmash</Filter>
+      <Filter>92.AI\State\Viper\Phase1\10.JumpSmash</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Devour_Viper.cpp">
-      <Filter>92.AI\State\Viper\11.Devour</Filter>
+      <Filter>92.AI\State\Viper\Phase1\11.Devour</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_SideMove_P1_Viper.cpp">
-      <Filter>92.AI\State\Viper\12.SideMove</Filter>
+      <Filter>92.AI\State\Viper\Phase1\12.SideMove</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_5HitCombo_Viper.cpp">
-      <Filter>92.AI\State\Viper\14.5HitCombo</Filter>
+      <Filter>92.AI\State\Viper\Phase1\14.5HitCombo</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_ThrowBlade_Viper.cpp">
-      <Filter>92.AI\State\Viper\13.ThrowBlade</Filter>
+      <Filter>92.AI\State\Viper\Phase1\13.ThrowBlade</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Ladder_Middle.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\09.Ladder\Middle</Filter>
@@ -3496,13 +3595,13 @@
       <Filter>02.GameObject\Creature\Monster\Imp_Range</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_StingGrab_Viper.cpp">
-      <Filter>92.AI\State\Viper\15.StingGrab</Filter>
+      <Filter>92.AI\State\Viper\Phase1\15.StingGrab</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Groggy_Viper.cpp">
-      <Filter>92.AI\State\Viper\16.Groggy</Filter>
+      <Filter>92.AI\State\Viper\Phase1\16.Groggy</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Hit_Viper.cpp">
-      <Filter>92.AI\State\Viper\17.Hit</Filter>
+      <Filter>92.AI\State\Viper\Phase1\17.Hit</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\GiantGate.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\13.GiantGate</Filter>
@@ -3529,10 +3628,10 @@
       <Filter>02.GameObject\Creature\Monster\Viper\Weapon\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_CutScene_2Phase_Viper.cpp">
-      <Filter>92.AI\State\Viper\19.CutScene_2P</Filter>
+      <Filter>92.AI\State\Viper\Phase1\19.CutScene_2P</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_CutScene_Start_Viper.cpp">
-      <Filter>92.AI\State\Viper\18.CutScene_Start</Filter>
+      <Filter>92.AI\State\Viper\Phase1\18.CutScene_Start</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Dragonian_Melee.cpp">
       <Filter>02.GameObject\Creature\Monster\Dragonian_Melee</Filter>
@@ -3543,12 +3642,60 @@
     <ClCompile Include="..\Private\Body_Cinematic_Viper.cpp">
       <Filter>02.GameObject\Creature\Monster\Viper\Body\Cinematic</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\AS_Dr_Rampage_Turn.cpp">
+    <ClCompile Include="..\Private\Body_Phase2_Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper\Body\Phase2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_Run_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\00.Run</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_HandStomp_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\01.HandStomp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\AS_P2_HandStompStr_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\02.HandStompSTR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_HandSwing2Hit_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\03.HandSwing2Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_HandUpper_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\04.HandUpper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_SlashDobule_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\05.SlashDouble</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_SlashStomp_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\06.SlashStomp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_HandSwing3Hit.cpp">
+      <Filter>92.AI\State\Viper\Phase2\07.HandSwing3Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_FakeRunAttack_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\08.FakeRunAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_DashUpper_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\09.DashUpper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_DashUpperStr_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\10.DashUpperStr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_BackJump_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\11.BackJump</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_JumpAttack_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\12.JumpAttack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_SideMove_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\13.SideMove</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Dr_Rampage_Turn.cpp">
       <Filter>92.AI\State\Dragonian_Rampage\Turn</Filter>
     </ClCompile>
     <ClCompile Include="..\private\AS_Dr_Rampage_Page2.cpp">
       <Filter>92.AI\State\Dragonian_Rampage\Page_2</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Yetuga_CutScene.cpp">
+      <Filter>04.Sequence\HeinMach\Yetuga\CutScene</Filter>
+    </ClCompile>    
     <ClCompile Include="..\private\SkipButton.cpp">
       <Filter>02.GameObject\UI\SkipButton</Filter>
     </ClCompile>

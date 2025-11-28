@@ -44,11 +44,14 @@ HRESULT CBody_Khazan_GS::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    if (FAILED(Ready_AnimationEvents()))
+    /* 부모 트랜스폼 연결 */
+    m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
+
+    if (FAILED(Initialize_Equipment()))
         return E_FAIL;
 
-     /* 부모 트랜스폼 연결 */
-    m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
+    if (FAILED(Ready_AnimationEvents()))
+        return E_FAIL;
 
     /* 뼈 행렬 가지고오기 */
     m_pMatGSwordBody = m_pModelCom->Get_BoneMatrix("FX_R_GSword_02");
@@ -770,10 +773,6 @@ HRESULT CBody_Khazan_GS::Ready_Components()
         m_AllParts[info.strPartName] = pModel;
     }
 
-
-    if (FAILED(Initialize_Equipment()))
-        return E_FAIL;
-
     CMeshTrail::TRAIL_DESC MeshDsc;
     MeshDsc.iTextureIdx = 9;
     MeshDsc.fLifeTime = .25f;
@@ -1131,7 +1130,12 @@ void CBody_Khazan_GS::Update_QuickRenderCache()
     }
 
     /* todo !! 여기에 모션트레일컴포넌트에  랜더용 파츠모델 바꼈다고 넘겨주기. */
+    
+    // Part Model이 있는 경우!!
+    m_pMotionTrailCom->Update_PartModels(m_RenderParts);
 
+    // Part Model이 없고 Master Model만 있는 경우!! (무기)
+    //  m_pMotionTrailCom->Update_MasterModel(m_pModelCom);
 }
 
 _vector CBody_Khazan_GS::Decompose_Rotation(_matrix W, _vector offset)

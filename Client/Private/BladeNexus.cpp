@@ -56,9 +56,12 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
             {
                 m_BNPop = e;
             });
-    }
 
-    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_NextLevelID(), TEXT("GhostKnight_static"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pTriggerCom->Collision_Active(false);
+    }
+    else
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_NextLevelID(), TEXT("GhostKnight_static"), m_pTransformCom->Get_State(STATE::POSITION));
+
     return S_OK;
 }
 
@@ -68,6 +71,14 @@ void CBladeNexus::Priority_Update(_float fTimeDelta)
     {
         if (false == m_BNPop.isPop)
             return;
+        else if (false == m_isPop)
+        {
+            m_isPop = true;
+
+            m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_NextLevelID(), TEXT("GhostKnight_static"), m_pTransformCom->Get_State(STATE::POSITION));
+
+            m_pTriggerCom->Collision_Active(true);
+        }
     }
 
     if (false == m_isCollision)
@@ -108,7 +119,7 @@ HRESULT CBladeNexus::Render()
     CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-    _float fIntensity = 15.f;
+    _float fIntensity = 10.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fIntensity, sizeof(_float))))
         return E_FAIL;
 
@@ -529,8 +540,8 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("결속"), 1.5f);
     
         LIGHT_TRANSITION_DESC LightDesc{};
-        LightDesc.fDuration = 2.f;
-        LightDesc.vFadeTime = _float2(2.f, 0.f);
+        LightDesc.fDuration = 1.f;
+        LightDesc.vFadeTime = _float2(1.f, 0.f);
         LightDesc.isReturnToStart = false;
         m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc, true);
     }
@@ -682,7 +693,9 @@ CGameObject* CBladeNexus::Clone(void* pArg)
 void CBladeNexus::Free()
 {
     m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iSubscribeEventID);
-    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), m_iPopEventID);
+
+    if (BLADENEXUS_ID::HEINMACH_YETUGA == static_cast<BLADENEXUS_ID>(m_iBladeNexus_ID))
+        m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), m_iPopEventID);
 
     __super::Free();
 

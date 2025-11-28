@@ -26,9 +26,17 @@ HRESULT CSlate_Switch::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
-    m_pActive = pDesc->pActive;
+    m_pActiveElevator = pDesc->pActiveElevator;
+    m_pAvailableSwitch = pDesc->pAvailableSwitch;
+    m_pSwitchPressed = pDesc->pSwitchPressed;
+    m_eElevatorType = pDesc->eType;
 
-    m_pSocketMatrix = pDesc->pSocketMatrix;
+    if (ELEVATOR_TYPE::LARGE == m_eElevatorType)
+    {
+        m_pSocketMatrix = pDesc->pSocketMatrix;
+
+        m_pTransformCom->Rotation(XMConvertToRadians(270.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f));
+    }
 
     m_eAnimState = ANIM_STATE::IDLE;
     m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
@@ -45,29 +53,57 @@ void CSlate_Switch::Priority_Update(_float fTimeDelta)
 
 void CSlate_Switch::Update(_float fTimeDelta)
 {
-    if (true == *m_pActive)
+    // IDLE 상태
+    // 신호오면 DIE 재생 후 멈춤
+    // 도착하면 신호 받고 SPAWN 재생 후 IDLE 변경
+
+    if (true == *m_pSwitchPressed && ANIM_STATE::IDLE == m_eAnimState)
     {
-        if (ANIM_STATE::DIE != m_eAnimState)
+        if (ANIM_STATE::IDLE == m_eAnimState)
         {
             m_eAnimState = ANIM_STATE::DIE;
-            m_pModelCom->Set_Animation(ENUM_CLASS(ANIM_STATE::DIE));
+            m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
         }
     }
-    else
+    else if (false == *m_pActiveElevator && true == *m_pAvailableSwitch)
     {
-        if (ANIM_STATE::SPAWN != m_eAnimState)
+        if (ANIM_STATE::DIE == m_eAnimState)
         {
             m_eAnimState = ANIM_STATE::SPAWN;
-            m_pModelCom->Set_Animation(ENUM_CLASS(ANIM_STATE::SPAWN));
+            m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+
+            *m_pAvailableSwitch = false;
         }
     }
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
     {
-
+        if (ANIM_STATE::DIE == m_eAnimState)
+        {
+            *m_pActiveElevator = true;
+            *m_pAvailableSwitch = true;
+            *m_pSwitchPressed = false;
+        }
+        if (ANIM_STATE::SPAWN == m_eAnimState)
+        {
+            m_eAnimState = ANIM_STATE::IDLE;
+            m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
+        }
     }
 
-    Update_CombinedMatrix();
+    if (ELEVATOR_TYPE::LARGE == m_eElevatorType)
+    {
+        _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+
+        for (_uint i = 0; i < 3; ++i)
+            BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
+
+        XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+    }
+    else if (ELEVATOR_TYPE::SMALL == m_eElevatorType)
+    {
+        Update_CombinedMatrix();
+    }
 }
 
 void CSlate_Switch::Late_Update(_float fTimeDelta)
@@ -130,24 +166,21 @@ HRESULT CSlate_Switch::Bind_ShaderResources()
 
 HRESULT CSlate_Switch::Bind_Materials(_uint iMeshIndex)
 {
-    _bool isDiffuse = { false };
-    _bool isNormal = { false };
-    _bool isEmissive = { false };
-    _bool isSpecular = { false };
+    m_iMtrlFlags = 0;
 
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
-        isDiffuse = true;
+        m_iMtrlFlags |= M_DIFFUSE;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
-        isNormal = true;
+        m_iMtrlFlags |= M_NORMAL;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
-        isEmissive = true;
+        m_iMtrlFlags |= M_EMISSIVE;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
-        isSpecular = true;
+        m_iMtrlFlags |= M_SPECULAR;
 
-    m_pShaderCom->Bind_RawValue("g_isDiffuse", &isDiffuse, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isNormal", &isNormal, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
-    m_pShaderCom->Bind_RawValue("g_isSpecular", &isSpecular, sizeof(_bool));
+    m_iMtrlFlags &= ~M_EMISSIVE;
+    m_iMtrlFlags &= ~M_SPECULAR;
+
+    m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_bool));
 
     return S_OK;
 }
