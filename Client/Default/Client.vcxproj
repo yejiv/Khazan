@@ -221,6 +221,20 @@
     <ClInclude Include="..\Public\AS_Move_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Move_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_NonStopAttack_Imp_Melee.h" />
+    <ClInclude Include="..\Public\AS_P2_BackJump_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_DashUpperStr_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_DashUpper_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_FakeRunAttack_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_HandStompStr_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_HandStomp_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_HandSwing2Hit_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_HandSwing3Hit.h" />
+    <ClInclude Include="..\Public\AS_P2_HandUpper_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_JumpAttack_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_Run_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_SideMove_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_SlashDobule_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_SlashStomp_Viper.h" />
     <ClInclude Include="..\Public\AS_Quick2Hit_Viper.h" />
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Run_Viper.h" />
@@ -259,6 +273,7 @@
     <ClInclude Include="..\Public\Body_Dragonian_Rampage.h" />
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
     <ClInclude Include="..\Public\Body_Khazan_GS.h" />
+    <ClInclude Include="..\Public\Body_Phase2_Viper.h" />
     <ClInclude Include="..\Public\Body_Viper.h" />
     <ClInclude Include="..\Public\Core_Viper.h" />
     <ClInclude Include="..\public\Dragonian_Claw_L.h" />
@@ -574,6 +589,19 @@
     <ClCompile Include="..\private\AS_Dr_Rampage_Attack_Jump.cpp" />
     <ClCompile Include="..\Private\AS_Groggy_Viper.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_BackJump_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_DashUpperStr_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_DashUpper_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_FakeRunAttack_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_HandStomp_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_HandSwing2Hit_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_HandSwing3Hit.cpp" />
+    <ClCompile Include="..\Private\AS_P2_HandUpper_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_JumpAttack_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_Run_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_SideMove_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_SlashDobule_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_SlashStomp_Viper.cpp" />
     <ClCompile Include="..\Private\AS_StingGrab_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Cinematic_Viper.cpp" />
     <ClCompile Include="..\private\Body_Dragonian_Melee.cpp" />
@@ -582,6 +610,7 @@
     <ClCompile Include="..\Private\AS_SideMove_P1_Viper.cpp" />
     <ClCompile Include="..\Private\AS_ThrowBlade_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Dragonian_Rampage.cpp" />
+    <ClCompile Include="..\Private\Body_Phase2_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp" />
     <ClCompile Include="..\Private\Core_Viper.cpp" />
     <ClCompile Include="..\private\Dragonian_Claw_L.cpp" />
@@ -922,6 +951,7 @@
     <ClCompile Include="..\Private\VerticalGate.cpp" />
     <ClCompile Include="..\Private\Viper_Trigger.cpp" />
     <ClCompile Include="..\Private\Yetuga.cpp" />
+    <ClCompile Include="..\Public\AS_P2_HandStompStr_Viper.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

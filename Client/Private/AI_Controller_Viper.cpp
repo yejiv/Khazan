@@ -35,7 +35,6 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         //CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
         ////pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
         //pViper->Consume_Stamina(10.f);
-        
         m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START),pViper);
 
     }
@@ -44,20 +43,21 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
     {
 
         CViper* pViper = static_cast<CViper*>(pOwner);
+        pViper->Set_PhaseWeapon_Cinematic();
         m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
 
     }
 
-    if (m_pGameInstance->Key_Down(DIK_Z))
-    {
+    //if (m_pGameInstance->Key_Down(DIK_Z))
+    //{
 
-        CViper* pViper = static_cast<CViper*>(pOwner);
-        CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-        //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-         pViper->Consume_Stamina(10.f);
+    //    CViper* pViper = static_cast<CViper*>(pOwner);
+    //    CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+    //    //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+    //    //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+    //     pViper->Consume_Stamina(10.f);
 
-    }
+    //}
 
 
 
@@ -200,7 +200,6 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
 #pragma endregion
 
-
 #pragma region PHASE
 
     else if ("Phase1" == name)
@@ -215,10 +214,295 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
             };
     }
 
+    else if ("Phase2" == name)
+    {
+        return [pViper](CBlackBoard* BB) -> _bool
+            {
+
+                if (CViper::PHASE::PHASE2 == pViper->Get_Phase())
+                    return true;
+
+                return false;
+            };
+    }
+
+#pragma endregion
+
+#pragma region COMBAT_PHASE2
+
+   
+    else if ("P2_JumpAttack" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fRunRange = BB->Get_Value<_float>(pViper->Get_Name(), "RunRange");
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_JumpAttackFinished");
+
+                if (fDist != 0 && fDist <= fRunRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+
+    else if ("P2_SideMove" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fDashAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "DashAttackRange");
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SideMoveFinished");
+
+                if (fDist != 0 && fDist <= fDashAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+
+
+    else if ("P2_BackJump" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_BackJumpFinished");
+
+                if (fDist != 0 && fDist <= fAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+    else if ("P2_DashUpperStr" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fDashAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "DashAttackRange");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_DashUpperStrFinished");
+
+                if (fDist > fAttackRange && fDist <= fDashAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+    else if ("P2_DashUpper" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fDashAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "DashAttackRange");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_DashUpperFinished");
+
+                if (fDist > fAttackRange && fDist <= fDashAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+    else if ("P2_FakeRunAttack" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "RunRange");
+
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_FakeRunAttackFinished");
+
+                if (fDist != 0 && fDist <= fAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+    else if ("P2_HandSwing3Hit" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_HandSwing3HitFinished");
+
+                if (fDist != 0 && fDist <= fAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+    else if ("P2_SlashStomp" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SlashStompFinished");
+
+                if (fDist != 0 && fDist <= fAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+
+    else if ("P2_SlashDouble" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SlashDoubleFinished");
+
+                if (fDist != 0 && fDist <= fAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+
+    else if ("P2_HandUpper" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_HandUpperFinished");
+
+                if (fDist != 0 && fDist <= fAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+    else if ("P2_HandSwing2Hit" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_HandSwing2HitFinished");
+
+                if (fDist != 0 && fDist <= fAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+    else if ("P2_HandStompStr" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_HandStompStrFinished");
+
+                if (fDist != 0 && fDist <= fAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+    else if ("P2_HandStomp" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+               
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_HandStompFinished");
+
+                if (fDist != 0 && fDist <= fAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+#pragma endregion
+
+#pragma region NONCOMBAT_PAHSE2
+
+    else if ("P2_Run" == name)
+    {
+        return [pViper](CBlackBoard* BB) ->_bool
+            {
+
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fRunRange = BB->Get_Value<_float>(pViper->Get_Name(), "RunRange");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+                _uint iStepCnt = BB->Get_Value<_uint>(pViper->Get_Name(), "WalkStepCount");
+
+                if ((fDist >= fAttackRange && fDist <= fRunRange) || iStepCnt >= 4)
+                    return true;
+
+                return false;
+            };
+    }
 #pragma endregion
 
 
-#pragma region COMBAT
+#pragma region COMBAT_PHASE1
 
 
     else if ("P1_StingGrab" == name)
@@ -550,7 +834,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
 #pragma endregion
 
-#pragma region NONCOMBAT
+#pragma region NONCOMBAT_PHASE1
 
     else if ("P1_Run" == name)
     {
@@ -654,6 +938,379 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                     ENUM_CLASS(VIPER_STATE_P1::HIT), pViper);
 
                 return BTNODESTATE::RUNNING;
+            };
+    }
+
+#pragma endregion
+
+
+    else if ("P2_JumpAttack" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_JumpAttackFinished"))
+                {
+                    // AttackInterrupt
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_JUMPATTACK), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+    else if ("P2_SideMove" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SideMoveFinished"))
+                {
+                    // AttackInterrupt
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SIDEMOVE), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+
+
+
+    else if ("P2_BackJump" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_BackJumpFinished"))
+                {
+                    // AttackInterrupt
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_BACKJUMP), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+
+#pragma region COMBAT_PHASE2
+
+    else if ("P2_DashUpperStr" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_DashUpperStrFinished"))
+                {
+                    // AttackInterrupt
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASTUPPERSTR), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+    else if ("P2_DashUpper" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_DashUpperFinished"))
+                {
+                    // AttackInterrupt
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHUPPER), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+    else if ("P2_FakeRunAttack" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_FakeRunAttackFinished"))
+                {
+                    // AttackInterrupt
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_FAKERUNATTACK), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+
+
+
+    else if ("P2_HandSwing3Hit" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_HandSwing3HitFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDSWING3HIT), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+
+   
+    else if ("P2_SlashStomp" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SlashStompFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SLASHSTOMP), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+    else if ("P2_SlashDouble" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SlashDoubleFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SLASHDOUBLE), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+    else if ("P2_HandUpper" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_HandUpperFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDUPPER), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+    else if ("P2_HandSwing2Hit" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_HandSwing2HitFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDSWING2HIT), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+    else if ("P2_HandStompStr" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_HandStompStrFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDSTOMPSTR), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+    else if ("P2_HandStomp" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_HandStompFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDSTOMP), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+#pragma endregion
+
+#pragma region NONCOMBAT_PAHSE2
+
+    else if ("P2_Run" == name)
+    {
+        return [pViper](CBlackBoard* BB) ->BTNODESTATE
+            {
+
+                _bool isGroggy = BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy");
+                if (isGroggy)
+                    return BTNODESTATE::FAILURE;
+
+
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+
+                if (fDist < fAttackRange)
+                    return BTNODESTATE::SUCCESS;
+
+                pViper->Get_Controller()->Get_State_Machine()->Change_State(
+                    ENUM_CLASS(VIPER_STATE_P1::P2_RUN), pViper);
+
+                return BTNODESTATE::RUNNING;
+
+
             };
     }
 
@@ -1126,6 +1783,264 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
 
 #pragma endregion
 
+#pragma region COMBAT_PHASE2
+
+
+
+    else if ("P2_JumpAttack" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_JumpAttackFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+    else if ("P2_SideMove" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_SideMoveFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+
+    else if ("P2_BackJump" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_BackJumpFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+
+    else if ("P2_DashUpperStr" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_DashUpperStrFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+    else if ("P2_DashUpper" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_DashUpperFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+    else if ("P2_FakeRunAttack" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_FakeRunAttackFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+    else if ("P2_HandSwing3Hit" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_HandSwing3HitFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+    else if ("P2_SlashStomp" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_SlashStompFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+
+    else if ("P2_SlashDouble" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_SlashDoubleFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+    else if ("P2_HandUpper" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_HandUpperFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+    else if ("P2_HandSwing2Hit" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_HandSwing2HitFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+    else if ("P2_HandStompStr" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_HandStompStrFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+    else if ("P2_HandStomp" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_HandStompFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+#pragma endregion
+
+#pragma region NONCOMBAT_PAHSE2
+
+#pragma endregion
+
 #pragma region COMBAT_TERMINATES
     
     else if ("P1_StingGrab" == name)
@@ -1375,8 +2290,6 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
 
 
 #pragma endregion
-
-
 
 #pragma region NONCOMBAT
 
