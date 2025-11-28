@@ -5,6 +5,8 @@
 class CAS_Dr_Rampage_LockOn : public CAI_State
 {
 private:
+    enum class LOCKONSTATE { LOCKON_F, LOCKON_B, LOCKON_L, LOCKON_R, END};
+private:
     CAS_Dr_Rampage_LockOn();
     virtual ~CAS_Dr_Rampage_LockOn() = default;
 
@@ -15,7 +17,9 @@ public:
 
 private:
     CDragonian_Rampage::MONDATA*    m_pMonData = { nullptr };
-
+    TARGET_DIR                      m_eDir = { TARGET_DIR::END };
+    _float                          m_fAccTime = {};
+    LOCKONSTATE                     m_eLockOn = { LOCKONSTATE ::END};
 public:
     static CAS_Dr_Rampage_LockOn*      Create();
     virtual void				    Free() override;

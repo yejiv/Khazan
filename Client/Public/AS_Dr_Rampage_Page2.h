@@ -2,11 +2,11 @@
 #include "AI_State.h"
 #include "Dragonian_Rampage.h"
 
-class CAS_Dr_Rampage_Attack_Jump : public CAI_State
+class CAS_Dr_Rampage_Page2 : public CAI_State
 {
 private:
-    CAS_Dr_Rampage_Attack_Jump();
-    virtual ~CAS_Dr_Rampage_Attack_Jump() = default;
+    CAS_Dr_Rampage_Page2();
+    virtual ~CAS_Dr_Rampage_Page2() = default;
 
 public:
     virtual void				    Enter(class CStateMachine* pFSM, class CGameObject* pOwner = nullptr) override;
@@ -17,7 +17,7 @@ private:
     CDragonian_Rampage::MONDATA* m_pMonData = { nullptr };
 
 public:
-    static CAS_Dr_Rampage_Attack_Jump* Create();
+    static CAS_Dr_Rampage_Page2* Create();
     virtual void				    Free() override;
 
 };
