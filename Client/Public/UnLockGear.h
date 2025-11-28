@@ -50,6 +50,7 @@ private:
     EVENT_TYPE m_eGimmickType = { EVENT_TYPE::END };
     EventObject m_Event = {};
 
+    _float3 m_vLookPosition = {};
     _float3 m_vCharacterPosition = {};
 
     _float m_fColTimeAcc = { 0.f };

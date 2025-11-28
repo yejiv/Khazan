@@ -47,12 +47,12 @@ void CAS_CutScene_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     {
         if (CUTSCENE_STATE::ROAR2 == m_eState)
         {
-            pModel->Set_Animation(6); // ¶Ù±â
+            pModel->Set_Animation(6); // ë›°ê¸°
             m_eState = CUTSCENE_STATE::RUN;
         }
 
 
-        /* ½ºÇÁ¸°Æ®  
+        /* ìŠ¤í”„ë¦°íŠ¸  
          pModel->Set_Animation(7);*/
         
     }

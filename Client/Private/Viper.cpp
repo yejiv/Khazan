@@ -9,6 +9,7 @@
 #include "TwinBlade_Viper.h"
 #include "Body_Cinematic_Viper.h"
 #include "Core_Viper.h"
+#include "Body_Phase2_Viper.h"
 
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -24,6 +25,12 @@ CViper::CViper(const CViper& Prototype)
 _float4* CViper::Get_LockOnPosition()
 {
     return m_vLockOnPosition;
+}
+
+void CViper::Set_PhaseWeapon_Cinematic()
+{
+    m_pWeapon->Set_IsActive(false);
+    m_pCore->Set_IsActive(true);
 }
 
 HRESULT CViper::Initialize_Prototype()
@@ -59,7 +66,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
     }
 
-    m_ePhase = PHASE::PHASE1;
+    m_ePhase = PHASE::PHASE2;
 
     m_fRecoveryPerSec = 5.f;
 
@@ -104,7 +111,9 @@ void CViper::Update(_float fTimeDelta)
     }
 
     if (m_pGameInstance->Key_Down(DIK_U))
+    {
         m_ePhase = PHASE::CINEMATIC;
+    }
 
 
     __super::Update(fTimeDelta);
@@ -330,8 +339,20 @@ HRESULT CViper::Ready_PartObjects()
 
 
 
+    CBody_Phase2_Viper::BODY_DESC Phase2BodyDesc{};
+    Phase2BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    Phase2BodyDesc.pOwnerTransform = m_pTransformCom;
+    Phase2BodyDesc.pOwner = this;
 
+    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body_Phase2"), ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Body_Phase2_Viper"), &Phase2BodyDesc)))
+        return E_FAIL;
 
+    CPartObject* pPhase2Body = Find_PartObject(TEXT("Part_Body_Phase2"));
+    if (nullptr == pPhase2Body)
+        return E_FAIL;
+
+    m_pPahse2Body = dynamic_cast<CBody_Phase2_Viper*>(pPhase2Body);
+    Safe_AddRef(m_pPahse2Body);
 
 
     return S_OK;
@@ -795,8 +816,26 @@ HRESULT CViper::Ready_AnimEvent()
  
 #pragma endregion
 
+#pragma region LOOKING_CORE
+
+    pModel->Register_Event("Looking_Core", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            CTransform* pCoreTransform = static_cast<CTransform*>(m_pCore->Get_Component(TEXT("Com_Transform")));
+            m_pCore->Set_IsActive(true);
+            pCoreTransform->Rotation(XMConvertToRadians(-90.f), XMConvertToRadians(180.f), XMConvertToRadians(-90.f));
+        });
+
+    pModel->Register_Event("Remove_Core", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pCore->Set_IsActive(false);
+        });
 
 
+#pragma endregion
+
+#pragma region REMOVE_CORE
+
+#pragma endregion
     return S_OK;
 
 }
@@ -829,5 +868,6 @@ void CViper::Free()
     Safe_Release(m_pCinematicBody);
     Safe_Release(m_pWeapon);
     Safe_Release(m_pCore);
+    Safe_Release(m_pPahse2Body);
     __super::Free();
 }

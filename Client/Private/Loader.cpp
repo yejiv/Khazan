@@ -60,6 +60,7 @@
 #include "TwinBlade_Viper.h"
 #include "Body_Cinematic_Viper.h"
 #include "Core_Viper.h"
+#include "Body_Phase2_Viper.h"
 
 #pragma endregion
 
@@ -1004,12 +1005,15 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Ice_Disappear"))))
         return E_FAIL;
 
+        
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"),
+
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Smoke"))))
+
         return E_FAIL;
 #pragma endregion
 
-#pragma region Shaderds
+#pragma region Shader
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Decal"),
         CDecal::Create(m_pDevice, m_pContext))))
         return E_FAIL;
@@ -1993,6 +1997,10 @@ HRESULT CLoader::Loading_For_Viper_Model()
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Viper_Cinematic"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Viper_Cinematic/Viper_Cinematic.dat")), E_FAIL);
 
+      CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Viper_Phase2"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Viper_Phase2/Viper_Phase2.dat")), E_FAIL);
+
+
 #pragma endregion
 
 
@@ -2203,6 +2211,9 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
         CCore_Viper::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Body_Phase2_Viper"),
+        CBody_Phase2_Viper::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 
 
 #pragma endregion

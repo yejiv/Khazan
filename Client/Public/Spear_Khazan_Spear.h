@@ -60,7 +60,7 @@ public:
 
 private:
 	CShader*					m_pShaderCom = { nullptr };
-    CModel*                     m_pModelCom = { nullptr }; //«ˆ¿Á ∏µ®
+    CModel*                     m_pModelCom = { nullptr }; //ÌòÑÏû¨ Î™®Îç∏
     CModel*                     m_pModelCom_Punish_Spear = { nullptr };
     CModel*                     m_pModelCom_Flash_Spear = { nullptr };
     CModel*                     m_pModelCom_Meteor_GSword = { nullptr };

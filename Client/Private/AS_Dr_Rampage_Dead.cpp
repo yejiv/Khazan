@@ -9,7 +9,12 @@ void CAS_Dr_Rampage_Dead::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     if (m_pMonData == nullptr)
         m_pMonData = &static_cast<CDragonian_Rampage*>(pOwner)->Get_Data();
 
-    m_pMonData->iAnimIndex = 0;
+    TARGET_DIR eDir = m_pMonData->pOwner->Get_DIR();
+
+    if(eDir == TARGET_DIR::B || eDir == TARGET_DIR::BR || eDir == TARGET_DIR::BL)
+        m_pMonData->iAnimIndex = 0;
+    else
+        m_pMonData->iAnimIndex = 1;
     m_eState = DIE;
 }
 

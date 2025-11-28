@@ -109,7 +109,7 @@ void CUI_Inven::Priority_Update(_float fTimeDelta)
 {
     if (m_pGameInstance->Key_Down(DIK_M, INPUT_TYPE::UI))
     {
-       Add_Item(2001);
+       Add_Item(1001);
        Add_Item(2002);
        Add_Item(2003);
        Add_Item(2004);

@@ -96,11 +96,11 @@ void CInteraction_Guide::Update(_float fTimeDelta)
 
 void CInteraction_Guide::Late_Update(_float fTimeDelta)
 {
-	Update_WorldPos();
 	if (!m_isVisible || !m_isActive)
 		return;
-	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
 	
+	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
+    Update_WorldPos();
 	if (m_eGuideType == GUIDE_TYPE::DEFAULT)
 		m_pTextBox->Late_Update(fTimeDelta);
 	else
@@ -121,10 +121,6 @@ void CInteraction_Guide::Reset()
 
 HRESULT CInteraction_Guide::Ready_Prototype()
 {
-	if (FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_Tex_Guide_Circle"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/Guide_Circle.png"), 1))))
-		return E_FAIL;
-
 	if (FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_Tex_Guide_Press"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/Guide_Press.png"), 1))))
 		return E_FAIL;
