@@ -1,4 +1,3 @@
-
 #include "Body_Khazan_Spear.h"
 #include "Khazan_Spear.h"
 #include "GameInstance.h"
@@ -58,14 +57,19 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
+    /* 부모 트랜스폼 연결 */
+    m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
+
+    if (FAILED(Initialize_Equipment()))
+        return E_FAIL;
+
+
+
     if (FAILED(Ready_AnimationEvent()))
         return E_FAIL;
 
     /* 파츠 자동 업데이트  */
     m_pClientInstance->Set_ChangePlayerEquipmentCallBack([this](EQUIPMENTTYPE type, const _wstring& strPartName) {Equip_Part(type, strPartName); });
-
-     /* 부모 트랜스폼 연결 */
-    m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
 
     /* 뼈 행렬 가지고오기 */
     m_pSpearTip1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip");
@@ -850,11 +854,11 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
 HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 {
 #pragma region Effect
-    m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {UpdateSpearWind(); FX_Trail(); });
+    m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {UpdateSpearWind(true); FX_Trail(); });
     m_pModelCom->Register_Event("FastAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SpawnSpearWind(); });
-    m_pModelCom->Register_Event("FastAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {UpdateSpearWind(); FX_Trail(); });
+    m_pModelCom->Register_Event("FastAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {UpdateSpearWind(true); FX_Trail(); });
     m_pModelCom->Register_Event("FastAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SpawnSpearWind(); });
-    m_pModelCom->Register_Event("FastAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {UpdateSpearWind(); FX_Trail(); });
+    m_pModelCom->Register_Event("FastAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {UpdateSpearWind(true); FX_Trail(); });
     m_pModelCom->Register_Event("FastAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SpawnSpearWind(); });
 
     m_pModelCom->Register_Event("StrongAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
@@ -939,12 +943,239 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
     m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //SpawnSpearWind();
+        // Radial Blur
+
+        RADIAL_BLUR_DESC RBDesc{};
+        RBDesc.vCenterUV = _float2(0.5f, 0.5f);
+        RBDesc.fSampleRadius = 0.05f;
+        RBDesc.vMaskRadius = _float2(0.f, 0.3f);
+        RBDesc.fExponent = 1.f;
+        RBDesc.iNumSamples = 16;
+        RBDesc.fAttenuation = 0.1f;
+        RBDesc.fStrength = 0.5f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
+        RBDesc.fDuration = 1.2f;
+        RBDesc.vFadeTime = _float2(0.25f, 0.5f);
+        m_pGameInstance->Start_RadialBlur(RBDesc);
         });
     
-    m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {UpdateSpearWind(); FX_Trail(); });
+    m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        UpdateSpearWind(false); 
+        FX_Trail(); 
+    });
 
 
     m_pModelCom->Register_Event("SpaceTimeCutter_Trail0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+
+#pragma endregion
+
+
+
+#pragma once ScreenEffect
+
+    // 급소 타격
+
+    m_pModelCom->Register_Event("SprintAtk_Strong_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+
+        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
+
+        RADIAL_BLUR_DESC RBDesc{};
+
+        RBDesc.vCenterUV = _float2(0.5f, 0.5f);
+        RBDesc.fSampleRadius = 0.05f;
+        RBDesc.vMaskRadius = _float2(0.f, 0.3f);
+        RBDesc.fExponent = 1.f;
+        RBDesc.iNumSamples = 16;
+        RBDesc.fAttenuation = 0.1f;
+        RBDesc.fStrength = 0.4f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
+        RBDesc.fDuration = 1.2f;
+        RBDesc.vFadeTime = _float2(0.25f, 0.5f);
+        m_pGameInstance->Start_RadialBlur(RBDesc);
+        });
+
+    m_pModelCom->Register_Event("SprintAtk_Strong_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.7f, 0.5f);
+        });
+
+    // 강공격
+
+    m_pModelCom->Register_Event("StrongAtk01_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+
+        // Distortion
+
+        DISTORTION_DESC Desc{};
+
+        _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
+        _float fPosY = XMVectorGetY(vCenterPos);
+        _float fOffset = 2.f;
+        vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
+        XMStoreFloat3(&Desc.vCenter, vCenterPos);
+        Desc.fRange = 1.f;
+        Desc.fPower = 0.01f;
+        Desc.fDuration = 0.3f;
+        Desc.vFadeTime = _float2(0.1f, 0.1f);
+        Desc.fSpeed = 1.f;
+        Desc.iNoiseIndex = 4;
+        m_pGameInstance->Start_Distortion(Desc);
+        });
+
+    m_pModelCom->Register_Event("StrongAtk02_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+
+        // Distortion
+
+        DISTORTION_DESC Desc{};
+
+        _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
+        _float fPosY = XMVectorGetY(vCenterPos);
+        _float fOffset = 2.f;
+        vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
+        XMStoreFloat3(&Desc.vCenter, vCenterPos);
+        Desc.fRange = 1.f;
+        Desc.fPower = 0.01f;
+        Desc.fDuration = 0.3f;
+        Desc.vFadeTime = _float2(0.1f, 0.1f);
+        Desc.fSpeed = 1.f;
+        Desc.iNoiseIndex = 4;
+        m_pGameInstance->Start_Distortion(Desc);
+        });
+
+    m_pModelCom->Register_Event("StrongAtk03_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+
+        RADIAL_BLUR_DESC RBDesc{};
+
+        RBDesc.vCenterUV = _float2(0.5f, 0.5f);
+        RBDesc.fSampleRadius = 0.05f;
+        RBDesc.vMaskRadius = _float2(0.f, 0.3f);
+        RBDesc.fExponent = 1.f;
+        RBDesc.iNumSamples = 16;
+        RBDesc.fAttenuation = 0.1f;
+        RBDesc.fStrength = 0.7f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
+        RBDesc.fDuration = 1.f;
+        RBDesc.vFadeTime = _float2(0.25f, 0.5f);
+        m_pGameInstance->Start_RadialBlur(RBDesc);
+
+        // Vignette
+
+        VIGNETTE_CONFIG Config{};
+
+        Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
+        Config.vColor = _float3(0.f, 0.f, 0.f);
+        Config.fPower = 3.5f;
+        Config.fIntensity = 1.f;
+        Config.fMaxIntensity = 4.f;
+        m_pGameInstance->Start_VignetteAnimation(1.f, Config);
+
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.5f, 0.2f, 0.5f);
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.5f, 0.2f, 0.5f);
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.5f, 0.2f, 0.5f);
+        });
+
+    // 강공격 차지
+
+    m_pModelCom->Register_Event("StrongAtk_Charge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), true);
+        });
+
+    m_pModelCom->Register_Event("StrongAtk_Charge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), false);
+        });
+
+    // 강습
+
+    m_pModelCom->Register_Event("PureMind_SeismicKick_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+
+        RADIAL_BLUR_DESC RBDesc{};
+        RBDesc.vCenterUV = _float2(0.5f, 0.5f);
+        RBDesc.fSampleRadius = 0.05f;
+        RBDesc.vMaskRadius = _float2(0.f, 0.3f);
+        RBDesc.fExponent = 1.f;
+        RBDesc.iNumSamples = 16;
+        RBDesc.fAttenuation = 0.1f;
+        RBDesc.fStrength = 0.7f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
+        RBDesc.fDuration = 1.f;
+        RBDesc.vFadeTime = _float2(0.25f, 0.5f);
+        m_pGameInstance->Start_RadialBlur(RBDesc);
+
+        });
+
+    // 찰나 베기
+
+    m_pModelCom->Register_Event("SprintAtk_Fast_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+
+        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
+        RADIAL_BLUR_DESC RBDesc{};
+        RBDesc.vCenterUV = _float2(0.5f, 0.5f);
+        RBDesc.fSampleRadius = 0.05f;
+        RBDesc.vMaskRadius = _float2(0.f, 0.3f);
+        RBDesc.fExponent = 1.f;
+        RBDesc.iNumSamples = 16;
+        RBDesc.fAttenuation = 0.1f;
+        RBDesc.fStrength = 0.5f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
+        RBDesc.fDuration = 1.25f;
+        RBDesc.vFadeTime = _float2(0.25f, 0.5f);
+        m_pGameInstance->Start_RadialBlur(RBDesc);
+
+        });
+
+    m_pModelCom->Register_Event("SprintAtk_Fast_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+        });
+
+    // 그림자 참격
+
+    m_pModelCom->Register_Event("Tempest_MoonVeil_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+
+        RADIAL_BLUR_DESC RBDesc{};
+
+        RBDesc.vCenterUV = _float2(0.5f, 0.5f);
+        RBDesc.fSampleRadius = 0.05f;
+        RBDesc.vMaskRadius = _float2(0.f, 0.3f);
+        RBDesc.fExponent = 1.f;
+        RBDesc.iNumSamples = 16;
+        RBDesc.fAttenuation = 0.1f;
+        RBDesc.fStrength = 0.4f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
+        RBDesc.fDuration = 1.5f;
+        RBDesc.vFadeTime = _float2(0.25f, 0.5f);
+        m_pGameInstance->Start_RadialBlur(RBDesc);
+        });
+
+    m_pModelCom->Register_Event("Tempest_MoonVeil_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+
+        // Distortion
+        DISTORTION_DESC Desc{};
+        _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
+        _float fPosY = XMVectorGetY(vCenterPos);
+        _float fOffset = 2.f;
+        vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
+        XMStoreFloat3(&Desc.vCenter, vCenterPos);
+        Desc.fRange = 0.5f;
+        Desc.fPower = 0.01f;
+        Desc.fDuration = 1.f;
+        Desc.vFadeTime = _float2(0.5f, 0.2f);
+        Desc.fSpeed = 1.f;
+        Desc.iNoiseIndex = 9;
+        m_pGameInstance->Start_Distortion(Desc);
+        });
+
+    // 포워드 닷지
+
+    m_pModelCom->Register_Event("Dodge_F_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
+        });
+
+    m_pModelCom->Register_Event("Dodge_F_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+        });
+
+    // 백 닷지
+
+    m_pModelCom->Register_Event("Dodge_B_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
+        });
+
+    m_pModelCom->Register_Event("Dodge_B_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+        });
 
 #pragma endregion
 
@@ -1163,7 +1394,13 @@ void CBody_Khazan_Spear::Update_QuickRenderCache()
     }
 
     /* todo !! 여기에 모션트레일컴포넌트에  랜더용 파츠모델 바꼈다고 넘겨주기. */
+    // Part Model이 있는 경우!!
+    m_pMotionTrailCom->Update_PartModels(m_RenderParts);
 
+
+
+    // Part Model이 없고 Master Model만 있는 경우!! (무기)
+    //  m_pMotionTrailCom->Update_MasterModel(m_pModelCom);
 }
 
 void CBody_Khazan_Spear::FX_Trail()
@@ -1230,6 +1467,16 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust3(_fvector pos)
     Desc.fSpeed = 1.5f;
     Desc.iNoiseIndex = 18;
     m_pGameInstance->Start_Distortion(Desc);
+
+    // Vignette
+
+    VIGNETTE_CONFIG Config{};
+    Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
+    Config.vColor = _float3(0.f, 0.f, 0.f);
+    Config.fPower = 3.5f;
+    Config.fIntensity = 1.f;
+    Config.fMaxIntensity = 4.f;
+    m_pGameInstance->Start_VignetteAnimation(1.f, Config);
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust4(_fvector pos)
@@ -1319,7 +1566,7 @@ void CBody_Khazan_Spear::Spear_Spike()
     EffectID_SpearWind = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust5"), Q, V_FinalPosition);
 }
 
-void CBody_Khazan_Spear::UpdateSpearWind()
+void CBody_Khazan_Spear::UpdateSpearWind(_bool isEnableRadialBlur)
 {
     _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
 

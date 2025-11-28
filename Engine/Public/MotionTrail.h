@@ -36,6 +36,8 @@ public:
 public:
     void                        Update(_float fTimeDelta);
     void                        Start_MotionTrail(_float fDuration);
+    void                        Update_PartModels(const vector<class CModel*>& NewPartModels);
+    void                        Update_MasterModel(class CModel* pModel);
 
 public:
     const MOTIONTRAIL_CONFIG&   Get_Config() { return m_Config; }

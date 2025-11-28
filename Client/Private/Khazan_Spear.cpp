@@ -867,7 +867,7 @@ void CKhazan_Spear::Move_Input(_float fTimeDelta)
     {
         Remove_SubState(MOV::MOVE_DODGE);
         Remove_Status(CHARGING_SPRINT);
-
+       
         // Dodge 애니메이션이 끝났는지 확인
         if (m_pAnimMove->IsEndMoveAnimantionFinished())
         {
