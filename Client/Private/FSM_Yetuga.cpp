@@ -24,6 +24,14 @@ CFSM_Yetuga::CFSM_Yetuga()
 {
 }
 
+CAS_CutScene_Yetuga* CFSM_Yetuga::Get_CutScene_Yetuga()
+{
+    CAS_CutScene_Yetuga* pCutScneState = static_cast<CAS_CutScene_Yetuga*>(m_States[ENUM_CLASS(YETUGA_STATE::CUTSCENE)]);
+
+    return pCutScneState;
+}
+
+
 HRESULT CFSM_Yetuga::Initialize()
 {
 

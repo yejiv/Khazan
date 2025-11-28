@@ -451,6 +451,30 @@ PS_OUT PS_TEX_WARNING_PASS(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_TEX_PROGRESS_CIRCLE_GAUGE_SKIP(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+    if (Out.vColor.a < 0.2f)
+        discard;
+    
+    float2 vCenter = { 0.5f, 0.5f };
+    float2 vPos = In.vTexcoord - vCenter;
+
+    float fAngle = atan2(vPos.y, vPos.x);
+
+    float fTemp = (fAngle + PI) / (2.0 * PI);
+    fTemp = frac(fTemp - 0.25);
+    Out.vColor.a = Out.vColor.r *g_fAlpha;
+    if (fTemp > g_fProgressValue.x)
+    {
+        Out.vColor.rgb = Out.vColor.r * 0.5f;
+  
+    }
+  
+    return Out;
+}
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -699,6 +723,17 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_TEX_WARNING_PASS();
+    }
+
+    pass PS_TEX_PROGRESS_CIRCLE_GAUGE_SKIP //23
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_TEX_PROGRESS_CIRCLE_GAUGE_SKIP();
     }
 
 }

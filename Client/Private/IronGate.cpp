@@ -152,7 +152,7 @@ HRESULT CIronGate::Ready_Collision(void* pArg)
 {
 #pragma region 스태틱 몸체
     CBody::BODY_BOXSHAPE_DESC StaticBodyDesc{};
-    StaticBodyDesc.vExtent = _float3(1.f, 1.f, 1.f);
+    StaticBodyDesc.vExtent = _float3(4.f, 1.f, 0.3f);
     StaticBodyDesc.bIsTrigger = false;
     StaticBodyDesc.bStartActive = true;
     StaticBodyDesc.eMotion = EMotionType::Static;

@@ -143,7 +143,7 @@ HRESULT CUnLockGear::Ready_Collision(void* pArg)
 {
 #pragma region 스태틱 몸체
     CBody::BODY_BOXSHAPE_DESC StaticBodyDesc{};
-    StaticBodyDesc.vExtent = _float3(0.5f, 0.5f, 0.5f);
+    StaticBodyDesc.vExtent = _float3(0.75f, 0.5f, 0.75f);
     StaticBodyDesc.bIsTrigger = false;
     StaticBodyDesc.bStartActive = true;
     StaticBodyDesc.eMotion = EMotionType::Static;
@@ -153,13 +153,14 @@ HRESULT CUnLockGear::Ready_Collision(void* pArg)
     StaticBodyDesc.fMass = 1.0f;
     StaticBodyDesc.fRestitution = 0.0f;
     StaticBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_STATIC_TRIGGER);
-    _float3 vPos{};
-    XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
-    vPos.y += StaticBodyDesc.vExtent.y;
-    _float4 vQuat{};
-    XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
-    StaticBodyDesc.vPos = vPos;
-    StaticBodyDesc.vQuat = vQuat;
+
+    XMStoreFloat3(&StaticBodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION) + XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * 1.f);
+    StaticBodyDesc.vPos.y += StaticBodyDesc.vExtent.y;
+
+    m_vLookPosition = StaticBodyDesc.vPos;
+
+    XMStoreFloat4(&StaticBodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+
     StaticBodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc.pGameObject = this;
     //pCollDesc.pInfo = ?? // 작성하기
@@ -183,8 +184,10 @@ HRESULT CUnLockGear::Ready_Collision(void* pArg)
     TriggerDesc.fRestitution = 0.0f;
     TriggerDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT);
 
-    XMStoreFloat3(&TriggerDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION) - XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * 1.f);
+    XMStoreFloat3(&TriggerDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
     TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
+
+    m_vCharacterPosition = TriggerDesc.vPos;
 
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
@@ -239,10 +242,8 @@ void CUnLockGear::Input_Interact_Event(_float fTimeDelta)
 
         EventUnLockGear UnLockGearEvent = {};
 
-        _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Root")) * m_pTransformCom->Get_WorldMatrix();
-
-        XMStoreFloat4(&UnLockGearEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-        XMStoreFloat4(&UnLockGearEvent.vPlayerPosition, OffSetMatrix.r[3]);
+        UnLockGearEvent.vPosition = _float4(m_vLookPosition.x, m_vLookPosition.y, m_vLookPosition.z, 1.f);
+        UnLockGearEvent.vPlayerPosition = _float4(m_vCharacterPosition.x, m_vCharacterPosition.y, m_vCharacterPosition.z, 1.f);
 
         InteractType.UnLockGearEvent = UnLockGearEvent;
 
@@ -290,8 +291,8 @@ void CUnLockGear::Animation_Update(_float fTimeDelta)
 
             _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Root")) * m_pTransformCom->Get_WorldMatrix();
 
-            XMStoreFloat4(&UnLockGearEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-            XMStoreFloat4(&UnLockGearEvent.vPlayerPosition, OffSetMatrix.r[3]);
+            UnLockGearEvent.vPosition = _float4(m_vLookPosition.x, m_vLookPosition.y, m_vLookPosition.z, 1.f);
+            UnLockGearEvent.vPlayerPosition = _float4(m_vCharacterPosition.x, m_vCharacterPosition.y, m_vCharacterPosition.z, 1.f);
 
             InteractType.UnLockGearEvent = UnLockGearEvent;            
 

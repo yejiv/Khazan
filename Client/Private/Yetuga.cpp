@@ -11,6 +11,8 @@
 #include "BossHp.h"
 #include "Head_Yetuga.h"
 #include "Viper.h"
+#include "FSM_Yetuga.h"
+#include "AS_CutScene_Yetuga.h"
 
 CYetuga::CYetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -33,8 +35,6 @@ _float4* CYetuga::Get_LockOnPosition()
 void CYetuga::Yetuga_Jump(_fvector vGoalPos, _float fHeight, _float fSpeed)
 {
     m_pCharVirCom->Jump_ToTarget(vGoalPos, fHeight, fSpeed);
-    //m_pCharVirCom->Jump(fHeight,fSpeed);
-
 }
 
 void CYetuga::Yetuga_Land(_fvector vGoalPosition, _float fSpeed)
@@ -42,9 +42,16 @@ void CYetuga::Yetuga_Land(_fvector vGoalPosition, _float fSpeed)
     m_pCharVirCom->Start_Dive(vGoalPosition, fSpeed);
 }
 
+CAS_CutScene_Yetuga* CYetuga::Get_Yetuga_CutSceneState()
+{
+    CFSM_Yetuga* pFSM = static_cast<CFSM_Yetuga*>(m_pController->Get_State_Machine());
+    CAS_CutScene_Yetuga* pCutSceneState = pFSM->Get_CutScene_Yetuga();
+    return pCutSceneState;
+}
+
+
 HRESULT CYetuga::Initialize_Prototype()
 {
-
     return S_OK;
 }
 

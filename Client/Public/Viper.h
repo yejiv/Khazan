@@ -19,11 +19,14 @@ public:
 public:
     class CBody_Viper*              Get_Body() const { return m_pBody; }
     class CBody_Cinematic_Viper*    Get_Cinematic_Body() const { return m_pCinematicBody; }
+    class CBody_Phase2_Viper*       Get_P2Body() const { return m_pPahse2Body; }
+
     virtual _float4*                Get_LockOnPosition();
     PHASE                           Get_Phase() const { return m_ePhase; }
 
     void                            Set_Phase(PHASE ePhase)  { m_ePhase = ePhase; }
-    
+    void                            Set_PhaseWeapon_Cinematic();
+
 
 public:
     virtual HRESULT					Initialize_Prototype() override;
@@ -56,6 +59,7 @@ private:
 private:
     class CBody_Viper*              m_pBody = { nullptr };
     class CBody_Cinematic_Viper*    m_pCinematicBody = { nullptr };
+    class CBody_Phase2_Viper*       m_pPahse2Body = { nullptr };
     class CTwinBlade_Viper*         m_pWeapon = { nullptr };
     class CCore_Viper*              m_pCore = { nullptr };
 

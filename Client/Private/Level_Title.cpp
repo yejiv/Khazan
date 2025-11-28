@@ -10,6 +10,8 @@
 #include "Sequence_Dummy.h"
 #include "UI_Announce_MapName.h"
 
+#include "SkipButton.h"
+
 CLevel_Title::CLevel_Title(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel { pDevice, pContext }
 {
@@ -136,6 +138,16 @@ HRESULT CLevel_Title::Ready_Layer_UI()
 
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
         ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_Over"), TIME_CHANNEL::WORLD, &Desc)))
+        return E_FAIL;
+
+    Desc.vLocalSize = { 46.f, 46.f };
+    Desc.vLocalPos = { g_iWinSizeX - 200, g_iWinSizeY - 50 };
+    Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    Desc.szName = "SkipButton";
+    Desc.fDepth = 1;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+        ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_SkipButton"), TIME_CHANNEL::WORLD, &Desc)))
         return E_FAIL;
 
     if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),

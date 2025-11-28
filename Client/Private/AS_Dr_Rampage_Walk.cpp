@@ -1,5 +1,5 @@
 #include "AS_Dr_Rampage_Walk.h"
-
+#include "AI_Controller.h"
 CAS_Dr_Rampage_Walk::CAS_Dr_Rampage_Walk()
 {
 }
@@ -15,9 +15,13 @@ void CAS_Dr_Rampage_Walk::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAS_Dr_Rampage_Walk::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
+    if(m_pMonData->pOwner->Check_Ranage("WalkRange"))
+        m_pMonData->isLockOn = true;
+
     if (m_eState == WALK)
     {
-        m_pMonData->pOwner->Move_F();
+        m_pMonData->pOwner->LockOnLerp(fTimeDelta);
+        pOwner->Get_Transform()->Go_Straight(1.5f * fTimeDelta);
     }
 }
 
