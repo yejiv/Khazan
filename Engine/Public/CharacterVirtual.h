@@ -129,6 +129,8 @@ public:
 public:
 	_bool Get_isGround();
 
+	void Teleport(_vector vPos, _vector qRot, CTransform* pTransform);
+
 public:
     void Fake_Release();
 

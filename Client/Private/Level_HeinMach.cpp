@@ -235,7 +235,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
    }
 
-   if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
+   /*if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
    {
        CYetuga* pYetuga = dynamic_cast<CYetuga*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Yetuga")));
        CSequence_Yetuga_CutScene* pSequence = CSequence_Yetuga_CutScene::Create(pYetuga);
@@ -246,7 +246,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
        tPlayDesc.fStartTime = 0.f;
 
        m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
-   }
+   }*/
 
 	return;
 }

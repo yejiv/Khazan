@@ -173,6 +173,17 @@ void CJolt_Manager::CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* 
     );
 }
 
+void CJolt_Manager::CharVir_RefreshContact(CharacterVirtual* pCharVir, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter)
+{
+    pCharVir->RefreshContacts(
+        m_pPhysics->GetDefaultBroadPhaseLayerFilter(iObjectLayer),
+        m_pPhysics->GetDefaultLayerFilter(iObjectLayer),
+        *pBodyFilter,
+        *pShapeFilter,
+        *m_pTempAlloc
+    );
+}
+
 CharacterVirtual* CJolt_Manager::Find_CharacterVirtual(CharacterID id)
 {
     auto iter = m_CharacterVirtuals.find(id);
