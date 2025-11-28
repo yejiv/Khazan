@@ -56,9 +56,12 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
             {
                 m_BNPop = e;
             });
-    }
 
-    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_NextLevelID(), TEXT("GhostKnight_static"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pTriggerCom->Collision_Active(false);
+    }
+    else
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_NextLevelID(), TEXT("GhostKnight_static"), m_pTransformCom->Get_State(STATE::POSITION));
+
     return S_OK;
 }
 
@@ -68,6 +71,14 @@ void CBladeNexus::Priority_Update(_float fTimeDelta)
     {
         if (false == m_BNPop.isPop)
             return;
+        else if (false == m_isPop)
+        {
+            m_isPop = true;
+
+            m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_NextLevelID(), TEXT("GhostKnight_static"), m_pTransformCom->Get_State(STATE::POSITION));
+
+            m_pTriggerCom->Collision_Active(true);
+        }
     }
 
     if (false == m_isCollision)
@@ -682,7 +693,9 @@ CGameObject* CBladeNexus::Clone(void* pArg)
 void CBladeNexus::Free()
 {
     m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iSubscribeEventID);
-    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), m_iPopEventID);
+
+    if (BLADENEXUS_ID::HEINMACH_YETUGA == static_cast<BLADENEXUS_ID>(m_iBladeNexus_ID))
+        m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), m_iPopEventID);
 
     __super::Free();
 

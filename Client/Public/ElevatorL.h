@@ -3,6 +3,8 @@
 #include "Client_Defines.h"
 #include "Prop_Interactive.h"
 
+// 회전중일때 사용하는 조명 태그 : ElevatorLight
+
 NS_BEGIN(Client)
 
 class CElevatorL final : public CProp_Interactive
@@ -67,6 +69,7 @@ public:
 
 private:
     class CBody* m_pBodyCom = { nullptr };
+    class CBody* m_pTriggerCom = { nullptr };
 
 private:
     EventHallElevator m_Event = {};
@@ -75,6 +78,10 @@ private:
 
     ANIM_STATE m_eAnimState = { ANIM_STATE::ALL };
     MOVE_STATE m_eMoveState = { MOVE_STATE::MID };
+
+    _bool m_isActiveElevator = { false };               // 엘리베이터 가동중인지 아닌지
+    _bool m_isAvailableSwitch = { false };              // 스위치의 애니메이션이 끝나서 상호 작용 가능해야 할 때 ( 스위치에서 다룰 것 )
+    _bool m_isSwitchPressed = { false };                // 스위치가 눌렸는지 안눌렸는지
 
     _bool m_isAnimChange = { false };
 
@@ -87,8 +94,6 @@ private:
 
     _bool m_isVerticalActive = { false };
     _float m_fVerticalTimeAcc = { 0.f };
-
-    _bool m_isMidToUpMove = { false };
 
     _uint m_iEventID = { 0 };
 
