@@ -50,16 +50,16 @@ void CInteraction_Icon::Priority_Update(_float fTimeDelta)
 
 void CInteraction_Icon::Update(_float fTimeDelta)
 {
-	if (m_isAnim)
-	{
-		m_vLocalPos.y = m_vLocalPos.y + fTimeDelta * 20.f;
-		m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - m_iWinSizeX * 0.5f, -m_vWorldPos.y + m_iWinSizeY * 0.5f, 0.f, 1.f));
-		m_fAlpha -= fTimeDelta *2.f;
-	}
 }
 
 void CInteraction_Icon::Late_Update(_float fTimeDelta)
 {
+    if (m_isAnim)
+    {
+        m_vLocalPos.y = m_vLocalPos.y + fTimeDelta * 20.f;
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - m_iWinSizeX * 0.5f, -m_vWorldPos.y + m_iWinSizeY * 0.5f, 0.f, 1.f));
+        m_fAlpha -= fTimeDelta * 2.f;
+    }
 	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
 }
 

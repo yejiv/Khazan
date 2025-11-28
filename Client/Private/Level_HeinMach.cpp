@@ -9,6 +9,8 @@
 #include "ClientInstance.h"
 #include "Khazan_Spear.h"
 #include "Sequence_HeinMach_Start.h"
+#include "Sequence_yetuga_CutScene.h"
+#include "Yetuga.h"
 
 #pragma region MAP OBJECT
 #include "MapObject_Header.h"
@@ -198,7 +200,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
 
-    /*if (m_eNextLevel != LEVEL::END)
+    if (m_eNextLevel != LEVEL::END)
     {      
         if (!m_isOpenLevel) {
             m_pGameInstance->StopAll();
@@ -206,22 +208,22 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
                 return;
             m_isOpenLevel = true;
         }
-    }*/
-
-    if (m_pGameInstance->Key_Down(DIK_RETURN))
-    {
-        if (!m_isOpenLevel) {
-            if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
-                return;
-            m_isOpenLevel = true;
-        }
-        
     }
+
+    //if (m_pGameInstance->Key_Down(DIK_RETURN))
+    //{
+    //    if (!m_isOpenLevel) {
+    //        if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EMBARS))))
+    //            return;
+    //        m_isOpenLevel = true;
+    //    }
+    //    
+    //}
 
 
 
    if (!m_isStart)
-    {
+   {
         m_isStart = true;
         CSequence_HeinMach_Start* pSequence = CSequence_HeinMach_Start::Create();
 
@@ -231,7 +233,20 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         tPlayDesc.fStartTime = 0.f;
 
         m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
-    }
+   }
+
+   if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
+   {
+       CYetuga* pYetuga = dynamic_cast<CYetuga*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Yetuga")));
+       CSequence_Yetuga_CutScene* pSequence = CSequence_Yetuga_CutScene::Create(pYetuga);
+
+       SEQ_REQ_PLAY_DESC tPlayDesc{};
+       tPlayDesc.tId.iSeq = 100010;
+       tPlayDesc.pAsset = L"Yetuga_CutScene";
+       tPlayDesc.fStartTime = 0.f;
+
+       m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
+   }
 
 	return;
 }
@@ -303,14 +318,15 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 HRESULT CLevel_HeinMach::Ready_Layer_Player(const _wstring& strLayerTag)
 {
-	//  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	//  ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
-	//  return E_FAIL;
 
-    // Test
-    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+	ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+	return E_FAIL;
+
+
+    /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
-        return E_FAIL;
+        return E_FAIL;*/
 
 	return S_OK;
 }
@@ -383,6 +399,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight_static"), 4);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight_static_connect"), 4);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"), 100);
 
     // [GS] 
 
@@ -697,7 +714,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
             MonsterDesc.strName = MonsterData.MonsterKey[i];
             MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
 
-            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Yetuga"),
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }

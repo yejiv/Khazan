@@ -161,18 +161,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 }
 
 void CKhazan_Spear::Priority_Update(_float fTimeDelta)
-{/*
-    if (m_pGameInstance->Key_Down(DIK_8))
-        m_pTalkUI->On_Panel();
-    
-    if (m_pGameInstance->Key_Down(DIK_J))
-        m_pDanginTalkUI->On_Panel();
-
-    if (m_pGameInstance->Key_Down(DIK_K))
-        m_pTraderTalkUI->On_Panel();*/
-
-    //m_pTalkUI->Priority_Update(fTimeDelta);
-    __super::Priority_Update(fTimeDelta);
+{    __super::Priority_Update(fTimeDelta);
 
     if (m_pGameInstance->Key_Down(DIK_P))
     {
@@ -192,10 +181,6 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 
 void CKhazan_Spear::Update(_float fTimeDelta)
 {
-   /* m_pTalkUI->Update(fTimeDelta);
-    m_pDanginTalkUI->Update(fTimeDelta);
-    m_pTraderTalkUI->Update(fTimeDelta);*/
-
     if (m_isEnableControl)
     {
         m_fTimeAcc += fTimeDelta;
@@ -280,13 +265,6 @@ void CKhazan_Spear::Update(_float fTimeDelta)
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
 {
-   /* m_pTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
-    m_pDanginTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
-    m_pTraderTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));*/
-
-   /* m_pTalkUI->Late_Update(fTimeDelta);
-    m_pDanginTalkUI->Late_Update(fTimeDelta);
-    m_pTraderTalkUI->Late_Update(fTimeDelta);*/
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 

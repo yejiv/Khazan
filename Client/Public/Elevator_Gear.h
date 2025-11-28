@@ -21,7 +21,7 @@ public:
         LEVEL eLevel{ LEVEL::END };
 
         _float fOffsetRotation{};
-        _bool* pActive{ nullptr };
+        _bool* pActiveElevator{ nullptr };
 
     }ELEVATOR_GEAR_DESC;
 
@@ -45,7 +45,7 @@ private:
     ANIM_STATE m_eAnimState = ANIM_STATE::END;
 
     _float m_fOffsetRotation = {};
-    _bool* m_pActive = { nullptr };
+    _bool* m_pActiveElevator = { nullptr };
 
 private:
     HRESULT Ready_Components(void* pArg);

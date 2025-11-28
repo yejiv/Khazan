@@ -4,7 +4,7 @@
 
 NS_BEGIN(Client)
 
-enum class  P2CUTSCENE_STATE { DOWN = 73, PICKUP = 74, INJURE = 75, HEMPTYSIS = 76, CONGESTION = 4, HANDDN = 5, END };
+enum class  P2CUTSCENE_STATE { DOWN = 73, PICKUP = 74, INJURE = 75, HEMPTYSIS = 76, CONGESTION = 3, HANDDN = 4, END };
 
 class CAS_CutScene_2Phase_Viper final : public CAI_State
 {
