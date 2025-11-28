@@ -329,6 +329,7 @@
     <ClInclude Include="..\Public\Sequence_Embars_Puzzle_Second.h" />
     <ClInclude Include="..\Public\Sequence_Embars_Puzzle_Third.h" />
     <ClInclude Include="..\Public\Sequence_Viper_SecondPhase.h" />
+    <ClInclude Include="..\Public\Sequence_Yetuga_CutScene.h" />
     <ClInclude Include="..\public\Skill_BG_Smoke.h" />
     <ClInclude Include="..\public\Skill_Slot_Flag.h" />
     <ClInclude Include="..\Public\Slate_Switch.h" />
@@ -719,6 +720,7 @@
     <ClCompile Include="..\Private\Sequence_Embars_Puzzle_Second.cpp" />
     <ClCompile Include="..\Private\Sequence_Embars_Puzzle_Third.cpp" />
     <ClCompile Include="..\Private\Sequence_Viper_SecondPhase.cpp" />
+    <ClCompile Include="..\Private\Sequence_Yetuga_CutScene.cpp" />
     <ClCompile Include="..\private\Skill_BG_Smoke.cpp" />
     <ClCompile Include="..\private\Skill_Slot_Flag.cpp" />
     <ClCompile Include="..\Private\Slate_Switch.cpp" />

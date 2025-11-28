@@ -1240,6 +1240,9 @@
     <Filter Include="02.GameObject\Creature\Monster\Viper\Body\Phase2">
       <UniqueIdentifier>{0625b37c-3910-4e34-a359-5626f29af45b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.Sequence\HeinMach\Yetuga\CutScene">
+      <UniqueIdentifier>{1bffd182-9a09-49c3-bb28-36325e0076c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2394,6 +2397,9 @@
     <ClInclude Include="..\Public\Body_Cinematic_Viper.h">
       <Filter>02.GameObject\Creature\Monster\Viper\Body\Cinematic</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Yetuga_CutScene.h">
+      <Filter>04.Sequence\HeinMach\Yetuga\CutScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3527,6 +3533,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Body_Cinematic_Viper.cpp">
       <Filter>02.GameObject\Creature\Monster\Viper\Body\Cinematic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Yetuga_CutScene.cpp">
+      <Filter>04.Sequence\HeinMach\Yetuga\CutScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

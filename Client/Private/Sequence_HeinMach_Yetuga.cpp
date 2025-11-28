@@ -43,13 +43,6 @@ void CSequence_HeinMach_Yetuga::Update(_float fTimeDelta)
 		m_isPlayerMove = true;
 	}
 
-	if (m_fTime > 3.f && !m_isFadeIn)
-	{
-		CClientInstance::GetInstance()->Fade_In();
-
-		m_isFadeIn = true;
-	}
-
 	if (m_fTime >= 5.f)
 	{
 		m_isEnd = true;
