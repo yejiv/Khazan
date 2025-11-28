@@ -63,8 +63,6 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Initialize_Equipment()))
         return E_FAIL;
 
-
-
     if (FAILED(Ready_AnimationEvent()))
         return E_FAIL;
 
@@ -815,10 +813,6 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
 
         m_AllParts[info.strPartName] = pModel;
     }
-
-
-    if (FAILED(Initialize_Equipment()))
-        return E_FAIL;
 
     CMeshTrail::TRAIL_DESC MeshDsc;
     MeshDsc.iTextureIdx = 9;

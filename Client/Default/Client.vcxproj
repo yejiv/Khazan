@@ -564,6 +564,8 @@
     <ClInclude Include="..\public\AS_Dr_Rampage_Page2.h" />
     <ClInclude Include="..\public\AS_Dr_Rampage_Turn.h" />
     <ClInclude Include="..\Public\Sequence_Yetuga_CutScene.h" />
+    <ClInclude Include="..\public\SkipButton.h" />
+    <ClInclude Include="..\public\SkipButton_Progress.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\AI_Controller_Dragonian_Melee.cpp" />
@@ -956,6 +958,8 @@
     <ClCompile Include="..\private\AS_Dr_Rampage_Page2.cpp" />
     <ClCompile Include="..\private\AS_Dr_Rampage_Turn.cpp" />
     <ClCompile Include="..\Private\Sequence_Yetuga_CutScene.cpp" />
+    <ClCompile Include="..\private\SkipButton.cpp" />
+    <ClCompile Include="..\private\SkipButton_Progress.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
