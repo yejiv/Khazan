@@ -31,12 +31,13 @@ void CAS_P2_LockOn_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     _float fDotF = XMVectorGetX(XMVector3Dot(vDir, vLook));
     _float fDotR = XMVectorGetX(XMVector3Dot(vDir, vRight));
 
-    // 방향 계산
-    //if (fDotF > 0.7f)
-    //{
-    //    m_eDirState = DIRECTION::F;
-    //    pModel->Set_Animation(37); 
-    //}
+    //방향 계산
+    if (fDotF > 0.7f)
+    {
+        m_eDirState = DIRECTION::F;
+        m_fMoveSpeed = 0.5f;
+        pModel->Set_Animation(37); 
+    }
     if (fDotF < -0.7f)
     {
         m_eDirState = DIRECTION::B;
@@ -71,11 +72,11 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
     CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
 
-    _vector vTarget = pTargetTransform->Get_State(STATE::POSITION);
-    _vector vOwner = pOwnerTransform->Get_State(STATE::POSITION);
+    _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+    _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
 
     // 타겟 바라보기
-    pOwnerTransform->LookAt_Lerp(vTarget, fTimeDelta, 0.18f);
+    pOwnerTransform->LookAt_Lerp(vTargetPos, fTimeDelta, 0.18f);
 
     // 방향에 따른 이동
     switch (m_eDirState)
@@ -95,7 +96,7 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     }
 
     // 탈출 조건: Look 방향이 타겟 방향과 맞음
-    _vector vDir = XMVector3Normalize(vTarget - vOwner);
+    _vector vDir = XMVector3Normalize(vTargetPos - vOwnerPos);
     vDir.m128_f32[1] = 0.f;
     _vector vLook = XMVector3Normalize(pOwnerTransform->Get_State(STATE::LOOK));
 
@@ -104,8 +105,7 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     if (fDotF > m_fDotThreshold)
     {
         pBB->Set_Value(pViper->Get_Name(), "isP2_LockOn_Finished", true);
-        pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pOwner);
-        return;
+        //pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pOwner);
     }
     pModel->Play_Animation(fTimeDelta);
 
