@@ -1,4 +1,7 @@
 #include "FSM_Viper.h"
+
+#pragma region PHASE1.h
+
 #include "AS_Idle_Viper.h"
 #include "AS_Walk_Viper.h"
 #include "AS_Run_Viper.h"
@@ -20,18 +23,41 @@
 #include "AS_CutScene_Start_Viper.h"
 #include "AS_CutScene_2Phase_Viper.h"
 
+#pragma endregion
+
+#pragma region PHASE2.h
+#include "AS_P2_Run_Viper.h"
+#include "AS_P2_HandStomp_Viper.h"
+#include "AS_P2_HandStompStr_Viper.h"
+#include "AS_P2_HandSwing2Hit_Viper.h"
+#include "AS_P2_HandUpper_Viper.h"
+#include "AS_P2_SlashDobule_Viper.h"
+#include "AS_P2_SlashStomp_Viper.h"
+#include "AS_P2_HandSwing3Hit.h"
+#include "AS_P2_FakeRunAttack_Viper.h"
+#include "AS_P2_DashUpper_Viper.h"
+#include "AS_P2_DashUpperStr_Viper.h"
+#include "AS_P2_BackJump_Viper.h"
+#include "AS_P2_SideMove_Viper.h"
+#include "AS_P2_JumpAttack_Viper.h"
+#pragma endregion
+
+
 CFSM_Viper::CFSM_Viper()
 {
+
 }
 
 HRESULT CFSM_Viper::Initialize()
 {
+#pragma region PHASE1
 
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), CAS_CutScene_Start_Viper::Create())))
         return E_FAIL;
 
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), CAS_Idle_Viper::Create())))
         return E_FAIL;
+
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::WALK), CAS_Walk_Viper::Create())))
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::RUN), CAS_Run_Viper::Create())))
@@ -68,12 +94,50 @@ HRESULT CFSM_Viper::Initialize()
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::STINGGRAB), CAS_StingGrab_Viper::Create())))
         return E_FAIL;
 
+#pragma endregion
 
+
+#pragma region PHASE2
+
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_RUN), CAS_P2_Run_Viper::Create())))
+        return E_FAIL;
+
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDSTOMP), CAS_P2_HandStomp_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDSTOMPSTR), CAS_P2_HandStompStr_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDSWING2HIT), CAS_P2_HandSwing2Hit_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDUPPER), CAS_P2_HandUpper_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_SLASHDOUBLE), CAS_P2_SlashDobule_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_SLASHSTOMP), CAS_P2_SlashStomp_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDSWING3HIT), CAS_P2_HandSwing3Hit::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_FAKERUNATTACK), CAS_P2_FakeRunAttack_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHUPPER), CAS_P2_DashUpper_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASTUPPERSTR), CAS_P2_DashUpperStr_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_BACKJUMP), CAS_P2_BackJump_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_SIDEMOVE), CAS_P2_SideMove_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_JUMPATTACK), CAS_P2_JumpAttack_Viper::Create())))
+        return E_FAIL;
+
+
+#pragma endregion
+
+
+  
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::GROGGY), CAS_Groggy_Viper::Create())))
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::HIT), CAS_Hit_Viper::Create())))
         return E_FAIL;
-
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), CAS_CutScene_2Phase_Viper::Create())))
         return E_FAIL;
 

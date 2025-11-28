@@ -13,9 +13,12 @@ private:
 public:
 	class CBody_Yetuga*				Get_Body() const { return m_pBody; }
 	virtual _float4*				Get_LockOnPosition();
-
     void                            Yetuga_Jump(_fvector vGoalPos, _float fHeight, _float fSpeed );
     void                            Yetuga_Land(_fvector vGoalPosition, _float fSpeed);
+    class CAS_CutScene_Yetuga*      Get_Yetuga_CutSceneState();
+
+
+
 
 public:
 	virtual HRESULT					Initialize_Prototype() override;

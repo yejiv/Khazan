@@ -16,13 +16,6 @@ void CAS_StingGrab_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* BB = pViper->Get_Controller()->Get_BlackBoard();
 
-    CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
-    CTransform* pTargetTransform = static_cast<CTransform*>(BB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target")->Get_Component(TEXT("Com_Transform")));
-    _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
-
-    pTransform->LookAt(vTargetLoc);
-
-
     pModel->Set_Animation(58);
     m_eState = VIPERGRAB_STATE::NONE;
 

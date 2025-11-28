@@ -81,5 +81,4 @@ public:
 	static CLevel_Embars* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;
 };
-
 NS_END

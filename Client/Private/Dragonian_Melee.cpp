@@ -105,6 +105,9 @@ HRESULT CDragonian_Melee::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_PartObjects(),E_FAIL);
     m_pHeadMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Head");
 
+    m_pLockOnSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("FX_Body_ExpGained");
+    m_vLockOnPosition = &m_vLockOnPos;
+
     CHECK_FAILED(Ready_AnimEvent(),E_FAIL);
     CHECK_FAILED(Ready_Components(),E_FAIL);
     
@@ -147,6 +150,10 @@ void CDragonian_Melee::Update(_float fTimeDelta)
     __super::Update(fTimeDelta);
     Update_UIHp();
     Update_WalkSpeed();
+
+    _float4x4 LockOnMatrix{};
+    XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
+    m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
 }
 
 void CDragonian_Melee::Late_Update(_float fTimeDelta)

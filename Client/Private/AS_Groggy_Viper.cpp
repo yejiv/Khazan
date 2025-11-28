@@ -24,7 +24,7 @@ void CAS_Groggy_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_vBonePosition = pViper->Get_LockOnPosition();
 
     m_eState = GROGGY::START;
-    pModel->Set_Animation(95);
+    pModel->Set_Animation(33);
 
 }
 
@@ -39,7 +39,7 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
         if (pModel->Play_Animation(fTimeDelta))
         {
             m_eState = GROGGY::LOOP;
-            pModel->Set_Animation(94);
+            pModel->Set_Animation(32);
             m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
             if (nullptr == m_pBrutalAttack)
                 return;
@@ -58,7 +58,7 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
         if (m_fCurrentTime >= m_fGroggyTime)
         {
             m_eState = GROGGY::RECOVERY;
-            pModel->Set_Animation(93);
+            pModel->Set_Animation(31);
 
             if (m_isBrutalAttackSuccess)
             {
