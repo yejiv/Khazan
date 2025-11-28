@@ -9,6 +9,7 @@
 #include "TwinBlade_Viper.h"
 #include "Body_Cinematic_Viper.h"
 #include "Core_Viper.h"
+#include "Body_Phase2_Viper.h"
 
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -26,6 +27,12 @@ _float4* CViper::Get_LockOnPosition()
     return m_vLockOnPosition;
 }
 
+void CViper::Set_PhaseWeapon_Cinematic()
+{
+    m_pWeapon->Set_IsActive(false);
+    m_pCore->Set_IsActive(true);
+}
+
 HRESULT CViper::Initialize_Prototype()
 {
     return S_OK;
@@ -39,9 +46,6 @@ HRESULT CViper::Initialize_Clone(void* pArg)
 
      if (FAILED(Ready_Components()))
         return E_FAIL;
-
-    //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
-    //m_pCharVirCom->Set_Position(XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
 
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
@@ -60,10 +64,9 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     if (nullptr != m_pController)
     {
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
-        //m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "Phase", ENUM_CLASS(PHASE::PHASE1));
     }
 
-    m_ePhase = PHASE::PHASE1;
+    m_ePhase = PHASE::PHASE2;
 
     m_fRecoveryPerSec = 5.f;
 
@@ -73,7 +76,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
 
 void CViper::Priority_Update(_float fTimeDelta)
 {
-  /*  CBlackBoard* pBB = m_pController->Get_BlackBoard();
+    CBlackBoard* pBB = m_pController->Get_BlackBoard();
     if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
     {
         CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
@@ -86,7 +89,7 @@ void CViper::Priority_Update(_float fTimeDelta)
 
 
         CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
-    }*/
+    }
 
     CContainerObject::Priority_Update(fTimeDelta);
 }
@@ -108,7 +111,9 @@ void CViper::Update(_float fTimeDelta)
     }
 
     if (m_pGameInstance->Key_Down(DIK_U))
+    {
         m_ePhase = PHASE::CINEMATIC;
+    }
 
 
     __super::Update(fTimeDelta);
@@ -334,8 +339,20 @@ HRESULT CViper::Ready_PartObjects()
 
 
 
+    CBody_Phase2_Viper::BODY_DESC Phase2BodyDesc{};
+    Phase2BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    Phase2BodyDesc.pOwnerTransform = m_pTransformCom;
+    Phase2BodyDesc.pOwner = this;
 
+    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body_Phase2"), ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Body_Phase2_Viper"), &Phase2BodyDesc)))
+        return E_FAIL;
 
+    CPartObject* pPhase2Body = Find_PartObject(TEXT("Part_Body_Phase2"));
+    if (nullptr == pPhase2Body)
+        return E_FAIL;
+
+    m_pPahse2Body = dynamic_cast<CBody_Phase2_Viper*>(pPhase2Body);
+    Safe_AddRef(m_pPahse2Body);
 
 
     return S_OK;
@@ -651,28 +668,34 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("P1_JumpStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            //m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_JumpStart", true);
             CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            m_pCharVirCom->Jump(70.f,10.f);
+            m_pCharVirCom->Jump(50.f,7.f);
         });
 
 
     pModel->Register_Event("P1_JumpStop", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.3f, 0.5f, 2.f);
-
+            m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 1.f, 0.1f, 0.25f);
         });
 
 
     pModel->Register_Event("P1_Landing", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_LandStart", true);
+            CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            m_pCharVirCom->Start_Dive(vTargetPos,80.f);
+
+            m_pWeapon->Set_OnAttackCollision(true);
+
+
         });
+
 
     pModel->Register_Event("P1_Landing", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_LandStart", false);
+            m_pWeapon->Set_OnAttackCollision(false);
+
         });
 
 
@@ -710,34 +733,12 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("StingGrab_Hold", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
         {
+            m_isLookAt = false;
             Grab_Check_Begin();
         });
 
-    pModel->Register_Event("StingGrab_Hold", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-        {
-           // 플레이어 날리기
-        });
-
-
 #pragma endregion
 
-#pragma region THROWMAINTAIN
-    
-
-    pModel->Register_Event("ThrowMainTain", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-        {
-           
-        });
-
-
-    pModel->Register_Event("ThrowMainTain", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-        {
-            
-        });
-
-
-#pragma endregion
-  
 #pragma region 5HITCombo
 
 
@@ -747,8 +748,6 @@ HRESULT CViper::Ready_AnimEvent()
             m_pWeapon->Set_OnAttackCollision(true);
             _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
             m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
-
-            
         });
 
     pModel->Register_Event("5Hit_Slash_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -817,8 +816,26 @@ HRESULT CViper::Ready_AnimEvent()
  
 #pragma endregion
 
+#pragma region LOOKING_CORE
+
+    pModel->Register_Event("Looking_Core", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            CTransform* pCoreTransform = static_cast<CTransform*>(m_pCore->Get_Component(TEXT("Com_Transform")));
+            m_pCore->Set_IsActive(true);
+            pCoreTransform->Rotation(XMConvertToRadians(-90.f), XMConvertToRadians(180.f), XMConvertToRadians(-90.f));
+        });
+
+    pModel->Register_Event("Remove_Core", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pCore->Set_IsActive(false);
+        });
 
 
+#pragma endregion
+
+#pragma region REMOVE_CORE
+
+#pragma endregion
     return S_OK;
 
 }
@@ -851,5 +868,6 @@ void CViper::Free()
     Safe_Release(m_pCinematicBody);
     Safe_Release(m_pWeapon);
     Safe_Release(m_pCore);
+    Safe_Release(m_pPahse2Body);
     __super::Free();
 }

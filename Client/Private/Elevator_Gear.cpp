@@ -26,7 +26,7 @@ HRESULT CElevator_Gear::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
-    m_pActive = pDesc->pActive;
+    m_pActiveElevator = pDesc->pActiveElevator;
 
     m_fOffsetRotation = pDesc->fOffsetRotation;
     m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fOffsetRotation);
@@ -46,7 +46,7 @@ void CElevator_Gear::Priority_Update(_float fTimeDelta)
 
 void CElevator_Gear::Update(_float fTimeDelta)
 {
-    if (true == *m_pActive)
+    if (true == *m_pActiveElevator)
     {
         if (ANIM_STATE::LOOP != m_eAnimState)
         {
