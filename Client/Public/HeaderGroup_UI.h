@@ -54,7 +54,7 @@
 #include "UI_Slot_Selete_Fx.h"
 
 #include "Store_Slot.h"
-
+#include "SkipButton.h"
 //HUD  관련
 #include "BossHp.h"
 #include "Amount.h"

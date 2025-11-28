@@ -121,10 +121,6 @@ void CInteraction_Guide::Reset()
 
 HRESULT CInteraction_Guide::Ready_Prototype()
 {
-	if (FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_Tex_Guide_Circle"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/Guide_Circle.png"), 1))))
-		return E_FAIL;
-
 	if (FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_Tex_Guide_Press"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/Guide_Press.png"), 1))))
 		return E_FAIL;

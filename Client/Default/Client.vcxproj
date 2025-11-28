@@ -332,6 +332,8 @@
     <ClInclude Include="..\Public\Sequence_Viper_SecondPhase.h" />
     <ClInclude Include="..\public\Skill_BG_Smoke.h" />
     <ClInclude Include="..\public\Skill_Slot_Flag.h" />
+    <ClInclude Include="..\public\SkipButton.h" />
+    <ClInclude Include="..\public\SkipButton_Progress.h" />
     <ClInclude Include="..\Public\Slate_Switch.h" />
     <ClInclude Include="..\Public\Statue.h" />
     <ClInclude Include="..\Public\Statue_Deco.h" />
@@ -723,6 +725,8 @@
     <ClCompile Include="..\Private\Sequence_Viper_SecondPhase.cpp" />
     <ClCompile Include="..\private\Skill_BG_Smoke.cpp" />
     <ClCompile Include="..\private\Skill_Slot_Flag.cpp" />
+    <ClCompile Include="..\private\SkipButton.cpp" />
+    <ClCompile Include="..\private\SkipButton_Progress.cpp" />
     <ClCompile Include="..\Private\Slate_Switch.cpp" />
     <ClCompile Include="..\Private\Statue.cpp" />
     <ClCompile Include="..\Private\Statue_Deco.cpp" />

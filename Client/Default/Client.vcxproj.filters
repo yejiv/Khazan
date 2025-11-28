@@ -1243,6 +1243,12 @@
     <Filter Include="92.AI\State\Dragonian_Rampage\Page_2">
       <UniqueIdentifier>{96765157-c7f0-4431-a78c-7b22b7670c33}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\SkipButton">
+      <UniqueIdentifier>{f7cce5d5-01f2-4e50-9e86-2c023488c0d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\SkipButton\Progress">
+      <UniqueIdentifier>{4aaa16c6-e9bf-47eb-961c-04a530227871}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2400,6 +2406,12 @@
     <ClInclude Include="..\public\AS_Dr_Rampage_Page2.h">
       <Filter>92.AI\State\Dragonian_Rampage\Page_2</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\SkipButton.h">
+      <Filter>02.GameObject\UI\SkipButton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\SkipButton_Progress.h">
+      <Filter>02.GameObject\UI\SkipButton\Progress</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3536,6 +3548,12 @@
     </ClCompile>
     <ClCompile Include="..\private\AS_Dr_Rampage_Page2.cpp">
       <Filter>92.AI\State\Dragonian_Rampage\Page_2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SkipButton.cpp">
+      <Filter>02.GameObject\UI\SkipButton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SkipButton_Progress.cpp">
+      <Filter>02.GameObject\UI\SkipButton\Progress</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
