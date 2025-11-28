@@ -91,16 +91,6 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
     VTXINSTANCE_PARTICLE Particle = g_OutputData[iIndex];
     VTXINSTANCE_DYNAMIC_DATA SpeedData = g_SpeedData[iIndex];
 	 
-    //Scale -> 이건 곱해줘야됨 1.f 이 스케일 그대로!
-    
-    //Particle.vRight.x += SpeedData.fSpeed.w * g_fTimeDelta;
-    //Particle.vUp.y += SpeedData.fSpeed.w * g_fTimeDelta;
-    //Particle.vLook.z += SpeedData.fSpeed.w * g_fTimeDelta;
-    
-    //Particle.vRight.x = Particle.vRight.x + 4.f * g_fTimeDelta;
-    //Particle.vUp.y = Particle.vUp.y + 4.f * g_fTimeDelta;
-    //Particle.vLook.z = Particle.vLook.z + 4.f * g_fTimeDelta;
-    
     Particle.vRight.x += g_InputData[iIndex].vRight.x * SpeedData.fSpeed.w * g_fTimeDelta;
     Particle.vUp.y += g_InputData[iIndex].vUp.y * SpeedData.fSpeed.w * g_fTimeDelta;
     Particle.vLook.z += g_InputData[iIndex].vLook.z * SpeedData.fSpeed.w * g_fTimeDelta;

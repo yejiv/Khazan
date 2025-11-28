@@ -416,6 +416,13 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Giant_Roar"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("DarkShadow_Land_1"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("DarkShadow_Land_2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Body_Wind"), 4);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("particle"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("particle2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Inner_Range_Ground"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Dawn_BloodTrail1"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Dawn_BloodTrail2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GS_StrongATK"), 2);
 
     return S_OK;
 }
