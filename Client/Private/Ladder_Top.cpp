@@ -28,6 +28,8 @@ HRESULT CLadder_Top::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, pDesc->fOffSetHeight, 0.f, 1.f));
 
+    m_pModelCom->Update_BoneCombinedMatrices();
+
     return S_OK;
 }
 

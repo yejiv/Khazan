@@ -41,16 +41,30 @@ HRESULT CLadder::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
+    m_iEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
+        {
+            m_Event = e;
+        });
+
     return S_OK;
 }
 
 void CLadder::Priority_Update(_float fTimeDelta)
 {
+    if (false == m_isCollision)
+    {
+        m_Event.None();
+    }
+
     __super::Priority_Update(fTimeDelta);
 }
 
 void CLadder::Update(_float fTimeDelta)
 {
+    Input_Interact_Event(fTimeDelta);
+
+    Event_Update(fTimeDelta);
+
     __super::Update(fTimeDelta);
 }
 
@@ -75,23 +89,32 @@ void CLadder::Set_GuideMatrix(_float4 vGuidePos)
 
 void CLadder::Set_PlayerPosition()
 {
+    if (true == m_isPlayerOnLadder)
+        return;
+
     switch (m_eLadderPoint)
     {
     case LADDER_POINT::UP_POS_CH:
+        m_eLadderStart = EventLadder::LADDER_ACTION::UPTODOWN;
         m_vPlayerPosition = m_vUpPlayerPos;
         Set_GuideMatrix(m_vPlayerPosition);
         m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, &m_matGuide,
             _float2(0.f, 10.f), TEXT("타기"), 1.5f);
+        m_pGuide->Update_Visible(true);
         break;
     case LADDER_POINT::DOWN_POS_CH:
+        m_eLadderStart = EventLadder::LADDER_ACTION::DOWNTOUP;
         m_vPlayerPosition = m_vDownPlayerPos;
         Set_GuideMatrix(m_vPlayerPosition);
         m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, &m_matGuide,
             _float2(0.f, 10.f), TEXT("타기"), 1.5f);
+        m_pGuide->Update_Visible(true);
         break;
     case LADDER_POINT::CLIMB_UP:
+        m_eLadderStart = EventLadder::LADDER_ACTION::UPEND;
         break;
     case LADDER_POINT::CLIMB_DOWN:
+        m_eLadderStart = EventLadder::LADDER_ACTION::DOWNEND;
         break;
     }
 
@@ -188,128 +211,160 @@ HRESULT CLadder::Ready_PartObjects(void* pArg)
 
 HRESULT CLadder::Ready_Collision(void* pArg)
 {
-    LADDER_POINT eLadderPoint = { LADDER_POINT::END };
-
-#pragma region 트리거 영역
-    CBody::BODY_BOXSHAPE_DESC TriggerDesc{};
-    TriggerDesc.bIsTrigger = true;
-    TriggerDesc.bStartActive = true;
-    TriggerDesc.eMotion = EMotionType::Kinematic;
-    TriggerDesc.eQuality = EMotionQuality::LinearCast;
-    TriggerDesc.eShapeType = SHAPE::BOX;
-    TriggerDesc.fFriction = 0.8f;
-    TriggerDesc.fMass = 1.0f;
-    TriggerDesc.fRestitution = 0.0f;
-    TriggerDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT);
-
 #pragma region 위쪽 플레이어 보정 트리거
-    TriggerDesc.vExtent = _float3(0.5f, 0.5f, 0.5f);
 
-    _float4x4* pBoneMatrix = static_cast<CModel*>(m_pLadderTop->Get_Component(TEXT("Com_Model")))->Get_LocalBoneMatrix("IA_BeginLoc_Climb_Down");
+    CBody::BODY_BOXSHAPE_DESC TriggerUpPosDesc{};
+    TriggerUpPosDesc.bIsTrigger = true;
+    TriggerUpPosDesc.bStartActive = true;
+    TriggerUpPosDesc.eMotion = EMotionType::Kinematic;
+    TriggerUpPosDesc.eQuality = EMotionQuality::LinearCast;
+    TriggerUpPosDesc.eShapeType = SHAPE::BOX;
+    TriggerUpPosDesc.fFriction = 0.8f;
+    TriggerUpPosDesc.fMass = 1.0f;
+    TriggerUpPosDesc.fRestitution = 0.0f;
+    TriggerUpPosDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT);
+
+    TriggerUpPosDesc.vExtent = _float3(0.5f, 0.5f, 0.5f);
+
+    _float4x4* pBoneMatrix = static_cast<CModel*>(m_pLadderTop->Get_Component(TEXT("Com_Model")))->Get_BoneMatrix("IA_BeginLoc_Climb_Down");
     CHECK_NULLPTR(pBoneMatrix, E_FAIL);
 
     _matrix PartMatrix = static_cast<CTransform*>(m_pLadderTop->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrix();
     _matrix BoneWorldMatrix = XMLoadFloat4x4(pBoneMatrix) * PartMatrix * m_pTransformCom->Get_WorldMatrix();
 
-    XMStoreFloat3(&TriggerDesc.vPos, BoneWorldMatrix.r[3]);
-    TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
+    XMStoreFloat3(&TriggerUpPosDesc.vPos, BoneWorldMatrix.r[3]);
+    TriggerUpPosDesc.vPos.y += TriggerUpPosDesc.vExtent.y;
 
     XMStoreFloat4(&m_vUpPlayerPos, BoneWorldMatrix.r[3]);
 
-    XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+    XMStoreFloat4(&TriggerUpPosDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
-    TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    eLadderPoint = LADDER_POINT::UP_POS_CH;
-    m_tCollisionDesc.pInfo = &eLadderPoint;
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    TriggerUpPosDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::UP_POS_CH)].pGameObject = this;
+    m_eLadderPoints[ENUM_CLASS(LADDER_POINT::UP_POS_CH)] = LADDER_POINT::UP_POS_CH;
+    m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::UP_POS_CH)].pInfo = &m_eLadderPoints[ENUM_CLASS(LADDER_POINT::UP_POS_CH)];
+    TriggerUpPosDesc.pCollisionDesc = &m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::UP_POS_CH)];
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-        TEXT("Com_Trigger_Up"), reinterpret_cast<CComponent**>(&m_pTriggerCom[ENUM_CLASS(eLadderPoint)]), &TriggerDesc)))
+        TEXT("Com_Trigger_Up"), reinterpret_cast<CComponent**>(&m_pTriggerCom[ENUM_CLASS(LADDER_POINT::UP_POS_CH)]), &TriggerUpPosDesc)))
         return E_FAIL;
 
 #pragma endregion
 
 #pragma region 위쪽으로 플레이어 다 올랐을때의 트리거
-    TriggerDesc.vExtent = _float3(0.5f, 0.5f, 0.5f);
 
-    pBoneMatrix = static_cast<CModel*>(m_pLadderTop->Get_Component(TEXT("Com_Model")))->Get_LocalBoneMatrix("ClimbEndLoc_Top");
+    CBody::BODY_BOXSHAPE_DESC TriggerCUDesc{};
+    TriggerCUDesc.bIsTrigger = true;
+    TriggerCUDesc.bStartActive = true;
+    TriggerCUDesc.eMotion = EMotionType::Kinematic;
+    TriggerCUDesc.eQuality = EMotionQuality::LinearCast;
+    TriggerCUDesc.eShapeType = SHAPE::BOX;
+    TriggerCUDesc.fFriction = 0.8f;
+    TriggerCUDesc.fMass = 1.0f;
+    TriggerCUDesc.fRestitution = 0.0f;
+    TriggerCUDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT);
+
+    TriggerCUDesc.vExtent = _float3(1.5f, 0.25f, 1.5f);
+
+    pBoneMatrix = static_cast<CModel*>(m_pLadderTop->Get_Component(TEXT("Com_Model")))->Get_BoneMatrix("ClimbEndLoc_Top");
     CHECK_NULLPTR(pBoneMatrix, E_FAIL);
 
     PartMatrix = static_cast<CTransform*>(m_pLadderTop->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrix();
     BoneWorldMatrix = XMLoadFloat4x4(pBoneMatrix) * PartMatrix * m_pTransformCom->Get_WorldMatrix();
 
-    XMStoreFloat3(&TriggerDesc.vPos, BoneWorldMatrix.r[3]);
+    XMStoreFloat3(&TriggerCUDesc.vPos, BoneWorldMatrix.r[3]);
 
     XMStoreFloat4(&m_vClimbUpPos, BoneWorldMatrix.r[3]);
 
-    XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+    XMStoreFloat4(&TriggerCUDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
-    TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    eLadderPoint = LADDER_POINT::CLIMB_UP;
-    m_tCollisionDesc.pInfo = &eLadderPoint;
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    TriggerCUDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::CLIMB_UP)].pGameObject = this;
+    m_eLadderPoints[ENUM_CLASS(LADDER_POINT::CLIMB_UP)] = LADDER_POINT::CLIMB_UP;
+    m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::CLIMB_UP)].pInfo = &m_eLadderPoints[ENUM_CLASS(LADDER_POINT::CLIMB_UP)];
+    TriggerCUDesc.pCollisionDesc = &m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::CLIMB_UP)];
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-        TEXT("Com_Trigger_Climb_Up"), reinterpret_cast<CComponent**>(&m_pTriggerCom[ENUM_CLASS(eLadderPoint)]), &TriggerDesc)))
+        TEXT("Com_Trigger_Climb_Up"), reinterpret_cast<CComponent**>(&m_pTriggerCom[ENUM_CLASS(LADDER_POINT::CLIMB_UP)]), &TriggerCUDesc)))
         return E_FAIL;
 
 #pragma endregion
 
 #pragma region 아래쪽 플레이어 보정 트리거
-    TriggerDesc.vExtent = _float3(1.5f, 0.25f, 1.5f);
-    pBoneMatrix = static_cast<CModel*>(m_pLadderBot->Get_Component(TEXT("Com_Model")))->Get_LocalBoneMatrix("IA_BeginLoc_Climb_Up");
+
+    CBody::BODY_BOXSHAPE_DESC TriggerDownPosDesc{};
+    TriggerDownPosDesc.bIsTrigger = true;
+    TriggerDownPosDesc.bStartActive = true;
+    TriggerDownPosDesc.eMotion = EMotionType::Kinematic;
+    TriggerDownPosDesc.eQuality = EMotionQuality::LinearCast;
+    TriggerDownPosDesc.eShapeType = SHAPE::BOX;
+    TriggerDownPosDesc.fFriction = 0.8f;
+    TriggerDownPosDesc.fMass = 1.0f;
+    TriggerDownPosDesc.fRestitution = 0.0f;
+    TriggerDownPosDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT);
+
+    TriggerDownPosDesc.vExtent = _float3(0.5f, 0.5f, 0.5f);
+    pBoneMatrix = static_cast<CModel*>(m_pLadderBot->Get_Component(TEXT("Com_Model")))->Get_BoneMatrix("IA_BeginLoc_Climb_Up");
     CHECK_NULLPTR(pBoneMatrix, E_FAIL);
 
     PartMatrix = static_cast<CTransform*>(m_pLadderBot->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrix();
     BoneWorldMatrix = XMLoadFloat4x4(pBoneMatrix) * PartMatrix * m_pTransformCom->Get_WorldMatrix();
 
-    XMStoreFloat3(&TriggerDesc.vPos, BoneWorldMatrix.r[3]);
-    TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
+    XMStoreFloat3(&TriggerDownPosDesc.vPos, BoneWorldMatrix.r[3]);
+    TriggerDownPosDesc.vPos.y += TriggerDownPosDesc.vExtent.y;
 
     XMStoreFloat4(&m_vDownPlayerPos, BoneWorldMatrix.r[3]);
 
-    XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+    XMStoreFloat4(&TriggerDownPosDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
-    TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    eLadderPoint = LADDER_POINT::DOWN_POS_CH;
-    m_tCollisionDesc.pInfo = &eLadderPoint;
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    TriggerDownPosDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)].pGameObject = this;
+    m_eLadderPoints[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)] = LADDER_POINT::DOWN_POS_CH;
+    m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)].pInfo = &m_eLadderPoints[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)];
+    TriggerDownPosDesc.pCollisionDesc = &m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)];
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-        TEXT("Com_Trigger_Down"), reinterpret_cast<CComponent**>(&m_pTriggerCom[ENUM_CLASS(eLadderPoint)]), &TriggerDesc)))
+        TEXT("Com_Trigger_Down"), reinterpret_cast<CComponent**>(&m_pTriggerCom[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)]), &TriggerDownPosDesc)))
         return E_FAIL;
 
 #pragma endregion
 
 #pragma region 아래쪽으로 플레이어 다 내려왔을때의 트리거
-    TriggerDesc.vExtent = _float3(1.5f, 0.25f, 1.5f);
 
-    pBoneMatrix = static_cast<CModel*>(m_pLadderBot->Get_Component(TEXT("Com_Model")))->Get_LocalBoneMatrix("ClimbEndLoc_Bottom");
+    CBody::BODY_BOXSHAPE_DESC TriggerCDDesc{};
+    TriggerCDDesc.bIsTrigger = true;
+    TriggerCDDesc.bStartActive = true;
+    TriggerCDDesc.eMotion = EMotionType::Kinematic;
+    TriggerCDDesc.eQuality = EMotionQuality::LinearCast;
+    TriggerCDDesc.eShapeType = SHAPE::BOX;
+    TriggerCDDesc.fFriction = 0.8f;
+    TriggerCDDesc.fMass = 1.0f;
+    TriggerCDDesc.fRestitution = 0.0f;
+    TriggerCDDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT);
+
+    TriggerCDDesc.vExtent = _float3(1.5f, 0.25f, 1.5f);
+
+    pBoneMatrix = static_cast<CModel*>(m_pLadderBot->Get_Component(TEXT("Com_Model")))->Get_BoneMatrix("ClimbEndLoc_Bottom");
     CHECK_NULLPTR(pBoneMatrix, E_FAIL);
 
     PartMatrix = static_cast<CTransform*>(m_pLadderBot->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrix();
     BoneWorldMatrix = XMLoadFloat4x4(pBoneMatrix) * PartMatrix * m_pTransformCom->Get_WorldMatrix();
 
-    XMStoreFloat3(&TriggerDesc.vPos, BoneWorldMatrix.r[3]);
+    XMStoreFloat3(&TriggerCDDesc.vPos, BoneWorldMatrix.r[3]);
 
     XMStoreFloat4(&m_vClimbDownPos, BoneWorldMatrix.r[3]);
 
-    XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+    XMStoreFloat4(&TriggerCDDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
-    TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    eLadderPoint = LADDER_POINT::CLIMB_DOWN;
-    m_tCollisionDesc.pInfo = &eLadderPoint;
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    TriggerCDDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+    m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::CLIMB_DOWN)].pGameObject = this;
+    m_eLadderPoints[ENUM_CLASS(LADDER_POINT::CLIMB_DOWN)] = LADDER_POINT::CLIMB_DOWN;
+    m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::CLIMB_DOWN)].pInfo = &m_eLadderPoints[ENUM_CLASS(LADDER_POINT::CLIMB_DOWN)];
+    TriggerCDDesc.pCollisionDesc = &m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::CLIMB_DOWN)];
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-        TEXT("Com_Trigger_Climb_Down"), reinterpret_cast<CComponent**>(&m_pTriggerCom[ENUM_CLASS(eLadderPoint)]), &TriggerDesc)))
+        TEXT("Com_Trigger_Climb_Down"), reinterpret_cast<CComponent**>(&m_pTriggerCom[ENUM_CLASS(LADDER_POINT::CLIMB_DOWN)]), &TriggerCDDesc)))
         return E_FAIL;
-
-#pragma endregion
 
 #pragma endregion
 
@@ -332,6 +387,9 @@ HRESULT CLadder::Ready_Interaction_Guide(void* pArg)
 
 void CLadder::Input_Interact_Event(_float fTimeDelta)
 {
+    if (false == m_isCollision)
+        return;
+
     _bool isPressing = { false };
 
     if (m_pGameInstance->Key_Pressing(DIK_F, fTimeDelta))
@@ -345,7 +403,7 @@ void CLadder::Input_Interact_Event(_float fTimeDelta)
 
         EventInteractType InteractType = {};
 
-        InteractType.eInteractType = INTERACTIVE_TYPE::UNLOCKGEAR;
+        InteractType.eInteractType = INTERACTIVE_TYPE::LADDER;
 
         InteractType.eState = EventInteractType::BEGIN;
 
@@ -361,6 +419,46 @@ void CLadder::Input_Interact_Event(_float fTimeDelta)
     }
 }
 
+void CLadder::Event_Update(_float fTimeDelta)
+{
+    if (m_Event.isOn())               // 켠다는 신호
+    {
+        m_pGuide->Update_Visible(false);
+
+        if (false == m_isPlayerOnLadder)
+        {
+            m_isPlayerOnLadder = true;
+
+            // 조각상 상호작용 시
+            EventInteractType InteractType = {};
+
+            InteractType.eInteractType = INTERACTIVE_TYPE::LADDER;
+            InteractType.isEvent = true;
+
+            EventLadder LadderEvent = {};
+
+            XMStoreFloat4(&LadderEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+            LadderEvent.vPlayerPosition = m_vPlayerPosition;
+            LadderEvent.eLadderState = m_eLadderStart;
+
+            _bool isColActive = { false };
+
+            if (EventLadder::LADDER_ACTION::UPTODOWN == m_eLadderStart)
+                isColActive = true;
+
+            m_pTriggerCom[ENUM_CLASS(LADDER_POINT::CLIMB_UP)]->Collision_Active(isColActive);
+            m_pTriggerCom[ENUM_CLASS(LADDER_POINT::CLIMB_DOWN)]->Collision_Active(!isColActive);
+
+            InteractType.LadderEvent = LadderEvent;
+
+            // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
+            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+            m_Event.None();
+        }
+    }
+}
+
 void CLadder::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
@@ -368,6 +466,8 @@ void CLadder::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
 
     m_eLadderPoint = *static_cast<LADDER_POINT*>(pMyDesc->pInfo);
     Set_PlayerPosition();
+
+    m_isCollision = true;
 }
 
 void CLadder::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -375,7 +475,7 @@ void CLadder::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _fl
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
         return;
 
-
+    m_isCollision = true;
 }
 
 void CLadder::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, COLLISION_DESC * pMyDesc)
@@ -416,6 +516,8 @@ CGameObject* CLadder::Clone(void* pArg)
 
 void CLadder::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iEventID);
+
     __super::Free();
 
     for (auto& pTriggerCom : m_pTriggerCom)
