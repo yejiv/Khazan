@@ -885,14 +885,23 @@ HRESULT CLevel_Shader::Render()
 HRESULT CLevel_Shader::Ready_Lights()
 {
 	// Directional
-	LIGHT_DESC LightDesc = {};
-	LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
-	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(0.2f, 0.2f, 0.2f, 0.2f);
-	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 0.2f);
-	LightDesc.vSpecular = LightDesc.vDiffuse;
-	if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
-		return E_FAIL;
+	//  LIGHT_DESC LightDesc = {};
+	//  LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
+	//  LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	//  LightDesc.vDiffuse = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+	//  LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 0.2f);
+	//  LightDesc.vSpecular = LightDesc.vDiffuse;
+	//  if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+	//  	return E_FAIL;
+
+    LIGHT_DESC LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
+    LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+    LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Directional"), ENUM_CLASS(LEVEL::SHADER), LightDesc)))
+        return E_FAIL;
 
     // Point_Red
     LightDesc = {};
