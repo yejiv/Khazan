@@ -111,4 +111,5 @@ void CKhazan_GS_AnimationController::Free()
     __super::Free();
 
     Safe_Release(m_pModel);
+    Safe_Release(m_pAnimMove);
 }

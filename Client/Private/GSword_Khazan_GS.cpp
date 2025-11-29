@@ -2,6 +2,7 @@
 //#include "Khazan_Sample.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
+#include "Khazan_GSword.h"
 
 CGSword_Khazan_GS::CGSword_Khazan_GS(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
@@ -14,7 +15,6 @@ CGSword_Khazan_GS::CGSword_Khazan_GS(const CGSword_Khazan_GS& Prototype)
     , m_pClientInstance{ CClientInstance::GetInstance() }
 {
     Safe_AddRef(m_pClientInstance);
-
 }
 
 _float4x4* CGSword_Khazan_GS::Get_BoneMatrix(const _char* pBoneName)
@@ -30,7 +30,7 @@ HRESULT CGSword_Khazan_GS::Initialize_Prototype()
 HRESULT CGSword_Khazan_GS::Initialize_Clone(void* pArg)
 {
     GSWORD_KHAZAN_GS_DESC* pDesc = static_cast<GSWORD_KHAZAN_GS_DESC*>(pArg);
-    m_pParentState = pDesc->pState;
+    m_pParentStatus = pDesc->pStatus;
     m_pParentTransform = pDesc->pParentTransform;
     Safe_AddRef(m_pParentTransform);
 
@@ -64,7 +64,8 @@ void CGSword_Khazan_GS::Update(_float fTimeDelta)
     if (!m_isEnble)
         return;
     
-	_matrix matWeapon = m_isEquip ? XMLoadFloat4x4(m_pWeaponR_Matrix) :  XMLoadFloat4x4(m_pBackPack_Matrix);
+    _matrix matWeapon = m_isEquip ? XMLoadFloat4x4(m_pWeaponR_Matrix)
+        : (m_pClientInstance->Is_CurrentGSword() ? XMLoadFloat4x4(m_GSwordBackPack_Matrix) : XMLoadFloat4x4(m_pSpearBackPack_Matrix));
 
     matWeapon.r[0] = XMVector4Normalize(matWeapon.r[0]);
     matWeapon.r[1] = XMVector4Normalize(matWeapon.r[1]);
@@ -176,12 +177,43 @@ void CGSword_Khazan_GS::Change_Weapon(EQUIPMENTTYPE type, const _wstring& strPar
     if (m_pModelCom)
         Safe_Release(m_pModelCom);
 
-    if (strPartName == TEXT("Meteor_GSword")) m_pModelCom = m_pModelCom_Meteor_GSword;
-    else if (strPartName == TEXT("Execution_GSword")) m_pModelCom = m_pModelCom_Execution_GSword;
-    else if (strPartName == TEXT("Flash_Spear")) m_pModelCom = m_pModelCom_Flash_Spear;
-    else if (strPartName == TEXT("Punish_Spear")) m_pModelCom = m_pModelCom_Punish_Spear;
-    Safe_AddRef(m_pModelCom);
+    _bool isGSword = false;
+    _bool isSpear = false;
 
+    if (strPartName == TEXT("Meteor_GSword")) {
+        m_pModelCom = m_pModelCom_Meteor_GSword;
+        isGSword = true;
+    }
+    else if (strPartName == TEXT("Execution_GSword")) {
+        m_pModelCom = m_pModelCom_Execution_GSword;
+        isGSword = true;
+    }
+    else if (strPartName == TEXT("Flash_Spear")) {
+        m_pModelCom = m_pModelCom_Flash_Spear;
+        isSpear = true;
+    }
+    else if (strPartName == TEXT("Punish_Spear")) {
+        m_pModelCom = m_pModelCom_Punish_Spear;
+        isSpear = true;
+    }
+    Safe_AddRef(m_pModelCom);
+    m_isChangeWeapon = true;
+
+    if (isGSword)
+    {
+        *m_pParentStatus |= CKhazan_GSword::PLAYER_STATUS::GSWORD;
+        *m_pParentStatus &= ~(CKhazan_GSword::PLAYER_STATUS::SPEAR | CKhazan_GSword::PLAYER_STATUS::BAREHAND);
+    }
+    else if (isSpear)
+    {
+        *m_pParentStatus |= CKhazan_GSword::PLAYER_STATUS::SPEAR;
+        *m_pParentStatus &= ~(CKhazan_GSword::PLAYER_STATUS::GSWORD | CKhazan_GSword::PLAYER_STATUS::BAREHAND);
+    }
+    else
+    {
+        *m_pParentStatus |= CKhazan_GSword::PLAYER_STATUS::BAREHAND;
+        *m_pParentStatus &= ~(CKhazan_GSword::PLAYER_STATUS::GSWORD | CKhazan_GSword::PLAYER_STATUS::SPEAR);
+    }
 }
 
 HRESULT CGSword_Khazan_GS::Ready_Components()
@@ -204,12 +236,6 @@ HRESULT CGSword_Khazan_GS::Ready_Components()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(eCurrentLevel), TEXT("Prototype_Component_Model_GSword_Execution"),
         TEXT("Com_Model4"), reinterpret_cast<CComponent**>(&m_pModelCom_Execution_GSword), nullptr)))
         return E_FAIL;
-
-    /* Test !!!!*/
-#ifdef _DEBUG
-    m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);
-#endif // _DEBUG
-
 
     CPlayerData_Manager::PLAYER_EQUIPMENT equipment = m_pClientInstance->Get_PlayerEquipment();
     if (equipment.isSpear)
@@ -284,9 +310,18 @@ void CGSword_Khazan_GS::Free()
 {
     __super::Free();
 
+    if (m_isChangeWeapon)
+        Safe_Release(m_pModelCom);
+
     Safe_Release(m_pParentTransform);
     Safe_Release(m_pModelCom);
+    Safe_Release(m_pModelCom_Punish_Spear);
+    Safe_Release(m_pModelCom_Flash_Spear);
+    Safe_Release(m_pModelCom_Meteor_GSword);
+    Safe_Release(m_pModelCom_Execution_GSword);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pMotionTrailCom);
+
+    Safe_Release(m_pClientInstance);
     //Safe_Release(m_pColliderCom);
 }

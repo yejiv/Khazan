@@ -81,7 +81,7 @@ void CBody_Khazan_GS::Priority_Update(_float fTimeDelta)
 
 void CBody_Khazan_GS::Update(_float fTimeDelta)
 {
-    m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDelta);
+    m_isFinishedAnimation = m_pModelCom->Play_Animation(m_isNotifyAttacking ? fTimeDelta * 1.2f : fTimeDelta);
 
     Update_CombinedMatrix();
 
@@ -119,6 +119,28 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
         Trigger_MotionTrail(TEXT("MT_Common_Avoid"), true);
     if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
         Trigger_MotionTrail(TEXT("MT_Common_Avoid"), false);
+
+
+    bool a =  m_pClientInstance->Is_CurrentSpear();
+    bool b = m_pClientInstance->Is_CurrentGSword();
+
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT,fTimeDelta) && m_pGameInstance->Key_Down(DIK_M)){
+        m_pClientInstance->Lock_Skill((1 << 4) );
+        m_pClientInstance->Lock_Skill((1 << 8));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Wind"), m_pParentTransform->Get_State(STATE::POSITION));
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_N)){
+        m_pClientInstance->Lock_Skill((1 << 4));
+        m_pClientInstance->Lock_Skill((1 << 8));
+        m_pClientInstance->Unlock_Skill(1 << 4);
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_B)){
+        m_pClientInstance->Lock_Skill((1 << 4));
+        m_pClientInstance->Lock_Skill((1 << 8));
+        m_pClientInstance->Unlock_Skill(1 << 8);
+    }
 
 }
 
@@ -333,6 +355,7 @@ void CBody_Khazan_GS::Render_Part_MotionVector(CModel* pModel)
         // 셰이더 바꿔야 함
         //  m_pShaderCom->Begin(11);
         pModel->Render(i);
+
     }
 }
 
@@ -371,11 +394,12 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             lock_guard<mutex> lock(m_CollMonsterMutex);
             if (pObj && (find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end()))
                 m_CollMonsters.push_back(pObj);
+            return;
         }
 
        /* 공격 콜라이더 */
         _bool   isAttack = false;
-        if (pMyDesc->strName == TEXT("Player_Attack"))
+        if (pMyDesc->strName == TEXT("Player_Attack1"))
         {
             isAttack = true;
             pMonster->KnockBack(
@@ -573,6 +597,7 @@ void CBody_Khazan_GS::AllAttackCollisionActive_Off()
     m_pBodyCom_Attack->Collision_Active(false);
     m_pBodyCom_RangeAttack->Collision_Active(false);
     m_pBodyCom_BodyAttack->Collision_Active(false);
+    m_isNotifyAttacking = false;
 }
 
 void CBody_Khazan_GS::Event_AttackTiming(GS_COLLISION eColl, _bool isAttackStart)
@@ -659,13 +684,14 @@ void CBody_Khazan_GS::Check_Guarding(_float fTimeDelta)
         m_fJustGuardTime.x += fTimeDelta;
 
     if (*m_pIsGuarding == true && !m_isCollGuard_Active) {
-
+        m_pBodyCom_Guard->Collision_Active(true);
         m_isCollGuard_Active = true;
         m_fJustGuardTime.x = 0.f;
         m_isJustGuardOnce = false;
     }
     if (*m_pIsGuarding == false && m_isCollGuard_Active) {
 
+        m_pBodyCom_Guard->Collision_Active(false);
         m_isCollGuard_Active = false;
     }
 }
@@ -821,7 +847,7 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
         AttackDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
         m_tAttackCollisionDesc.pGameObject = this;
         m_tAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
-        m_tAttackCollisionDesc.strName = TEXT("Player_Attack");
+        m_tAttackCollisionDesc.strName = TEXT("Player_Attack1");
         AttackDesc.pCollisionDesc = &m_tAttackCollisionDesc;
 
         DAMAGEINFO DamageInfo = {};
@@ -868,7 +894,7 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
 
     CBody::BODY_SPHERESHAPE_DESC BodyAttackDesc{};
     {
-        BodyAttackDesc.fRadius = 0.7f;
+        BodyAttackDesc.fRadius = 1.f;
         BodyAttackDesc.bIsTrigger = true;
         BodyAttackDesc.bStartActive = true;
         BodyAttackDesc.eMotion = EMotionType::Kinematic;
@@ -878,7 +904,7 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
 
         XMStoreFloat3(&BodyAttackDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
         XMStoreFloat4(&BodyAttackDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
-        BodyAttackDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        BodyAttackDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
         m_tBodyAttackCollisionDesc.pGameObject = this;
         m_tBodyAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
         m_tBodyAttackCollisionDesc.strName = TEXT("Player_BodyAttack");
@@ -909,10 +935,10 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
         GuardDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
         GuardDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
         GuardDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-        m_tAttackCollisionDesc.pGameObject = this;
-        m_tAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
-        m_tAttackCollisionDesc.strName = TEXT("Player_Guard");
-        GuardDesc.pCollisionDesc = &m_tAttackCollisionDesc;
+        m_tGuardCollisionDesc.pGameObject = this;
+        m_tGuardCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
+        m_tGuardCollisionDesc.strName = TEXT("Player_Guard");
+        GuardDesc.pCollisionDesc = &m_tGuardCollisionDesc;
         GuardDesc.bIsTrigger = true;
 
         if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -958,8 +984,9 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         });
 
     m_pModelCom->Register_Event("GS_WeakAtk02_SowardFX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_iFXIdx_Spining = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]); 
         _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody)); 
+        m_iFXIdx_Spining = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+        rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody), XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)));
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger1"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
         });
 
@@ -976,63 +1003,205 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("GS_WeakAtk02_BloodTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Trail"), rot, m_pParentTransform->Get_State(STATE::POSITION));
-        });
+        }); 
+
+    //강공 차지
+    m_pModelCom->Register_Event("GS_StrongAtk01_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust10"), m_pParentTransform->Get_State(STATE::POSITION)); //흰색
+        }); 
 
     //강기발현
-
-        //Strong Charge - 해금
-    m_pModelCom->Register_Event("GS_StrongAtk01_Charge_Unlock_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust8"), m_pParentTransform->Get_State(STATE::POSITION));
-        //상황에 따라 켜고 끄기!
-        //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust9"), m_pParentTransform->Get_State(STATE::POSITION));
-        //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("DarkShadow_Land_1"), m_pParentTransform->Get_State(STATE::POSITION));
-        //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("DarkShadow_Land_2"), m_pParentTransform->Get_State(STATE::POSITION));
+        //강기발현 차지
+    m_pModelCom->Register_Event("GS_StrongAtk01_Force_Release_Charge", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust9"), m_pParentTransform->Get_State(STATE::POSITION));
         });
 
         //Strong Charge - 해금 X
     //m_pModelCom->Register_Event("GS_StrongAtk01_Charge_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { });
 
     m_pModelCom->Register_Event("GS_StrongAtk01_Charge_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Trail_V"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+        if (Has_Status(CKhazan_GSword::CHARGING_STRONG_ATTACK)) //차징 됨
+        {
+            if (m_pClientInstance->Is_UsedSkill(CPlayerData_Manager::GSWORDSKILL::MANIFESTSTRENGTH))    //강기발현
+            {
+                _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+                m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Trail_V"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+            }
+            //else if (m_pClientInstance->Is_UsedSkill(CPlayerData_Manager::GSWORDSKILL::LIMIT_BREAK))    //한계극복
+            //    ;
+            else
+                ; //그냥 차징 강공
+        }
+        else
+            ; //그냥 차징 강공
+
         });
 
     m_pModelCom->Register_Event("GS_StrongAtk01_Charge_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { 
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke_Red"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);
+        if (Has_Status(CKhazan_GSword::CHARGING_STRONG_ATTACK)) //차징 됨
+        {
+            if (m_pClientInstance->Is_UsedSkill(CPlayerData_Manager::GSWORDSKILL::MANIFESTSTRENGTH))    //강기발현 
+                m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke_Red"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);  
+            else
+                ; // 그냥 차징 강공
+        }
+        else
+            ; //그냥 차징 안한 강공
         });
 
-    m_pModelCom->Register_Event("GS_StrongAtk01_Charge_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {        
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Manifest_Strength_Land"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]); 
+    m_pModelCom->Register_Event("GS_StrongAtk01_Charge_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        if (Has_Status(CKhazan_GSword::CHARGING_STRONG_ATTACK)) //차징 됨
+        {
+            if (m_pClientInstance->Is_UsedSkill(CPlayerData_Manager::GSWORDSKILL::MANIFESTSTRENGTH))    //강기발현
+            {
+                m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Manifest_Strength_Land"), XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+            } 
+            else
+                m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("GS_StrongATK"), XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+        }
+        else
+            m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("GS_StrongATK"), XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
         });
 
     //거인사냥
     m_pModelCom->Register_Event("GS_Soulbringer_Land_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Giant_Hunt_Land"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);
+        _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody));
+        m_iFXIdx_Spining = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+        rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody), XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger1"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);  
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("particle"), m_pParentTransform->Get_State(STATE::POSITION));
         });
+
+    m_pModelCom->Register_Event("GS_Soulbringer_Land_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody));
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), m_iFXIdx_Spining, rot, XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);
+        });
+
+    m_pModelCom->Register_Event("GS_Soulbringer_Land_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Giant_Hunt_Land"), XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), m_iFXIdx_Spining);
+        });
+
+    m_pModelCom->Register_Event("GS_AsheFork_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody), XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger1"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+        }); 
 
     //거대한 포효
     m_pModelCom->Register_Event("GS_WarDeclaration_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Giant_Roar"), m_pParentTransform->Get_State(STATE::POSITION));
         });
 
+    //정면 돌파
+    m_pModelCom->Register_Event("GS_ChargeCrash_Wind", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+        m_iFXIdx_BodyWind = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Wind"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+        });
+
+    m_pModelCom->Register_Event("GS_ChargeCrash_Wind", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Wind"), m_iFXIdx_BodyWind, rot, m_pParentTransform->Get_State(STATE::POSITION));
+        });
+
+    m_pModelCom->Register_Event("GS_ChargeCrash_Wind", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("particle"), m_pParentTransform->Get_State(STATE::POSITION));
+        });
+
+    //숨통끊기 선혈
+    m_pModelCom->Register_Event("GS_GhostSlash_Trail1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+        m_iFXIdx_Trail = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Dawn_BloodTrail1"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+        });
+
+    m_pModelCom->Register_Event("GS_GhostSlash_Trail2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Dawn_BloodTrail2"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Dawn_BloodTrail1"), m_iFXIdx_Trail, rot, m_pParentTransform->Get_State(STATE::POSITION));
+        });
+
+    m_pModelCom->Register_Event("GS_GhostSlash_Trail1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);
+        });
+
+    m_pModelCom->Register_Event("GS_GhostSlash_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody), XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger1"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("particle2"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+        });
+
+    // 내재된 분노 
+    m_pModelCom->Register_Event("GS_RasingFurry_Explosion", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Inner_Range_Ground"), m_pParentTransform->Get_State(STATE::POSITION));
+        });
+
+    // 귀신 어둠의 그림자 
+        //임시!
+    m_pModelCom->Register_Event("GS_GhostLiberation_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("particle2"), m_pParentTransform->Get_State(STATE::POSITION));
+        _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody));
+        m_iFXIdx_Spining = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+        });
+
+    m_pModelCom->Register_Event("GS_GhostLiberation_Landing", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);
+        _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody));
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), m_iFXIdx_Spining, rot, XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+        });
+
+    m_pModelCom->Register_Event("GS_GhostLiberation_Landing", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), m_iFXIdx_Spining);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Giant_Hunt_Land"), XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+        });
+
+    //한계극복
+        //한계극복 차징
+    m_pModelCom->Register_Event("GS_StrongAtk01_Charge_Unlock_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust9"), m_pParentTransform->Get_State(STATE::POSITION)); //빨강!
+        });
+
+    m_pModelCom->Register_Event("GS_Apocalypse_Land", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Trail_V"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+        });
+
+    m_pModelCom->Register_Event("GS_Apocalypse_Land", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke_Red"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);
+        });
+
+    m_pModelCom->Register_Event("GS_Apocalypse_Land", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Manifest_Strength_Land"), XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+        });
+
 #pragma endregion
 
 #pragma region Collider  
-    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_Attack->Collision_Active(true); });
-    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { m_pBodyCom_Attack->Collision_Active(false); });
+    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_Attack->Collision_Active(true); m_isNotifyAttacking = true; });
+ //   m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { m_pBodyCom_Attack->Collision_Active(false); });
 
-    m_pModelCom->Register_Event("RangeAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_RangeAttack->Collision_Active(true); });
-    m_pModelCom->Register_Event("RangeAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()  { m_pBodyCom_RangeAttack->Collision_Active(false); });
+    m_pModelCom->Register_Event("RangeAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_RangeAttack->Collision_Active(true); m_isNotifyAttacking = true; });
+  //  m_pModelCom->Register_Event("RangeAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()  { m_pBodyCom_RangeAttack->Collision_Active(false); });
 
-    m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_BodyAttack->Collision_Active(true); });
-    m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()  { m_pBodyCom_BodyAttack->Collision_Active(false); });
+    m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_BodyAttack->Collision_Active(true); m_isNotifyAttacking = true; });
+  //  m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()  { m_pBodyCom_BodyAttack->Collision_Active(false); });
 
     m_pModelCom->Register_Event("WeaponOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  m_pWSword->Set_Equipped(true);  m_pClientInstance->Set_PlayerInput(true); });
     m_pModelCom->Register_Event("WeaponOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  m_pWSword->Set_Equipped(false); m_pClientInstance->Set_PlayerInput(false); });
+
+    m_pModelCom->Register_Event("HEAL1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;
+        if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
+            m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp; }); //라크리마
+    m_pModelCom->Register_Event("HEAL2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        
+        m_pPlayerData->fCulHp += m_pPlayerData->fHealItemRegen;
+        if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
+            m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp; }); //힐템
+
 #pragma endregion
 
     return S_OK;
-}
+} 
 
 HRESULT CBody_Khazan_GS::Initialize_Equipment()
 {
@@ -1138,9 +1307,12 @@ void CBody_Khazan_GS::Update_QuickRenderCache()
     //  m_pMotionTrailCom->Update_MasterModel(m_pModelCom);
 }
 
-_vector CBody_Khazan_GS::Decompose_Rotation(_matrix W, _vector offset)
+_vector CBody_Khazan_GS::Decompose_Rotation(_matrix W, _vector localRot, _vector offset)
 {
     _vector S, Q, T;
+
+    _matrix Local_Rotation = XMMatrixRotationQuaternion(localRot); 
+    W = XMMatrixMultiply(Local_Rotation, W);
 
     if (!XMMatrixDecompose(&S, &Q, &T, W))
     {
@@ -1192,6 +1364,7 @@ void CBody_Khazan_GS::Free()
     Safe_Release(m_pMotionTrailCom);
 
     Safe_Release(m_pBodyCom_BodyAttack);
+    Safe_Release(m_pBodyCom_RangeAttack);
     Safe_Release(m_pBodyCom_Attack);
     Safe_Release(m_pBodyCom_Guard);
     Safe_Release(m_pBodyCom_Search);
@@ -1218,11 +1391,22 @@ void CBody_Khazan_GS::Free()
         Safe_Release(pModel);
     m_RenderParts.clear();
 
+    for (auto EquipPart : m_AllParts)
+    {
+        for (auto Part : m_EquippedParts)
+        {
+            if (Part.second == EquipPart.first)
+            {
+                Safe_Release(EquipPart.second);
+                break;
+            }
+        }       
+    }
+
     for (auto partIter : m_AllParts)
         Safe_Release(partIter.second);
     m_AllParts.clear();
 
     Safe_Release(m_pModelCom);
-
     Safe_Release(m_pTrail);
 }

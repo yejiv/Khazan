@@ -206,6 +206,9 @@ PS_OUT PS_MAIN(PS_IN In)
     //vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
     vector vFinalColor = float4(g_vSourceColor.xyz, vEffectTexture.r);
     
+    if (vFinalColor.a <= 0.f)
+        discard;
+    
     float fDecreaseAlpha = (In.vLifeTime.x / In.vLifeTime.y);
     if (g_IsDissolve == false)
         vFinalColor.a -= fDecreaseAlpha;

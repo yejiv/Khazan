@@ -16,7 +16,7 @@ void CAS_LockOn_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
 
     m_fDotThreshold = cosf(XMConvertToRadians(10.f));
-    m_fMoveSpeed = 0.9f;
+    m_fMoveSpeed = 1.1f;
 
     CViper* pViper = static_cast<CViper*>(pOwner);
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();

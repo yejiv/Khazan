@@ -59,7 +59,8 @@ float g_fColorRatio;
 float3 g_vRimColor;
 
 // Blink RimLight
-float g_fTimeDelta, g_fCycleSpeed;
+float g_fTimeDelta;
+float g_fCycleSpeed;
 float g_fRimEmissive;
 
 struct VS_IN
