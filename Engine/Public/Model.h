@@ -83,6 +83,7 @@ public:
     _uint				Get_BoneIndex(const _char* pBoneName);
     _float4x4* Get_BoneMatrix(const _char* pBoneName);
     _float4x4* Get_BoneMatrix(_int iBoneIndex);
+    _float4x4* Get_LocalBoneMatrix(const _char* pBoneName);
     _float4x4* Get_LocalBoneMatrix(_int iBoneIndex);
     _float4x4* Get_ContainNameBoneMatrix(const _char* pBoneName);
     _int				Get_CurAnimIndex() { return m_iCurrentAnimIndex; }
@@ -98,7 +99,7 @@ public:
     void                Set_Transform(const _float4x4* pMat) { m_pTransformMatrix = pMat; }
     void				Set_OwnerTransform(_float4x4* pMatrix) { m_pOwnerTransformMatrix = pMatrix;}
     _float4x4*          Get_OwnerWorldMatrix() const {return m_pOwnerTransformMatrix;}
-    _bool               IsAnimationStart(_uint iAnimIndex) { return iAnimIndex == m_iCurrentAnimIndex && m_isAnimStart; }
+    _bool               IsAnimationStart(_uint iAnimIndex) { return iAnimIndex == m_iCurrentAnimIndex && m_isAnimStart; } //해당 애니메이션이 시작 됐는지 
 
     _vector Get_BoneWorldRotationQuat(_int iBone) const;
 
@@ -114,6 +115,7 @@ public:
     void			Set_AnimationSet(const string& strKey);
     void			Set_AnimationLoop(_bool isLoop);
     _bool			Check_MinAnimationTime();
+    _bool           Check_CanDodgeTime();
     void            AnimationSetIndexIncrease(); //애니메이션세트 강제로 다음으로 넘기기
     void            Set_AnimationBlend(_bool isBlend) { m_isBlendEnable = isBlend; }      // 애니메이션 보간할건지 여부
     void            AnimationLoop(_bool isLoop);

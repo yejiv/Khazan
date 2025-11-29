@@ -78,6 +78,11 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(&desc)))
         return E_FAIL;
 
+    /* 플레이어 셋팅  */
+    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();  //플레이어 데이터 연결
+    m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
+
+
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
@@ -101,6 +106,7 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     Debug_Widget();
 #endif // _DEBUG
 
+    /* 기본 셋팅  */
     m_eDir.Add_Flag(DIRECTION_INFO::NONE);
 
     m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
@@ -123,13 +129,8 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     m_iStopMoveIndexTable[8] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_Stop_F");
     m_iStopMoveIndexTable[9] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Sprint_Stop_F");
 
-
-    /* 기본셋팅  */
-    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();  //플레이어 데이터 연결
-    m_pClientInstance->UsedGSword();
     m_pGSword->Set_Enble(true);
     m_strName = "Khazan";
-
     m_EffectTimeDelta = 0.f;
 
     return S_OK;
@@ -142,8 +143,9 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
 
     if (m_pGameInstance->Key_Down(DIK_P))
     {
-        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.f, -11.f, 264.f, 1.f));
-        m_pCharVirCom->Set_Position(XMVectorSet(516.f, -11.f, 264.f, 1.f));
+        //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(511.f, -11.9f, 260.f, 1.f));
+        m_pCharVirCom->Teleport(XMVectorSet(511.f, -11.9f, 260.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+        m_pTransformCom->LookAt(XMVectorSet(520.47f, -11.48f, 227.18, 0.f));               
     }
 
 }
@@ -211,7 +213,7 @@ void CKhazan_GSword::Update(_float fTimeDelta)
 
 void CKhazan_GSword::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
+   if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
     __super::Late_Update(fTimeDelta);
@@ -311,7 +313,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
     DECAL_DESC Desc{};
     Desc.fLifeTime = 8.f;
     Desc.vFadeTime = _float2(0.2f, 0.2f);
-    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::END)));
+    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
     XMStoreFloat3(&Desc.vPosition, vDecalPos);
     Desc.vScale = _float3(
         m_pGameInstance->Rand(3.f, 5.f),
@@ -319,6 +321,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         m_pGameInstance->Rand(3.f, 5.f)
     );
     Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+    Desc.isRandomTexture = true;
     m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
 
     switch (eHitreaction)
@@ -503,9 +506,13 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
         Check_KeyInput_Direction(fTimeDelta);
 
         Interaction_Input(fTimeDelta);
-        Guard_Input(fTimeDelta);
-        Skill_Input(fTimeDelta);
-        Attack_Input(fTimeDelta);
+        /* 공격이나 가드를 막아야하는 상호작용 처리  */
+        if (!Has_Status(INTERACT_LOCKED_STATE))
+        {
+            Guard_Input(fTimeDelta);
+            Skill_Input(fTimeDelta);
+            Attack_Input(fTimeDelta);
+        }
 
         // 공격 중일 때는 Move_Input을 완전히 차단
         if (!Has_State(CAT::M_ATTACK | CAT::M_GUARD | CAT::M_SKILL) && !m_pAnimAttack->Is_Attacking() && m_pAnimAttack)
@@ -1418,6 +1425,13 @@ _bool CKhazan_GSword::Interaction_Input(_float fTimeDelta)
             m_pAnimInteraction->Try_Lachryma();
     }
 
+    //힐 템
+    if (m_pGameInstance->Key_Down(DIK_3)) {
+        if (m_pPlayerData->fCulHp < m_pPlayerData->fMaxHp)
+            m_pAnimInteraction->Try_Lachryma();
+    }
+
+
     return false;
 }
 
@@ -1557,6 +1571,9 @@ void CKhazan_GSword::ExecuteAnimationExit()
 
 void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
 {
+    //if (m_pAnimMove->IsDodge() || m_pAnimAttack->Is_Attacking() || !m_pAnimMove->IsMoving())
+    //    return;
+
     // 낙하 중에는 이동 금지
     if (Has_Status(FALLING | FALLING_ATTACK | PRE_LAND))
         return;
@@ -1575,6 +1592,7 @@ void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
     if (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_DODGE))
         return;
 
+    /* stop 애니메이션도 이동 x  */
     for (size_t i = 0; i < 10; i++)
         if (m_iStopMoveIndexTable[i] == m_pBody->Get_Model()->Get_CurAnimIndex()) {
             Remove_State(CAT::M_MOVE);
@@ -1923,6 +1941,26 @@ void CKhazan_GSword::Clear_Injured()
     //Remove_Status(INJURED);
 }
 
+void CKhazan_GSword::EnterStatuePuzzle()
+{
+    Add_Status(INTERACT_LOCKED_STATE | INTERACTION_STATUE);
+
+    if (Has_Status(SPEAR))
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
+    if (Has_Status(GSWORD))
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_UnArmed"));
+}
+
+void CKhazan_GSword::ExitStatuePuzzle()
+{
+    Remove_Status(INTERACT_LOCKED_STATE | INTERACTION_STATUE);
+
+    if (Has_Status(SPEAR))
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed"));
+    if (Has_Status(GSWORD))
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));
+}
+
 
 void CKhazan_GSword::Get_HitReaction(_float3 vContactPoint)
 {
@@ -2239,12 +2277,13 @@ HRESULT CKhazan_GSword::Ready_PartObjects()
         return E_FAIL;
     m_pBody = static_cast<CBody_Khazan_GS*>(Find_PartObject(TEXT("Part_Body")));
     m_pWeaponR_Matrix = m_pBody->Get_BoneMatrix("Weapon_R");
-    m_BackPack_Matrix = m_pBody->Get_BoneMatrix("Weapon_R_BackPack_GSword");
+    m_GSwordBackPack_Matrix = m_pBody->Get_BoneMatrix("Weapon_R_BackPack_GSword");
+    m_SpearBackPack_Matrix = m_pBody->Get_BoneMatrix("Weapon_C_BackPack_Spear");
     m_LanternSocket_Matrix = m_pBody->Get_BoneMatrix("Lantern_Socket_L");
     m_LHandSocket_Matrix = m_pBody->Get_BoneMatrix("L_Hand_Socket");
 
     CGSword_Khazan_GS::GSWORD_KHAZAN_GS_DESC         GSwordDesc{};
-    GSwordDesc.pState = &m_iCurMainState;
+    GSwordDesc.pStatus = &m_iStatus;
     GSwordDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     GSwordDesc.pParentTransform = m_pTransformCom;
     if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_GSword_Khazan_GS"), &GSwordDesc)))
@@ -2261,10 +2300,11 @@ HRESULT CKhazan_GSword::Ready_PartObjects()
     if (FAILED(__super::Add_PartObject(TEXT("Part_Lantern"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Lantern_Khazan_GS"), &LanternDesc)))
         return E_FAIL;
     m_pLantern = static_cast<CLantern_Khazan_GS*>(Find_PartObject(TEXT("Part_Lantern")));
-
-
-    /* 넘겨주기  */
-    m_pGSword->Set_matBackPack(m_BackPack_Matrix);
+                       
+                 
+    /* 넘겨주기  */         
+    m_pGSword->Set_GSwordBackPack(m_GSwordBackPack_Matrix);
+    m_pGSword->Set_SpearBackPack(m_SpearBackPack_Matrix);
     m_pGSword->Set_matWeaponR(m_pWeaponR_Matrix);
     m_pBody->Set_matGSword(m_pGSword_Matrix);
     m_pBody->Set_GSword(m_pGSword);
@@ -2350,15 +2390,28 @@ void CKhazan_GSword::Subscribe_Events()
     m_iObjectInteractEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e) {
         if (e.isOff())
         {
-            m_pBody->Get_Model()->AnimationSetIndexIncrease();
-            m_pGSword->Set_Enble(true);
-            static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
-            Add_Status(GSWORD);
-            Remove_Status(BAREHAND);
+            if (m_EventInteract.isNPC())
+            {
+                if(Has_Status(SPEAR))
+                    m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed"));
+                if (Has_Status(GSWORD))
+                    m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));
+
+               // m_pGSword->Set_Enble(true);
+                static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+            }
+            else
+            {
+                m_pBody->Get_Model()->AnimationSetIndexIncrease();
+               // m_pGSword->Set_Enble(true);
+                static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+               // Add_Status(SPEAR);
+            }
         }  });
 
 #pragma endregion
 }
+
 
 void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
 {
@@ -2369,10 +2422,14 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         {
             m_isInteractEventSetting = true;
 
-            /*  창 들고 있으면 UnArmed 애니메이션 재생 */
-            if (Has_Status(GSWORD))
-                m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_UnArmed"));
-
+            /*  UnArmed 애니메이션 재생  (조각상떄는 안함)*/
+            if (!Has_Status(INTERACTION_STATUE))
+            {
+                if (Has_Status(SPEAR))
+                    m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
+                if (Has_Status(GSWORD))
+                    m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_UnArmed"));
+            }
             XMStoreFloat4(&m_vStartPos_Event, m_pTransformCom->Get_State(STATE::POSITION));
             m_fLerpTime_Event = 0.f;
 
@@ -2385,47 +2442,70 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         case INTERACTIVE_TYPE::CHEST:
         {
             isDone = false;
-            _bool isMove = false;
-            CModel* pBodyModel = m_pBody->Get_Model();
-
-           /* 현재 재생되는 애니메이션이 UnArmed이고 끝났으면 true로 */
-            if (m_pBody->Get_Model()->IsFinished()) {
-                isDone = true;
-            }
-
+            if (m_pBody->Get_Model()->IsFinished())  isDone = true;   /* 현재 재생되는 애니메이션이 UnArmed이고 끝났으면 true로 */
             break;
         }
         case INTERACTIVE_TYPE::CHECKPOINT:
         {
             isDone = false;
-
-            if (m_pBody->Get_Model()->IsFinished()) {
-                isDone = true;
-            }
-
+            if (m_pBody->Get_Model()->IsFinished())  isDone = true;
             break;
         }
         case INTERACTIVE_TYPE::LEVER:
         {
             isDone = false;
-
+            if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+            break;
+        }
+        case INTERACTIVE_TYPE::STATUE:
+        {
+            isDone = false;
+            if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+            break;
+        }
+        case INTERACTIVE_TYPE::IRONGATE:
+        {
+            isDone = false;
+            if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+            break;
+        }
+        case INTERACTIVE_TYPE::UNLOCKGEAR:
+        {
+            isDone = false;
+            if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+            break;
+        }
+        case INTERACTIVE_TYPE::GIANTGATE:
+        {
+            isDone = false;
+            if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+            break;
+        }
+        case INTERACTIVE_TYPE::DANJIN:
+        case INTERACTIVE_TYPE::DUIMUK:
+        case INTERACTIVE_TYPE::DAPHRONA:
+        {
+            isDone = false;
             if (m_pBody->Get_Model()->IsFinished()) {
+                static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
                 isDone = true;
             }
-
             break;
         }
         default:
             break;
         }
 
+        /* 플레이어가 오브젝트한테 "나 이제 준비됐어"를 보낸다. */
         if (isDone)               // 특정 조건 완성하면 이벤트 발생
         {
             // 이벤트에 필요한 세팅을 다음에 또 발생시 변경 가능하게 false로 변경
             m_isInteractEventSetting = false;
 
             // 상호작용 활성화시 맵 오브젝트한테 EVENT_STATE를 ON 으로 던져준다
-            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OnEvent() });
+            _float4 vPosition = {};
+            XMStoreFloat4(&vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+            m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OnEvent_Player(vPosition) });
             // 내 상태를 STATE::NONE 으로 변경해준다.
             m_EventInteract.eState = EventInteractType::EVENT_STATE::NONE;
         }
@@ -2466,6 +2546,31 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         {
             Lever_Event(fTimeDelta);
         }
+        // 조각상 기믹일때
+        if (INTERACTIVE_TYPE::STATUE == m_EventInteract.eInteractType)
+        {
+            Statue_Event(fTimeDelta);
+        }
+        // 엠바스 위쪽 잠겨있는 철문을 열때
+        if (INTERACTIVE_TYPE::IRONGATE == m_EventInteract.eInteractType)
+        {
+            IronGate_Event(fTimeDelta);
+        }
+        // 엘리베이터 가동 위한 잠금 장치 가동 시
+        if (INTERACTIVE_TYPE::UNLOCKGEAR == m_EventInteract.eInteractType)
+        {
+            UnLockGear_Event(fTimeDelta);
+        }
+        // 엘리베이터 가동 위한 잠금 장치 가동 시
+        if (INTERACTIVE_TYPE::GIANTGATE == m_EventInteract.eInteractType)
+        {
+            GiantGate_Event(fTimeDelta);
+        }
+        // NPC 랑 상호 작용 시
+        if (true == m_EventInteract.isNPC())
+        {
+            NPC_Event(fTimeDelta);
+        }
     }
 }
 
@@ -2481,8 +2586,10 @@ void CKhazan_GSword::BladeNexus_Event(_float fTimeDelta)
         if (true == BNEvent.isUnLock)
         {
             // 첫 해금 플레이어    애니메이션 재생 
-            if (m_pAnimInteraction->Try_DamagedTS_Before(Has_Status(GSWORD)))
+            if (m_pAnimInteraction->Try_DamagedTS_Before(Has_Status(GSWORD | SPEAR)))
             {
+                if (Has_Status(GSWORD | SPEAR))
+                    m_pBody->Get_Model()->AnimationSetIndexIncrease();
                 Clear_State();
                 Clear_SubState();
                 Clear_CycleState();
@@ -2493,8 +2600,10 @@ void CKhazan_GSword::BladeNexus_Event(_float fTimeDelta)
         else if (false == BNEvent.isUnLock)
         {
             // 해금된 귀검 플레이어 애니메이션 재생
-            if (m_pAnimInteraction->Try_DamagedTS_After(Has_Status(GSWORD)))
+            if (m_pAnimInteraction->Try_DamagedTS_After(Has_Status(GSWORD | SPEAR)))
             {
+                if (Has_Status(GSWORD | SPEAR))
+                    m_pBody->Get_Model()->AnimationSetIndexIncrease();
                 Clear_State();
                 Clear_SubState();
                 Clear_CycleState();
@@ -2532,7 +2641,7 @@ void CKhazan_GSword::Chest_Event(_float fTimeDelta)
     if (false == ChestEvent.isChestOpened)
     {
         /* 애니메이션 재생 */
-        if (m_pAnimInteraction->Try_BoxOpen(Has_Status(GSWORD)))
+        if (m_pAnimInteraction->Try_BoxOpen(Has_Status(GSWORD | SPEAR)))
         {
             Clear_State();
             Clear_SubState();
@@ -2609,7 +2718,13 @@ void CKhazan_GSword::Lever_Event(_float fTimeDelta)
     // 레버가 Active 로 전환 중일 때
     if (EventLever::ACTIVE == LeverEvent.eState)
     {
-        // 플레이어가 레버를 Active 시키는 애니메이션 재생
+        /* 애니메이션 재생 */
+        if (m_pAnimInteraction->Try_Lever(Has_Status(GSWORD | SPEAR)))
+        {
+            Clear_State();
+            Clear_SubState();
+            Clear_CycleState();
+        }
 
         LeverEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
@@ -2628,6 +2743,107 @@ void CKhazan_GSword::Lever_Event(_float fTimeDelta)
         LeverEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         m_pTransformCom->LookAt(XMLoadFloat4(&LeverEvent.vPosition));
     }
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_GSword::Statue_Event(_float fTimeDelta)
+{
+    EventStatue StatueEvent = m_EventInteract.StatueEvent;
+
+    /* 애니메이션 재생 */
+    if (m_pAnimInteraction->Try_Statue(false))
+    {
+        Clear_State();
+        Clear_SubState();
+        Clear_CycleState();
+    }
+
+
+    StatueEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&StatueEvent.vPlayerPosition));
+    StatueEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&StatueEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_GSword::IronGate_Event(_float fTimeDelta)
+{
+    EventIronGate IronGateEvent = m_EventInteract.IronGateEvent;
+
+    /* 애니메이션 재생 */
+    if (m_pAnimInteraction->Try_IronGate(Has_Status(GSWORD | SPEAR)))
+    {
+        Clear_State();
+        Clear_SubState();
+        Clear_CycleState();
+    }
+
+
+    IronGateEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&IronGateEvent.vPlayerPosition));
+    IronGateEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&IronGateEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_GSword::UnLockGear_Event(_float fTimeDelta)
+{
+    EventUnLockGear ULGearEvent = m_EventInteract.UnLockGearEvent;
+
+    /* 애니메이션 재생 */
+    if (m_pAnimInteraction->Try_UnLockGear(Has_Status(GSWORD | SPEAR)))
+    {
+        Clear_State();
+        Clear_SubState();
+        Clear_CycleState();
+    }
+
+
+    //ULGearEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    //m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&ULGearEvent.vPlayerPosition));
+    ULGearEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&ULGearEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_GSword::GiantGate_Event(_float fTimeDelta)
+{
+    EventGiantGate GateEvent = m_EventInteract.GiantGateEvent;
+
+    /* 애니메이션 재생 */
+    if (m_pAnimInteraction->Try_GiantGate(Has_Status(GSWORD | SPEAR)))
+    {
+        Clear_State();
+        Clear_SubState();
+        Clear_CycleState();
+    }
+
+
+    GateEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&GateEvent.vPlayerPosition));
+    GateEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&GateEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_GSword::NPC_Event(_float fTimeDelta)
+{
+    EventNPC NPCEvent = m_EventInteract.NPCEvent;
+
+    if (Has_Status(SPEAR))
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed"));
+    if (Has_Status(GSWORD))
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));
+
+    NPCEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&NPCEvent.vPlayerPosition));
+    NPCEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&NPCEvent.vPosition));
 
     m_EventInteract.End_Event();
 }
@@ -2989,6 +3205,7 @@ void CKhazan_GSword::Debug_Widget_Animation()
         ImGui::Text("Selected Index: %d", m_pAnimMove->Get_AnimationIndex());
         ImGui::Text("Is Finished: %s", m_pAnimMove->Is_Finished() ? "YES" : "NO");
         ImGui::Text("Is Dodging: %s", m_pAnimMove->IsDodge() ? "YES" : "NO");
+        ImGui::Text("Is Moving: %s", m_pAnimMove->IsMoving() ? "YES" : "NO");
         ImGui::Unindent();
     }
 
@@ -3230,7 +3447,6 @@ void CKhazan_GSword::Free()
 {
     m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), m_iInteractTypeEventID);
     m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iObjectInteractEventID);
-
     __super::Free();
 
     Safe_Release(m_pClientInstance);

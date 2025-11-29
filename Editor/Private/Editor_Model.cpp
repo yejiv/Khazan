@@ -1384,16 +1384,16 @@ _bool CEditor_Model::Export_AnimationJson(const string& strFilePath, const strin
 {
 	/* 전체 애니메이션 JSON 저장*/
 
-	JSON j = m_Model_Data.vecAnimation;
-	ofstream ofs(strFilePath);
-	if (!ofs.is_open())
-		return false;
+	//JSON j = m_Model_Data.vecAnimation;
+	//ofstream ofs(strFilePath);
+	//if (!ofs.is_open())
+	//	return false;
 
-	ofs << j.dump(4);
-	ofs.close();
+	//ofs << j.dump(4);
+	//ofs.close();
 
-	if (!ofs.good())
-		return false;
+	//if (!ofs.good())
+	//	return false;
 
 
 	/* 요약본 저장 */

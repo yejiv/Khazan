@@ -1293,12 +1293,51 @@
     </Filter>
     <Filter Include="04.Sequence\HeinMach\Yetuga\CutScene">
       <UniqueIdentifier>{1bffd182-9a09-49c3-bb28-36325e0076c1}</UniqueIdentifier>
-    </Filter>    
+    </Filter>
     <Filter Include="02.GameObject\UI\SkipButton">
       <UniqueIdentifier>{f7cce5d5-01f2-4e50-9e86-2c023488c0d2}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\UI\SkipButton\Progress">
       <UniqueIdentifier>{4aaa16c6-e9bf-47eb-961c-04a530227871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Viper\CutScene">
+      <UniqueIdentifier>{d4bab3a1-7c33-4ea0-a782-ba1bfcc76e57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Elamain">
+      <UniqueIdentifier>{b3502cf8-1a22-4532-b9cf-61d216374f36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Elamain\Weapon">
+      <UniqueIdentifier>{876a5ca4-1dfc-485f-88ab-55344c281204}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Elamain\Body">
+      <UniqueIdentifier>{a2ce8046-d08e-41b7-bc68-4bb55770e930}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Elamain">
+      <UniqueIdentifier>{82cefe2c-65a4-4f1d-9fce-51e58c2ae08c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Elamain">
+      <UniqueIdentifier>{1260fb0e-9b5b-4cb0-968b-5039d7ce2cfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\14.SwingCombo">
+      <UniqueIdentifier>{5b1950c6-9308-4c59-8a20-8882f095d354}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\15.ThrowRock">
+      <UniqueIdentifier>{53027f63-ccf1-419a-b245-aa308a599add}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\16.DashDrift">
+      <UniqueIdentifier>{7af2c1fa-54c3-4366-8887-69edae79e38b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\17.SwingRound">
+      <UniqueIdentifier>{51ec1274-eeab-4a55-9ba5-6f17e1dd1c0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\18.Roar">
+      <UniqueIdentifier>{8252798c-6f0b-4ed9-b561-87a9f5cac3ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Viper\Weapon\TwinBladeR">
+      <UniqueIdentifier>{fa38b132-b18d-40ec-9d92-11d478910428}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\19.Lockon">
+      <UniqueIdentifier>{4a00da1e-8bff-4b74-adc3-dc7a7f144cea}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2511,6 +2550,43 @@
     <ClInclude Include="..\public\SkipButton_Progress.h">
       <Filter>02.GameObject\UI\SkipButton\Progress</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Viper_CutScene.h">
+      <Filter>04.Sequence\Viper\CutScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Elamain.h">
+      <Filter>02.GameObject\Creature\Monster\Elamain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Elamain_Sword.h">
+      <Filter>02.GameObject\Creature\Monster\Elamain\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Elamain_Shield.h">
+      <Filter>02.GameObject\Creature\Monster\Elamain\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Body_Elamain.h">
+      <Filter>02.GameObject\Creature\Monster\Elamain\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AI_Controller_Elamain.h">
+      <Filter>92.AI\Controller\Elamain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_SwingCombo_VIper.h">
+      <Filter>92.AI\State\Viper\Phase2\14.SwingCombo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_DashDrift_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\16.DashDrift</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_ThrowRock_VIper.h">
+      <Filter>92.AI\State\Viper\Phase2\15.ThrowRock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_SwingRound_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\17.SwingRound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_Roar_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\18.Roar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TwinBlade_R_Viper.h">
+      <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBladeR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_LockOn_Viper.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3695,13 +3771,50 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sequence_Yetuga_CutScene.cpp">
       <Filter>04.Sequence\HeinMach\Yetuga\CutScene</Filter>
-    </ClCompile>    
+    </ClCompile>
     <ClCompile Include="..\private\SkipButton.cpp">
       <Filter>02.GameObject\UI\SkipButton</Filter>
     </ClCompile>
     <ClCompile Include="..\private\SkipButton_Progress.cpp">
       <Filter>02.GameObject\UI\SkipButton\Progress</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Viper_CutScene.cpp">
+      <Filter>04.Sequence\Viper\CutScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Elamain.cpp">
+      <Filter>02.GameObject\Creature\Monster\Elamain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Elamain_Sword.cpp">
+      <Filter>02.GameObject\Creature\Monster\Elamain\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Elamain_Shield.cpp">
+      <Filter>02.GameObject\Creature\Monster\Elamain\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Body_Elamain.cpp">
+      <Filter>02.GameObject\Creature\Monster\Elamain\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AI_Controller_Elamain.cpp">
+      <Filter>92.AI\Controller\Elamain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_SwingCombo_VIper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\14.SwingCombo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_DashDrift_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\16.DashDrift</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_ThrowRock_VIper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\15.ThrowRock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_SwingRound_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\17.SwingRound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_Roar_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\18.Roar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TwinBlade_R_Viper.cpp">
+      <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBladeR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_LockOn_Viper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

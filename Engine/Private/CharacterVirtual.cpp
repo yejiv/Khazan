@@ -183,7 +183,7 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
             XMVectorSet(curCharPosF.GetX(), curCharPosF.GetY(), curCharPosF.GetZ(), 1.f)
         );
     }
-
+    
     // 5) 중력 세팅
     {
         float gx = XMVectorGetX(vGravity);
@@ -669,6 +669,39 @@ _bool CCharacterVirtual::Get_isGround()
         return true;
 
 	return false;
+}
+
+void CCharacterVirtual::Teleport(_vector vPos, _vector qRot, CTransform* pTransform)
+{
+    if (m_pCharVir == nullptr)
+        return;
+
+    // 1) 위치 / 회전 즉시 세팅
+    JPH::RVec3 jPos = RVec3(
+        XMVectorGetX(vPos),
+        XMVectorGetY(vPos),
+        XMVectorGetZ(vPos)
+    );
+
+    m_pCharVir->SetPosition(jPos);
+    m_pCharVir->SetRotation(LoadQuat(qRot));
+
+    // 2) 속도 완전 0으로
+    m_pCharVir->SetLinearVelocity(JPH::Vec3::sZero());
+
+    // 3) 내가 따로 들고 있던 속도 / 점프 상태도 0으로
+    m_vVelocity = JPH::Vec3::sZero();   // 네가 쓰는 필드 이름에 맞게    
+
+    // 4) 새 위치 기준으로 접촉 정보 다시 계산
+    //    (Update에서 쓰는 필터/알로케이터 그대로 사용)
+    m_pGameInstance->CharVir_RefreshContact(
+        m_pCharVir,
+        m_iNumObjectLayer,
+        m_pBodyFilter,
+        m_pShapeFilter
+    );
+
+    pTransform->Set_State(STATE::POSITION, vPos);
 }
 
 void CCharacterVirtual::Fake_Release()

@@ -81,7 +81,7 @@ void CBody_Khazan_GS::Priority_Update(_float fTimeDelta)
 
 void CBody_Khazan_GS::Update(_float fTimeDelta)
 {
-    m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDelta);
+    m_isFinishedAnimation = m_pModelCom->Play_Animation(m_isNotifyAttacking ? fTimeDelta * 1.2f : fTimeDelta);
 
     Update_CombinedMatrix();
 
@@ -355,6 +355,7 @@ void CBody_Khazan_GS::Render_Part_MotionVector(CModel* pModel)
         // 셰이더 바꿔야 함
         //  m_pShaderCom->Begin(11);
         pModel->Render(i);
+
     }
 }
 
@@ -393,11 +394,12 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             lock_guard<mutex> lock(m_CollMonsterMutex);
             if (pObj && (find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end()))
                 m_CollMonsters.push_back(pObj);
+            return;
         }
 
        /* 공격 콜라이더 */
         _bool   isAttack = false;
-        if (pMyDesc->strName == TEXT("Player_Attack"))
+        if (pMyDesc->strName == TEXT("Player_Attack1"))
         {
             isAttack = true;
             pMonster->KnockBack(
@@ -595,6 +597,7 @@ void CBody_Khazan_GS::AllAttackCollisionActive_Off()
     m_pBodyCom_Attack->Collision_Active(false);
     m_pBodyCom_RangeAttack->Collision_Active(false);
     m_pBodyCom_BodyAttack->Collision_Active(false);
+    m_isNotifyAttacking = false;
 }
 
 void CBody_Khazan_GS::Event_AttackTiming(GS_COLLISION eColl, _bool isAttackStart)
@@ -681,13 +684,14 @@ void CBody_Khazan_GS::Check_Guarding(_float fTimeDelta)
         m_fJustGuardTime.x += fTimeDelta;
 
     if (*m_pIsGuarding == true && !m_isCollGuard_Active) {
-
+        m_pBodyCom_Guard->Collision_Active(true);
         m_isCollGuard_Active = true;
         m_fJustGuardTime.x = 0.f;
         m_isJustGuardOnce = false;
     }
     if (*m_pIsGuarding == false && m_isCollGuard_Active) {
 
+        m_pBodyCom_Guard->Collision_Active(false);
         m_isCollGuard_Active = false;
     }
 }
@@ -843,7 +847,7 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
         AttackDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
         m_tAttackCollisionDesc.pGameObject = this;
         m_tAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
-        m_tAttackCollisionDesc.strName = TEXT("Player_Attack");
+        m_tAttackCollisionDesc.strName = TEXT("Player_Attack1");
         AttackDesc.pCollisionDesc = &m_tAttackCollisionDesc;
 
         DAMAGEINFO DamageInfo = {};
@@ -890,7 +894,7 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
 
     CBody::BODY_SPHERESHAPE_DESC BodyAttackDesc{};
     {
-        BodyAttackDesc.fRadius = 0.7f;
+        BodyAttackDesc.fRadius = 1.f;
         BodyAttackDesc.bIsTrigger = true;
         BodyAttackDesc.bStartActive = true;
         BodyAttackDesc.eMotion = EMotionType::Kinematic;
@@ -900,7 +904,7 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
 
         XMStoreFloat3(&BodyAttackDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
         XMStoreFloat4(&BodyAttackDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
-        BodyAttackDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        BodyAttackDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
         m_tBodyAttackCollisionDesc.pGameObject = this;
         m_tBodyAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
         m_tBodyAttackCollisionDesc.strName = TEXT("Player_BodyAttack");
@@ -931,10 +935,10 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
         GuardDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
         GuardDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
         GuardDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-        m_tAttackCollisionDesc.pGameObject = this;
-        m_tAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
-        m_tAttackCollisionDesc.strName = TEXT("Player_Guard");
-        GuardDesc.pCollisionDesc = &m_tAttackCollisionDesc;
+        m_tGuardCollisionDesc.pGameObject = this;
+        m_tGuardCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
+        m_tGuardCollisionDesc.strName = TEXT("Player_Guard");
+        GuardDesc.pCollisionDesc = &m_tGuardCollisionDesc;
         GuardDesc.bIsTrigger = true;
 
         if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -1172,17 +1176,28 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
 #pragma endregion
 
 #pragma region Collider  
-    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_Attack->Collision_Active(true); });
-    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { m_pBodyCom_Attack->Collision_Active(false); });
+    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_Attack->Collision_Active(true); m_isNotifyAttacking = true; });
+ //   m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { m_pBodyCom_Attack->Collision_Active(false); });
 
-    m_pModelCom->Register_Event("RangeAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_RangeAttack->Collision_Active(true); });
-    m_pModelCom->Register_Event("RangeAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()  { m_pBodyCom_RangeAttack->Collision_Active(false); });
+    m_pModelCom->Register_Event("RangeAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_RangeAttack->Collision_Active(true); m_isNotifyAttacking = true; });
+  //  m_pModelCom->Register_Event("RangeAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()  { m_pBodyCom_RangeAttack->Collision_Active(false); });
 
-    m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_BodyAttack->Collision_Active(true); });
-    m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()  { m_pBodyCom_BodyAttack->Collision_Active(false); });
+    m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_BodyAttack->Collision_Active(true); m_isNotifyAttacking = true; });
+  //  m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()  { m_pBodyCom_BodyAttack->Collision_Active(false); });
 
     m_pModelCom->Register_Event("WeaponOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  m_pWSword->Set_Equipped(true);  m_pClientInstance->Set_PlayerInput(true); });
     m_pModelCom->Register_Event("WeaponOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  m_pWSword->Set_Equipped(false); m_pClientInstance->Set_PlayerInput(false); });
+
+    m_pModelCom->Register_Event("HEAL1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;
+        if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
+            m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp; }); //라크리마
+    m_pModelCom->Register_Event("HEAL2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        
+        m_pPlayerData->fCulHp += m_pPlayerData->fHealItemRegen;
+        if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
+            m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp; }); //힐템
+
 #pragma endregion
 
     return S_OK;
@@ -1349,6 +1364,7 @@ void CBody_Khazan_GS::Free()
     Safe_Release(m_pMotionTrailCom);
 
     Safe_Release(m_pBodyCom_BodyAttack);
+    Safe_Release(m_pBodyCom_RangeAttack);
     Safe_Release(m_pBodyCom_Attack);
     Safe_Release(m_pBodyCom_Guard);
     Safe_Release(m_pBodyCom_Search);
@@ -1375,11 +1391,22 @@ void CBody_Khazan_GS::Free()
         Safe_Release(pModel);
     m_RenderParts.clear();
 
+    for (auto EquipPart : m_AllParts)
+    {
+        for (auto Part : m_EquippedParts)
+        {
+            if (Part.second == EquipPart.first)
+            {
+                Safe_Release(EquipPart.second);
+                break;
+            }
+        }       
+    }
+
     for (auto partIter : m_AllParts)
         Safe_Release(partIter.second);
     m_AllParts.clear();
 
     Safe_Release(m_pModelCom);
-
     Safe_Release(m_pTrail);
 }

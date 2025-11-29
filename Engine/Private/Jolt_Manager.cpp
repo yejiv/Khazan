@@ -97,6 +97,8 @@ CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSe
 
     m_CharacterVirtuals.emplace(pCharVir->GetID(), pCharVir);
 
+    pCharVir->AddRef();
+
     return pCharVir;
 }
 
@@ -173,6 +175,17 @@ void CJolt_Manager::CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* 
     );
 }
 
+void CJolt_Manager::CharVir_RefreshContact(CharacterVirtual* pCharVir, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter)
+{
+    pCharVir->RefreshContacts(
+        m_pPhysics->GetDefaultBroadPhaseLayerFilter(iObjectLayer),
+        m_pPhysics->GetDefaultLayerFilter(iObjectLayer),
+        *pBodyFilter,
+        *pShapeFilter,
+        *m_pTempAlloc
+    );
+}
+
 CharacterVirtual* CJolt_Manager::Find_CharacterVirtual(CharacterID id)
 {
     auto iter = m_CharacterVirtuals.find(id);
@@ -196,6 +209,7 @@ void CJolt_Manager::Remove_CharacterVirtual(CharacterID id)
         Remove_BodyDesc(innerId);
 
         pChar->Release();
+        
         m_CharacterVirtuals.erase(iter);
     }
 }

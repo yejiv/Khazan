@@ -16,7 +16,7 @@ private:
 	virtual ~CAI_Controller_Yetuga() = default;
 
 public:
-    void                        Set_ActiveAIController(_bool isToggle) { m_isActiveController = isToggle; }
+    virtual void                Set_ControllerActivate(_bool isToggle) override { m_isActiveController = isToggle; }
 
 public:
 	virtual HRESULT				Initialize(class CCreature* pOwner);
@@ -32,7 +32,7 @@ public:
 	virtual INTERRUPTCONDITION	GetCallbackInterruptCondition(CGameObject* pOwner, const string& name);
 	virtual PERCEPTIONCALLBACK	GetCallBackPerception(class CGameObject* pOwner, const string& name);
 
-    _bool                       m_isActiveController = { false };
+    //_bool                       m_isActiveController = { false };
 
 
 public:

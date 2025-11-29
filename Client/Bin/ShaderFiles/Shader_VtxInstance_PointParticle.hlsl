@@ -276,7 +276,7 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     
     /* Blend Weight */
     float z = In.vProjPos.z / In.vProjPos.w; // 0..1 depth
-    float weight = max(1e-5, exp(-z * 0.75f));
+    float weight = max(1e-5, exp(-z));
     Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
     Out.vAccumAlpha.r = vFinalColor.a;
 

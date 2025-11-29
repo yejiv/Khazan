@@ -51,6 +51,12 @@ HRESULT CE_Body_Khazan_Spear::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_BareHands_Run_F"));
 
     m_pParentTransform->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 0.f));
+    
+    m_fRimPower = 5.f;
+    m_fRimIntensity = 1.f;
+    m_vRimColor = { 1.f, 1.f, 1.f };
+    m_fCycleSpeed = 5.f;
+
     return S_OK;
 }
 
@@ -72,6 +78,8 @@ void CE_Body_Khazan_Spear::Update(_float fTimeDelta)
     }
     
     m_pMotionTrailCom->Update(fTimeDelta);
+
+    m_fBlinkTimeAcc += fTimeDelta;
 }
 
 void CE_Body_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -82,8 +90,8 @@ void CE_Body_Khazan_Spear::Late_Update(_float fTimeDelta)
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
         return;
 
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::MOTIONVECTOR, this)))
-        return;
+    //  if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::MOTIONVECTOR, this)))
+    //      return;
 }
 
 HRESULT CE_Body_Khazan_Spear::Render()
@@ -106,6 +114,26 @@ HRESULT CE_Body_Khazan_Spear::Render()
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
         return E_FAIL;
+
+    // Blink Rim Light Test
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &m_fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &m_fRimIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fTimeDelta", &m_fBlinkTimeAcc, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fCycleSpeed", &m_fCycleSpeed, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &m_vRimColor, sizeof(_float3))))
+        return E_FAIL;
+
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
@@ -221,7 +249,9 @@ void CE_Body_Khazan_Spear::Render_Part(CModel* pModel)
         if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             continue;
 
-        m_pShaderCom->Begin(1);
+        //  m_pShaderCom->Begin(1);
+        // Blink Rim Light Test
+        m_pShaderCom->Begin(12);
         pModel->Render(i);
     }
 }
