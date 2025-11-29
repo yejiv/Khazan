@@ -61,8 +61,6 @@ void CLadder::Priority_Update(_float fTimeDelta)
 
 void CLadder::Update(_float fTimeDelta)
 {
-    Input_Interact_Event(fTimeDelta);
-
     Event_Update(fTimeDelta);
 
     __super::Update(fTimeDelta);
@@ -387,9 +385,6 @@ HRESULT CLadder::Ready_Interaction_Guide(void* pArg)
 
 void CLadder::Input_Interact_Event(_float fTimeDelta)
 {
-    if (false == m_isCollision)
-        return;
-
     _bool isPressing = { false };
 
     if (m_pGameInstance->Key_Pressing(DIK_F, fTimeDelta))
@@ -421,6 +416,11 @@ void CLadder::Input_Interact_Event(_float fTimeDelta)
 
 void CLadder::Event_Update(_float fTimeDelta)
 {
+    if (false == m_isCollision)
+        return;
+
+    Input_Interact_Event(fTimeDelta);
+
     if (m_Event.isOn())               // 켠다는 신호
     {
         m_pGuide->Update_Visible(false);
