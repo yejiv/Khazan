@@ -97,6 +97,8 @@ CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSe
 
     m_CharacterVirtuals.emplace(pCharVir->GetID(), pCharVir);
 
+    pCharVir->AddRef();
+
     return pCharVir;
 }
 
@@ -207,6 +209,7 @@ void CJolt_Manager::Remove_CharacterVirtual(CharacterID id)
         Remove_BodyDesc(innerId);
 
         pChar->Release();
+        
         m_CharacterVirtuals.erase(iter);
     }
 }

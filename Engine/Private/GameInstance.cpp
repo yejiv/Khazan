@@ -262,7 +262,7 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 HRESULT CGameInstance::Clear_Resources(_uint iClearLevelID)
 {
 #ifdef _DEBUG
-	//m_pImgui_Manager->ClearGizmoObject();
+	m_pImgui_Manager->Clear_GizmoObject();
 #endif
 	/* 기존레벨용 자원들을 날린다. */
 	m_pPrototype_Manager->Clear(iClearLevelID);
@@ -927,6 +927,10 @@ void CGameInstance::Set_GizmoObject(CGameObject* pGameObject)
 void CGameInstance::Clear_GizmoObject()
 {
 	m_pImgui_Manager->Clear_GizmoObject();
+}
+void CGameInstance::Imgui_All_Clean()
+{
+    m_pImgui_Manager->All_Clean();
 }
 #endif
 #pragma endregion
@@ -1706,9 +1710,6 @@ void CGameInstance::Release_Engine()
 {
 	Release();
 
-#ifdef _DEBUG
-	Safe_Release(m_pImgui_Manager);
-#endif
     Safe_Release(m_pSound_Manager);
 	Safe_Release(m_pDecal_Manager);
 	Safe_Release(m_pSequence_Manager);
@@ -1752,6 +1753,11 @@ void CGameInstance::Release_Engine()
     Safe_Release(m_pJolt_Manager);
 	Safe_Release(m_pGraphic_Device);
     
+
+#ifdef _DEBUG
+    Safe_Release(m_pImgui_Manager);
+#endif
+
 }
 
 void CGameInstance::Free()

@@ -161,7 +161,8 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 }
 
 void CKhazan_Spear::Priority_Update(_float fTimeDelta)
-{    __super::Priority_Update(fTimeDelta);
+{    
+    __super::Priority_Update(fTimeDelta);
 
     if (m_pGameInstance->Key_Down(DIK_P))
     {

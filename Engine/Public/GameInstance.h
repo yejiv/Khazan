@@ -206,6 +206,7 @@ public:
 
 	void Set_GizmoObject(class CGameObject* pGameObject);
 	void Clear_GizmoObject();
+    void Imgui_All_Clean();
 #endif
 #pragma endregion
 

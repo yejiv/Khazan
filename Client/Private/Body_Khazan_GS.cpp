@@ -1349,6 +1349,7 @@ void CBody_Khazan_GS::Free()
     Safe_Release(m_pMotionTrailCom);
 
     Safe_Release(m_pBodyCom_BodyAttack);
+    Safe_Release(m_pBodyCom_RangeAttack);
     Safe_Release(m_pBodyCom_Attack);
     Safe_Release(m_pBodyCom_Guard);
     Safe_Release(m_pBodyCom_Search);
@@ -1374,6 +1375,18 @@ void CBody_Khazan_GS::Free()
     for (auto pModel : m_RenderParts)
         Safe_Release(pModel);
     m_RenderParts.clear();
+
+    for (auto EquipPart : m_AllParts)
+    {
+        for (auto Part : m_EquippedParts)
+        {
+            if (Part.second == EquipPart.first)
+            {
+                Safe_Release(EquipPart.second);
+                break;
+            }
+        }       
+    }
 
     for (auto partIter : m_AllParts)
         Safe_Release(partIter.second);
