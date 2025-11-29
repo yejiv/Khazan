@@ -78,7 +78,7 @@ void CLever_Gear::Late_Update(_float fTimeDelta)
 
 HRESULT CLever_Gear::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CLever_Gear : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 

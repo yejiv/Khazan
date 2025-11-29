@@ -44,8 +44,15 @@ _bool CKhazan_GS_Anim_Interaction::Try_TobStone(_bool isWeapon)
     if (!m_pModel->Check_MinAnimationTime())
         return false;
 
-    if (isWeapon) m_pModel->Set_AnimationSet("Set_SpearTobstone");
-    else m_pModel->Set_AnimationSet("Set_Tobstone");
+    if (isWeapon)
+    {
+        if( m_pClientInstance->Is_CurrentGSword())
+            m_pModel->Set_AnimationSet("Set_GSwordTobstone");
+        else
+            m_pModel->Set_AnimationSet("Set_SpearTobstone");
+    }
+    else 
+        m_pModel->Set_AnimationSet("Set_Tobstone");
 
     return true;
 }
@@ -55,8 +62,15 @@ _bool CKhazan_GS_Anim_Interaction::Try_DamagedTS_Before(_bool isWeapon)
     if (!m_pModel->Check_MinAnimationTime())
         return false;
 
-    if (isWeapon) m_pModel->Set_AnimationSet("Set_SpearDamagedTS_Before");
-    else m_pModel->Set_AnimationSet("Set_DamagedTS_Before");
+    if (isWeapon)
+    {
+        if (m_pClientInstance->Is_CurrentGSword())
+            m_pModel->Set_AnimationSet("Set_GSwordDamagedTS_Before");
+        else
+            m_pModel->Set_AnimationSet("Set_SpearDamagedTS_Before");
+    }
+    else 
+        m_pModel->Set_AnimationSet("Set_DamagedTS_Before");
 
     return true;
 }
@@ -66,8 +80,15 @@ _bool CKhazan_GS_Anim_Interaction::Try_DamagedTS_After(_bool isWeapon)
     if (!m_pModel->Check_MinAnimationTime())
         return false;
 
-    if (isWeapon) m_pModel->Set_AnimationSet("Set_SpearDamagedTS_After");
-    else m_pModel->Set_AnimationSet("Set_DamagedTS_After");
+    if (isWeapon)
+    {
+        if (m_pClientInstance->Is_CurrentGSword())
+            m_pModel->Set_AnimationSet("Set_GSwordDamagedTS_After");
+        else
+            m_pModel->Set_AnimationSet("Set_SpearDamagedTS_After");
+    }
+    else 
+        m_pModel->Set_AnimationSet("Set_DamagedTS_After");
 
     return true;
 }
@@ -96,11 +117,105 @@ _bool CKhazan_GS_Anim_Interaction::Try_Lachryma()
 
     m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_LacrimaInteraction"));
 
-    m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;
-    if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
-        m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
+    //노티파이에서 힐링 처리 
+    //m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;
+    //if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
+    //    m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
 
     return true;
+}
+
+_bool CKhazan_GS_Anim_Interaction::Try_Heal()
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+    m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_Heal_01"));
+
+    return true;
+}
+
+_bool CKhazan_GS_Anim_Interaction::Try_Lever(_bool isUsedSet)
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    if (isUsedSet) {
+        if(m_pClientInstance->Get_PlayerEquipment().isGSword)
+            m_pModel->Set_AnimationSet("Set_GSwordLeverPull"); 
+        else
+            m_pModel->Set_AnimationSet("Set_SpearLeverPull");
+
+        m_pModel->AnimationSetIndexIncrease();    
+
+    }
+    else  m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_LeverPull")); 
+
+    return true;
+}
+
+_bool CKhazan_GS_Anim_Interaction::Try_Statue(_bool isUsedSet)
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    m_pClientInstance->Set_PlayerInput(true);
+
+    if (isUsedSet) {
+        m_pModel->Set_AnimationSet("Set_StatueRotate");
+        m_pModel->AnimationSetIndexIncrease();
+
+    }
+    else 
+    m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_StatueTable_Rotate_001"));
+
+    return true;
+}
+
+_bool CKhazan_GS_Anim_Interaction::Try_IronGate(_bool isUsedSet)
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    if (isUsedSet) {
+        m_pModel->Set_AnimationSet("Set_OpenGateLock");
+        m_pModel->AnimationSetIndexIncrease();
+
+    }
+    else  m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_MiddleDoor_Open_001_b"));
+
+    return true;
+}
+
+_bool CKhazan_GS_Anim_Interaction::Try_UnLockGear(_bool isUsedSet)
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    if (isUsedSet) {
+        if (m_pClientInstance->Get_PlayerEquipment().isGSword)
+            m_pModel->Set_AnimationSet("Set_GSwordGearSwitch");
+        else
+            m_pModel->Set_AnimationSet("Set_SpearGearSwitch");
+
+        m_pModel->AnimationSetIndexIncrease();
+
+    }
+    else  m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_GearSwitch_001_Interation"));
+
+    return true;
+}
+
+_bool CKhazan_GS_Anim_Interaction::Try_GiantGate(_bool isUsedSet)
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    if (isUsedSet) {
+        m_pModel->Set_AnimationSet("Set_OpenGiantGate");
+        m_pModel->AnimationSetIndexIncrease();
+
+    }
+    else  m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_OpenDoor_Giant"));
 }
 
 

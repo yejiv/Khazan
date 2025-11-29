@@ -27,6 +27,12 @@ public:
     _bool            Try_DamagedTS_After(_bool isWeapon);
     _bool            Try_BoxOpen(_bool isUsedSet);
     _bool            Try_Lachryma();
+    _bool            Try_Heal();
+    _bool            Try_Lever(_bool isUsedSet);
+    _bool            Try_Statue(_bool isUsedSet);
+    _bool            Try_IronGate(_bool isUsedSet);
+    _bool            Try_UnLockGear(_bool isUsedSet);
+    _bool            Try_GiantGate(_bool isUsedSet);
 
 public:
     _bool           Is_Interaction() const { return m_isInteraction; }

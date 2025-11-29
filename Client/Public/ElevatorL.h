@@ -102,6 +102,7 @@ private:
 
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
+    virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
     HRESULT Ready_PartObjects(void* pArg);
     HRESULT Ready_Collision(void* pArg);
 

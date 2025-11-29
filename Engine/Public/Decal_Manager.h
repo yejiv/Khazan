@@ -22,6 +22,9 @@ public:
     // 클론 후 Decal에 푸시만
     void                        Batch_Decal(class CDecal* pDecal) { m_Decals.push_back(pDecal); }
 #pragma endregion
+    // 셰이더 툴
+    ID3D11ShaderResourceView*   Get_DecalTexture(DECALTYPE eType, _uint iIndex);
+    _uint                       Get_NumDecalTextures(DECALTYPE eType);
 
 public:
     void Decal_Clear();

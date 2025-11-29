@@ -52,7 +52,10 @@ public:
         BRUTAL_READY = 1 << 22, //브루탈공격 가능 범위 내에 옴
         BRUTAL_SUCCESS = 1 << 23,  //브루탈공격 함. 
 
+        EARLY_DODGING = 1 << 24,  
 
+        INTERACTION_STATUE = 1 << 25, //상호작용 조각상
+        INTERACT_LOCKED_STATE = 1 << 26, //상호작용 도중에 상태 막기  (조각상 돌리기,  )
 
         /* 회전 */
         //TURN180 = 1 << 20,
@@ -64,8 +67,9 @@ public:
 
         STATUS_CLEARS = RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_FAST_ATTACK | SPRINT_AGAIN_REQUEST | LOCKON | CHARGING_STRONG_ATTACK
         | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST
-        | FALLING | FALLING_ATTACK | PRE_LAND  | DODGING
+        | FALLING | FALLING_ATTACK | PRE_LAND  | DODGING | EARLY_DODGING
         | BRUTAL_BEGIN | BRUTAL_READY | BRUTAL_SUCCESS
+        | INTERACTION_STATUE | INTERACT_LOCKED_STATE
 
         /*| TURN180| TURN180_REQUESTED | TURN180_COMPLETE| MOVE_AFTER_TURN*/,
 
@@ -139,7 +143,8 @@ private:
     /* info */
     _float4x4*                  m_LHandSocket_Matrix;  //왼손 소켓 
     _float4x4*                  m_LanternSocket_Matrix;         //랜턴 소켓
-    _float4x4*                  m_BackPack_Matrix;              //대검 소켓 
+    _float4x4*                  m_GSwordBackPack_Matrix;              //대검 소켓 
+    _float4x4*                  m_SpearBackPack_Matrix;              //대검 소켓 
     _float4x4*                  m_pWeaponR_Matrix = { nullptr };
     _float4x4*                  m_pGSword_Matrix = { nullptr };
    // _float4x4					m_pGSword_WorldMatrix = {};
@@ -214,7 +219,6 @@ private:
     _bool			Attack_Input(_float fTimeDelta);
     _bool			Guard_Input(_float fTimeDelta);
     _bool           Interaction_Input(_float fTimeDelta);
-    
 
     /* Animation  */
     void			Change_MoveIdle(_float fTimeDelta);
@@ -240,7 +244,8 @@ private:
     /* others,, */
     void            Check_IsInAir(_float fTimeDelta);
     void            Clear_Injured();
-
+    void            EnterStatuePuzzle(); //조각상 돌리기 모드 on
+    void            ExitStatuePuzzle(); //조각상 돌리기 모드 off
 
 private:
     HRESULT			Ready_Components();
@@ -303,10 +308,18 @@ private:
 private:
     void						Subscribe_Events();
     void						Event_Interact_Object(_float fTimeDelta);
+    /*  하인마스 + 엠바스 */
     void						BladeNexus_Event(_float fTimeDelta);
     void						Chest_Event(_float fTimeDelta);
-    void						TombStone_Event(_float fTimeDelta);
+    void						TombStone_Event(_float fTimeDelta);     //폐기
+
+    /* 앰바스 */
     void						Lever_Event(_float fTimeDelta);
+    void						Statue_Event(_float fTimeDelta); //조각상 퍼즐
+    void						IronGate_Event(_float fTimeDelta); //레버 다음 철문 밀어서열기 (자물쇠 해제)
+    void						UnLockGear_Event(_float fTimeDelta);  // ?? CA_P_Kazan_GearSwitch_001_Interation 이거 쓰면될 듯
+    void						GiantGate_Event(_float fTimeDelta);  //거대한 철문 
+    void						NPC_Event(_float fTimeDelta);
 
 private:
     void                        Lerp_Position_ByInteractEvent(_float4 vTargetPos, _float4 vStartPos, _float fDuration, _float fTimeDelta, _bool& isDone);

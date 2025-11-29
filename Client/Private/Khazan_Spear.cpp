@@ -161,7 +161,8 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 }
 
 void CKhazan_Spear::Priority_Update(_float fTimeDelta)
-{    __super::Priority_Update(fTimeDelta);
+{    
+    __super::Priority_Update(fTimeDelta);
 
     if (m_pGameInstance->Key_Down(DIK_P))
     {
@@ -370,6 +371,7 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         m_pGameInstance->Rand(3.f, 5.f)
     );
     Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+    Desc.isRandomTexture = true;
     m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
 
     switch (eHitreaction)
@@ -380,6 +382,10 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     //case Client::HITREACTION::GROGGY:
 
     //    break;
+	case Client::HITREACTION::GRAB:
+		cout << " GRAB !!! " << endl;
+		m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
+		break;
     case Client::HITREACTION::KNOCKBACK_WEAK:
         if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
         if (Has_State(CAT::M_SKILL))  m_pAnimAttack->Exit();
@@ -434,10 +440,7 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     case Client::HITREACTION::PARRY:
 
         break;
-    case Client::HITREACTION::GRAB:
-        cout << " GRAB !!! "  << endl;
-        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
-        break;
+
 
     }
 
@@ -2531,7 +2534,7 @@ HRESULT CKhazan_Spear::Ready_PartObjects()
     m_LHandSocket_Matrix = m_pBody->Get_BoneMatrix("L_Hand_Socket");
 
     CSpear_Khazan_Spear::SPEAR_KHAZAN_SPEAR_DESC         SpearDesc{};
-    SpearDesc.pState = &m_iCurMainState;
+    SpearDesc.pStatus = &m_iStatus;
     SpearDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     SpearDesc.pParentTransform = m_pTransformCom;
     if (FAILED(__super::Add_PartObject(TEXT("Part_Weapon_Spear"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Spear_Khazan_Spear"), &SpearDesc)))
@@ -2641,13 +2644,13 @@ void CKhazan_Spear::Subscribe_Events()
         {
             if (m_EventInteract.isNPC())
             {
-                m_pClientInstance->Set_PlayerInput(true);
+               // m_pClientInstance->Set_PlayerInput(true);
                 m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed"));
                 m_pSpear->Set_Enble(true);
                 // m_pSpear->Equip();
                 static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
-                Add_Status(SPEAR);
-                Remove_Status(BAREHAND | INJURED);
+                //Add_Status(SPEAR);
+               // Remove_Status(BAREHAND | INJURED);
             }
             else
             {
@@ -2656,13 +2659,14 @@ void CKhazan_Spear::Subscribe_Events()
                 // m_pSpear->Equip();
                 static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
                 Add_Status(SPEAR);
-                Remove_Status(BAREHAND | INJURED);
+               // Remove_Status(BAREHAND | INJURED);
             }
         }  });
 
 #pragma endregion
 }
 
+/* 준비운동 */
 void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
 {
     // 상호 작용 오브젝트 쪽에서 BEGIN STATE 내보내면 플레이어에서 행동 후, 행동 완료 시 이벤트 발생으로 상호 작용 오브젝트 동작
@@ -2688,18 +2692,17 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         case INTERACTIVE_TYPE::CHEST:
         {
             isDone = false;
-            _bool isMove = false;
+     
 
             CModel* pBodyModel = m_pBody->Get_Model();
 
+			/* 현재 재생되는 애니메이션이 UnArmed이고 끝났으면 true로 */
+            if (pBodyModel->IsFinished())  isDone = true;
+            
+
            // Lerp_Position_ByInteractEvent(m_EventInteract.ChestEvent.vPlayerPosition, m_vStartPos_Event, 0.3f, fTimeDelta, isDone);
             
-                /* 현재 재생되는 애니메이션이 UnArmed이고 끝났으면 true로 */
-            if (m_pBody->Get_Model()->IsFinished()) {
-                //m_pSpear->UnEquip();
-
-                isDone = true;
-            }
+            //_bool isMove = false;
             //if (pBodyModel->Get_CurAnimIndex() != pBodyModel->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"))
             //    isMove = true;
             //else if (pBodyModel->IsFinished())
@@ -2716,72 +2719,55 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         case INTERACTIVE_TYPE::CHECKPOINT:
         {
             isDone = false;
-
-            if (m_pBody->Get_Model()->IsFinished()) {
-                // m_pSpear->UnEquip();
-                isDone = true;
-            }
-
+            if (m_pBody->Get_Model()->IsFinished())  isDone = true;
             break;
         }
         case INTERACTIVE_TYPE::LEVER:
         {
-            isDone = false;
-
-            if (m_pBody->Get_Model()->IsFinished()) {
-                isDone = true;
-            }
-
-            break;
+			isDone = false;
+			if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+			break;
         }
         case INTERACTIVE_TYPE::STATUE:
         {
-            isDone = false;
-
-            if (m_pBody->Get_Model()->IsFinished()) {
-                isDone = true;
-            }
-
-            break;
+			isDone = false;
+			if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+			break;
         }
         case INTERACTIVE_TYPE::IRONGATE:
         {
-            isDone = false;
-
-            if (m_pBody->Get_Model()->IsFinished()) {
-                isDone = true;
-            }
-
-            break;
+			isDone = false;
+			if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+			break;
         }
         case INTERACTIVE_TYPE::UNLOCKGEAR:
         {
-            isDone = false;
-
-            if (m_pBody->Get_Model()->IsFinished()) {
-                isDone = true;
-            }
-
-            break;
+			isDone = false;
+			if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+			break;
         }
         case INTERACTIVE_TYPE::GIANTGATE:
         {
-            isDone = false;
-
-            if (m_pBody->Get_Model()->IsFinished()) {
-                isDone = true;
-            }
-
-            break;
+			isDone = false;
+			if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+			break;
         }
         case INTERACTIVE_TYPE::DANJIN:
         case INTERACTIVE_TYPE::DUIMUK:
         case INTERACTIVE_TYPE::DAPHRONA:
         {
             isDone = false;
-
             if (m_pBody->Get_Model()->IsFinished()) {
                 static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+                isDone = true;
+            }
+            break;
+        }
+        case INTERACTIVE_TYPE::LADDER:
+        {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
                 isDone = true;
             }
 
@@ -2791,6 +2777,7 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
             break;
         }
 
+        /* 플레이어가 오브젝트한테 "나 이제 준비됐어"를 보낸다. */
         if (isDone)               // 특정 조건 완성하면 이벤트 발생
         {
             // 이벤트에 필요한 세팅을 다음에 또 발생시 변경 가능하게 false로 변경
@@ -2865,6 +2852,11 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         {
             NPC_Event(fTimeDelta);
         }
+        // 사다리랑 상호 작용 시
+        if (INTERACTIVE_TYPE::LADDER == m_EventInteract.eInteractType)
+        {
+            Ladder_Event(fTimeDelta);
+        }
     }
 }
 
@@ -2880,9 +2872,14 @@ void CKhazan_Spear::BladeNexus_Event(_float fTimeDelta)
         // 귀검 첫 해금 시
         if (true == BNEvent.isUnLock)
         {
+			_bool isweapon = Has_Status(SPEAR) && !Has_Status(INJURED);
+
             // 첫 해금 플레이어    애니메이션 재생 
-            if (m_pAnimInteraction->Try_DamagedTS_Before(Has_Status(SPEAR)&&!Has_Status(INJURED)))
+            if (m_pAnimInteraction->Try_DamagedTS_Before(isweapon))
             {
+				if(isweapon) 
+					m_pBody->Get_Model()->AnimationSetIndexIncrease();
+
                 Clear_State();
                 Clear_SubState();
                 Clear_CycleState();
@@ -2895,6 +2892,7 @@ void CKhazan_Spear::BladeNexus_Event(_float fTimeDelta)
             // 해금된 귀검 플레이어 애니메이션 재생
             if (m_pAnimInteraction->Try_DamagedTS_After(Has_Status(SPEAR) && !Has_Status(INJURED)))
             {
+				if (Has_Status(SPEAR)) m_pBody->Get_Model()->AnimationSetIndexIncrease();
                 Clear_State();
                 Clear_SubState();
                 Clear_CycleState();
@@ -2982,6 +2980,7 @@ void CKhazan_Spear::Chest_Event(_float fTimeDelta)
     }
 }
 
+/* 폐기 */
 void CKhazan_Spear::TombStone_Event(_float fTimeDelta)
 {
     EventTombStone TSEvent = m_EventInteract.TSEvent;
@@ -3092,12 +3091,59 @@ void CKhazan_Spear::NPC_Event(_float fTimeDelta)
     EventNPC NPCEvent = m_EventInteract.NPCEvent;
 
     // 플레이어가 NPC와 상호작용하는 애니메이션 ???
+	if (Has_Status(SPEAR))
+		m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed"));
 
     NPCEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&NPCEvent.vPlayerPosition));
     NPCEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&NPCEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::Ladder_Event(_float fTimeDelta)
+{
+    EventLadder LadderEvent = m_EventInteract.LadderEvent;
+
+    switch (LadderEvent.eLadderState)
+    {
+    case EventLadder::LADDER_ACTION::UPTODOWN:
+    {
+        // 중력 끄기 ???
+        // 플레이어가 사다리 내려가는 애니메이션 ???
+        break;
+    }
+    case EventLadder::LADDER_ACTION::DOWNTOUP:
+    {
+        // 중력 끄기 ???
+        // 플레이어가 사다리 올라가는 애니메이션 ???
+        break;
+    }
+    case EventLadder::LADDER_ACTION::UPEND:
+    {
+        // 플레이어가 사다리 다 올라온 애니메이션 ???
+        break;
+    }
+    case EventLadder::LADDER_ACTION::DOWNEND:
+    {
+        // 중력 끄기 ???
+        // 플레이어가 사다리 다 내려온 애니메이션 ???
+        break;
+    }
+    default:
+        MSG_BOX(TEXT("읭 사다리 이런거 없는디"));
+        break;
+    }
+
+    if (true == LadderEvent.isStartAction())
+    {
+        LadderEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+        // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&LadderEvent.vPlayerPosition));
+        LadderEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+        m_pTransformCom->LookAt(XMLoadFloat4(&LadderEvent.vPosition));
+    }
 
     m_EventInteract.End_Event();
 }
@@ -3124,7 +3170,7 @@ void CKhazan_Spear::Lerp_Position_ByInteractEvent(_float4 vTargetPos, _float4 vS
     {
         m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vLerpPos));
         vPos.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-        m_pTransformCom->LookAt(XMLoadFloat4(&vPos));
+        m_pTransformCom->LookAt(XMLoadFloat4(&vPos));     
     }
 }
 #pragma endregion

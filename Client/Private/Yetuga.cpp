@@ -215,7 +215,8 @@ void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
             m_pGameInstance->Rand(4.f, 8.f)
             );
         Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
-        
+        Desc.isRandomTexture = true;
+
         m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
     }
 }
@@ -612,13 +613,13 @@ HRESULT CYetuga::Ready_Components()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.9f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-    tCharVirDesc.fRadius = 0.8f;
-    tCharVirDesc.fHeight = 0.4f;
+    tCharVirDesc.fRadius = 1.f;
+    tCharVirDesc.fHeight = 0.3f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
-    tCharVirDesc.fMass = 70.f;
-    tCharVirDesc.fMaxStrength = 30.f;
+    tCharVirDesc.fMass = 10.f;
+    tCharVirDesc.fMaxStrength = 10.f;
     tCharVirDesc.vStickToFloorStepDown = _float3(0.f, 0.f, 0.f);
     tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.f, 0.f);
     tCharVirDesc.vWalkStairsStepDownExtra = _float3(0.f, 0.f, 0.f);

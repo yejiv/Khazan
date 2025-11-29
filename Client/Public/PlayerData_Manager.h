@@ -143,7 +143,7 @@ public:
             m_iGSwordSkill &= ~skill;
     }
 
-    void    UsedSpear() { m_isCurSpear = true; m_isCurGSword = false; }
+    void    UsedSpear() {  m_isCurSpear = true; m_isCurGSword = false; }
     void    UsedGSword() { m_isCurSpear = false; m_isCurGSword = true; }
     _bool   Is_CurrentSpear() const { return m_isCurSpear; }
     _bool   Is_CurrentGSword() const { return m_isCurGSword; }

@@ -44,8 +44,6 @@ public:
 	//const _matrix&				Get_RootMotionDelta()const { return m_vRootMotionDelta; }
 	//_bool						isRootMotion() { return m_isRootMotion; }
 
-
-
 public:
 	void			ExportModel(string& strPath);
 	void			ExportModel_NoMsg(string& strPath);	// 확인 창 말고 디버그 창에 띄우는 추출 함수

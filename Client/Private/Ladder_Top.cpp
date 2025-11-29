@@ -28,6 +28,8 @@ HRESULT CLadder_Top::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, pDesc->fOffSetHeight, 0.f, 1.f));
 
+    m_pModelCom->Update_BoneCombinedMatrices();
+
     return S_OK;
 }
 
@@ -37,12 +39,14 @@ void CLadder_Top::Priority_Update(_float fTimeDelta)
 
 void CLadder_Top::Update(_float fTimeDelta)
 {
+    m_pModelCom->Update_BoneCombinedMatrices();
+
     Update_CombinedMatrix();
 }
 
 void CLadder_Top::Late_Update(_float fTimeDelta)
 {
-    m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+    m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
 }
 
 HRESULT CLadder_Top::Render()
@@ -55,7 +59,9 @@ HRESULT CLadder_Top::Render()
     {
         Bind_Materials(i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(4), E_FAIL);
+        m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -71,7 +77,7 @@ HRESULT CLadder_Top::Ready_Components(void* pArg)
     LEVEL eLevel = pDesc->eLevel;
     CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("level==end"), E_FAIL);
 
-    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_Ladder_Top"),

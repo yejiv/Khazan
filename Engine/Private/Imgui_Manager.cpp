@@ -307,6 +307,14 @@ void CImgui_Manager::Render_Gizmo()
     }
 }
 
+void CImgui_Manager::All_Clean()
+{
+    for (auto Menu : m_Widgets)
+    {
+        Menu.second.clear();
+    }
+}
+
 CImgui_Manager* CImgui_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, list<wstring> Menu, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
 {
     CImgui_Manager* pInstance = new CImgui_Manager(pDevice, pContext);
