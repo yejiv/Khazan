@@ -396,11 +396,13 @@ public:
 #pragma endregion
 
 #pragma region DECAL_MANAGER
-	HRESULT                 Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc);
-	HRESULT                 Render_Decals();
-    CTexture*               Get_DecalTexture(DECALTYPE eType);
-    void                    Batch_Decal(class CDecal* pDecal);
-    void                    Decal_Clear();
+	HRESULT                     Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc);
+	HRESULT                     Render_Decals();
+    CTexture*                   Get_DecalTexture(DECALTYPE eType);
+    ID3D11ShaderResourceView*   Get_DecalTexture(DECALTYPE eType, _uint iIndex);
+    _uint                       Get_NumDecalTextures(DECALTYPE eType);
+    void                        Batch_Decal(class CDecal* pDecal);
+    void                        Decal_Clear();
 #pragma endregion
 
 #pragma region EFFECT_MANAGER

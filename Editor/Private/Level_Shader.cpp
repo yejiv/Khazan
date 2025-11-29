@@ -59,8 +59,14 @@ HRESULT CLevel_Shader::Initialize()
 	
 	m_DecalDesc.fLifeTime = 5.f;
 	m_DecalDesc.vFadeTime = { 0.5f, 0.5f };
-	m_DecalDesc.vScale = { 40.f, 10.f, 40.f };
+	m_DecalDesc.vScale = { 30.f, 3.f, 30.f };
 	m_DecalDesc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+
+    m_DecalDesc.EmissiveDesc.vBaseColor = _float3(0.15f, 0.02f, 0.01f);
+    m_DecalDesc.EmissiveDesc.vEmissiveColor = _float3(1.f, 0.15f, 0.15f);
+    m_DecalDesc.EmissiveDesc.vBorderColor = _float3(0.f, 0.f, 0.f);
+    m_DecalDesc.EmissiveDesc.fEmissiveMaskPower = 3.f;
+    m_DecalDesc.EmissiveDesc.fEmissiveIntensity = 5.f;
 
 	m_DistortionDesc = m_pGameInstance->Get_DistortionDesc();
     m_RadialBlurDesc = m_pGameInstance->Get_RadialBlurDesc();
@@ -512,6 +518,8 @@ HRESULT CLevel_Shader::Initialize()
 			isChanged |= ImGui::RadioButton("Blood Circle", &iDecalType, static_cast<_int>(DECALTYPE::CIRCLE));
 			ImGui::SameLine();
 			isChanged |= ImGui::RadioButton("Blood Curve", &iDecalType, static_cast<_int>(DECALTYPE::CURVE));
+            ImGui::SameLine();
+            isChanged |= ImGui::RadioButton("Emissive Decal", &iDecalType, static_cast<_int>(DECALTYPE::EMISSIVE));
 
 			if (true == isChanged)
 				m_DecalDesc.eType = static_cast<DECALTYPE>(iDecalType);
@@ -520,8 +528,36 @@ HRESULT CLevel_Shader::Initialize()
 			ImGui::SliderFloat3("Decal Bounding Box Size", reinterpret_cast<_float*>(&m_DecalDesc.vScale), 1.f, 50.f, "%.0f");
 			
 			// 컬러
-			ImGui::ColorEdit3("Decal Color", reinterpret_cast<_float*>(&m_DecalDesc.vColor));
-		
+            if (DECALTYPE::EMISSIVE == m_DecalDesc.eType)
+            {
+                ImGui::ColorEdit3("Base Color", reinterpret_cast<_float*>(&m_DecalDesc.EmissiveDesc.vBaseColor));
+                ImGui::ColorEdit3("Emissive Color", reinterpret_cast<_float*>(&m_DecalDesc.EmissiveDesc.vEmissiveColor));
+                ImGui::ColorEdit3("Border Color", reinterpret_cast<_float*>(&m_DecalDesc.EmissiveDesc.vBorderColor));
+                ImGui::SliderFloat("Decal Emissive Mask Power", &m_DecalDesc.EmissiveDesc.fEmissiveMaskPower, 1.f, 10.f, "%.2f");
+                ImGui::SliderFloat("Decal Emissive Intensity", &m_DecalDesc.EmissiveDesc.fEmissiveIntensity, 1.f, 10.f, "%.2f");
+            }
+            else
+			    ImGui::ColorEdit3("Decal Color", reinterpret_cast<_float*>(&m_DecalDesc.vColor));		
+
+            ImGui::Checkbox("Random Texture", &m_DecalDesc.isRandomTexture);
+
+            if (false == m_DecalDesc.isRandomTexture)
+            {
+                ImGui::BeginChild("Decal Texture", ImVec2(0, 70), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+                for (_uint i = 0; i < m_pGameInstance->Get_NumDecalTextures(m_DecalDesc.eType); ++i)
+                {
+                    ID3D11ShaderResourceView* pSRV = m_pGameInstance->Get_DecalTexture(m_DecalDesc.eType, i);
+
+                    if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                        m_DecalDesc.iTextureIndex = i;
+
+                    ImGui::SameLine();
+                }
+
+                ImGui::EndChild();
+            }
+
 			ImGui::Separator();
 		}
 
