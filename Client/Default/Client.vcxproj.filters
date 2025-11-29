@@ -1293,12 +1293,15 @@
     </Filter>
     <Filter Include="04.Sequence\HeinMach\Yetuga\CutScene">
       <UniqueIdentifier>{1bffd182-9a09-49c3-bb28-36325e0076c1}</UniqueIdentifier>
-    </Filter>    
+    </Filter>
     <Filter Include="02.GameObject\UI\SkipButton">
       <UniqueIdentifier>{f7cce5d5-01f2-4e50-9e86-2c023488c0d2}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\UI\SkipButton\Progress">
       <UniqueIdentifier>{4aaa16c6-e9bf-47eb-961c-04a530227871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Sequence\Viper\CutScene">
+      <UniqueIdentifier>{d4bab3a1-7c33-4ea0-a782-ba1bfcc76e57}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2511,6 +2514,9 @@
     <ClInclude Include="..\public\SkipButton_Progress.h">
       <Filter>02.GameObject\UI\SkipButton\Progress</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Viper_CutScene.h">
+      <Filter>04.Sequence\Viper\CutScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3695,12 +3701,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sequence_Yetuga_CutScene.cpp">
       <Filter>04.Sequence\HeinMach\Yetuga\CutScene</Filter>
-    </ClCompile>    
+    </ClCompile>
     <ClCompile Include="..\private\SkipButton.cpp">
       <Filter>02.GameObject\UI\SkipButton</Filter>
     </ClCompile>
     <ClCompile Include="..\private\SkipButton_Progress.cpp">
       <Filter>02.GameObject\UI\SkipButton\Progress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Viper_CutScene.cpp">
+      <Filter>04.Sequence\Viper\CutScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
