@@ -67,6 +67,7 @@
 #pragma region MONSTER_KBS
 #include "Dragonian_Melee.h"
 #include "Dragonian_Rampage.h"
+#include "Elamain.h"
 #pragma endregion
 
 #pragma region UI
@@ -1618,13 +1619,17 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
 
 #pragma region MONSTER
 
-#pragma region Dragonian
+#pragma region KBS
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"),
         CDragonian_Melee::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"),
         CDragonian_Rampage::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Monster_Elamain"),
+        CElamain::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
         return E_FAIL;
 #pragma endregion
 

@@ -67,6 +67,8 @@ _bool CEquip_Slot::Add_Item(_int iItemIndex, CItem_Slot* pItem)
         {
             EQUIPITEM_DATA pEquipData = *CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData.iEffect_ID);
             Setting_EquipData(pEquipData);
+            if (pEquipData.iType >= ENUM_CLASS(EQUIPMENTTYPE::SPEAR) && pEquipData.iType <= ENUM_CLASS(EQUIPMENTTYPE::SHOES))
+                CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, m_iItemIndex);
         }
         return true;
     }
@@ -100,6 +102,17 @@ void CEquip_Slot::Release_Item(CItem_Slot* pItem)
     {
         EQUIPITEM_DATA pEquipData = *CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData.iEffect_ID);
         Setting_UnEquipData(pEquipData);
+
+        if (pEquipData.iType == ENUM_CLASS(EQUIPMENTTYPE::HEAD))
+            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 1);
+        else if (pEquipData.iType == ENUM_CLASS(EQUIPMENTTYPE::TORSO))
+            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 2);
+        else if (pEquipData.iType == ENUM_CLASS(EQUIPMENTTYPE::ARM))
+            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 3);
+        else if (pEquipData.iType == ENUM_CLASS(EQUIPMENTTYPE::LEG))
+            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 4);
+        else if (pEquipData.iType == ENUM_CLASS(EQUIPMENTTYPE::SHOES))
+            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 5);
     }
     Safe_Release(m_pItem_Slot);
     m_pItem_Slot = nullptr;
