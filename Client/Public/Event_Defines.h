@@ -290,6 +290,15 @@ namespace Client {
         XMFLOAT4 vPlayerPosition{};
     };
 
+    struct EventLadder
+    {
+        enum class CH_STATE { AVAILABLE_LADDER, DISABLE_LADDER, NONE };
+
+        CH_STATE eLadderState{ CH_STATE::NONE };
+        XMFLOAT4 vPosition{};
+        XMFLOAT4 vPlayerPosition{};
+    };
+
     //상호작용 오브젝트 어떤 종류인지 받아오는 이벤트 구조체(오브젝트->플레이어)
 	struct EventInteractType {
 		enum EVENT_STATE { BEGIN, END, NONE };
@@ -307,6 +316,7 @@ namespace Client {
         EventUnLockGear UnLockGearEvent{};
         EventGiantGate GiantGateEvent{};
         EventNPC NPCEvent{};
+        EventLadder LadderEvent{};
 
 		void End_Event() { isEvent = false; }
 
