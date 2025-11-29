@@ -74,7 +74,8 @@ private:
 private:
     _bool                                   m_isActiveController = { false };
     unordered_map<string, SKILLCOOLDOWN>    m_SkillCoolDowns;
-
+    _float                                  m_fAnimSpeed = {};
+    _float                                  m_fCurrentTime = {};
 
 
 public:

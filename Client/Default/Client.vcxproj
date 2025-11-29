@@ -232,6 +232,7 @@
     <ClInclude Include="..\Public\AS_P2_HandSwing3Hit.h" />
     <ClInclude Include="..\Public\AS_P2_HandUpper_Viper.h" />
     <ClInclude Include="..\Public\AS_P2_JumpAttack_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_LockOn_Viper.h" />
     <ClInclude Include="..\Public\AS_P2_Run_Viper.h" />
     <ClInclude Include="..\Public\AS_P2_SideMove_Viper.h" />
     <ClInclude Include="..\Public\AS_P2_SlashDobule_Viper.h" />
@@ -357,6 +358,7 @@
     <ClInclude Include="..\Public\Statue_Plate.h" />
     <ClInclude Include="..\public\Store_List.h" />
     <ClInclude Include="..\public\Store_Slot.h" />
+    <ClInclude Include="..\Public\TwinBlade_R_Viper.h" />
     <ClInclude Include="..\public\UI_Announce_Warning.h" />
     <ClInclude Include="..\Public\TwinBlade_Viper.h" />
     <ClInclude Include="..\public\UI_BladeNexus_Map.h" />
@@ -572,6 +574,11 @@
     <ClInclude Include="..\Public\Sequence_Yetuga_CutScene.h" />
     <ClInclude Include="..\public\SkipButton.h" />
     <ClInclude Include="..\public\SkipButton_Progress.h" />
+    <ClInclude Include="..\Public\AS_P2_DashDrift_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_Roar_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_SwingCombo_VIper.h" />
+    <ClInclude Include="..\Public\AS_P2_SwingRound_Viper.h" />
+    <ClInclude Include="..\Public\AS_P2_ThrowRock_VIper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\AI_Controller_Dragonian_Melee.cpp" />
@@ -608,6 +615,7 @@
     <ClCompile Include="..\Private\AS_P2_HandSwing3Hit.cpp" />
     <ClCompile Include="..\Private\AS_P2_HandUpper_Viper.cpp" />
     <ClCompile Include="..\Private\AS_P2_JumpAttack_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_LockOn_Viper.cpp" />
     <ClCompile Include="..\Private\AS_P2_Run_Viper.cpp" />
     <ClCompile Include="..\Private\AS_P2_SideMove_Viper.cpp" />
     <ClCompile Include="..\Private\AS_P2_SlashDobule_Viper.cpp" />
@@ -771,6 +779,7 @@
     <ClCompile Include="..\Private\Statue_Plate.cpp" />
     <ClCompile Include="..\private\Store_List.cpp" />
     <ClCompile Include="..\private\Store_Slot.cpp" />
+    <ClCompile Include="..\Private\TwinBlade_R_Viper.cpp" />
     <ClCompile Include="..\private\UI_Announce_Warning.cpp" />
     <ClCompile Include="..\Private\TwinBlade_Viper.cpp" />
     <ClCompile Include="..\private\UI_BladeNexus_Map.cpp" />
@@ -972,6 +981,11 @@
     <ClCompile Include="..\Private\Sequence_Yetuga_CutScene.cpp" />
     <ClCompile Include="..\private\SkipButton.cpp" />
     <ClCompile Include="..\private\SkipButton_Progress.cpp" />
+    <ClCompile Include="..\Private\AS_P2_DashDrift_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_Roar_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_SwingCombo_VIper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_SwingRound_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_P2_ThrowRock_VIper.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -10,6 +10,7 @@
 #include "Body_Cinematic_Viper.h"
 #include "Core_Viper.h"
 #include "Body_Phase2_Viper.h"
+#include "TwinBlade_R_Viper.h"
 
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -31,6 +32,12 @@ void CViper::Set_PhaseWeapon_Cinematic()
 {
     m_pWeapon->Set_IsActive(false);
     m_pCore->Set_IsActive(true);
+}
+
+void CViper::Set_PhaseWeapon_Phase2()
+{
+    m_pCore->Set_IsActive(false);
+    m_pP2Weapon->Set_IsActive(true);
 }
 
 HRESULT CViper::Initialize_Prototype()
@@ -68,7 +75,15 @@ HRESULT CViper::Initialize_Clone(void* pArg)
 
     m_ePhase = PHASE::PHASE2;
 
+    Set_PhaseWeapon_Phase2();
+
     m_fRecoveryPerSec = 5.f;
+
+    if (m_ePhase == PHASE::PHASE2)
+    {
+        //(-30.103f, -29.9f, 188.961f, 1.f)
+        m_pCharVirCom->Set_Position(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
+    }
 
 
     return S_OK;
@@ -102,11 +117,24 @@ void CViper::Update(_float fTimeDelta)
     {
         if (m_isLookAt)
         {
-            CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
-            if (nullptr == pModel)
-                return;
-            _float fRatio = pModel->MakeRatio();
-            Look_Target_Lerp(fTimeDelta, fRatio, 8.f);
+            if (PHASE::PHASE1 == m_ePhase)
+            {
+                CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+                if (nullptr == pModel)
+                    return;
+                _float fRatio = pModel->MakeRatio();
+                Look_Target_Lerp(fTimeDelta, fRatio, m_fTurnSpeed);
+
+            }
+            else if (PHASE::PHASE2 == m_ePhase)
+            {
+                CModel* pModel = static_cast<CModel*>(m_pPahse2Body->Get_Component(TEXT("Com_Model")));
+                if (nullptr == pModel)
+                    return;
+                _float fRatio = pModel->MakeRatio();
+                Look_Target_Lerp(fTimeDelta, fRatio, m_fTurnSpeed);
+            }
+          
         }
     }
 
@@ -118,7 +146,7 @@ void CViper::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
-    m_vLockOnPosition = m_pBody->Get_BonePointEX("Bip001-Spine2");
+    m_vLockOnPosition = m_pBody->Get_BonePointEX("Bone_Wp");
 
 }
 
@@ -319,7 +347,7 @@ HRESULT CViper::Ready_PartObjects()
     Safe_AddRef(m_pCinematicBody);
 
 
-    CTwinBlade_Viper::WEAPON_DESC CoreDesc{};
+    CCore_Viper::WEAPON_DESC CoreDesc{};
     CoreDesc.pOwner = this;
     CoreDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     CoreDesc.pOwnerTransform = m_pTransformCom;
@@ -338,7 +366,6 @@ HRESULT CViper::Ready_PartObjects()
         return E_FAIL;
 
 
-
     CBody_Phase2_Viper::BODY_DESC Phase2BodyDesc{};
     Phase2BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     Phase2BodyDesc.pOwnerTransform = m_pTransformCom;
@@ -353,6 +380,24 @@ HRESULT CViper::Ready_PartObjects()
 
     m_pPahse2Body = dynamic_cast<CBody_Phase2_Viper*>(pPhase2Body);
     Safe_AddRef(m_pPahse2Body);
+
+
+
+
+    CTwinBlade_R_Viper::WEAPON_DESC P2WeaponDesc{};
+    P2WeaponDesc.pOwner = this;
+    P2WeaponDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    P2WeaponDesc.pOwnerTransform = m_pTransformCom;
+    P2WeaponDesc.pSocketMatrix = m_pPahse2Body->Get_BoneMatrix_Ptr("Bone_Wp");
+    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_P2Weapon"), ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_TwinBlade_R"), &P2WeaponDesc)))
+        return E_FAIL;
+    CPartObject* pP2Weapon = Find_PartObject(TEXT("Part_P2Weapon"));
+    if (nullptr == pP2Weapon)
+        return E_FAIL;
+    m_pP2Weapon = dynamic_cast<CTwinBlade_R_Viper*>(pP2Weapon);
+    Safe_AddRef(m_pP2Weapon);
+    if (nullptr == pP2Weapon)
+        return E_FAIL;
 
 
     return S_OK;
@@ -407,6 +452,7 @@ HRESULT CViper::Ready_AnimEvent()
     CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
     if (nullptr == pModel)
         return E_FAIL;
+
     pModel->Register_Event("WalkStepEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             _uint iStepCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName,"WalkStepCount");
@@ -833,9 +879,405 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma endregion
 
-#pragma region REMOVE_CORE
+    CModel* pP2Model = static_cast<CModel*>(m_pPahse2Body->Get_Component(TEXT("Com_Model")));
+    if (nullptr == pP2Model)
+        return E_FAIL;
+
+#pragma region HANDSTOMP
+
+    pP2Model->Register_Event("HandStomp_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("HandStomp_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+          
+        });
+
+
+    pP2Model->Register_Event("HandStomp_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("HandStomp_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+#pragma endregion
+
+#pragma region HANDSTOMPSTR
+    pP2Model->Register_Event("HandStompStr_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("HandStompStr_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+           
+        });
+
+
+    pP2Model->Register_Event("HandStompStr_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("HandStompStr_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+#pragma endregion
+
+#pragma region HANDSWING2HIT
+    pP2Model->Register_Event("HandSwing2Hit_Look1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+
+        });
+
+    pP2Model->Register_Event("HandSwing2Hit_Look1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+
+
+    pP2Model->Register_Event("HandSwing2Hit_Look2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+
+        });
+
+    pP2Model->Register_Event("HandSwing2Hit_Look2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+           
+        });
+
+    pP2Model->Register_Event("HandSwing2Hit_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("HandSwing2Hit_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+
+    pP2Model->Register_Event("HandSwing2Hit_Look3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("HandSwing2Hit_Look3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+           
+        });
+    pP2Model->Register_Event("HandSwing2Hit_Attack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("HandSwing2Hit_Attack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+
 
 #pragma endregion
+
+#pragma region HANDUPPER
+    pP2Model->Register_Event("HandUpperLook1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("HandUpperLook1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+           
+        });
+
+
+    pP2Model->Register_Event("HandUpperAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("HandUpperAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+#pragma endregion
+
+#pragma region DASHUPPER
+    pP2Model->Register_Event("DashUpperLook", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("DashUpperLook", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            
+        });
+
+
+    pP2Model->Register_Event("DashUpperAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("DashUpperAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+
+    pP2Model->Register_Event("DashUpperLook2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("DashUpperLook2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            
+        });
+
+
+    pP2Model->Register_Event("DashUpperAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("DashUpperAttack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+
+
+#pragma endregion
+
+#pragma region DASHUPPERSTR
+    pP2Model->Register_Event("DashUpperStrLook", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("DashUpperStrLook", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+           
+        });
+
+
+    pP2Model->Register_Event("DashUpperStrAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("DashUpperStrAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 바디 오른손 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+
+        });
+#pragma endregion
+
+#pragma region FAKERUNATTACK
+    pP2Model->Register_Event("FakeRunAttackLook", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+            m_isGhost = true;
+        });
+
+    pP2Model->Register_Event("FakeRunAttackLook", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            
+            m_isGhost = false;
+        });
+
+
+    pP2Model->Register_Event("FakeRunAttackAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 무기 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("FakeRunAttackAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 무기 공격 콜라이더 OFF
+           
+        });
+
+    pP2Model->Register_Event("FakeRunAttackAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 무기 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("FakeRunAttackAttack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 무기 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+
+
+
+#pragma endregion
+
+#pragma region SLASHDOUBLE
+    pP2Model->Register_Event("SlashDoubleLook1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("SlashDoubleLook1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            
+        });
+
+
+    pP2Model->Register_Event("SlashDoubleAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 무기 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("SlashDoubleAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 무기 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+
+    pP2Model->Register_Event("SlashDoubleLook2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("SlashDoubleLook2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+           
+        });
+
+
+    pP2Model->Register_Event("SlashDoubleAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 무기 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("SlashDoubleAttack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 무기 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+
+
+
+#pragma endregion
+
+#pragma region SLASHSTOMP
+    pP2Model->Register_Event("SlashStompLook1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("SlashStompLook1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+           
+        });
+
+
+    pP2Model->Register_Event("SlashStompAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 무기 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("SlashStompAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 무기 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+
+    pP2Model->Register_Event("SlashStompLook2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("SlashStompLook2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+           
+        });
+
+
+    pP2Model->Register_Event("SlashStompAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 무기 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("SlashStompAttack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 무기 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+
+
+    pP2Model->Register_Event("SlashStompLook3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("SlashStompLook3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+        });
+
+
+    pP2Model->Register_Event("SlashStompAttack3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 무기 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("SlashStompAttack3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 무기 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+
+
+
+#pragma endregion
+
+
     return S_OK;
 
 }
@@ -869,5 +1311,7 @@ void CViper::Free()
     Safe_Release(m_pWeapon);
     Safe_Release(m_pCore);
     Safe_Release(m_pPahse2Body);
+    Safe_Release(m_pP2Weapon);
+
     __super::Free();
 }

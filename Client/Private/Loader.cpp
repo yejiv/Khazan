@@ -61,6 +61,7 @@
 #include "Body_Cinematic_Viper.h"
 #include "Core_Viper.h"
 #include "Body_Phase2_Viper.h"
+#include "TwinBlade_R_Viper.h"
 
 #pragma endregion
 
@@ -2005,6 +2006,9 @@ HRESULT CLoader::Loading_For_Viper_Model()
       CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Viper_Phase2"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Viper_Phase2/Viper_Phase2.dat")), E_FAIL);
 
+      CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_TwinBlade_R"),
+          CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/TwinBlade150_R/TwinBlade150_R.dat")), E_FAIL);
+
 
 #pragma endregion
 
@@ -2220,6 +2224,9 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
         CBody_Phase2_Viper::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_TwinBlade_R"),
+        CTwinBlade_R_Viper::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 
 #pragma endregion
 #pragma region Dragonian
