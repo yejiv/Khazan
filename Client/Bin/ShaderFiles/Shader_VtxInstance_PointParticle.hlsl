@@ -247,6 +247,9 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     
     vFinalColor.a = max(max(vMask.r, vMask.g), vMask.b);
     
+    if (vFinalColor.a <= 0)
+        discard;
+    
     if (g_MaskScrollSpeed)
         vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
      
@@ -265,11 +268,11 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     vFinalColor.xyz *= (g_vSourceColor.a + 1.5);
     
     /* Soft Effect */
-    float2 vTexcoord;
-    vTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
-    vTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
-    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
-    vFinalColor.a = vFinalColor.a * saturate(vDepthDesc.y - In.vProjPos.w);
+    //float2 vTexcoord;
+    //vTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
+    //vTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
+    //vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
+    //vFinalColor.a = vFinalColor.a * saturate(vDepthDesc.y - In.vProjPos.w);
     
     /* Blend Weight */
     float z = In.vProjPos.z / In.vProjPos.w; // 0..1 depth

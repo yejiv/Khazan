@@ -51,11 +51,6 @@ _bool CSequence_Viper_CutScene::IsEnd() const
     return m_isEnd;
 }
 
-void CSequence_Viper_CutScene::Push_Obelisk(CObelisk* pObelisk)
-{
-}
-
-
 CSequence_Viper_CutScene* CSequence_Viper_CutScene::Create()
 {
     return new CSequence_Viper_CutScene();
