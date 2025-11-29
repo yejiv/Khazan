@@ -1142,11 +1142,11 @@ void CAnimationTool::Tool_AnimationInfo_Widget()
                 ImGui::PopID();
             }
 
-            if (ImGui::Button("Add Event", ImVec2(150, 25)))
-            {
-                setup->vecEventKeys.push_back("NewEvent");
-                setup->vecEventFrames.push_back(FLOAT2_DATA{ 0.0f, 0.0f });
-            }
+            //if (ImGui::Button("Add Event", ImVec2(150, 25)))
+            //{
+            //    setup->vecEventKeys.push_back("NewEvent");
+            //    setup->vecEventFrames.push_back(FLOAT2_DATA{ 0.0f, 0.0f });
+            //}
 
             ImGui::Unindent();
         }

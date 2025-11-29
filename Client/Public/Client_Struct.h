@@ -180,6 +180,7 @@ namespace Client
 
         const _float fUsedStamina = { 80.f };
         const _float fLachrymaItemRegen = { 660.0f };
+        const _float fHealItemRegen = { 330.0f };
         
 	}PLAYER_DATA;
 

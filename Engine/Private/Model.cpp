@@ -642,6 +642,14 @@ _bool CModel::Check_MinAnimationTime()
     return m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime <= m_fCurrentTrackPosition;
 }
 
+_bool CModel::Check_CanDodgeTime()
+{
+    if (m_AnimationsSetup[m_iCurrentAnimIndex].fBlendInTime < 1.f)
+        return true;
+
+    return m_AnimationsSetup[m_iCurrentAnimIndex].fBlendInTime <= m_fCurrentTrackPosition;
+}
+
 void CModel::AnimationSetIndexIncrease()
 {
     ++m_AnimationSetInfo.iCurrentIndex;

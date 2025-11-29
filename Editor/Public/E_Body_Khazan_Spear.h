@@ -92,11 +92,16 @@ private:
     _float              m_fColorUpdateSpeed = {};
     _bool               m_isIndividualColor = {};
     _float              m_fTimeAcc = {};
+    _float3             m_vRimColor = {};
+    _float              m_fCycleSpeed = {};
 
     // Motion Trail Test
     CMotionTrail*       m_pMotionTrailCom = { nullptr };
 
     _float4x4           m_PrevCombinedMatrix = {};
+
+    // Blink Rim Light Test
+    _float              m_fBlinkTimeAcc = {};
 
 private:
     HRESULT				Ready_Components();

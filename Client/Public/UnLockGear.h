@@ -61,8 +61,14 @@ private:
     _uint m_iObjectInteractEventID = {};
     _uint m_iGimmickTypeEventID = {};
     _uint m_iEventID = {};
+
+    // Blink Rim Light Shader
+    _float m_fBlinkTimeAcc = {};
+    _bool m_isEnableBlink = {};
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
+    virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
     HRESULT Ready_Collision(void* pArg);
     HRESULT Ready_Interaction_Guide(void* pArg);
 

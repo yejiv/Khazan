@@ -23,6 +23,9 @@ HRESULT CAI_Controller_Viper::Initialize(CCreature* pOwner)
     if (nullptr == m_pFSM)
         return E_FAIL;
 
+
+    m_fAnimSpeed = 1.f;
+
     return S_OK;
 }
 
@@ -59,12 +62,26 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
     //}
 
-
-
-
-    if(m_pGameInstance->Key_Down(DIK_J))
+    if (m_pGameInstance->Key_Down(DIK_J))
         Set_ActiveAIController(true); // 이거 하면 실행됩니다.
 
+
+
+    if (m_pBB->Get_Value<_bool>(m_strMonstertag, "is_Berserker"))
+    {
+        m_fAnimSpeed = 1.2f;
+        m_fCurrentTime += fTimeDelta;
+        if (m_fCurrentTime >= 30.f)
+        {
+            m_pBB->Set_Value<_bool>(m_strMonstertag, "is_P2Loar", true);
+            m_pBB->Set_Value<_bool>(m_strMonstertag, "is_Berserker", false);
+            m_fAnimSpeed = 1.f;
+            m_fCurrentTime = 0.f;
+        }
+
+    }
+
+    
     if (m_isActiveController)
     {
         m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
@@ -80,7 +97,9 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         m_pBT->Update();
     }
 
-    m_pFSM->Update(pOwner, fTimeDelta);
+
+
+    m_pFSM->Update(pOwner, fTimeDelta * m_fAnimSpeed);
 }
 
 HRESULT CAI_Controller_Viper::Ready_Perception(CGameObject* pOwner, const AIPERCEPTION_DATA& Desc)
@@ -226,15 +245,206 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
             };
     }
 
+    else if ("P2_Roar" == name)
+    {
+        return [pViper](CBlackBoard* BB)->_bool
+            {
+                _bool isRoar = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2Loar");
+                if (isRoar)
+                    return true;
+                return false;
+            };
+    }
+
+
 #pragma endregion
+
+
+#pragma region LOCKON
+    else if ("P2_LockOn" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fLockOnRange = BB->Get_Value<_float>(pViper->Get_Name(), "LockOnRange");
+
+                // 락온 거리 조건
+                if (fDist != 0 && fDist <= fLockOnRange)
+                    return true;
+
+                return false;
+            };
+    }
+#pragma endregion
+
+#pragma region DIR
+    else if ("P2_Front" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _uint iDir = BB->Get_Value<_uint>(pViper->Get_Name(), "LockDir");
+                if (iDir == ENUM_CLASS(DIRECTION::F))
+                    return true;
+
+                return false;
+            };
+    }
+
+    else if ("P2_Left" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _uint iDir = BB->Get_Value<_uint>(pViper->Get_Name(), "LockDir");
+                if (iDir == ENUM_CLASS(DIRECTION::L))
+                    return true;
+
+                return false;
+            };
+    }
+
+    else if ("P2_Right" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _uint iDir = BB->Get_Value<_uint>(pViper->Get_Name(), "LockDir");
+                if (iDir == ENUM_CLASS(DIRECTION::R))
+                    return true;
+
+                return false;
+            };
+    }
+
+    else if ("P2_Back" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+                _uint iDir = BB->Get_Value<_uint>(pViper->Get_Name(), "LockDir");
+                if (iDir == ENUM_CLASS(DIRECTION::B))
+                    return true;
+
+                return false;
+            };
+    }
+
+
+#pragma endregion
+
+
 
 #pragma region COMBAT_PHASE2
 
-   
+
+    else if ("P2_SwingRound" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+
+                _float fHpRatio = pViper->Get_CurrentHP() / pViper->Get_MaxHP();
+                if (fHpRatio >= 0.4f)
+                    return false;
+
+                //// HP가 60퍼 밑으로 내려가면
+                //_float fDiffScale = (0.4f - fHpRatio);
+                //// 최소 확률
+                //_float fMinChance = 0.15f;
+                //_float fChance = fMinChance + fDiffScale * 0.4f; // 최소 확률 + 확률 보정치
+                //// fDiffScale 이 커질 수록 확률이 증가 하게된다.
+
+                //// 여기다가 확률 추가
+                //if (m_pGameInstance->Rand(0, 1) > fChance)
+                //    return false;
+
+
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fLockOnRange = BB->Get_Value<_float>(pViper->Get_Name(), "LockOnRange");
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SwingRoundFinished");
+
+                if (fDist != 0 && fDist <= fLockOnRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+
+    else if ("P2_DashDrift" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+
+                _float fHpRatio = pViper->Get_CurrentHP() / pViper->Get_MaxHP();
+                if (fHpRatio >= 0.6f)
+                    return false;
+
+
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fJumpAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "JumpAttackRange");
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_DashDriftFinished");
+
+                if (fDist != 0 && fDist <= fJumpAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+    else if ("P2_ThrowRock" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+                _float fLockOnRange = BB->Get_Value<_float>(pViper->Get_Name(), "LockOnRange");
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_ThrowRockFinished");
+
+                if (fDist >= fAttackRange && fDist <= fLockOnRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+    else if ("P2_SwingCombo" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+
+                _float fHpRatio = pViper->Get_CurrentHP() / pViper->Get_MaxHP();
+                if (fHpRatio >= 0.7f)
+                    return false;
+
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SwingComboFinished");
+
+                if (fDist != 0 && fDist <= fAttackRange)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
     else if ("P2_JumpAttack" == name)
     {
         return [pViper, this](CBlackBoard* BB)->_bool
             {
+
+                _float fHpRatio = pViper->Get_CurrentHP() / pViper->Get_MaxHP();
+                if (fHpRatio >= 0.7f)
+                    return false;
+
+
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fRunRange = BB->Get_Value<_float>(pViper->Get_Name(), "RunRange");
                 _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_JumpAttackFinished");
@@ -292,12 +502,17 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
     {
         return [pViper, this](CBlackBoard* BB)->_bool
             {
+
+                _float fHpRatio = pViper->Get_CurrentHP() / pViper->Get_MaxHP();
+                if (fHpRatio >= 0.7f)
+                    return false;
+
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fDashAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "DashAttackRange");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
                 _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_DashUpperStrFinished");
 
-                if (fDist > fAttackRange && fDist <= fDashAttackRange)
+                if (fDist > fAttackRange && fDist <= 70.f)
                 {
                     return true;
                 }
@@ -311,12 +526,12 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
     {
         return [pViper, this](CBlackBoard* BB)->_bool
             {
+
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fDashAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "DashAttackRange");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
-                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_DashUpperFinished");
 
-                if (fDist > fAttackRange && fDist <= fDashAttackRange)
+                if (fDist != 0 && fDist <= 70.f)
                 {
                     return true;
                 }
@@ -329,6 +544,11 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
     {
         return [pViper, this](CBlackBoard* BB)->_bool
             {
+
+                _float fHpRatio = pViper->Get_CurrentHP() / pViper->Get_MaxHP();
+                if (fHpRatio >= 0.6f)
+                    return false;
+
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "RunRange");
 
@@ -348,6 +568,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
     {
         return [pViper, this](CBlackBoard* BB)->_bool
             {
+
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
 
@@ -444,6 +665,12 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
     {
         return [pViper, this](CBlackBoard* BB)->_bool
             {
+
+                _float fHpRatio = pViper->Get_CurrentHP() / pViper->Get_MaxHP();
+                if (fHpRatio >= 0.7f)
+                    return false;
+
+
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
 
@@ -489,11 +716,11 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
             {
 
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
-                _float fRunRange = BB->Get_Value<_float>(pViper->Get_Name(), "RunRange");
+                _float fWalkRange = BB->Get_Value<_float>(pViper->Get_Name(), "WalkRange");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
                 _uint iStepCnt = BB->Get_Value<_uint>(pViper->Get_Name(), "WalkStepCount");
 
-                if ((fDist >= fAttackRange && fDist <= fRunRange) || iStepCnt >= 4)
+                if ((fDist >= fAttackRange && fDist <= fWalkRange))
                     return true;
 
                 return false;
@@ -944,6 +1171,156 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 #pragma endregion
 
 
+#pragma region LOCKON
+
+    else if ("P2_LockOn" == name)
+    {
+        return [pViper](CBlackBoard* BB)->BTNODESTATE
+            {
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP2_LockOn_Finished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                pViper->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_LOCKON), pViper);
+                return BTNODESTATE::RUNNING;
+            };
+    }
+#pragma endregion
+    
+
+
+#pragma region COMBAT_PHASE2
+
+    else if ("P2_Roar" == name)
+    {
+        return [pViper](CBlackBoard* BB)->BTNODESTATE
+            {
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_RoarFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_ROAR), pViper);
+
+                return BTNODESTATE::RUNNING;
+
+
+            };
+    }
+   
+
+    else if ("P2_SwingRound" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SwingRoundFinished"))
+                {
+                    // AttackInterrupt
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGROUND), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+    else if ("P2_DashDrift" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_DashDriftFinished"))
+                {
+                    // AttackInterrupt
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHDRIFT), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+    else if ("P2_ThrowRock" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_ThrowRockFinished"))
+                {
+                    // AttackInterrupt
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_THROWROCK), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
+
+
+    else if ("P2_SwingCombo" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SwingComboFinished"))
+                {
+                    // AttackInterrupt
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGCOMBO), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+    }
+
+
     else if ("P2_JumpAttack" == name)
     {
 
@@ -1026,7 +1403,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
 
 
-#pragma region COMBAT_PHASE2
+
 
     else if ("P2_DashUpperStr" == name)
     {
@@ -1786,6 +2163,105 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
 #pragma region COMBAT_PHASE2
 
 
+    else if ("P2_Roar" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_RoarFinished", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isP2_Roar", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+
+    else if ("P2_SwingRound" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_SwingRoundFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+    else if ("P2_DashDrift" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_DashDriftFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+    else if ("P2_ThrowRock" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_ThrowRockFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+
+    else if ("P2_SwingCombo" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_SwingComboFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
+
+
+
+
 
     else if ("P2_JumpAttack" == name)
     {
@@ -2040,6 +2516,26 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
 #pragma region NONCOMBAT_PAHSE2
 
 #pragma endregion
+
+#pragma region LOCKON
+
+    else if ("P2_LockOn" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isP2_LockOn_Finished", false);
+                }
+            };
+            }
+#pragma endregion
+
+
+
 
 #pragma region COMBAT_TERMINATES
     

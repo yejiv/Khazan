@@ -134,13 +134,18 @@ HRESULT CElevatorL::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    // 이미시브
+    _float fEmissiveIntensity = 10.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
+        return E_FAIL;
+
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(14), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -208,6 +213,28 @@ HRESULT CElevatorL::Ready_Components(void* pArg)
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), m_szModelName,
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CElevatorL::Bind_Materials(_uint iMeshIndex)
+{
+    m_iMtrlFlags = 0;
+
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+        m_iMtrlFlags |= M_DIFFUSE;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
+        m_iMtrlFlags |= M_NORMAL;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
+        m_iMtrlFlags |= M_EMISSIVE;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
+        m_iMtrlFlags |= M_SPECULAR;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalicTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
+        m_iMtrlFlags |= M_METALIC;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
+        m_iMtrlFlags |= M_ROUGHNESS;
+
+    m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 
     return S_OK;
 }
