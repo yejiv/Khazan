@@ -50,12 +50,13 @@ HRESULT CPlayer_Manager::Initialize()
 
     /* 임시 */
     m_pClientInstance->UsedGSword();
-    BindSkillToButton(Q, CPlayerData_Manager::GIANTHUNT);
-    BindSkillToButton(E, CPlayerData_Manager::PHANTOM_SHADOWOFDARKNESS);
-    BindSkillToButton(R, CPlayerData_Manager::BREAK_THROUGH);
-    BindSkillToButton(CTRL_LB, CPlayerData_Manager::WARCRY);
-    BindSkillToButton(CTRL_RB, CPlayerData_Manager::INNER_FURY);
+    BindSkillToButton(Q, CPlayerData_Manager::GIANTHUNT);   /* 거인 사냥 */
+    BindSkillToButton(E, CPlayerData_Manager::PHANTOM_SHADOWOFDARKNESS);    /* 귀신 : 어둠의 그림자*/
+    BindSkillToButton(R, CPlayerData_Manager::BREAK_THROUGH);   /* 정면 돌파 */
+    BindSkillToButton(CTRL_LB, CPlayerData_Manager::WARCRY);    /* 거대한 포효 */ 
+    BindSkillToButton(CTRL_RB, CPlayerData_Manager::INNER_FURY);    /* 내재된 분노 */
 
+    //m_pClientInstance->UsedSpear();
 
 	return S_OK;
 }

@@ -44,10 +44,10 @@ HRESULT CPlayerData_Manager::Initialize()
     m_ePlayerEquipment.iGSword = 4001;
     m_ePlayerEquipment.isSpear = true;
     m_ePlayerEquipment.isGSword = false;
+    UsedSpear();
 
     return S_OK;
 }
-
 
 void CPlayerData_Manager::Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex)
 {
@@ -57,11 +57,13 @@ void CPlayerData_Manager::Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEqu
         m_ePlayerEquipment.iSpear = iEquipmentIndex;
         m_ePlayerEquipment.isGSword = false;
         m_ePlayerEquipment.isSpear = true;
+        UsedSpear();
         break;
     case Client::EQUIPMENTTYPE::GSWORD:
         m_ePlayerEquipment.iSpear = iEquipmentIndex;
         m_ePlayerEquipment.isGSword = true;
         m_ePlayerEquipment.isSpear = false;
+        UsedGSword();
         break;
     case Client::EQUIPMENTTYPE::HEAD:
         m_ePlayerEquipment.iHead = iEquipmentIndex;
@@ -93,11 +95,13 @@ void CPlayerData_Manager::Set_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipm
         m_ePlayerEquipment.iSpear = iEquipmentIndex;
         m_ePlayerEquipment.isGSword = false;
         m_ePlayerEquipment.isSpear = true;
+        UsedSpear();
         break;
     case Client::EQUIPMENTTYPE::GSWORD:
         m_ePlayerEquipment.iSpear = iEquipmentIndex;
         m_ePlayerEquipment.isGSword = true;
         m_ePlayerEquipment.isSpear = false;
+        UsedGSword();
         break;
     case Client::EQUIPMENTTYPE::HEAD:
         m_ePlayerEquipment.iHead = iEquipmentIndex;

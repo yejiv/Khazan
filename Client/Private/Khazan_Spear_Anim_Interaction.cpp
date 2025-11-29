@@ -84,7 +84,8 @@ _bool CKhazan_Spear_Anim_Interaction::Try_BoxOpen(_bool isUsedSet)
         m_pModel->AnimationSetIndexIncrease();      //무기 집어 넣는건 플레이어에서 관리.
 
     }
-    else  m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_BigChest_Open_003")); //상자만 여는 모션
+    else 
+        m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_BigChest_Open_003")); //상자만 여는 모션
 
     return true;
 }

@@ -290,6 +290,28 @@ namespace Client {
         XMFLOAT4 vPlayerPosition{};
     };
 
+    struct EventLadder
+    {
+        enum class LADDER_ACTION {
+            UPTODOWN,       // 위에서 아래로가는 액션
+            DOWNTOUP,       // 아래에서 위로가는 액션
+            UPEND,          // 위쪽 도착했을때 액션
+            DOWNEND,        // 아래쪽 도착했을때 액션
+            NONE };
+
+        LADDER_ACTION eLadderState{ LADDER_ACTION::NONE };
+        XMFLOAT4 vPosition{};
+        XMFLOAT4 vPlayerPosition{};
+
+        bool isStartAction() {
+            return LADDER_ACTION::UPTODOWN == eLadderState || LADDER_ACTION::DOWNTOUP == eLadderState;
+        }
+
+        bool isEndAction() {
+            return LADDER_ACTION::DOWNEND == eLadderState || LADDER_ACTION::UPEND == eLadderState;
+        }
+    };
+
     //상호작용 오브젝트 어떤 종류인지 받아오는 이벤트 구조체(오브젝트->플레이어)
 	struct EventInteractType {
 		enum EVENT_STATE { BEGIN, END, NONE };
@@ -307,6 +329,7 @@ namespace Client {
         EventUnLockGear UnLockGearEvent{};
         EventGiantGate GiantGateEvent{};
         EventNPC NPCEvent{};
+        EventLadder LadderEvent{};
 
 		void End_Event() { isEvent = false; }
 

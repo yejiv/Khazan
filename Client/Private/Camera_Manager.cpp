@@ -80,6 +80,8 @@ void CCamera_Manager::Clear(_uint iLevelIndex)
 	if (iLevelIndex >= m_iNumLevels)
 		return;
 
+    m_pActiveCamera = nullptr;
+
 	m_pCameras[iLevelIndex].clear();
 }
 
