@@ -114,6 +114,7 @@ public:
 
 public:
 	virtual void	Set_PosRot(_vector vPos, _vector vRot);
+    void           Set_Pos(_vector vPos);
 	BodyID           Get_BodyID() const { return m_BodyID; }
 	EMotionType      Get_Motion() const { return m_eMotion; }
 

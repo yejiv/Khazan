@@ -32,6 +32,9 @@ protected:
 protected:
     _bool m_isJump = { false };
     _bool m_isDive = { false };
+    _bool m_isOnLadder = { false };
+
+    Vec3 m_vLadderUp = Vec3(0.f, 1.f, 0.f);
 
     Vec3 m_vDivePos = Vec3::sZero();
     _float m_fDiveSpeed = { 25.f };

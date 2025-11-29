@@ -305,6 +305,8 @@
     <ClInclude Include="..\Public\GiantGate_Part_R.h" />
     <ClInclude Include="..\Public\Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Sword.h" />
+    <ClInclude Include="..\Public\Interaction_Item.h" />
+    <ClInclude Include="..\Public\Interaction_Object.h" />
     <ClInclude Include="..\Public\IronGate.h" />
     <ClInclude Include="..\Public\IronGate_Lock.h" />
     <ClInclude Include="..\Public\IronGate_Part_L.h" />
@@ -726,6 +728,8 @@
     <ClCompile Include="..\Private\FSM_Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Sword.cpp" />
+    <ClCompile Include="..\Private\Interaction_Item.cpp" />
+    <ClCompile Include="..\Private\Interaction_Object.cpp" />
     <ClCompile Include="..\Private\IronGate.cpp" />
     <ClCompile Include="..\Private\IronGate_Lock.cpp" />
     <ClCompile Include="..\Private\IronGate_Part_L.cpp" />
