@@ -61,6 +61,7 @@ float3 g_vRimColor;
 // Blink RimLight
 float g_fTimeDelta;
 float g_fCycleSpeed;
+float g_fRimEmissive;
 
 struct VS_IN
 {
@@ -563,6 +564,81 @@ PS_OUT PS_BLINK_RIMLIGHT(PS_IN In)
         discard;
     
     vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+        float3 vNormal = vMtrlNormal.xyz * 2.f - 1.f;
+        
+        float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+        vNormal = mul(vNormal, WorldMatrix);
+        
+        vMtrlNormal = float4(normalize(vNormal.xyz), 0.f);
+    }
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+        vMtrlSpecular.a = 0.f;
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+        //  float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMtrlMetalic.r);
+        //  float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMtrlMetalic.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+        
+        float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMtrlMetalic.r);
+        float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMtrlMetalic.g);
+        
+        Out.vDiffuse *= fEdgeMask;
+        Out.vDiffuse *= fShadeMask;
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_ROUGHNESS))
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    //  Out.vDiffuse = vMtrlDiffuse * vMtrlSpecular * g_fEmissiveIntensity;
+    vMtrlDiffuse.g = 0.f;
+    Out.vDiffuse = lerp(vMtrlDiffuse, vMtrlSpecular, g_fColorRatio) * g_fEmissiveIntensity;
+    //  Out.vDiffuse = vMtrlMetalic;
+    // Out.vDiffuse = vMtrlSpecular * 10.f;
+    
+    Out.vNormal = vector(vMtrlNormal);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    //  Out.vEmissive = vMtrlEmissive;
+    
+    //  Out.vEmissive = vMtrlSpecular * 2.f;
+
+    return Out;
+}
+
+PS_OUT PS_MAP_ANIM(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
     if (IsFlag(M_NORMAL))
     {
         vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
@@ -596,25 +672,242 @@ PS_OUT PS_BLINK_RIMLIGHT(PS_IN In)
         vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
     }
     
-    // Rim Light
-    vector vLook = normalize(g_vCamPosition - In.vWorldPos);
-    
-    float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
-    fRim = pow(fRim, g_fRimPower);
-    
-    // cos = (-1 ~ 1) + 1 -> (0 ~ 2) * RimIntensity / 2 => 0 ~ 1
-    float fFinalIntensity = g_fRimLightIntensity / 2.f * (1.f + cos(g_fTimeDelta * g_fCycleSpeed));
-    
-    fRim = g_vRimColor * fRim * fFinalIntensity;
-    
-    Out.vDiffuse = vMtrlDiffuse + fRim;
+    Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
     Out.vSpecular = vMtrlSpecular;
     Out.vSpecular.a = 0.f;
     Out.vEmissive = vMtrlEmissive;
+
+    return Out;
+}
+
+PS_OUT PS_LANTERN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
     
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
+    Out.vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    float fEmissvie = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord).g;
+
+    Out.vEmissive = float4(fEmissvie, fEmissvie, fEmissvie, 1.f);
+    //  Out.vEmissive *= 2.f;
+    
+    return Out;
+}
+
+struct PS_OUT_VELOCITY
+{
+    float4 vVelocity : SV_TARGET0;
+};
+
+PS_OUT_VELOCITY PS_MOTIONVECTOR(PS_IN In)
+{
+    PS_OUT_VELOCITY Out = (PS_OUT_VELOCITY) 0;
+    
+    Out.vVelocity = float4(1.f, 0.f, 0.f, 1.f);
+    
+    return Out;
+}
+
+PS_OUT PS_BLINK_UNLOCK_GEAR(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_ROUGHNESS))
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+
+    // Emissive
+    float fMask = vMtrlEmissive.b;
+    vMtrlDiffuse += vMtrlDiffuse * fMask * g_fEmissiveIntensity;
+    
+    // Rim Light
+    vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+    float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+    fRim = pow(fRim, g_fRimPower);
+    
+    // Blink Cycle = cos = (-1 ~ 1) + 1 -> (0 ~ 2) * RimIntensity / 2 => 0 ~ 1
+    float fFinalIntensity = g_fRimLightIntensity / 2.f * (1.f + cos(g_fTimeDelta * g_fCycleSpeed));
+
+    float3 vRimColor = g_vRimColor * fRim * fFinalIntensity;
+
+    Out.vDiffuse.rgb = vMtrlDiffuse.rgb + vRimColor * g_fRimEmissive; // Rim Emissive
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular * 0.1f;
+    Out.vSpecular.a = 0.f;
+    //  Out.vEmissive = vMtrlEmissive;
+    
+    return Out;
+}
+
+PS_OUT PS_UNLOCK_GEAR(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_ROUGHNESS))
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    float fMask = vMtrlEmissive.b;
+
+    vMtrlDiffuse += vMtrlDiffuse * fMask * g_fEmissiveIntensity;
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular * 0.1f;
+    Out.vSpecular.a = 0.f;
+    //  Out.vEmissive = vMtrlEmissive;
+
+    return Out;
+}
+
+PS_OUT PS_ELEVATOR_L(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_ROUGHNESS))
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+
+    Out.vDiffuse = vMtrlDiffuse * vMtrlSpecular.r * g_fEmissiveIntensity;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    //  Out.vSpecular = vMtrlSpecular * 0.1f;
+    //  Out.vSpecular.a = 0.f;
+    //  Out.vEmissive = vMtrlEmissive;
+
     return Out;
 }
 
@@ -761,7 +1054,7 @@ technique11 DefaultTechnique
     }
 
     // 깜빡이는 림 라이트 (활성화된 오브젝트용) 패스        ( 12번 )
-    pass BlinkRimLight
+    pass BlinkUnlockGear
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -769,6 +1062,30 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_BLINK_RIMLIGHT();
+        PixelShader = compile ps_5_0 PS_BLINK_UNLOCK_GEAR();
+    }
+
+    // 언락 기어 패스        ( 13번 )
+    pass UnlockGear
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_UNLOCK_GEAR();
+    }
+
+    // 엘레베이터 L 패스        ( 14번 )
+    pass ElevatorL
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_ELEVATOR_L();
     }
 }
