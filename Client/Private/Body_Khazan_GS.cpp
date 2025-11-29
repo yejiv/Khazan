@@ -981,6 +981,8 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("GS_WeakAtk01_Charge_Ground", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("FerociousMomentum0"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+        Spawn_EmissiveDecal();
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.f);
         });
 
     m_pModelCom->Register_Event("GS_WeakAtk02_SowardFX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -1091,6 +1093,8 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     //거대한 포효
     m_pModelCom->Register_Event("GS_WarDeclaration_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Giant_Roar"), m_pParentTransform->Get_State(STATE::POSITION));
+        Spawn_CrackDecal();
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
         });
 
     //정면 돌파
@@ -1133,6 +1137,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     // 내재된 분노 
     m_pModelCom->Register_Event("GS_RasingFurry_Explosion", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Inner_Range_Ground"), m_pParentTransform->Get_State(STATE::POSITION));
+        Spawn_CircleBloodDecal();
         });
 
     // 귀신 어둠의 그림자 
@@ -1173,6 +1178,24 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Manifest_Strength_Land"), XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
         });
 
+#pragma endregion
+
+#pragma region ScreenEffect
+    // 포워드 닷지
+    m_pModelCom->Register_Event("Dodge_F_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        });
+    m_pModelCom->Register_Event("Dodge_F_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
+        });
+
+    // 백 닷지
+    m_pModelCom->Register_Event("Dodge_B_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        });
+    m_pModelCom->Register_Event("Dodge_B_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
+        });
 #pragma endregion
 
 #pragma region Collider  
@@ -1331,6 +1354,76 @@ _vector CBody_Khazan_GS::Decompose_Rotation(_matrix W, _vector localRot, _vector
     }
 
     return Q;
+}
+
+void CBody_Khazan_GS::Spawn_EmissiveDecal()
+{
+    DECAL_DESC Desc{};
+    Desc.fLifeTime = 5.f;
+    Desc.vFadeTime = _float2(0.5f, 0.5f);
+    Desc.eType = DECALTYPE::EMISSIVE;
+
+    _matrix ParentMatrix = XMLoadFloat4x4(m_pParentMatrix);
+    _vector vRight = ParentMatrix.r[0];
+    _vector vLook = ParentMatrix.r[2];
+    _vector vPosition = ParentMatrix.r[3];
+    vPosition += (vRight * 2.f) + (vLook * 2.f);
+    XMStoreFloat3(&Desc.vPosition, vPosition);
+    Desc.vScale = _float3(5.f, 1.5f, 5.f);
+    // Base가 더 빨간 버전
+    Desc.EmissiveDesc.vBaseColor = _float3(0.547f, 0.02f, 0.f);
+    //  Desc.EmissiveDesc.vBaseColor = _float3(0.506f, 0.02f, 0.f);
+    Desc.EmissiveDesc.vEmissiveColor = _float3(1.f, 0.05f, 0.05f);
+    //  Desc.EmissiveDesc.vEmissiveColor = _float3(0.637f, 0.116f, 0.104f);
+    Desc.EmissiveDesc.vBorderColor = _float3(0.f, 0.f, 0.f);
+    Desc.EmissiveDesc.fEmissiveMaskPower = 3.f;
+    Desc.EmissiveDesc.fEmissiveIntensity = 5.f;
+    Desc.isRandomTexture = false;
+    Desc.iTextureIndex = 2;
+
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+}
+
+void CBody_Khazan_GS::Spawn_CrackDecal()
+{
+    DECAL_DESC Desc{};
+    Desc.fLifeTime = 5.f;
+    Desc.vFadeTime = _float2(0.5f, 0.5f);
+    Desc.eType = DECALTYPE::EMISSIVE;
+
+    _matrix ParentMatrix = XMLoadFloat4x4(m_pParentMatrix);
+    _vector vPosition = ParentMatrix.r[3];
+    XMStoreFloat3(&Desc.vPosition, vPosition);
+    Desc.vScale = _float3(5.f, 1.5f, 5.f);
+    // Base가 더 빨간 버전
+    Desc.EmissiveDesc.vBaseColor = _float3(0.f, 0.f, 0.f);
+    //  Desc.EmissiveDesc.vBaseColor = _float3(0.506f, 0.02f, 0.f);
+    Desc.EmissiveDesc.vEmissiveColor = _float3(0.f, 0.f, 0.f);
+    //  Desc.EmissiveDesc.vEmissiveColor = _float3(0.637f, 0.116f, 0.104f);
+    Desc.EmissiveDesc.vBorderColor = _float3(1.f, 0.f, 0.f);
+    Desc.EmissiveDesc.fEmissiveMaskPower = 1.f;
+    Desc.EmissiveDesc.fEmissiveIntensity = 1.f;
+    Desc.isRandomTexture = false;
+    Desc.iTextureIndex = 7;
+
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+}
+
+void CBody_Khazan_GS::Spawn_CircleBloodDecal()
+{
+    DECAL_DESC Desc{};
+    Desc.fLifeTime = 5.f;
+    Desc.vFadeTime = _float2(0.5f, 0.5f);
+    Desc.eType = DECALTYPE::CIRCLE;
+    _matrix ParentMatrix = XMLoadFloat4x4(m_pParentMatrix);
+    _vector vPosition = ParentMatrix.r[3];
+    XMStoreFloat3(&Desc.vPosition, vPosition);
+    Desc.vScale = _float3(5.f, 1.5f, 5.f);
+    Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+    Desc.isRandomTexture = false;
+    Desc.iTextureIndex = 0;
+
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
 }
 
 CBody_Khazan_GS* CBody_Khazan_GS::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

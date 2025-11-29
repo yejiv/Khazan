@@ -1152,21 +1152,17 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         });
 
     // 포워드 닷지
-
     m_pModelCom->Register_Event("Dodge_F_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         });
-
     m_pModelCom->Register_Event("Dodge_F_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
         });
 
     // 백 닷지
-
     m_pModelCom->Register_Event("Dodge_B_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         });
-
     m_pModelCom->Register_Event("Dodge_B_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
         });
