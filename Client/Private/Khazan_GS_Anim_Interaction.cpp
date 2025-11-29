@@ -216,9 +216,9 @@ _bool CKhazan_GS_Anim_Interaction::Try_GiantGate(_bool isUsedSet)
 
     }
     else  m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_OpenDoor_Giant"));
+
+    return true;
 }
-
-
 
 CKhazan_GS_Anim_Interaction* CKhazan_GS_Anim_Interaction::Create()
 {
