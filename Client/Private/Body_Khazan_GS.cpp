@@ -982,7 +982,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("FerociousMomentum0"), rot, m_pParentTransform->Get_State(STATE::POSITION));
         });
-
+    
     m_pModelCom->Register_Event("GS_WeakAtk02_SowardFX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody)); 
         m_iFXIdx_Spining = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
