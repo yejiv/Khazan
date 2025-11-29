@@ -68,7 +68,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL); 
 
-    /*for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
+    for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
     {
         CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
         CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
@@ -82,7 +82,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-    CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);*/
+    CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
     CClientInstance::GetInstance()->Fade_Out();
 

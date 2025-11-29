@@ -773,8 +773,6 @@ void CMainApp::Free()
 {
 	__super::Free();
 
-    m_pGameInstance->Imgui_All_Clean();
-
 	m_pClientInstance->Release_Client();
 
 	Safe_Release(m_pClientInstance);
