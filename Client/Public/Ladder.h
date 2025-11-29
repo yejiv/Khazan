@@ -4,6 +4,7 @@
 #include "Prop_Interactive.h"
 
 NS_BEGIN(Engine)
+class CBody;
 class CTransform;
 NS_END
 
@@ -67,8 +68,13 @@ private:
 
     CBody* m_pTriggerCom[ENUM_CLASS(LADDER_POINT::END)] = { nullptr };
 
+    COLLISION_DESC m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::END)] = {};
+
     class CInteraction_Guide* m_pGuide = { nullptr };
+    LADDER_POINT m_eLadderPoints[ENUM_CLASS(LADDER_POINT::END)] = {};
     _float4x4 m_matGuide = {};
+
+    EventObject m_Event = {};
 
     _float4 m_vPlayerPosition = {};
 
@@ -79,6 +85,10 @@ private:
     _float4 m_vClimbDownPos = {};                 // 사다리 액션 중단 액션
 
     LADDER_POINT m_eLadderPoint = { LADDER_POINT::END };
+
+    EventLadder::LADDER_ACTION m_eLadderStart = { EventLadder::LADDER_ACTION::NONE };
+
+    _bool m_isPlayerOnLadder = { false };
 
 private:
     void Set_GuideMatrix(_float4 vGuidePos);
@@ -92,16 +102,7 @@ private:
 
     void Input_Interact_Event(_float fTimeDelta);
 
-    // TOP
-    // IA_BeginLoc_Climb_Down : 플레이어 내려가는 애니메이션 시작 지점
-    // ClimbEndLoc_Top : 사다리 위쪽 위치
-    // IA_BeginLoc_Kick : 킥은 뭐고
-    // 
-    ////////////////////////////////////////////////////////////////////////
-    // 
-    // BOTTOM
-    // IA_BeginLoc_Climb_Up : 플레이어 애니메이션 시작 지점
-    // ClimbEndLoc_Bottom : 사다리 내려오는 지점
+    void Event_Update(_float fTimeDelta);
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;

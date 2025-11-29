@@ -26,6 +26,8 @@ HRESULT CLadder_Bottom::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
+    m_pModelCom->Update_BoneCombinedMatrices();
+
     return S_OK;
 }
 
