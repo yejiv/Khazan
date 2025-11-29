@@ -18,7 +18,7 @@ class CSpear_Khazan_Spear final : public CPartObject
 public:
 	typedef struct tagSpearKhazanSpearDesc : public CPartObject::PARTOBJECT_DESC
 	{
-		_uint* pState = { nullptr };
+		_uint* pStatus = { nullptr };
 		class CTransform* pParentTransform = { nullptr };
 
 	}SPEAR_KHAZAN_SPEAR_DESC;
@@ -69,7 +69,7 @@ private:
     class CClientInstance*      m_pClientInstance = { nullptr };
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
-	_uint*						m_pParentState = { nullptr };
+	_uint*                      m_pParentStatus = { nullptr };
 	_float4x4*					m_pWeaponR_Matrix = { nullptr };
     _float4x4*                  m_pBackPack_Matrix = { nullptr };
 

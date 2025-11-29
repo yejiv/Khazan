@@ -121,10 +121,13 @@ HRESULT CLevel_Embars::Ready_Layer_UI()
 
 HRESULT CLevel_Embars::Ready_Layer_Player(const _wstring& strLayerTag)
 {
-    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), strLayerTag,
+  /*  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), strLayerTag,
         ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
-        return E_FAIL;
+        return E_FAIL;*/
 
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), strLayerTag,
+        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+        return E_FAIL;
     return S_OK;
 }
 

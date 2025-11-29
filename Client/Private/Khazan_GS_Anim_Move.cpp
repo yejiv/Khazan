@@ -222,13 +222,13 @@ _bool CKhazan_GS_Anim_Move::Try_ChangeAnimation(GS_MOVEINFO moveInfo)
         else if (moveInfo.eDir.AllCheck_Flag(DIR::R)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Dodge_R");
 
         m_isDodging = true;
-
+        m_isReserve = { false };
         m_isStopAnimationFinished = true;
     }
 
 
 
-    _bool isCheckMin = m_pModel->Check_MinAnimationTime();
+    _bool isCheckMin = Has_State(MOV::MOVE_DODGE) ? m_pModel->Check_CanDodgeTime() : m_pModel->Check_MinAnimationTime();
     if (m_iPrevSelectedAnimationIndex == iSelectedAnimationIndex && !isCheckMin)
         return false;
     else if (isCheckMin || Has_State(MOV::MOVE_DODGE))
@@ -250,6 +250,43 @@ _bool CKhazan_GS_Anim_Move::Try_ChangeAnimation(GS_MOVEINFO moveInfo)
     }
 }
 
+
+_bool CKhazan_GS_Anim_Move::Force_DodgeAnimation(GS_MOVEINFO moveInfo)
+{
+
+    Clear_State();
+    Add_State(moveInfo.iState);
+    m_isStopAnimationFinished = false;
+    m_isReserve = { false };
+    m_isTurning180 = { false };
+
+    _uint iSelectedAnimationIndex{};
+
+    if (moveInfo.eDir.AllCheck_Flag(DIR::B | DIR::L)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Dodge_BL");
+    else if (moveInfo.eDir.AllCheck_Flag(DIR::B | DIR::R)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSwordDodge_BR");
+    //if (moveInfo.eDir.AllCheck_Flag(DIR::B | DIR::L)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Dodge_B");
+    //else if (moveInfo.eDir.AllCheck_Flag(DIR::B | DIR::R)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Dodge_B");
+    else if (moveInfo.eDir.AllCheck_Flag(DIR::B)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Dodge_B");
+    else if (moveInfo.eDir.AllCheck_Flag(DIR::F | DIR::L)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Dodge_FL");
+    else if (moveInfo.eDir.AllCheck_Flag(DIR::F | DIR::R)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Dodge_FR");
+    else if (moveInfo.eDir.AllCheck_Flag(DIR::F)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Dodge_F");
+    else if (moveInfo.eDir.AllCheck_Flag(DIR::L)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Dodge_L");
+    else if (moveInfo.eDir.AllCheck_Flag(DIR::R)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Dodge_R");
+
+
+    m_isDodging = true;
+
+    m_isStopAnimationFinished = true;
+    m_isMoving = true;
+    m_iPrevSelectedAnimationIndex = m_iSelectedAnimationIndex;
+    m_iSelectedAnimationIndex = iSelectedAnimationIndex;
+
+    if (m_iSelectedAnimationIndex == 0)
+        return false;
+
+    m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+
+}
 
 void CKhazan_GS_Anim_Move::Reserve_Animation(GS_MOVEINFO moveInfo)
 {
@@ -382,7 +419,6 @@ _bool CKhazan_GS_Anim_Move::Check_Dodge()
         m_isStopAnimationFinished = true;
         m_isMoving = false;
         m_isDodging = false;
-
         return true;
     }
 

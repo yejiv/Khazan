@@ -117,6 +117,11 @@ private:
     COLLISION_DESC				m_tGuardCollisionDesc = {};
     COLLISION_DESC              m_tSearchCollisionDesc = {};
 
+    _bool                       m_isCollAttack_Active = { true };
+    _bool                       m_isCollRangeAttack_Active = { true };
+    _bool                       m_isCollBodyAttack_Active = { true };
+    _bool                       m_isCollGuard_Active = { true };
+
     _float4x4*                  m_pGSword_Matrix = { nullptr };
 
     _uint*                      m_pParentState = { nullptr };
@@ -128,7 +133,8 @@ private:
     _bool				        m_isFinishedAnimation = { false };
     _uint				        m_iCurSetAnimIndex = { 0 };
    // _bool                       m_isSpearFullExtension = { false }; //창을 완전히 뻗는 타이밍부터 true 
-    _bool*                      m_pIsGuarding = { nullptr }; //가드중인지 체크
+    _bool*                      m_pIsGuarding = { nullptr }; //가드중인지 체크4
+    _bool                       m_isNotifyAttacking = { false };    //어택중에 콜라이더 onoff 알림 
 
 
      /* 뼈 위치 */
@@ -144,11 +150,6 @@ private:
     _uint	                    EffectID_SpearWind;
     _uint	                    EffectID_SpiralSpear;
 
-
-    _bool                       m_isCollAttack_Active = { true };
-    _bool                       m_isCollRangeAttack_Active = { true };
-    _bool                       m_isCollBodyAttack_Active = { true };
-    _bool                       m_isCollGuard_Active = { true };
 
     /* 가드 */
     _bool                       m_isJustGuardOnce = { false };
