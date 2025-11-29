@@ -84,8 +84,7 @@ HRESULT CDecal_Manager::Render()
 
 HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc)
 {
-    // 풀 태그, 레벨 인덱스, 레이어 태그, 포지션, 노말, 스케일
-    // 인자로 받아 풀에서 꺼냄
+    // 풀에서 꺼냄
     CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(iLayerLevelIndex, strPoolTag);
     if (nullptr == pGameObject)
         return E_FAIL;
@@ -94,15 +93,20 @@ HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLeve
     if (nullptr == pDecal)
         return E_FAIL;
 
-    // 세팅
-    pDecal->Set_Desc(Desc);
-    _uint iNumTextures = m_pTexture[ENUM_CLASS(Desc.eType)]->Get_NumTextures();
-    _uint iTextureIndex = static_cast<_uint>(m_pGameInstance->Rand(0.f, static_cast<_float>(iNumTextures)));
-    pDecal->Set_TextureIndex(iTextureIndex);
-    pDecal->Set_RandomSeed(static_cast<_uint>(m_pGameInstance->Rand(0.f, 256.f)));
+    DECAL_DESC DecalDesc = Desc;
+    _uint iTextureIndex = 0;
+
+    if (true == DecalDesc.isRandomTexture)
+    {
+        _uint iNumTextures = m_pTexture[ENUM_CLASS(DecalDesc.eType)]->Get_NumTextures();
+        DecalDesc.iTextureIndex = static_cast<_uint>(m_pGameInstance->Rand(0.f, static_cast<_float>(iNumTextures)));
+    }
+
+    if (DECALTYPE::EMISSIVE != Desc.eType)
+        pDecal->Set_RandomSeed(static_cast<_uint>(m_pGameInstance->Rand(0.f, 256.f)));
     
-    // Test
-    //  pDecal->Set_EnableDecoration(true);
+    // 세팅
+    pDecal->Set_Desc(DecalDesc);
 
     // 컨테이너에 저장
     m_Decals.push_back(pDecal);
@@ -111,6 +115,19 @@ HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLeve
     m_pGameInstance->Push_PoolObject_ToLayer(iLayerLevelIndex, strLayerTag, pDecal);
 
     return S_OK;
+}
+
+ID3D11ShaderResourceView* CDecal_Manager::Get_DecalTexture(DECALTYPE eType, _uint iIndex)
+{
+    if (iIndex >= m_pTexture[ENUM_CLASS(eType)]->Get_NumTextures())
+        return nullptr;
+
+    return m_pTexture[ENUM_CLASS(eType)]->Get_Texture(iIndex);
+}
+
+_uint CDecal_Manager::Get_NumDecalTextures(DECALTYPE eType)
+{
+    return m_pTexture[ENUM_CLASS(eType)]->Get_NumTextures();
 }
 
 void CDecal_Manager::Decal_Clear()
@@ -179,6 +196,28 @@ HRESULT CDecal_Manager::Ready_Components()
     };
 
     m_pTexture[ENUM_CLASS(DECALTYPE::CURVE)] = CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Shader/Decal/"), TextureTags);
+    if (nullptr == m_pTexture)
+        return E_FAIL;
+
+    // =============== GS Test ===============
+    TextureTags =
+    {
+        TEXT("FT_Decal_001.png"),
+        TEXT("FT_Decal_002.png"),
+        TEXT("FT_Decal_03.png"),
+        TEXT("FT_Decal_07.png"),
+        TEXT("FT_Decal_09.png"),
+
+        TEXT("FT_Decal_Slash_001.png"),
+        TEXT("FT_Decal_04.png"),
+        TEXT("FT_Decal_Crack_Center_001.png"),
+        TEXT("FT_Decal_Crack_Center_002.png"),
+        TEXT("FT_Decal_Crack_Front_001.png"),
+        TEXT("FT_Decal_06.png"),
+        TEXT("FT_Decal_11.png"),
+    };
+
+    m_pTexture[ENUM_CLASS(DECALTYPE::EMISSIVE)] = CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Shader/Decal/"), TextureTags);
     if (nullptr == m_pTexture)
         return E_FAIL;
 

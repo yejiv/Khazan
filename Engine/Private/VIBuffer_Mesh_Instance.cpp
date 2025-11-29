@@ -129,7 +129,7 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Prototype(INSTANCE_DESC* pArg)
         _float		fLifeTime = m_pGameInstance->Rand(pMeshDesc->vLifeTime.x, pMeshDesc->vLifeTime.y);
 
         XMVECTOR rotation;
-        if (m_sData.fRotation.x == 0.f && m_sData.fRotation.y == 0.f && m_sData.fRotation.z == 0.f && m_iNumInstance > 8)
+        if (m_sData.fRotation.x == 0.f && m_sData.fRotation.y == 0.f && m_sData.fRotation.z == 0.f && m_iNumInstance > 4)
             rotation = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(m_pGameInstance->Rand(0, 360)),
                 XMConvertToRadians(m_pGameInstance->Rand(0, 360)),
                 XMConvertToRadians(m_pGameInstance->Rand(0, 360)));
@@ -203,8 +203,6 @@ HRESULT CVIBuffer_Mesh_Instance::Initialize_Clone(void* pArg)
 
     if (FAILED(Ready_CB()))
         return E_FAIL;
-
-
 
 	return S_OK;
 }

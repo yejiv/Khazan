@@ -85,36 +85,60 @@ HRESULT CDecal::Bind_ShaderResources(CShader* pShader, class CTexture** pTexture
 	if (FAILED(pShader->Bind_Matrix("g_WorldMatrixInv", &WorldMatrixInv)))
 		return E_FAIL;
 
-	if (FAILED(pShader->Bind_RawValue("g_vDecalColor", &m_Desc.vColor, sizeof(_float3))))
-		return E_FAIL;
-
-	if (FAILED(pShader->Bind_RawValue("g_fOpacity", &m_fOpacity, sizeof(_float))))
-		return E_FAIL;
-
-    if (true == m_isDecoration)             // 데코용일 경우 고정 쓰레스 홀드
+    if (DECALTYPE::EMISSIVE == m_Desc.eType)
     {
-        if (FAILED(pShader->Bind_RawValue("g_fThreshold", &m_fThreshold, sizeof(_float))))
+        if (FAILED(pShader->Bind_RawValue("g_vBaseColor", &m_Desc.EmissiveDesc.vBaseColor, sizeof(_float3))))
+            return E_FAIL;
+
+        if (FAILED(pShader->Bind_RawValue("g_vEmissiveColor", &m_Desc.EmissiveDesc.vEmissiveColor, sizeof(_float3))))
+            return E_FAIL;
+
+        if (FAILED(pShader->Bind_RawValue("g_vBorderColor", &m_Desc.EmissiveDesc.vBorderColor, sizeof(_float3))))
+            return E_FAIL;
+
+        if (FAILED(pShader->Bind_RawValue("g_fEmissiveMaskPower", &m_Desc.EmissiveDesc.fEmissiveMaskPower, sizeof(_float))))
+            return E_FAIL;
+
+        if (FAILED(pShader->Bind_RawValue("g_fEmissiveIntensity", &m_Desc.EmissiveDesc.fEmissiveIntensity, sizeof(_float))))
             return E_FAIL;
     }
     else
     {
-        if (FAILED(pShader->Bind_RawValue("g_iRandSeed", &m_iRandSeed, sizeof(_uint))))
-            return E_FAIL;
+	    if (FAILED(pShader->Bind_RawValue("g_vDecalColor", &m_Desc.vColor, sizeof(_float3))))
+		    return E_FAIL;
+
+        if (true == m_isDecoration)             // 데코용일 경우 고정 쓰레스 홀드
+        {
+            if (FAILED(pShader->Bind_RawValue("g_fThreshold", &m_fThreshold, sizeof(_float))))
+                return E_FAIL;
+        }
+        else
+        {
+            if (FAILED(pShader->Bind_RawValue("g_iRandSeed", &m_iRandSeed, sizeof(_uint))))
+                return E_FAIL;
+        }
     }
+
+	if (FAILED(pShader->Bind_RawValue("g_fOpacity", &m_fOpacity, sizeof(_float))))
+		return E_FAIL;
 
 	switch (m_Desc.eType)
 	{
 	case DECALTYPE::LINEAR:
-		if (FAILED(pTexture[ENUM_CLASS(DECALTYPE::LINEAR)]->Bind_Shader_Resource(pShader, "g_DecalTexture", m_iTextureIndex)))
+		if (FAILED(pTexture[ENUM_CLASS(DECALTYPE::LINEAR)]->Bind_Shader_Resource(pShader, "g_DecalTexture", m_Desc.iTextureIndex)))
 			return E_FAIL;
 		break;
 	case DECALTYPE::CIRCLE:
-		if (FAILED(pTexture[ENUM_CLASS(DECALTYPE::CIRCLE)]->Bind_Shader_Resource(pShader, "g_DecalTexture", m_iTextureIndex)))
+		if (FAILED(pTexture[ENUM_CLASS(DECALTYPE::CIRCLE)]->Bind_Shader_Resource(pShader, "g_DecalTexture", m_Desc.iTextureIndex)))
 			return E_FAIL;
 		break;
 	case DECALTYPE::CURVE:
-		if (FAILED(pTexture[ENUM_CLASS(DECALTYPE::CURVE)]->Bind_Shader_Resource(pShader, "g_DecalTexture", m_iTextureIndex)))
+		if (FAILED(pTexture[ENUM_CLASS(DECALTYPE::CURVE)]->Bind_Shader_Resource(pShader, "g_DecalTexture", m_Desc.iTextureIndex)))
 			return E_FAIL;
+        break;
+    case DECALTYPE::EMISSIVE:
+        if (FAILED(pTexture[ENUM_CLASS(DECALTYPE::EMISSIVE)]->Bind_Shader_Resource(pShader, "g_DecalTexture", m_Desc.iTextureIndex)))
+            return E_FAIL;
 		break;
 	}
 
@@ -124,7 +148,12 @@ HRESULT CDecal::Bind_ShaderResources(CShader* pShader, class CTexture** pTexture
         pShader->Begin(1);
     }
     else
-        pShader->Begin(0);
+    {
+        if (DECALTYPE::EMISSIVE == m_Desc.eType)
+            pShader->Begin(3);
+        else
+            pShader->Begin(0);
+    }
 
 	pVIBuffer->Bind_Resources();
 	pVIBuffer->Render();

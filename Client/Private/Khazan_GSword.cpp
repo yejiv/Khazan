@@ -143,8 +143,9 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
 
     if (m_pGameInstance->Key_Down(DIK_P))
     {
-        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.f, -11.f, 264.f, 1.f));
-        m_pCharVirCom->Set_Position(XMVectorSet(516.f, -11.f, 264.f, 1.f));
+        //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(511.f, -11.9f, 260.f, 1.f));
+        m_pCharVirCom->Teleport(XMVectorSet(511.f, -11.9f, 260.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+        m_pTransformCom->LookAt(XMVectorSet(520.47f, -11.48f, 227.18, 0.f));               
     }
 
 }
@@ -212,7 +213,7 @@ void CKhazan_GSword::Update(_float fTimeDelta)
 
 void CKhazan_GSword::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
+   if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
     __super::Late_Update(fTimeDelta);
@@ -312,7 +313,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
     DECAL_DESC Desc{};
     Desc.fLifeTime = 8.f;
     Desc.vFadeTime = _float2(0.2f, 0.2f);
-    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::END)));
+    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
     XMStoreFloat3(&Desc.vPosition, vDecalPos);
     Desc.vScale = _float3(
         m_pGameInstance->Rand(3.f, 5.f),
@@ -320,6 +321,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         m_pGameInstance->Rand(3.f, 5.f)
     );
     Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+    Desc.isRandomTexture = true;
     m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
 
     switch (eHitreaction)
@@ -3445,7 +3447,6 @@ void CKhazan_GSword::Free()
 {
     m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), m_iInteractTypeEventID);
     m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iObjectInteractEventID);
-
     __super::Free();
 
     Safe_Release(m_pClientInstance);

@@ -39,6 +39,9 @@ public:
 public:
     void Set_GizmoObject(class CGameObject* pGameObject) { m_pGizmoObject = pGameObject; }
 
+public:
+    void All_Clean();
+
 private:
     //ID3D11Device* m_pDevice = nullptr;
     //ID3D11DeviceContext* m_pContext = nullptr;

@@ -81,6 +81,8 @@ private:
 	_matrix						m_matOffset;
     _bool                       m_isEnble = { true };
     _bool                       m_isEquip = { true };
+    
+    _bool                       m_isChangeWeapon = { false };
 
     /* Motion Trail */
     function<void(const _wstring&, _bool)>  m_OnMotionTrailCallBack;

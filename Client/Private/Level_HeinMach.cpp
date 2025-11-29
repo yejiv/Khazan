@@ -58,7 +58,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
         CHECK_FAILED(Ready_FireLights(TEXT("HeinMach_Point"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-        CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+        // CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
         return S_OK;
 
@@ -235,7 +235,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
    }
 
-   if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
+   /*if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
    {
        CYetuga* pYetuga = dynamic_cast<CYetuga*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Yetuga")));
        CSequence_Yetuga_CutScene* pSequence = CSequence_Yetuga_CutScene::Create(pYetuga);
@@ -246,7 +246,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
        tPlayDesc.fStartTime = 0.f;
 
        m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
-   }
+   }*/
 
 	return;
 }
@@ -414,6 +414,13 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Giant_Roar"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("DarkShadow_Land_1"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("DarkShadow_Land_2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Body_Wind"), 4);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("particle"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("particle2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Inner_Range_Ground"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Dawn_BloodTrail1"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Dawn_BloodTrail2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GS_StrongATK"), 2);
 
     return S_OK;
 }

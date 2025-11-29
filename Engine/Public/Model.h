@@ -83,6 +83,7 @@ public:
     _uint				Get_BoneIndex(const _char* pBoneName);
     _float4x4* Get_BoneMatrix(const _char* pBoneName);
     _float4x4* Get_BoneMatrix(_int iBoneIndex);
+    _float4x4* Get_LocalBoneMatrix(const _char* pBoneName);
     _float4x4* Get_LocalBoneMatrix(_int iBoneIndex);
     _float4x4* Get_ContainNameBoneMatrix(const _char* pBoneName);
     _int				Get_CurAnimIndex() { return m_iCurrentAnimIndex; }

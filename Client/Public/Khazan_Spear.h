@@ -319,11 +319,12 @@ private:
 
     /* 앰바스 */
     void						Lever_Event(_float fTimeDelta);
-    void						Statue_Event(_float fTimeDelta); //조각상 퍼즐
-    void						IronGate_Event(_float fTimeDelta); //레버 다음 철문 밀어서열기 (자물쇠 해제)
-    void						UnLockGear_Event(_float fTimeDelta);  // ?? CA_P_Kazan_GearSwitch_001_Interation 이거 쓰면될 듯
-    void						GiantGate_Event(_float fTimeDelta);  //거대한 철문 
-    void						NPC_Event(_float fTimeDelta);   
+    void						Statue_Event(_float fTimeDelta);
+    void						IronGate_Event(_float fTimeDelta);
+    void						UnLockGear_Event(_float fTimeDelta);
+    void						GiantGate_Event(_float fTimeDelta);
+    void						NPC_Event(_float fTimeDelta);
+    void						Ladder_Event(_float fTimeDelta);
 
 private:
     void                        Lerp_Position_ByInteractEvent(_float4 vTargetPos, _float4 vStartPos, _float fDuration, _float fTimeDelta, _bool& isDone);

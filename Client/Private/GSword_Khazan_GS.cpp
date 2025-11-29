@@ -15,7 +15,6 @@ CGSword_Khazan_GS::CGSword_Khazan_GS(const CGSword_Khazan_GS& Prototype)
     , m_pClientInstance{ CClientInstance::GetInstance() }
 {
     Safe_AddRef(m_pClientInstance);
-
 }
 
 _float4x4* CGSword_Khazan_GS::Get_BoneMatrix(const _char* pBoneName)
@@ -198,6 +197,7 @@ void CGSword_Khazan_GS::Change_Weapon(EQUIPMENTTYPE type, const _wstring& strPar
         isSpear = true;
     }
     Safe_AddRef(m_pModelCom);
+    m_isChangeWeapon = true;
 
     if (isGSword)
     {
@@ -310,9 +310,18 @@ void CGSword_Khazan_GS::Free()
 {
     __super::Free();
 
+    if (m_isChangeWeapon)
+        Safe_Release(m_pModelCom);
+
     Safe_Release(m_pParentTransform);
     Safe_Release(m_pModelCom);
+    Safe_Release(m_pModelCom_Punish_Spear);
+    Safe_Release(m_pModelCom_Flash_Spear);
+    Safe_Release(m_pModelCom_Meteor_GSword);
+    Safe_Release(m_pModelCom_Execution_GSword);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pMotionTrailCom);
+
+    Safe_Release(m_pClientInstance);
     //Safe_Release(m_pColliderCom);
 }

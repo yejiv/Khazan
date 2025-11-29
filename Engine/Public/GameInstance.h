@@ -206,6 +206,7 @@ public:
 
 	void Set_GizmoObject(class CGameObject* pGameObject);
 	void Clear_GizmoObject();
+    void Imgui_All_Clean();
 #endif
 #pragma endregion
 
@@ -222,6 +223,7 @@ public:
 
 	void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
 	void CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting);
+    void CharVir_RefreshContact(CharacterVirtual* pCharVir, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
 
 	CharacterVirtual* Find_CharacterVirtual(CharacterID id);
 	void Remove_CharacterVirtual(CharacterID id);
@@ -395,11 +397,13 @@ public:
 #pragma endregion
 
 #pragma region DECAL_MANAGER
-	HRESULT                 Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc);
-	HRESULT                 Render_Decals();
-    CTexture*               Get_DecalTexture(DECALTYPE eType);
-    void                    Batch_Decal(class CDecal* pDecal);
-    void                    Decal_Clear();
+	HRESULT                     Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, const DECAL_DESC& Desc);
+	HRESULT                     Render_Decals();
+    CTexture*                   Get_DecalTexture(DECALTYPE eType);
+    ID3D11ShaderResourceView*   Get_DecalTexture(DECALTYPE eType, _uint iIndex);
+    _uint                       Get_NumDecalTextures(DECALTYPE eType);
+    void                        Batch_Decal(class CDecal* pDecal);
+    void                        Decal_Clear();
 #pragma endregion
 
 #pragma region EFFECT_MANAGER

@@ -190,6 +190,21 @@ _float4x4* CModel::Get_BoneMatrix(const _int iBoneIndex)
     return m_Bones[iBoneIndex]->Get_CombinedTransformationMatrixPtr();
 }
 
+_float4x4* CModel::Get_LocalBoneMatrix(const _char* pBoneName)
+{
+    auto    iter = find_if(m_Bones.begin(), m_Bones.end(), [&](CBone* pBone) {
+
+        if (true == pBone->Compare_Name(pBoneName))
+            return true;
+        return false;
+        });
+
+    if (iter == m_Bones.end())
+        return nullptr;
+
+    return (*iter)->Get_TransformationMatrixPtr();
+}
+
 _float4x4* CModel::Get_LocalBoneMatrix(_int iBoneIndex)
 {
     if (m_Bones.size() < iBoneIndex || 0 > iBoneIndex)

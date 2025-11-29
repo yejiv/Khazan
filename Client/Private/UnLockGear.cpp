@@ -94,6 +94,12 @@ void CUnLockGear::Update(_float fTimeDelta)
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         Animation_Change(fTimeDelta);
+
+    m_fBlinkTimeAcc += fTimeDelta;
+
+    // Test
+    if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+        m_isEnableBlink = !m_isEnableBlink;
 }
 
 void CUnLockGear::Late_Update(_float fTimeDelta)
@@ -105,6 +111,38 @@ HRESULT CUnLockGear::Render()
 {
     CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CUnLockGear : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+
+    _float fRimPower = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRimIntensity = 1.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &fRimIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    // 보석 이미시브
+    _float fEmissiveIntensity = 30.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    // 반짝이는 림라이트 이미시브
+    _float fRimEmissive = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fTimeDelta", &m_fBlinkTimeAcc, sizeof(_float))))
+        return E_FAIL;
+
+    _float fCycleSpeed = 3.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fCycleSpeed", &fCycleSpeed, sizeof(_float))))
+        return E_FAIL;
+
+    _float3 vRimColor = _float3(1.f, 1.f, 1.f);
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3))))
+        return E_FAIL;
+
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     for (_uint i = 0; i < iNumMeshes; ++i)
@@ -113,7 +151,13 @@ HRESULT CUnLockGear::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        // CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        
+        // Unlock Gear 보석 살리기, Blink Rim Light Test
+        if (true == m_isEnableBlink)
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(12), E_FAIL);
+        else
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(13), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -354,6 +398,28 @@ void CUnLockGear::Animation_Change(_float fTimeDelta)
 
         m_pGameInstance->Emit_Event<EventHallElevator>(ENUM_CLASS(m_eEventType), m_EventHallElevator);
     }
+}
+
+HRESULT CUnLockGear::Bind_Materials(_uint iMeshIndex)
+{
+    m_iMtrlFlags = 0;
+
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+        m_iMtrlFlags |= M_DIFFUSE;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
+        m_iMtrlFlags |= M_NORMAL;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
+        m_iMtrlFlags |= M_EMISSIVE;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
+        m_iMtrlFlags |= M_SPECULAR;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalicTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
+        m_iMtrlFlags |= M_METALIC;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
+        m_iMtrlFlags |= M_ROUGHNESS;
+
+    m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
+
+    return S_OK;
 }
 
 void CUnLockGear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)

@@ -161,7 +161,8 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 }
 
 void CKhazan_Spear::Priority_Update(_float fTimeDelta)
-{    __super::Priority_Update(fTimeDelta);
+{    
+    __super::Priority_Update(fTimeDelta);
 
     if (m_pGameInstance->Key_Down(DIK_P))
     {
@@ -370,6 +371,7 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         m_pGameInstance->Rand(3.f, 5.f)
     );
     Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+    Desc.isRandomTexture = true;
     m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
 
     switch (eHitreaction)
@@ -2761,6 +2763,16 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
             }
             break;
         }
+        case INTERACTIVE_TYPE::LADDER:
+        {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
+                isDone = true;
+            }
+
+            break;
+        }
         default:
             break;
         }
@@ -2839,6 +2851,11 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         if (true == m_EventInteract.isNPC())
         {
             NPC_Event(fTimeDelta);
+        }
+        // 사다리랑 상호 작용 시
+        if (INTERACTIVE_TYPE::LADDER == m_EventInteract.eInteractType)
+        {
+            Ladder_Event(fTimeDelta);
         }
     }
 }
@@ -3082,6 +3099,51 @@ void CKhazan_Spear::NPC_Event(_float fTimeDelta)
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&NPCEvent.vPlayerPosition));
     NPCEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&NPCEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::Ladder_Event(_float fTimeDelta)
+{
+    EventLadder LadderEvent = m_EventInteract.LadderEvent;
+
+    switch (LadderEvent.eLadderState)
+    {
+    case EventLadder::LADDER_ACTION::UPTODOWN:
+    {
+        // 중력 끄기 ???
+        // 플레이어가 사다리 내려가는 애니메이션 ???
+        break;
+    }
+    case EventLadder::LADDER_ACTION::DOWNTOUP:
+    {
+        // 중력 끄기 ???
+        // 플레이어가 사다리 올라가는 애니메이션 ???
+        break;
+    }
+    case EventLadder::LADDER_ACTION::UPEND:
+    {
+        // 플레이어가 사다리 다 올라온 애니메이션 ???
+        break;
+    }
+    case EventLadder::LADDER_ACTION::DOWNEND:
+    {
+        // 중력 끄기 ???
+        // 플레이어가 사다리 다 내려온 애니메이션 ???
+        break;
+    }
+    default:
+        MSG_BOX(TEXT("읭 사다리 이런거 없는디"));
+        break;
+    }
+
+    if (true == LadderEvent.isStartAction())
+    {
+        LadderEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+        // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&LadderEvent.vPlayerPosition));
+        LadderEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+        m_pTransformCom->LookAt(XMLoadFloat4(&LadderEvent.vPosition));
+    }
 
     m_EventInteract.End_Event();
 }

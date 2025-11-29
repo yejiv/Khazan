@@ -183,6 +183,8 @@ private:
 
 private :
     _uint                       m_iFXIdx_Spining;
+    _uint                       m_iFXIdx_BodyWind;
+    _uint                       m_iFXIdx_Trail;
     //_float                      m_SmokeSpawnTIme;
 
 private:
@@ -227,7 +229,7 @@ private:
     inline void		Clear_CollState() { m_iCollState = 0; }
 
 private: 
-    _vector Decompose_Rotation(_matrix W, _vector offset = { 0.f, 0.f, 0.f, 1.f });
+    _vector Decompose_Rotation(_matrix W, _vector localRot = { 0.f, 0.f, 0.f, 0.f },_vector offset = { 0.f, 0.f, 0.f, 1.f });
 
 
 public:

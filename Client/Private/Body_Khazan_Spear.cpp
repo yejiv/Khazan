@@ -1725,6 +1725,18 @@ void CBody_Khazan_Spear::Free()
         Safe_Release(pModel);
     m_RenderParts.clear();
 
+    for (auto EquipPart : m_AllParts)
+    {
+        for (auto Part : m_EquippedParts)
+        {
+            if (Part.second == EquipPart.first)
+            {
+                Safe_Release(EquipPart.second);
+                break;
+            }
+        }
+    }
+
     for (auto partIter : m_AllParts)
         Safe_Release(partIter.second);
     m_AllParts.clear();
