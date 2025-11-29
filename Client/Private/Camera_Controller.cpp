@@ -470,6 +470,11 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Animation_Item()
 				pCamera->Create_Animation_Item(m_strListSelectAnimation);
 			}
 
+            if (m_pGameInstance->Key_Down(DIK_DELETE))
+            {
+                pCamera->Create_Animation_Item(m_strListSelectAnimation);
+            }
+
 			ImGui::End();
 		}
 

@@ -23,17 +23,16 @@ HRESULT CSequence_Yetuga_CutScene::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
     m_fTime = tDesc.fStartTime;
     m_pCamera = dynamic_cast<CCamera_Compre*>(m_pClientInstance->Get_ActiveCamera());
     CTransform* pTransform = dynamic_cast<CTransform*>(m_pCamera->Get_Component(TEXT("Com_Transform")));
-
+    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Yetuga_CutScene");
     //1. 카메라 예투가 맵 가운데로 이동
-    pTransform->Set_State(STATE::POSITION, XMVectorSet(513.9f, -10.25, 240.47, 1.f));
+    //pTransform->Set_State(STATE::POSITION, XMVectorSet(513.9f, -10.25, 240.47, 1.f));
 
     CTransform* pYetugaTransform = static_cast<CTransform*>(m_pYetuga->Get_Component(TEXT("Com_Transform")));
     pYetugaTransform->Set_State(STATE::POSITION, XMVectorSet(537.354f, 18.684f, 221.961f, 1.f));
     CCharacterVirtual* pCharVir = dynamic_cast<CCharacterVirtual*>(m_pYetuga->Get_Component(TEXT("Com_CharacterVirtual")));
     pCharVir->Set_Position(XMVectorSet(537.354f, 18.684f, 221.961f, 1.f));
-    pCharVir->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 0.f));
-    
-    
+    pCharVir->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 0.f));    
+
     return S_OK;
 }
 
@@ -63,6 +62,13 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
                     1.f));
             }
             m_fSnowTime = 0.f;
+        }
+
+        if (!m_isCameraAnimation && m_fTime > 0.5f)
+        {
+            m_pClientInstance->Camera_Set_Animation(TEXT("Yetuga_CutScene"));
+            m_pClientInstance->Fade_In();
+            m_isCameraAnimation = true;
         }        
     }
     if (m_fTime > 1.5f && !m_isYetugaJump)
@@ -77,7 +83,9 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
         CAS_CutScene_Yetuga* Cut_Yetuga = m_pYetuga->Get_Yetuga_CutSceneState();
         Cut_Yetuga->YetugaScene_Land(m_pYetuga);
         m_pClientInstance->ActiveCamera_Shaking(5.f, 1.f);
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMVectorSet(518.58f, -11.952f, 220.08f, 1.f));
+        CTransform* pYetugaTransform = static_cast<CTransform*>(m_pYetuga->Get_Component(TEXT("Com_Transform")));
+       
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), pYetugaTransform->Get_State(STATE::POSITION));
 
         // Vignette
         VIGNETTE_CONFIG Config{};
@@ -138,6 +146,8 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
         RadialDesc.vFadeTime = _float2(0.05f, 0.25f);
         m_pGameInstance->Start_RadialBlur(RadialDesc);
 
+        m_pClientInstance->ActiveCamera_Shaking(1.f, 1.f);
+
         m_isRoar1Effect = true;
     }
 
@@ -172,12 +182,14 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
         RadialDesc.vFadeTime = _float2(0.05f, 0.25f);
         m_pGameInstance->Start_RadialBlur(RadialDesc);
 
+        m_pClientInstance->ActiveCamera_Shaking(1.f, 1.f);
+
         m_isRoar2Effect = true;
     }    
 
-    if (m_fTime > 20.f)
+    if (m_fTime > 14.f)
     {
-        m_pYetuga->Get_Controller()->Set_ControllerActivate(true);
+        dynamic_cast<CAI_Controller_Yetuga*>(m_pYetuga->Get_Controller())->Set_ControllerActivate(true);
         m_isEnd = true;
     }
 

@@ -983,6 +983,11 @@ void CGameInstance::CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* 
 	m_pJolt_Manager->CharVir_ExtendedUpdate(fTimeDelta, pCharVir, vGravity, iObjectLayer, pBodyFilter, pShapeFilter, tSetting);
 }
 
+void CGameInstance::CharVir_RefreshContact(CharacterVirtual* pCharVir, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter)
+{
+    m_pJolt_Manager->CharVir_RefreshContact(pCharVir, iObjectLayer, pBodyFilter, pShapeFilter);
+}
+
 CharacterVirtual* CGameInstance::Find_CharacterVirtual(CharacterID id)
 {
 	return m_pJolt_Manager->Find_CharacterVirtual(id);
