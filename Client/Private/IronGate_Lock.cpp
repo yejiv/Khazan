@@ -73,7 +73,7 @@ void CIronGate_Lock::Update(_float fTimeDelta)
 
 void CIronGate_Lock::Late_Update(_float fTimeDelta)
 {
-    m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+    m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
 }
 
 HRESULT CIronGate_Lock::Render()
