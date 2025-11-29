@@ -1,29 +1,29 @@
-#include "Body_Elamain.h"
+#include "Body_Elamein.h"
 #include "GameInstance.h"
 
-CBody_Elamain::CBody_Elamain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CBody_Elamein::CBody_Elamein(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CPartObject{ pDevice,pContext }
 {
 }
 
-CBody_Elamain::CBody_Elamain(const CBody_Elamain& Prototype)
+CBody_Elamein::CBody_Elamein(const CBody_Elamein& Prototype)
     :CPartObject(Prototype)
 {
 }
 
-_float4x4* CBody_Elamain::Get_BoneMatrix_Ptr(const _char* pBoneName)
+_float4x4* CBody_Elamein::Get_BoneMatrix_Ptr(const _char* pBoneName)
 {
     return m_pModelCom->Get_BoneMatrix(pBoneName);
 }
 
-HRESULT CBody_Elamain::Initialize_Prototype(_int iLevel)
+HRESULT CBody_Elamein::Initialize_Prototype(_int iLevel)
 {
     m_iPrototypeIndex = iLevel;
 
     return S_OK;
 }
 
-HRESULT CBody_Elamain::Initialize_Clone(void* pArg)
+HRESULT CBody_Elamein::Initialize_Clone(void* pArg)
 {
     BODY_DESC* pDesc = static_cast<BODY_DESC*>(pArg);
 
@@ -42,13 +42,12 @@ HRESULT CBody_Elamain::Initialize_Clone(void* pArg)
     return S_OK;
 }
 
-void CBody_Elamain::Priority_Update(_float fTimeDelta)
+void CBody_Elamein::Priority_Update(_float fTimeDelta)
 {
 }
 
-void CBody_Elamain::Update(_float fTimeDelta)
+void CBody_Elamein::Update(_float fTimeDelta)
 {
-    m_pData->iAnimIndex = 101;
     if (m_iPreAnim != m_pData->iAnimIndex)
     {
         m_pModelCom->Set_Animation(m_pData->iAnimIndex);
@@ -69,16 +68,16 @@ void CBody_Elamain::Update(_float fTimeDelta)
     }
 
     Update_CombinedMatrix();
-    m_pData->isAnimFinash = m_pModelCom->Play_Animation(fTimeDelta);
+    m_pData->isAnimFinash = m_pModelCom->Play_Animation(fTimeDelta * m_pData->fDeltaSpeed);
 }
 
-void CBody_Elamain::Late_Update(_float fTimeDelta)
+void CBody_Elamein::Late_Update(_float fTimeDelta)
 {
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 }
 
-HRESULT CBody_Elamain::Render()
+HRESULT CBody_Elamein::Render()
 {
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
@@ -94,7 +93,7 @@ HRESULT CBody_Elamain::Render()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(0);
+        m_pShaderCom->Begin(1);
 
         m_pModelCom->Render(i);
     }
@@ -102,19 +101,19 @@ HRESULT CBody_Elamain::Render()
     return S_OK;
 }
 
-void CBody_Elamain::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
+void CBody_Elamein::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 }
 
-void CBody_Elamain::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
+void CBody_Elamein::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 }
 
-void CBody_Elamain::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
+void CBody_Elamein::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 }
 
-HRESULT CBody_Elamain::Ready_Components()
+HRESULT CBody_Elamein::Ready_Components()
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
@@ -129,7 +128,7 @@ HRESULT CBody_Elamain::Ready_Components()
     return S_OK;
 }
 
-HRESULT CBody_Elamain::Bind_ShaderResources()
+HRESULT CBody_Elamein::Bind_ShaderResources()
 {
     if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
         return E_FAIL;
@@ -145,30 +144,30 @@ HRESULT CBody_Elamain::Bind_ShaderResources()
 
 
 
-CBody_Elamain* CBody_Elamain::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
+CBody_Elamein* CBody_Elamein::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
 {
-    CBody_Elamain* pInstance = new CBody_Elamain(pDevice, pContext);
+    CBody_Elamein* pInstance = new CBody_Elamein(pDevice, pContext);
     if (FAILED(pInstance->Initialize_Prototype(iLevel)))
     {
         Safe_Release(pInstance);
-        MSG_BOX(TEXT("Failed Create : CBody_Elamain"));
+        MSG_BOX(TEXT("Failed Create : CBody_Elamein"));
     }
     return pInstance;
 }
 
-CGameObject* CBody_Elamain::Clone(void* pArg)
+CGameObject* CBody_Elamein::Clone(void* pArg)
 {
-    CBody_Elamain* pInstance = new CBody_Elamain(*this);
+    CBody_Elamein* pInstance = new CBody_Elamein(*this);
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
         Safe_Release(pInstance);
-        MSG_BOX(TEXT("Failed Clone : CBody_Elamain"));
+        MSG_BOX(TEXT("Failed Clone : CBody_Elamein"));
     }
 
     return pInstance;
 }
 
-void CBody_Elamain::Free()
+void CBody_Elamein::Free()
 {
     __super::Free();
 

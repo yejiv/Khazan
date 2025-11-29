@@ -68,7 +68,7 @@
 #pragma region MONSTER_KBS
 #include "Dragonian_Melee.h"
 #include "Dragonian_Rampage.h"
-#include "Elamain.h"
+#include "Elamein.h"
 #pragma endregion
 
 #pragma region UI
@@ -1655,8 +1655,8 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
         CDragonian_Rampage::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Monster_Elamain"),
-        CElamain::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Monster_Elamein"),
+        CElamein::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
         return E_FAIL;
 #pragma endregion
 
@@ -2262,6 +2262,10 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"),
         CDragonian_Rampage::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Elamein"),
+        CElamein::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
         return E_FAIL;
 #pragma endregion
 

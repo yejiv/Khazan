@@ -1,24 +1,24 @@
-#include "Elamain_Shield.h"
+#include "Elamein_Shield.h"
 #include "GameInstance.h"
 #include "AI_Controller.h"
 
-CElamain_Shield::CElamain_Shield(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CElamein_Shield::CElamein_Shield(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CPartObject{ pDevice,pContext }
 {
 }
 
-CElamain_Shield::CElamain_Shield(const CElamain_Shield& Prototype)
+CElamein_Shield::CElamein_Shield(const CElamein_Shield& Prototype)
     :CPartObject(Prototype)
 {
 }
 
-HRESULT CElamain_Shield::Initialize_Prototype(_int iLevel)
+HRESULT CElamein_Shield::Initialize_Prototype(_int iLevel)
 {
     m_iPrototypeIndex = iLevel;
     return S_OK;
 }
 
-HRESULT CElamain_Shield::Initialize_Clone(void* pArg)
+HRESULT CElamein_Shield::Initialize_Clone(void* pArg)
 {
     WEAPON_DESC* pDesc = static_cast<WEAPON_DESC*>(pArg);
     m_pData = pDesc->pData;
@@ -38,11 +38,11 @@ HRESULT CElamain_Shield::Initialize_Clone(void* pArg)
     return S_OK;
 }
 
-void CElamain_Shield::Priority_Update(_float fTimeDelta)
+void CElamein_Shield::Priority_Update(_float fTimeDelta)
 {
 }
 
-void CElamain_Shield::Update(_float fTimeDelta)
+void CElamein_Shield::Update(_float fTimeDelta)
 {
     m_pTransformCom->Rotation(XMConvertToRadians(75.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
 
@@ -52,7 +52,7 @@ void CElamain_Shield::Update(_float fTimeDelta)
         BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
     XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
-    _bool isAttakc = m_pData->iAttackBody_State & (_uint)CElamain::ATTACK_BODY::HAND_L;
+    _bool isAttakc = m_pData->iAttackBody_State & (_uint)CElamein::ATTACK_BODY::SHILED;
     m_pBodyComp->Collision_Active(isAttakc);
 
     //m_pModelCom->Play_Animation(fTimeDelta);
@@ -93,12 +93,12 @@ void CElamain_Shield::Update(_float fTimeDelta)
     m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
 }
 
-void CElamain_Shield::Late_Update(_float fTimeDelta)
+void CElamein_Shield::Late_Update(_float fTimeDelta)
 {
     CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this),);
 }
 
-HRESULT CElamain_Shield::Render()
+HRESULT CElamein_Shield::Render()
 {
     CHECK_FAILED(Bind_ShaderResources(), E_FAIL);
 
@@ -118,7 +118,7 @@ HRESULT CElamain_Shield::Render()
     return S_OK;
 }
 
-void CElamain_Shield::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
+void CElamein_Shield::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
     if (COLLISION_LAYER::PLAYER == eLayer)
@@ -127,15 +127,15 @@ void CElamain_Shield::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
     }
 }
 
-void CElamain_Shield::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
+void CElamein_Shield::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 }
 
-void CElamain_Shield::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
+void CElamein_Shield::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 }
 
-HRESULT CElamain_Shield::Ready_Components()
+HRESULT CElamein_Shield::Ready_Components()
 {
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom, nullptr), E_FAIL);
     CHECK_FAILED(CGameObject::Add_Component(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_Elamein_Shield"), TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr), E_FAIL);
@@ -145,7 +145,7 @@ HRESULT CElamain_Shield::Ready_Components()
     return S_OK;
 }
 
-HRESULT CElamain_Shield::Ready_Collision()
+HRESULT CElamein_Shield::Ready_Collision()
 {
     m_tCollisionDesc.pGameObject = this;
 
@@ -169,7 +169,7 @@ HRESULT CElamain_Shield::Ready_Collision()
     return S_OK;
 }
 
-HRESULT CElamain_Shield::Bind_ShaderResources()
+HRESULT CElamein_Shield::Bind_ShaderResources()
 {
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix), E_FAIL);
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
@@ -178,30 +178,30 @@ HRESULT CElamain_Shield::Bind_ShaderResources()
     return S_OK;
 }
 
-CElamain_Shield* CElamain_Shield::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
+CElamein_Shield* CElamein_Shield::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
 {
-    CElamain_Shield* pInstance = new CElamain_Shield(pDevice, pContext);
+    CElamein_Shield* pInstance = new CElamein_Shield(pDevice, pContext);
     if (FAILED(pInstance->Initialize_Prototype(iLevel)))
     {
         Safe_Release(pInstance);
-        MSG_BOX(TEXT("Failed Create : CElamain_Shield"));
+        MSG_BOX(TEXT("Failed Create : CElamein_Shield"));
     }
     return pInstance;
 }
 
-CGameObject* CElamain_Shield::Clone(void* pArg)
+CGameObject* CElamein_Shield::Clone(void* pArg)
 {
-    CElamain_Shield* pInstance = new CElamain_Shield(*this);
+    CElamein_Shield* pInstance = new CElamein_Shield(*this);
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
         Safe_Release(pInstance);
-        MSG_BOX(TEXT("Failed Clone : CElamain_Shield"));
+        MSG_BOX(TEXT("Failed Clone : CElamein_Shield"));
     }
 
     return pInstance;
 }
 
-void CElamain_Shield::Free()
+void CElamein_Shield::Free()
 {
     __super::Free();
 
