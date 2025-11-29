@@ -1182,7 +1182,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_pClientInstance->Set_PlayerInput(true); });
     m_pModelCom->Register_Event("SpearOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pSpear->Set_Equipped(false);
-       // m_pClientInstance->Set_PlayerInput(false);
+        m_pClientInstance->Set_PlayerInput(false);
         });
 #pragma endregion
 

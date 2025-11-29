@@ -36,7 +36,7 @@ void CKhazan_GS_Anim_Attack::Enter()
 
 void CKhazan_GS_Anim_Attack::Continue(_float fTimeDelta)
 {
-    if (m_isReserveSkill)
+    if (m_isReserveSkill)  
     {
         /* 기다리는 중 다른 공격이 나오면 예약 취소 */
         if (m_iReserveSkillIndex == 0)
@@ -1034,6 +1034,8 @@ void CKhazan_GS_Anim_Attack::Update_Skill_Breathaking()
     if (!isCurAnimStart)
         return;
 
+    cout << *m_pModel->Get_CurTrackPosition() << endl;
+
     /* 현재 애니메이션이 최소 보장 시간이 안지났으면 리턴  */
     if (isCurAnimStart && !isMinTime)
         return;
@@ -1048,7 +1050,7 @@ void CKhazan_GS_Anim_Attack::Update_Skill_Breathaking()
     }
 
     /* 차징공격까지 다 끝마쳣으면 Clear */
-    if (m_isSkillChargeAttack && /*isMinTime*/ m_pModel->IsFinished())
+    if (m_isSkillChargeAttack && isMinTime)
     {
         m_isSkilling = { false };
         m_isAttacking = { false };

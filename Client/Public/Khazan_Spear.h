@@ -311,16 +311,19 @@ private:
 
 private:
 	void						Subscribe_Events();
-	void						Update_Interact_Event(_float fTimeDelta);
-	void						BladeNexus_Event(_float fTimeDelta);
-	void						Chest_Event(_float fTimeDelta);
-    void						TombStone_Event(_float fTimeDelta);
+	void						Update_Interact_Event(_float fTimeDelta);  
+    /*  하인마스 + 엠바스 */
+	void						BladeNexus_Event(_float fTimeDelta);    
+    void						Chest_Event(_float fTimeDelta);         
+    void						TombStone_Event(_float fTimeDelta);     //폐기
+
+    /* 앰바스 */
     void						Lever_Event(_float fTimeDelta);
-    void						Statue_Event(_float fTimeDelta);
-    void						IronGate_Event(_float fTimeDelta);
-    void						UnLockGear_Event(_float fTimeDelta);
-    void						GiantGate_Event(_float fTimeDelta);
-    void						NPC_Event(_float fTimeDelta);
+    void						Statue_Event(_float fTimeDelta); //조각상 퍼즐
+    void						IronGate_Event(_float fTimeDelta); //레버 다음 철문 밀어서열기 (자물쇠 해제)
+    void						UnLockGear_Event(_float fTimeDelta);  // ?? CA_P_Kazan_GearSwitch_001_Interation 이거 쓰면될 듯
+    void						GiantGate_Event(_float fTimeDelta);  //거대한 철문 
+    void						NPC_Event(_float fTimeDelta);   
 
 private:
     void                        Lerp_Position_ByInteractEvent(_float4 vTargetPos, _float4 vStartPos, _float fDuration, _float fTimeDelta, _bool& isDone);
@@ -329,7 +332,7 @@ private:
 #ifdef _DEBUG
 	void			Debug_Widget();
 	void			Debug_Widget_States();      // 상태 디버깅
-    void Debug_Widget_Combat();
+    void            Debug_Widget_Combat();
 	void			Debug_Widget_Animation();   // 애니메이션 디버깅
 	void			Debug_Widget_Movement();    // 이동 디버깅
 
