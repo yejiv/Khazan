@@ -47,7 +47,7 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 
     if (m_pGameInstance->Key_Down(DIK_J))
     {
-        Set_ActiveAIController(true);
+        //Set_ActiveAIController(true);
     }
     
 

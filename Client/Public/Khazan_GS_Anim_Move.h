@@ -48,6 +48,7 @@ public:
     //_bool	Try_Run(GS_MOVEINFO moveInfo);
     //_bool	Try_Sprint(GS_MOVEINFO moveInfo);
     //_bool	Try_Dodge(GS_MOVEINFO moveInfo);
+    _bool   Force_DodgeAnimation(GS_MOVEINFO moveInfo);
 
     void	Reserve_Animation(GS_MOVEINFO moveInfo);
 

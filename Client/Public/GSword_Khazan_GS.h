@@ -18,7 +18,7 @@ class CGSword_Khazan_GS final : public CPartObject
 public:
 	typedef struct tagGSwordKhazanGSDesc : public CPartObject::PARTOBJECT_DESC
 	{
-		_uint* pState = { nullptr };
+		_uint* pStatus = { nullptr };
 		class CTransform* pParentTransform = { nullptr };
 
 	}GSWORD_KHAZAN_GS_DESC;
@@ -32,7 +32,8 @@ public:
 	_float4x4*  Get_BoneMatrix(const _char* pBoneName);
 	const _matrix& Get_OffestMatrix() const { return m_matOffset; }
     void		Set_matWeaponR(_float4x4* mat) { m_pWeaponR_Matrix = mat; }
-    void		Set_matBackPack(_float4x4* mat) { m_pBackPack_Matrix = mat; }
+    void		Set_GSwordBackPack(_float4x4* mat) { m_GSwordBackPack_Matrix = mat; }
+    void		Set_SpearBackPack(_float4x4* mat) { m_pSpearBackPack_Matrix = mat; }
 
    // _bool*      Get_isEquip() { return &m_isEquip; }
     void        Set_Equipped(bool equip) { m_isEquip = equip; }
@@ -72,13 +73,16 @@ private:
     class CClientInstance*      m_pClientInstance = { nullptr };
     class CTransform*			m_pParentTransform = { nullptr };
 
-	_uint*						m_pParentState = { nullptr };
+	_uint*						m_pParentStatus = { nullptr };
 	_float4x4*					m_pWeaponR_Matrix = { nullptr };
-    _float4x4*                  m_pBackPack_Matrix = { nullptr };
+    _float4x4*                  m_GSwordBackPack_Matrix = { nullptr };
+    _float4x4*                  m_pSpearBackPack_Matrix = { nullptr };
 
 	_matrix						m_matOffset;
     _bool                       m_isEnble = { true };
     _bool                       m_isEquip = { true };
+    
+    _bool                       m_isChangeWeapon = { false };
 
     /* Motion Trail */
     function<void(const _wstring&, _bool)>  m_OnMotionTrailCallBack;

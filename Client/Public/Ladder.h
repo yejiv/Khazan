@@ -4,6 +4,7 @@
 #include "Prop_Interactive.h"
 
 NS_BEGIN(Engine)
+class CBody;
 class CTransform;
 NS_END
 
@@ -11,6 +12,15 @@ NS_BEGIN(Client)
 
 class CLadder final : public CProp_Interactive
 {
+private:
+    enum class LADDER_POINT
+    {
+        DOWN_POS_CH,
+        UP_POS_CH,
+        CLIMB_UP,
+        CLIMB_DOWN,
+        END
+    };
     ////////////////////////////////////////////////////////////////////////
     // 
     // TOP
@@ -53,8 +63,51 @@ public:
     virtual HRESULT Render() override;
 
 private:
+    class CLadder_Bottom* m_pLadderBot = { nullptr };
+    class CLadder_Top* m_pLadderTop = { nullptr };
+
+    CBody* m_pTriggerCom[ENUM_CLASS(LADDER_POINT::END)] = { nullptr };
+
+    COLLISION_DESC m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::END)] = {};
+
+    class CInteraction_Guide* m_pGuide = { nullptr };
+    LADDER_POINT m_eLadderPoints[ENUM_CLASS(LADDER_POINT::END)] = {};
+    _float4x4 m_matGuide = {};
+
+    EventObject m_Event = {};
+
+    _float4 m_vPlayerPosition = {};
+
+    _float4 m_vDownPlayerPos = {};
+    _float4 m_vClimbUpPos = {};
+
+    _float4 m_vUpPlayerPos = {};                  // 사다리 위쪽 플레이어 위치 정보
+    _float4 m_vClimbDownPos = {};                 // 사다리 액션 중단 액션
+
+    LADDER_POINT m_eLadderPoint = { LADDER_POINT::END };
+
+    EventLadder::LADDER_ACTION m_eLadderStart = { EventLadder::LADDER_ACTION::NONE };
+
+    _bool m_isPlayerOnLadder = { false };
+
+private:
+    void Set_GuideMatrix(_float4 vGuidePos);
+    void Set_PlayerPosition();
+
+private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_PartObjects(void* pArg);
+    HRESULT Ready_Collision(void* pArg);
+    HRESULT Ready_Interaction_Guide(void* pArg);
+
+    void Input_Interact_Event(_float fTimeDelta);
+
+    void Event_Update(_float fTimeDelta);
+
+public:
+    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
 public:
     static CLadder* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

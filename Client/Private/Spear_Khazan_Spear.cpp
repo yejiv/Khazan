@@ -31,7 +31,7 @@ HRESULT CSpear_Khazan_Spear::Initialize_Prototype()
 HRESULT CSpear_Khazan_Spear::Initialize_Clone(void* pArg)
 {
     SPEAR_KHAZAN_SPEAR_DESC* pDesc = static_cast<SPEAR_KHAZAN_SPEAR_DESC*>(pArg);
-    m_pParentState = pDesc->pState;
+    m_pParentStatus = pDesc->pStatus;
     m_pParentTransform = pDesc->pParentTransform;
     Safe_AddRef(m_pParentTransform);
 
@@ -180,11 +180,42 @@ void CSpear_Khazan_Spear::Change_Weapon(EQUIPMENTTYPE type, const _wstring& strP
     if (m_pModelCom)
         Safe_Release(m_pModelCom);
 
-    if (strPartName == TEXT("Meteor_GSword")) m_pModelCom = m_pModelCom_Meteor_GSword;
-    else if (strPartName == TEXT("Execution_GSword")) m_pModelCom = m_pModelCom_Execution_GSword;
-    else if (strPartName == TEXT("Flash_Spear")) m_pModelCom = m_pModelCom_Flash_Spear;
-    else if (strPartName == TEXT("Punish_Spear")) m_pModelCom = m_pModelCom_Punish_Spear;
+    _bool isGSword = false;
+    _bool isSpear = false;
+
+    if (strPartName == TEXT("Meteor_GSword")) {
+        m_pModelCom = m_pModelCom_Meteor_GSword;
+        isGSword = true;
+    }
+    else if (strPartName == TEXT("Execution_GSword")) {
+        m_pModelCom = m_pModelCom_Execution_GSword;
+        isGSword = true;
+    }
+    else if (strPartName == TEXT("Flash_Spear")) {
+        m_pModelCom = m_pModelCom_Flash_Spear;
+        isSpear = true;
+    }
+    else if (strPartName == TEXT("Punish_Spear")) {
+        m_pModelCom = m_pModelCom_Punish_Spear;
+        isSpear = true;
+    }
     Safe_AddRef(m_pModelCom);
+
+/*    if (isGSword)
+    {
+        *m_pParentStatus |= CKhazan_Spear::PLAYER_STATUS::GSWORD;
+        *m_pParentStatus &= ~(CKhazan_Spear::PLAYER_STATUS::SPEAR | CKhazan_Spear::PLAYER_STATUS::BAREHAND);
+    }
+    else */if (isSpear)
+    {
+        *m_pParentStatus |= CKhazan_Spear::PLAYER_STATUS::SPEAR;
+        *m_pParentStatus &= ~(/*CKhazan_Spear::PLAYER_STATUS::GSWORD |*/ CKhazan_Spear::PLAYER_STATUS::BAREHAND);
+    }
+    else
+    {
+        *m_pParentStatus |= CKhazan_Spear::PLAYER_STATUS::BAREHAND;
+        *m_pParentStatus &= ~(/*CKhazan_Spear::PLAYER_STATUS::GSWORD |*/ CKhazan_Spear::PLAYER_STATUS::SPEAR);
+    }
 
 }
 
