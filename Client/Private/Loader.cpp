@@ -76,6 +76,10 @@
 #include "UI_Logo.h"
 #pragma endregion
 
+#pragma region ITEM
+#include "Interaction_Item.h"
+#pragma endregion
+
 #include "Effect_Prefab.h"
 //static mutex g_GpuGate;
 
@@ -1047,6 +1051,12 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 #pragma region Shader
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Decal"),
         CDecal::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+#pragma endregion
+
+#pragma region Item
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"),
+        CInteraction_Item::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 #pragma endregion
 

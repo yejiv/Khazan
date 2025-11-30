@@ -109,6 +109,8 @@ HRESULT CInteraction_Item::Ready_Effect()
 {
     m_pEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("ITEM_FX")));
 
+    if (m_pEffect)
+        m_pEffect->ResetChildren();
     return S_OK;
 }
 
@@ -117,7 +119,7 @@ HRESULT CInteraction_Item::Ready_Guide()
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::DEFAULT, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("°¡µ¿"), 1.f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::DEFAULT, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("ê°€ë™"), 1.f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 
@@ -158,14 +160,17 @@ void CInteraction_Item::Item_Check()
 {
     if (m_isGuideVisible && m_pGameInstance->Key_Down(DIK_F))
     {
-        static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(m_iItemIndex);
+        if (CClientInstance::GetInstance()->Item_Exist_ID(m_iItemIndex))
+        {
+            static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(m_iItemIndex);
 
-        m_isDead = true;
-        m_pGuide->Set_IsDead(true);
-        m_pGuide = nullptr;
+            m_isDead = true;
+            m_pGuide->Set_IsDead(true);
+            m_pGuide = nullptr;
 
-        Safe_Release(m_pEffect);
-        m_pEffect = nullptr;
+            Safe_Release(m_pEffect);
+            m_pEffect = nullptr;
+        }
     }
 }
 
