@@ -73,15 +73,16 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
     }
 
-    m_ePhase = PHASE::PHASE2;
+    m_ePhase = PHASE::PHASE1;
+    //  m_ePhase = PHASE::PHASE2;
 
-    Set_PhaseWeapon_Phase2();
 
     m_fRecoveryPerSec = 5.f;
 
     if (m_ePhase == PHASE::PHASE2)
     {
         //(-30.103f, -29.9f, 188.961f, 1.f)
+        Set_PhaseWeapon_Phase2();
         m_pCharVirCom->Set_Position(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
     }
 
