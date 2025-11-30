@@ -50,8 +50,7 @@ private:
 
     }SKILLCOOLDOWN;
 
-public:
-    void                        Set_ActiveAIController(_bool isToggle) { m_isActiveController = isToggle; }
+
 
 public:
     virtual HRESULT				Initialize(class CCreature* pOwner);

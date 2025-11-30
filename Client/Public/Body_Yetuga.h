@@ -24,6 +24,7 @@ public:
 public:
 	_float3					Get_BonePoint(const _char* BoneName);
 	_float4*				Get_BonePointEX(const _char* BoneName);
+    _float4*                Get_BonePointVFX(const _char* BoneName);
 	_matrix					Get_BoneMatrix(const _char* pBoneName);
 
 	void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
@@ -76,6 +77,7 @@ private:
 private:
 	_float3					m_vThrowPoint = {};
 	_float4					m_vLockOnPoint = {};
+    _float4                 m_pVFXBonePoint = {};
 
 private:
 	_float4x4				m_RightHandMatrix = {};

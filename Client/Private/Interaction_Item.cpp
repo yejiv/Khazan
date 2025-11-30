@@ -28,8 +28,8 @@ HRESULT CInteraction_Item::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    if (FAILED(Ready_Effect()))
-        return E_FAIL;
+    //if (FAILED(Ready_Effect()))
+    //    return E_FAIL;
 
     if (FAILED(Ready_Guide()))
         return E_FAIL;
@@ -66,18 +66,18 @@ HRESULT CInteraction_Item::Initialize_Clone(void* pArg)
 
 void CInteraction_Item::Priority_Update(_float fTimeDelta)
 {
-    m_pEffect->Priority_Update(fTimeDelta);
+    //m_pEffect->Priority_Update(fTimeDelta);
 }
 
 void CInteraction_Item::Update(_float fTimeDelta)
 {
-    m_pEffect->Update(fTimeDelta);
+    //m_pEffect->Update(fTimeDelta);
     Item_Check();
 }
 
 void CInteraction_Item::Late_Update(_float fTimeDelta)
 {
-    m_pEffect->Late_Update(fTimeDelta);
+   //m_pEffect->Late_Update(fTimeDelta);
 }
 
 HRESULT CInteraction_Item::Render()
