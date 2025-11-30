@@ -227,10 +227,14 @@ namespace Client {
 
         UNLOCK_STATE eStep{};
         bool isEventOn = {};
+        bool isEventSkip = {};
 
         bool isEvent() { return isEventOn; }
+        bool isSkip() { return isEventSkip; }
+
         void EventOn() { isEventOn = true; }
         void EventOff() { isEventOn = false; }
+        void EventSkip() { isEventSkip = true; }
 
         void Set_UnLockState(bool isUnLock)
         {
