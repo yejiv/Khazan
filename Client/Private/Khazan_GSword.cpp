@@ -103,7 +103,7 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
 #pragma endregion
 
 #ifdef _DEBUG
-    Debug_Widget();
+    //Debug_Widget();
 #endif // _DEBUG
 
     /* 기본 셋팅  */
@@ -152,6 +152,22 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
 
 void CKhazan_GSword::Update(_float fTimeDelta)
 {
+    //_vector vpos = m_pTransformCom->Get_State(STATE::POSITION);
+    //vpos.m128_f32[1] += g_fGravity* fTimeDelta;
+    //    //m_pCharVirCom->Set_Gravity(0.f);
+    //if (m_pGameInstance->Key_Down(DIK_J))
+    //    m_vGravity = XMVectorSet(0.f, g_fGravity, 0.f, 0.f);
+    //if (m_pGameInstance->Key_Pressing(DIK_H, fTimeDelta))
+    //    m_pTransformCom->Set_State(STATE::POSITION, vpos);
+    //    //m_pCharVirCom->Set_Gravity(g_fGravity);
+    //    //m_vGravity = XMVectorSet(0.f, 0.F, 0.f, 0.f);
+    //if (m_pGameInstance->Key_Down(DIK_B))
+    //    m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_ClimbDn_DL_Loop"));
+    //if (m_pGameInstance->Key_Down(DIK_N))
+    //    m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_ClimbDn_DR_Loop"));
+    //if (m_pGameInstance->Key_Down(DIK_M))
+    //    m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_ClimbDn_D_Sprint_Loop"));
+
     if (m_isEnableControl)
     {
         m_fTimeAcc += fTimeDelta;
@@ -327,14 +343,32 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
     switch (eHitreaction)
     {
     case Client::HITREACTION::NONE:
-
+        cout << "@@@@@@     HITREACTION::NONE  @@@@@@" << endl;
         break;
-        //case Client::HITREACTION::GROGGY:
-
-        //    break;
+    case Client::HITREACTION::PARRY:
+        cout << "@@@@@@     HITREACTION::PARRY   @@@@@@" << endl;
+        break;
+    case Client::HITREACTION::GROGGY:
+        cout << "@@@@@@     HITREACTION::GROGGY   @@@@@@" << endl;
+        break;
+    case Client::HITREACTION::GRAB_FINISHED:
+        cout << "@@@@@@     HITREACTION::GRAB_FINISHED   @@@@@@" << endl;
+        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_DamAir_F");
+        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+        break;
+    case Client::HITREACTION::BRUTAL_ATTACK:
+        cout << "@@@@@@     HITREACTION::BRUTAL_ATTACK   @@@@@@" << endl;
+        break;
+    case Client::HITREACTION::GRAB:
+        cout << "@@@@@@     HITREACTION::GRAB   @@@@@@" << endl;
+        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Burrow_Predation_Kazan_DamageHold");
+        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+        Add_Status(VIPER_GRAB);
+        break;
     case Client::HITREACTION::KNOCKBACK_WEAK:
-        if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
-        if (Has_State(CAT::M_SKILL))  m_pAnimAttack->Exit();
+        if (Has_State(CAT::M_ATTACK | CAT::M_SKILL))  break;
+        //if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
+        //if (Has_State(CAT::M_SKILL))  m_pAnimAttack->Exit();
         if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
         if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
 
@@ -350,8 +384,9 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         m_pAnimDamaged->Force_DamagedNormal(Has_Status(GSWORD), m_eHitNormalDir.iDirFlag);
         break;
     case Client::HITREACTION::KNOCKBACK_NORMAL:
-        if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
-        if (Has_State(CAT::M_SKILL))  m_pAnimAttack->Exit();
+        if (Has_State(CAT::M_ATTACK | CAT::M_SKILL))  break;
+        //if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
+        //if (Has_State(CAT::M_SKILL))  m_pAnimAttack->Exit();
         if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
         if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
         cout << "       KNOCKBACK_NORMAL     " << endl;
@@ -367,8 +402,9 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         m_pAnimDamaged->Force_DamagedNormal(Has_Status(GSWORD), m_eHitNormalDir.iDirFlag);
         break;
     case Client::HITREACTION::KNOCKBACK_STRONG:
-        if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
-        if (Has_State(CAT::M_SKILL))  m_pAnimAttack->Exit();
+        if (Has_State(CAT::M_ATTACK | CAT::M_SKILL))  break;
+        //if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
+        //if (Has_State(CAT::M_SKILL))  m_pAnimAttack->Exit();
         if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
         if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
         cout << "        KNOCKBACK_STRONG       " << endl;
@@ -383,14 +419,6 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         Add_State(CAT::M_DAMAGED);
         m_pAnimDamaged->Force_DamagedStrong(Has_Status(GSWORD), m_eHitStrongDir.iDirFlag);
         break;
-    case Client::HITREACTION::PARRY:
-
-        break;
-    case Client::HITREACTION::GRAB:
-        cout << " GRAB !!! " << endl;
-        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
-        break;
-
     }
 
 }
@@ -408,6 +436,26 @@ void CKhazan_GSword::Set_Position(_float4 vPos)
 
 void CKhazan_GSword::Update_Stats(_float fTimeDelta)
 {
+    /*  스태미나 다 떨어짐 */
+    if (m_pPlayerData->fCulStamina < 0.1f)
+    {
+        m_pPlayerData->fCulStamina = 0.f;
+        if (!Has_Status(STAMINA_EXHAUSTION)) {
+            Add_Status(STAMINA_EXHAUSTION);
+            m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_StaminaExhaustion"));
+            m_pClientInstance->Set_PlayerInput(false);     //입력 막기 
+        }
+
+        if (Has_Status(STAMINA_EXHAUSTION) && m_pBody->Get_Model()->IsFinished())
+        {
+            Remove_Status(STAMINA_EXHAUSTION);
+            m_pPlayerData->fCulStamina += 5.f;      //스태미나 약간 회복 
+            m_pClientInstance->Set_PlayerInput(true);       //입력 풀기
+        }
+
+        return;
+    }
+
     /* idle, run, walk, 현재 스태미나가 닳아 있는 상태일 때*/
     if (!Has_States() || (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_RUN | MOV::MOVE_WALK)) && m_pPlayerData->fCulStamina < m_pPlayerData->fMaxStamina)
     {
@@ -446,6 +494,11 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
 {
     if (Has_State(CAT::M_DIE))
         return;
+
+    if (Has_Status(VIPER_GRAB)) {
+        if (!ChangeGrabAnimation())
+            return;
+    }
 
     /* 이전 상태 저장*/
     m_iPrevMainState = m_iCurMainState;
@@ -507,7 +560,7 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
 
         Interaction_Input(fTimeDelta);
         /* 공격이나 가드를 막아야하는 상호작용 처리  */
-        if (!Has_Status(INTERACT_LOCKED_STATE))
+        if (!Has_Status(INTERACTION_STATUE))
         {
             Guard_Input(fTimeDelta);
             Skill_Input(fTimeDelta);
@@ -1569,6 +1622,19 @@ void CKhazan_GSword::ExecuteAnimationExit()
 
 }
 
+_bool CKhazan_GSword::ChangeGrabAnimation()
+{
+    if (m_pBody->Get_Model()->Check_MinAnimationTime())
+    {
+        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Down_Loop_F");
+        //m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+        Remove_Status(VIPER_GRAB);
+        return true;
+    }
+
+    return false;
+}
+
 void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
 {
     //if (m_pAnimMove->IsDodge() || m_pAnimAttack->Is_Attacking() || !m_pAnimMove->IsMoving())
@@ -1943,7 +2009,7 @@ void CKhazan_GSword::Clear_Injured()
 
 void CKhazan_GSword::EnterStatuePuzzle()
 {
-    Add_Status(INTERACT_LOCKED_STATE | INTERACTION_STATUE);
+    Add_Status( INTERACTION_STATUE);
 
     if (Has_Status(SPEAR))
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
@@ -1953,7 +2019,7 @@ void CKhazan_GSword::EnterStatuePuzzle()
 
 void CKhazan_GSword::ExitStatuePuzzle()
 {
-    Remove_Status(INTERACT_LOCKED_STATE | INTERACTION_STATUE);
+    Remove_Status( INTERACTION_STATUE);
 
     if (Has_Status(SPEAR))
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed"));
@@ -2492,6 +2558,12 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
             }
             break;
         }
+        case INTERACTIVE_TYPE::LADDER:
+        {
+            isDone = false;
+            if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+            break;
+        }
         default:
             break;
         }
@@ -2570,6 +2642,11 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         if (true == m_EventInteract.isNPC())
         {
             NPC_Event(fTimeDelta);
+        }
+        // 사다리랑 상호 작용 시
+        if (INTERACTIVE_TYPE::LADDER == m_EventInteract.eInteractType)
+        {
+            Ladder_Event(fTimeDelta);
         }
     }
 }
@@ -2844,6 +2921,55 @@ void CKhazan_GSword::NPC_Event(_float fTimeDelta)
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&NPCEvent.vPlayerPosition));
     NPCEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&NPCEvent.vPosition));
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_GSword::Ladder_Event(_float fTimeDelta)
+{
+    EventLadder LadderEvent = m_EventInteract.LadderEvent;
+
+    switch (LadderEvent.eLadderState)
+    {
+    case EventLadder::LADDER_ACTION::UPTODOWN:
+    {
+        m_pCharVirCom->Set_Gravity(0.f);
+        // 중력 끄기 ???
+        // 플레이어가 사다리 내려가는 애니메이션 ???
+        break;
+    }
+    case EventLadder::LADDER_ACTION::DOWNTOUP:
+    {
+        m_pCharVirCom->Set_Gravity(0.f);
+        
+        // 중력 끄기 ???
+        // 플레이어가 사다리 올라가는 애니메이션 ???
+        break;
+    }
+    case EventLadder::LADDER_ACTION::UPEND:
+    {
+
+        // 플레이어가 사다리 다 올라온 애니메이션 ???
+        break;
+    }
+    case EventLadder::LADDER_ACTION::DOWNEND:
+    {
+        // 중력 끄기 ???
+        // 플레이어가 사다리 다 내려온 애니메이션 ???
+        break;
+    }
+    default:
+        MSG_BOX(TEXT("읭 사다리 이런거 없는디"));
+        break;
+    }
+
+    if (true == LadderEvent.isStartAction())
+    {
+        LadderEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1]; //플레이어가 이동할 위치 y 
+        // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&LadderEvent.vPlayerPosition));  //순간이동
+        LadderEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1]; // 레더 위치 
+        m_pTransformCom->LookAt(XMLoadFloat4(&LadderEvent.vPosition)); //꼬라보기 
+    }
 
     m_EventInteract.End_Event();
 }

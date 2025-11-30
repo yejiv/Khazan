@@ -1,7 +1,7 @@
 #pragma once
 #include "Client_Defines.h"
 #include "PartObject.h"
-#include "Elamain.h"
+#include "Elamein.h"
 
 NS_BEGIN(Engine)
 class CShader;
@@ -11,21 +11,21 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CElamain_Shield final : public CPartObject
+class CElamein_Sword final : public CPartObject
 {
 public:
     typedef struct tagWeaponDesc : public PARTOBJECT_DESC
     {
         CTransform* pOwnerTransform = { nullptr };
         _float4x4* pSocketMatrix = { nullptr };
-        CElamain::MONDATA* pData = { nullptr };
+        CElamein::MONDATA* pData = { nullptr };
 
     }WEAPON_DESC;
 
 private:
-    CElamain_Shield(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CElamain_Shield(const CElamain_Shield& Prototype);
-    virtual ~CElamain_Shield() = default;
+    CElamein_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    CElamein_Sword(const CElamein_Sword& Prototype);
+    virtual ~CElamein_Sword() = default;
 
 public:
     virtual HRESULT			    Initialize_Prototype(_int iLevel);
@@ -55,9 +55,9 @@ private:
     _bool					    m_isOnAttackCollision = { false };
     _float4x4*                  m_pSocketMatrix = { nullptr };
 
-    CElamain::MONDATA*          m_pData = { nullptr };
+    CElamein::MONDATA*          m_pData = { nullptr };
 public:
-    static CElamain_Shield*    Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
+    static CElamein_Sword*      Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*        Clone(void* pArg) override;
     virtual void			    Free() override;
 };

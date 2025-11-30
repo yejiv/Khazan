@@ -119,7 +119,7 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
     {
         // Distortion
         DISTORTION_DESC Desc{};
-        _vector vCenterPos = XMVectorSet(518.41f, -10.6f, 233.39f, 1.f);
+        _vector vCenterPos = XMVectorSet(520.f, -10.6f, 228.48f, 1.f);
         _float fPosY = XMVectorGetY(vCenterPos);
         _float fOffset = 2.f;
         vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
@@ -155,7 +155,7 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
     {
         // Distortion
         DISTORTION_DESC Desc{};
-        _vector vCenterPos = XMVectorSet(518.47f, -8.5f, 233.18f, 1.f);
+        _vector vCenterPos = XMVectorSet(520.f, -10.6f, 228.48f, 1.f);
         _float fPosY = XMVectorGetY(vCenterPos);
         _float fOffset = 2.f;
         vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
