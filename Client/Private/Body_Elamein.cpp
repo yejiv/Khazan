@@ -16,6 +16,11 @@ _float4x4* CBody_Elamein::Get_BoneMatrix_Ptr(const _char* pBoneName)
     return m_pModelCom->Get_BoneMatrix(pBoneName);
 }
 
+_float CBody_Elamein::Get_CulTrack()
+{
+    return *m_pModelCom->Get_CurTrackPosition();
+}
+
 HRESULT CBody_Elamein::Initialize_Prototype(_int iLevel)
 {
     m_iPrototypeIndex = iLevel;
@@ -79,21 +84,29 @@ void CBody_Elamein::Late_Update(_float fTimeDelta)
 
 HRESULT CBody_Elamein::Render()
 {
-    if (FAILED(Bind_ShaderResources()))
-        return E_FAIL;
+    CHECK_FAILED(Bind_ShaderResources(), E_FAIL);
+    CHECK_FAILED(Bind_Dissolve(), E_FAIL);
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
-
+    
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
 
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
-
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(1);
+        if (i == 5)
+        { 
+            _float fValue = 0.15f;
+            //g_fEmissiveValue
+            m_pShaderCom->Bind_RawValue("g_fEmissiveValue", &fValue, sizeof(_float));
+            m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0);
+            m_pShaderCom->Begin(15);
+        }
+        else
+            m_pShaderCom->Begin(17);
 
         m_pModelCom->Render(i);
     }
@@ -115,6 +128,9 @@ void CBody_Elamein::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLaye
 
 HRESULT CBody_Elamein::Ready_Components()
 {
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Monster_Dissolve"),
+        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr), E_FAIL);
+
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
@@ -140,6 +156,17 @@ HRESULT CBody_Elamein::Bind_ShaderResources()
         return E_FAIL;
 
     return S_OK;
+}
+
+HRESULT CBody_Elamein::Bind_Dissolve()
+{
+    CHECK_FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", 0), E_FAIL);
+
+    m_pShaderCom->Bind_RawValue("g_fDecreaseAlpha", &m_pData->fDecreaseAlpha, sizeof(_float));
+    m_pData->fEdgeWidth = 0.2f;
+    m_pData->fEdgeColor = { 5.f, 0.f, 0.f, 1.f };
+    m_pShaderCom->Bind_RawValue("g_fEdgeWidth", &m_pData->fEdgeWidth, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeColor", &m_pData->fEdgeColor, sizeof(_float4));
 }
 
 

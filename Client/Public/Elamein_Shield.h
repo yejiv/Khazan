@@ -22,6 +22,9 @@ public:
 
     }WEAPON_DESC;
 
+public:
+    void                        Add_Charge(_float fValue) { m_fChageValue = fValue; }
+    void                        Reset_Charge() { m_isReset = true; }
 private:
     CElamein_Shield(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CElamein_Shield(const CElamein_Shield& Prototype);
@@ -56,6 +59,9 @@ private:
     _float4x4*                  m_pSocketMatrix = { nullptr };
 
     CElamein::MONDATA*          m_pData = { nullptr };
+
+    _float                      m_fChageValue = {};
+    _bool                       m_isReset = { false };
 public:
     static CElamein_Shield*    Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*        Clone(void* pArg) override;

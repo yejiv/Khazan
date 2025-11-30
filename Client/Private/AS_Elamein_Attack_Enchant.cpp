@@ -17,6 +17,7 @@ void CAS_Elamein_Attack_Enchant::Update(CStateMachine* pFSM, CGameObject* pOwner
 {
     if (m_eState == START)
     {
+        m_pMonData->pOwner->Add_Charge((m_pMonData->pOwner->Get_TrackPotion() / 45.f) * 5.f);
         if (m_pMonData->isAnimFinash)
         {
             m_pMonData->iAnimIndex = 88;
@@ -25,6 +26,8 @@ void CAS_Elamein_Attack_Enchant::Update(CStateMachine* pFSM, CGameObject* pOwner
     }
     else if (m_eState == LOOP)
     {
+        m_pMonData->pOwner->LockOnLerp(fTimeDelta, 10.f);
+        pOwner->Get_Transform()->Go_Straight(3.5f * fTimeDelta);
         if (m_pMonData->pOwner->Check_Ranage("AttackRange"))
         {
             m_pMonData->iAnimIndex = 83;
@@ -33,9 +36,12 @@ void CAS_Elamein_Attack_Enchant::Update(CStateMachine* pFSM, CGameObject* pOwner
     }
     else if (m_eState == END)
     {
+        m_pMonData->pOwner->LockOnLerp(fTimeDelta, 6.f);
         if (m_pMonData->isAnimFinash)
         {
+            m_pMonData->fSpecial_AttackCool = 30.f;
             m_pMonData->eAttackState = CElamein::ATTACKSTATE::END;
+            m_pMonData->pOwner->Reset_Charge();
         }
     }
 
@@ -43,7 +49,17 @@ void CAS_Elamein_Attack_Enchant::Update(CStateMachine* pFSM, CGameObject* pOwner
 
 void CAS_Elamein_Attack_Enchant::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    m_pMonData->fSpecial_AttackCool = 30.f;
+
+}
+
+void CAS_Elamein_Attack_Enchant::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+    }
 }
 
 CAS_Elamein_Attack_Enchant* CAS_Elamein_Attack_Enchant::Create()
