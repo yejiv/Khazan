@@ -192,9 +192,20 @@ HRESULT CLight_Manager::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer, _uin
 {
 	for (auto& pLight : m_pLights[iLevelIndex])
 	{
-		if (true == pLight.second->isEnable())
+        CLight* pEnableLight = pLight.second;
+        if (nullptr == pEnableLight)
+            continue;
+
+		if (true == pEnableLight->isEnable())
 		{
-			pLight.second->Render(pShader, pVIBuffer);
+            const LIGHT_DESC LightDesc = *pEnableLight->Get_LightDesc();
+
+            if (LIGHT_DESC::POINT == LightDesc.eType && false == m_pGameInstance->isIn_Frustum_WorldSpace(XMLoadFloat4(&LightDesc.vPosition), LightDesc.fRange * 1.1f))
+            {
+                continue;
+            }
+
+			pEnableLight->Render(pShader, pVIBuffer);
 		}
 	}
 

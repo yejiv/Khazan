@@ -26,9 +26,6 @@ HRESULT CMap_TestPlayer::Initialize(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    //m_pModelCom->Set_Animation(12, true);
-
-    //m_pTransformCom->Scale(_float3(0.1f, 0.1f, 0.1f));
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 
     return S_OK;
@@ -61,10 +58,13 @@ HRESULT CMap_TestPlayer::Render()
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
-        m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
+        m_iMtrlFlags = 0;
+        if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0)))
+            m_iMtrlFlags |= M_DIFFUSE;
+
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        m_pShaderCom->Begin(0);
+        m_pShaderCom->Begin(9);
 
         m_pModelCom->Render(i);
     }

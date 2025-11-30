@@ -227,10 +227,14 @@ namespace Client {
 
         UNLOCK_STATE eStep{};
         bool isEventOn = {};
+        bool isEventSkip = {};
 
         bool isEvent() { return isEventOn; }
+        bool isSkip() { return isEventSkip; }
+
         void EventOn() { isEventOn = true; }
         void EventOff() { isEventOn = false; }
+        void EventSkip() { isEventSkip = true; }
 
         void Set_UnLockState(bool isUnLock)
         {
@@ -302,6 +306,7 @@ namespace Client {
         LADDER_ACTION eLadderState{ LADDER_ACTION::NONE };
         XMFLOAT4 vPosition{};
         XMFLOAT4 vPlayerPosition{};
+        XMFLOAT2 vEndActionPos{};               // x : 위쪽 값 | y : 아래쪽 값
 
         bool isStartAction() {
             return LADDER_ACTION::UPTODOWN == eLadderState || LADDER_ACTION::DOWNTOUP == eLadderState;

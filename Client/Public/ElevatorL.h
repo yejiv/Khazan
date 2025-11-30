@@ -116,6 +116,7 @@ public:
 
 private:
     void VerticalOnTime_Update(_float fTimeDelta);
+    void Gimmick_Event_Skip(_float fTimeDelta);
 
 public:
     static CElevatorL* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
