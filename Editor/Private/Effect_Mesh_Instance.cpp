@@ -63,7 +63,8 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
     __super::Update(fTimeDelta);
 
     /* Edit */
-    if (m_TimeTracks.size() == 0)
+    //if (m_TimeTracks.size() == 0)
+    if (!m_bRunning)
         m_pVIBufferCom->Remove_Speed(); 
 }
 
@@ -134,7 +135,7 @@ void CEffect_Mesh_Instance::Edit_Element()
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
     const char* textures[] = { "test0", "test1", "test2",  "test3",  "test4",  "test5",  "test6" ,  "test7" ,  "test8" ,  "test9" ,  "test10" ,  "test11" ,  "test12",  "test13",  "test14",  "test15",  "test16",  "test17",  "test18",  "test19",  "test20",
-        "shock", "smoke", "cloud", "blood", "Ice1", "Ice2", "Rock", "Slash28", "Slash29" , "Slash30" , "Slash31" , "Slash32", "Slash33" };
+        "shock", "smoke", "cloud", "blood", "Ice1", "Ice2", "Rock", "Slash28", "Slash29" , "Slash30" , "Slash31" , "Slash32", "Slash33", "Viper_Slash0", "Viper_Slash1", "Viper_Slash2", "Viper_Slash3", "Viper_Slash4" };
 
     ImGui::Combo("Mesh Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
@@ -151,7 +152,7 @@ void CEffect_Mesh_Instance::Edit_Element()
                                     "FastAtk_1", "FastAtk_2L", "FastAtk_2R", "FastAtk_3L", "FastAtk_3R", "Grapple_Atk_2", "CounterATK", "DodgeATK", "FastATK1","FastATK2_L", "FastATK2_R",  "FastATK3_L" ,  "FastATK3_R", "FastATK4",
                                     "StrongAtk0", "StrongAtk1", "FastAtk03_Slash", "GrappleAtk02_Slash", "StrongAtk03_Slash"
                                     , "Cylinder_003", "Cylinder_003_02", "Cylinder_003_Noise" , "Spine", "Circle_002" ,"Sphere","CircleTwist", "CircleTwist2", "Plane" , "circle001", "circle002", "Ice",  "Rock", "Crystal", "Ring_Twist"
-                                    , "CircleMesh0", "CircleMesh1", "CircleMesh2", "CircleMesh3", "CircleMesh4", "CircleMesh5" };
+                                    , "CircleMesh0", "CircleMesh1", "CircleMesh2", "CircleMesh3", "CircleMesh4", "CircleMesh5", "ViperHandTrail" };
 
     ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_sEditingData.iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 
