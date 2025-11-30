@@ -174,7 +174,7 @@ HRESULT CLevel_Embars::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust6"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Stamp"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("BlustSmall"), 3);
-    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Fire"), 29);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Fire"), 38);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Spawn"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("BloodHit"), 100);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Open"), 3);
