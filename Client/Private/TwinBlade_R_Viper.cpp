@@ -60,7 +60,7 @@ void CTwinBlade_R_Viper::Update(_float fTimeDelta)
 
     if (CViper::PHASE::PHASE2 == m_pOwner->Get_Phase() && m_isActive)
     {
-        // ¹Ùµð ¼ÒÄÏ ¿ùµå
+        // ë°”ë”” ì†Œì¼“ ì›”ë“œ
         _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
         for (_uint i = 0; i < 3; i++)
         {

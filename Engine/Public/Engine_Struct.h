@@ -276,6 +276,7 @@ namespace Engine
         XMFLOAT2	            vFadeTime;
         DECALTYPE	            eType;
         XMFLOAT3	            vPosition;
+        XMFLOAT3                vAngle;
         XMFLOAT3	            vScale;
         XMFLOAT3	            vColor;
         DECAL_EMISSIVE_DESC     EmissiveDesc;

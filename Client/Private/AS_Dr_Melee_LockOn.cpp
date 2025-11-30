@@ -19,7 +19,7 @@ void CAS_Dr_Melee_LockOn::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_pMonData->iAnimIndex = 31;
     else if (m_eDir == TARGET_DIR::F)
         m_pMonData->iAnimIndex = 29;
-    //ÅÏ
+    //í„´
     else if (m_eDir == TARGET_DIR::BL)
     {
         m_pMonData->isTurn = true;
@@ -99,7 +99,7 @@ void CAS_Dr_Melee_LockOn::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
         }
         
-        if (m_eDir == TARGET_DIR::FR || m_eDir == TARGET_DIR::R || m_eDir == TARGET_DIR::BR || m_eDir == TARGET_DIR::F)    //¿À¸¥ÂÊ
+        if (m_eDir == TARGET_DIR::FR || m_eDir == TARGET_DIR::R || m_eDir == TARGET_DIR::BR || m_eDir == TARGET_DIR::F)    //ì˜¤ë¥¸ìª½
             pOwner->Get_Transform()->Go_Left(fTimeDelta);
         else
             pOwner->Get_Transform()->Go_Right(fTimeDelta);

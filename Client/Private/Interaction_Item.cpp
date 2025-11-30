@@ -28,8 +28,8 @@ HRESULT CInteraction_Item::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    //if (FAILED(Ready_Effect()))
-    //    return E_FAIL;
+    if (FAILED(Ready_Effect()))
+        return E_FAIL;
 
     if (FAILED(Ready_Guide()))
         return E_FAIL;
@@ -198,6 +198,8 @@ HRESULT CInteraction_Item::Ready_Collision()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
         return E_FAIL;
+
+    return true;
 }
 
 void CInteraction_Item::Item_Check()

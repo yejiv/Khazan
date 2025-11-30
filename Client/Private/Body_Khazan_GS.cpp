@@ -1103,7 +1103,10 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
                 m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("GS_StrongATK"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);
         }
         else
+        {
             m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("GS_StrongATK"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(0.7f, 1.f);
+        }
         });
 
     //거인사냥
@@ -1231,6 +1234,8 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("GS_Apocalypse_Land", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Trail_V"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+        Start_LongRadialBlur();
+        Start_DefaultVignette();
         });
 
     m_pModelCom->Register_Event("GS_Apocalypse_Land", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
@@ -1240,6 +1245,8 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("GS_Apocalypse_Land", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Manifest_Strength_Land"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+        Spawn_LinearBloodDecal();
         });
 
 #pragma endregion
@@ -1265,11 +1272,11 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     // 거인 사냥
     m_pModelCom->Register_Event("AsheFork_Atk_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         // 모션 트레일 시작
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), true);
         });
     m_pModelCom->Register_Event("AsheFork_Atk_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         // 모션 트레일 끝
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
+        Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), false);
         // 비네트
         Start_DefaultVignette();
         // 레디얼 블러
@@ -1279,11 +1286,11 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     // 귀신 : 어둠의 그림자
     m_pModelCom->Register_Event("GhostLiberation_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         // 모션 트레일 시작
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), true);
         });
     m_pModelCom->Register_Event("GhostLiberation_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         // 모션 트레일 끝
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
+        Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), false);
         // 비네트
         Start_DefaultVignette();
         // 레디얼 블러
@@ -1293,22 +1300,40 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     // 정면 돌파
     m_pModelCom->Register_Event("ChargeCrash_Atk_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         // 카메라 쉐이킹
-        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.2f, 1.f);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.5f);
+        });
+
+    // 한계 극복
+    m_pModelCom->Register_Event("Apocalypse_Atk_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.5f, 0.2f);
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.3f, 0.5f, 0.2f);
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.3f, 0.5f, 0.2f);
+        });
+
+    // 전투의 굴레
+    m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), true);
+        Start_LongRadialBlur();
+        Start_DefaultVignette();
+        });
+    m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), false);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.7f, 1.5f);
         });
 
     // 포워드 닷지
-    m_pModelCom->Register_Event("Dodge_F_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
         });
-    m_pModelCom->Register_Event("Dodge_F_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+    m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
         });
 
     // 백 닷지
-    m_pModelCom->Register_Event("Dodge_B_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
         });
-    m_pModelCom->Register_Event("Dodge_B_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+    m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
         });
 #pragma endregion
@@ -1486,7 +1511,7 @@ void CBody_Khazan_GS::Spawn_EmissiveDecal(_bool isUseOffset)
         _vector vPosition = ParentMatrix.r[3];
         vPosition += (vRight * 2.f) + (vLook * 2.f);
         XMStoreFloat3(&Desc.vPosition, vPosition);
-        Desc.vScale = _float3(5.f, 1.5f, 5.f);
+        Desc.vScale = _float3(5.5f, 1.5f, 5.5f);
         Desc.EmissiveDesc.vBaseColor = _float3(0.547f, 0.02f, 0.f);
         Desc.EmissiveDesc.vEmissiveColor = _float3(1.f, 0.05f, 0.05f);
         Desc.EmissiveDesc.vBorderColor = _float3(0.f, 0.f, 0.f);
@@ -1505,7 +1530,7 @@ void CBody_Khazan_GS::Spawn_EmissiveDecal(_bool isUseOffset)
         _vector vLook = ParentMatrix.r[2];
         vPosition += (vLook * 1.2f);
         XMStoreFloat3(&Desc.vPosition, vPosition);
-        Desc.vScale = _float3(5.f, 1.5f, 5.f);
+        Desc.vScale = _float3(5.5f, 1.5f, 5.5f);
         Desc.EmissiveDesc.vBaseColor = _float3(0.547f, 0.02f, 0.f);
         Desc.EmissiveDesc.vEmissiveColor = _float3(1.f, 0.05f, 0.05f);
         Desc.EmissiveDesc.vBorderColor = _float3(0.f, 0.f, 0.f);
@@ -1548,10 +1573,36 @@ void CBody_Khazan_GS::Spawn_CircleBloodDecal()
     _matrix ParentMatrix = XMLoadFloat4x4(m_pParentMatrix);
     _vector vPosition = ParentMatrix.r[3];
     XMStoreFloat3(&Desc.vPosition, vPosition);
-    Desc.vScale = _float3(5.f, 1.5f, 5.f);
+    Desc.vScale = _float3(4.5f, 1.5f, 4.5f);
     Desc.vColor = _float3(0.4745f, 0.08f, 0.08f);
     Desc.isRandomTexture = false;
     Desc.iTextureIndex = 0;
+
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+}
+
+void CBody_Khazan_GS::Spawn_LinearBloodDecal()
+{
+    DECAL_DESC Desc{};
+    Desc.fLifeTime = 5.f;
+    Desc.vFadeTime = _float2(0.5f, 0.5f);
+    Desc.eType = DECALTYPE::LINEAR;
+    _matrix ParentMatrix = XMLoadFloat4x4(m_pParentMatrix);
+    _vector vPosition = ParentMatrix.r[3];
+    _vector vLook = ParentMatrix.r[2];
+    vPosition += (vLook * 4.25f);
+    XMStoreFloat3(&Desc.vPosition, vPosition);
+    //  Desc.vAngle = _float3(0.f, 180.f, 0.f);
+    
+    // 부모의 Look 벡터를 사용하여 XZ 평면에서의 회전 각도(라디안)을 얻음
+    _float fParentRadianY = atan2f(XMVectorGetX(vLook), XMVectorGetZ(vLook));
+    _float fParentDegreeY = XMConvertToDegrees(fParentRadianY);
+    Desc.vAngle = _float3(0.f, fParentDegreeY + 180.f, 0.f);
+
+    Desc.vScale = _float3(3.f, 1.5f, 5.5f);
+    Desc.vColor = _float3(0.4745f, 0.08f, 0.08f);
+    Desc.isRandomTexture = false;
+    Desc.iTextureIndex = 3;
 
     m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
 }

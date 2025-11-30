@@ -145,7 +145,7 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
     {
         //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(511.f, -11.9f, 260.f, 1.f));
         m_pCharVirCom->Teleport(XMVectorSet(511.f, -11.9f, 260.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
-        m_pTransformCom->LookAt(XMVectorSet(520.47f, -11.48f, 227.18, 0.f));               
+        m_pTransformCom->LookAt(XMVectorSet(520.47f, -11.48f, 227.18f, 0.f));               
     }
 
 }
