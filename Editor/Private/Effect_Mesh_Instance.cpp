@@ -63,7 +63,8 @@ void CEffect_Mesh_Instance::Update(_float fTimeDelta)
     __super::Update(fTimeDelta);
 
     /* Edit */
-    if (m_TimeTracks.size() == 0)
+    //if (m_TimeTracks.size() == 0)
+    if (!m_bRunning)
         m_pVIBufferCom->Remove_Speed(); 
 }
 

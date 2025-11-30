@@ -41,9 +41,9 @@ HRESULT CLevel_Effect::Initialize()
     if (FAILED(m_pGameInstance->Add_Light(TEXT("default"), ENUM_CLASS(LEVEL::EFFECT), LightDesc)))
         return E_FAIL;
 
-    m_pGameInstance->Set_EnableShadow(false);
-    m_pGameInstance->Set_EnableFog(false);
-    m_pGameInstance->Set_EnableSSAO(false);
+    //m_pGameInstance->Set_EnableShadow(false);
+    //m_pGameInstance->Set_EnableFog(false);
+    //m_pGameInstance->Set_EnableSSAO(false);
 
 	return S_OK;
 }
@@ -126,7 +126,7 @@ void CLevel_Effect::Prefab_Info()
 	ImGui::SameLine();
 
 	if (ImGui::Button("Stop"))
-		;
+        m_PrefabPrototype->Stop();
 
 	ImGui::SameLine();
 

@@ -172,30 +172,10 @@ float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)    //이거 버텍스 �
     return maskValue;
 }
 
-float4 Dissolve(float4 InColor, float fDecreaseAlpha, float2 UV)
-{
-    float4 rt = InColor;
-    
-    float noise = g_DissolveTexture.Sample(PointSampler, UV).r;
-    
-    if (noise < fDecreaseAlpha)
-    {
-        rt.a = 0.f;
-        return rt;
-    }
-    
-    float edgeStart = fDecreaseAlpha;
-    float edgeEnd = fDecreaseAlpha + g_EdgeWidth;
-    float edgeFactor = smoothstep(edgeStart, edgeEnd, noise);
-    rt = lerp(g_EdgeColor * 2.f, InColor, edgeFactor);
-    
-    return rt; 
-}
-
 PS_OUT PS_MAIN(PS_IN In)
 {
-    //if (In.bDead == true)
-    //    discard;
+    if (In.bDead)
+        discard;
     
     PS_OUT Out = (PS_OUT) 0;
     
@@ -203,8 +183,8 @@ PS_OUT PS_MAIN(PS_IN In)
     float2 fScrolledEffectUV = In.vTexcoord + fEffectOffset;
     
     vector vEffectTexture = g_DiffuseTexture.Sample(DefaultSampler, fScrolledEffectUV);
-    //vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
-    vector vFinalColor = float4(g_vSourceColor.xyz, vEffectTexture.r);
+    vector vFinalColor = g_vSourceColor;
+    vFinalColor.a *= vEffectTexture.r;
     
     if (vFinalColor.a <= 0.f)
         discard;
@@ -213,7 +193,10 @@ PS_OUT PS_MAIN(PS_IN In)
     if (g_IsDissolve == false)
         vFinalColor.a -= fDecreaseAlpha;
     else
-        vFinalColor = Dissolve(vFinalColor, fDecreaseAlpha, fScrolledEffectUV);
+    {
+        float noise = g_DissolveTexture.Sample(PointSampler, fScrolledEffectUV).r;
+        vFinalColor = Dissolve(fDecreaseAlpha, noise, g_EdgeWidth, g_EdgeColor, vFinalColor);
+    }
     
     if (g_MaskScrollSpeed)
         vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
@@ -222,7 +205,7 @@ PS_OUT PS_MAIN(PS_IN In)
         discard;
 
     //Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
-    vFinalColor.xyz *= (g_vSourceColor.a + 1);
+    //vFinalColor.xyz *= (g_vSourceColor.a + 1);
     
     //float weight = vFinalColor.a * max(1e-5, (1 - In.vPosition.z));
     float z = In.vProjPos.z / In.vProjPos.w; // 0.1 depth
@@ -236,8 +219,8 @@ PS_OUT PS_MAIN(PS_IN In)
 
 PS_OUT PS_PRESNEL(PS_IN In)
 {
-    //if (In.bDead == true)
-    //    discard;
+    if (In.bDead == true)
+        discard;
     
     PS_OUT Out = (PS_OUT) 0;
     
@@ -245,8 +228,9 @@ PS_OUT PS_PRESNEL(PS_IN In)
     float2 fScrolledEffectUV = In.vTexcoord + fEffectOffset;
     
     vector vEffectTexture = g_DiffuseTexture.Sample(DefaultSampler, fScrolledEffectUV);
-    //vector vFinalColor = float4(g_vSourceColor.xyz, min(vEffectTexture.r, g_vSourceColor.a));
-    vector vFinalColor = float4(g_vSourceColor.xyz, vEffectTexture.r);
+    //vector vFinalColor = float4(g_vSourceColor.xyz, vEffectTexture.r);
+    vector vFinalColor = g_vSourceColor;
+    vFinalColor.a *= vEffectTexture.r;
     
     float fresnelFactor = 1.0 - abs(dot(In.vNormal.xyz, normalize(g_vCamPosition.xyz - In.vWorldPos.xyz)));
     vFinalColor.xyz = vFinalColor.xyz * pow(fresnelFactor, 1.4f);
@@ -255,7 +239,10 @@ PS_OUT PS_PRESNEL(PS_IN In)
     if (g_IsDissolve == false) 
         vFinalColor.a -= fDecreaseAlpha; 
     else
-        vFinalColor = Dissolve(vFinalColor, fDecreaseAlpha, fScrolledEffectUV);
+    {
+        float noise = g_DissolveTexture.Sample(PointSampler, fScrolledEffectUV).r;
+        vFinalColor = Dissolve(fDecreaseAlpha, noise, g_EdgeWidth, g_EdgeColor, vFinalColor);
+    }
     
     if (vFinalColor.a <= 0.f)
         discard;
@@ -263,7 +250,7 @@ PS_OUT PS_PRESNEL(PS_IN In)
     //Out.vColor = vFinalColor;
     //Out.vColor = vFinalColor * (g_vSourceColor.a + 1);
 
-    vFinalColor.xyz *= (g_vSourceColor.a + 1);
+    //vFinalColor.xyz *= (g_vSourceColor.a + 1);
     
     float z = In.vProjPos.z / In.vProjPos.w;
     //float weight = max(1e-5, (1 - z));
@@ -278,12 +265,12 @@ PS_NORMAL_OUT PS_NORMAL_MAIN(PS_NORMAL_IN In)
 {
     PS_NORMAL_OUT Out = (PS_NORMAL_OUT) 0;
     
+    if (In.bDead)
+        discard;
+    
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vSourColor = float4(g_vSourceColor.xyz, max(max(vMtrlDiffuse.r, vMtrlDiffuse.g), vMtrlDiffuse.b));
     vector vFinalColor = vSourColor * vMtrlDiffuse;
-    
-    //if (vFinalColor.a < 0.01f)
-    //    discard;
     
     if (g_IsFresnel)
     {
