@@ -35,6 +35,7 @@ void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
         if(Brutal1_AnimIndex  == curAnimIndex  && *m_pModel->Get_CurTrackPosition() >= m_pModel->Get_CurDuration() * 0.49f)
         {
             m_iSelectedAnimationIndex = Brutal2_AnimIndex;
+            m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 8.f;
             m_pModel->Set_Animation(m_iSelectedAnimationIndex);
         }
         // Brutal2 종료
@@ -306,7 +307,7 @@ _bool CKhazan_Spear_Anim_Attack::Try_GrappleAttack()
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
     m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
-    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 125.f;
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 4.f;
 
     return true;
 }

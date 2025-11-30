@@ -281,10 +281,14 @@ _bool CKhazan_GS_Anim_Attack::Try_ChageStrongAttack()
         m_isFastCombo = false;
         m_isCanNextCombo = false;
 
-        if(!isLimitBreak)
+        if (!isLimitBreak) {
             m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_StrongAtk01_Charge");
-        else
+            if(m_pClientInstance->Check_Skill(GS_SKILL::MANIFESTSTRENGTH)) m_pClientInstance->Set_UsedSkill(GS_SKILL::MANIFESTSTRENGTH, true);
+        }
+        else {
             m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_ChargeMaster_Apocalypse_Charge_02");
+            m_pClientInstance->Set_UsedSkill(GS_SKILL::LIMIT_BREAK, true);
+        }
 
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
@@ -412,7 +416,7 @@ _bool CKhazan_GS_Anim_Attack::Try_GrappleAttack()
     m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_Grapple_Atk_01");
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
-    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 3.3f;
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 6.f;
 
     return true;
 }
@@ -665,11 +669,14 @@ void CKhazan_GS_Anim_Attack::Clear_Skill()
         GS_SKILL::BREATHTAKING 
         | GS_SKILL::BREATHTAKING_BLOODSHED
         | GS_SKILL::BREATHTAKING_EMBRYONIC
+        | GS_SKILL::MANIFESTSTRENGTH
         | GS_SKILL::GIANTHUNT
         | GS_SKILL::PHANTOM_SHADOWOFDARKNESS 
+        | GS_SKILL::LIMIT_BREAK
         | GS_SKILL::BREAK_THROUGH
         | GS_SKILL::WARCRY 
         | GS_SKILL::INNER_FURY
+
         , false
     );
 }
@@ -724,11 +731,14 @@ void CKhazan_GS_Anim_Attack::Clear_All()
         GS_SKILL::BREATHTAKING 
         | GS_SKILL::BREATHTAKING_BLOODSHED
         | GS_SKILL::BREATHTAKING_EMBRYONIC
+        | GS_SKILL::MANIFESTSTRENGTH
         | GS_SKILL::GIANTHUNT 
         | GS_SKILL::PHANTOM_SHADOWOFDARKNESS
+        | GS_SKILL::LIMIT_BREAK
         | GS_SKILL::BREAK_THROUGH 
         | GS_SKILL::WARCRY 
         | GS_SKILL::INNER_FURY
+        
         , false
     );
 }

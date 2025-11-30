@@ -135,6 +135,7 @@ private:
    // _bool                       m_isSpearFullExtension = { false }; //창을 완전히 뻗는 타이밍부터 true 
     _bool*                      m_pIsGuarding = { nullptr }; //가드중인지 체크4
     _bool                       m_isNotifyAttacking = { false };    //어택중에 콜라이더 onoff 알림 
+    _bool                       m_isBrutalSuccess = { false };
 
 
      /* 뼈 위치 */
