@@ -1271,6 +1271,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 #pragma endregion
 
 #pragma region Amageddon
+
     // 돌을 풀에 서 꺼낸다.
     pModel->Register_Event("AMG_RockEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Pick_Rock(); });
     // 대미지를 주고 충돌끄고 풀로 보낸다.
@@ -1511,43 +1512,43 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     //5연타 
 
     pModel->Register_Event("Dampsey_First_Snow", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
     pModel->Register_Event("Dampsey_Second_Snow", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
     pModel->Register_Event("Dampsey_Thrid_Snow", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
     pModel->Register_Event("Dampsey_Fourth_Snow", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
     pModel->Register_Event("Dampsey_Final_Snow ", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
 
     //2HIT
     pModel->Register_Event("2Hit_One_FlowSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
 
     pModel->Register_Event("2Hit_Two_FlowSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
 
     //counter attack - 내려찍기
     pModel->Register_Event("CounterAttack_LeftHandSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 0.6f);
         });
 
     pModel->Register_Event("CounterAttack_RightHandSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 0.6f);
         });
 
     pModel->Register_Event("CounterAttack_FinalAtackSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         Start_DefaultRadialBlur();
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.5f, 0.8f);
         });
@@ -1556,24 +1557,24 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     //Jump Attack ->점프찍기
     pModel->Register_Event("JumpAttack_Land", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         cout << "JumpAttack_Land :: Enter" << endl;
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         Start_DefaultRadialBlur();
         CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 0.6f);
         });
 
     pModel->Register_Event("JumpAttack_Land", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         cout << "JumpAttack_Land :: Exit" << endl;
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
 
     pModel->Register_Event("JumpAttack_RightHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 0.8f);
         });
 
     //Turn_Attack -> 한번 긁는 거 
     pModel->Register_Event("Turn_Atk_FlowSnow", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
 
     //charge attack - 달리기 전에 왼발 구르기
@@ -1583,38 +1584,38 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
 
 #pragma region FOOT
     pModel->Register_Event("ChargeTackle_StampFoot_Run0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         Start_DefaultRadialBlur();
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
 #pragma endregion
     
@@ -1648,11 +1649,11 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     //  
 
     pModel->Register_Event("Focus2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Focus"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-Head")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Focus"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-Head")));
         });
 
     pModel->Register_Event("IceBreath_Ground", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice"));
         _matrix W = m_pTransformCom->Get_WorldMatrix();
         _vector S, Q, T;
@@ -1700,16 +1701,16 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     //Dodge
 
     pModel->Register_Event("Dodge_Up", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
     pModel->Register_Event("Dodge_Down", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
 
     pModel->Register_Event("Back_Jump_Up", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -1719,102 +1720,103 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), m_pTransformCom->Get_State(STATE::POSITION));
         });
     pModel->Register_Event("Back_Jump_LeftHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
     pModel->Register_Event("Back_Jump_RightHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
 
     pModel->Register_Event("Back_Move_RightHand1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
     pModel->Register_Event("Back_Move_RightHand2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
     pModel->Register_Event("Back_Move_LeftHand1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
     pModel->Register_Event("Back_Move_LeftHand2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
     pModel->Register_Event("Back_Move_LeftFoot1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
         });
     pModel->Register_Event("Back_Move_LeftFoot2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
         });
     pModel->Register_Event("Back_Move_LeftFoot3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
         });
     pModel->Register_Event("Back_Move_RightFoot1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("Back_Move_RightFoot2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("Back_Move_RightFoot3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("Back_Move2_RightFoot1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("Back_Move2_RightFoot2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("Back_Move2_LeftFoot1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
         });
     pModel->Register_Event("Back_Move2_RightFoot1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("Back_Move2_RightFoot2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("Back_Move2_LeftHand1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
     pModel->Register_Event("FastBall_HandSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
 
     pModel->Register_Event("Run_LeftFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
         });
     pModel->Register_Event("Run_RightFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("Sprint_RightHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
     pModel->Register_Event("Sprint_LeftHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
     pModel->Register_Event("Sprint_LeftFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
         });
     pModel->Register_Event("Sprint_RightFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("Roar_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
     pModel->Register_Event("Roar_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
 
     pModel->Register_Event("Armageddon_RightHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
     pModel->Register_Event("Armageddon_LeftHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
     pModel->Register_Event("Armageddon_Jump", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), m_pTransformCom->Get_State(STATE::POSITION));
         });
     pModel->Register_Event("Armageddon_Jump", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
     return S_OK;
+
 }
 
 CYetuga* CYetuga::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

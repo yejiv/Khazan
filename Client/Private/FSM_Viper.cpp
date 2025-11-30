@@ -55,6 +55,14 @@ CFSM_Viper::CFSM_Viper()
 
 }
 
+
+CAS_CutScene_Start_Viper* CFSM_Viper::Get_CutScene_Start_Viper()
+{
+    CAS_CutScene_Start_Viper* pCutScneState = static_cast<CAS_CutScene_Start_Viper*>(m_States[ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START)]);
+
+    return pCutScneState;
+}
+
 HRESULT CFSM_Viper::Initialize()
 {
 #pragma region PHASE1

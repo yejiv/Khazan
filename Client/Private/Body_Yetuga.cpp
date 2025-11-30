@@ -41,6 +41,29 @@ _float4* CBody_Yetuga::Get_BonePointEX(const _char* BoneName)
     return &m_vLockOnPoint;
 }
 
+_float4* CBody_Yetuga::Get_BonePointVFX(const _char* BoneName)
+{
+
+    _float4x4* BoneMatrix = m_pModelCom->Get_BoneMatrix(BoneName);
+
+
+    _matrix ConvertMatrix = XMLoadFloat4x4(BoneMatrix);
+    _matrix WorldMatrix = m_pOwnerTransform->Get_WorldMatrix();
+
+    _matrix MulMatrix = ConvertMatrix * WorldMatrix;
+
+    _float4x4 ThrowMatrix{};
+
+    XMStoreFloat4x4(&ThrowMatrix, MulMatrix);
+
+    m_pVFXBonePoint.x = ThrowMatrix.m[3][0];
+    m_pVFXBonePoint.y = ThrowMatrix.m[3][1];
+    m_pVFXBonePoint.z = ThrowMatrix.m[3][2];
+
+    return &m_pVFXBonePoint;
+
+}
+
 _matrix CBody_Yetuga::Get_BoneMatrix(const _char* pBoneName)
 {
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix(pBoneName);

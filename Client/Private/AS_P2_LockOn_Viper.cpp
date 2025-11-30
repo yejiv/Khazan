@@ -20,45 +20,25 @@ void CAS_P2_LockOn_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
     CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
 
+    m_fMoveSpeed = 0.5f;
+    m_fDotThreshold = cosf(XMConvertToRadians(20.f));
+    m_fTimeAcc = 0.f;
+    m_fMinLockTime = 2.5f;
+    m_fMaxLockTime = 10.f;
+
     _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
     _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-    _vector vDir = XMVector3Normalize(vTargetPos - vOwnerPos);
-    vDir.m128_f32[1] = 0.f;
-
-    _vector vLook = XMVector3Normalize(pOwnerTransform->Get_State(STATE::LOOK));
-    _vector vRight = XMVector3Normalize(pOwnerTransform->Get_State(STATE::RIGHT));
-
-    _float fDotF = XMVectorGetX(XMVector3Dot(vDir, vLook));
-    _float fDotR = XMVectorGetX(XMVector3Dot(vDir, vRight));
-
-    //방향 계산
-    if (fDotF > 0.7f)
-    {
-        m_eDirState = DIRECTION::F;
-        m_fMoveSpeed = 0.5f;
-        pModel->Set_Animation(37); 
-    }
-    if (fDotF < -0.7f)
-    {
-        m_eDirState = DIRECTION::B;
-        pModel->Set_Animation(36);
-    }
-    else if (fDotR > 0.0f)
-    {
-        m_eDirState = DIRECTION::R;
-        pModel->Set_Animation(39);
-    }
-    else
-    {
-        m_eDirState = DIRECTION::L;
-        pModel->Set_Animation(38);
-    }
-
+  
+    _vector vDiff = vTargetPos - vOwnerPos;
+    vDiff = XMVectorSetY(vDiff,0.f);
+    _float fStartDist = XMVectorGetX(XMVector3Length(vDiff));
+    m_fEndDist = fStartDist * 0.5f; // 시작거리의 60% 정도 가까워지면 탈출
+    
+    Update_Direction(pOwnerTransform, pTargetTransform, pModel);
+  
     // 블랙보드에 저장
-    pBB->Set_Value(pViper->Get_Name(), "LockDir", static_cast<_uint>(m_eDirState));
+    pBB->Set_Value<_uint>(pViper->Get_Name(), "LockDir", static_cast<_uint>(m_eDirState));
 
-    m_fMoveSpeed = 1.2f;
-    m_fDotThreshold = cosf(XMConvertToRadians(20.f));
 }
 
 void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -75,34 +55,49 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
     _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
 
+    m_fTimeAcc += fTimeDelta;
+    
     // 타겟 바라보기
-    pOwnerTransform->LookAt_Lerp(vTargetPos, fTimeDelta, 0.18f);
+    pOwnerTransform->LookAt_Lerp(vTargetPos, fTimeDelta, 0.5f);
 
-    // 방향에 따른 이동
-    switch (m_eDirState)
-    {
-    case DIRECTION::F:
-        pOwnerTransform->Go_Straight(m_fMoveSpeed * fTimeDelta);
-        break;
-    case DIRECTION::B:
-        pOwnerTransform->Go_Backward(m_fMoveSpeed * fTimeDelta);
-        break;
-    case DIRECTION::L:
-        pOwnerTransform->Go_Left(m_fMoveSpeed * fTimeDelta);
-        break;
-    case DIRECTION::R:
-        pOwnerTransform->Go_Right(m_fMoveSpeed * fTimeDelta);
-        break;
-    }
+  
+    // 방향으로 이동
+    Move_To_Direction(pOwnerTransform,fTimeDelta);
+
+
 
     // 탈출 조건: Look 방향이 타겟 방향과 맞음
     _vector vDir = XMVector3Normalize(vTargetPos - vOwnerPos);
-    vDir.m128_f32[1] = 0.f;
-    _vector vLook = XMVector3Normalize(pOwnerTransform->Get_State(STATE::LOOK));
+    vDir = XMVectorSetY(vDir, 0.f);
 
-    _float fDotF = XMVectorGetX(XMVector3Dot(vDir, vLook));
+    _matrix matBodyCombined = {};
+    _float4x4 matTemp = pViper->Get_P2Body()->Get_CombinedMatrix();
+    matBodyCombined = XMLoadFloat4x4(&matTemp);
 
-    if (fDotF > m_fDotThreshold)
+    _vector vBodyLook = matBodyCombined.r[2];
+    vBodyLook = XMVectorSetY(vBodyLook, 0.f);
+    vBodyLook = XMVector3Normalize(vBodyLook);
+
+    _float fDotF = XMVectorGetX(XMVector3Dot(vDir, vBodyLook));
+
+    _float fDist = XMVectorGetX(XMVector3Length(vDir));
+
+    _bool isLockOnFinished = { false };
+
+    if (m_fTimeAcc >= m_fMinLockTime)
+    {
+        if (fDotF > m_fDotThreshold)
+            isLockOnFinished = true;
+
+        if (fDist >= m_fEndDist)
+            isLockOnFinished = true;
+
+    }
+
+    if (m_fTimeAcc >= m_fMaxLockTime)
+        isLockOnFinished = true;
+
+    if (isLockOnFinished)
     {
         pBB->Set_Value(pViper->Get_Name(), "isP2_LockOn_Finished", true);
         //pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pOwner);
@@ -114,6 +109,93 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
 void CAS_P2_LockOn_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+}
+
+void CAS_P2_LockOn_Viper::Update_Direction(CTransform* pOwnerTransform, CTransform* pTargetTransfrom, CModel* pModel)
+{
+    _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
+    _vector vTargetPos = pTargetTransfrom->Get_State(STATE::POSITION);
+
+    _vector vDir = vTargetPos - vOwnerPos;
+    vDir = XMVectorSetY(vDir,0.f);
+    vDir = XMVector3Normalize(vDir);
+
+    _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+    vLook = XMVectorSetY(vLook, 0.f);
+    vLook = XMVector3Normalize(vLook);
+
+    _vector vRight = pOwnerTransform->Get_State(STATE::RIGHT);
+    vRight = XMVectorSetY(vRight, 0.f);
+    vRight = XMVector3Normalize(vRight);
+
+    _float fDotF = XMVectorGetX(XMVector3Dot(vDir,vLook));
+    _float fDotR = XMVectorGetX(XMVector3Dot(vDir,vRight));
+
+
+    DIRECTION ePrevDir = m_eDirState;
+
+
+    if (fDotF > 0.7f)
+    {
+        m_eDirState = DIRECTION::F;
+    }
+    else if (fDotF < -0.7f)
+    {
+        m_eDirState = DIRECTION::B;
+    }
+    else
+    {
+        // 좌/우
+        if (fDotR > 0.0f)
+            m_eDirState = DIRECTION::R;
+        else
+            m_eDirState = DIRECTION::L;
+    }
+
+    // 방향 바뀔 때만 애니 다시 세팅
+    if (ePrevDir != m_eDirState)
+    {
+        switch (m_eDirState)
+        {
+        case DIRECTION::F:
+            pModel->Set_Animation(37); // 전진 락온
+            m_fMoveSpeed = 0.5f;
+            break;
+        case DIRECTION::B:
+            pModel->Set_Animation(36); // 후진 락온
+            m_fMoveSpeed = 0.5f;
+            break;
+        case DIRECTION::L:
+            pModel->Set_Animation(38); // 좌측 락온
+            m_fMoveSpeed = 1.2f;
+            break;
+        case DIRECTION::R:
+            pModel->Set_Animation(39); // 우측 락온
+            m_fMoveSpeed = 1.2f;
+            break;
+        }
+    }
+}
+
+void CAS_P2_LockOn_Viper::Move_To_Direction(CTransform* pOwnerTransform, _float fTimeDelta)
+{
+    _float fMove = m_fMoveSpeed * fTimeDelta;
+
+    switch (m_eDirState)
+    {
+    case DIRECTION::F:
+        pOwnerTransform->Go_Straight(fMove);
+        break;
+    case DIRECTION::B:
+        pOwnerTransform->Go_Backward(fMove);
+        break;
+    case DIRECTION::L:
+        pOwnerTransform->Go_Left(fMove);
+        break;
+    case DIRECTION::R:
+        pOwnerTransform->Go_Right(fMove);
+        break;
+    }
 }
 
 CAS_P2_LockOn_Viper* CAS_P2_LockOn_Viper::Create()

@@ -51,16 +51,16 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
     }
 
-    //if (m_pGameInstance->Key_Down(DIK_Z))
-    //{
+    if (m_pGameInstance->Key_Down(DIK_Z))
+    {
 
-    //    CViper* pViper = static_cast<CViper*>(pOwner);
-    //    CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-    //    //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-    //    //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-    //     pViper->Consume_Stamina(10.f);
+        CViper* pViper = static_cast<CViper*>(pOwner);
+        CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+        //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+        pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+         //pViper->Consume_Stamina(10.f);
 
-    //}
+    }
 
     if (m_pGameInstance->Key_Down(DIK_J))
         Set_ActiveAIController(true); // 이거 하면 실행됩니다.
@@ -81,7 +81,7 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
     }
 
-    
+
     if (m_isActiveController)
     {
         m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
@@ -261,15 +261,17 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
 
 #pragma region LOCKON
+
     else if ("P2_LockOn" == name)
     {
         return [pViper, this](CBlackBoard* BB)->_bool
             {
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fLockOnRange = BB->Get_Value<_float>(pViper->Get_Name(), "LockOnRange");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
 
                 // 락온 거리 조건
-                if (fDist != 0 && fDist <= fLockOnRange)
+                if (fDist > fAttackRange && fDist <= fLockOnRange)
                     return true;
 
                 return false;

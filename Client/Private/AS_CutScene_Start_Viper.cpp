@@ -24,32 +24,16 @@ void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, 
 
    
     if (m_pGameInstance->Key_Down(DIK_0))
-        Change_CutSceneState(CUTSCENE_STATE::SIT, pModel,pViper);
-    else if(m_pGameInstance->Key_Down(DIK_1))
-        Change_CutSceneState(CUTSCENE_STATE::LAND, pModel, pViper);
+        ViperScene_Sit(pViper);
+    else if (m_pGameInstance->Key_Down(DIK_1))
+        ViperScene_Land(pViper);
     else if (m_pGameInstance->Key_Down(DIK_2))
-        Change_CutSceneState(CUTSCENE_STATE::STAND, pModel, pViper);
+        ViperScene_Roar(pViper);
 
-    if (m_eState == CUTSCENE_STATE::LAND)
-    {
-        pViper->Set_ViperPosition(XMVectorSet(-34.749f, -29.986f, 208.162f, 1.f));
-    }
-        
-    else if (m_eState == CUTSCENE_STATE::STAND)
-    {
-        pViper->Set_ViperPosition(XMVectorSet(-34.749f, -29.986f, 208.162f, 1.f));
-    }
-    
+  
     if (pModel->Play_Animation(fTimeDelta))
     {
-        if (m_eState == CUTSCENE_STATE::SIT)
-            pViper->Set_ViperPosition(XMVectorSet(-34.749f, -29.986f, 208.162f, 1.f));
-
-        if (m_eState == CUTSCENE_STATE::STAND)
-        {
-            // 여기서 시작 플래그
-        }
-
+       
     }
    
 }
@@ -57,6 +41,24 @@ void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, 
 void CAS_CutScene_Start_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
 
+}
+
+void CAS_CutScene_Start_Viper::ViperScene_Sit(CViper* pViper)
+{
+    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+    Change_CutSceneState(CUTSCENE_STATE::SIT, pModel, pViper);
+}
+
+void CAS_CutScene_Start_Viper::ViperScene_Land(CViper* pViper)
+{
+    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+    Change_CutSceneState(CUTSCENE_STATE::LAND, pModel, pViper);
+}
+
+void CAS_CutScene_Start_Viper::ViperScene_Roar(CViper* pViper)
+{
+    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+    Change_CutSceneState(CUTSCENE_STATE::STAND, pModel, pViper);
 }
 
 void CAS_CutScene_Start_Viper::Change_CutSceneState(CUTSCENE_STATE eNextState , CModel* pModel, CViper* pViper)
@@ -70,10 +72,12 @@ void CAS_CutScene_Start_Viper::Change_CutSceneState(CUTSCENE_STATE eNextState , 
     {
     case Client::CUTSCENE_STATE::SIT:
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::SIT));
+        pViper->Set_ViperPosition(XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
         break;
     case Client::CUTSCENE_STATE::LAND:
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::LAND));
-        
+        _vector vPosition = XMVectorSet(-31.938f, -29.986f, 201.162f, 1.f);
+        pViper->Set_ViperPosition(vPosition);
         break;
     case Client::CUTSCENE_STATE::STAND:
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::STAND));
