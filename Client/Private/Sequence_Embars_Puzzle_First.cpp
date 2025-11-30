@@ -84,7 +84,10 @@ void CSequence_Embars_Puzzle_First::Update(_float fTimeDelta)
 
         if (m_fSkipTime > 1.f && !m_isSkipCameraSet)
         {
-            m_pClientInstance->Camera_Force_AniEnd();
+            m_pClientInstance->Camera_Force_AniEnd();                     
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ELEVATOR_SKIP), []() {
+                EventElevatorSkip::SkipEvent();
+                });
             m_isSkipCameraSet = true;
         }
 
