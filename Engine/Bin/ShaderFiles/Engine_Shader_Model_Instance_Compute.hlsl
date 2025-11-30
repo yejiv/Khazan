@@ -122,9 +122,7 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
             Particle.vTranslation = g_InputData[iIndex].vInitTranslation; 
         }
     }
-	    
-    if (Particle.bDead == 0.f)
-        g_SpeedData[0].bDead = 0.f;
+	     
     
     if (abs(Particle.vRight.x) <= 0.f)
     { 
@@ -134,6 +132,10 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
     }
     
     g_OutputData[iIndex] = Particle;
+    g_SpeedData[iIndex] = SpeedData;
+
+    if (Particle.bDead == 0.f)
+        g_SpeedData[0].bDead = 0.f;
 }
 
 [numthreads(256, 1, 1)]

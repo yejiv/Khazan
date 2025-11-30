@@ -10,13 +10,15 @@ private:
 	virtual ~CDB_Manager() = default;
 
 public:
-	HRESULT									Load_Data(DATATYPE eType, const _tchar* pFilePath);
+	HRESULT									Load_Data(DATATYPE eType, const _tchar* pFilePath);    
 	
 	template <typename T>
 	const T*								Get_Data(_uint iID) const;
 
 	template <typename T>
 	const T*								Get_DataTalbe() const;
+
+    _bool Exist_ID(_uint iID);
 
 private:
 
@@ -27,6 +29,7 @@ private:
 	unordered_map<_uint, STATE_DATA>		m_StateData = {};
 	unordered_map<_uint, ANNOUNCE_TALK_DB>	m_Announce_Talk_Data = {};
 	unordered_map<_uint, SKILL_DB>			m_Skill_Data = {};
+    vector<_uint>                           m_ItemIndex;
 
 	
 private:

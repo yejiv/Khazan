@@ -17,7 +17,7 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CCharacterVirtual final : public CRigidBody
 {
 public:
-	enum class WORLDUP { X, Y, Z, END};
+	enum class WORLDUP { X, Y, Z, END };
 public:
 	typedef struct tagCharacterVirtual
 	{
@@ -132,6 +132,10 @@ public:
 	void Teleport(_vector vPos, _vector qRot, CTransform* pTransform);
 
 public:
+    void Begin_Ladder();
+    void End_Ladder();
+
+public:
     void Fake_Release();
 
 private:
@@ -151,6 +155,13 @@ private:
 
 	_float m_fAirLoss = 2.f;
 	_float m_fLoss = 25.f;
+
+    _float m_fBaseAirLoss = 2.f;
+    _float m_fBaseLoss = 5.f;
+
+    _bool m_isPower = { false };
+
+    _bool m_isUseRootMotion = { false };
 
 
     MOVE_MODE m_eMove_Mode = { MOVE_MODE::NORMAL };

@@ -509,11 +509,13 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
             MonsterDesc.fRotationPerSec = 180.f;
 
             MonsterDesc.WorldMatrix = WorldMatrix;
+
             MonsterDesc.strName = "Dragonian_Rampage";
             MonsterDesc.iLevelIndex = ENUM_CLASS(eCurrentLevel);
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
                 ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+
                 return E_FAIL;
         }
     }
