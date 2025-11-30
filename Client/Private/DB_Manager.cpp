@@ -24,6 +24,17 @@ HRESULT CDB_Manager::Load_Data(DATATYPE eType, const _tchar* pFilePath)
 	return S_OK;
 }
 
+_bool CDB_Manager::Exist_ID(_uint iID)
+{
+
+    auto iter = find(m_ItemIndex.begin(), m_ItemIndex.end(), iID);
+
+    if (iter == m_ItemIndex.end())
+        return false;
+
+    return true;
+}
+
 
 _wstring CDB_Manager::Load_UTF8ToWString(const std::wstring& filePath)
 {
@@ -84,10 +95,9 @@ HRESULT CDB_Manager::Load_ItemDB(const _tchar* pFilePath)
         {
             bHeader = false;
             continue;
-        }
-
+        }        
         wstringstream ss(line);
-        ITEM_DATA data{};
+        ITEM_DATA data{};        
 		_int ID = data.iID = Read_UInt(ss);
 		data.strName = Read_WString(ss);
 		data.iType = Read_UInt(ss);
@@ -108,6 +118,7 @@ HRESULT CDB_Manager::Load_ItemDB(const _tchar* pFilePath)
 		data.strIconName = Read_WString(ss);
 		data.strText = Read_WString(ss);
 
+        m_ItemIndex.push_back(ID);
 		m_ItemData.emplace(ID, data);
     }
 

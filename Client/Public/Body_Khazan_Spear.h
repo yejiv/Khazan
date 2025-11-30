@@ -87,8 +87,8 @@ public:
 
 
     _bool       Is_SpearFullExtension() const { return m_isSpearFullExtension; }
-
     _bool       Get_IsAttackCollisionActive() { return m_isSpearTipActive; }
+    void        AllAttackCollisionActive_Off();
 
 private:
     class CClientInstance*      m_pClientInstance = { nullptr };
@@ -163,6 +163,7 @@ private:
     /* 기타 */
     _bool*              m_isEquipSpear = { nullptr };
     _bool*              m_isEquipLantern = { nullptr };
+    _bool               m_isNotifyAttacking = { false };    //어택중에 콜라이더 onoff 알림 
 
     _bool               m_isCollision;
     _float4             m_fCollisionPos;

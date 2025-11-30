@@ -65,6 +65,7 @@ public:
 	void							ResetChildren();
 	void							Save(const char* filename);
 	void							Load(const char* filename);
+	void							Stop();
 
 private:
 	vector<class CEffect_Element*>	m_Children;

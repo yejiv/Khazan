@@ -48,6 +48,8 @@ public:
 
 	template <typename T>
 	const T* Get_DataTalbe() const;
+
+    _bool   Item_Exist_ID(_uint iID);
 #pragma endregion
 
 #pragma region UI_MANGER
