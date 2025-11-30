@@ -317,6 +317,10 @@ void CClientInstance::Camera_Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos, _f
 {
     m_pCamera_Manager->Set_NpcTalk(isNpcTalk, vTargetPos, vLookAt);
 }
+void CClientInstance::Camera_Force_AniEnd()
+{
+    m_pCamera_Manager->Force_AniEnd();
+}
 void CClientInstance::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
 {
     m_pCamera_Manager->Start_ForceOrbit(eForceDir);

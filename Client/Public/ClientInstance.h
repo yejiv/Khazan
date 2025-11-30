@@ -156,6 +156,8 @@ public:
     HRESULT Camera_Set_Animation_Json(string strFilePath);
 
     void Camera_Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos = _float3(0.f, 0.f, 0.f), _float3 vLookAt = _float3(0.f, 0.f, 0.f));
+
+    void Camera_Force_AniEnd();
 #pragma endregion
 
 #pragma region INTERACT_MANAGER

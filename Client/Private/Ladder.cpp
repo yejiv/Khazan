@@ -46,6 +46,12 @@ HRESULT CLadder::Initialize_Clone(void* pArg)
             m_Event = e;
         });
 
+    _float4 vOffSetPos = {};
+    XMStoreFloat4(&vOffSetPos, m_pTransformCom->Get_State(STATE::POSITION));
+
+    m_fClimbUpPos = vOffSetPos.y + m_fOffSetHeight;
+    m_fClimbDownPos = vOffSetPos.y + 2.8f;
+
     return S_OK;
 }
 
@@ -141,7 +147,7 @@ HRESULT CLadder::Ready_PartObjects(void* pArg)
 
     TopDesc.eLevel = eLevel;
     TopDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
-    TopDesc.fOffSetHeight = pLadderOffset->fOffSetHeight;
+    m_fOffSetHeight = TopDesc.fOffSetHeight = pLadderOffset->fOffSetHeight;
 
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Top"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_Ladder_Top"), &TopDesc), E_FAIL);
@@ -272,8 +278,6 @@ HRESULT CLadder::Ready_Collision(void* pArg)
 
     XMStoreFloat3(&TriggerCUDesc.vPos, BoneWorldMatrix.r[3]);
 
-    XMStoreFloat4(&m_vClimbUpPos, BoneWorldMatrix.r[3]);
-
     XMStoreFloat4(&TriggerCUDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     TriggerCUDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
@@ -350,8 +354,6 @@ HRESULT CLadder::Ready_Collision(void* pArg)
 
     XMStoreFloat3(&TriggerCDDesc.vPos, BoneWorldMatrix.r[3]);
 
-    XMStoreFloat4(&m_vClimbDownPos, BoneWorldMatrix.r[3]);
-
     XMStoreFloat4(&TriggerCDDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     TriggerCDDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
@@ -407,6 +409,7 @@ void CLadder::Input_Interact_Event(_float fTimeDelta)
         XMStoreFloat4(&LadderEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
 
         LadderEvent.vPlayerPosition = m_vPlayerPosition;
+        LadderEvent.vEndActionPos = _float2(m_fClimbUpPos, m_fClimbDownPos);
 
         InteractType.LadderEvent = LadderEvent;
 
@@ -440,6 +443,7 @@ void CLadder::Event_Update(_float fTimeDelta)
             XMStoreFloat4(&LadderEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
             LadderEvent.vPlayerPosition = m_vPlayerPosition;
             LadderEvent.eLadderState = m_eLadderStart;
+            LadderEvent.vEndActionPos = _float2(m_fClimbUpPos, m_fClimbDownPos);
 
             _bool isColActive = { false };
 
@@ -467,6 +471,8 @@ void CLadder::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
     m_eLadderPoint = *static_cast<LADDER_POINT*>(pMyDesc->pInfo);
     Set_PlayerPosition();
 
+    // COLLISION_LAYER::PLAYER
+    // 콜리젼 플레이어의 어떠한 상태가 사다리액션이 안끝난 상태면 충돌을 false 유지시킨다.
     m_isCollision = true;
 }
 
