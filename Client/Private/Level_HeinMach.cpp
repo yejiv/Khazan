@@ -24,6 +24,10 @@
 #include "UI_HUD.h"
 #pragma endregion
 
+#pragma region ITEM
+#include "Interaction_Item.h"
+#pragma endregion
+
 CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
 	, m_pClientInstance(CClientInstance::GetInstance())
@@ -312,6 +316,16 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
     m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag, pCamera_Player);
 
     m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::PLAYER));
+
+    /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"), TIME_CHANNEL::PLAYER)))
+        return E_FAIL;*/
+
+    CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item")));
+
+    pItem->Ready_Item(1, XMVectorSet(516.f, -11.f, 264.f, 1.f));
+
+    m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TEST_LAYER"), pItem);
 
 	return S_OK;
 }

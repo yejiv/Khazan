@@ -90,6 +90,10 @@ HRESULT CClientInstance::Load_Data(DATATYPE eType, const _tchar* pFilePath)
 }
 
 #pragma region UI_MANGER
+_bool CClientInstance::Item_Exist_ID(_uint iID)
+{
+    return m_pDB_Manager->Exist_ID(iID);
+}
 void CClientInstance::Fade_In(function<void()> FadeEvent)
 {
 	m_pUI_Manager->Fade_In(FadeEvent);
