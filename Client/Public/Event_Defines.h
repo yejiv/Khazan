@@ -21,6 +21,7 @@ namespace Client {
         EMBARS_GIMMICK1,
         EMBARS_GIMMICK2,
         HALL_ELEVATOR_UNLOCK,
+        ELEVATOR_SKIP,
         BLADENEXUS_POP,
 		END };
 
@@ -227,14 +228,11 @@ namespace Client {
 
         UNLOCK_STATE eStep{};
         bool isEventOn = {};
-        bool isEventSkip = {};
 
         bool isEvent() { return isEventOn; }
-        bool isSkip() { return isEventSkip; }
 
         void EventOn() { isEventOn = true; }
         void EventOff() { isEventOn = false; }
-        void EventSkip() { isEventSkip = true; }
 
         void Set_UnLockState(bool isUnLock)
         {
@@ -267,6 +265,19 @@ namespace Client {
             if (UNLOCK_STATE::STEP_3 == eStep)
                 return true;
             return false;
+        }
+    };
+
+    struct EventElevatorSkip {
+        bool isSkip{};
+
+        void Skip() { isSkip = true; }
+
+        static EventElevatorSkip SkipEvent()
+        {
+            EventElevatorSkip e = {};
+            e.Skip();
+            return e;
         }
     };
 

@@ -54,7 +54,7 @@ HRESULT CElevatorL::Initialize_Clone(void* pArg)
     m_pModelCom->Set_AnimationBlend(true);
 
     m_iEventID = m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(EVENT_TYPE::HALL_ELEVATOR_UNLOCK), [&](const EventHallElevator& e) { m_Event = e; });
-
+    m_iSkipEventID = m_pGameInstance->Subscribe_Event<EventElevatorSkip>(ENUM_CLASS(EVENT_TYPE::ELEVATOR_SKIP), [&](const EventElevatorSkip& e) { m_SkipEvent = e; });
     return S_OK;
 }
  
@@ -343,7 +343,7 @@ HRESULT CElevatorL::Ready_Collision(void* pArg)
 
 void CElevatorL::Animation_Update(_float fTimeDelta)
 {
-    if (true == m_Event.isSkip())
+    if (true == m_SkipEvent.isSkip)
     {
         Gimmick_Event_Skip(fTimeDelta);
     }
@@ -510,7 +510,7 @@ void CElevatorL::VerticalOnTime_Update(_float fTimeDelta)
 
 void CElevatorL::Gimmick_Event_Skip(_float fTimeDelta)
 {
-    m_Event.isEventSkip = false;
+    m_SkipEvent.isSkip = false;
 
     m_Event.EventOff();
 
@@ -538,6 +538,12 @@ void CElevatorL::Gimmick_Event_Skip(_float fTimeDelta)
         m_eAnimState = ANIM_STATE::OUTER_STOPPING;
         m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
         m_pModelCom->AnimationLoop(true);
+
+        m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK1;
+
+        EventGimmick Gimmick = {};
+        Gimmick.Set_GimmickClear();
+        m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK1), Gimmick);
         break;
     }
     case ANIM_STATE::INNER_STOPPING:
@@ -598,6 +604,7 @@ CGameObject* CElevatorL::Clone(void* pArg)
 void CElevatorL::Free()
 {
     m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::HALL_ELEVATOR_UNLOCK), m_iEventID);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::ELEVATOR_SKIP), m_iSkipEventID);
 
     __super::Free();
 
