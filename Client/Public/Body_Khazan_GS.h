@@ -232,9 +232,12 @@ private:
     _vector Decompose_Rotation(_matrix W, _vector localRot = { 0.f, 0.f, 0.f, 0.f },_vector offset = { 0.f, 0.f, 0.f, 1.f });
 
     // Screen Effect
-    void Spawn_EmissiveDecal();
+    void Spawn_EmissiveDecal(_bool isUseOffset);
     void Spawn_CrackDecal();
     void Spawn_CircleBloodDecal();
+    void Start_DefaultVignette();
+    void Start_DefaultRadialBlur();
+    void Start_LongRadialBlur();
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

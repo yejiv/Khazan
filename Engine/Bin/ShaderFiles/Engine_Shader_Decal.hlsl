@@ -120,7 +120,7 @@ PS_OUT PS_MAIN(PS_IN In)
     vDecalTexcoord += 0.5f;
 
     //  데칼 텍스처를 샘플링
-    float4 vDecalDesc = g_DecalTexture.Sample(ClampSampler, vDecalTexcoord);
+    float4 vDecalDesc = g_DecalTexture.Sample(BorderSampler, vDecalTexcoord);
 
     float fMask = 1.f;
         
