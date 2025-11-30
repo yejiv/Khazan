@@ -94,9 +94,9 @@ public:
     _bool   Check_Skill(_uint skill)
     { 
         if(m_isCurSpear)
-            return m_iSpearSkill & skill; 
+            return (m_iSpearSkill & skill) != 0;
         if(m_isCurGSword)
-            return m_iGSwordSkill & skill;
+            return  (m_iGSwordSkill & skill) != 0;
     }
 
     _bool   Check_Skills(_uint skills)

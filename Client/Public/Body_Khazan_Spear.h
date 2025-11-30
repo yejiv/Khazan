@@ -153,6 +153,7 @@ private:
     /* Monster Search, Brutal */
     _bool                       m_isBackBrutal = { false };
     _bool                       m_isGroggyBrutal = { false };
+    _bool                       m_isBrutalSuccess = { false };
     vector< CGameObject*>       m_CollMonsters;
     _float2                     m_fOptimizationSearchTime = { 0.f,0.3f };
     CGameObject*                m_pBrutalmonster = { nullptr };

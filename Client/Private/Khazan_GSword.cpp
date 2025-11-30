@@ -103,7 +103,7 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
 #pragma endregion
 
 #ifdef _DEBUG
-    //Debug_Widget();
+    Debug_Widget();
 #endif // _DEBUG
 
     /* 기본 셋팅  */
@@ -1576,10 +1576,12 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
     }
 
     /* Move  */
-    if (((Has_Status(LOCKON) && m_eDir.iDirFlag != m_ePrevDir && m_eDir.iDirFlag > 0)) || Has_State(CAT::M_MOVE) && !Has_State(CAT::M_ATTACK | CAT::M_GUARD)|| !Has_SubState(MOV::MOVE_DODGE))
+    if (((Has_Status(LOCKON) && m_eDir.iDirFlag != m_ePrevDir && m_eDir.iDirFlag > 0)) || Has_State(CAT::M_MOVE) && !Has_State(CAT::M_ATTACK | CAT::M_GUARD)/*|| !Has_SubState(MOV::MOVE_DODGE)*/)
     {
         CKhazan_GS_Anim_Move::GS_MOVEINFO info;
-        info.iWeapon = Has_Status(GSWORD);
+        if (Has_Status(BAREHAND))info.iWeapon = BAREHAND;
+        else if (Has_Status(SPEAR))info.iWeapon = SPEAR;
+        else if (Has_Status(GSWORD))info.iWeapon = GSWORD;
         info.isLockOn = Has_Status(LOCKON);
         info.iState = m_iCurSubState;
         info.iCycle = m_iCycle;

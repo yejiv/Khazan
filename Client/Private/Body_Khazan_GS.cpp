@@ -9,6 +9,8 @@
 #include "MeshTrail.h"
 #include "Target_BrutalAttack.h"
 
+#include "Monster.h"
+
 
 CBody_Khazan_GS::CBody_Khazan_GS(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
@@ -452,21 +454,23 @@ void CBody_Khazan_GS::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLa
         CGameObject* pObj = pDesc->pGameObject;
 
         if (!pObj) return;
+
         lock_guard<mutex> lock(m_CollMonsterMutex);
+
         auto it = remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
         if (it != m_CollMonsters.end()) m_CollMonsters.erase(it, m_CollMonsters.end());
 
-        if (m_CollMonsters.empty())
-        {
-            if (Has_Status(CKhazan_GSword::BRUTAL_BEGIN))
-            {
-                if (m_pBrutalAttack && !m_pBrutalAttack->Get_IsDead()) {
-                    m_pBrutalAttack->Off_BrutalAttack();
-                }
+        //if (m_CollMonsters.empty())
+        //{
+        //    if (Has_Status(CKhazan_GSword::BRUTAL_BEGIN))
+        //    {
+        //        if (m_pBrutalAttack && !m_pBrutalAttack->Get_IsDead()) {
+        //            m_pBrutalAttack->Off_BrutalAttack();
+        //        }
 
-                Remove_Status(CKhazan_GSword::BRUTAL_BEGIN | CKhazan_GSword::BRUTAL_READY | CKhazan_GSword::BRUTAL_SUCCESS);
-            }
-        }
+        //        Remove_Status(CKhazan_GSword::BRUTAL_BEGIN | CKhazan_GSword::BRUTAL_READY | CKhazan_GSword::BRUTAL_SUCCESS);
+        //    }
+        //}
     }
 }
 
@@ -492,10 +496,17 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
     if (m_fOptimizationSearchTime.x < m_fOptimizationSearchTime.y)
         return;
 
+    if (m_isBrutalSuccess)
+    {
+        m_fOptimizationSearchTime.y = 0.3f;
+        m_isBrutalSuccess = false;
+    }
+
     m_fOptimizationSearchTime.x = 0.f;
 
     _vector vPlayerPos = XMVectorSet(m_pParentMatrix->_41, m_pParentMatrix->_42, m_pParentMatrix->_43, 1.f);
-    lock_guard <mutex> lock(m_CollMonsterMutex);
+
+    lock_guard<mutex> lock(m_CollMonsterMutex);
     for (CGameObject* monster : m_CollMonsters)
     {
         if (!monster || monster->Get_IsDead())
@@ -505,38 +516,34 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
 
         _vector  vDiff = vPlayerPos - vMonsterPos;
         _float  fDistSq = XMVectorGetX(XMVector3LengthSq(vDiff));
-
         /* 일정 범위에 다가가면  */
-        if (fDistSq < 5.f * 5.f)
+        if (fDistSq < 15.f * 15.f)
         {
-
+            CMonster* pCreatureMoster = static_cast<CMonster*>(monster);
             /* 후방 */
-            _float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(monster->Get_Look()), XMVector3Normalize(vDiff)));
-            if (fDot < 0.f)
-            {
+            if (!pCreatureMoster->Get_isSleep()) {
+                _float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(monster->Get_Look()), XMVector3Normalize(vDiff)));
 
-                m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
-                m_pBrutalAttack->Setting_BrutalAttack(reinterpret_cast<const _float4*>(&monster->Get_Transform()->Get_WorldMatrixPtr()->_41), 0.f, { 0.f, 8.f });
-                m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
+                if (-0.7f > fDot)
+                {
+                    m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+                    m_pBrutalAttack->Setting_BrutalAttack(reinterpret_cast<const _float4*>(&monster->Get_Transform()->Get_WorldMatrixPtr()->_41), 0.f, { 0.f, 50.f });
+                    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
 
-                m_pBrutalmonster = monster;
-                m_isBackBrutal = true;
-                m_isGroggyBrutal = false;
+                    m_pBrutalmonster = monster;
+                    m_isBackBrutal = true;
+                    m_isGroggyBrutal = false;
 
-                Add_Status(CKhazan_GSword::BRUTAL_BEGIN);
+                    Add_Status(CKhazan_GSword::BRUTAL_BEGIN);
 
-                return;
+                    return;
+                }
             }
 
-            /* 몬스터 그로기 상태*/
-            CCreature* pCreatureMoster = static_cast<CCreature*>(monster);
-            if (pCreatureMoster->Get_CurrentStamina() < 5.f)
+            /*  몬스터 그로기 상태 */
+            if (pCreatureMoster->Get_IsGroggy())
             {
-                m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
-                m_pBrutalAttack->Setting_BrutalAttack(reinterpret_cast<const _float4*>(&monster->Get_Transform()->Get_WorldMatrixPtr()->_41), 5.f, { 0.f,8.f });
-                m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
                 m_pBrutalmonster = monster;
-
                 m_isBackBrutal = false;
                 m_isGroggyBrutal = true;
 
@@ -552,41 +559,71 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
 _bool CBody_Khazan_GS::Check_BrutalAttack(_float fTimeDelta)
 {
     /* 범위 내에 브루탈 가능 개체가 없으면  */
-    if (!Has_Status(CKhazan_GSword::BRUTAL_BEGIN))
+    if (!Has_Status(CKhazan_GSword::BRUTAL_BEGIN)) {
         return false;
+    }
 
     /* 브루탈 어택 성공 후 아이콘 지우기 */
     if (Has_Status(CKhazan_GSword::BRUTAL_SUCCESS))
     {
         Remove_Status(CKhazan_GSword::BRUTAL_BEGIN | CKhazan_GSword::BRUTAL_READY | CKhazan_GSword::BRUTAL_SUCCESS);
-        m_pBrutalAttack->Off_BrutalAttack();
+        if (m_isBackBrutal) {
+            m_pBrutalAttack->Off_BrutalAttack();
+            m_isBackBrutal = false;
+            m_fOptimizationSearchTime.y = 2.f;
+            m_isBrutalSuccess = true;
+        }
+
         return false;
     }
 
     /* 몬스터가 죽으면  */
     if (!m_pBrutalmonster || m_pBrutalmonster->Get_IsDead()) {
         Remove_Status(CKhazan_GSword::BRUTAL_BEGIN | CKhazan_GSword::BRUTAL_READY | CKhazan_GSword::BRUTAL_SUCCESS);
-        m_pBrutalAttack->Off_BrutalAttack();
+        if (m_isBackBrutal) {
+            m_pBrutalAttack->Off_BrutalAttack();
+            m_isBackBrutal = false;
+            m_fOptimizationSearchTime.y = 2.f;
+            m_isBrutalSuccess = true;
+
+        }
         return false;
     }
 
-    /* 브루탈 가능 시간이 다 되면 */
-    if (m_pBrutalAttack->Get_IsDead()) {
+    /*  몬스터가 슬립이 풀리면 */
+    if (static_cast<CMonster*>(m_pBrutalmonster)->Get_isSleep() == true && m_isBackBrutal)
+    {
         Remove_Status(CKhazan_GSword::BRUTAL_BEGIN | CKhazan_GSword::BRUTAL_READY | CKhazan_GSword::BRUTAL_SUCCESS);
+        if (m_isBackBrutal) {
+            m_pBrutalAttack->Off_BrutalAttack();
+            m_isBackBrutal = false;
+            m_fOptimizationSearchTime.y = 2.f;
+            m_isBrutalSuccess = true;
+        }
         return false;
     }
 
     /* 브루탈 가능 범위인지 아닌지 체크 */
     _float  fDistSq = XMVectorGetX(XMVector3LengthSq(XMVectorSet(m_pParentMatrix->_41, m_pParentMatrix->_42, m_pParentMatrix->_43, 1.f) - m_pBrutalmonster->Get_Position()));
-    if (fDistSq < 4.f * 4.f) {
+    if (fDistSq < 6.f * 6.f) {
         if (!Has_Status(CKhazan_GSword::BRUTAL_READY)) {
             Add_Status(CKhazan_GSword::BRUTAL_READY);
             return true;
         }
     }
-    else if (fDistSq > 4.f * 4.f + 1.f)
+    else if (fDistSq > 15.f * 15.f + 1.f)
         if (Has_Status(CKhazan_GSword::BRUTAL_READY))
-            Remove_Status(CKhazan_GSword::BRUTAL_READY);
+        {
+            if (m_isBackBrutal)
+                m_pBrutalAttack->Off_BrutalAttack();
+
+            m_pBrutalAttack = nullptr;
+            m_pBrutalmonster = nullptr;
+            m_isBackBrutal = false;
+            m_isGroggyBrutal = false;
+            Remove_Status(CKhazan_GSword::BRUTAL_READY | CKhazan_GSword::BRUTAL_BEGIN);
+
+        }
 
 
     return false;
@@ -836,7 +873,7 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
 {
     CBody::BODY_BOXSHAPE_DESC AttackDesc{};
     {
-        AttackDesc.vExtent = _float3(0.7f, 0.7f, 1.8f);
+        AttackDesc.vExtent = _float3(1.f, 1.f, 1.8f);
         AttackDesc.eMotion = EMotionType::Kinematic;
         AttackDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         AttackDesc.eShapeType = SHAPE::BOX;
@@ -926,7 +963,7 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
 
     CBody::BODY_BOXSHAPE_DESC GuardDesc{};
     {
-        GuardDesc.vExtent = _float3(0.4f, 1.8f, 0.4f);
+        GuardDesc.vExtent = _float3(0.5f, 1.8f, 0.5f);
         GuardDesc.eMotion = EMotionType::Kinematic;
         GuardDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         GuardDesc.eShapeType = SHAPE::BOX;
@@ -1177,7 +1214,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
 
     m_pModelCom->Register_Event("GS_GhostLiberation_Landing", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), m_iFXIdx_Spining);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Giant_Hunt_Land"), XMLoadFloat4x4(&m_matWorldGSwordBody).r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Giant_Hunt_Land"), XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);
         // 카메라 쉐이킹
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
         // 이미시브 데칼
@@ -1207,7 +1244,8 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
 
 #pragma endregion
 
-#pragma region ScreenEffect
+
+
     // 숨통 끊기
     m_pModelCom->Register_Event("GhostSlash_Atk_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         // 카메라 쉐이킹
