@@ -139,11 +139,24 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
         (ground_state == JPH::CharacterVirtual::EGroundState::OnGround) ||
         (ground_state == JPH::CharacterVirtual::EGroundState::OnSteepGround);
 
-    _bool onGroundForRoot = !m_isJump && onGround;
+    //const bool ignoreRootMotion =
+    //    m_isJump ||   // 점프 중
+    //    m_isDive ||   // 다이브 중
+    //    m_isPower;         // 넉백이나 힘으로 미는 중 (원하면 빼도 됨)
 
-    // 3) 애니 루트 델타 → 속도 반영 (지면일 때만)
-    if (onGroundForRoot)
+    const bool ignoreRootMotion =
+        m_isJump ||
+        m_isDive;
+
+    const bool useRootForMotion =
+        !ignoreRootMotion && (onGround || m_isOnLadder);
+
+    m_isUseRootMotion = false;
+    
+    if (useRootForMotion)
     {
+        m_isUseRootMotion = true;
+
         const RVec3 curCharPos = m_pCharVir->GetPosition();
         JPH::Vec3   curCharPosF(
             (float)curCharPos.GetX(),
@@ -155,17 +168,32 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
         JPH::Vec3 tPos = LoadVec3(tPosVec);
 
         JPH::Vec3 rootDelta = tPos - curCharPosF;
-        rootDelta.SetY(0.0f);
 
+        if (!m_isOnLadder)
+        {
+            rootDelta.SetY(0.0f);
+        }        
         if (fTimeDelta > 0.f && rootDelta.LengthSq() > 0.0f)
         {
             JPH::Vec3 rootVel = rootDelta / fTimeDelta;
 
             float vy = m_vVelocity.GetY();
-            rootVel = m_pCharVir->CancelVelocityTowardsSteepSlopes(rootVel);
+
+            if (!m_isOnLadder)
+                rootVel = m_pCharVir->CancelVelocityTowardsSteepSlopes(rootVel);
 
             m_vVelocity = rootVel;
-            m_vVelocity.SetY(vy);
+
+            if (!m_isOnLadder)
+                m_vVelocity.SetY(vy);
+        }
+        else if (m_isOnLadder)
+        {
+            m_vVelocity = JPH::Vec3::sZero();
+        }
+        else 
+        {
+            m_vVelocity = JPH::Vec3::sZero();
         }
     }
 
@@ -214,6 +242,9 @@ void CCharacterVirtual::Update(_float fTimeDelta, CTransform* pTransform, _vecto
 
 void CCharacterVirtual::Update_Dive(_float fTimeDelta)
 {
+    if (!m_pCharVir)
+        return;
+
     const RVec3 curPosR = m_pCharVir->GetPosition();
     JPH::Vec3   vCurPos(
         (float)curPosR.GetX(),
@@ -222,59 +253,78 @@ void CCharacterVirtual::Update_Dive(_float fTimeDelta)
     );
 
     JPH::Vec3 vToTarget = m_vDivePos - vCurPos;
-    float     fDistSq = vToTarget.LengthSq();
+    _float     fDist = vToTarget.Length();
 
-    if (m_pCharVir->IsSupported() || fDistSq < 0.05f)
+    // 1) 거의 도착했다고 판단되면 강제 스냅
+    if (fDist < 0.3f || m_pCharVir->IsSupported())
     {
+        // 상태 플래그 리셋
         m_isDive = false;
         m_isJump = false;
+        m_isPower = false;
+        m_fLoss = m_fBaseLoss;
 
-        m_vVelocity = m_pCharVir->GetLinearVelocity();
-        if (m_vVelocity.GetY() < 0.0f)
-            m_vVelocity.SetY(0.0f);
+        // 위치/속도 리셋
+        RVec3 snapPos(
+            (double)m_vDivePos.GetX(),
+            (double)m_vDivePos.GetY(),
+            (double)m_vDivePos.GetZ()
+        );
+        m_pCharVir->SetPosition(snapPos);
 
+        m_vVelocity = JPH::Vec3::sZero();
         m_pCharVir->SetLinearVelocity(m_vVelocity);
-        return;
+
+        // 접촉정보 다시 계산
+        m_pGameInstance->CharVir_RefreshContact(
+            m_pCharVir,
+            m_iNumObjectLayer,
+            m_pBodyFilter,
+            m_pShapeFilter
+        );
     }
 
-    float fDist = sqrtf(fDistSq);
-    if (fDist > 0.0001f)
+    // 2) 다이브 스피드 보정
+    _float fDiveSpeed = m_fDiveSpeed;
+    if (!std::isfinite(fDiveSpeed) || fDiveSpeed <= 0.0f)
+        fDiveSpeed = 25.0f;
+
+    if (fDist > 1e-4f)
     {
-        vToTarget /= fDist;
+        vToTarget /= fDist; // 방향 벡터
 
-        if (vToTarget.GetY() > -0.3f)
-            vToTarget.SetY(-0.3f);
-
-        vToTarget = vToTarget.Normalized();
+        // 필요하다면 Y를 어느 정도 아래로만 제한
+        // if (vToTarget.GetY() > -0.2f)
+        //     vToTarget.SetY(-0.2f);
     }
     else
     {
         vToTarget = JPH::Vec3(0.0f, -1.0f, 0.0f);
+        fDist = 0.0f;
     }
 
-    float fDiveSpeed = m_fDiveSpeed;
-    if (!std::isfinite(fDiveSpeed) || fDiveSpeed <= 0.0f)
-        fDiveSpeed = 25.0f;
+    // 3) 이번 프레임에 이동 가능한 최대 거리
+    _float maxStep = fDiveSpeed * fTimeDelta;
+    if (maxStep <= 0.0f)
+        return;
 
-    m_vVelocity = vToTarget * fDiveSpeed;
+    // 4) 남은 거리보다 더 많이 가지 않도록 클램프
+    _float stepDist = (fDist > maxStep) ? maxStep : fDist;
 
-    const float fMaxDiveSpeed = 80.0f;
-    float fLenSq = m_vVelocity.LengthSq();
-    if (fLenSq > fMaxDiveSpeed * fMaxDiveSpeed)
-    {
-        float fLen = sqrtf(fLenSq);
-        m_vVelocity *= (fMaxDiveSpeed / fLen);
-    }
+    // 이 속도로 가면 정확히 stepDist만큼 이동함
+    JPH::Vec3 vStepVel = vToTarget * (stepDist / fTimeDelta);
 
-    if (!IsFiniteVec3(m_vVelocity))
-        m_vVelocity = JPH::Vec3::sZero();
+    if (!IsFiniteVec3(vStepVel))
+        vStepVel = JPH::Vec3::sZero();
 
+    m_vVelocity = vStepVel;
     m_pCharVir->SetLinearVelocity(m_vVelocity);
 
+    // 5) 다이브 동안은 중력 0으로, "목표로 끌려가는" 느낌으로
     m_pGameInstance->CharVir_ExtendedUpdate(
         fTimeDelta,
         m_pCharVir,
-        m_vGravity,
+        JPH::Vec3::sZero(), // 중력 끔
         m_iNumObjectLayer,
         m_pBodyFilter,
         m_pShapeFilter,
@@ -305,6 +355,28 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
         return;
     }
 
+    if (m_isOnLadder)
+    {
+        if (!IsFiniteVec3(m_vVelocity))
+            m_vVelocity = JPH::Vec3::sZero();
+
+        m_pCharVir->SetLinearVelocity(m_vVelocity);
+
+        m_pGameInstance->CharVir_ExtendedUpdate(
+            fTimeDelta,
+            m_pCharVir,
+            JPH::Vec3::sZero(),
+            m_iNumObjectLayer,
+            m_pBodyFilter,
+            m_pShapeFilter,
+            m_tEXUpdateSetting
+        );
+
+        m_vVelocity = m_pCharVir->GetLinearVelocity();
+
+        return;
+    }
+
     if (!m_pCharVir->IsSupported())
     {
 
@@ -331,7 +403,22 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
     _float loss = 0.0f;
 
     if (!m_isJump)
-        loss = m_pCharVir->IsSupported() ? m_fLoss : m_fAirLoss;
+    {
+        if (m_isPower)
+        {
+            loss = m_fLoss;
+        }
+        else if (!m_isUseRootMotion)
+        {
+            loss = m_pCharVir->IsSupported() ? m_fBaseLoss : m_fBaseAirLoss;
+        }
+            
+    }
+    else
+    {
+        loss = m_pCharVir->IsSupported() ? m_fBaseLoss : m_fBaseAirLoss;
+    }
+        
 
     if (loss > 0.0f)
     {
@@ -339,6 +426,21 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
         m_vVelocity.SetX(m_vVelocity.GetX() * k);
         m_vVelocity.SetY(m_vVelocity.GetY() * k);
         m_vVelocity.SetZ(m_vVelocity.GetZ() * k);
+    }
+
+    if (m_isPower)
+    {
+        const float minSpeedSq = 0.01f; 
+        if (m_vVelocity.LengthSq() < minSpeedSq)
+        {
+            m_isPower = false;
+            m_vVelocity = JPH::Vec3::sZero();
+
+            // 감쇠값도 기본으로 되돌리기
+            m_fLoss = m_fBaseLoss;
+            if (m_pCharVir)
+                m_pCharVir->SetLinearVelocity(m_vVelocity);
+        }
     }
 
 
@@ -369,6 +471,22 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
 
         m_pCharVir->SetLinearVelocity(m_vVelocity);
     }
+
+    if (!m_isJump && !m_isPower && !m_isOnLadder && !m_isDive && m_pCharVir->IsSupported())
+    {
+
+        JPH::Vec3 vHoriz(m_vVelocity.GetX(), 0.0f, m_vVelocity.GetZ());
+        float lenSq = vHoriz.LengthSq();
+
+
+        const float stopThreshold = 0.05f;
+        if (lenSq < stopThreshold * stopThreshold)
+        {
+            m_vVelocity.SetX(0.0f);
+            m_vVelocity.SetZ(0.0f);
+            m_pCharVir->SetLinearVelocity(m_vVelocity);
+        }
+    }
 }
 
 void CCharacterVirtual::Set_Position(_vector vPos)
@@ -388,7 +506,8 @@ void CCharacterVirtual::Set_Rotation(_vector vRotation)
 
 void CCharacterVirtual::Set_Gravity(_float fGravity)
 {
-	m_pBodyInterface->SetGravityFactor(m_pCharVir->GetInnerBodyID(), fGravity);
+	//m_pBodyInterface->SetGravityFactor(m_pCharVir->GetInnerBodyID(), fGravity);
+    m_vGravity = Vec3(0.f, fGravity, 0.f);
 }
 
 
@@ -397,6 +516,10 @@ void CCharacterVirtual::Set_VelocityPower(_vector vDir, _float fPower, _float fL
 {
 	m_vVelocity = Vec3(vDir.m128_f32[0], vDir.m128_f32[1], vDir.m128_f32[2]) * fPower;
 	m_fLoss = fLoss;
+    m_isPower = true;
+
+    if (m_pCharVir)
+        m_pCharVir->SetLinearVelocity(m_vVelocity);
 }
 
 void CCharacterVirtual::Collision_Active(_bool isActive)
@@ -704,6 +827,23 @@ void CCharacterVirtual::Teleport(_vector vPos, _vector qRot, CTransform* pTransf
     pTransform->Set_State(STATE::POSITION, vPos);
 }
 
+void CCharacterVirtual::Begin_Ladder()
+{
+    m_isOnLadder = true;
+    
+    m_vVelocity = JPH::Vec3::sZero();
+    if (m_pCharVir)
+        m_pCharVir->SetLinearVelocity(Vec3::sZero());
+
+    m_isJump = false;
+    m_isDive = false;
+}
+
+void CCharacterVirtual::End_Ladder()
+{
+    m_isOnLadder = false;
+}
+
 void CCharacterVirtual::Fake_Release()
 {
     if (m_pBodyInterface->IsAdded(m_BodyId))
@@ -745,7 +885,7 @@ void CCharacterVirtual::Free()
 
     if (m_pCharVir)
     {
-        m_pGameInstance->Remove_CharacterVirtual(m_pCharVir->GetID()); // 네가 쓰는 방식에 맞게
+        m_pGameInstance->Remove_CharacterVirtual(m_pCharVir->GetID());
 
 
         m_pCharVir = nullptr;

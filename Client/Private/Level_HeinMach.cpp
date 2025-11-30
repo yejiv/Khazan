@@ -24,6 +24,10 @@
 #include "UI_HUD.h"
 #pragma endregion
 
+#pragma region ITEM
+#include "Interaction_Item.h"
+#pragma endregion
+
 CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
 	, m_pClientInstance(CClientInstance::GetInstance())
@@ -235,7 +239,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
    }
 
-   /*if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
+   if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
    {
        CYetuga* pYetuga = dynamic_cast<CYetuga*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Yetuga")));
        CSequence_Yetuga_CutScene* pSequence = CSequence_Yetuga_CutScene::Create(pYetuga);
@@ -246,7 +250,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
        tPlayDesc.fStartTime = 0.f;
 
        m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
-   }*/
+   }
 
 	return;
 }
@@ -312,6 +316,16 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
     m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag, pCamera_Player);
 
     m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::PLAYER));
+
+    /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"), TIME_CHANNEL::PLAYER)))
+        return E_FAIL;*/
+
+    CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item")));
+
+    pItem->Ready_Item(1, XMVectorSet(516.f, -11.f, 264.f, 1.f));
+
+    m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TEST_LAYER"), pItem);
 
 	return S_OK;
 }
@@ -398,6 +412,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight_static"), 4);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight_static_connect"), 4);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"), 100);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("ITEM_FX"), 5);
 
     // [GS] 
 
@@ -421,6 +436,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Dawn_BloodTrail1"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Dawn_BloodTrail2"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GS_StrongATK"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Ghost_Dark_Shadow_Land"),1);
 
     return S_OK;
 }

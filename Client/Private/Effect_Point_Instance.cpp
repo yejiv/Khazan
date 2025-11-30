@@ -80,14 +80,25 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
         m_pVIBufferCom->UpdateTurbulence(fTimeDelta, m_fAccTime);
     }
 
-    if (m_fSpriteTime * 100.f > m_sData.fSpriteSpeed)
+    //if (m_fSpriteTime * 100.f > m_sData.fSpriteSpeed)
+    //{
+    //    ++m_iUVIdx;
+    //    m_fSpriteTime = 0.f;
+    //}
+    //
+    //if (m_iUVIdx == (m_sData.iCol * m_sData.iRow))
+    //    m_iUVIdx = 0;
+    if (m_sData.fSpriteSpeed && m_fSpriteTime * 100.f > m_sData.fSpriteSpeed)
     {
         ++m_iUVIdx;
         m_fSpriteTime = 0.f;
+        if (m_iUVIdx == (m_sData.iCol * m_sData.iRow))
+        {
+            m_iUVIdx = 0;
+            if (!m_pVIBufferCom->isLoop())
+                m_bRunning = false;
+        }
     }
-
-    if (m_iUVIdx == (m_sData.iCol * m_sData.iRow))
-        m_iUVIdx = 0;
 
     __super::Update(fTimeDelta);
 }
