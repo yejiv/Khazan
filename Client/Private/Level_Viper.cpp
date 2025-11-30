@@ -42,7 +42,17 @@ HRESULT CLevel_Viper::Initialize()
     
     // 우선 맵 오브젝트 서브 레벨 로드
     
-    CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+    //  CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+
+    // Test MainLight
+    LIGHT_DESC LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
+    LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+    LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("MainLight"), ENUM_CLASS(LEVEL::VIPER), LightDesc)))
+        return E_FAIL;
 
     CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 

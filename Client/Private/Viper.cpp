@@ -93,6 +93,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     }
 
     m_ePhase = PHASE::PHASE1;
+    //  m_ePhase = PHASE::PHASE2;
+
 
   
     m_fRecoveryPerSec = 5.f;

@@ -71,6 +71,8 @@ float g_fEmissiveValue;
 float   g_fDecreaseAlpha;
 float   g_fEdgeWidth;
 float4  g_fEdgeColor;
+// Viper
+bool g_HasEmissive;
 
 struct VS_IN
 {
@@ -747,7 +749,6 @@ PS_OUT PS_ELEVATOR_L(PS_IN In)
     return Out;
 }
 
-
 PS_OUT PS_MAIN_HAIR_EMISSIVE(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
@@ -864,6 +865,48 @@ PS_OUT PS_MAIN_DISSOLVE(PS_IN In)
         discard;
     return Out;
 }
+
+PS_OUT PS_VIPER(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+
+    float4 vEmissiveDesc = float4(0.f, 0.f, 0.f, 0.f);
+    if (g_HasEmissive)
+        vEmissiveDesc = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    //  Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 0.f;
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    vMtrlDiffuse *= fEdgeMask;
+    vMtrlDiffuse *= fShadeMask;
+
+    float fMask = vEmissiveDesc.g;    
+    vMtrlDiffuse += vMtrlDiffuse * fMask * g_fEmissiveIntensity;
+    Out.vDiffuse = vMtrlDiffuse;
+    
+    // Test
+    //  Out.vDiffuse = vEmissiveDesc;
+    
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass        // 0 번
@@ -1041,6 +1084,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_ELEVATOR_L();
     }
+
     // 이미시브 추가         ( 15번 )
     pass PS_MAIN_HAIR_EMISSIVE_15
     {
@@ -1052,6 +1096,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_HAIR_EMISSIVE();
     }
+    // 이미시브 추가         ( 16번 )
     pass PS_MAIN_SHIELD_EMISSIVE_16
     {
         SetRasterizerState(RS_Default);
@@ -1062,6 +1107,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SHIELD_EMISSIVE();
     }
+    // 이미시브 추가         ( 17번 )
     pass PS_MAIN_DISSOLVE_17
     {
         SetRasterizerState(RS_Default);
@@ -1073,4 +1119,15 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE();
     }
 
+    // 바이퍼 패스        ( 18번 )
+    pass Viper
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_VIPER();
+    }
 }
