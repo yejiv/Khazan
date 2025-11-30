@@ -236,6 +236,7 @@ private:
     void Spawn_EmissiveDecal(_bool isUseOffset);
     void Spawn_CrackDecal();
     void Spawn_CircleBloodDecal();
+    void Spawn_LinearBloodDecal();
     void Start_DefaultVignette();
     void Start_DefaultRadialBlur();
     void Start_LongRadialBlur();
