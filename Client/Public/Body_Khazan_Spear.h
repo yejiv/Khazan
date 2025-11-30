@@ -172,6 +172,7 @@ private:
     // Shader
     _bool               m_isEnableEdge = { true };
     _bool               m_isEnableMotionTrail = {};
+    _uint               m_iCurMotionTrailAnimIndex = {};
 
 
     COLLISION_DESC      m_tSearchCollisionDesc = {};

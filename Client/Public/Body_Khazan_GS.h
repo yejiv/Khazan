@@ -176,9 +176,11 @@ private:
 
     // Shader
     _bool                       m_isEnableEdge = { true };
+    _bool                       m_isActiveMotionTrail = { false };
+    _bool                       m_isEnableMotionTrail = {};
+    _uint                       m_iCurMotionTrailAnimIndex = {};
     OUTLINE_CONFIG              m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
     function<void(const _wstring&, _bool)>  m_OnMotionTrailCallBack;
-    _bool                       m_isActiveMotionTrail = { false };
 
     /*  mutex */
     mutex                       m_CollMonsterMutex;

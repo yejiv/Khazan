@@ -694,7 +694,7 @@ CGameObject* CCamera_Compre::Pick_ClosetTarget()
     }
 
     return bestObject;*/
-
+    lock_guard<mutex> lock(m_CollMonsterMutex);
     if (!m_pTransformCom || m_CollMonsters.empty())
         return nullptr;
 
@@ -1302,6 +1302,7 @@ void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
 
         CGameObject* pObj = pDesc->pGameObject;
         CMonster* pMonster = dynamic_cast<CMonster*>(pDesc->pGameObject);
+        lock_guard<mutex> lock(m_CollMonsterMutex);
         if (pObj && find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end())
             m_CollMonsters.push_back(pObj);
     }
@@ -1346,6 +1347,7 @@ void CCamera_Compre::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
         CGameObject* pObj = pDesc->pGameObject;
         if (!pObj) return;
+        lock_guard<mutex> lock(m_CollMonsterMutex);
         auto it = std::remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
         if (it != m_CollMonsters.end()) m_CollMonsters.erase(it, m_CollMonsters.end());
     }
