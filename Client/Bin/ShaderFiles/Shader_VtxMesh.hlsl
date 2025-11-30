@@ -41,6 +41,9 @@ vector    g_vColor = vector(1.f, 0.f, 1.f, 1.f);
 
 unsigned int g_iMapObjectID;
 
+//이미시브
+float g_fEmissiveValue;
+
 struct VS_IN
 {
     float3 vPosition : POSITION; 
@@ -435,6 +438,30 @@ PS_OUT PS_SNOWMAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽
     return Out;
 }
 
+PS_OUT PS_SWORD_EMISSIVE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    float4 vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    
+    if (vEmissive.g >= 0.95f)
+    {
+        Out.vDiffuse.rgb = Out.vDiffuse.rgb + g_fEmissiveValue;
+    }
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     /* 특정 패스를 이용해서 점정을 그려냈다. */
@@ -527,6 +554,18 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_SNOWMAP_ICE();
     }
+
+    pass PS_SWORD_EMISSIVE_8 // 엘라메인 검 이미시브 8번
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SWORD_EMISSIVE();
+    }
+
 
     ///* 모델의 상황에 따라 다른 쉐이딩 기법 세트(블렌딩 + 디스토션  )를 먹여주기위해서 */
     //pass DefaultPass1

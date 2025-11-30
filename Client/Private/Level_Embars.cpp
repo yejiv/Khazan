@@ -518,6 +518,26 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
 
                 return E_FAIL;
         }
+        else if ("Elamein" == MonsterData.MonsterKey[i])
+        {
+            CMonster::MONSTER_DESC MonsterDesc{};
+            MonsterDesc.fAttack = 10.f;
+            MonsterDesc.fMaxHP = 2000.f;
+            MonsterDesc.fMaxStamina = 300.f;
+            MonsterDesc.fMoveSpeed = 10.f;
+            MonsterDesc.fSpeedPerSec = 3.f;
+            MonsterDesc.fRotationPerSec = 180.f;
+
+            MonsterDesc.WorldMatrix = WorldMatrix;
+
+            MonsterDesc.strName = "Elamein";
+            MonsterDesc.iLevelIndex = ENUM_CLASS(eCurrentLevel);
+
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+                ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Elamein"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+
+                return E_FAIL;
+        }
     }
 
     _tchar szDone[MAX_PATH] = {};

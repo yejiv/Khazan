@@ -43,6 +43,13 @@ void CElamein_Sword::Priority_Update(_float fTimeDelta)
 
 void CElamein_Sword::Update(_float fTimeDelta)
 {
+    if (m_isReset)
+    {
+        m_fChageValue -= fTimeDelta * 5.f;
+        if (m_fChageValue <= 0.f)
+            m_isReset = false;
+    }
+
     m_pTransformCom->Rotation(XMConvertToRadians(90.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
 
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
@@ -82,7 +89,9 @@ HRESULT CElamein_Sword::Render()
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
 
-        m_pShaderCom->Begin(0);
+        m_pShaderCom->Bind_RawValue("g_fEmissiveValue", &m_fChageValue, sizeof(_float));
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0);
+        m_pShaderCom->Begin(8);
         m_pModelCom->Render(i);
     }
 
@@ -121,7 +130,7 @@ HRESULT CElamein_Sword::Ready_Collision()
     m_tCollisionDesc.pGameObject = this;
 
     CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-    BodyDesc.vExtent = { 0.4f, 1.f, 0.4f };
+    BodyDesc.vExtent = { 0.7f, 1.f, .5f };
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::BOX;
@@ -132,10 +141,10 @@ HRESULT CElamein_Sword::Ready_Collision()
     BodyDesc.vPos = { m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43 };
     XMStoreFloat4(&BodyDesc.vQuat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&m_CombinedWorldMatrix)));
 
-    BodyDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
+    BodyDesc.vShapeOffset = _float3(0.f, 1.f, 0.f);
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_Body_LH"), (CComponent**)&m_pBodyComp, &BodyDesc), E_FAIL );
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_Body_RH"), (CComponent**)&m_pBodyComp, &BodyDesc), E_FAIL);
 
 
     return S_OK;

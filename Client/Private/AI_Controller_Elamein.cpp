@@ -180,6 +180,7 @@ PERCEPTIONCALLBACK CAI_Controller_Elamein::GetCallBackPerception(CGameObject* pO
 
                         if (m_pMonData->eHitType != HITREACTION::BRUTAL_ATTACK)
                             m_pMonData->eHitType = static_cast<HITREACTION>(m_pBB->Get_Value<_uint>(m_strMonstertag, "DamageType"));
+
                     }
                 }
             };
@@ -286,7 +287,7 @@ BTNODESTATE CAI_Controller_Elamein::Turn(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Elamein::Attack_Long_Check(CGameObject* pOwner)
 {
-    if (!m_pMonData->isSleep && !m_pMonData->pOwner->Check_Ranage("AttackRange_Rush"))
+    if (!m_pMonData->isSleep && !m_pMonData->pOwner->Check_Ranage("AttackRange_Rush") && m_pMonData->fLong_AttackCool <= 0.f)
     {
         m_pMonData->eAttackState = CElamein::ATTACKSTATE::LONG;
         return BTNODESTATE::SUCCESS;
@@ -340,15 +341,15 @@ BTNODESTATE CAI_Controller_Elamein::Attack_Check(CGameObject* pOwner)
     {
         _bool isMaxRange = m_pMonData->pOwner->Check_Ranage("AttackRange_Rush");
         _bool isMinRange = m_pMonData->pOwner->Check_Ranage("AttackRange");
-
+        _bool isMiddleRange = m_pMonData->pOwner->Check_Ranage("AttackRange_Middle");
         if(isMaxRange && !isMinRange && m_pMonData->fSpecial_AttackCool <= 0.f)
         {
             m_pMonData->eAttackState = CElamein::ATTACKSTATE::ENCHANT;
             return BTNODESTATE::SUCCESS;
         }
-        else if (m_pMonData->fAttackCool <= 0.f)
+        else if (isMiddleRange && m_pMonData->fAttackCool <= 0.f)
         {
-            if (isMaxRange && !isMinRange)
+            if (!isMinRange)
                  m_pMonData->eAttackState = CElamein::ATTACKSTATE::MIDDLE;
             else
                  m_pMonData->eAttackState = CElamein::ATTACKSTATE::DEFAULT;
