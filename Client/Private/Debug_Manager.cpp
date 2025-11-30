@@ -127,6 +127,8 @@ void CDebug_Manager::Ready_JoltDebug()
         Labels.push_back("MAP_DEST");
         Labels.push_back("MAP_CHUNK");
         Labels.push_back("TEST");
+        Labels.push_back("CONTROLLER");
+        Labels.push_back("INTERACT_OBJECT");
 
 		for (size_t i = 0; i < Labels.size(); i++)
 		{

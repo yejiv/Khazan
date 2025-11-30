@@ -58,6 +58,7 @@ public:
         STAMINA_EXHAUSTION  = 1 << 26, 
 
         VIPER_GRAB = 1 << 27,
+
         /* 회전 */
         //TURN180 = 1 << 20,
         //TURN180_REQUESTED = 1 << 21, 
@@ -246,6 +247,8 @@ private:
     /* others,, */
     void            Check_IsInAir(_float fTimeDelta);
     void            Clear_Injured();
+
+public:
     void            EnterStatuePuzzle(); //조각상 돌리기 모드 on
     void            ExitStatuePuzzle(); //조각상 돌리기 모드 off
 

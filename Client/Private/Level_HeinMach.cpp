@@ -45,6 +45,8 @@ HRESULT CLevel_HeinMach::Initialize()
         //return S_OK;
         //}));
 
+    CHECK_FAILED(Ready_Layer_Item(), E_FAIL);
+
     m_pGameInstance->Add_FireTask([&]() {
         CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
         return S_OK;
@@ -321,12 +323,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"), TIME_CHANNEL::PLAYER)))
         return E_FAIL;*/
 
-    CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item")));
-
-    pItem->Ready_Item(1, XMVectorSet(516.f, -11.f, 264.f, 1.f));
-
-    m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TEST_LAYER"), pItem);
-
 	return S_OK;
 }
 
@@ -447,6 +443,37 @@ HRESULT CLevel_HeinMach::Ready_Layer_Decal()
     if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Decal"),
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Pool_Decal"), nullptr, 100)))
         return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_Item()
+{
+    m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item"), nullptr, 10);
+
+    CInteraction_Item* pItem1 = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item")));
+
+    pItem1->RandNormal_Item(XMVectorSet(516.f, -12.f, 264.f, 1.f));
+
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Item"), pItem1);
+
+    CInteraction_Item* pItem2 = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item")));
+
+    pItem2->RandNormal_Item(XMVectorSet(516.f, -12.f, 250.f, 1.f));
+
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Item"), pItem2);
+
+    CInteraction_Item* pItem3 = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item")));
+
+    pItem3->RandNormal_Item(XMVectorSet(516.f, -12.f, 240.f, 1.f));
+
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Item"), pItem3);
+
+    CInteraction_Item* pItem4 = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item")));
+
+    pItem4->RandNormal_Item(XMVectorSet(516.f, -12.f, 230.f, 1.f));
+
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Item"), pItem4);
 
     return S_OK;
 }

@@ -3,6 +3,7 @@
 #include "ClientInstance.h"
 #include "Transform.h"
 #include "GameObject.h"
+#include "SkipButton.h"
 
 CSequence_Embars_Puzzle_First::CSequence_Embars_Puzzle_First()
     : m_pGameInstance{ CGameInstance::GetInstance() }
@@ -27,44 +28,77 @@ void CSequence_Embars_Puzzle_First::Update(_float fTimeDelta)
 {
     m_fTime += fTimeDelta;
 
-    if (m_fTime >= 3.0f && !m_isElevatorFadeOut)
-    {
-        CClientInstance::GetInstance()->Fade_Out();
-        m_isElevatorFadeOut = true;
-    }
-    else if (m_fTime >= 4.f && !m_isElevatorCamera)
-    {
-        CClientInstance::GetInstance()->Fade_In();
-        m_pClientInstance->Camera_Set_Animation(TEXT("Turn_Elevator"));
-        m_isElevatorCamera = true;
-    }
-    else if (m_fTime >= 9.f && !m_isVerticalGateFadeOut)
-    {
-        CClientInstance::GetInstance()->Fade_Out();
-        m_isVerticalGateFadeOut = true;
-    }
-    else if (m_fTime >= 10.f && !m_isVerticalGateCamera)
-    {
-        CClientInstance::GetInstance()->Fade_In();
-        m_pClientInstance->Camera_Set_Animation(TEXT("VerticalGate1"));
-        m_isVerticalGateCamera = true;
-    }
-    else if (m_fTime >= 15.f && !m_isMovePlayerFadeOut)
-    {
-        CClientInstance::GetInstance()->Fade_Out();
-        m_isMovePlayerFadeOut = true;
-    }
-    else if (m_fTime > 16.f && !m_isMovePlayer)
-    {
-        m_pClientInstance->Camera_Set_FixEnd();
-        m_isMovePlayer = true;
-    }
-    else if (m_fTime >= 17.f)
-    {
-        CClientInstance::GetInstance()->Fade_In();
-        m_isEnd = true;
-    }
+    Skip_KeyInput(fTimeDelta);
 
+    if (!m_isSkip)
+    {
+        if (m_fTime >= 3.0f && !m_isElevatorFadeOut)
+        {
+            m_pClientInstance->Fade_Out();
+            m_isElevatorFadeOut = true;
+        }
+        else if (m_fTime >= 4.f && !m_isElevatorCamera)
+        {
+            m_pClientInstance->Fade_In();
+            m_pClientInstance->Camera_Set_Animation(TEXT("Turn_Elevator"));
+            m_isElevatorCamera = true;
+        }
+        else if (m_fTime >= 9.f && !m_isVerticalGateFadeOut)
+        {
+            m_pClientInstance->Fade_Out();
+            m_isVerticalGateFadeOut = true;
+        }
+        else if (m_fTime >= 10.f && !m_isVerticalGateCamera)
+        {
+            m_pClientInstance->Fade_In();
+            m_pClientInstance->Camera_Set_Animation(TEXT("VerticalGate1"));
+            m_isVerticalGateCamera = true;
+        }
+        else if (m_fTime >= 15.f && !m_isMovePlayerFadeOut)
+        {
+            m_pClientInstance->Fade_Out();
+            m_isMovePlayerFadeOut = true;
+        }
+        else if (m_fTime > 16.f && !m_isMovePlayer)
+        {
+            m_pClientInstance->Camera_Set_FixEnd();
+            m_isMovePlayer = true;
+        }
+        else if (m_fTime >= 17.f)
+        {
+            m_pClientInstance->Fade_In();
+            m_isEnd = true;
+        }
+    }
+    else {
+        m_fSkipTime += fTimeDelta;
+        if (m_fSkipTime > 0.f && !m_isSkipFadeOut)
+        {
+            CSkipButton::SKIPBUTTON_DESC SkipBtnDesc{};
+            SkipBtnDesc.isOpen = false;
+            m_pClientInstance->UI_UpdateSwitch(TEXT("SkipButton"), &SkipBtnDesc);
+
+            m_pClientInstance->Fade_Out();
+            m_isSkipFadeOut = true;
+        }
+
+        if (m_fSkipTime > 1.f && !m_isSkipCameraSet)
+        {
+            m_pClientInstance->Camera_Force_AniEnd();
+            m_isSkipCameraSet = true;
+        }
+
+        if (m_fSkipTime > 2.f && !m_isSkipFadeIn)
+        {
+            m_pClientInstance->Fade_In();
+            m_isSkipFadeIn = true;
+        }
+
+        if (m_fSkipTime > 3.f && !m_isEnd)
+        {
+            m_isEnd = true;
+        }
+    }
 }
 
 void CSequence_Embars_Puzzle_First::Pause()
@@ -90,6 +124,27 @@ void CSequence_Embars_Puzzle_First::Jump(_float fTime)
 _bool CSequence_Embars_Puzzle_First::IsEnd() const
 {
     return m_isEnd;
+}
+
+void CSequence_Embars_Puzzle_First::Skip_KeyInput(_float fTimeDelta)
+{
+    if (!m_isSkipKey)
+    {
+        if (m_pGameInstance->Key_Down(DIK_G))
+        {
+            CSkipButton::SKIPBUTTON_DESC SkipBtnDesc{};
+            SkipBtnDesc.isOpen = true;
+            SkipBtnDesc.Event = [this]() {
+                Set_Skip(true);
+                };
+
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkipButton"), &SkipBtnDesc);
+
+            m_isSkipKey = true;
+        }
+    }
+
+
 }
 
 CSequence_Embars_Puzzle_First* CSequence_Embars_Puzzle_First::Create()

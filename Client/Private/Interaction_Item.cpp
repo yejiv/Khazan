@@ -39,6 +39,28 @@ HRESULT CInteraction_Item::Initialize_Clone(void* pArg)
 
     m_strName = "Interaction_Item";
 
+    m_NormalItemIndex.reserve(11);
+
+
+    // Normal Item
+    m_NormalItemIndex.push_back(1001);
+    m_NormalItemIndex.push_back(1002);
+    m_NormalItemIndex.push_back(1003);
+    m_NormalItemIndex.push_back(1004);
+    m_NormalItemIndex.push_back(3001);
+    m_NormalItemIndex.push_back(3002);
+    m_NormalItemIndex.push_back(3003);
+    m_NormalItemIndex.push_back(3004);
+    m_NormalItemIndex.push_back(3005);
+    m_NormalItemIndex.push_back(3006);
+    m_NormalItemIndex.push_back(3007);
+
+    // Special Item
+    m_SpecialItemIndex.emplace(TEXT("Precept"), 2001); // 호송 명령서
+    m_SpecialItemIndex.emplace(TEXT("Record"), 2002); // 어느 병사의 기록
+    m_SpecialItemIndex.emplace(TEXT("Handwriting"), 2003); // 도굴꾼의 수기
+    m_SpecialItemIndex.emplace(TEXT("Report"), 2004); // 용족에 대한 보고서
+
     return S_OK;
 }
 
@@ -69,6 +91,28 @@ void CInteraction_Item::Ready_Item(_uint iItemIndex, _vector vPos)
     m_iItemIndex = iItemIndex;
     m_pTransformCom->Set_State(STATE::POSITION, vPos);
     m_pBodyCom->Set_Pos(m_pTransformCom->Get_State(STATE::POSITION));    
+    m_pEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
+}
+
+void CInteraction_Item::RandNormal_Item(_vector vPos)
+{
+    _int iRand = m_pGameInstance->Rand(0, 10);
+    m_iItemIndex = m_NormalItemIndex[iRand];
+    m_pTransformCom->Set_State(STATE::POSITION, vPos);
+    m_pBodyCom->Set_Pos(m_pTransformCom->Get_State(STATE::POSITION));
+    m_pEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
+}
+
+void CInteraction_Item::Special_Item(_wstring strNameTag, _vector vPos)
+{
+    auto iter = m_SpecialItemIndex.find(strNameTag);
+
+    if (iter == m_SpecialItemIndex.end())
+        return;
+
+    m_pTransformCom->Set_State(STATE::POSITION, vPos);
+    m_pBodyCom->Set_Pos(m_pTransformCom->Get_State(STATE::POSITION));
+    m_pEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
 }
 
 void CInteraction_Item::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -170,6 +214,9 @@ void CInteraction_Item::Item_Check()
 
             Safe_Release(m_pEffect);
             m_pEffect = nullptr;
+
+            Safe_Release(m_pBodyCom);
+            Remove_Component(TEXT("Com_Body"));
         }
     }
 }
@@ -184,6 +231,11 @@ void CInteraction_Item::Reset()
     if (m_pEffect == nullptr)
     {
         Ready_Effect();
+    }
+
+    if (m_pBodyCom == nullptr)
+    {
+        Ready_Collision();
     }
 }
 
@@ -216,4 +268,12 @@ CGameObject* CInteraction_Item::Clone(void* pArg)
 void CInteraction_Item::Free()
 {
     __super::Free();
+    if (m_pGuide)
+    {
+        m_pGuide->Set_IsDead(true);
+        m_pGuide = nullptr;
+    }
+
+    Safe_Release(m_pEffect);
+
 }
