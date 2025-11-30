@@ -84,8 +84,8 @@ void CAS_CutScene_Start_Viper::Change_CutSceneState(CUTSCENE_STATE eNextState , 
         break;
 
     }
-    
-       
+   
+
 }
 
 

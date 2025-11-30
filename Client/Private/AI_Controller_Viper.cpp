@@ -63,7 +63,7 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
     }
 
     if (m_pGameInstance->Key_Down(DIK_J))
-        Set_ActiveAIController(true); // 이거 하면 실행됩니다.
+        //Set_ActiveAIController(true); // 이거 하면 실행됩니다.
 
 
 

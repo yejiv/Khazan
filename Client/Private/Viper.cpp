@@ -60,6 +60,7 @@ CAS_CutScene_Start_Viper* CViper::Get_Viper_CutSceneState()
 
 HRESULT CViper::Initialize_Prototype()
 {
+    
     return S_OK;
 }
 
