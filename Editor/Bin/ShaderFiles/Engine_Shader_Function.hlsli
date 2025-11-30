@@ -22,3 +22,22 @@ float GetAlphaFadeInOut(float t)
     float angle = t * 2.0f * 3.141592;
     return 0.5f * (1.0f - cos(angle));
 }
+
+
+float4 Dissolve(float fDecreaseAlpha, float noise, float EdgeWidth, float4 EdgeColor, float4 InColor)
+{
+    float4 rt = InColor;
+        
+    if (noise < fDecreaseAlpha)
+    {
+        rt.a = 0.f;
+        return rt;
+    }
+    
+    float edgeStart = fDecreaseAlpha;
+    float edgeEnd = fDecreaseAlpha + EdgeWidth;
+    float edgeFactor = smoothstep(edgeStart, edgeEnd, noise);
+    rt = lerp(EdgeColor * 2.f, InColor, edgeFactor);
+    
+    return rt;
+}

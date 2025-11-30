@@ -140,6 +140,7 @@ private:
      /* 뼈 위치 */
     _float4x4*                  m_pMatGSwordBody = { nullptr }; // 칼 중앙 로컬행렬
     _float4x4			        m_matWorldGSwordBody;                // 칼 중앙 월드행렬
+    _float4x4                   m_matWorldGSwordBody_nJolt;
     _float4x4*                  m_pMatGSwordTip = { nullptr };  // 칼 끝 로컬행렬
     _float4x4			        m_matWorldGSwordTip;                 // 칼 끝 월드행렬
 
@@ -232,9 +233,12 @@ private:
     _vector Decompose_Rotation(_matrix W, _vector localRot = { 0.f, 0.f, 0.f, 0.f },_vector offset = { 0.f, 0.f, 0.f, 1.f });
 
     // Screen Effect
-    void Spawn_EmissiveDecal();
+    void Spawn_EmissiveDecal(_bool isUseOffset);
     void Spawn_CrackDecal();
     void Spawn_CircleBloodDecal();
+    void Start_DefaultVignette();
+    void Start_DefaultRadialBlur();
+    void Start_LongRadialBlur();
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

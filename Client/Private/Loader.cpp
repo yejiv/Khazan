@@ -338,9 +338,9 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust6"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust7"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust7"))))
-        return E_FAIL;
+    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust7"),
+    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust7"))))
+    //    return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust8"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust8"))))
@@ -370,9 +370,9 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/bloodhit"))))
         return E_FAIL;
     
-    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpiralSpear_SpearFX"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Bloodhand_Big"))))
-        return E_FAIL;
+    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpiralSpear_SpearFX"),
+    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Bloodhand_Big"))))
+    //    return E_FAIL;
     
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Stamp"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/stamp"))))
@@ -480,6 +480,10 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
 
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("GS_StrongATK"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GS_StrongATK"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Ghost_Dark_Shadow_Land"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Ghost_Dark_Shadow/Ghost_Dark_Shadow_Land"))))
         return E_FAIL;
     return S_OK;
 }
