@@ -425,7 +425,7 @@ void CLever::Animation_Change(_float fTimeDelta)
 
 void CLever::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     if (ANIM_STATE::IDLE1 == m_eAnimState || ANIM_STATE::IDLE2 == m_eAnimState)
@@ -441,7 +441,7 @@ void CLever::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _f
 
 void CLever::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     m_isCollision = true;
@@ -449,7 +449,7 @@ void CLever::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _fl
 
 void CLever::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     m_pGuide->Update_Visible(false);

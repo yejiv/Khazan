@@ -465,7 +465,7 @@ void CLadder::Event_Update(_float fTimeDelta)
 
 void CLadder::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     m_eLadderPoint = *static_cast<LADDER_POINT*>(pMyDesc->pInfo);
@@ -478,7 +478,7 @@ void CLadder::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
 
 void CLadder::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     m_isCollision = true;
@@ -486,7 +486,7 @@ void CLadder::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _fl
 
 void CLadder::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, COLLISION_DESC * pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     m_pGuide->Update_Visible(false);

@@ -424,7 +424,7 @@ HRESULT CUnLockGear::Bind_Materials(_uint iMeshIndex)
 
 void CUnLockGear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     if (m_EventGimmick.isUnLockGearAvailable(m_iEventID) || EVENT_TYPE::EMBARS_GIMMICK2 == m_eGimmickType)
@@ -443,7 +443,7 @@ void CUnLockGear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer
 
 void CUnLockGear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     if (m_EventGimmick.isUnLockGearAvailable(m_iEventID) || EVENT_TYPE::EMBARS_GIMMICK2 == m_eGimmickType)
@@ -454,7 +454,7 @@ void CUnLockGear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer,
 
 void CUnLockGear::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     m_pGuide->Update_Visible(false);

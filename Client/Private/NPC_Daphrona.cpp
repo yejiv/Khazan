@@ -350,7 +350,7 @@ void CNPC_Daphrona::Animation_Change(_float fTimeDelta)
 
 void CNPC_Daphrona::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     if (ANIM_STATE::IDLE == m_eAnimState)
@@ -361,7 +361,7 @@ void CNPC_Daphrona::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
 void CNPC_Daphrona::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     m_isCollision = true;
@@ -369,7 +369,7 @@ void CNPC_Daphrona::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLaye
 
 void CNPC_Daphrona::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
