@@ -35,6 +35,7 @@ namespace Client
         MAP_CHUNK, 
         TEST,
         CONTROLLER,
+        INTERACT_OBJECT,
         END };
 
 	enum class KHAZAN_MAP { HEINMACH, CREVICE, EMBARS, VIPER, END };

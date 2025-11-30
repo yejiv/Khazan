@@ -130,6 +130,10 @@ HRESULT CLevel_Viper::Ready_Layer_Player(const _wstring& strLayerTag)
 		ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
 		return E_FAIL;
 
+    //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
+    //    ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+    //    return E_FAIL;
+
 	return S_OK;
 }
 

@@ -489,6 +489,12 @@ void CEffect_Prefab::Load(const char* filename)
     is.close();
 }
 
+void CEffect_Prefab::Stop()
+{
+    for (auto child : m_Children)
+        child->SetStop();
+}
+
 CEffect_Prefab* CEffect_Prefab::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
     CEffect_Prefab* pInstance = new CEffect_Prefab(pDevice, pDeviceContext);

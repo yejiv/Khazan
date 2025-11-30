@@ -37,6 +37,14 @@ sampler PointClampSampler = sampler_state
     AddressV = clamp;
 };
 
+sampler BorderSampler = sampler_state
+{
+    filter = min_mag_mip_linear;
+    AddressU = border;
+    AddressV = border;
+    BorderColor = float4(0.f, 0.f, 0.f, 0.f);
+};
+
 sampler SkySampler = sampler_state
 {
     filter = min_mag_mip_linear;

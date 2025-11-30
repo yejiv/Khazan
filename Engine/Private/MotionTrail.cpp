@@ -366,6 +366,19 @@ HRESULT CMotionTrail::Ready_CachedConfig()
     }
     {
         config.vLifeTime = { 0.f, 0.3f };
+        config.vStartColor = { 0.5f, 0.f, 0.f };
+        config.vTargetColor = { 0.5f, 0.5f, 0.5f };
+        config.fRimPower = 2.f;
+        config.fRimIntensity = 1.f;
+        config.fEmissiveIntensity = 2.f;
+        config.isIndividualColor = true;
+        config.fColorUpdateSpeed = 2000.f;
+        config.fInterval = 0.05f;
+        config.iMaxFrames = 10.f;
+        m_CachedConfig.emplace(TEXT("MT_Int05_RedGray"), config);
+    }
+    {
+        config.vLifeTime = { 0.f, 0.3f };
         config.vStartColor = { 1.f, 1.f, 0.f };
         config.vTargetColor = { 1.f, 1.f, 0.f };
         config.fRimPower = 2.f;

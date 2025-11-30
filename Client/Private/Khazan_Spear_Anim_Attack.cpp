@@ -170,12 +170,15 @@ void CKhazan_Spear_Anim_Attack::Continue(_float fTimeDelta)
 
     if (m_isSkilling)
     {
-        if (m_iCurSkillIndex == m_pModel->Get_CurAnimIndex() && isFinish || isMinTime)
+       
+        if (  m_pModel->IsAnimationStart(m_iSelectedAnimationIndex) &&isMinTime)
         {
             m_pClientInstance->Set_UsedSkill(m_iCurSkillIndex, false);
 
             m_iCurSkillIndex = 0;
             m_isSkilling = false;
+            cout << "m_isSkilling - finish " << m_iSelectedAnimationIndex <<", "<< *m_pModel->Get_CurTrackPosition() << endl;
+
         }
     }
     if (m_isAttacking)
@@ -348,6 +351,7 @@ _bool CKhazan_Spear_Anim_Attack::Try_SkillAttack(_uint iSkill)
     m_pPlayerData->fCulDoggedness -= 1.f;
     m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 35.f;
 
+    cout << "Try_SkillAttack " << endl;
     return true;
 }
 
@@ -523,6 +527,9 @@ void CKhazan_Spear_Anim_Attack::Clear_Skill()
     m_iCurSkillIndex = 0;
     m_iReserveSkillIndex = 0;
     m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage;
+
+    cout << "Clear_Skill " << endl;
+
 }
 
 void CKhazan_Spear_Anim_Attack::Clear_Attack()
@@ -556,6 +563,8 @@ void CKhazan_Spear_Anim_Attack::Clear_All()
     m_iCurrentCombo = 0;
     m_fComboTime = 0.f;
     m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage;
+
+    cout << "Clear_All " << endl;
 }
 
 

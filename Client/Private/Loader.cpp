@@ -76,6 +76,10 @@
 #include "UI_Logo.h"
 #pragma endregion
 
+#pragma region ITEM
+#include "Interaction_Item.h"
+#pragma endregion
+
 #include "Effect_Prefab.h"
 //static mutex g_GpuGate;
 
@@ -334,9 +338,9 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust6"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust7"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust7"))))
-        return E_FAIL;
+    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust7"),
+    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust7"))))
+    //    return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust8"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Blust8"))))
@@ -366,9 +370,9 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/bloodhit"))))
         return E_FAIL;
     
-    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpiralSpear_SpearFX"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Bloodhand_Big"))))
-        return E_FAIL;
+    //if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("SpiralSpear_SpearFX"),
+    //    CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Bloodhand_Big"))))
+    //    return E_FAIL;
     
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Stamp"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/stamp"))))
@@ -394,6 +398,9 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight_static_connect"))))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("ITEM_FX"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item"))))
+        return E_FAIL;
 
     // [GS]
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("FerociousMomentum0"),
@@ -473,6 +480,10 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
 
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("GS_StrongATK"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GS_StrongATK"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Ghost_Dark_Shadow_Land"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Ghost_Dark_Shadow/Ghost_Dark_Shadow_Land"))))
         return E_FAIL;
     return S_OK;
 }
@@ -1044,6 +1055,12 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
 #pragma region Shader
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Decal"),
         CDecal::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+#pragma endregion
+
+#pragma region Item
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"),
+        CInteraction_Item::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 #pragma endregion
 
