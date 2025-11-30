@@ -96,7 +96,7 @@ void CBody_Khazan_Spear::Priority_Update(_float fTimeDelta)
 
 void CBody_Khazan_Spear::Update(_float fTimeDelta)
 {
-    m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDelta);
+    m_isFinishedAnimation = m_pModelCom->Play_Animation(m_isNotifyAttacking ? fTimeDelta * 1.2f : fTimeDelta);
 
     Update_CombinedMatrix();
     Update_Collider(fTimeDelta);
@@ -607,6 +607,11 @@ _bool CBody_Khazan_Spear::isEnableMotionTrail()
 void CBody_Khazan_Spear::Start_MotionTrail(_float fDuration)
 {
     m_pMotionTrailCom->Start_MotionTrail(fDuration);
+}
+
+void CBody_Khazan_Spear::AllAttackCollisionActive_Off()
+{
+    m_isNotifyAttacking = false;
 }
 
 void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
@@ -1649,6 +1654,7 @@ void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
     /* 공격 맞아서 중간에 끊길 경우는? */
     if (isAttackStart)
     {
+        m_isNotifyAttacking = true;
         m_isSpearTipActive = true;
         m_isSpearFullExtension = false;
         m_iCurSetAnimIndex = m_pModelCom->Get_CurAnimIndex();
@@ -1657,6 +1663,7 @@ void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
     }
     else
     {
+        m_isNotifyAttacking = false;
         m_isSpearTipActive = false;
         m_isSpearFullExtension = true;
         //m_pBodyCom_SpearTip1->Collision_Active(false);

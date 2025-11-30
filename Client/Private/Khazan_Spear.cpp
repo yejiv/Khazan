@@ -377,16 +377,32 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     switch (eHitreaction)
     {
     case Client::HITREACTION::NONE:
-
+        cout << "@@@@@@     HITREACTION::NONE  @@@@@@" << endl;
         break;
-    //case Client::HITREACTION::GROGGY:
+    case Client::HITREACTION::PARRY:
+        cout << "@@@@@@     HITREACTION::PARRY   @@@@@@" << endl;
+        break;
+    case Client::HITREACTION::GROGGY:
+        cout << "@@@@@@     HITREACTION::GROGGY   @@@@@@" << endl;
+        break;
+    case Client::HITREACTION::GRAB_FINISHED:
+        cout << "@@@@@@     HITREACTION::GRAB_FINISHED   @@@@@@" << endl;
 
-    //    break;
+        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F");
+        //m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+        break;
+    case Client::HITREACTION::BRUTAL_ATTACK:
+        cout << "@@@@@@     HITREACTION::BRUTAL_ATTACK   @@@@@@" << endl;
+        break;
 	case Client::HITREACTION::GRAB:
-		cout << " GRAB !!! " << endl;
+        cout << "@@@@@@     HITREACTION::GRAB   @@@@@@" << endl;
+
 		m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
+        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+        Add_Status(YETUGA_GRAB);
 		break;
     case Client::HITREACTION::KNOCKBACK_WEAK:
+        cout << "@@@@@@     HITREACTION::KNOCKBACK_WEAK   @@@@@@" << endl;
         if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
         if (Has_State(CAT::M_SKILL))  m_pAnimAttack->Exit();
         if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
@@ -398,18 +414,17 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | SPRINT_AGAIN_REQUEST | READY_ASSAULT);
         m_eDir.iDirFlag = 0;
        // m_eWorldDir.iDirFlag = 0;
-        cout << "        KNOCKBACK_WEAK    " << endl;
 
         Add_State(CAT::M_DAMAGED);
         m_pAnimDamaged->Force_DamagedNormal(Has_Status(SPEAR), m_eHitNormalDir.iDirFlag);
         break;
     case Client::HITREACTION::KNOCKBACK_NORMAL:
+        cout << "@@@@@@     HITREACTION::KNOCKBACK_NORMAL   @@@@@@" << endl;
+
         if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
         if (Has_State(CAT::M_SKILL))  m_pAnimAttack->Exit();
         if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
         if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
-        cout << "       KNOCKBACK_NORMAL     " << endl;
-
         Clear_CycleState();
         Clear_SubState();
         Clear_State();
@@ -421,11 +436,12 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         m_pAnimDamaged->Force_DamagedNormal(Has_Status(SPEAR), m_eHitNormalDir.iDirFlag);
         break;
     case Client::HITREACTION::KNOCKBACK_STRONG:
+        cout << "@@@@@@     HITREACTION::KNOCKBACK_STRONG   @@@@@@" << endl;
+
         if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
         if (Has_State(CAT::M_SKILL))  m_pAnimAttack->Exit();
         if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
         if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
-        cout << "        KNOCKBACK_STRONG       " << endl;
 
         Clear_CycleState();
         Clear_SubState();
@@ -437,11 +453,6 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         Add_State(CAT::M_DAMAGED);
         m_pAnimDamaged->Force_DamagedStrong(Has_Status(SPEAR), m_eHitStrongDir.iDirFlag);
         break;
-    case Client::HITREACTION::PARRY:
-
-        break;
-
-
     }
 
 }
@@ -459,6 +470,26 @@ void CKhazan_Spear::Set_Position(_float4 vPos)
 
 void CKhazan_Spear::Update_Stats(_float fTimeDelta)
 {
+    /*  스태미나 다 떨어짐 */
+    if (m_pPlayerData->fCulStamina < 0.1f)
+    {
+        m_pPlayerData->fCulStamina = 0.f;
+        if (!Has_Status(STAMINA_EXHAUSTION)) {
+            Add_Status(STAMINA_EXHAUSTION);
+            m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_StaminaExhaustion"));
+            m_pClientInstance->Set_PlayerInput(false);     //입력 막기 
+        }
+
+        if (Has_Status(STAMINA_EXHAUSTION) && m_pBody->Get_Model()->IsFinished())
+        {
+            Remove_Status(STAMINA_EXHAUSTION);
+            m_pPlayerData->fCulStamina += 5.f;      //스태미나 약간 회복 
+            m_pClientInstance->Set_PlayerInput(true);       //입력 풀기
+        }
+
+        return;
+    }
+
     /* idle, run, walk, 현재 스태미나가 닳아 있는 상태일 때*/
     if (!Has_States() || (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_RUN | MOV::MOVE_WALK)) && m_pPlayerData->fCulStamina < m_pPlayerData->fMaxStamina)
     {
@@ -498,6 +529,10 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
     if (Has_State(CAT::M_DIE))
         return;
 
+    if (Has_Status(YETUGA_GRAB)) {
+        if (!ChangeGrabAnimation())
+            return;
+    }
     /* 이전 상태 저장*/
     m_iPrevMainState = m_iCurMainState;
     m_iPrevSubState = m_iCurSubState;
@@ -1544,6 +1579,20 @@ void CKhazan_Spear::ExecuteAnimationExit()
     //if(m_iPrevMainState &   CAT::M_WEAPON_CHANGE    )
     //if(m_iPrevMainState &   CAT::M_IDLE             )
     //if(m_iPrevMainState &   CAT::M_END              )
+
+}
+
+_bool CKhazan_Spear::ChangeGrabAnimation()
+{
+    if (m_pBody->Get_Model()->Check_MinAnimationTime())
+    {
+        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F");
+        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+        Remove_Status(YETUGA_GRAB);
+        return true;
+    }
+
+    return false; 
 
 }
 

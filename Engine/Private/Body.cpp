@@ -174,6 +174,11 @@ void CBody::Set_PosRot(_vector vPos, _vector vRot)
     m_pBodyInterface->SetPositionAndRotation(m_BodyID, LoadVec3(vPos), LoadQuat(vRot), EActivation::Activate);
 }
 
+void CBody::Set_Pos(_vector vPos)
+{
+    m_pBodyInterface->SetPosition(m_BodyID, LoadVec3(vPos), EActivation::Activate);
+}
+
 _vector CBody::Get_Pos()
 {
     Vec3 vPostion = m_pBodyInterface->GetPosition(m_BodyID);

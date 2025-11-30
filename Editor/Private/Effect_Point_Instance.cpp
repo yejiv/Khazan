@@ -59,14 +59,17 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
     if (m_sData.bIsTurbulence)
         m_pVIBufferCom->UpdateTurbulence(fTimeDelta, m_fAccTime);
 
-    if (m_fSpriteTime * 100.f > m_sData.fSpriteSpeed )
+    if (m_sData.fSpriteSpeed && m_fSpriteTime * 100.f > m_sData.fSpriteSpeed )
     {
         ++m_iUVIdx;
         m_fSpriteTime = 0.f;
+        if (m_iUVIdx == (m_sData.iCol * m_sData.iRow))
+        {
+            m_iUVIdx = 0;
+            if (!m_pVIBufferCom->isLoop())
+                m_bRunning = false;
+        }
     }
-
-    if (m_iUVIdx == (m_sData.iCol * m_sData.iRow))
-        m_iUVIdx = 0;
 
     __super::Update(fTimeDelta);
 
@@ -341,6 +344,9 @@ HRESULT CEffect_Point_Instance::Bind_ShaderResources()
         return E_FAIL;
 
     if (FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DisolveTexture", m_sData.sDissolveData.iDissolveTextureIdx)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShaderCom, "g_DepthTexture")))
         return E_FAIL;
 
     return S_OK;

@@ -51,6 +51,8 @@ public:
         BRUTAL_READY = 1 << 21, //브루탈공격 가능 범위 내에 옴
         BRUTAL_SUCCESS = 1 << 22,  //브루탈공격 함. 
 
+        STAMINA_EXHAUSTION = 1 << 23, 
+        YETUGA_GRAB = 1 << 24,
 
         /* 회전 */
         //TURN180 = 1 << 20,
@@ -63,7 +65,7 @@ public:
         STATUS_CLEARS = RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | SPRINT_AGAIN_REQUEST | READY_ASSAULT
         | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST
         | FALLING | FALLING_ATTACK | PRE_LAND
-
+        | STAMINA_EXHAUSTION | YETUGA_GRAB
         /*| TURN180| TURN180_REQUESTED | TURN180_COMPLETE| MOVE_AFTER_TURN*/,
 
 	};
@@ -225,6 +227,7 @@ private:
     /* Animation  */
 	void			Change_MoveIdle(_float fTimeDelta);
 	void			ExecuteAnimationExit();
+    _bool           ChangeGrabAnimation();
 
     /* Rotation, Direction */
 	void			Apply_PlayerMovement(_float fTimeDelta);

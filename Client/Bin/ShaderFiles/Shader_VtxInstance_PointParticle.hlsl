@@ -241,11 +241,10 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
         discard;
     
     vector vMask = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vFinalColor = g_vSourceColor;
+    vFinalColor.a *= vMask.r;
     
-    vector vSourColor = float4(g_vSourceColor.xyz, 1.f);
-    vector vFinalColor = vSourColor * vMask;
-    
-    vFinalColor.a = max(max(vMask.r, vMask.g), vMask.b);
+    //vFinalColor.a = max(max(vMask.r, vMask.g), vMask.b);
     
     if (vFinalColor.a <= 0)
         discard;
@@ -265,7 +264,7 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     if (vFinalColor.a <= 0)
         discard;
 
-    vFinalColor.xyz *= (g_vSourceColor.a + 1.5);
+    //vFinalColor.xyz *= (g_vSourceColor.a + 1.5);
     
     /* Soft Effect */
     //float2 vTexcoord;

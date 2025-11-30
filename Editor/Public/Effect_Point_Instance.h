@@ -58,7 +58,7 @@ private:
 	HRESULT							Ready_Component() override;
 	HRESULT							Bind_ShaderResources() override;
 	virtual void					Apply(void* pArg) override;
-
+     
 private:
 	CTexture*						m_pTextureCom = { nullptr };
 	CTexture*						m_pSpriteTextureCom = { nullptr };

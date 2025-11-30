@@ -140,6 +140,7 @@ private:
      /* 뼈 위치 */
     _float4x4*                  m_pMatGSwordBody = { nullptr }; // 칼 중앙 로컬행렬
     _float4x4			        m_matWorldGSwordBody;                // 칼 중앙 월드행렬
+    _float4x4                   m_matWorldGSwordBody_nJolt;
     _float4x4*                  m_pMatGSwordTip = { nullptr };  // 칼 끝 로컬행렬
     _float4x4			        m_matWorldGSwordTip;                 // 칼 끝 월드행렬
 

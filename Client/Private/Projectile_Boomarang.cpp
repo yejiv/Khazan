@@ -107,6 +107,7 @@ void CProjectile_Boomarang::Late_Update(_float fTimeDelta)
 
     if(m_isVisible)
         m_fEffect->Late_Update(fTimeDelta);
+
 }
 
 HRESULT CProjectile_Boomarang::Render()
