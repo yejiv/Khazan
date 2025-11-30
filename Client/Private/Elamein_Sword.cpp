@@ -1,24 +1,24 @@
-#include "Elamain_Sword.h"
+#include "Elamein_Sword.h"
 #include "GameInstance.h"
 #include "AI_Controller.h"
 
-CElamain_Sword::CElamain_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CElamein_Sword::CElamein_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CPartObject{ pDevice,pContext }
 {
 }
 
-CElamain_Sword::CElamain_Sword(const CElamain_Sword& Prototype)
+CElamein_Sword::CElamein_Sword(const CElamein_Sword& Prototype)
     :CPartObject(Prototype)
 {
 }
 
-HRESULT CElamain_Sword::Initialize_Prototype(_int iLevel)
+HRESULT CElamein_Sword::Initialize_Prototype(_int iLevel)
 {
     m_iPrototypeIndex = iLevel;
     return S_OK;
 }
 
-HRESULT CElamain_Sword::Initialize_Clone(void* pArg)
+HRESULT CElamein_Sword::Initialize_Clone(void* pArg)
 {
     WEAPON_DESC* pDesc = static_cast<WEAPON_DESC*>(pArg);
     m_pData = pDesc->pData;
@@ -37,11 +37,11 @@ HRESULT CElamain_Sword::Initialize_Clone(void* pArg)
     return S_OK;
 }
 
-void CElamain_Sword::Priority_Update(_float fTimeDelta)
+void CElamein_Sword::Priority_Update(_float fTimeDelta)
 {
 }
 
-void CElamain_Sword::Update(_float fTimeDelta)
+void CElamein_Sword::Update(_float fTimeDelta)
 {
     m_pTransformCom->Rotation(XMConvertToRadians(90.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
 
@@ -51,7 +51,7 @@ void CElamain_Sword::Update(_float fTimeDelta)
         BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
     XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
-    _bool isAttakc = m_pData->iAttackBody_State & (_uint)CElamain::ATTACK_BODY::HAND_L;
+    _bool isAttakc = m_pData->iAttackBody_State & (_uint)CElamein::ATTACK_BODY::SWORD;
     m_pBodyComp->Collision_Active(isAttakc);
 
     if (!isAttakc)
@@ -67,12 +67,12 @@ void CElamain_Sword::Update(_float fTimeDelta)
 
 }
 
-void CElamain_Sword::Late_Update(_float fTimeDelta)
+void CElamein_Sword::Late_Update(_float fTimeDelta)
 {
     CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this),);
 }
 
-HRESULT CElamain_Sword::Render()
+HRESULT CElamein_Sword::Render()
 {
     CHECK_FAILED(Bind_ShaderResources(), E_FAIL);
 
@@ -89,7 +89,7 @@ HRESULT CElamain_Sword::Render()
     return S_OK;
 }
 
-void CElamain_Sword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
+void CElamein_Sword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
     if (COLLISION_LAYER::PLAYER == eLayer)
@@ -98,15 +98,15 @@ void CElamain_Sword::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
     }
 }
 
-void CElamain_Sword::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
+void CElamein_Sword::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 }
 
-void CElamain_Sword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
+void CElamein_Sword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 }
 
-HRESULT CElamain_Sword::Ready_Components()
+HRESULT CElamein_Sword::Ready_Components()
 {
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom, nullptr), E_FAIL);
     CHECK_FAILED(CGameObject::Add_Component(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_Elamein_Sword"), TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr), E_FAIL);
@@ -116,7 +116,7 @@ HRESULT CElamain_Sword::Ready_Components()
     return S_OK;
 }
 
-HRESULT CElamain_Sword::Ready_Collision()
+HRESULT CElamein_Sword::Ready_Collision()
 {
     m_tCollisionDesc.pGameObject = this;
 
@@ -141,7 +141,7 @@ HRESULT CElamain_Sword::Ready_Collision()
     return S_OK;
 }
 
-HRESULT CElamain_Sword::Bind_ShaderResources()
+HRESULT CElamein_Sword::Bind_ShaderResources()
 {
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix), E_FAIL);
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
@@ -150,30 +150,30 @@ HRESULT CElamain_Sword::Bind_ShaderResources()
     return S_OK;
 }
 
-CElamain_Sword* CElamain_Sword::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
+CElamein_Sword* CElamein_Sword::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
 {
-    CElamain_Sword* pInstance = new CElamain_Sword(pDevice, pContext);
+    CElamein_Sword* pInstance = new CElamein_Sword(pDevice, pContext);
     if (FAILED(pInstance->Initialize_Prototype(iLevel)))
     {
         Safe_Release(pInstance);
-        MSG_BOX(TEXT("Failed Create : CElamain_Sword"));
+        MSG_BOX(TEXT("Failed Create : CElamein_Sword"));
     }
     return pInstance;
 }
 
-CGameObject* CElamain_Sword::Clone(void* pArg)
+CGameObject* CElamein_Sword::Clone(void* pArg)
 {
-    CElamain_Sword* pInstance = new CElamain_Sword(*this);
+    CElamein_Sword* pInstance = new CElamein_Sword(*this);
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
         Safe_Release(pInstance);
-        MSG_BOX(TEXT("Failed Clone : CElamain_Sword"));
+        MSG_BOX(TEXT("Failed Clone : CElamein_Sword"));
     }
 
     return pInstance;
 }
 
-void CElamain_Sword::Free()
+void CElamein_Sword::Free()
 {
     __super::Free();
 

@@ -54,22 +54,23 @@ public:
 
         EARLY_DODGING = 1 << 24,  
 
-        INTERACTION_STATUE = 1 << 25, //상호작용 조각상
-        INTERACT_LOCKED_STATE = 1 << 26, //상호작용 도중에 상태 막기  (조각상 돌리기,  )
+        INTERACTION_STATUE = 1 << 25, //상호작용 조각상 (공격,가드,스킬키 입력 안받음)
+        STAMINA_EXHAUSTION  = 1 << 26, 
 
+        VIPER_GRAB = 1 << 27,
         /* 회전 */
         //TURN180 = 1 << 20,
         //TURN180_REQUESTED = 1 << 21, 
         //TURN180_COMPLETE = 1 << 22,
         //MOVE_AFTER_TURN = 1 << 23,
         //JUST_COMPLETED_TURN180 = 1 << 24,
-
+        
 
         STATUS_CLEARS = RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_FAST_ATTACK | SPRINT_AGAIN_REQUEST | LOCKON | CHARGING_STRONG_ATTACK
         | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST
         | FALLING | FALLING_ATTACK | PRE_LAND  | DODGING | EARLY_DODGING
         | BRUTAL_BEGIN | BRUTAL_READY | BRUTAL_SUCCESS
-        | INTERACTION_STATUE | INTERACT_LOCKED_STATE
+        | INTERACTION_STATUE | STAMINA_EXHAUSTION | VIPER_GRAB
 
         /*| TURN180| TURN180_REQUESTED | TURN180_COMPLETE| MOVE_AFTER_TURN*/,
 
@@ -223,6 +224,7 @@ private:
     /* Animation  */
     void			Change_MoveIdle(_float fTimeDelta);
     void			ExecuteAnimationExit();
+    _bool           ChangeGrabAnimation();
 
     /* Rotation, Direction */
     void			Apply_PlayerMovement(_float fTimeDelta);
@@ -320,6 +322,7 @@ private:
     void						UnLockGear_Event(_float fTimeDelta);  // ?? CA_P_Kazan_GearSwitch_001_Interation 이거 쓰면될 듯
     void						GiantGate_Event(_float fTimeDelta);  //거대한 철문 
     void						NPC_Event(_float fTimeDelta);
+    void						Ladder_Event(_float fTimeDelta);
 
 private:
     void                        Lerp_Position_ByInteractEvent(_float4 vTargetPos, _float4 vStartPos, _float fDuration, _float fTimeDelta, _bool& isDone);

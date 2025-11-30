@@ -1,59 +1,59 @@
-#include "Elamain.h"
+#include "Elamein.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
 
 #include "CharacterVirtual.h"
 
-#include "Body_Elamain.h"
-#include "Elamain_Sword.h"
-#include "Elamain_Shield.h"
+#include "Body_Elamein.h"
+#include "Elamein_Sword.h"
+#include "Elamein_Shield.h"
 
-#include "AI_Controller_Elamain.h"
+#include "AI_Controller_Elamein.h"
 
 #include "Mon_Hp.h"
 
-CElamain::CElamain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CElamein::CElamein(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
 {
 }
 
-CElamain::CElamain(const CElamain& Prototype)
+CElamein::CElamein(const CElamein& Prototype)
     :CMonster(Prototype)
 {
 }
 
-void CElamain::LockOnLerp(_float fTimeDetla)
+void CElamein::LockOnLerp(_float fTimeDetla)
 {
-    m_pTransformCom->LookAt_Lerp(m_pTarget->Get_Position(), fTimeDetla, 1.5f);
+    m_pTransformCom->LookAt_Lerp(m_pTarget->Get_Position(), fTimeDetla, 1.3f);
 }
 
-CElamain::MONDATA& CElamain::Get_Data()
+CElamein::MONDATA& CElamein::Get_Data()
 {
     return m_Data;
 }
 
-void CElamain::Move_F()
+void CElamein::Move_F()
 {
     m_pTarget->Get_Position();
     m_pTransformCom->LookAt(m_pTarget->Get_Position());
 
-    _float fWorkSpeed = m_Data.isSlowWalk ? 3.5f : 4.1f;
+    _float fWorkSpeed =4.1f;
 
     m_pTransformCom->AI_Chase(m_pTarget->Get_Position(), m_fTimeDelta, fWorkSpeed);
 }
 
-void CElamain::Hp_Visivle(_bool isVisivle)
+void CElamein::Hp_Visivle(_bool isVisivle)
 {
     m_pUI_HP->Update_Visible(isVisivle);
 }
 
-void CElamain::Hp_Dead()
+void CElamein::Hp_Dead()
 {
     m_pUI_HP->Set_IsDead(true);
     Safe_Release(m_pUI_HP);
 }
 
-_bool CElamain::Check_Ranage(string strKey)
+_bool CElamein::Check_Ranage(string strKey)
 {
     _float fDist = XMVectorGetX(XMVector3Length(m_pTarget->Get_Transform()->Get_State(STATE::POSITION) - m_pTransformCom->Get_State(STATE::POSITION)));
     _float fAttackRanage = m_pBlackBoard->Get_Value<_float>(m_strName, strKey);
@@ -67,7 +67,7 @@ _bool CElamain::Check_Ranage(string strKey)
         return false;
 }
 
-_bool CElamain::Check_Ranage(_float fRange)
+_bool CElamein::Check_Ranage(_float fRange)
 {
     _float fDist = XMVectorGetX(XMVector3Length(m_pTarget->Get_Transform()->Get_State(STATE::POSITION) - m_pTransformCom->Get_State(STATE::POSITION)));
 
@@ -80,12 +80,24 @@ _bool CElamain::Check_Ranage(_float fRange)
         return false;
 }
 
-TARGET_DIR CElamain::Get_DIR()
+TARGET_DIR CElamein::Get_DIR()
 {
     return Check_Dir(m_pTransformCom->Get_WorldMatrix(), m_pTarget->Get_Transform()->Get_State(STATE::POSITION));
 }
 
-HRESULT CElamain::Initialize_Prototype(_int iLevel)
+void CElamein::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
+{
+    if (m_Data.fDodgeCool <= 0.f)
+    {
+        m_pController->AI_ApplyDamage(pGameObject, fDamage, ENUM_CLASS(eHitreaction), 3.f);
+    }
+    else
+    {
+        __super::Take_Damage(fDamage, eHitreaction, pGameObject);
+    }
+}
+
+HRESULT CElamein::Initialize_Prototype(_int iLevel)
 {
     m_iPrototypeIndex = iLevel;
 
@@ -94,7 +106,7 @@ HRESULT CElamain::Initialize_Prototype(_int iLevel)
     return S_OK;
 }
 
-HRESULT CElamain::Initialize_Clone(void* pArg)
+HRESULT CElamein::Initialize_Clone(void* pArg)
 {
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
@@ -104,7 +116,7 @@ HRESULT CElamain::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_PartObjects(), E_FAIL);
     m_pHeadMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Head");
     m_pBodySocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Spine2");
-    m_pTailSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Head");
+    m_pLeftLegSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Head");
     m_pLockOnSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Spine2");
     m_vLockOnPosition = &m_vLockOnPos;
 
@@ -115,15 +127,8 @@ HRESULT CElamain::Initialize_Clone(void* pArg)
     return S_OK;
 }
 
-void CElamain::Priority_Update(_float fTimeDelta)
+void CElamein::Priority_Update(_float fTimeDelta)
 {
-    //m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
-
-    if (!m_Data.isPageChange && *m_Data.pCulHp <= *m_Data.pMaxHp * 0.4f)
-    {
-        m_Data.isPageChange = true;
-        m_Data.isLockOn = true;
-    }
     CContainerObject::Priority_Update(fTimeDelta);
 
     if (m_pGameInstance->Key_Down(DIK_M))
@@ -169,12 +174,18 @@ void CElamain::Priority_Update(_float fTimeDelta)
     }
 }
 
-void CElamain::Update(_float fTimeDelta)
+void CElamein::Update(_float fTimeDelta)
 {
     m_fTimeDelta = fTimeDelta;
 
-    if (m_Data.fAttackCool >= 0.f)
+    if (m_Data.fAttackCool > 0.f)
         m_Data.fAttackCool -= fTimeDelta;
+
+    if (m_Data.fGuardCool > 0.f)
+        m_Data.fGuardCool -= fTimeDelta;
+
+    if (m_Data.fSpecial_AttackCool > 0.f)
+        m_Data.fSpecial_AttackCool -= fTimeDelta;
 
     m_pController->Update(this, fTimeDelta);
     __super::Update(fTimeDelta);
@@ -187,12 +198,12 @@ void CElamain::Update(_float fTimeDelta)
     m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
 }
 
-void CElamain::Late_Update(_float fTimeDelta)
+void CElamein::Late_Update(_float fTimeDelta)
 {
     CContainerObject::Late_Update(fTimeDelta);
 }
 
-void CElamain::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
+void CElamein::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
 
@@ -200,17 +211,17 @@ void CElamain::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _
         m_Data.isWallCrushed = true;
 }
 
-void CElamain::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
+void CElamein::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-void CElamain::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
+void CElamein::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
 
 }
 
-HRESULT CElamain::Ready_Prototype()
+HRESULT CElamein::Ready_Prototype()
 {
     CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_Component_Model_Elamein"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Elamein/Elamein/Elamein.dat")), E_FAIL);
@@ -222,26 +233,26 @@ HRESULT CElamain::Ready_Prototype()
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Elamein/Elamein_Shield/Elamein_Shield.dat")), E_FAIL);
 
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Elamain_Body"),
-        CBody_Elamain::Create(m_pDevice, m_pContext, m_iPrototypeIndex)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Elamein_Body"),
+        CBody_Elamein::Create(m_pDevice, m_pContext, m_iPrototypeIndex)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Elamain_Shield"),
-        CElamain_Shield::Create(m_pDevice, m_pContext, m_iPrototypeIndex)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Elamein_Shield"),
+        CElamein_Shield::Create(m_pDevice, m_pContext, m_iPrototypeIndex)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Elamain_Sword"),
-        CElamain_Sword::Create(m_pDevice, m_pContext, m_iPrototypeIndex)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Elamein_Sword"),
+        CElamein_Sword::Create(m_pDevice, m_pContext, m_iPrototypeIndex)), E_FAIL);
 
     return S_OK;
 }
 
-HRESULT CElamain::Ready_ETC()
+HRESULT CElamein::Ready_ETC()
 {
     m_pUI_HP = static_cast<CMon_HP*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP")));
     CHECK_NULLPTR(m_pUI_HP, E_FAIL);
     m_pUI_HP->Setting_HP(&m_vHpPos, { 0.f, 0.f }, &m_fCurrentHP, &m_fMaxHP, &m_fCurrentStamina, &m_fMaxStamina);
     m_pGameInstance->Push_PoolObject_ToLayer(m_iPrototypeIndex, TEXT("Layer_UI"), m_pUI_HP);
 
-    m_pController = CAI_Controller_Elamain::Create(this);
+    m_pController = CAI_Controller_Elamein::Create(this);
     CHECK_NULLPTR(m_pController, E_FAIL);
 
     m_pBlackBoard = m_pController->Get_BlackBoard();
@@ -251,7 +262,7 @@ HRESULT CElamain::Ready_ETC()
     return S_OK;
 }
 
-HRESULT CElamain::Ready_Components()
+HRESULT CElamein::Ready_Components()
 {
     CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
     _float3 vPos{};
@@ -262,16 +273,17 @@ HRESULT CElamain::Ready_Components()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 1.75f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.75f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::CONTROLLER);
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
-
+    tCharVirDesc.fMass = 0.f;
+    tCharVirDesc.fMaxStrength = 10.f;
     m_tCollisionDesc.pGameObject = this;
     m_isGhost = true;
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    tCharVirDesc.fRadius = 1.6f;
+    tCharVirDesc.fRadius = 0.5f;
     tCharVirDesc.fHeight = 0.5f;
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
@@ -288,7 +300,7 @@ HRESULT CElamain::Ready_Components()
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
     BodyDesc.bIsTrigger = true;
 
-    _matrix TailMat = XMLoadFloat4x4(m_pTailSocketMatrix) * m_pTransformCom->Get_WorldMatrix();
+    _matrix TailMat = XMLoadFloat4x4(m_pLeftLegSocketMatrix) * m_pTransformCom->Get_WorldMatrix();
     for (uint32_t i = 0; i < 3; i++)
         TailMat.r[i] = XMVector3Normalize(TailMat.r[i]);
 
@@ -300,7 +312,7 @@ HRESULT CElamain::Ready_Components()
     BodyDesc.vShapeOffset = _float3(0.f, -0.f, 0.f);
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_TailBody"), (CComponent**)&m_pTaileCom, &BodyDesc);
+    CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_TailBody"), (CComponent**)&m_pLeftLegCom, &BodyDesc);
 
     BodyDesc.vExtent = { 2.2f, 1.f, 1.f };
     BodyDesc.eMotion = EMotionType::Kinematic;
@@ -326,52 +338,52 @@ HRESULT CElamain::Ready_Components()
     return S_OK;
 }
 
-HRESULT CElamain::Ready_PartObjects()
+HRESULT CElamein::Ready_PartObjects()
 {
-    CBody_Elamain::BODY_DESC BodyDesc{};
+    CBody_Elamein::BODY_DESC BodyDesc{};
     BodyDesc.pData = &m_Data;
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pOwnerTransform = m_pTransformCom;
-    CHECK_FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body"), m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Elamain_Body"), &BodyDesc), E_FAIL);
+    CHECK_FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body"), m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Elamein_Body"), &BodyDesc), E_FAIL);
 
-    m_pBody = dynamic_cast<CBody_Elamain*>(Find_PartObject(TEXT("Part_Body")));
+    m_pBody = dynamic_cast<CBody_Elamein*>(Find_PartObject(TEXT("Part_Body")));
     CHECK_NULLPTR(m_pBody, E_FAIL);
     Safe_AddRef(m_pBody);
 
-    CElamain_Shield::WEAPON_DESC WeaponLDesc{};
+    CElamein_Shield::WEAPON_DESC WeaponLDesc{};
     WeaponLDesc.pData = &m_Data;
     WeaponLDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     WeaponLDesc.pOwnerTransform = m_pTransformCom;
     WeaponLDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Weapon_L");
-    CHECK_FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon_L"), m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Elamain_Shield"), &WeaponLDesc), E_FAIL);
+    CHECK_FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon_L"), m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Elamein_Shield"), &WeaponLDesc), E_FAIL);
 
-    m_pShield = dynamic_cast<CElamain_Shield*>(Find_PartObject(TEXT("Part_Weapon_L")));
+    m_pShield = dynamic_cast<CElamein_Shield*>(Find_PartObject(TEXT("Part_Weapon_L")));
     CHECK_NULLPTR(m_pShield, E_FAIL);
     Safe_AddRef(m_pShield);
 
-    CElamain_Sword::WEAPON_DESC WeaponRDesc{};
+    CElamein_Sword::WEAPON_DESC WeaponRDesc{};
     WeaponRDesc.pData = &m_Data;
     WeaponRDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     WeaponRDesc.pOwnerTransform = m_pTransformCom;
     WeaponRDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Weapon_R");
 
-    CHECK_FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon_R"), m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Elamain_Sword"), &WeaponRDesc), E_FAIL);
+    CHECK_FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon_R"), m_iPrototypeIndex, TEXT("Prototype_PartObject_Monster_Elamein_Sword"), &WeaponRDesc), E_FAIL);
 
-    m_pSword = dynamic_cast<CElamain_Sword*>(Find_PartObject(TEXT("Part_Weapon_R")));
+    m_pSword = dynamic_cast<CElamein_Sword*>(Find_PartObject(TEXT("Part_Weapon_R")));
     CHECK_NULLPTR(m_pSword, E_FAIL);
     Safe_AddRef(m_pSword);
 
     return S_OK;
 }
 
-HRESULT CElamain::Ready_AnimEvent()
+HRESULT CElamein::Ready_AnimEvent()
 {
     CModel* pModel = m_pBody->Get_Model();
 
     return S_OK;
 }
 
-HRESULT CElamain::Ready_MonData()
+HRESULT CElamein::Ready_MonData()
 {
     m_Data.iAnimIndex = 101;
     m_Data.pOwner = this;
@@ -385,14 +397,14 @@ HRESULT CElamain::Ready_MonData()
     return S_OK;
 }
 
-void CElamain::Update_UIHp()
+void CElamein::Update_UIHp()
 {
     m_vHpPos = { m_pHeadMatrix->m[3][0], m_pHeadMatrix->m[3][1], m_pHeadMatrix->m[3][2], 1.f };
     XMStoreFloat4(&m_vHpPos, XMVector4Transform(XMLoadFloat4(&m_vHpPos), m_pTransformCom->Get_WorldMatrix()));
     m_vHpPos.y += 0.5f;
 }
 
-void CElamain::Update_Body(_float fTimeDelta)
+void CElamein::Update_Body(_float fTimeDelta)
 {
     _vector vMatScale{}, vMatQuat{}, vMatPos{};
     _matrix HitMat = XMLoadFloat4x4(m_pBodySocketMatrix);
@@ -405,46 +417,46 @@ void CElamain::Update_Body(_float fTimeDelta)
     m_pHitBodyCom->Update(fTimeDelta, HitMat, vMatQuat, vMatPos);
 
 
-    _bool isAttack = m_Data.iAttackBody_State & (_uint)CElamain::ATTACK_BODY::TAIL;
-    m_pTaileCom->Collision_Active(isAttack);
+    _bool isAttack = m_Data.iAttackBody_State & (_uint)CElamein::ATTACK_BODY::LEFT_LEG;
+    m_pLeftLegCom->Collision_Active(isAttack);
 
     if (!isAttack)
         return;
 
-    _matrix TailMat = XMLoadFloat4x4(m_pTailSocketMatrix);
+    _matrix TailMat = XMLoadFloat4x4(m_pLeftLegSocketMatrix);
     for (uint32_t i = 0; i < 3; i++)
         TailMat.r[i] = XMVector3Normalize(TailMat.r[i]);
     TailMat *= m_pTransformCom->Get_WorldMatrix();
 
     XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, TailMat);
-    m_pTaileCom->Sync_Update(TailMat);
-    m_pTaileCom->Update(fTimeDelta, TailMat, vMatQuat, vMatPos);
+    m_pLeftLegCom->Sync_Update(TailMat);
+    m_pLeftLegCom->Update(fTimeDelta, TailMat, vMatQuat, vMatPos);
 
 }
 
-CElamain* CElamain::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
+CElamein* CElamein::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
 {
-    CElamain* pInstance = new CElamain(pDevice, pContext);
+    CElamein* pInstance = new CElamein(pDevice, pContext);
     if (FAILED(pInstance->Initialize_Prototype(iLevel)))
     {
         Safe_Release(pInstance);
-        MSG_BOX(TEXT("Failed Create : CElamain"));
+        MSG_BOX(TEXT("Failed Create : CElamein"));
     }
     return pInstance;
 }
 
-CGameObject* CElamain::Clone(void* pArg)
+CGameObject* CElamein::Clone(void* pArg)
 {
-    CElamain* pInstance = new CElamain(*this);
+    CElamein* pInstance = new CElamein(*this);
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
         Safe_Release(pInstance);
-        MSG_BOX(TEXT("Failed Clone : CElamain"));
+        MSG_BOX(TEXT("Failed Clone : CElamein"));
     }
     return pInstance;
 }
 
-void CElamain::Free()
+void CElamein::Free()
 {
     if (m_pUI_HP != nullptr)
     {

@@ -165,7 +165,7 @@
   <ItemGroup>
     <ClInclude Include="..\public\AI_Controller_Dragonian_Melee.h" />
     <ClInclude Include="..\public\AI_Controller_Dragonian_Rampage.h" />
-    <ClInclude Include="..\public\AI_Controller_Elamain.h" />
+    <ClInclude Include="..\public\AI_Controller_Elamein.h" />
     <ClInclude Include="..\Public\AI_Controller_Gomdol.h" />
     <ClInclude Include="..\Public\AI_Controller_Imp_Melee.h" />
     <ClInclude Include="..\Public\AI_Controller_Imp_Range.h" />
@@ -199,6 +199,19 @@
     <ClInclude Include="..\Public\AS_Dr_Rampage_Brutal.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Dead.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Groggy.h" />
+    <ClInclude Include="..\Public\AS_Elamein_Attack_Middle.h" />
+    <ClInclude Include="..\Public\AS_Elamein_Groggy.h" />
+    <ClInclude Include="..\Public\AS_Elamein_Brutal.h" />
+    <ClInclude Include="..\Public\AS_Elamein_Attack_Long.h" />
+    <ClInclude Include="..\Public\AS_Elamein_Dodge.h" />
+    <ClInclude Include="..\Public\AS_Elamein_Attack_Enchant.h" />
+    <ClInclude Include="..\Public\AS_Elamein_Attack_default.h" />
+    <ClInclude Include="..\Public\AS_Elamein_Damage.h" />
+    <ClInclude Include="..\Public\AS_Elamein_LockOn.h" />
+    <ClInclude Include="..\Public\AS_Elamein_Guard.h" />
+    <ClInclude Include="..\Public\AS_Elamein_Dead.h" />
+    <ClInclude Include="..\public\AS_Elamein_Sleep.h" />
+    <ClInclude Include="..\public\AS_Elamein_Turn.h" />
     <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h" />
     <ClInclude Include="..\Public\AS_Groggy_Viper.h" />
     <ClInclude Include="..\Public\AS_Groggy_Yetuga.h" />
@@ -272,7 +285,7 @@
     <ClInclude Include="..\Public\Body_Cinematic_Viper.h" />
     <ClInclude Include="..\public\Body_Dragonian_Melee.h" />
     <ClInclude Include="..\Public\Body_Dragonian_Rampage.h" />
-    <ClInclude Include="..\public\Body_Elamain.h" />
+    <ClInclude Include="..\public\Body_Elamein.h" />
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
     <ClInclude Include="..\Public\Body_Khazan_GS.h" />
     <ClInclude Include="..\Public\Body_Phase2_Viper.h" />
@@ -282,9 +295,9 @@
     <ClInclude Include="..\public\Dragonian_Claw_R.h" />
     <ClInclude Include="..\public\Dragonian_Sword.h" />
     <ClInclude Include="..\Public\Duimuk_Part.h" />
-    <ClInclude Include="..\public\Elamain.h" />
-    <ClInclude Include="..\public\Elamain_Shield.h" />
-    <ClInclude Include="..\public\Elamain_Sword.h" />
+    <ClInclude Include="..\public\Elamein.h" />
+    <ClInclude Include="..\public\Elamein_Shield.h" />
+    <ClInclude Include="..\public\Elamein_Sword.h" />
     <ClInclude Include="..\Public\ElevatorL.h" />
     <ClInclude Include="..\Public\Elevator_Inner.h" />
     <ClInclude Include="..\Public\Elevator_Mid.h" />
@@ -585,7 +598,7 @@
   <ItemGroup>
     <ClCompile Include="..\private\AI_Controller_Dragonian_Melee.cpp" />
     <ClCompile Include="..\private\AI_Controller_Dragonian_Rampage.cpp" />
-    <ClCompile Include="..\private\AI_Controller_Elamain.cpp" />
+    <ClCompile Include="..\private\AI_Controller_Elamein.cpp" />
     <ClCompile Include="..\Private\AS_CutScene_2Phase_Viper.cpp" />
     <ClCompile Include="..\Private\AS_CutScene_Start_Viper.cpp" />
     <ClCompile Include="..\private\AS_Dr_Melee_Attack.cpp" />
@@ -606,6 +619,19 @@
     <ClCompile Include="..\Private\AS_Dr_Rampage_Groggy.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Walk.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_LockOn.cpp" />
+    <ClCompile Include="..\Private\AS_Elamein_Attack_Middle.cpp" />
+    <ClCompile Include="..\Private\AS_Elamein_Groggy.cpp" />
+    <ClCompile Include="..\Private\AS_Elamein_Brutal.cpp" />
+    <ClCompile Include="..\Private\AS_Elamein_Attack_Long.cpp" />
+    <ClCompile Include="..\Private\AS_Elamein_Dodge.cpp" />
+    <ClCompile Include="..\Private\AS_Elamein_Attack_Enchant.cpp" />
+    <ClCompile Include="..\Private\AS_Elamein_Attack_default.cpp" />
+    <ClCompile Include="..\Private\AS_Elamein_Damage.cpp" />
+    <ClCompile Include="..\Private\AS_Elamein_LockOn.cpp" />
+    <ClCompile Include="..\Private\AS_Elamein_Guard.cpp" />
+    <ClCompile Include="..\Private\AS_Elamein_Dead.cpp" />
+    <ClCompile Include="..\private\AS_Elamein_Sleep.cpp" />
+    <ClCompile Include="..\private\AS_Elamein_Turn.cpp" />
     <ClCompile Include="..\Private\AS_Groggy_Viper.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Viper.cpp" />
     <ClCompile Include="..\Private\AS_P2_BackJump_Viper.cpp" />
@@ -630,7 +656,7 @@
     <ClCompile Include="..\Private\AS_SideMove_P1_Viper.cpp" />
     <ClCompile Include="..\Private\AS_ThrowBlade_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Dragonian_Rampage.cpp" />
-    <ClCompile Include="..\private\Body_Elamain.cpp" />
+    <ClCompile Include="..\private\Body_Elamein.cpp" />
     <ClCompile Include="..\Private\Body_Phase2_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp" />
     <ClCompile Include="..\Private\Core_Viper.cpp" />
@@ -638,9 +664,9 @@
     <ClCompile Include="..\private\Dragonian_Claw_R.cpp" />
     <ClCompile Include="..\private\Dragonian_Sword.cpp" />
     <ClCompile Include="..\Private\Duimuk_Part.cpp" />
-    <ClCompile Include="..\private\Elamain.cpp" />
-    <ClCompile Include="..\private\Elamain_Shield.cpp" />
-    <ClCompile Include="..\private\Elamain_Sword.cpp" />
+    <ClCompile Include="..\private\Elamein.cpp" />
+    <ClCompile Include="..\private\Elamein_Shield.cpp" />
+    <ClCompile Include="..\private\Elamein_Sword.cpp" />
     <ClCompile Include="..\Private\ElevatorL.cpp" />
     <ClCompile Include="..\Private\Elevator_Inner.cpp" />
     <ClCompile Include="..\Private\Elevator_Mid.cpp" />

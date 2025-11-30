@@ -318,7 +318,7 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Turn(CGameObject* pOwner)
 {
     if (m_pMonData->isTurn)
     {
-        if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Rampage::MONSTATE::DAMAGE)))
+        if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Rampage::MONSTATE::TURN)))
             m_pFSM->Change_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::TURN), pOwner);
 
         return BTNODESTATE::RUNNING;
@@ -355,9 +355,9 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Sleep(CGameObject* pOwner)
     if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Rampage::MONSTATE::SLEEP)))
         m_pFSM->Change_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::SLEEP), pOwner);
 
-    _bool pisis = m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected");
     if (m_pMonData->isSleep && m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected"))
         m_pMonData->isSleep = false;
+
     else if (m_pMonData->isStateFiash)
         return BTNODESTATE::SUCCESS;
 
