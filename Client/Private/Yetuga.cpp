@@ -34,7 +34,7 @@ _float4* CYetuga::Get_LockOnPosition()
 
 void CYetuga::Yetuga_Jump(_fvector vGoalPos, _float fHeight, _float fSpeed)
 {
-    m_pCharVirCom->Jump_ToTarget(vGoalPos, fHeight, fSpeed);
+    m_pCharVirCom->Jump_Direction(vGoalPos, fHeight, fSpeed);
 }
 
 void CYetuga::Yetuga_Land(_fvector vGoalPosition, _float fSpeed)
@@ -90,6 +90,24 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
 
 void CYetuga::Priority_Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
+    {
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(537.354f, 18.684f, 221.961f, 1.f));
+        m_pCharVirCom->Teleport(XMVectorSet(537.354f, 18.684f, 221.961f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+    }
+
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    {
+        CAS_CutScene_Yetuga* Cut_Yetuga = Get_Yetuga_CutSceneState();
+        Cut_Yetuga->YetugaScene_Jump(this);        
+    }
+
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+    {
+        CAS_CutScene_Yetuga* Cut_Yetuga = Get_Yetuga_CutSceneState();
+        Cut_Yetuga->YetugaScene_Land(this);
+    }
+
     CBlackBoard* pBB = m_pController->Get_BlackBoard();
 
     if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
