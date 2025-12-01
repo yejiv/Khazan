@@ -8,6 +8,7 @@
 #include "Dummy.h"
 #include "Monster.h"
 #include "Khazan_Spear.h"
+#include "Khazan_GSword.h"
 #include "Sequence_Embars_Puzzle_First.h"
 #include "Sequence_Embars_Puzzle_Second.h"
 
@@ -54,7 +55,7 @@ HRESULT CLevel_Embars::Initialize()
     for (_uint i = 0; i < EMBARS_SUBLV; ++i)
     {
         CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Embars"), i, LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
-        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_MapObject"), TEXT("Embars"), i, LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+       // CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_MapObject"), TEXT("Embars"), i, LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
     }
 
     CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
@@ -165,7 +166,8 @@ HRESULT CLevel_Embars::Ready_Layer_Camera(const _wstring& strLayerTag)
     CGameObject* pPlayer = m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Creature_Player"));
     pCamera_Player->Set_ObjMatrix(dynamic_cast<CTransform*>(pPlayer->Get_Component(TEXT("Com_Transform")))->Get_WorldMatrixPtr());
 
-    static_cast<CKhazan_Spear*>(pPlayer)->Set_Camera(pCamera_Player);
+    //static_cast<CKhazan_Spear*>(pPlayer)->Set_Camera(pCamera_Player);
+    static_cast<CKhazan_GSword*>(pPlayer)->Set_Camera(pCamera_Player);
 
     m_pClientInstance->Add_Camera(ENUM_CLASS(LEVEL::EMBARS), pCamera_Player);
 

@@ -1384,6 +1384,9 @@
     <Filter Include="02.GameObject\Interation_Object\Item">
       <UniqueIdentifier>{772ec527-b2a6-4f60-abbf-58a7da8b5241}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Animation\Ladder">
+      <UniqueIdentifier>{878a082a-49da-448f-ae67-d7c41018076b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2598,8 +2601,6 @@
     <ClInclude Include="..\Public\Sequence_Viper_CutScene.h">
       <Filter>04.Sequence\Viper\CutScene</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Elamain.h">
-    </ClInclude>
     <ClInclude Include="..\public\Elamein.h">
       <Filter>02.GameObject\Creature\Monster\Elamain</Filter>
     </ClInclude>
@@ -2678,6 +2679,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Interaction_Item.h">
       <Filter>02.GameObject\Interation_Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_GS_Anim_Ladder.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Ladder</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3873,8 +3877,6 @@
     <ClCompile Include="..\Private\Sequence_Viper_CutScene.cpp">
       <Filter>04.Sequence\Viper\CutScene</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Elamain.cpp">
-    </ClCompile>
     <ClCompile Include="..\private\Elamein.cpp">
       <Filter>02.GameObject\Creature\Monster\Elamain</Filter>
     </ClCompile>
@@ -3953,6 +3955,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Interaction_Item.cpp">
       <Filter>02.GameObject\Interation_Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_GS_Anim_Ladder.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Ladder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

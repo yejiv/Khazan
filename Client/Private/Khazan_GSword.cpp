@@ -16,7 +16,7 @@
 #include "Khazan_GS_Anim_Damaged.h"
 #include "Khazan_GS_Anim_Fall.h"
 #include "Lantern_Khazan_GS.h"
-
+#include "Khazan_GS_Anim_Ladder.h"
 #include "Camera_Compre.h"
 #include "UI_HUD.h"
 #include "Damage_Text.h"
@@ -135,7 +135,6 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
 
     static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
 
-
     return S_OK;
 
 }
@@ -144,11 +143,15 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
 {
     __super::Priority_Update(fTimeDelta);
 
-    if (m_pGameInstance->Key_Down(DIK_P))
+    //if (m_pGameInstance->Key_Down(DIK_P))
+    //{
+    //    //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(511.f, -11.9f, 260.f, 1.f));
+    //    m_pCharVirCom->Teleport(XMVectorSet(511.f, -11.9f, 260.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+    //    m_pTransformCom->LookAt(XMVectorSet(520.47f, -11.48f, 227.18f, 0.f));               
+    //}
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT,fTimeDelta) && m_pGameInstance->Key_Down(DIK_P))
     {
-        //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(511.f, -11.9f, 260.f, 1.f));
-        m_pCharVirCom->Teleport(XMVectorSet(511.f, -11.9f, 260.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
-        m_pTransformCom->LookAt(XMVectorSet(520.47f, -11.48f, 227.18f, 0.f));               
+        m_pCharVirCom->Teleport(XMVectorSet(43.f, -81.f, -47.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
     }
 
 }
@@ -164,12 +167,11 @@ void CKhazan_GSword::Update(_float fTimeDelta)
     //    m_pTransformCom->Set_State(STATE::POSITION, vpos);
     //    //m_pCharVirCom->Set_Gravity(g_fGravity);
     //    //m_vGravity = XMVectorSet(0.f, 0.F, 0.f, 0.f);
-    //if (m_pGameInstance->Key_Down(DIK_B))
-    //    m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_ClimbDn_DL_Loop"));
-    //if (m_pGameInstance->Key_Down(DIK_N))
-    //    m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_ClimbDn_DR_Loop"));
-    //if (m_pGameInstance->Key_Down(DIK_M))
-    //    m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_ClimbDn_D_Sprint_Loop"));
+    if (m_pGameInstance->Key_Down(DIK_B))
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));
+    if (m_pGameInstance->Key_Down(DIK_N))
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_UnArmed"));
+
 
     if (m_isEnableControl)
     {
@@ -497,21 +499,33 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
     if (Has_State(CAT::M_DIE))
         return;
 
+   /* Ladder Climb 상태 최우선 체크 */
+    if (Has_Status(LADDER_CLIMBING))
+    {
+        LadderClimb_Input(fTimeDelta);
+        return;
+    }
+    else if (Has_Status(LADDER_SPRINT))
+    {
+        Remove_Status(LADDER_CLIMBING_END | LADDER_SPRINT);
+    }
+
+    ///* Viper Grab 상태 최우선 체크 */
     //if (Has_Status(VIPER_GRAB)) {
     //    if (!ChangeGrabAnimation())
     //        return;
     //}
+
+    /* Fall 상태 최우선 체크 */
+    if (Fall_Input(fTimeDelta))
+        return;
 
     /* 이전 상태 저장*/
     m_iPrevMainState = m_iCurMainState;
     m_iPrevSubState = m_iCurSubState;
     m_ePrevDir = m_eDir.iDirFlag;
     m_iPrevCycle = m_iCycle;
-
-    /* Fall 상태 최우선 체크 */
-    if (Fall_Input(fTimeDelta))
-        return;
-
+ 
     /* 대미지 상태 우선 체크 */
     _bool IsDamaged = m_pAnimDamaged->Is_Damaged();
     _bool IsGuarding = m_pAnimGuard->Is_Guarding();
@@ -1491,6 +1505,63 @@ _bool CKhazan_GSword::Interaction_Input(_float fTimeDelta)
     return false;
 }
 
+_bool CKhazan_GSword::LadderClimb_Input(_float fTimeDelta)
+{
+    /* 사다리 타기 끝나고 무기 꺼낼때 까지 */
+    if (Has_Status(LADDER_CLIMBING_END))
+    {
+        if (m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed")) && m_pBody->Get_Model()->Check_MinAnimationTime()) {
+            Remove_Status(LADDER_CLIMBING_END | LADDER_CLIMBING | LADDER_SPRINT);
+            m_pClientInstance->Set_PlayerInput(true);
+        }
+        return true;
+    }
+
+    /* 사다리 타기 시작시  회전시키기  */
+    if (Has_Status(LADDER_CLIMBING_ROTATION) && m_pAnimLadder->Is_Climbing()) {
+        m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
+        Remove_Status(LADDER_CLIMBING_ROTATION);
+    }
+
+    CKhazan_GS_Anim_Ladder::GS_LADDERINFO info;  
+
+    if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))
+    {
+        if (m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] >= m_EventInteract.LadderEvent.vEndActionPos.x + 1.6f)
+        {
+            m_EventInteract.isEvent = true;
+            m_EventInteract.LadderEvent.eLadderState = EventLadder::LADDER_ACTION::UPEND;
+            return true;
+        }
+
+        info.eDir.Add_Flag(DIR::U);
+    }
+    else if (m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta))
+    {
+        if (m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] <= m_EventInteract.LadderEvent.vEndActionPos.y - 1.6f)
+        {
+            m_EventInteract.isEvent = true;
+            m_EventInteract.LadderEvent.eLadderState = EventLadder::LADDER_ACTION::DOWNEND;
+            return true;
+        }
+
+        info.eDir.Add_Flag(DIR::D);
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_SPACE, fTimeDelta)) {
+        //info.isSprint = true;
+        Add_Status(LADDER_SPRINT);
+    }
+    else if (m_pGameInstance->Key_Up(DIK_SPACE)) {
+       // info.isSprint = false;
+        Remove_Status(LADDER_SPRINT);
+    }
+
+    m_pAnimLadder->Try_PlayLadder(info);
+
+    return true;
+}
+
 void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
 {
     // 낙하 중에는 애니메이션 변경 금지
@@ -2014,23 +2085,30 @@ void CKhazan_GSword::Clear_Injured()
 
 void CKhazan_GSword::EnterStatuePuzzle()
 {
-    Add_Status( BLOCK_ATK_SKILL_GUARD);
+    Add_Status( BLOCK_ATK_SKILL_GUARD | STATUE_MODE | BAREHAND);
+    Remove_Status(GSWORD);
 
     if (Has_Status(SPEAR))
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
     if (Has_Status(GSWORD))
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_UnArmed"));
 
+    cout << " STATUE_MODE On" << endl;
+
 }
 
 void CKhazan_GSword::ExitStatuePuzzle()
 {
-    Remove_Status( BLOCK_ATK_SKILL_GUARD);
+    Remove_Status( BLOCK_ATK_SKILL_GUARD | STATUE_MODE | BAREHAND);
+    Add_Status(GSWORD);
 
     if (Has_Status(SPEAR))
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed"));
     if (Has_Status(GSWORD))
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));    
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));  
+
+    cout << " STATUE_MODE Off" << endl;
+
 }
 
 
@@ -2225,6 +2303,12 @@ HRESULT CKhazan_GSword::Ready_AnimationStateMachine()
         return E_FAIL;
     m_pAnimFall->Set_Model(m_pBody->Get_Model());
 
+
+    m_pAnimLadder = CKhazan_GS_Anim_Ladder::Create();
+    if (m_pAnimLadder == nullptr)
+        return E_FAIL;
+    m_pAnimLadder->Set_Model(m_pBody->Get_Model()); 
+    m_pAnimLadder->Initialize();
 
     return S_OK;
 }
@@ -2456,6 +2540,7 @@ _uint CKhazan_GSword::ConvertCameraToPlayerDir(PLAYER_CAMERA_DIR playerCamDir)
 #pragma region 상호 작용 맵 오브젝트 이벤트
 void CKhazan_GSword::Subscribe_Events()
 {
+
 #pragma region 상호 작용 맵 오브젝트 이벤트
     m_iInteractTypeEventID = m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e) { m_EventInteract = e; });
 
@@ -2493,7 +2578,6 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         if (false == m_isInteractEventSetting)
         {
             m_isInteractEventSetting = true;
-
             /*  UnArmed 애니메이션 재생  (조각상떄는 안함)*/
             if (!Has_Status(BLOCK_ATK_SKILL_GUARD))
             {
@@ -2938,29 +3022,42 @@ void CKhazan_GSword::Ladder_Event(_float fTimeDelta)
     {
     case EventLadder::LADDER_ACTION::UPTODOWN:
     {
-        m_pCharVirCom->Set_Gravity(0.f);
-        // 중력 끄기 ???
-        // 플레이어가 사다리 내려가는 애니메이션 ???
+        m_pCharVirCom-> Begin_Ladder();
+        m_pAnimLadder->Try_Start_Down_Ladder(3);
+        Clear_Step0();
+        Add_Status(BLOCK_ATK_SKILL_GUARD | LADDER_CLIMBING | LADDER_CLIMBING_ROTATION);
+
         break;
     }
     case EventLadder::LADDER_ACTION::DOWNTOUP:
     {
-        m_pCharVirCom->Set_Gravity(0.f);
-        
-        // 중력 끄기 ???
-        // 플레이어가 사다리 올라가는 애니메이션 ???
+        m_pCharVirCom->Begin_Ladder();
+        m_pAnimLadder->Try_Start_Up_Ladder();
+        Clear_Step0();
+        Add_Status(BLOCK_ATK_SKILL_GUARD | LADDER_CLIMBING| LADDER_CLIMBING_ROTATION);
+
         break;
     }
     case EventLadder::LADDER_ACTION::UPEND:
     {
-
-        // 플레이어가 사다리 다 올라온 애니메이션 ???
+        m_pCharVirCom->End_Ladder();
+        m_pAnimLadder->Force_End_Up_Ladder();
+        Clear_Step0();
+        Remove_Status(BLOCK_ATK_SKILL_GUARD  | LADDER_CLIMBING_ROTATION);
+        Add_Status(LADDER_CLIMBING_END);
+        m_pClientInstance->Set_PlayerInput(false);
         break;
+
     }
     case EventLadder::LADDER_ACTION::DOWNEND:
     {
-        // 중력 끄기 ???
-        // 플레이어가 사다리 다 내려온 애니메이션 ???
+        m_pCharVirCom->End_Ladder();
+        m_pAnimLadder->Force_End_Down_Ladder();
+        Clear_Step0();
+        Remove_Status(BLOCK_ATK_SKILL_GUARD | LADDER_CLIMBING_ROTATION);
+        Add_Status(LADDER_CLIMBING_END);
+        m_pClientInstance->Set_PlayerInput(false);
+
         break;
     }
     default:
@@ -2970,7 +3067,8 @@ void CKhazan_GSword::Ladder_Event(_float fTimeDelta)
 
     if (true == LadderEvent.isStartAction())
     {
-        LadderEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1]; //플레이어가 이동할 위치 y 
+        LadderEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 0.1f ; //플레이어가 이동할 위치 y 
+
         // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
         m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&LadderEvent.vPlayerPosition));  //순간이동
         LadderEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1]; // 레더 위치 
@@ -3198,6 +3296,14 @@ void CKhazan_GSword::Debug_Widget_States()
     StatusFlag("Brutal Begin", BRUTAL_BEGIN);
     StatusFlag("Brutal Ready", BRUTAL_READY);
     StatusFlag("Brutal Success", BRUTAL_SUCCESS);
+    StatusFlag("Statue Mode", STATUE_MODE);
+    StatusFlag("Block Atk Skill Guard", BLOCK_ATK_SKILL_GUARD);
+    StatusFlag("Stamina Exhaustion", STAMINA_EXHAUSTION);
+    StatusFlag("Viper Grab", VIPER_GRAB);
+    StatusFlag("Ladder Climbing", LADDER_CLIMBING);
+    StatusFlag("Ladder Climbing Rotation", LADDER_CLIMBING_ROTATION);
+    StatusFlag("Ladder Climbing End", LADDER_CLIMBING_END);
+    StatusFlag("Ladder Sprint", LADDER_SPRINT);
 
 
     //StatusFlag("TURN180", TURN180);
