@@ -28,6 +28,9 @@ public:
     _float4x4*              Get_BoneMatrix_Ptr(const _char* pBoneName);
     void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
 
+    _float4x4               Get_CombinedMatrix() const { return m_CombinedWorldMatrix; }
+
+
 private:
     CBody_Phase2_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CBody_Phase2_Viper(const CBody_Phase2_Viper& Prototype);

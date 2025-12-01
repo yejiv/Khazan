@@ -135,6 +135,7 @@ private:
    // _bool                       m_isSpearFullExtension = { false }; //창을 완전히 뻗는 타이밍부터 true 
     _bool*                      m_pIsGuarding = { nullptr }; //가드중인지 체크4
     _bool                       m_isNotifyAttacking = { false };    //어택중에 콜라이더 onoff 알림 
+    _bool                       m_isBrutalSuccess = { false };
 
 
      /* 뼈 위치 */
@@ -175,9 +176,11 @@ private:
 
     // Shader
     _bool                       m_isEnableEdge = { true };
+    _bool                       m_isActiveMotionTrail = { false };
+    _bool                       m_isEnableMotionTrail = {};
+    _uint                       m_iCurMotionTrailAnimIndex = {};
     OUTLINE_CONFIG              m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
     function<void(const _wstring&, _bool)>  m_OnMotionTrailCallBack;
-    _bool                       m_isActiveMotionTrail = { false };
 
     /*  mutex */
     mutex                       m_CollMonsterMutex;
@@ -236,6 +239,7 @@ private:
     void Spawn_EmissiveDecal(_bool isUseOffset);
     void Spawn_CrackDecal();
     void Spawn_CircleBloodDecal();
+    void Spawn_LinearBloodDecal();
     void Start_DefaultVignette();
     void Start_DefaultRadialBlur();
     void Start_LongRadialBlur();

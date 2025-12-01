@@ -241,7 +241,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
    }
 
-   if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
+   /*if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
    {
        CYetuga* pYetuga = dynamic_cast<CYetuga*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Yetuga")));
        CSequence_Yetuga_CutScene* pSequence = CSequence_Yetuga_CutScene::Create(pYetuga);
@@ -252,7 +252,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
        tPlayDesc.fStartTime = 0.f;
 
        m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
-   }
+   }*/
 
 	return;
 }
@@ -323,14 +323,20 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"), TIME_CHANNEL::PLAYER)))
         return E_FAIL;*/
 
+    //  CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item")));
+    //  
+    //  pItem->Ready_Item(1, XMVectorSet(516.f, -11.f, 264.f, 1.f));
+    //  
+    //  m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TEST_LAYER"), pItem);
+
 	return S_OK;
 }
 
 HRESULT CLevel_HeinMach::Ready_Layer_Player(const _wstring& strLayerTag)
 {
 	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	//ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
-	//return E_FAIL;
+	//    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+	//    return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
@@ -449,32 +455,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_Decal()
 
 HRESULT CLevel_HeinMach::Ready_Layer_Item()
 {
-    m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item"), nullptr, 10);
-
-    CInteraction_Item* pItem1 = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item")));
-
-    pItem1->RandNormal_Item(XMVectorSet(516.f, -12.f, 264.f, 1.f));
-
-    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Item"), pItem1);
-
-    CInteraction_Item* pItem2 = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item")));
-
-    pItem2->RandNormal_Item(XMVectorSet(516.f, -12.f, 250.f, 1.f));
-
-    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Item"), pItem2);
-
-    CInteraction_Item* pItem3 = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item")));
-
-    pItem3->RandNormal_Item(XMVectorSet(516.f, -12.f, 240.f, 1.f));
-
-    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Item"), pItem3);
-
-    CInteraction_Item* pItem4 = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item")));
-
-    pItem4->RandNormal_Item(XMVectorSet(516.f, -12.f, 230.f, 1.f));
-
-    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Item"), pItem4);
-
     return S_OK;
 }
 
@@ -752,7 +732,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
+            MonsterDesc.fMaxHP = 1000.f;
             MonsterDesc.fMaxStamina = 100.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;

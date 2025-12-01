@@ -24,11 +24,15 @@ void CAS_Elamein_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
         {
             m_eState = RELEASSE;
             //작업 완료 후 살려야함
-            //m_pMonData->pOwner->Hp_Dead();
+            m_pMonData->pOwner->Hp_Dead();
         }
     }
     else if (m_eState == RELEASSE)
     {
+        m_pMonData->fDecreaseAlpha += fTimeDelta * 0.35f;
+
+        if (m_pMonData->fDecreaseAlpha >= 1.f)
+            m_pMonData->pOwner->Creature_Release();
     }
 }
 

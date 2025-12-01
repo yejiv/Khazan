@@ -83,7 +83,6 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
             if (HITREACTION::BRUTAL_ATTACK == eHitreaction)
             {
                 m_pBrutalAttack->Off_BrutalAttack();
-                Safe_Release(m_pBrutalAttack);
                 m_isBrutalAttackSuccess = false;
                 pModel->Set_Animation(24);
                 pViper->Set_RequestRecoveryStamina(true);

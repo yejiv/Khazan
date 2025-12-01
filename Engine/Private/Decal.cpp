@@ -191,6 +191,7 @@ void CDecal::Set_Desc(DECAL_DESC Desc)
 	m_Desc.vFadeTime.y = Desc.fLifeTime - Desc.vFadeTime.y;
 
 	m_pTransformCom->Scale(Desc.vScale);
+    m_pTransformCom->Rotation(XMConvertToRadians(Desc.vAngle.x), XMConvertToRadians(Desc.vAngle.y), XMConvertToRadians(Desc.vAngle.z));
 	m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(Desc.vPosition.x, Desc.vPosition.y, Desc.vPosition.z, 1.f));
 }
 

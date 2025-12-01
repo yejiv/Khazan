@@ -20,45 +20,25 @@ void CAS_P2_LockOn_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
     CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
 
+    m_fMoveSpeed = 0.5f;
+    m_fDotThreshold = cosf(XMConvertToRadians(20.f));
+    m_fTimeAcc = 0.f;
+    m_fMinLockTime = 2.5f;
+    m_fMaxLockTime = 10.f;
+
     _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
     _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-    _vector vDir = XMVector3Normalize(vTargetPos - vOwnerPos);
-    vDir.m128_f32[1] = 0.f;
+  
+    _vector vDiff = vTargetPos - vOwnerPos;
+    vDiff = XMVectorSetY(vDiff,0.f);
+    _float fStartDist = XMVectorGetX(XMVector3Length(vDiff));
+    m_fEndDist = fStartDist * 0.5f; // ì‹œìž‘ê±°ë¦¬ì˜ 60% ì •ë„ ê°€ê¹Œì›Œì§€ë©´ íƒˆì¶œ
+    
+    Update_Direction(pOwnerTransform, pTargetTransform, pModel);
+  
+    // ë¸”ëž™ë³´ë“œì— ì €ìž¥
+    pBB->Set_Value<_uint>(pViper->Get_Name(), "LockDir", static_cast<_uint>(m_eDirState));
 
-    _vector vLook = XMVector3Normalize(pOwnerTransform->Get_State(STATE::LOOK));
-    _vector vRight = XMVector3Normalize(pOwnerTransform->Get_State(STATE::RIGHT));
-
-    _float fDotF = XMVectorGetX(XMVector3Dot(vDir, vLook));
-    _float fDotR = XMVectorGetX(XMVector3Dot(vDir, vRight));
-
-    //¹æÇâ °è»ê
-    if (fDotF > 0.7f)
-    {
-        m_eDirState = DIRECTION::F;
-        m_fMoveSpeed = 0.5f;
-        pModel->Set_Animation(37); 
-    }
-    if (fDotF < -0.7f)
-    {
-        m_eDirState = DIRECTION::B;
-        pModel->Set_Animation(36);
-    }
-    else if (fDotR > 0.0f)
-    {
-        m_eDirState = DIRECTION::R;
-        pModel->Set_Animation(39);
-    }
-    else
-    {
-        m_eDirState = DIRECTION::L;
-        pModel->Set_Animation(38);
-    }
-
-    // ºí·¢º¸µå¿¡ ÀúÀå
-    pBB->Set_Value(pViper->Get_Name(), "LockDir", static_cast<_uint>(m_eDirState));
-
-    m_fMoveSpeed = 1.2f;
-    m_fDotThreshold = cosf(XMConvertToRadians(20.f));
 }
 
 void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -75,36 +55,49 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
     _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
 
-    // Å¸°Ù ¹Ù¶óº¸±â
-    pOwnerTransform->LookAt_Lerp(vTargetPos, fTimeDelta, 0.18f);
+    m_fTimeAcc += fTimeDelta;
+    
+    //pOwnerTransform->LookAt_Lerp(vTargetPos, fTimeDelta, 0.5f);
+    pOwnerTransform->LookAt_Lerp(vTargetPos, fTimeDelta, m_fTurnSpeed);
 
-    // ¹æÇâ¿¡ µû¸¥ ÀÌµ¿
-    switch (m_eDirState)
+    // ë°©í–¥ìœ¼ë¡œ ì´ë™
+    Move_To_Direction(pOwnerTransform,fTimeDelta);
+
+    // íƒˆì¶œ ì¡°ê±´: Look ë°©í–¥ì´ íƒ€ê²Ÿ ë°©í–¥ê³¼ ë§žìŒ
+    _vector vDir = XMVector3Normalize(vTargetPos - vOwnerPos);
+    vDir = XMVectorSetY(vDir, 0.f);
+
+    _matrix matBodyCombined = {};
+    _float4x4 matTemp = pViper->Get_P2Body()->Get_CombinedMatrix();
+    matBodyCombined = XMLoadFloat4x4(&matTemp);
+
+    _vector vBodyLook = matBodyCombined.r[2];
+    vBodyLook = XMVectorSetY(vBodyLook, 0.f);
+    vBodyLook = XMVector3Normalize(vBodyLook);
+
+    _float fDotF = XMVectorGetX(XMVector3Dot(vDir, vBodyLook));
+
+    _float fDist = XMVectorGetX(XMVector3Length(vDir));
+
+    _bool isLockOnFinished = { false };
+
+    if (m_fTimeAcc >= m_fMinLockTime)
     {
-    case DIRECTION::F:
-        pOwnerTransform->Go_Straight(m_fMoveSpeed * fTimeDelta);
-        break;
-    case DIRECTION::B:
-        pOwnerTransform->Go_Backward(m_fMoveSpeed * fTimeDelta);
-        break;
-    case DIRECTION::L:
-        pOwnerTransform->Go_Left(m_fMoveSpeed * fTimeDelta);
-        break;
-    case DIRECTION::R:
-        pOwnerTransform->Go_Right(m_fMoveSpeed * fTimeDelta);
-        break;
+        if (fDotF > m_fDotThreshold)
+            isLockOnFinished = true;
+
+        if (fDist >= m_fEndDist)
+            isLockOnFinished = true;
+
     }
 
-    // Å»Ãâ Á¶°Ç: Look ¹æÇâÀÌ Å¸°Ù ¹æÇâ°ú ¸ÂÀ½
-    _vector vDir = XMVector3Normalize(vTargetPos - vOwnerPos);
-    vDir.m128_f32[1] = 0.f;
-    _vector vLook = XMVector3Normalize(pOwnerTransform->Get_State(STATE::LOOK));
+    if (m_fTimeAcc >= m_fMaxLockTime)
+        isLockOnFinished = true;
 
-    _float fDotF = XMVectorGetX(XMVector3Dot(vDir, vLook));
-
-    if (fDotF > m_fDotThreshold)
+    if (isLockOnFinished)
     {
         pBB->Set_Value(pViper->Get_Name(), "isP2_LockOn_Finished", true);
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2LockOn", false);
         //pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pOwner);
     }
     pModel->Play_Animation(fTimeDelta);
@@ -114,6 +107,110 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
 void CAS_P2_LockOn_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+}
+
+void CAS_P2_LockOn_Viper::Update_Direction(CTransform* pOwnerTransform, CTransform* pTargetTransfrom, CModel* pModel)
+{
+    _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
+    _vector vTargetPos = pTargetTransfrom->Get_State(STATE::POSITION);
+
+    _vector vDir = vTargetPos - vOwnerPos;
+    vDir = XMVectorSetY(vDir,0.f);
+    vDir = XMVector3Normalize(vDir);
+
+    _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+    vLook = XMVectorSetY(vLook, 0.f);
+    vLook = XMVector3Normalize(vLook);
+
+    _vector vRight = pOwnerTransform->Get_State(STATE::RIGHT);
+    vRight = XMVectorSetY(vRight, 0.f);
+    vRight = XMVector3Normalize(vRight);
+
+    _float fDotF = XMVectorGetX(XMVector3Dot(vDir,vLook));
+    _float fDotR = XMVectorGetX(XMVector3Dot(vDir,vRight));
+
+
+    //DIRECTION ePrevDir = m_eDirState;
+
+    _float fDist = XMVectorGetX(XMVector3Length(vDir));
+    _bool isBackward = {false};    
+    // ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+
+     /*if (fDotF < -0.7f)
+     {
+         m_eDirState = DIRECTION::B;
+     }*/
+
+    if (fDist < 300.f)
+    {
+        _float fChance = m_pGameInstance->Rand(0,1);
+        if (fChance > 0.4)
+            isBackward = true;
+    }
+
+    if (isBackward)
+        m_eDirState = DIRECTION::B;
+
+    else if (fDotF > 0.7f)
+        m_eDirState = DIRECTION::F;
+
+    else
+    {
+        // ì¢Œ/ìš°
+        if (fDotR > 0.0f)
+            m_eDirState = DIRECTION::R;
+        else
+            m_eDirState = DIRECTION::L;
+    }
+
+    // ë°©í–¥ ë°”ë€” ë•Œë§Œ ì• ë‹ˆ ë‹¤ì‹œ ì„¸íŒ…
+    //if (ePrevDir != m_eDirState)
+    {
+        switch (m_eDirState)
+        {
+        case DIRECTION::F:
+            pModel->Set_Animation(37); // ì „ì§„ ë½ì˜¨
+            m_fMoveSpeed = 0.5f;
+            m_fTurnSpeed = 0.5f;
+            break;
+        case DIRECTION::B:
+            pModel->Set_Animation(36); // í›„ì§„ ë½ì˜¨
+            m_fMoveSpeed = 0.5f;
+            m_fTurnSpeed = 0.5f;
+            break;
+        case DIRECTION::L:
+            pModel->Set_Animation(38);
+            m_fMoveSpeed = 0.5f;
+            m_fTurnSpeed = 2.f;
+            break;
+        case DIRECTION::R:
+            pModel->Set_Animation(39);
+            m_fMoveSpeed = 0.5f;
+            m_fTurnSpeed = 2.f;
+            break;
+        }
+    }
+}
+
+void CAS_P2_LockOn_Viper::Move_To_Direction(CTransform* pOwnerTransform, _float fTimeDelta)
+{
+    _float fMove = m_fMoveSpeed * fTimeDelta;
+
+    switch (m_eDirState)
+    {
+    case DIRECTION::F:
+        pOwnerTransform->Go_Straight(fMove);
+        break;
+    case DIRECTION::B:
+        pOwnerTransform->Go_Backward(fMove);
+        break;
+    case DIRECTION::L:
+        pOwnerTransform->Go_Left(fMove);
+        break;
+    case DIRECTION::R:
+        pOwnerTransform->Go_Right(fMove);
+        break;
+    }
 }
 
 CAS_P2_LockOn_Viper* CAS_P2_LockOn_Viper::Create()

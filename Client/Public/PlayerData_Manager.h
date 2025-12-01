@@ -94,9 +94,11 @@ public:
     _bool   Check_Skill(_uint skill)
     { 
         if(m_isCurSpear)
-            return m_iSpearSkill & skill; 
+            return (m_iSpearSkill & skill) != 0;
         if(m_isCurGSword)
-            return m_iGSwordSkill & skill;
+            return  (m_iGSwordSkill & skill) != 0;
+
+        return false;
     }
 
     _bool   Check_Skills(_uint skills)
@@ -105,6 +107,8 @@ public:
             return (m_iSpearSkill & skills) == skills;
         if (m_isCurGSword)
             return (m_iGSwordSkill & skills) == skills;
+
+        return false;
     }
 
     //모든 스킬 잠금 해제

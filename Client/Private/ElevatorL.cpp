@@ -65,6 +65,7 @@ void CElevatorL::Priority_Update(_float fTimeDelta)
 
 void CElevatorL::Update(_float fTimeDelta)
 {
+    /*
     if (true == m_Event.isEvent()) // m_pGameInstance->Key_Down(DIK_H) && ANIM_STATE::IDLE != m_eAnimState) // 어떤 조건이 들어오면 애니메이션 Loop 중단 후 슥슥 샥샥
     {
         m_Event.EventOff();
@@ -94,6 +95,7 @@ void CElevatorL::Update(_float fTimeDelta)
             }
         }
     }
+    */
 
     Animation_Update(fTimeDelta);
 
@@ -343,14 +345,14 @@ HRESULT CElevatorL::Ready_Collision(void* pArg)
 
 void CElevatorL::Animation_Update(_float fTimeDelta)
 {
-    if (true == m_SkipEvent.isSkip)
+    if (ANIM_STATE::IDLE != m_eAnimState && true == m_SkipEvent.isSkip)
     {
         Gimmick_Event_Skip(fTimeDelta);
     }
     else if (true == m_Event.isEvent()) // m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_H) && ANIM_STATE::IDLE != m_eAnimState) // 어떤 조건이 들어오면 애니메이션 Loop 중단 후 슥슥 샥샥
     {
         m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-        *m_pModelCom->Get_CurTrackPosition() = 0.f;
+        *m_pModelCom->Get_CurTrackPosition() = 50.f;
         m_isAnimChange = true;
         m_pModelCom->AnimationLoop(false);
     }
@@ -458,7 +460,7 @@ void CElevatorL::Animation_Change(_float fTimeDelta)
 
 void CElevatorL::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     if (pMyDesc->iObjectLayer == ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT))
@@ -475,7 +477,7 @@ void CElevatorL::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer
 
 void CElevatorL::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
 
@@ -483,7 +485,7 @@ void CElevatorL::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer,
 
 void CElevatorL::Collision_Exit(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     m_isCollision = false;
@@ -510,6 +512,9 @@ void CElevatorL::VerticalOnTime_Update(_float fTimeDelta)
 
 void CElevatorL::Gimmick_Event_Skip(_float fTimeDelta)
 {
+    if (ANIM_STATE::IDLE == m_eAnimState)
+        return;
+
     m_SkipEvent.isSkip = false;
 
     m_Event.EventOff();
@@ -518,9 +523,9 @@ void CElevatorL::Gimmick_Event_Skip(_float fTimeDelta)
     m_fVerticalTimeAcc = 3.9f;
     m_isVerticalActive = true;
 
-    switch (m_eAnimState)
+    switch (m_Event.eStep)
     {
-    case ANIM_STATE::ALL:
+    case EventHallElevator::UNLOCK_STATE::STEP_1:
     {
         m_eAnimState = ANIM_STATE::MID_STOP;
         m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
@@ -533,7 +538,7 @@ void CElevatorL::Gimmick_Event_Skip(_float fTimeDelta)
         m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK0), Gimmick);
         break;
     }
-    case ANIM_STATE::MID_STOP:
+    case EventHallElevator::UNLOCK_STATE::STEP_2:
     {
         m_eAnimState = ANIM_STATE::OUTER_STOPPING;
         m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
@@ -546,20 +551,7 @@ void CElevatorL::Gimmick_Event_Skip(_float fTimeDelta)
         m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK1), Gimmick);
         break;
     }
-    case ANIM_STATE::INNER_STOPPING:
-    {
-        m_eAnimState = ANIM_STATE::OUTER_STOPPING;
-        m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-        m_pModelCom->AnimationLoop(true);
-
-        m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK1;
-
-        EventGimmick Gimmick = {};
-        Gimmick.Set_GimmickClear();
-        m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK1), Gimmick);
-        break;
-    }
-    case ANIM_STATE::OUTER_STOPPING:
+    case EventHallElevator::UNLOCK_STATE::STEP_3:
     {
         m_eAnimState = ANIM_STATE::IDLE;
         m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));

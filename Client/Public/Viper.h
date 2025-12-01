@@ -27,6 +27,11 @@ public:
     void                            Set_Phase(PHASE ePhase)  { m_ePhase = ePhase; }
     void                            Set_PhaseWeapon_Cinematic();
     void                            Set_PhaseWeapon_Phase2();
+    void                            Viper_Land(_fvector vGoalPosition, _float fSpeed);
+
+
+
+    class CAS_CutScene_Start_Viper*       Get_Viper_CutSceneState();
 
 
 public:

@@ -66,18 +66,18 @@ HRESULT CInteraction_Item::Initialize_Clone(void* pArg)
 
 void CInteraction_Item::Priority_Update(_float fTimeDelta)
 {
-    m_pEffect->Priority_Update(fTimeDelta);
+    //m_pEffect->Priority_Update(fTimeDelta);
 }
 
 void CInteraction_Item::Update(_float fTimeDelta)
 {
-    m_pEffect->Update(fTimeDelta);
+    //m_pEffect->Update(fTimeDelta);
     Item_Check();
 }
 
 void CInteraction_Item::Late_Update(_float fTimeDelta)
 {
-    m_pEffect->Late_Update(fTimeDelta);
+   //m_pEffect->Late_Update(fTimeDelta);
 }
 
 HRESULT CInteraction_Item::Render()
@@ -198,6 +198,8 @@ HRESULT CInteraction_Item::Ready_Collision()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
         return E_FAIL;
+
+    return true;
 }
 
 void CInteraction_Item::Item_Check()
