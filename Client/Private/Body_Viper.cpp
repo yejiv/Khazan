@@ -127,7 +127,7 @@ HRESULT CBody_Viper::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     _float fEdgeIntensity = 0.5f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
