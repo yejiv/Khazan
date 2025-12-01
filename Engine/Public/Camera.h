@@ -70,6 +70,12 @@ public:
     _bool Get_IsAniFix() { return m_isAniFix; }
     void Set_IsAniFix(_bool isFix) { m_isAniFix = isFix; }
 
+    void Force_AniEnd()
+    {
+        m_isAnimation = false;
+        m_isAniFix = false;
+    };
+
 public:
 	HRESULT Set_DefaultData(CAMERA_DESC tDesc);
 	HRESULT Load(map<_wstring, CAMERA_ANIMATION> Animations, map<_wstring, vector<CAMERA_EVENT_DATA>> Events);

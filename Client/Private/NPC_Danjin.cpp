@@ -312,7 +312,7 @@ void CNPC_Danjin::Animation_Update(_float fTimeDelta)
             // NPC를 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
-            m_pClientInstance->Camera_Set_NpcTalk(true, _float3(247.15f, 5.01f, 143.43), _float3(0.59f, -0.11f, -0.80f));
+            m_pClientInstance->Camera_Set_NpcTalk(true, _float3(247.15f, 5.01f, 143.43f), _float3(0.59f, -0.11f, -0.80f));
         }
     }
     else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨

@@ -286,6 +286,7 @@ _bool CKhazan_GS_Anim_Move::Force_DodgeAnimation(GS_MOVEINFO moveInfo)
 
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
+    return S_OK;
 }
 
 void CKhazan_GS_Anim_Move::Reserve_Animation(GS_MOVEINFO moveInfo)

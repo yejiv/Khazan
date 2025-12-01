@@ -50,6 +50,8 @@ private:
     //class CSequence_HeinMach_Start_Chat* m_pHeinMach_Start_Chat = { nullptr };
     class CClientInstance* m_pClientInstance = { nullptr };
 
+    class CKhazan_GSword* m_pKhazan = { nullptr };
+
     // FOG 구조체
     FOG_CONFIG m_FogConfig = {};
     EventGimmick m_EventGimmick = {};

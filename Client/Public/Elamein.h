@@ -14,7 +14,7 @@ class CElamein final : public CMonster
 {
 public:
     enum class MONSTATE { DEAD, GRORRY, BRUTAL, ATTACK_LONG, ATTACK_ENCHANT, ATTACK_DEFAULT, ATTACK_MIDDLE, DAMAGE, TURN, LOCKON, SLEEP, DODGE, GUARD, END };
-    enum class ATTACK_BODY : _uint { SHILED = 1 << 0, SWORD = 1 << 1, LEFT_LEG = 1 << 2, END = 1 << 3};
+    enum class ATTACK_BODY : _uint { SHILED = 1 << 0, SWORD = 1 << 1, RIGHT_LEG = 1 << 2, END = 1 << 3};
     enum class ATTACKSTATE { DEFAULT, ENCHANT, MIDDLE, LONG, END };
 
     typedef struct TagMonData_Elamein{
@@ -27,6 +27,11 @@ public:
         _float              fQuat = {};
         _float              fLook = {};
         _bool               isBland = { false };
+
+        _float              fDecreaseAlpha = {};
+        _float              fEdgeWidth = {};
+        _float4             fEdgeColor = {};
+
         //BT 판단용 변수
         _float              fDodgeCool = {};
         _bool               isDodge = { false };
@@ -36,13 +41,15 @@ public:
         
         _bool               isDamage = { false };
         _bool               isWallCrushed = { false };
-        
+
+        _float              fLong_AttackCool = {};
         _float              fAttackCool = {};
         _float              fSpecial_AttackCool = {};
         _float              fDeltaSpeed = {1.f};
 
         HITREACTION         eHitType = { HITREACTION::END };
-        
+        _int                iBrutalHit = {};
+
         //ETC
         _float              fGloggyTime = {};
         _uint               iAttackBody_State = {};
@@ -65,7 +72,11 @@ private:
     virtual ~CElamein() = default;
 
 public:
-    void                            LockOnLerp(_float fTimeDetla);
+    void                            LockOnLerp(_float fTimeDetla, _float fSpeed);
+    void                            LockOn();
+
+    void                            Rush();
+
     MONDATA&                        Get_Data();
     void                            Move_F();
     void                            Hp_Visivle(_bool isVisivle);
@@ -74,8 +85,12 @@ public:
     _bool                           Check_Ranage(_float fRange);
     TARGET_DIR                      Get_DIR();
 
+    void                            Add_Charge(_float fValue);
+    void                            Reset_Charge();
+    _float                          Get_TrackPotion();
     virtual void				    Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) override;
 public:
+    virtual void                    Creature_Release() override;
     virtual HRESULT					Initialize_Prototype(_int iLevel);
     virtual HRESULT					Initialize_Clone(void* pArg) override;
     virtual void					Priority_Update(_float fTimeDelta) override;
@@ -91,7 +106,6 @@ private:
     class CBody_Elamein*            m_pBody = { nullptr };
     class CElamein_Shield*          m_pShield = { nullptr };
     class CElamein_Sword*           m_pSword = { nullptr };
-
     class CBlackBoard*              m_pBlackBoard = { nullptr };
     class CMon_HP*                  m_pUI_HP = { nullptr };
 
@@ -110,6 +124,7 @@ private:
     _float                          m_fTimeDelta = {};
     _float                          m_fAccTime = {};
 
+    _bool                           m_isHit = { true };
 private:
     HRESULT                         Ready_Prototype();
 
@@ -122,7 +137,6 @@ private:
 
     void                            Update_UIHp();
     void                            Update_Body(_float fTimeDelta);
-
 public:
     static CElamein*      Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;

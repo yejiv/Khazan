@@ -369,6 +369,16 @@ void CCamera_Manager::Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos, _float3 v
     
 }
 
+void CCamera_Manager::Force_AniEnd()
+{
+    CCamera* pCamera = Get_ActiveCamera();
+    if (pCamera == nullptr)
+        return;
+
+    CCamera_Compre* pCameraCompre = dynamic_cast<CCamera_Compre*>(pCamera);
+    pCameraCompre->Force_AniEnd();
+}
+
 void CCamera_Manager::Switch_CameraMode(CAMERATYPE eType)
 {
     CCamera* pCamera = Get_ActiveCamera();

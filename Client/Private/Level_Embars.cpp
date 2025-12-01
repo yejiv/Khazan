@@ -38,18 +38,18 @@ HRESULT CLevel_Embars::Initialize()
 
     CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
-    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+    /*m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 
-        CHECK_FAILED(Ready_Lights(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+        }));*/
 
-        CHECK_FAILED(Ready_FireLights(TEXT("Embars_Point"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
-        CHECK_FAILED(Ready_BrazierLights(TEXT("Embars_Brazier"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+    CHECK_FAILED(Ready_Lights(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
-        //CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+    CHECK_FAILED(Ready_FireLights(TEXT("Embars_Point"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
-        return S_OK;
-        }));
+    CHECK_FAILED(Ready_BrazierLights(TEXT("Embars_Brazier"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+
+    //CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);        
 
     for (_uint i = 0; i < EMBARS_SUBLV; ++i)
     {
@@ -92,9 +92,9 @@ void CLevel_Embars::Update(_float fTimeDelta)
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
 
-    if (m_pGameInstance->Key_Down(DIK_RETURN))
+    /*if (m_pGameInstance->Key_Down(DIK_RETURN))
         if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))))
-            return;
+            return;*/
 
 	return;
 }
@@ -517,6 +517,26 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
                 ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+
+                return E_FAIL;
+        }
+        else if ("Elamein" == MonsterData.MonsterKey[i])
+        {
+            CMonster::MONSTER_DESC MonsterDesc{};
+            MonsterDesc.fAttack = 10.f;
+            MonsterDesc.fMaxHP = 2000.f;
+            MonsterDesc.fMaxStamina = 300.f;
+            MonsterDesc.fMoveSpeed = 10.f;
+            MonsterDesc.fSpeedPerSec = 3.f;
+            MonsterDesc.fRotationPerSec = 180.f;
+
+            MonsterDesc.WorldMatrix = WorldMatrix;
+
+            MonsterDesc.strName = "Elamein";
+            MonsterDesc.iLevelIndex = ENUM_CLASS(eCurrentLevel);
+
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+                ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Elamein"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
 
                 return E_FAIL;
         }

@@ -22,9 +22,14 @@ CElamein::CElamein(const CElamein& Prototype)
 {
 }
 
-void CElamein::LockOnLerp(_float fTimeDetla)
+void CElamein::LockOnLerp(_float fTimeDetla, _float fSpeed)
 {
-    m_pTransformCom->LookAt_Lerp(m_pTarget->Get_Position(), fTimeDetla, 1.3f);
+    m_pTransformCom->LookAt_Lerp(m_pTarget->Get_Position(), fTimeDetla, fSpeed);
+}
+
+void CElamein::LockOn()  
+{
+    m_pTransformCom->LookAt(m_pTarget->Get_Position());
 }
 
 CElamein::MONDATA& CElamein::Get_Data()
@@ -50,7 +55,7 @@ void CElamein::Hp_Visivle(_bool isVisivle)
 void CElamein::Hp_Dead()
 {
     m_pUI_HP->Set_IsDead(true);
-    Safe_Release(m_pUI_HP);
+    m_pUI_HP = nullptr;
 }
 
 _bool CElamein::Check_Ranage(string strKey)
@@ -85,16 +90,44 @@ TARGET_DIR CElamein::Get_DIR()
     return Check_Dir(m_pTransformCom->Get_WorldMatrix(), m_pTarget->Get_Transform()->Get_State(STATE::POSITION));
 }
 
+void CElamein::Add_Charge(_float fValue)
+{
+    m_pShield->Add_Charge(fValue);
+    m_pSword->Add_Charge(fValue);
+}
+
+void CElamein::Reset_Charge()
+{
+    m_pShield->Reset_Charge();
+    m_pSword->Reset_Charge();
+}
+
+_float CElamein::Get_TrackPotion()
+{
+    return m_pBody->Get_CulTrack();
+}
+
 void CElamein::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
 {
-    if (m_Data.fDodgeCool <= 0.f)
+    if (m_Data.fDodgeCool <= 0.f && m_Data.eHitType != HITREACTION::BRUTAL_ATTACK)
     {
         m_pController->AI_ApplyDamage(pGameObject, fDamage, ENUM_CLASS(eHitreaction), 3.f);
     }
     else
     {
+        if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
+            ++m_Data.iBrutalHit;
+
         __super::Take_Damage(fDamage, eHitreaction, pGameObject);
     }
+}
+
+void CElamein::Creature_Release()
+{
+    m_isHit = false;
+    m_pHitBodyCom->Collision_Active(m_isHit);
+
+    __super::Creature_Release();
 }
 
 HRESULT CElamein::Initialize_Prototype(_int iLevel)
@@ -116,7 +149,7 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_PartObjects(), E_FAIL);
     m_pHeadMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Head");
     m_pBodySocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Spine2");
-    m_pLeftLegSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Head");
+    m_pLeftLegSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-R-Foot");
     m_pLockOnSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Spine2");
     m_vLockOnPosition = &m_vLockOnPos;
 
@@ -130,48 +163,6 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
 void CElamein::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
-
-    if (m_pGameInstance->Key_Down(DIK_M))
-    {
-        m_fCurrentHP = m_fMaxHP;
-        m_Data.isSleep = true;
-    }
-    else if (m_pGameInstance->Key_Down(DIK_B))
-        Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
-    else if (m_pGameInstance->Key_Down(DIK_N))
-        m_fCurrentStamina = 0;
-
-    if (m_pGameInstance->Key_Down(DIK_V))
-    {
-        Safe_Release(m_pHitBodyCom);
-        this->Remove_Component(TEXT("Com_HitBody"));
-        m_pHitBodyCom = nullptr;
-
-        _vector vMatScale{}, vMatQuat{}, vMatPos{};
-
-        CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-        BodyDesc.vExtent = { 1.3f, 1.f, 1.f };
-        BodyDesc.eMotion = EMotionType::Kinematic;
-        BodyDesc.eQuality = EMotionQuality::Discrete;
-        BodyDesc.eShapeType = SHAPE::BOX;
-        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-        BodyDesc.bIsTrigger = true;
-
-        _matrix BodyMat = XMLoadFloat4x4(m_pBodySocketMatrix) * m_pTransformCom->Get_WorldMatrix();
-        for (uint32_t i = 0; i < 3; i++)
-            BodyMat.r[i] = XMVector3Normalize(BodyMat.r[i]);
-
-        XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, BodyMat);
-
-        XMStoreFloat3(&BodyDesc.vPos, vMatPos);
-        XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
-
-        BodyDesc.vShapeOffset = _float3(-0.f, -0.f, 0.f);
-        BodyDesc.pCollisionDesc = &m_tCollisionDesc;
-
-        CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_HitBody"), (CComponent**)&m_pHitBodyCom, &BodyDesc);
-
-    }
 }
 
 void CElamein::Update(_float fTimeDelta)
@@ -186,6 +177,9 @@ void CElamein::Update(_float fTimeDelta)
 
     if (m_Data.fSpecial_AttackCool > 0.f)
         m_Data.fSpecial_AttackCool -= fTimeDelta;
+
+    if (m_Data.fLong_AttackCool > 0.f)
+        m_Data.fLong_AttackCool -= fTimeDelta;
 
     m_pController->Update(this, fTimeDelta);
     __super::Update(fTimeDelta);
@@ -273,7 +267,7 @@ HRESULT CElamein::Ready_Components()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.75f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 1.25f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::CONTROLLER);
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
@@ -283,8 +277,8 @@ HRESULT CElamein::Ready_Components()
     m_isGhost = true;
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    tCharVirDesc.fRadius = 0.5f;
-    tCharVirDesc.fHeight = 0.5f;
+    tCharVirDesc.fRadius = 1.f;
+    tCharVirDesc.fHeight = 1.f;
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc), E_FAIL);
@@ -293,35 +287,35 @@ HRESULT CElamein::Ready_Components()
     _vector vMatScale{}, vMatQuat{}, vMatPos{};
 
     CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-    BodyDesc.vExtent = { 1.2f, 0.7f, 0.7f };
+    BodyDesc.vExtent = { 0.6f, 0.5f, 0.5f };
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::BOX;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
     BodyDesc.bIsTrigger = true;
 
-    _matrix TailMat = XMLoadFloat4x4(m_pLeftLegSocketMatrix) * m_pTransformCom->Get_WorldMatrix();
+    _matrix LegMat = XMLoadFloat4x4(m_pLeftLegSocketMatrix) * m_pTransformCom->Get_WorldMatrix();
     for (uint32_t i = 0; i < 3; i++)
-        TailMat.r[i] = XMVector3Normalize(TailMat.r[i]);
+        LegMat.r[i] = XMVector3Normalize(LegMat.r[i]);
 
-    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, TailMat);
+    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, LegMat);
 
     XMStoreFloat3(&BodyDesc.vPos, vMatPos);
     XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
 
-    BodyDesc.vShapeOffset = _float3(0.f, -0.f, 0.f);
+    BodyDesc.vShapeOffset = _float3(0.2f, -0.f, 0.f);
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_TailBody"), (CComponent**)&m_pLeftLegCom, &BodyDesc);
+    CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_LegBody"), (CComponent**)&m_pLeftLegCom, &BodyDesc);
 
-    BodyDesc.vExtent = { 2.2f, 1.f, 1.f };
+    BodyDesc.vExtent = { 0.9f, 2.2f, 0.9f };
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::BOX;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
     BodyDesc.bIsTrigger = true;
 
-    _matrix BodyMat = XMLoadFloat4x4(m_pBodySocketMatrix) * m_pTransformCom->Get_WorldMatrix();
+    _matrix BodyMat = m_pTransformCom->Get_WorldMatrix();
     for (uint32_t i = 0; i < 3; i++)
         BodyMat.r[i] = XMVector3Normalize(BodyMat.r[i]);
 
@@ -330,7 +324,7 @@ HRESULT CElamein::Ready_Components()
     XMStoreFloat3(&BodyDesc.vPos, vMatPos);
     XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
 
-    BodyDesc.vShapeOffset = _float3(-0.5f, -0.f, 0.f);
+    BodyDesc.vShapeOffset = _float3(-0.f, 0.5f, 0.f);
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_HitBody"), (CComponent**)&m_pHitBodyCom, &BodyDesc);
@@ -379,6 +373,64 @@ HRESULT CElamein::Ready_PartObjects()
 HRESULT CElamein::Ready_AnimEvent()
 {
     CModel* pModel = m_pBody->Get_Model();
+    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 65; });
+    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 66; });
+    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+
+    pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
+    pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
+    pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
+    pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 68; });
+    pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 69; });
+    pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+
+    pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
+    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 71; });
+    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+
+    pModel->Register_Event("ShieldStomp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
+    pModel->Register_Event("ShieldStomp", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+
+    pModel->Register_Event("HeadCrusher", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("HeadCrusher", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+
+    pModel->Register_Event("RapidSlash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("RapidSlash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+
+    pModel->Register_Event("JumpSmash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
+    pModel->Register_Event("JumpSmash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+
+    pModel->Register_Event("GuardCounter", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State = (_uint)ATTACK_BODY::SHILED | (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("GuardCounter", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+
+    pModel->Register_Event("Arranged_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("Arranged_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("Arranged_3_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("Arranged_3_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::RIGHT_LEG; });
+    pModel->Register_Event("Arranged_3_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAnimIndex = 86; });
+    pModel->Register_Event("Arranged_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
+    pModel->Register_Event("Arranged_5_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("Arranged_5_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+
+    pModel->Register_Event("Arranged_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 84; });
+    pModel->Register_Event("Arranged_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 85; });
+    pModel->Register_Event("Arranged_3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("Arranged_3_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("Arranged_4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 87; });
+    pModel->Register_Event("Arranged_5_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("Arranged_5_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
     return S_OK;
 }
@@ -394,6 +446,8 @@ HRESULT CElamein::Ready_MonData()
     m_Data.pCulStamina = &m_fCurrentStamina;
     m_Data.pMaxStamina = &m_fMaxStamina;
 
+    m_Data.fEdgeWidth = 0.2f;
+    m_Data.fEdgeColor = { 4.2f, 1.6f, 0.2f, 1.f };
     return S_OK;
 }
 
@@ -406,32 +460,40 @@ void CElamein::Update_UIHp()
 
 void CElamein::Update_Body(_float fTimeDelta)
 {
+    m_pHitBodyCom->Collision_Active(m_isHit);
     _vector vMatScale{}, vMatQuat{}, vMatPos{};
-    _matrix HitMat = XMLoadFloat4x4(m_pBodySocketMatrix);
-    for (uint32_t i = 0; i < 3; i++)
-        HitMat.r[i] = XMVector3Normalize(HitMat.r[i]);
-    HitMat *= m_pTransformCom->Get_WorldMatrix();
 
-    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, HitMat);
-    m_pHitBodyCom->Sync_Update(HitMat);
-    m_pHitBodyCom->Update(fTimeDelta, HitMat, vMatQuat, vMatPos);
+    if (m_isHit)
+    {
+        XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, m_pTransformCom->Get_WorldMatrix());
+        m_pHitBodyCom->Sync_Update(m_pTransformCom->Get_WorldMatrix());
+        m_pHitBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix(), vMatQuat, vMatPos);
+    }
 
-
-    _bool isAttack = m_Data.iAttackBody_State & (_uint)CElamein::ATTACK_BODY::LEFT_LEG;
+    _bool isAttack = m_Data.iAttackBody_State & (_uint)CElamein::ATTACK_BODY::RIGHT_LEG;
     m_pLeftLegCom->Collision_Active(isAttack);
 
-    if (!isAttack)
-        return;
+    if (isAttack)
+    {
+        _matrix TailMat = XMLoadFloat4x4(m_pLeftLegSocketMatrix);
+        for (uint32_t i = 0; i < 3; i++)
+            TailMat.r[i] = XMVector3Normalize(TailMat.r[i]);
+        TailMat *= m_pTransformCom->Get_WorldMatrix();
 
-    _matrix TailMat = XMLoadFloat4x4(m_pLeftLegSocketMatrix);
-    for (uint32_t i = 0; i < 3; i++)
-        TailMat.r[i] = XMVector3Normalize(TailMat.r[i]);
-    TailMat *= m_pTransformCom->Get_WorldMatrix();
+        XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, TailMat);
+        m_pLeftLegCom->Sync_Update(TailMat);
+        m_pLeftLegCom->Update(fTimeDelta, TailMat, vMatQuat, vMatPos);
+    }
+}
 
-    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, TailMat);
-    m_pLeftLegCom->Sync_Update(TailMat);
-    m_pLeftLegCom->Update(fTimeDelta, TailMat, vMatQuat, vMatPos);
+void CElamein::Rush()
+{
+    _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+    _vector vTargetPos = m_pTarget->Get_Transform()->Get_State(STATE::POSITION);
+    m_pTransformCom->LookAt(vTargetPos);
 
+    _vector vOffsetPos = XMVectorLerp(vPos, vTargetPos, (m_pBody->Get_CulTrack()) / 13.f);
+    m_pTransformCom->Set_State(STATE::POSITION, vOffsetPos);
 }
 
 CElamein* CElamein::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
