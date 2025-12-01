@@ -55,9 +55,6 @@ CAS_CutScene_Start_Viper* CViper::Get_Viper_CutSceneState()
     return pCutSceneState;
 }
 
-
-
-
 HRESULT CViper::Initialize_Prototype()
 {
     
@@ -91,11 +88,11 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     {
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
     }
-    m_ePhase = PHASE::PHASE2;
+    m_ePhase = PHASE::PHASE1;
 
     m_fRecoveryPerSec = 5.f;
 
-    if (m_ePhase == PHASE::PHASE2)
+    if (m_ePhase == PHASE::PHASE1)
     {
         //(-30.103f, -29.9f, 188.961f, 1.f)
         Set_PhaseWeapon_Phase2();
@@ -163,7 +160,7 @@ void CViper::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
-    m_vLockOnPosition = m_pBody->Get_BonePointEX("Bone_Wp");
+    m_vLockOnPosition = m_pBody->Get_BonePointEX("Bip001-Spine2");
 
 }
 

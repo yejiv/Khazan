@@ -1850,7 +1850,7 @@ void CYetuga::Free()
         m_pHoldStone->Set_IsDead(true);
 
     if (m_pHoldRock)
-        m_pHoldStone->Set_IsDead(true);
+        m_pHoldRock->Set_IsDead(true);
 
     if (m_pBreath)
         m_pBreath->Set_IsDead(true);
