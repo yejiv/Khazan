@@ -28,19 +28,23 @@ public:
     void    Jump(_float fTime) override;
     _bool   IsEnd() const override;
     SEQ_ID  GetId() const override { return m_Id; }
-
-public:
-    void Push_Obelisk(class CObelisk* pObelisk);
-
 private:
     SEQ_ID m_Id{};
     _float  m_fTime{ 0.f };
 
-    _bool   m_isFadeIn = { false };    
+    _bool   m_isFadeOut = { false };
+    _bool   m_isCameraSet = { false };
+    _bool   m_isFadeIn = { false };
+    _bool   m_isFirstScene = { false };
+    _bool   m_isSecondCameraSet = { false };
+    _bool   m_isSecondScene = { false };
+
     
     _bool   m_isEnd = { false };
 
     class CGameInstance* m_pGameInstance = { nullptr };
+    class CClientInstance* m_pClientInstance = { nullptr };
+    class CViper* m_pViper = { nullptr };
 
 public:
     static CSequence_Viper_CutScene* Create();
