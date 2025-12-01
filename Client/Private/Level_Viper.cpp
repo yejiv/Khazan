@@ -42,7 +42,17 @@ HRESULT CLevel_Viper::Initialize()
     
     // 우선 맵 오브젝트 서브 레벨 로드
     
-    CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+    //  CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+
+    // Test MainLight
+    LIGHT_DESC LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
+    LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+    LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("MainLight"), ENUM_CLASS(LEVEL::VIPER), LightDesc)))
+        return E_FAIL;
 
     CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
@@ -126,13 +136,13 @@ HRESULT CLevel_Viper::Ready_Layer_UI()
 }
 HRESULT CLevel_Viper::Ready_Layer_Player(const _wstring& strLayerTag)
 {
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-		ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
+	//	ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
+	//	return E_FAIL;
 
-    //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-    //    ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
-    //    return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
+        ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+        return E_FAIL;
 
 	return S_OK;
 }
@@ -840,7 +850,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
 
     CMonster::MONSTER_DESC MonsterDesc{};
     MonsterDesc.fAttack = 10.f;
-    MonsterDesc.fMaxHP = 500.f;
+    MonsterDesc.fMaxHP = 100.f;
     MonsterDesc.fMaxStamina = 100.f;
     MonsterDesc.fMoveSpeed = 10.f;
     MonsterDesc.fSpeedPerSec = 3.f;

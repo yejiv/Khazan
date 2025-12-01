@@ -26,10 +26,10 @@ private:
     DIRECTION                               m_eDirState = { DIRECTION::END };
     _float						            m_fDotThreshold = {};
     _float						            m_fMoveSpeed = {};
-    _float                                  m_fTimeAcc = {}; // ¶ô¿Â À¯Áö ½Ã°£
-    _float                                  m_fMinLockTime = {}; // ÃÖ¼Ò À¯Áö½Ã°£
-    _float                                  m_fMaxLockTime = {} ; // ÃÖ´ë À¯Áö ½Ã°£
-    _float                                  m_fEndDist = {}; // °Å¸® Å»Ãâ¿ë
+    _float                                  m_fTimeAcc = {}; // ë½ì˜¨ ìœ ì§€ ì‹œê°„
+    _float                                  m_fMinLockTime = {}; // ìµœì†Œ ìœ ì§€ì‹œê°„
+    _float                                  m_fMaxLockTime = {} ; // ìµœëŒ€ ìœ ì§€ ì‹œê°„
+    _float                                  m_fEndDist = {}; // ê±°ë¦¬ íƒˆì¶œìš©
 
 
     _float                                  m_fTurnSpeed = {};

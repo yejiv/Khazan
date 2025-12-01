@@ -45,6 +45,8 @@ HRESULT CLevel_HeinMach::Initialize()
         //return S_OK;
         //}));
 
+    CHECK_FAILED(Ready_Layer_Item(), E_FAIL);
+
     m_pGameInstance->Add_FireTask([&]() {
         CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
         return S_OK;
@@ -239,7 +241,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
    }
 
-   if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
+   /*if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
    {
        CYetuga* pYetuga = dynamic_cast<CYetuga*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Yetuga")));
        CSequence_Yetuga_CutScene* pSequence = CSequence_Yetuga_CutScene::Create(pYetuga);
@@ -250,7 +252,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
        tPlayDesc.fStartTime = 0.f;
 
        m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
-   }
+   }*/
 
 	return;
 }
@@ -321,11 +323,11 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"), TIME_CHANNEL::PLAYER)))
         return E_FAIL;*/
 
-    CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item")));
-
-    pItem->Ready_Item(1, XMVectorSet(516.f, -11.f, 264.f, 1.f));
-
-    m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TEST_LAYER"), pItem);
+    //  CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item")));
+    //  
+    //  pItem->Ready_Item(1, XMVectorSet(516.f, -11.f, 264.f, 1.f));
+    //  
+    //  m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TEST_LAYER"), pItem);
 
 	return S_OK;
 }
@@ -333,8 +335,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 HRESULT CLevel_HeinMach::Ready_Layer_Player(const _wstring& strLayerTag)
 {
 	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	//ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
-	//return E_FAIL;
+	//    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+	//    return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
@@ -448,6 +450,11 @@ HRESULT CLevel_HeinMach::Ready_Layer_Decal()
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Pool_Decal"), nullptr, 100)))
         return E_FAIL;
 
+    return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_Layer_Item()
+{
     return S_OK;
 }
 
@@ -725,7 +732,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 2000.f;
+            MonsterDesc.fMaxHP = 1000.f;
             MonsterDesc.fMaxStamina = 100.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;

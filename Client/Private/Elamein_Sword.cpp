@@ -43,6 +43,13 @@ void CElamein_Sword::Priority_Update(_float fTimeDelta)
 
 void CElamein_Sword::Update(_float fTimeDelta)
 {
+    if (m_isReset)
+    {
+        m_fChageValue -= fTimeDelta * 5.f;
+        if (m_fChageValue <= 0.f)
+            m_isReset = false;
+    }
+
     m_pTransformCom->Rotation(XMConvertToRadians(90.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
 
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
@@ -75,14 +82,28 @@ void CElamein_Sword::Late_Update(_float fTimeDelta)
 HRESULT CElamein_Sword::Render()
 {
     CHECK_FAILED(Bind_ShaderResources(), E_FAIL);
-
+    CHECK_FAILED(Bind_Dissolve(), E_FAIL);
     uint32_t iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    _float fEdgeIntensity = 1.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fShadeIntensity = 0.9f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
+
     for (uint32_t i = 0; i < iNumMeshes; i++)
     {
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
 
-        m_pShaderCom->Begin(0);
+        _float fChargeValue = m_fChageValue * 0.5f;
+        m_pShaderCom->Bind_RawValue("g_fEmissiveValue", &fChargeValue, sizeof(_float));
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0);
+        m_pShaderCom->Begin(8);
         m_pModelCom->Render(i);
     }
 
@@ -108,6 +129,9 @@ void CElamein_Sword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
 HRESULT CElamein_Sword::Ready_Components()
 {
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Monster_Dissolve"),
+        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr), E_FAIL);
+
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom, nullptr), E_FAIL);
     CHECK_FAILED(CGameObject::Add_Component(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_Elamein_Sword"), TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr), E_FAIL);
 
@@ -121,7 +145,7 @@ HRESULT CElamein_Sword::Ready_Collision()
     m_tCollisionDesc.pGameObject = this;
 
     CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-    BodyDesc.vExtent = { 0.4f, 1.f, 0.4f };
+    BodyDesc.vExtent = { 0.7f, 1.f, .5f };
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::BOX;
@@ -132,10 +156,10 @@ HRESULT CElamein_Sword::Ready_Collision()
     BodyDesc.vPos = { m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43 };
     XMStoreFloat4(&BodyDesc.vQuat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&m_CombinedWorldMatrix)));
 
-    BodyDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
+    BodyDesc.vShapeOffset = _float3(0.f, 1.f, 0.f);
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_Body_LH"), (CComponent**)&m_pBodyComp, &BodyDesc), E_FAIL );
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_Body_RH"), (CComponent**)&m_pBodyComp, &BodyDesc), E_FAIL);
 
 
     return S_OK;
@@ -146,6 +170,17 @@ HRESULT CElamein_Sword::Bind_ShaderResources()
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix), E_FAIL);
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
     CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CElamein_Sword::Bind_Dissolve()
+{
+    CHECK_FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", 0), E_FAIL);
+
+    m_pShaderCom->Bind_RawValue("g_fDecreaseAlpha", &m_pData->fDecreaseAlpha, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeWidth", &m_pData->fEdgeWidth, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeColor", &m_pData->fEdgeColor, sizeof(_float4));
 
     return S_OK;
 }
@@ -181,5 +216,5 @@ void CElamein_Sword::Free()
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
     Safe_Release(m_pBodyComp);
-
+    Safe_Release(m_pTextureCom);
 }

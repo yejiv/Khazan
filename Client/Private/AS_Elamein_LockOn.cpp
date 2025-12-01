@@ -53,19 +53,19 @@ void CAS_Elamein_LockOn::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
     else if (LOCKONSTATE::LOCKON_L == m_eLockOn)
     {
         m_pMonData->iAnimIndex = 61;
-        pOwner->Get_Transform()->Go_Left(1.1f * fTimeDelta);
+        pOwner->Get_Transform()->Go_Left(0.7f * fTimeDelta);
     }
     else if (LOCKONSTATE::LOCKON_R == m_eLockOn)
     {
         m_pMonData->iAnimIndex = 62;
-        pOwner->Get_Transform()->Go_Right(1.1f * fTimeDelta);
+        pOwner->Get_Transform()->Go_Right(0.7f * fTimeDelta);
     }
     else if (LOCKONSTATE::LOCKON_B == m_eLockOn)
     {
         m_pMonData->iAnimIndex = 59;
         pOwner->Get_Transform()->Go_Backward(fTimeDelta);
     }
-    //wasm_pMonData->pOwner->LockOnLerp(fTimeDelta);
+    m_pMonData->pOwner->LockOnLerp(fTimeDelta, 5.f);
 }
 
 void CAS_Elamein_LockOn::Exit(CStateMachine* pFSM, CGameObject* pOwner)

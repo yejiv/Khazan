@@ -91,10 +91,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     {
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
     }
-
     m_ePhase = PHASE::PHASE2;
 
-  
     m_fRecoveryPerSec = 5.f;
 
     if (m_ePhase == PHASE::PHASE2)

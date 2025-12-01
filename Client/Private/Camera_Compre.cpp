@@ -658,43 +658,7 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
 
 CGameObject* CCamera_Compre::Pick_ClosetTarget()
 {
-    /*if (!m_pTransformCom || m_CollMonsters.empty())
-        return nullptr;
-
-    const _vector PlayerWorldPosition = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42, m_pObjMatrix->_43, 1.f);
-    const _vector cameraLookDirection = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
-
-    CGameObject* bestObject = nullptr;
-    float bestProjectedDistance = FLT_MAX;
-
-    for (CGameObject* pObj : m_CollMonsters)
-    {
-        if (!pObj) continue;
-
-        CTransform* pTransform = dynamic_cast<CTransform*>(pObj->Get_Component(TEXT("Com_Transform")));
-        const _matrix world = pTransform->Get_WorldMatrix();
-        const _vector objectWorldPosition = XMVectorSet(world.r[3].m128_f32[0], world.r[3].m128_f32[1], world.r[3].m128_f32[2], 1.f);
-        const _vector toTargetVector = XMVectorSubtract(objectWorldPosition, PlayerWorldPosition);
-
-        const float worldDistance = XMVectorGetX(XMVector3Length(toTargetVector));
-        if (worldDistance > m_fTargetMaxDistance) continue;
-
-        const _vector toTargetNormalized = XMVector3Normalize(toTargetVector);
-        const float forwardCos = XMVectorGetX(XMVector3Dot(toTargetNormalized, cameraLookDirection));
-        if (forwardCos < m_fTargetHalfFovCos) continue;
-
-        const float projectedDistance = XMVectorGetX(XMVector3Dot(toTargetVector, cameraLookDirection));
-        if (projectedDistance <= 0.0f) continue;
-
-        if (projectedDistance < bestProjectedDistance)
-        {
-            bestProjectedDistance = projectedDistance;
-            bestObject = pObj;
-        }
-    }
-
-    return bestObject;*/
-
+    lock_guard<mutex> lock(m_CollMonsterMutex);
     if (!m_pTransformCom || m_CollMonsters.empty())
         return nullptr;
 
@@ -714,8 +678,7 @@ CGameObject* CCamera_Compre::Pick_ClosetTarget()
         m_pTransformCom->Get_State(STATE::LOOK)
     );
 
-    // (projectedDistance, Object) 쌍으로 저장
-    std::vector<std::pair<float, CGameObject*>> vCandidates;
+    vector<pair<_float, CGameObject*>> vCandidates;
     vCandidates.reserve(m_CollMonsters.size());
 
     for (CGameObject* pObj : m_CollMonsters)
@@ -762,22 +725,19 @@ CGameObject* CCamera_Compre::Pick_ClosetTarget()
         vCandidates.emplace_back(projectedDistance, pObj);
     }
 
-    // 유효 후보가 없음
     if (vCandidates.empty())
         return nullptr;
 
-    // 인덱스가 범위를 벗어나면 nullptr
     if (m_iLockOrder >= static_cast<int>(vCandidates.size()))
         return nullptr;
 
-    // iOrder번째로 가까운 놈만 앞쪽으로 가져오고 정렬은 거기까지만(nth_element)
     nth_element(
         vCandidates.begin(),
         vCandidates.begin() + m_iLockOrder,
         vCandidates.end(),
         [](const auto& a, const auto& b)
         {
-            return a.first < b.first; // projectedDistance 오름차순
+            return a.first < b.first; 
         }
     );
 
@@ -1302,6 +1262,7 @@ void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
 
         CGameObject* pObj = pDesc->pGameObject;
         CMonster* pMonster = dynamic_cast<CMonster*>(pDesc->pGameObject);
+        lock_guard<mutex> lock(m_CollMonsterMutex);
         if (pObj && find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end())
             m_CollMonsters.push_back(pObj);
     }
@@ -1346,6 +1307,7 @@ void CCamera_Compre::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
         CGameObject* pObj = pDesc->pGameObject;
         if (!pObj) return;
+        lock_guard<mutex> lock(m_CollMonsterMutex);
         auto it = std::remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
         if (it != m_CollMonsters.end()) m_CollMonsters.erase(it, m_CollMonsters.end());
     }
