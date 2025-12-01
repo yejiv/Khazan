@@ -73,6 +73,7 @@ float   g_fEdgeWidth;
 float4  g_fEdgeColor;
 // Viper
 bool g_HasEmissive;
+float g_fGreenIntensity = 1.f;
 
 struct VS_IN
 {
@@ -884,7 +885,6 @@ PS_OUT PS_VIPER(PS_IN In)
     if (g_HasEmissive)
         vEmissiveDesc = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    //  Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
@@ -896,13 +896,13 @@ PS_OUT PS_VIPER(PS_IN In)
     float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
     vMtrlDiffuse *= fEdgeMask;
     vMtrlDiffuse *= fShadeMask;
-
+    
+    vMtrlDiffuse.g *= g_fGreenIntensity;
+    
     float fMask = vEmissiveDesc.g;    
     vMtrlDiffuse += vMtrlDiffuse * fMask * g_fEmissiveIntensity;
+
     Out.vDiffuse = vMtrlDiffuse;
-    
-    // Test
-    //  Out.vDiffuse = vEmissiveDesc;
     
     return Out;
 }
