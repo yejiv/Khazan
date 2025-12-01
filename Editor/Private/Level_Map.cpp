@@ -2502,7 +2502,62 @@ HRESULT CLevel_Map::Ready_Light_Window()
 		{
 			ImGui::Begin("LIGHT WINDOW", &m_isLightSettingWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-			if (true == m_isFindFixLight)
+            if (true == m_isFixBatchLight)
+            {
+                ImGui::Text("DIFFUSE");
+                ImGui::ColorPicker4("##batch_point_dif_light", reinterpret_cast<_float*>(&m_BatchOnLightDesc.vDiffuse.x));
+                SEPARATOR;
+
+                ImGui::Text("AMBIENT R : "); SAMELINE;
+                ImGui::InputFloat("##batch_fix_pt_amb_light_r", &m_BatchOnLightDesc.vAmbient.x);
+                ImGui::Text("AMBIENT G : "); SAMELINE;
+                ImGui::InputFloat("##batch_fix_pt_amb_light_g", &m_BatchOnLightDesc.vAmbient.y);
+                ImGui::Text("AMBIENT B : "); SAMELINE;
+                ImGui::InputFloat("##batch_fix_pt_amb_light_b", &m_BatchOnLightDesc.vAmbient.z);
+                ImGui::Text("AMBIENT A : "); SAMELINE;
+                ImGui::InputFloat("##batch_fix_pt_amb_light_a", &m_BatchOnLightDesc.vAmbient.w);
+                //ImGui::ColorPicker4("##batch_point_amb_light", reinterpret_cast<_float*>(&m_BatchOnLightDesc.vAmbient.x));
+                SEPARATOR;
+
+                ImGui::Text("SPECULAR R : "); SAMELINE;
+                ImGui::InputFloat("##batch_fix_pt_spe_light_r", &m_BatchOnLightDesc.vSpecular.x);
+                ImGui::Text("SPECULAR G : "); SAMELINE;
+                ImGui::InputFloat("##batch_fix_pt_spe_light_g", &m_BatchOnLightDesc.vSpecular.y);
+                ImGui::Text("SPECULAR B : "); SAMELINE;
+                ImGui::InputFloat("##batch_fix_pt_spe_light_b", &m_BatchOnLightDesc.vSpecular.z);
+                ImGui::Text("SPECULAR A : "); SAMELINE;
+                ImGui::InputFloat("##batch_fix_pt_spe_light_a", &m_BatchOnLightDesc.vSpecular.w);
+                //ImGui::ColorPicker4("##batch_point_spec_light", reinterpret_cast<_float*>(&m_BatchOnLightDesc.vSpecular.x));
+                SEPARATOR;
+
+                if (ImGui::Button("BATCH DESC"))
+                {
+                    _uint iSize = m_LightTags.size();
+
+                    for (_uint i = 0; i < iSize; ++i)
+                    {
+                        wstring strLightTag = AnsiToWString(m_LightTags[i]);
+
+                        _bool isAble = m_pGameInstance->Is_LightEnable(strLightTag, ENUM_CLASS(LEVEL::MAP));
+                        if (false == isAble)
+                            continue;
+
+                        LIGHT_DESC LightDesc = *m_pGameInstance->Get_LightDesc(strLightTag, ENUM_CLASS(LEVEL::MAP));
+                        if (LIGHT_DESC::TYPE::POINT != LightDesc.eType)
+                            continue;
+
+                        m_BatchOnLightDesc.vPosition = LightDesc.vPosition;
+                        m_BatchOnLightDesc.fRange = LightDesc.fRange;
+                        m_BatchOnLightDesc.eType = LightDesc.eType;
+
+                        if (true == isAble)
+                            m_pGameInstance->Set_LightDesc(strLightTag, ENUM_CLASS(LEVEL::MAP), m_BatchOnLightDesc);
+                    }
+
+                    m_isFixBatchLight = false;
+                }
+            }
+			else if (true == m_isFindFixLight)
 			{
 				if (LIGHT_DESC::DIRECTIONAL == m_FixLightDesc.eType)
 				{
@@ -2690,7 +2745,21 @@ HRESULT CLevel_Map::Ready_Light_Window()
 					m_isFixLight = !m_isFixLight;
 					m_isAddLight = false;
 					m_LightDesc.eType = LIGHT_DESC::END;
-				} SEPARATOR;
+				} SAMELINE;
+                if (ImGui::Button("MOVE TO LIGHT"))
+                {
+                    // LIGHT_DESC FindLightDesc = *m_pGameInstance->Get_LightDesc(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP));
+                    // 
+                    // if (LIGHT_DESC::TYPE::POINT == FindLightDesc.eType)
+                    // {
+                    //     static_cast<CCamera_Map*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_Map_Camera")))->Set_MapCameraPosition(FindLightDesc.vPosition);
+                    // }
+                    
+                }
+                if (ImGui::Button("FIX BATCH POINT LIGHT"))
+                {
+                    m_isFixBatchLight = !m_isFixBatchLight;
+                }
 
 				// Add Light 띄우기
 				if (true == m_isAddLight)
