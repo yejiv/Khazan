@@ -75,7 +75,7 @@ HRESULT CFSM_Yetuga::Initialize()
         return E_FAIL;
     
     m_pCurrentState = m_States[ENUM_CLASS(YETUGA_STATE::IDLE)];
-    Safe_AddRef(m_pCurrentState);
+    
     if (nullptr == m_pCurrentState)
         return E_FAIL;
 

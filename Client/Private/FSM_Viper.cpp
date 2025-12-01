@@ -166,7 +166,7 @@ HRESULT CFSM_Viper::Initialize()
 
 
     m_pCurrentState = m_States[ENUM_CLASS(VIPER_STATE_P1::IDLE)];
-    Safe_AddRef(m_pCurrentState);
+    
     if (nullptr == m_pCurrentState)
         return E_FAIL;
 

@@ -86,7 +86,4 @@ void CStateMachine::Free()
 
     m_States.clear();
 
-    Safe_Release(m_pCurrentState);
-
-
 }
