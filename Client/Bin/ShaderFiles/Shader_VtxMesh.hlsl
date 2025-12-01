@@ -17,10 +17,10 @@ static const unsigned int M_ROUGHNESS = (1 << 5);
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 /*재질*/
-texture2D g_DiffuseTexture;
-texture2D g_NormalTexture;
-texture2D g_SpecularTexture;
-texture2D g_EmissiveTexture;
+Texture2D g_DiffuseTexture;
+Texture2D g_NormalTexture;
+Texture2D g_SpecularTexture;
+Texture2D g_EmissiveTexture;
 Texture2D g_MetalnessTexture;
 Texture2D g_DissolveTexture;
 /*눈 내리는 맵에 사용*/
@@ -53,6 +53,8 @@ float g_fDecreaseAlpha;
 float g_fEdgeWidth;
 float4 g_fEdgeColor;
 
+// 임프
+float g_fDiffusePower = 1.f;
 
 struct VS_IN
 {
@@ -522,6 +524,41 @@ PS_OUT PS_MAIN_DISSOLVE(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_IMP_WEAPON(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 0.f;
+    //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+
+    // Diffuse 어두운 문제로 임의값 곱해주기 3~5
+    Out.vDiffuse *= g_fDiffusePower;
+    
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     /* 특정 패스를 이용해서 점정을 그려냈다. */
@@ -636,20 +673,14 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE();
     }
 
+    pass Imp_Weapon // 임프 무기 ( 10번 )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-    ///* 모델의 상황에 따라 다른 쉐이딩 기법 세트(블렌딩 + 디스토션  )를 먹여주기위해서 */
-    //pass DefaultPass1
-    //{
-    //    VertexShader = compile vs_5_0 VS_MAIN1();
-
-    //}
-
-    ///* 정점의 정보에 따라 쉐이더 파일을 작성한다. */
-    ///* 정점의 정보가 같지만 완전히 다른 취급을 하느 ㄴ객체나 모델을 그리는 방식 -> 렌더링방식에 차이가 생길 수 있다. */ 
-    //pass DefaultPass1
-    //{
-    //    VertexShader = compile vs_5_0 VS_MAIN1();
-
-    //}
-
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_IMP_WEAPON();
+    }
 }

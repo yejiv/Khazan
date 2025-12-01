@@ -243,6 +243,9 @@ private:
     void Start_DefaultVignette();
     void Start_DefaultRadialBlur();
     void Start_LongRadialBlur();
+    void Start_LongDistortion();
+    void Start_DefaultDistortion();
+    void Start_FullScreenDistortion();
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
