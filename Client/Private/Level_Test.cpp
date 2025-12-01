@@ -143,9 +143,9 @@ HRESULT CLevel_Test::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 HRESULT CLevel_Test::Ready_Layer_Test(const _wstring& strLayerTag)
 {
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TEST), strLayerTag,
-		ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Khazan_Sample"), TIME_CHANNEL::PLAYER)))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TEST), strLayerTag,
+	//	ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Khazan_Sample"), TIME_CHANNEL::PLAYER)))
+	//	return E_FAIL;
 
 	return S_OK;
 }

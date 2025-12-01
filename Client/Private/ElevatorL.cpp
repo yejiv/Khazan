@@ -351,6 +351,8 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
     }
     else if (true == m_Event.isEvent()) // m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_H) && ANIM_STATE::IDLE != m_eAnimState) // 어떤 조건이 들어오면 애니메이션 Loop 중단 후 슥슥 샥샥
     {
+        m_Event.EventOff();
+
         m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
         *m_pModelCom->Get_CurTrackPosition() = 50.f;
         m_isAnimChange = true;
@@ -396,7 +398,6 @@ void CElevatorL::Animation_Change(_float fTimeDelta)
     if (ANIM_STATE::INNER_STOPPING == m_eAnimState)
     {
         m_fLimitTimeAcc = 0.f;
-        m_Event.EventOff();
 
         m_isAnimChange = false;
 
@@ -414,7 +415,6 @@ void CElevatorL::Animation_Change(_float fTimeDelta)
     else if (true == m_isAnimChange)
     {
         m_fLimitTimeAcc = 0.f;
-        m_Event.EventOff();
 
         m_isAnimChange = false;
 

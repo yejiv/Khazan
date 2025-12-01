@@ -32,6 +32,11 @@ HRESULT CFSM_Imp_Melee::Initialize(CGameObject* pOwner)
     if (FAILED(Add_State(ENUM_CLASS(IMPMELEE_STATE::DEAD), CAS_Dead_Imp_Melee::Create())))
         return E_FAIL;
 
+    m_pCurrentState = m_States[ENUM_CLASS(IMPMELEE_STATE::SLEEP)];
+    if (nullptr == m_pCurrentState)
+        return E_FAIL;
+
+    m_pCurrentState->Enter(this, pOwner);
     return S_OK;
 }
 
