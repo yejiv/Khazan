@@ -60,12 +60,6 @@ void CElevatorS::Update(_float fTimeDelta)
 {
     m_pModelCom->Play_Animation(fTimeDelta);
 
-    if (m_pGameInstance->Key_Down(DIK_6))
-    {
-        if (false == m_isActive)
-            m_isActive = true;
-    }
-
     if (true == m_isActive)
     {
         if (ELEVATOR_STATE::IDLE_UP == m_eState)

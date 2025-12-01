@@ -1730,8 +1730,11 @@ void CBody_Khazan_Spear::Free()
 
     if (m_pBrutalAttack)
         Safe_Release(m_pBrutalAttack);
-    if (m_pBrutalmonster)
-        Safe_Release(m_pBrutalmonster);
+
+    //현재 Safe_AddRef 하지 않고 와서 널 밖아둠
+    m_pBrutalmonster = nullptr;
+    //if (m_pBrutalmonster)
+    //    Safe_Release(m_pBrutalmonster);
 
     Safe_Release(m_pSpear);
     Safe_Release(m_pClientInstance);

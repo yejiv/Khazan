@@ -44,6 +44,10 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
         break;
         case Client::DRIFTSTATE::LOOP:
         {
+            CTransform* pOwnerTransform = static_cast<CTransform*>(pViper->Get_Component(TEXT("Com_Tranform")));
+            //CTransform* pTarget
+            //pOwnerTransform->AI_Chase();
+
             m_eState = DRIFTSTATE::FINISH;
             pModel->Set_Animation(20);
         }

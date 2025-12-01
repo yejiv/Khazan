@@ -401,14 +401,6 @@ CJolt_Manager* CJolt_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext*
 void CJolt_Manager::Free()
 {
     __super::Free();
-    for (auto& pair : m_CharacterVirtuals)
-    {
-        CharacterVirtual* pChar = pair.second;
-        if (m_pCharVsCharCollision)
-            m_pCharVsCharCollision->Remove(pChar);
-
-        pChar->Release();       
-    }
     m_CharacterVirtuals.clear();
     BodyInterface& bi = m_pPhysics->GetBodyInterface();
 

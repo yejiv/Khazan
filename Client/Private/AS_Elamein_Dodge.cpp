@@ -13,13 +13,11 @@ void CAS_Elamein_Dodge::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     if (m_isAttack)
     {
-        m_pMonData->fDeltaSpeed = 1.5f;
         m_pMonData->iAnimIndex = 31;
         m_eState = DODGE;
     }
     else
     {
-        m_pMonData->fDeltaSpeed = 1.5f;
         m_pMonData->iAnimIndex = 35;
     }
 }
@@ -65,7 +63,16 @@ void CAS_Elamein_Dodge::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
 void CAS_Elamein_Dodge::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    m_pMonData->fDeltaSpeed = 1.f;
+}
+
+void CAS_Elamein_Dodge::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+    }
 }
 
 CAS_Elamein_Dodge* CAS_Elamein_Dodge::Create()

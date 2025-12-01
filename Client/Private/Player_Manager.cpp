@@ -132,6 +132,7 @@ _uint CPlayer_Manager::Get_ButtonSkill(CONTROL_BUTTON eButton)
         if (it != m_ButtonToGSwordSkill.end())  return it->second;
         return 0; // 바인딩된 스킬 없음
     }
+    return 0;
 }
 
 void CPlayer_Manager::Set_UsedSkill(_uint iSkill, _bool isUsed)
@@ -219,6 +220,7 @@ _bool CPlayer_Manager::Is_UsedSkill(_uint iSkill)
             return false;
         return  m_UsedGSwordSkill[GetBitPosition(iSkill)];
     }
+    return true;
 }
 
 CPlayer_Manager* CPlayer_Manager::Create()

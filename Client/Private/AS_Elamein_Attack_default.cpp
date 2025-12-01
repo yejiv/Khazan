@@ -44,7 +44,16 @@ void CAS_Elamein_Attack_default::Update(CStateMachine* pFSM, CGameObject* pOwner
 
 void CAS_Elamein_Attack_default::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    int a = 0;
+}
+
+void CAS_Elamein_Attack_default::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_WEAK, nullptr);
+    }
 }
 
 CAS_Elamein_Attack_default* CAS_Elamein_Attack_default::Create()

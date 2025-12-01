@@ -38,6 +38,8 @@ void CAS_Elamein_Attack_Middle::Update(CStateMachine* pFSM, CGameObject* pOwner,
         }
         else if (m_eState == ATTACK_2)
         {
+            m_pMonData->pOwner->LockOn();
+            pOwner->Get_Transform()->Go_Straight(7.5f * fTimeDelta);
             if (m_pMonData->pOwner->Check_Ranage("AttackRange"))
             {
                 m_pMonData->iAnimIndex = 77;
@@ -48,6 +50,7 @@ void CAS_Elamein_Attack_Middle::Update(CStateMachine* pFSM, CGameObject* pOwner,
         {
             if (m_pMonData->isAnimFinash)
             {
+                m_pMonData->fAttackCool = 3.f;
                 m_pMonData->fQuat = 180.f;
                 m_pMonData->iAnimIndex = 101;
                 m_pMonData->eAttackState = CElamein::ATTACKSTATE::END;
@@ -67,6 +70,8 @@ void CAS_Elamein_Attack_Middle::Update(CStateMachine* pFSM, CGameObject* pOwner,
         }
         else if (m_eState == ATTACK_2)
         {
+            m_pMonData->pOwner->LockOn();
+            pOwner->Get_Transform()->Go_Straight(7.5f * fTimeDelta);
             if (m_pMonData->pOwner->Check_Ranage("AttackRange"))
             {
                 m_pMonData->iAnimIndex = 56;
@@ -77,6 +82,7 @@ void CAS_Elamein_Attack_Middle::Update(CStateMachine* pFSM, CGameObject* pOwner,
         {
             if (m_pMonData->isAnimFinash)
             {
+                m_pMonData->fAttackCool = 3.f;
                 //m_pMonData->fQuat = 180.f;
                 //m_pMonData->iAnimIndex = 101;
                 m_pMonData->eAttackState = CElamein::ATTACKSTATE::END;
@@ -87,7 +93,16 @@ void CAS_Elamein_Attack_Middle::Update(CStateMachine* pFSM, CGameObject* pOwner,
 
 void CAS_Elamein_Attack_Middle::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    m_pMonData->fAttackCool = 3.f;
+}
+
+void CAS_Elamein_Attack_Middle::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_WEAK, nullptr);
+    }
 }
 
 CAS_Elamein_Attack_Middle* CAS_Elamein_Attack_Middle::Create()

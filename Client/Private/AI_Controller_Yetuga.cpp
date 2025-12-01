@@ -47,7 +47,7 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 
     if (m_pGameInstance->Key_Down(DIK_J))
     {
-        //Set_ActiveAIController(true);
+        m_isActiveController = true;
     }
     
 
@@ -149,22 +149,22 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 			};
 	}
 
-	//else if ("Groggy" == name)
-	//{
-	//	return [pYetuga](CBlackBoard* BB)->_bool
-	//		{
-	//			HITREACTION eHitRection = static_cast<HITREACTION>(BB->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
-	//			_float fCurrentStamina = pYetuga->Get_CurrentStamina();
-	//		
-	//			if (fCurrentStamina <= 0.1f && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "isGroggy"))
-	//			{
-	//				eHitRection = HITREACTION::GROGGY;
-	//				return true;
-	//			}
-	//			else
-	//				return false;
-	//		};
-	//}
+	else if ("Groggy" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)->_bool
+			{
+				HITREACTION eHitRection = static_cast<HITREACTION>(BB->Get_Value<_uint>(pYetuga->Get_Name(), "DamageType"));
+				_float fCurrentStamina = pYetuga->Get_CurrentStamina();
+			
+				if (fCurrentStamina <= 0.1f && !BB->Get_Value<_bool>(pYetuga->Get_Name(), "isGroggy"))
+				{
+					eHitRection = HITREACTION::GROGGY;
+					return true;
+				}
+				else
+					return false;
+			};
+	}
 
 	/*else if ("Dodge" == name)
 	{
@@ -300,11 +300,10 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 		return [pYetuga](CBlackBoard* BB)
 			{
                 _float fDist = BB->Get_Value<_float>(pYetuga->Get_Name(), "TargetDist");
-                _float fSprintRange= BB->Get_Value<_float>(pYetuga->Get_Name(), "SprintRange");
+                _float fJumpRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "JumpAttackRange");
                 _float fChasRange = BB->Get_Value<_float>(pYetuga->Get_Name(), "ChaseRange");
 
-				if (fDist >= fSprintRange && fDist <= fChasRange &&
-					!BB->Get_Value<_bool>(pYetuga->Get_Name(), "isRush"))
+   				if (fDist > fJumpRange && fDist <= fChasRange)
 				{
 					return true;
 				}
@@ -569,26 +568,22 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 
 	
 
-	//else if ("Groggy" == name)
-	//{
-	//	return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
-	//		{
+	else if ("Groggy" == name)
+	{
+		return [pYetuga](CBlackBoard* BB)-> BTNODESTATE
+			{
 
-	//			if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isGroggyFinished"))
-	//			{
- //                   BB->Set_Value<_bool>(pYetuga->Get_Name(), "DamageInterrupt", false);
-	//				return BTNODESTATE::SUCCESS;
-	//			}
+				if (BB->Get_Value<_bool>(pYetuga->Get_Name(), "isGroggyFinished"))
+				{
+					return BTNODESTATE::SUCCESS;
+				}
 
-	//			BB->Set_Value(pYetuga->Get_Name(), "isGroggy", true);
-	//			BB->Set_Value(pYetuga->Get_Name(), "isGroggyFinished", false);
+				pYetuga->Get_Controller()->Get_State_Machine()->
+					Change_State(ENUM_CLASS(YETUGA_STATE::GROGGY), pYetuga);
+				return BTNODESTATE::RUNNING;
 
-	//			pYetuga->Get_Controller()->Get_State_Machine()->
-	//				Change_State(ENUM_CLASS(YETUGA_STATE::GROGGY), pYetuga);
-	//			return BTNODESTATE::RUNNING;
-
-	//		};
-	//}
+			};
+	}
 
 	//else if ("Dodge" == name)
 	//{
@@ -752,8 +747,6 @@ ACTION CAI_Controller_Yetuga::GetCallbackAction(CGameObject* pOwner, const strin
 				}
 
                 BB->Set_Value<_bool>(pYetuga->Get_Name(), "AttackInterrupt", true);
-				BB->Set_Value(pYetuga->Get_Name(), "isRushFinished", false);
-				BB->Set_Value(pYetuga->Get_Name(), "isRush", true);
                 BB->Set_Value(pYetuga->Get_Name(), "isSuperArmor", true);
 
 
@@ -1066,7 +1059,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
 
 #pragma region HIT SELECTOR
 
-	/*else if ("Groggy" == name)
+	else if ("Groggy" == name)
 	{
 		return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
 			{
@@ -1080,7 +1073,7 @@ TERMINATE CAI_Controller_Yetuga::GetCallbackTeminate(CGameObject* pOwner, const 
                     BB->Set_Value<_uint>(pYetuga->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
 				}
 			};
-	}*/
+	}
 	//else if ("Dodge" == name)
 	//{
 	//	return [pYetuga](CBlackBoard* BB, BTNODESTATE eState)
