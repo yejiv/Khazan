@@ -13,6 +13,7 @@
 #include "TwinBlade_R_Viper.h"
 #include "AS_CutScene_Start_Viper.h"
 #include "FSM_Viper.h"
+#include "Projectile_Rock_Viper.h"
 
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -46,6 +47,11 @@ void CViper::Viper_Land(_fvector vGoalPosition, _float fSpeed)
 {
     m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 0.f));
     m_pCharVirCom->Start_Dive(vGoalPosition, fSpeed);
+}
+
+void CViper::Reset_Viper_Gravity()
+{
+    m_vGravity = XMVectorSet(0.f, g_fGravity, 0.f, 0.f);
 }
 
 CAS_CutScene_Start_Viper* CViper::Get_Viper_CutSceneState()
@@ -88,8 +94,10 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     {
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
     }
+
     m_ePhase = PHASE::PHASE1;
 
+ 
     m_fRecoveryPerSec = 5.f;
 
     if (m_ePhase == PHASE::PHASE2)
@@ -420,7 +428,18 @@ HRESULT CViper::Ready_PartObjects()
 
 HRESULT CViper::Ready_Projectiles()
 {
+    CProjectile_Rock_Viper::PROJECTILE_DESC Desc{};
+    Desc.fDamage = 20.f;
+    Desc.fSpeedPerSec = 50.f;
+    Desc.fLifeTime = 3.f;
+    Desc.fRotationPerSec = 180.f;
+    m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Projectile_Viper_Rock"),
+        ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Rock"), &Desc, 5);
+
    
+    m_pThrowMatrix = m_pPahse2Body->Get_BoneMatrix_Ptr("Bip001-L-Hand");
+    
+    
     return S_OK;
 }
 
@@ -784,6 +803,7 @@ HRESULT CViper::Ready_AnimEvent()
         {
             m_isLookAt = true;
             m_pWeapon->Set_OnAttackCollision_L(true);
+            m_fTurnSpeed = 10.f;
         });
 
 
@@ -791,6 +811,7 @@ HRESULT CViper::Ready_AnimEvent()
         {
             m_isLookAt = false;
             m_pWeapon->Set_OnAttackCollision_L(false);
+            m_fTurnSpeed = 8.f;
         });
 
     pModel->Register_Event("StingGrab_Hold", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
@@ -890,6 +911,25 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("Remove_Core", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pCore->Set_IsActive(false);
+        });
+
+
+#pragma endregion
+
+
+#pragma region START_CINEMATIC_JUMP
+
+
+    pModel->Register_Event("Viper_StartCutScene_Jump_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            
+             m_pCharVirCom->Set_Gravity(0.f);
+             m_pCharVirCom->Set_Velocity(XMVectorSet(0.f,0.f,0.f,0.f));
+             m_vGravity = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+
+             //m_vGravity = XMVectorSet(0.f, g_fGravity, 0.f, 0.f);
+                //m_pCharVirCom->Start_Dive(vPosition,50.f);
+
         });
 
 
@@ -1445,6 +1485,30 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma endregion
 
+#pragma region THROWROCK
+
+    pP2Model->Register_Event("P2_ThrowRock_Start", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            Pick_ViperRock();
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("P2_ThrowRock_Loop", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            Throw_ViperRock();
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+
+        });
+
+    pP2Model->Register_Event("P2_ThrowRock_Loop", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
+        {
+            Hold_ViperRock();
+        });
+
+
+#pragma endregion
 
 #pragma region P2_SIDEJUMP_L
     pP2Model->Register_Event("P2_SideJumpL_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this,pP2Model]()
@@ -1506,7 +1570,126 @@ HRESULT CViper::Ready_AnimEvent()
 #pragma endregion
 
 
+#pragma region P2_VIPER_DASH_DRIFT
+
+    pP2Model->Register_Event("DashDrift_Pause", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            m_isLookAt = true;
+            m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 1.f, 0.1f, 0.25f);
+        });
+
+
+    pP2Model->Register_Event("DashDrift_Pause", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
+        {
+            m_isLookAt = false;
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName,"isP2_Dash_Abort", true);
+        });
+
+
+
+#pragma endregion
+
+
     return S_OK;
+
+}
+
+void CViper::Pick_ViperRock()
+{
+    _float3 vSpawnPoint{};
+    _matrix ConvertMatrix = XMLoadFloat4x4(m_pThrowMatrix);
+    _matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix();
+    _matrix MulMatrix = ConvertMatrix * WorldMatrix;
+    _float4x4 ThrowMatrix{};
+    XMStoreFloat4x4(&ThrowMatrix, MulMatrix);
+    vSpawnPoint.x = ThrowMatrix.m[3][0];
+    vSpawnPoint.y = ThrowMatrix.m[3][1];
+    vSpawnPoint.z = ThrowMatrix.m[3][2];
+
+    CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Rock"));
+    if (nullptr == pGameObject)
+        return;
+
+    m_pRock = static_cast<CProjectile_Rock_Viper*>(pGameObject);
+    if (m_pRock == nullptr)
+        return;
+
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+    m_pRock->Set_SpawnDir(vNormalize);
+    m_pRock->Set_IsActive(false);   // 던지지 않음
+    m_pRock->Set_Visible(true);     // 보이게
+    m_pRock->Set_SpanwPoint(vSpawnPoint);
+    m_pRock->Reset();
+
+    m_pGameInstance->Push_PoolObject_ToLayer(
+        ENUM_CLASS(LEVEL::VIPER),
+        TEXT("Layer_Viper_Rock"),
+        m_pRock
+    );
+}
+
+void CViper::Hold_ViperRock()
+{
+    if (nullptr == m_pRock)
+        return;
+
+    _float3 vSpawnPoint{};
+    _matrix ConvertMatrix = XMLoadFloat4x4(m_pThrowMatrix);
+    _matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix();
+    _matrix MulMatrix = ConvertMatrix * WorldMatrix;
+    _float4x4 ThrowMatrix{};
+    XMStoreFloat4x4(&ThrowMatrix, MulMatrix);
+    vSpawnPoint.x = ThrowMatrix.m[3][0];
+    vSpawnPoint.y = ThrowMatrix.m[3][1];
+    vSpawnPoint.z = ThrowMatrix.m[3][2];
+
+    _float3 vTargetDir = m_pController->Get_BlackBoard()->Get_Value<_float3>(m_strName, "TargetDir");
+    _vector vTempVec = XMVector3Normalize(XMLoadFloat3(&vTargetDir));
+    _float3 vNormalize{};
+    XMStoreFloat3(&vNormalize, vTempVec);
+    m_pRock->Set_SpawnDir(vNormalize);
+    m_pRock->Set_SpanwPoint(vSpawnPoint);
+    m_pRock->Reset();
+    m_pRock->Enter_State(CProjectile::IDLE);
+}
+
+void CViper::Throw_ViperRock()
+{
+    if (m_pRock == nullptr)
+        return;
+
+    CTransform* pTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    _vector vOffset = XMVectorSet(-0.f, -0.01f, 0.f, 0.f);
+    _vector vTargetLoc = pTransform->Get_State(STATE::POSITION) + vOffset;
+
+    _float3 vSpawnPoint{};
+    _matrix ConvertMatrix = XMLoadFloat4x4(m_pThrowMatrix);
+    _matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix();
+    _matrix MulMatrix = ConvertMatrix * WorldMatrix;
+    _float4x4 ThrowMatrix{};
+    XMStoreFloat4x4(&ThrowMatrix, MulMatrix);
+    vSpawnPoint.x = ThrowMatrix.m[3][0];
+    vSpawnPoint.y = ThrowMatrix.m[3][1];
+    vSpawnPoint.z = ThrowMatrix.m[3][2];
+
+
+    _vector vDir = vTargetLoc - XMLoadFloat3(&vSpawnPoint);
+    vDir = XMVector3Normalize(vDir);
+    _float3 vSpawnDir{};
+    XMStoreFloat3(&vSpawnDir, vDir);
+
+    m_pRock->Set_SpanwPoint(vSpawnPoint);
+    m_pRock->Set_SpawnDir(vSpawnDir);
+    m_pRock->Reset();
+    m_pRock->Set_IsActive(true);
+    m_pRock->Fire_Projectile();
+    m_pRock->Enter_State(CProjectile::LOOP);
+
+    //CModel* pModel = static_cast<CModel*>(m_pRock->Get_Component(TEXT("Com_Model")));
+    //pModel->Set_Animation(2);
 
 }
 
@@ -1540,6 +1723,7 @@ void CViper::Free()
     Safe_Release(m_pCore);
     Safe_Release(m_pPahse2Body);
     Safe_Release(m_pP2Weapon);
+    Safe_Release(m_pRock);
 
     __super::Free();
 }

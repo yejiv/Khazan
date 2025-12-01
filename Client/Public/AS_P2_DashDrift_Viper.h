@@ -20,8 +20,8 @@ public:
 
 private:
     DRIFTSTATE                          m_eState = { DRIFTSTATE::END };
-
-
+    _float                              m_fMoveSpeed = {};
+    _float                              m_fAttackRange = {};
 public:
     static CAS_P2_DashDrift_Viper*      Create();
     virtual void                        Free() override;

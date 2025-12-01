@@ -26,14 +26,19 @@ void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, 
     if (m_pGameInstance->Key_Down(DIK_0))
         ViperScene_Sit(pViper);
     else if (m_pGameInstance->Key_Down(DIK_1))
-        ViperScene_Land(pViper);
+        ViperScene_Jump(pViper);
     else if (m_pGameInstance->Key_Down(DIK_2))
+        ViperScene_Land(pViper);
+    else if (m_pGameInstance->Key_Down(DIK_3))
         ViperScene_Roar(pViper);
 
   
     if (pModel->Play_Animation(fTimeDelta))
     {
-       
+        if (m_eState == CUTSCENE_STATE::JUMP)
+        {
+
+        }
     }
    
 }
@@ -47,6 +52,12 @@ void CAS_CutScene_Start_Viper::ViperScene_Sit(CViper* pViper)
 {
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
     Change_CutSceneState(CUTSCENE_STATE::SIT, pModel, pViper);
+}
+
+void CAS_CutScene_Start_Viper::ViperScene_Jump(CViper* pViper)
+{
+    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+    Change_CutSceneState(CUTSCENE_STATE::JUMP, pModel, pViper);
 }
 
 void CAS_CutScene_Start_Viper::ViperScene_Land(CViper* pViper)
@@ -76,22 +87,29 @@ void CAS_CutScene_Start_Viper::Change_CutSceneState(CUTSCENE_STATE eNextState , 
         pViper->Set_ViperPosition(XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
         break;
     }
+
+    case Client::CUTSCENE_STATE::JUMP:
+    {
+        pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::JUMP));
+        pViper->Set_ViperPosition(XMVectorSet(-30.838f, -8.453f, 199.893f, 1.f));
         
+        break;
+    }        
     case Client::CUTSCENE_STATE::LAND:
     {
+        pViper->Reset_Viper_Gravity();
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::LAND));
         _vector vPosition = XMVectorSet(-31.938f, -29.986f, 201.162f, 1.f);
         pViper->Set_ViperPosition(vPosition);
         break;
-    }
-        
+    }       
     case Client::CUTSCENE_STATE::STAND:
     {
-        _vector vPosition = XMVectorSet(-31.938f, -29.986f, 201.162f, 1.f);
-        pViper->Set_ViperPosition(vPosition);
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::STAND));
+        _vector vPosition = XMVectorSet(-31.938f, -29.986f, 198.162f, 1.f);
+        pViper->Set_ViperPosition(vPosition);
         break;
-    }      
+    }                    
     }
    
 
