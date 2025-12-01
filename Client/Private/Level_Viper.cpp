@@ -102,6 +102,15 @@ void CLevel_Viper::Update(_float fTimeDelta)
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
 
+    //if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    //{
+    //    m_pClientInstance->Fade_Out(nullptr, 5.f);
+    //}
+
+    //if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+    //{
+    //    m_pClientInstance->Fade_In(nullptr, 5.f);
+    //}
 
 	return;
 }
