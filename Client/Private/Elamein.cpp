@@ -55,6 +55,7 @@ void CElamein::Hp_Visivle(_bool isVisivle)
 void CElamein::Hp_Dead()
 {
     m_pUI_HP->Set_IsDead(true);
+    m_pUI_HP = nullptr;
 }
 
 _bool CElamein::Check_Ranage(string strKey)
@@ -121,6 +122,14 @@ void CElamein::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject
     }
 }
 
+void CElamein::Creature_Release()
+{
+    m_isHit = false;
+    m_pHitBodyCom->Collision_Active(m_isHit);
+
+    __super::Creature_Release();
+}
+
 HRESULT CElamein::Initialize_Prototype(_int iLevel)
 {
     m_iPrototypeIndex = iLevel;
@@ -154,16 +163,6 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
 void CElamein::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
-
-    if (m_pGameInstance->Key_Down(DIK_M))
-    {
-        m_fCurrentHP = m_fMaxHP;
-        m_Data.isSleep = true;
-    }
-    else if (m_pGameInstance->Key_Down(DIK_B))
-        Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
-    else if (m_pGameInstance->Key_Down(DIK_N))
-        m_fCurrentStamina = 0;
 }
 
 void CElamein::Update(_float fTimeDelta)
@@ -447,6 +446,8 @@ HRESULT CElamein::Ready_MonData()
     m_Data.pCulStamina = &m_fCurrentStamina;
     m_Data.pMaxStamina = &m_fMaxStamina;
 
+    m_Data.fEdgeWidth = 0.2f;
+    m_Data.fEdgeColor = { 4.2f, 1.6f, 0.2f, 1.f };
     return S_OK;
 }
 
@@ -459,32 +460,30 @@ void CElamein::Update_UIHp()
 
 void CElamein::Update_Body(_float fTimeDelta)
 {
+    m_pHitBodyCom->Collision_Active(m_isHit);
     _vector vMatScale{}, vMatQuat{}, vMatPos{};
-    //_matrix HitMat = XMLoadFloat4x4(m_pBodySocketMatrix);
-    //for (uint32_t i = 0; i < 3; i++)
-    //    HitMat.r[i] = XMVector3Normalize(HitMat.r[i]);
-    //HitMat *= m_pTransformCom->Get_WorldMatrix();
 
-    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, m_pTransformCom->Get_WorldMatrix());
-    m_pHitBodyCom->Sync_Update(m_pTransformCom->Get_WorldMatrix());
-    m_pHitBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix(), vMatQuat, vMatPos);
-
+    if (m_isHit)
+    {
+        XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, m_pTransformCom->Get_WorldMatrix());
+        m_pHitBodyCom->Sync_Update(m_pTransformCom->Get_WorldMatrix());
+        m_pHitBodyCom->Update(fTimeDelta, m_pTransformCom->Get_WorldMatrix(), vMatQuat, vMatPos);
+    }
 
     _bool isAttack = m_Data.iAttackBody_State & (_uint)CElamein::ATTACK_BODY::RIGHT_LEG;
     m_pLeftLegCom->Collision_Active(isAttack);
 
-    if (!isAttack)
-        return;
+    if (isAttack)
+    {
+        _matrix TailMat = XMLoadFloat4x4(m_pLeftLegSocketMatrix);
+        for (uint32_t i = 0; i < 3; i++)
+            TailMat.r[i] = XMVector3Normalize(TailMat.r[i]);
+        TailMat *= m_pTransformCom->Get_WorldMatrix();
 
-    _matrix TailMat = XMLoadFloat4x4(m_pLeftLegSocketMatrix);
-    for (uint32_t i = 0; i < 3; i++)
-        TailMat.r[i] = XMVector3Normalize(TailMat.r[i]);
-    TailMat *= m_pTransformCom->Get_WorldMatrix();
-
-    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, TailMat);
-    m_pLeftLegCom->Sync_Update(TailMat);
-    m_pLeftLegCom->Update(fTimeDelta, TailMat, vMatQuat, vMatPos);
-
+        XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, TailMat);
+        m_pLeftLegCom->Sync_Update(TailMat);
+        m_pLeftLegCom->Update(fTimeDelta, TailMat, vMatQuat, vMatPos);
+    }
 }
 
 void CElamein::Rush()

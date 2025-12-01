@@ -773,16 +773,17 @@ PS_OUT PS_MAIN_HAIR_EMISSIVE(PS_IN In)
     Out.vSpecular.rgb = vSpecular.rgb * 1.f;
     float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    if (g_isEnableEdge)
-    {
-        float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
-        float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
-        Out.vDiffuse *= fEdgeMask;
-        Out.vDiffuse *= fShadeMask;
-    }
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+    
     vEmissive.b *= g_fEmissiveValue;
     Out.vDiffuse = Out.vDiffuse + (vEmissive * 1.f);
     Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+    
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
     
     return Out;
 }
@@ -810,18 +811,20 @@ PS_OUT PS_MAIN_SHIELD_EMISSIVE(PS_IN In)
     Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
     Out.vSpecular.a = 1.f;
     float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+   
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
 
-    if (g_isEnableEdge)
-    {
-        float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
-        float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
-        Out.vDiffuse *= fEdgeMask;
-        Out.vDiffuse *= fShadeMask;
-    }
     if (vEmissive.g >= 0.95f)
     {
         Out.vDiffuse.rgb = Out.vDiffuse.rgb + g_fEmissiveValue;    
     }
+    
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
     
     return Out;
 }
@@ -850,14 +853,11 @@ PS_OUT PS_MAIN_DISSOLVE(PS_IN In)
     
     float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    // Test
-    if (g_isEnableEdge)
-    {
-        float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
-        float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
-        Out.vDiffuse *= fEdgeMask;
-        Out.vDiffuse *= fShadeMask;
-    }
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g);
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+
     Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
     
     

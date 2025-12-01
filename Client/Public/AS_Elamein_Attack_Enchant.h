@@ -5,7 +5,7 @@
 class CAS_Elamein_Attack_Enchant : public CAI_State
 {
 private:
-    enum FSMSTATE { START, LOOP, COUNT, END };
+    enum FSMSTATE { CHARGE, START, LOOP, COUNT, END };
 private:
     CAS_Elamein_Attack_Enchant();
     virtual ~CAS_Elamein_Attack_Enchant() = default;

@@ -10,11 +10,16 @@ void CAS_Elamein_Attack_Enchant::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_pMonData = &static_cast<CElamein*>(pOwner)->Get_Data();
 
     m_pMonData->iAnimIndex = 89;
-    m_eState = START;
+    m_eState = CHARGE;
+    m_pMonData->isAnimFinash = false;
 }
 
 void CAS_Elamein_Attack_Enchant::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
+    if (m_eState == CHARGE)
+    {
+        m_eState = START;
+    }
     if (m_eState == START)
     {
         m_pMonData->pOwner->Add_Charge((m_pMonData->pOwner->Get_TrackPotion() / 45.f) * 5.f);
@@ -49,7 +54,7 @@ void CAS_Elamein_Attack_Enchant::Update(CStateMachine* pFSM, CGameObject* pOwner
 
 void CAS_Elamein_Attack_Enchant::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-
+    m_pMonData->pOwner->Reset_Charge();
 }
 
 void CAS_Elamein_Attack_Enchant::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
