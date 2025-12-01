@@ -64,9 +64,7 @@ void CSequence_Embars_Puzzle_Third::Update(_float fTimeDelta)
             CSkipButton::SKIPBUTTON_DESC SkipBtnDesc{};
             SkipBtnDesc.isOpen = false;
             m_pClientInstance->UI_UpdateSwitch(TEXT("SkipButton"), &SkipBtnDesc);
-            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ELEVATOR_SKIP), []() {
-                EventElevatorSkip::SkipEvent();
-                });
+            m_pGameInstance->Emit_Event<EventElevatorSkip>(ENUM_CLASS(EVENT_TYPE::ELEVATOR_SKIP), { EventElevatorSkip::SkipEvent() });
             m_pClientInstance->Fade_Out();
             m_isSkipFadeOut = true;
         }
