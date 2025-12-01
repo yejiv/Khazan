@@ -96,10 +96,6 @@ void CUnLockGear::Update(_float fTimeDelta)
         Animation_Change(fTimeDelta);
 
     m_fBlinkTimeAcc += fTimeDelta;
-
-    // Test
-    if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-        m_isEnableBlink = !m_isEnableBlink;
 }
 
 void CUnLockGear::Late_Update(_float fTimeDelta)
@@ -154,8 +150,14 @@ HRESULT CUnLockGear::Render()
         // CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
         
         // Unlock Gear 보석 살리기, Blink Rim Light Test
-        if (true == m_isEnableBlink)
-            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(12), E_FAIL);
+
+        if (true == m_EventGimmick.isUnLockGearAvailable(m_iEventID) || EVENT_TYPE::EMBARS_GIMMICK2 == m_eGimmickType)
+        {
+            if (false == m_isForceOff)
+                CHECK_FAILED_ASSERT(m_pShaderCom->Begin(12), E_FAIL);
+            else
+                CHECK_FAILED_ASSERT(m_pShaderCom->Begin(13), E_FAIL);
+        }
         else
             CHECK_FAILED_ASSERT(m_pShaderCom->Begin(13), E_FAIL);
 
@@ -390,6 +392,8 @@ void CUnLockGear::Animation_Change(_float fTimeDelta)
         m_eAnimState = ANIM_STATE::STOP;
         m_pModelCom->Set_Animation(m_eAnimState);
         m_pModelCom->AnimationLoop(false);
+
+        m_isForceOff = true;
 
         m_pTriggerCom->Collision_Active(false);
 
