@@ -66,6 +66,8 @@ private:
     _float m_fBlinkTimeAcc = {};
     _bool m_isEnableBlink = {};
 
+    _bool m_isForceOff = { false };
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     virtual HRESULT Bind_Materials(_uint iMeshIndex) override;

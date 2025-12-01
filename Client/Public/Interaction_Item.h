@@ -27,6 +27,8 @@ public:
 
 public:
     void Ready_Item(_uint iItemIndex, _vector vPos);
+    void RandNormal_Item(_vector vPos);
+    void Special_Item(_wstring strNameTag, _vector vPos);
     
 public:
     void Item_Check();
@@ -39,6 +41,11 @@ private:
     _uint m_iItemIndex = {};
     class CInteraction_Guide* m_pGuide = { nullptr };
     _bool m_isGuideVisible = { false };
+
+
+private:
+    vector<_uint> m_NormalItemIndex;
+    map<_wstring, _uint> m_SpecialItemIndex;
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;

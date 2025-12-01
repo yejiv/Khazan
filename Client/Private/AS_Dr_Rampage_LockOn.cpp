@@ -37,7 +37,7 @@ void CAS_Dr_Rampage_LockOn::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
             m_eLockOn = LOCKONSTATE::LOCKON_B;
         else
         {
-            if (m_eDir == TARGET_DIR::FR || m_eDir == TARGET_DIR::R || m_eDir == TARGET_DIR::BR || m_eDir == TARGET_DIR::F)    //¿À¸¥ÂÊ
+            if (m_eDir == TARGET_DIR::FR || m_eDir == TARGET_DIR::R || m_eDir == TARGET_DIR::BR || m_eDir == TARGET_DIR::F)    //ì˜¤ë¥¸ìª½
                 m_eLockOn = LOCKONSTATE::LOCKON_L;
             else
                 m_eLockOn = LOCKONSTATE::LOCKON_R;

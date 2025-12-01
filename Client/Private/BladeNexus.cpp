@@ -637,7 +637,7 @@ void CBladeNexus::Chase_Target(_float fTimeDelta)
 
 void CBladeNexus::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     if (ANIM_STATE::AFTER_IDLE == m_eAnimState || ANIM_STATE::BEFORE_IDLE == m_eAnimState)

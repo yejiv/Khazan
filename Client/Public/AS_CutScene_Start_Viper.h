@@ -18,6 +18,13 @@ public:
     virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
 
+public:
+    void                                ViperScene_Sit(class CViper* pViper);
+    void                                ViperScene_Land(class CViper* pViper);
+    void                                ViperScene_Roar(class CViper* pViper);
+    
+
+
 private:
     void                                Change_CutSceneState(CUTSCENE_STATE eNextState, class CModel* pModel, class CViper* pViper);
 

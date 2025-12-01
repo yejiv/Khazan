@@ -21,6 +21,7 @@ namespace Client {
         EMBARS_GIMMICK1,
         EMBARS_GIMMICK2,
         HALL_ELEVATOR_UNLOCK,
+        ELEVATOR_SKIP,
         BLADENEXUS_POP,
 		END };
 
@@ -229,6 +230,7 @@ namespace Client {
         bool isEventOn = {};
 
         bool isEvent() { return isEventOn; }
+
         void EventOn() { isEventOn = true; }
         void EventOff() { isEventOn = false; }
 
@@ -263,6 +265,19 @@ namespace Client {
             if (UNLOCK_STATE::STEP_3 == eStep)
                 return true;
             return false;
+        }
+    };
+
+    struct EventElevatorSkip {
+        bool isSkip{};
+
+        void Skip() { isSkip = true; }
+
+        static EventElevatorSkip SkipEvent()
+        {
+            EventElevatorSkip e = {};
+            e.Skip();
+            return e;
         }
     };
 
@@ -302,6 +317,7 @@ namespace Client {
         LADDER_ACTION eLadderState{ LADDER_ACTION::NONE };
         XMFLOAT4 vPosition{};
         XMFLOAT4 vPlayerPosition{};
+        XMFLOAT2 vEndActionPos{};               // x : 위쪽 값 | y : 아래쪽 값
 
         bool isStartAction() {
             return LADDER_ACTION::UPTODOWN == eLadderState || LADDER_ACTION::DOWNTOUP == eLadderState;

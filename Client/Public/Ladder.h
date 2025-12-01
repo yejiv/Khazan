@@ -78,17 +78,19 @@ private:
 
     _float4 m_vPlayerPosition = {};
 
-    _float4 m_vDownPlayerPos = {};
-    _float4 m_vClimbUpPos = {};
-
     _float4 m_vUpPlayerPos = {};                  // 사다리 위쪽 플레이어 위치 정보
-    _float4 m_vClimbDownPos = {};                 // 사다리 액션 중단 액션
+    _float m_fClimbUpPos = {};                   // 사다리 액션 중단 위치
+
+    _float4 m_vDownPlayerPos = {};                // 사다리 아래쪽 플레이어 위치 정보
+    _float m_fClimbDownPos = {};                 // 사다리 액션 중단 위치
 
     LADDER_POINT m_eLadderPoint = { LADDER_POINT::END };
 
     EventLadder::LADDER_ACTION m_eLadderStart = { EventLadder::LADDER_ACTION::NONE };
 
     _bool m_isPlayerOnLadder = { false };
+
+    _float m_fOffSetHeight = {};
 
 private:
     void Set_GuideMatrix(_float4 vGuidePos);

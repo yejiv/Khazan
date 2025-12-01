@@ -38,16 +38,18 @@ HRESULT CLevel_Embars::Initialize()
 
     CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
-    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+    /*m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 
-        CHECK_FAILED(Ready_Lights(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+        }));*/
 
-        CHECK_FAILED(Ready_FireLights(TEXT("Embars_Point"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
-        //CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+    CHECK_FAILED(Ready_Lights(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
-        return S_OK;
-        }));
+    CHECK_FAILED(Ready_FireLights(TEXT("Embars_Point"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+
+    CHECK_FAILED(Ready_BrazierLights(TEXT("Embars_Brazier"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+
+    //CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);        
 
     for (_uint i = 0; i < EMBARS_SUBLV; ++i)
     {
@@ -90,9 +92,9 @@ void CLevel_Embars::Update(_float fTimeDelta)
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
 
-    if (m_pGameInstance->Key_Down(DIK_RETURN))
+    /*if (m_pGameInstance->Key_Down(DIK_RETURN))
         if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))))
-            return;
+            return;*/
 
 	return;
 }
@@ -174,7 +176,7 @@ HRESULT CLevel_Embars::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust6"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Stamp"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("BlustSmall"), 3);
-    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Fire"), 29);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Fire"), 38);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Spawn"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("BloodHit"), 100);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Open"), 3);
@@ -993,6 +995,74 @@ HRESULT CLevel_Embars::Ready_FireLights(const _tchar* pDataFileName, LEVEL eCurr
         m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
 
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Fire"), XMLoadFloat4(&LightDesc.vPosition));
+    }
+
+    CloseHandle(hFile);
+
+    return S_OK;
+}
+
+HRESULT CLevel_Embars::Ready_BrazierLights(const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
+{
+    // Dat 기본 경로
+    _wstring strDataFilePath = { TEXT("../../Client/Bin/Data/Map/MapData/") };
+
+    switch (eMap)
+    {
+    case KHAZAN_MAP::HEINMACH:
+        strDataFilePath += TEXT("HeinMach/");
+        break;
+    case KHAZAN_MAP::CREVICE:
+        strDataFilePath += TEXT("Crevice/");
+        break;
+    case KHAZAN_MAP::EMBARS:
+        strDataFilePath += TEXT("Embars/");
+        break;
+    case KHAZAN_MAP::VIPER:
+        strDataFilePath += TEXT("Viper/");
+        break;
+    default:
+        break;
+    }
+
+    strDataFilePath += pDataFileName;
+
+    strDataFilePath += TEXT("_lights.dat");
+
+    DWORD dwByte = {};
+
+    HANDLE hFile = CreateFile(strDataFilePath.c_str(), GENERIC_READ, NULL, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        return E_FAIL;
+    }
+    CHECK_EQUAL(INVALID_HANDLE_VALUE, hFile, E_FAIL);
+
+    // 1. 조명의 총 개수
+    _uint iLightCnt = {};
+    CHECK_FALSE(ReadFile(hFile, &iLightCnt, sizeof(_uint), &dwByte, nullptr), false);
+
+    // 조명 총 개수만큼 순회
+    for (_uint i = 0; i < iLightCnt; ++i)
+    {
+        LIGHT_DESC LightDesc = {};
+
+        // 2. 조명 태그 길이 불러오기
+        _uint iLightTagLen = {};
+        CHECK_FALSE(ReadFile(hFile, &iLightTagLen, sizeof(_uint), &dwByte, nullptr), false);
+
+        // 3. 조명 태그 이름 불러오기
+        _tchar szLightTag[MAX_PATH] = {};
+        CHECK_FALSE(ReadFile(hFile, &szLightTag, sizeof(_tchar) * iLightTagLen, &dwByte, nullptr), false);
+
+        // 4. 조명 구조체 불러오기
+        CHECK_FALSE(ReadFile(hFile, &LightDesc, sizeof(LIGHT_DESC), &dwByte, nullptr), false);
+
+        // 조명 등록
+        m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
+
+        //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Brazier"), XMLoadFloat4(&LightDesc.vPosition));
     }
 
     CloseHandle(hFile);

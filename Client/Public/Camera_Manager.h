@@ -52,6 +52,9 @@ public:
     void Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos = _float3(0.f, 0.f, 0.f), _float3 vLookAt = _float3(0.f, 0.f, 0.f));
 
 public:
+    void Force_AniEnd();
+
+public:
     void Switch_CameraMode(CAMERATYPE eType);
 
 private:

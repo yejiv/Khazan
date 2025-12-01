@@ -44,6 +44,7 @@ HRESULT CLevel_Viper::Initialize()
     
     //  CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
+    // Test MainLight
     LIGHT_DESC LightDesc = {};
     LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
     LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
@@ -53,7 +54,6 @@ HRESULT CLevel_Viper::Initialize()
     if (FAILED(m_pGameInstance->Add_Light(TEXT("MainLight"), ENUM_CLASS(LEVEL::VIPER), LightDesc)))
         return E_FAIL;
 
-
     CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
     CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
@@ -62,12 +62,12 @@ HRESULT CLevel_Viper::Initialize()
     for (_uint i = 0; i < VIPER_SUBLV; ++i)
     {
         CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-        //CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     }
     //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
-    CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
+    //CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
     CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
 
     //CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
@@ -136,13 +136,13 @@ HRESULT CLevel_Viper::Ready_Layer_UI()
 }
 HRESULT CLevel_Viper::Ready_Layer_Player(const _wstring& strLayerTag)
 {
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-		ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
+	//	ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
+	//	return E_FAIL;
 
-    //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-    //    ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
-    //    return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
+        ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+        return E_FAIL;
 
 	return S_OK;
 }
