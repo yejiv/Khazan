@@ -45,6 +45,13 @@ HRESULT CTwinBlade_Viper::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Collision())) return E_FAIL;
 
     m_pTransformCom->Rotation(0.1f, 3.14f, 1.f);
+    
+   
+
+ 
+    
+
+
 
     return S_OK;
 }
@@ -59,13 +66,58 @@ void CTwinBlade_Viper::Update(_float fTimeDelta)
     if (CViper::PHASE::PHASE1 == m_pOwner->Get_Phase() && m_isActive)
     {
         _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+        CBlackBoard* pBB = m_pOwner->Get_Controller()->Get_BlackBoard();
+
+
+        if (pBB->Get_Value<_bool>(m_pOwner->Get_Name(), "isStartCutSceneSit"))
+        {
+            //x = 0.700129509 y = 0.100012794 z = 2.01165676e-07
+            m_vLocalOffset = _float3(0.7f, 0.1f, 0.f);
+        }
+        else if (pBB->Get_Value<_bool>(m_pOwner->Get_Name(), "isStartCutSceneJump"))
+        {
+            //m_vLocalOffset = {x=0.00000000 y=0.133346602 z=0.00000000 }
+            m_vLocalOffset = _float3(0.f, 0.1334f, 0.f);
+        }
+        else
+        {
+            m_vLocalOffset = _float3(0.f, 0.f, 0.f);
+        }
+
+        //_float3 offset = m_vLocalOffset;
+
+      /*  if (m_pGameInstance->Key_Down(DIK_UP))
+            offset.y += fMoveSpeed * fTimeDelta;
+        if (m_pGameInstance->Key_Down(DIK_DOWN))
+            offset.y -= fMoveSpeed * fTimeDelta;
+
+        if (m_pGameInstance->Key_Down(DIK_LEFT))
+            offset.x -= fMoveSpeed * fTimeDelta;
+
+        if (m_pGameInstance->Key_Down(DIK_RIGHT))
+            offset.x += fMoveSpeed * fTimeDelta;
+
+        if (m_pGameInstance->Key_Down(DIK_L))
+            offset.z += fMoveSpeed * fTimeDelta;
+
+        if (m_pGameInstance->Key_Down(DIK_K))
+            offset.z -= fMoveSpeed * fTimeDelta;*/
+
+        //m_vLocalOffset = offset;
 
         for (uint32_t i = 0; i < 3; i++)
             BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
+        _matrix OffsetMatrix = XMMatrixTranslation(
+            m_vLocalOffset.x,
+            m_vLocalOffset.y,
+            m_vLocalOffset.z
+        );
+
+
         XMStoreFloat4x4(
             &m_CombinedWorldMatrix,
-            m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
+            m_pTransformCom->Get_WorldMatrix() * OffsetMatrix * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
         );
 
         _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);

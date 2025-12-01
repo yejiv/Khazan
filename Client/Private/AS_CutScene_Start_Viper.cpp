@@ -35,9 +35,15 @@ void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, 
   
     if (pModel->Play_Animation(fTimeDelta))
     {
+        CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+
         if (m_eState == CUTSCENE_STATE::JUMP)
         {
-
+            
+        }
+        else if (m_eState == CUTSCENE_STATE::STAND)
+        {
+            pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneJump", false);
         }
     }
    
@@ -52,6 +58,7 @@ void CAS_CutScene_Start_Viper::ViperScene_Sit(CViper* pViper)
 {
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
     Change_CutSceneState(CUTSCENE_STATE::SIT, pModel, pViper);
+    
 }
 
 void CAS_CutScene_Start_Viper::ViperScene_Jump(CViper* pViper)
@@ -77,6 +84,8 @@ void CAS_CutScene_Start_Viper::Change_CutSceneState(CUTSCENE_STATE eNextState , 
     if (m_eState == eNextState)
         return;
 
+    CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+
     m_eState = eNextState;
     
     switch (m_eState)
@@ -84,11 +93,13 @@ void CAS_CutScene_Start_Viper::Change_CutSceneState(CUTSCENE_STATE eNextState , 
     case Client::CUTSCENE_STATE::SIT:
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::SIT));
         pViper->Set_ViperPosition(XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
+        pBB->Set_Value<_bool>(pViper->Get_Name(),"isStartCutSceneSit",true);
         break;
     case Client::CUTSCENE_STATE::JUMP:
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::JUMP));
         pViper->Set_ViperPosition(XMVectorSet(-30.838f, -8.453f, 199.893f, 1.f));
-        
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneSit", false);
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneJump", true);
         break;
     case Client::CUTSCENE_STATE::LAND:
     {

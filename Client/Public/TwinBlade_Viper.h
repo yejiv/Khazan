@@ -82,6 +82,9 @@ private:
     _float4                 m_vTipPos = {};
     _float4                 m_vGrabPos = {};
 
+    _float3                 m_vLocalOffset = {};
+
+
 public:
     static CTwinBlade_Viper*    Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CGameObject*        Clone(void* pArg) override;
