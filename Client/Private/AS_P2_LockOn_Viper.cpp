@@ -57,14 +57,11 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
     m_fTimeAcc += fTimeDelta;
     
-    // 타겟 바라보기
-    pOwnerTransform->LookAt_Lerp(vTargetPos, fTimeDelta, 0.5f);
+    //pOwnerTransform->LookAt_Lerp(vTargetPos, fTimeDelta, 0.5f);
+    pOwnerTransform->LookAt_Lerp(vTargetPos, fTimeDelta, m_fTurnSpeed);
 
-  
     // 방향으로 이동
     Move_To_Direction(pOwnerTransform,fTimeDelta);
-
-
 
     // 탈출 조건: Look 방향이 타겟 방향과 맞음
     _vector vDir = XMVector3Normalize(vTargetPos - vOwnerPos);
@@ -100,6 +97,7 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     if (isLockOnFinished)
     {
         pBB->Set_Value(pViper->Get_Name(), "isP2_LockOn_Finished", true);
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2LockOn", false);
         //pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pOwner);
     }
     pModel->Play_Animation(fTimeDelta);
@@ -132,17 +130,30 @@ void CAS_P2_LockOn_Viper::Update_Direction(CTransform* pOwnerTransform, CTransfo
     _float fDotR = XMVectorGetX(XMVector3Dot(vDir,vRight));
 
 
-    DIRECTION ePrevDir = m_eDirState;
+    //DIRECTION ePrevDir = m_eDirState;
 
+    _float fDist = XMVectorGetX(XMVector3Length(vDir));
+    _bool isBackward = {false};    
+    // �Ÿ���� �������� ����
 
-    if (fDotF > 0.7f)
+     /*if (fDotF < -0.7f)
+     {
+         m_eDirState = DIRECTION::B;
+     }*/
+
+    if (fDist < 300.f)
     {
-        m_eDirState = DIRECTION::F;
+        _float fChance = m_pGameInstance->Rand(0,1);
+        if (fChance > 0.4)
+            isBackward = true;
     }
-    else if (fDotF < -0.7f)
-    {
+
+    if (isBackward)
         m_eDirState = DIRECTION::B;
-    }
+
+    else if (fDotF > 0.7f)
+        m_eDirState = DIRECTION::F;
+
     else
     {
         // 좌/우
@@ -153,25 +164,29 @@ void CAS_P2_LockOn_Viper::Update_Direction(CTransform* pOwnerTransform, CTransfo
     }
 
     // 방향 바뀔 때만 애니 다시 세팅
-    if (ePrevDir != m_eDirState)
+    //if (ePrevDir != m_eDirState)
     {
         switch (m_eDirState)
         {
         case DIRECTION::F:
             pModel->Set_Animation(37); // 전진 락온
             m_fMoveSpeed = 0.5f;
+            m_fTurnSpeed = 0.5f;
             break;
         case DIRECTION::B:
             pModel->Set_Animation(36); // 후진 락온
             m_fMoveSpeed = 0.5f;
+            m_fTurnSpeed = 0.5f;
             break;
         case DIRECTION::L:
-            pModel->Set_Animation(38); // 좌측 락온
-            m_fMoveSpeed = 1.2f;
+            pModel->Set_Animation(38);
+            m_fMoveSpeed = 0.5f;
+            m_fTurnSpeed = 2.f;
             break;
         case DIRECTION::R:
-            pModel->Set_Animation(39); // 우측 락온
-            m_fMoveSpeed = 1.2f;
+            pModel->Set_Animation(39);
+            m_fMoveSpeed = 0.5f;
+            m_fTurnSpeed = 2.f;
             break;
         }
     }

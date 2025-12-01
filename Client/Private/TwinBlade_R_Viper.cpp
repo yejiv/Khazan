@@ -58,6 +58,19 @@ void CTwinBlade_R_Viper::Priority_Update(_float fTimeDelta)
 void CTwinBlade_R_Viper::Update(_float fTimeDelta)
 {
 
+    if (m_pOwner->Get_Controller()->Get_BlackBoard()->Get_Value<_bool>(m_pOwner->Get_Name(), "isP2LockOn"))
+    {
+        // ¶ô¿Â Offset
+        _matrix tempMat = XMMatrixRotationZ(XMConvertToRadians(180.0f)) * XMMatrixRotationX(XMConvertToRadians(60.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f));
+        XMStoreFloat4x4(&m_matOffset, tempMat);
+    }
+    else
+    {
+        _matrix tempMat = XMMatrixRotationZ(XMConvertToRadians(90.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f));
+        XMStoreFloat4x4(&m_matOffset, tempMat);
+    }
+
+
     if (CViper::PHASE::PHASE2 == m_pOwner->Get_Phase() && m_isActive)
     {
         // ë°”ë”” ì†Œì¼“ ì›”ë“œ

@@ -38,18 +38,18 @@ HRESULT CLevel_Embars::Initialize()
 
     CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
-    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+    /*m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 
-        CHECK_FAILED(Ready_Lights(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+        }));*/
 
-        CHECK_FAILED(Ready_FireLights(TEXT("Embars_Point"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
-        CHECK_FAILED(Ready_BrazierLights(TEXT("Embars_Brazier"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+    CHECK_FAILED(Ready_Lights(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
-        //CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+    CHECK_FAILED(Ready_FireLights(TEXT("Embars_Point"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
-        return S_OK;
-        }));
+    CHECK_FAILED(Ready_BrazierLights(TEXT("Embars_Brazier"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+
+    //CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);        
 
     for (_uint i = 0; i < EMBARS_SUBLV; ++i)
     {
