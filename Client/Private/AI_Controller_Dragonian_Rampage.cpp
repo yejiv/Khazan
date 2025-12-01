@@ -283,8 +283,8 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Check(CGameObject* pOwner)
         m_pMonData->eAttack_State = CDragonian_Rampage::ATTACKSTATE::RUSH;
         return BTNODESTATE::SUCCESS;
     }
-    else
-        return BTNODESTATE::FAILURE;
+
+    return BTNODESTATE::FAILURE;
 }
 
 BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Back(CGameObject* pOwner)

@@ -65,7 +65,7 @@ void CDragonian_Sword::Update(_float fTimeDelta)
 
 void CDragonian_Sword::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this));
+    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this),);
 }
 
 HRESULT CDragonian_Sword::Render()

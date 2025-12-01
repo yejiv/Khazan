@@ -125,6 +125,9 @@ private:
     _float                          m_fAccTime = {};
 
     _bool                           m_isHit = { true };
+
+    //UI테스트
+    class CUI_Talk_Danjinjar*       m_pTalk = { nullptr };
 private:
     HRESULT                         Ready_Prototype();
 

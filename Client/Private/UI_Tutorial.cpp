@@ -119,7 +119,7 @@ HRESULT CUI_Tutorial::Initialize_Clone(void* pArg)
 
 	CHECK_FAILED(Ready_Component(), E_FAIL);
 
-    m_fValue = 0.84;
+    m_fValue = 0.84f;
 	return S_OK;
 }
 

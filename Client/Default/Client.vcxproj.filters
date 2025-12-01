@@ -1381,6 +1381,9 @@
     <Filter Include="92.AI\State\Dragonian_Melee\Turn">
       <UniqueIdentifier>{30695547-ff52-4c5f-8ee2-1d28b8935637}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Talk\Danjinjar">
+      <UniqueIdentifier>{fffe43d7-c56d-4ac8-987a-d7659500da8d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2671,6 +2674,9 @@
     <ClInclude Include="..\public\AS_Dr_Melee_Turn.h">
       <Filter>92.AI\State\Dragonian_Melee\Turn</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Talk_Danjinjar.h">
+      <Filter>02.GameObject\UI\Talk\Danjinjar</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3940,6 +3946,9 @@
     </ClCompile>
     <ClCompile Include="..\private\AS_Dr_Melee_Turn.cpp">
       <Filter>92.AI\State\Dragonian_Melee\Turn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Talk_Danjinjar.cpp">
+      <Filter>02.GameObject\UI\Talk\Danjinjar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

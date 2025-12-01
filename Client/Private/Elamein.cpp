@@ -12,6 +12,8 @@
 
 #include "Mon_Hp.h"
 
+#include "UI_Talk_Danjinjar.h"
+
 CElamein::CElamein(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
 {
@@ -156,6 +158,14 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_AnimEvent(), E_FAIL);
     CHECK_FAILED(Ready_Components(), E_FAIL);
 
+    CUIObject::UIOBJECT_DESC Desc;
+
+    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+    Desc.vLocalPos = { 0.f, 0.f };
+    Desc.vLocalSize = { 3.625f, 1.f };
+    Desc.szName = "Dangin_TalkUI";
+    m_pTalk = static_cast<CUI_Talk_Danjinjar*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TalkDanjinjar"), &Desc));
+    CHECK_NULLPTR(m_pTalk, E_FAIL);
 
     return S_OK;
 }
@@ -163,6 +173,7 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
 void CElamein::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
+    m_pTalk->Priority_Update(fTimeDelta);
 }
 
 void CElamein::Update(_float fTimeDelta)
@@ -190,11 +201,15 @@ void CElamein::Update(_float fTimeDelta)
     _float4x4 LockOnMatrix{};
     XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
     m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
+
+    m_pTalk->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
+    m_pTalk->Update(fTimeDelta);
 }
 
 void CElamein::Late_Update(_float fTimeDelta)
 {
     CContainerObject::Late_Update(fTimeDelta);
+    m_pTalk->Late_Update(fTimeDelta);
 }
 
 void CElamein::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -531,4 +546,7 @@ void CElamein::Free()
     Safe_Release(m_pSword);
     Safe_Release(m_pShield);
     m_Data.pOwner = nullptr;
+
+
+    Safe_Release(m_pTalk);
 }
