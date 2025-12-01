@@ -221,6 +221,7 @@ private:
 
 	_bool m_isAddLight = { false };				// 조명 추가 시 활성화
 	_bool m_isFixLight = { false };				// 조명 수정 시 활성화
+    LIGHT_DESC m_OriginalLightDesc = {};        // 조명 수정 시 Reset 할 백업용 구조체
 	_bool m_isFindFixLight = { false };			// FIX 할거 찾으면 활성화
 
 	LIGHT_DESC m_FixLightDesc = {};				// 수정할 조명 구조체

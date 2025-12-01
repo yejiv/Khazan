@@ -36,7 +36,7 @@ public:
 	void Set_IsPool(_bool isPool) { m_isPool = isPool; }
 	_bool Get_IsPool() { return m_isPool; }
 
-	void Set_IsDead(_bool isDead) { m_isDead = isDead; }
+	virtual void Set_IsDead(_bool isDead) { m_isDead = isDead; }
 
      _bool Get_IsDead() { return m_isDead; }
 

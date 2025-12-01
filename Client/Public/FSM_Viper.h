@@ -1,5 +1,9 @@
 #pragma once
 #include "StateMachine.h"
+#include "Client_Defines.h"
+
+
+NS_BEGIN(Client)
 
 enum class VIPER_STATE_P1
 {
@@ -51,11 +55,16 @@ enum class VIPER_STATE_P1
 };
 
 
+
 class CFSM_Viper final : public CStateMachine
 {
 private:
     CFSM_Viper();
     virtual ~CFSM_Viper() = default;
+
+public:
+    class CAS_CutScene_Start_Viper* Get_CutScene_Start_Viper();
+
 
 public:
     virtual HRESULT				Initialize();
@@ -66,3 +75,4 @@ public:
     virtual void				Free() override;
 };
 
+NS_END

@@ -398,9 +398,9 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight_static_connect"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("ITEM_FX"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item"))))
-        return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("ITEM_FX"),
+    //      CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item"))))
+    //      return E_FAIL;
 
     // [GS]
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("FerociousMomentum0"),

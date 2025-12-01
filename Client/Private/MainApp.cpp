@@ -360,6 +360,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
         CMotionTrail::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
+    /* Prototype_Component_Texture_Monster_Dissolve */
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Monster_Dissolve"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Dissolve/FT_Noise_Dissolve_0.png"), 1))))
+        return E_FAIL;
+
 	return S_OK;
 }
 

@@ -54,10 +54,11 @@ public:
 
         EARLY_DODGING = 1 << 24,  
 
-        INTERACTION_STATUE = 1 << 25, //상호작용 조각상 (공격,가드,스킬키 입력 안받음)
+        BLOCK_ATK_SKILL_GUARD = 1 << 25, //상호작용 조각상, 스태미나 떨어짐(공격,가드,스킬키 입력 안받음)
         STAMINA_EXHAUSTION  = 1 << 26, 
 
         VIPER_GRAB = 1 << 27,
+
         /* 회전 */
         //TURN180 = 1 << 20,
         //TURN180_REQUESTED = 1 << 21, 
@@ -70,7 +71,7 @@ public:
         | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST
         | FALLING | FALLING_ATTACK | PRE_LAND  | DODGING | EARLY_DODGING
         | BRUTAL_BEGIN | BRUTAL_READY | BRUTAL_SUCCESS
-        | INTERACTION_STATUE | STAMINA_EXHAUSTION | VIPER_GRAB
+        | BLOCK_ATK_SKILL_GUARD | STAMINA_EXHAUSTION | VIPER_GRAB
 
         /*| TURN180| TURN180_REQUESTED | TURN180_COMPLETE| MOVE_AFTER_TURN*/,
 
@@ -246,6 +247,8 @@ private:
     /* others,, */
     void            Check_IsInAir(_float fTimeDelta);
     void            Clear_Injured();
+
+public:
     void            EnterStatuePuzzle(); //조각상 돌리기 모드 on
     void            ExitStatuePuzzle(); //조각상 돌리기 모드 off
 

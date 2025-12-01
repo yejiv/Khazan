@@ -7,6 +7,7 @@
 #include "Camera_Compre.h"
 #include "Transform.h"
 #include "Creature.h"
+#include "Khazan_GSword.h"
 
 #include "MapObject_Header.h"
 
@@ -56,6 +57,7 @@ void CEmbars_Trigger::Update(_float fTimeDelta)
             if (m_strTriggerKey == "Puzzle_1")
             {
                 m_pClientInstance->Camera_Set_FixEnd();
+                m_pKhazan->ExitStatuePuzzle();
                 m_isDead = true;
             }
         }
@@ -65,6 +67,7 @@ void CEmbars_Trigger::Update(_float fTimeDelta)
             if (m_strTriggerKey == "Puzzle_2")
             {
                 m_pClientInstance->Camera_Set_FixEnd();
+                m_pKhazan->ExitStatuePuzzle();
                 m_isDead = true;
             }
         }
@@ -114,6 +117,7 @@ HRESULT CEmbars_Trigger::Ready_TriggerType(void* pArg)
         string filePath = "../../Client/Bin/Data/Camera/Animation/Statue1";
         m_pClientInstance->Camera_Set_Animation_Json(filePath);
         m_iLitEventId = m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK0), [&](const EventGimmick& e) { m_EventGimmick = e; });
+        m_pKhazan = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Creature_Player")));
     }
     else if (m_strTriggerKey == "Puzzle_2")
     {
@@ -121,6 +125,7 @@ HRESULT CEmbars_Trigger::Ready_TriggerType(void* pArg)
         string filePath = "../../Client/Bin/Data/Camera/Animation/Statue2";
         m_pClientInstance->Camera_Set_Animation_Json(filePath);
         m_iLitEventId = m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK1), [&](const EventGimmick& e) { m_EventGimmick = e; });
+        m_pKhazan = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Creature_Player")));
     }
 
     /*
@@ -160,10 +165,12 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
         if (m_strTriggerKey == "Puzzle_1")
         {
             m_pClientInstance->Camera_Set_Animation(TEXT("Statue1"));
+            m_pKhazan->EnterStatuePuzzle();
         }
         else if (m_strTriggerKey == "Puzzle_2")
         {
             m_pClientInstance->Camera_Set_Animation(TEXT("Statue2"));
+            m_pKhazan->EnterStatuePuzzle();
         }
         else if (m_strTriggerKey == "B1_Entry")
         {
@@ -174,7 +181,7 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             Desc.vColor = _float4(0.f, 0.058f, 0.117f, 1.f);
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
-            m_pGameInstance->Start_FogTransition(1.5f, Desc);
+            m_pGameInstance->Start_FogTransition(1.5f, Desc);            
         }
         else if (m_strTriggerKey == "B1_Exit")
         {
@@ -185,7 +192,7 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
             FogDesc.isUseHeight = false;
             FogDesc.isUseNoise = false;
-            m_pGameInstance->Start_FogTransition(1.5f, FogDesc);
+            m_pGameInstance->Start_FogTransition(1.5f, FogDesc);            
         }
         /*
         else if (m_strTriggerKey == "Talk_03")
@@ -214,6 +221,7 @@ void CEmbars_Trigger::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLa
         if (m_strTriggerKey == "Puzzle_1" || m_strTriggerKey == "Puzzle_2")
         {
             m_pClientInstance->Camera_Set_FixEnd();
+            m_pKhazan->ExitStatuePuzzle();
         }
     }
 
@@ -265,6 +273,7 @@ void CEmbars_Trigger::Free()
     __super::Free();
 
     Safe_Release(m_pClientInstance);
+    m_pKhazan = nullptr;
     //Safe_Release(m_pHeinMach_Field);
     //Safe_Release(m_pHeinMach_Yetuga);
     //Safe_Release(m_pHeinMach_Start_Chat);

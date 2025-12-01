@@ -17,9 +17,22 @@ public:
 
 
 private:
+    void          Update_Direction(class CTransform* pOwnerTransform, class CTransform* pTargetTransfrom, class CModel* pModel);
+    void          Move_To_Direction(class CTransform* pOwnerTransform, _float fTimeDelta);
+
+
+
+private:
     DIRECTION                               m_eDirState = { DIRECTION::END };
     _float						            m_fDotThreshold = {};
     _float						            m_fMoveSpeed = {};
+    _float                                  m_fTimeAcc = {}; // 락온 유지 시간
+    _float                                  m_fMinLockTime = {}; // 최소 유지시간
+    _float                                  m_fMaxLockTime = {} ; // 최대 유지 시간
+    _float                                  m_fEndDist = {}; // 거리 탈출용
+
+
+    _float                                  m_fTurnSpeed = {};
 
 public:
     static CAS_P2_LockOn_Viper*             Create();

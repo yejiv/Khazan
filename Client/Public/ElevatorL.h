@@ -73,6 +73,7 @@ private:
 
 private:
     EventHallElevator m_Event = {};
+    EventElevatorSkip m_SkipEvent = {};
 
     EVENT_TYPE m_eGimmickType = { EVENT_TYPE::END };
 
@@ -96,6 +97,7 @@ private:
     _float m_fVerticalTimeAcc = { 0.f };
 
     _uint m_iEventID = { 0 };
+    _uint m_iSkipEventID = { 0 };
 
 private:
     void Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4 vTargetPos, _float fDuration);
@@ -116,6 +118,7 @@ public:
 
 private:
     void VerticalOnTime_Update(_float fTimeDelta);
+    void Gimmick_Event_Skip(_float fTimeDelta);
 
 public:
     static CElevatorL* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

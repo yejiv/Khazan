@@ -9,7 +9,6 @@ void CAS_Elamein_Guard::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     if (m_pMonData == nullptr)
         m_pMonData = &static_cast<CElamein*>(pOwner)->Get_Data();
 
-    m_pMonData->pOwner->Hp_Visivle(false);
     m_pMonData->iAnimIndex = 48;
     m_eState = START;
 
@@ -17,7 +16,7 @@ void CAS_Elamein_Guard::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAS_Elamein_Guard::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
-    //m_pMonData->pOwner->LockOnLerp(fTimeDelta);
+    m_pMonData->pOwner->LockOnLerp(fTimeDelta, 5.f);
     if (m_eState == START)
     {
         if (m_pMonData->isAnimFinash)
@@ -59,9 +58,19 @@ void CAS_Elamein_Guard::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
 void CAS_Elamein_Guard::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    m_pMonData->fGuardCool = 20.f;
+    m_pMonData->fGuardCool = 30.f;
     m_fAcctime = 0.f;
     m_pMonData->eHitType = HITREACTION::END;
+}
+
+void CAS_Elamein_Guard::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+    }
 }
 
 CAS_Elamein_Guard* CAS_Elamein_Guard::Create()
