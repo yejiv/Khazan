@@ -11,6 +11,8 @@
 #include "Core_Viper.h"
 #include "Body_Phase2_Viper.h"
 #include "TwinBlade_R_Viper.h"
+#include "AS_CutScene_Start_Viper.h"
+#include "FSM_Viper.h"
 
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -40,8 +42,25 @@ void CViper::Set_PhaseWeapon_Phase2()
     m_pP2Weapon->Set_IsActive(true);
 }
 
+void CViper::Viper_Land(_fvector vGoalPosition, _float fSpeed)
+{
+    m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 0.f));
+    m_pCharVirCom->Start_Dive(vGoalPosition, fSpeed);
+}
+
+CAS_CutScene_Start_Viper* CViper::Get_Viper_CutSceneState()
+{
+    CFSM_Viper* pFSM = static_cast<CFSM_Viper*>(m_pController->Get_State_Machine());
+    CAS_CutScene_Start_Viper* pCutSceneState = pFSM->Get_CutScene_Start_Viper();
+    return pCutSceneState;
+}
+
+
+
+
 HRESULT CViper::Initialize_Prototype()
 {
+    
     return S_OK;
 }
 
@@ -72,9 +91,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     {
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
     }
-
     m_ePhase = PHASE::PHASE2;
-
 
     m_fRecoveryPerSec = 5.f;
 
@@ -440,6 +457,7 @@ void CViper::Grab_Check_End()
 
 void CViper::Set_ViperPosition(_fvector vPosition)
 {
+    m_pTransformCom->Set_State(STATE::POSITION, vPosition);
     m_pCharVirCom->Set_Position(vPosition);
 }
 
@@ -880,9 +898,35 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma endregion
 
+
+#pragma region START_CINNEMATIC_LANDING
+
+    pModel->Register_Event("ViperStartCutScene_Jump", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            
+            _vector vPosition = XMVectorSet(-31.938f, -29.986f, 190.162f, 1.f);
+            m_pCharVirCom->Jump_ToTarget(vPosition,10.f,80.f);
+        });
+
+    pModel->Register_Event("ViperStartCutScene_Jump", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            _vector vPosition = XMVectorSet(-31.938f, -29.986f, 210.162f, 1.f);
+            m_pCharVirCom->Start_Dive(vPosition, 20);
+        });
+
+
+#pragma endregion
+
+
+
     CModel* pP2Model = static_cast<CModel*>(m_pPahse2Body->Get_Component(TEXT("Com_Model")));
     if (nullptr == pP2Model)
         return E_FAIL;
+
+
+
+    //=============================================================PHASE2======================================================//
+
 
 #pragma region HANDSTOMP
 
@@ -1272,6 +1316,192 @@ HRESULT CViper::Ready_AnimEvent()
             // 무기 공격 콜라이더 OFF
             m_isLookAt = false;
             m_fTurnSpeed = 8.f;
+        });
+
+
+
+#pragma endregion
+
+
+#pragma region BACKJUMP_1
+
+    pP2Model->Register_Event("BackJump_1Attack_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("BackJump_1Attack_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+
+
+    pP2Model->Register_Event("BackJump_1Attack_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 무기 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("BackJump_1Attack_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 무기 공격 콜라이더 ON
+            
+        });
+
+#pragma endregion
+
+#pragma region BACKJUMP_2
+
+    pP2Model->Register_Event("BackJump_2Attack_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("BackJump_2Attack_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+        });
+
+
+    pP2Model->Register_Event("BackJump_2Attack_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 무기 공격 콜라이더 ON
+        });
+
+    pP2Model->Register_Event("BackJump_2Attack_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 무기 공격 콜라이더 ON
+
+        });
+
+#pragma endregion
+
+#pragma region JUMPATTACK
+
+    pP2Model->Register_Event("P2_JumpAttack_Start", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            m_pCharVirCom->Jump(50.f, 7.f);
+        });
+
+    pP2Model->Register_Event("P2_JumpAttack_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            m_pCharVirCom->Start_Dive(vTargetPos, 80.f);
+
+            //m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+
+    pP2Model->Register_Event("P2_JumpAttack_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            m_pCharVirCom->Start_Dive(vTargetPos, 80.f);
+
+            //m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+
+
+    pP2Model->Register_Event("P2_JumpAttack_Attack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 왼손 공격 콜라이더 ON
+            
+        });
+
+    pP2Model->Register_Event("P2_JumpAttack_Attack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 왼손 공격 콜라이더 ON
+
+        });
+
+    pP2Model->Register_Event("P2_JumpAttack_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
+        });
+
+    pP2Model->Register_Event("P2_JumpAttack_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+
+        });
+
+    pP2Model->Register_Event("P2_JumpAttack_Attack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+           // 오른손 무기 콜라이더ON
+        });
+
+    pP2Model->Register_Event("P2_JumpAttack_Attack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 오른손 무기 콜라이더 OFF
+        });
+
+
+
+#pragma endregion
+
+
+#pragma region P2_SIDEJUMP_L
+    pP2Model->Register_Event("P2_SideJumpL_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this,pP2Model]()
+        {
+            //CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            //_vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            // _float fAnimRatio = pP2Model->MakeRatio();
+            //pTargetTransform->LookAt_Lerp(vTargetPos,fAnimRatio,1.f);
+
+            m_isLookAt = true;
+            m_fTurnSpeed = 20.f;
+
+        });
+
+    pP2Model->Register_Event("P2_SideJumpL_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
+        {
+            //CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            //_vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            // _float fAnimRatio = pP2Model->MakeRatio();
+            //pTargetTransform->LookAt_Lerp(vTargetPos,fAnimRatio,1.f);
+
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+
+        });
+
+
+#pragma endregion
+
+#pragma region P2_SIDEJUMP_R
+    pP2Model->Register_Event("P2_SideJumpR_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            //CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            //_vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            //_float fAnimRatio = pP2Model->MakeRatio();
+            //pTargetTransform->LookAt_Lerp(vTargetPos, fAnimRatio, 1.f);
+
+            m_isLookAt = true;
+            m_fTurnSpeed = 20.f;
+
+
+        });
+
+
+    pP2Model->Register_Event("P2_SideJumpR_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
+        {
+            //CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            //_vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            // _float fAnimRatio = pP2Model->MakeRatio();
+            //pTargetTransform->LookAt_Lerp(vTargetPos,fAnimRatio,1.f);
+
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+
         });
 
 

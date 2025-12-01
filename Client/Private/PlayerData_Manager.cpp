@@ -33,7 +33,7 @@ HRESULT CPlayerData_Manager::Initialize()
     m_CachedEquipments[5004] = TEXT("Thief_Leg");
     m_CachedEquipments[5005] = TEXT("Thief_Shoes");
 
-    /* ÇöÀç Àåºñ ÃÊ±âÈ­  */
+    /* í˜„ìž¬ ìž¥ë¹„ ì´ˆê¸°í™”  */
     m_ePlayerEquipment.iFace = 0;
     m_ePlayerEquipment.iHead =1;
     m_ePlayerEquipment.iTorso = 2;
@@ -129,7 +129,7 @@ const _wstring& CPlayerData_Manager::Get_EquipmentName(_uint iEquipmentIndex) co
     if (iter != m_CachedEquipments.end())
         return iter->second;
 
-    /* ¾øÀ¸¸é  */
+    /* ì—†ìœ¼ë©´  */
     _uint iTemp = iEquipmentIndex % 10;
     if (iTemp == 0)
         return  TEXT("Prisoner_Face1");
@@ -144,7 +144,7 @@ const _wstring& CPlayerData_Manager::Get_EquipmentName(_uint iEquipmentIndex) co
     if (iTemp == 5)
         return  TEXT("Prisoner_Shoes1");
     else
-        return  TEXT("Prisoner_Face1");  //´Ù Æ²·ÈÀ¸¸é ±×³É ¾ó±¼ ¹Ú±â,,
+        return  TEXT("Prisoner_Face1");  //ë‹¤ í‹€ë ¸ìœ¼ë©´ ê·¸ëƒ¥ ì–¼êµ´ ë°•ê¸°,,
 }
 
 

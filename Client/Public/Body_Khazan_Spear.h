@@ -153,6 +153,7 @@ private:
     /* Monster Search, Brutal */
     _bool                       m_isBackBrutal = { false };
     _bool                       m_isGroggyBrutal = { false };
+    _bool                       m_isBrutalSuccess = { false };
     vector< CGameObject*>       m_CollMonsters;
     _float2                     m_fOptimizationSearchTime = { 0.f,0.3f };
     CGameObject*                m_pBrutalmonster = { nullptr };
@@ -171,6 +172,7 @@ private:
     // Shader
     _bool               m_isEnableEdge = { true };
     _bool               m_isEnableMotionTrail = {};
+    _uint               m_iCurMotionTrailAnimIndex = {};
 
 
     COLLISION_DESC      m_tSearchCollisionDesc = {};

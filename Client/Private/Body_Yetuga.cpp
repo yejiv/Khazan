@@ -41,6 +41,29 @@ _float4* CBody_Yetuga::Get_BonePointEX(const _char* BoneName)
     return &m_vLockOnPoint;
 }
 
+_float4* CBody_Yetuga::Get_BonePointVFX(const _char* BoneName)
+{
+
+    _float4x4* BoneMatrix = m_pModelCom->Get_BoneMatrix(BoneName);
+
+
+    _matrix ConvertMatrix = XMLoadFloat4x4(BoneMatrix);
+    _matrix WorldMatrix = m_pOwnerTransform->Get_WorldMatrix();
+
+    _matrix MulMatrix = ConvertMatrix * WorldMatrix;
+
+    _float4x4 ThrowMatrix{};
+
+    XMStoreFloat4x4(&ThrowMatrix, MulMatrix);
+
+    m_pVFXBonePoint.x = ThrowMatrix.m[3][0];
+    m_pVFXBonePoint.y = ThrowMatrix.m[3][1];
+    m_pVFXBonePoint.z = ThrowMatrix.m[3][2];
+
+    return &m_pVFXBonePoint;
+
+}
+
 _matrix CBody_Yetuga::Get_BoneMatrix(const _char* pBoneName)
 {
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix(pBoneName);
@@ -293,7 +316,6 @@ HRESULT CBody_Yetuga::Ready_Colliders()
 {
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
-    // ������
     BodyDesc.fRadius = 2.f;
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete; 
@@ -306,8 +328,10 @@ HRESULT CBody_Yetuga::Ready_Colliders()
     BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_tCollision_RHDesc.pGameObject = this;
+    m_tCollision_RHDesc.strName = TEXT("Yetgua_RightHand");
+    m_tCollision_RHDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    BodyDesc.pCollisionDesc = &m_tCollision_RHDesc;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_RH"), reinterpret_cast<CComponent**>(&m_pRH_BodyCom), &BodyDesc)))
@@ -328,8 +352,10 @@ HRESULT CBody_Yetuga::Ready_Colliders()
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_tCollision_LHDesc.pGameObject = this;
+    m_tCollision_LHDesc.strName = TEXT("Yetgua_LeftHand");
+    m_tCollision_LHDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    BodyDesc.pCollisionDesc = &m_tCollision_LHDesc;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_LH"), reinterpret_cast<CComponent**>(&m_pLH_BodyCom), &BodyDesc)))
@@ -350,8 +376,8 @@ HRESULT CBody_Yetuga::Ready_Colliders()
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_tCollision_Desc.pGameObject = this;
+    BodyDesc.pCollisionDesc = &m_tCollision_Desc;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_Back"), reinterpret_cast<CComponent**>(&m_pBack_BodyCom), &BodyDesc)))

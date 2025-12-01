@@ -137,7 +137,7 @@ HRESULT CTwinBlade_Viper::Render()
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0);
 
-        m_pShaderCom->Begin(15);
+        m_pShaderCom->Begin(18);
         m_pModelCom->Render(i);
     }
 

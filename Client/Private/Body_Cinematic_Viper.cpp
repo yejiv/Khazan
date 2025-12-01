@@ -120,7 +120,7 @@ HRESULT CBody_Cinematic_Viper::Render()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(15);
+        m_pShaderCom->Begin(18);
 
         m_pModelCom->Render(i);
     }

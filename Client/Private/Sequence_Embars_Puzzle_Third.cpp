@@ -3,6 +3,7 @@
 #include "ClientInstance.h"
 #include "Transform.h"
 #include "GameObject.h"
+#include "SkipButton.h"
 
 CSequence_Embars_Puzzle_Third::CSequence_Embars_Puzzle_Third()
     : m_pGameInstance{ CGameInstance::GetInstance() }
@@ -25,34 +26,68 @@ HRESULT CSequence_Embars_Puzzle_Third::Initialize(const SEQ_REQ_PLAY_DESC& tDesc
 void CSequence_Embars_Puzzle_Third::Update(_float fTimeDelta)
 {
     m_fTime += fTimeDelta;
+    Skip_KeyInput(fTimeDelta);
 
-    if (m_fTime >= 2.f && !m_isElevatorFadeOut)
+    if (!m_isSkip)
     {
-        CClientInstance::GetInstance()->Fade_Out();
-        m_isElevatorFadeOut = true;
+        if (m_fTime >= 2.f && !m_isElevatorFadeOut)
+        {
+            m_pClientInstance->Fade_Out();
+            m_isElevatorFadeOut = true;
+        }
+        else if (m_fTime >= 3.f && !m_isElevatorCamera)
+        {
+            m_pClientInstance->Fade_In();
+            m_pClientInstance->Camera_Set_Animation(TEXT("Turn_Elevator"));
+            m_isElevatorCamera = true;
+        }
+        else if (m_fTime >= 11.f && !m_isMovePlayerFadeOut)
+        {
+            m_pClientInstance->Fade_Out();
+            m_isMovePlayerFadeOut = true;
+        }
+        else if (m_fTime > 12.f && !m_isMovePlayer)
+        {
+            m_pClientInstance->Camera_Set_FixEnd();
+            m_isMovePlayer = true;
+        }
+        else if (m_fTime >= 13.f)
+        {
+            m_pClientInstance->Fade_In();
+            m_isEnd = true;
+        }
     }
-    else if (m_fTime >= 3.f && !m_isElevatorCamera)
-    {
-        CClientInstance::GetInstance()->Fade_In();
-        m_pClientInstance->Camera_Set_Animation(TEXT("Turn_Elevator"));
-        m_isElevatorCamera = true;
-    }
-    else if (m_fTime >= 11.f && !m_isMovePlayerFadeOut)
-    {
-        CClientInstance::GetInstance()->Fade_Out();
-        m_isMovePlayerFadeOut = true;
-    }
-    else if (m_fTime > 12.f && !m_isMovePlayer)
-    {
-        m_pClientInstance->Camera_Set_FixEnd();
-        m_isMovePlayer = true;
-    }
-    else if (m_fTime >= 13.f)
-    {
-        CClientInstance::GetInstance()->Fade_In();
-        m_isEnd = true;
-    }
+    else {
+        m_fSkipTime += fTimeDelta;
+        if (m_fSkipTime > 0.f && !m_isSkipFadeOut)
+        {
+            CSkipButton::SKIPBUTTON_DESC SkipBtnDesc{};
+            SkipBtnDesc.isOpen = false;
+            m_pClientInstance->UI_UpdateSwitch(TEXT("SkipButton"), &SkipBtnDesc);
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ELEVATOR_SKIP), []() {
+                EventElevatorSkip::SkipEvent();
+                });
+            m_pClientInstance->Fade_Out();
+            m_isSkipFadeOut = true;
+        }
 
+        if (m_fSkipTime > 1.f && !m_isSkipCameraSet)
+        {
+            m_pClientInstance->Camera_Force_AniEnd();
+            m_isSkipCameraSet = true;
+        }
+
+        if (m_fSkipTime > 2.f && !m_isSkipFadeIn)
+        {
+            m_pClientInstance->Fade_In();
+            m_isSkipFadeIn = true;
+        }
+
+        if (m_fSkipTime > 3.f && !m_isEnd)
+        {
+            m_isEnd = true;
+        }
+    }
 }
 
 void CSequence_Embars_Puzzle_Third::Pause()
@@ -78,6 +113,27 @@ void CSequence_Embars_Puzzle_Third::Jump(_float fTime)
 _bool CSequence_Embars_Puzzle_Third::IsEnd() const
 {
     return m_isEnd;
+}
+
+void CSequence_Embars_Puzzle_Third::Skip_KeyInput(_float fTimeDelta)
+{
+    if (!m_isSkipKey)
+    {
+        if (m_pGameInstance->Key_Down(DIK_G))
+        {
+            CSkipButton::SKIPBUTTON_DESC SkipBtnDesc{};
+            SkipBtnDesc.isOpen = true;
+            SkipBtnDesc.Event = [this]() {
+                Set_Skip(true);
+                };
+
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkipButton"), &SkipBtnDesc);
+
+            m_isSkipKey = true;
+        }
+    }
+
+
 }
 
 CSequence_Embars_Puzzle_Third* CSequence_Embars_Puzzle_Third::Create()

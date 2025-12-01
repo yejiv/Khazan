@@ -2605,13 +2605,21 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 				m_pGameInstance->Set_LightDesc(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), m_FixLightDesc);
 
-				if (ImGui::Button("DONE") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
-				{
-					m_strFixLightTag.clear();
-					m_isFindFixLight = false;
-					ZeroMemory(&m_FixLightDesc, sizeof(LIGHT_DESC));
-				}
-				
+                if (ImGui::Button("DONE") || m_pGameInstance->Key_Down(DIK_RETURN) || m_pGameInstance->Key_Down(DIK_NUMPADENTER) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
+                {
+                    m_strFixLightTag.clear();
+                    m_isFindFixLight = false;
+                    ZeroMemory(&m_FixLightDesc, sizeof(LIGHT_DESC));
+                }
+
+                if (ImGui::Button("RESET") || m_pGameInstance->Key_Down(DIK_R))
+                {
+                    m_pGameInstance->Set_LightDesc(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP), m_OriginalLightDesc);
+
+                    m_strFixLightTag.clear();
+                    m_isFindFixLight = false;
+                    ZeroMemory(&m_FixLightDesc, sizeof(LIGHT_DESC));
+                }
 			}
 			else
 			{
@@ -2677,6 +2685,8 @@ HRESULT CLevel_Map::Ready_Light_Window()
 				} SAMELINE;
 				if (ImGui::Button("FIX LIGHT"))
 				{
+                    m_OriginalLightDesc = *m_pGameInstance->Get_LightDesc(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP));
+
 					m_isFixLight = !m_isFixLight;
 					m_isAddLight = false;
 					m_LightDesc.eType = LIGHT_DESC::END;

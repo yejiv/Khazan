@@ -307,7 +307,7 @@ void CNPC_Daphrona::Animation_Update(_float fTimeDelta)
             // NPC를 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
-            m_pClientInstance->Camera_Set_NpcTalk(true, _float3(4.33f, -88.86f, 8.21), _float3(0.35f, -0.16f, 0.92f));
+            m_pClientInstance->Camera_Set_NpcTalk(true, _float3(4.33f, -88.86f, 8.21f), _float3(0.35f, -0.16f, 0.92f));
         }
     }
     else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
@@ -350,7 +350,7 @@ void CNPC_Daphrona::Animation_Change(_float fTimeDelta)
 
 void CNPC_Daphrona::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     if (ANIM_STATE::IDLE == m_eAnimState)
@@ -361,7 +361,7 @@ void CNPC_Daphrona::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
 void CNPC_Daphrona::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     m_isCollision = true;
@@ -369,7 +369,7 @@ void CNPC_Daphrona::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLaye
 
 void CNPC_Daphrona::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
     // 처음 상호 작용이 끝난 후 After Idle 상태로 전환

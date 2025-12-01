@@ -68,7 +68,6 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 				if (HITREACTION::GROGGY == eHitreaction)
 				{
 					m_pBrutalAttack->Off_BrutalAttack();
-					Safe_Release(m_pBrutalAttack);
 					m_isBrutalAttackSuccess = false;
 				}
 			}
@@ -76,6 +75,7 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 		break;
 
     case GROGGY::RECOVERY:
+
         if (pModel->Play_Animation(fTimeDelta))
         {
             m_eState = GROGGY::END;              
@@ -85,7 +85,10 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         break;
 
     case GROGGY::END:
+
         pYetuga->Recovery_Stamina(fTimeDelta * 10.f);
+
+
         if (pModel->Play_Animation(fTimeDelta))
         {
             pYetuga->Set_RequestRecoveryStamina(false);

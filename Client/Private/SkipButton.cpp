@@ -111,6 +111,9 @@ HRESULT CSkipButton::Update_Switch(void* pArg)
     SKIPBUTTON_DESC* pDesc = static_cast<SKIPBUTTON_DESC*>(pArg);
 
     m_IsUpdate = pDesc->isOpen;
+    if (!m_IsUpdate)
+        m_fAccTime = 0.f;
+
     if (m_IsUpdate)
         m_Event = pDesc->Event;
     else

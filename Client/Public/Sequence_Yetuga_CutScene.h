@@ -30,12 +30,19 @@ public:
     SEQ_ID  GetId() const override { return m_Id; }
 
 public:
+    void Set_Skip(_bool isSkip) { m_isSkip = true; }
+
+public:
     void PlayerMove(_float fTimeDelta);
+
+public:
+    void Skip_KeyInput(_float fTimeDelta);
 
 private:
     SEQ_ID m_Id{};
     _float  m_fTime{ 0.f };
     _float  m_fSnowTime{ 0.f };
+    _float  m_fSkipTime = { 0.f };
 
     _bool   m_isEnd = { false };
 
@@ -55,10 +62,17 @@ private:
     _bool   m_isVignette = { false };
     _bool   m_isRadial = { false };
 
+    _bool   m_isSkip = { false };
+    _bool   m_isSkipFadeOut = { false };
+    _bool   m_isSkipCameraSet = { false };
+    _bool   m_isSkipFadeIn = { false };
+    _bool   m_isSkipKey = { false };
+
     class CYetuga* m_pYetuga = { nullptr };
     class CClientInstance* m_pClientInstance = { nullptr };
     class CGameInstance* m_pGameInstance = { nullptr };
     class CCamera_Compre* m_pCamera = { nullptr };
+    class CSkipButton* m_pSkipButton = { nullptr };
 
 public:
     static CSequence_Yetuga_CutScene* Create(class CYetuga* pYetuga);

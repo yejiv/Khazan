@@ -58,9 +58,22 @@ void CTwinBlade_R_Viper::Priority_Update(_float fTimeDelta)
 void CTwinBlade_R_Viper::Update(_float fTimeDelta)
 {
 
+    if (m_pOwner->Get_Controller()->Get_BlackBoard()->Get_Value<_bool>(m_pOwner->Get_Name(), "isP2LockOn"))
+    {
+        // 락온 Offset
+        _matrix tempMat = XMMatrixRotationZ(XMConvertToRadians(180.0f)) * XMMatrixRotationX(XMConvertToRadians(60.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f));
+        XMStoreFloat4x4(&m_matOffset, tempMat);
+    }
+    else
+    {
+        _matrix tempMat = XMMatrixRotationZ(XMConvertToRadians(90.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f));
+        XMStoreFloat4x4(&m_matOffset, tempMat);
+    }
+
+
     if (CViper::PHASE::PHASE2 == m_pOwner->Get_Phase() && m_isActive)
     {
-        // 바디 소켓 월드
+        // 諛붾뵒 ?뚯폆 ?붾뱶
         _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
         for (_uint i = 0; i < 3; i++)
         {
@@ -127,7 +140,7 @@ HRESULT CTwinBlade_R_Viper::Render()
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0);
 
-        m_pShaderCom->Begin(15);
+        m_pShaderCom->Begin(18);
         m_pModelCom->Render(i);
     }
 
