@@ -283,9 +283,9 @@ HRESULT CLoader::Loading_For_Test_GameObject()
 		return E_FAIL;
 
 	/* Prototype_GameObject_Khazan_Sample */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Khazan_Sample"),
-		CKhazan_Sample::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Khazan_Sample"),
+	//	CKhazan_Sample::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 	/* Prototype_GameObject_Body_Khazan_Sample */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TEST), TEXT("Prototype_GameObject_Body_Khazan_Sample"),

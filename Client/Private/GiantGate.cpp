@@ -77,8 +77,9 @@ void CGiantGate::Update(_float fTimeDelta)
         if (true == m_pModelCom->Play_Animation(fTimeDelta))
         {
             Animation_Change(fTimeDelta);
+            m_pGameInstance->Emit_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), { ENUM_CLASS(LEVEL::VIPER) });
         }
-    }
+    }    
 
     __super::Update(fTimeDelta);
 }
