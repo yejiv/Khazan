@@ -90,6 +90,7 @@ public:
     _float                          Get_TrackPotion();
     virtual void				    Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) override;
 public:
+    virtual void                    Creature_Release() override;
     virtual HRESULT					Initialize_Prototype(_int iLevel);
     virtual HRESULT					Initialize_Clone(void* pArg) override;
     virtual void					Priority_Update(_float fTimeDelta) override;
@@ -123,6 +124,7 @@ private:
     _float                          m_fTimeDelta = {};
     _float                          m_fAccTime = {};
 
+    _bool                           m_isHit = { true };
 private:
     HRESULT                         Ready_Prototype();
 
