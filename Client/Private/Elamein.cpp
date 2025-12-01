@@ -109,7 +109,7 @@ _float CElamein::Get_TrackPotion()
 
 void CElamein::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
 {
-    if (m_Data.fDodgeCool <= 0.f && m_Data.eHitType != HITREACTION::BRUTAL_ATTACK)
+    if (m_Data.fDodgeCool <= 0.f && m_Data.eHitType != HITREACTION::BRUTAL_ATTACK && m_Data.eAttackState == ATTACKSTATE::END)
     {
         m_pController->AI_ApplyDamage(pGameObject, fDamage, ENUM_CLASS(eHitreaction), 3.f);
     }
@@ -448,6 +448,7 @@ HRESULT CElamein::Ready_MonData()
 
     m_Data.fEdgeWidth = 0.2f;
     m_Data.fEdgeColor = { 4.2f, 1.6f, 0.2f, 1.f };
+    m_Data.fAttackDamage = m_fAttack;
     return S_OK;
 }
 

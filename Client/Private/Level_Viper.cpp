@@ -40,7 +40,7 @@ HRESULT CLevel_Viper::Initialize()
        
     // 우선 맵 오브젝트 서브 레벨 로드
     
-    //  CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+    //CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
     // Test MainLight
     LIGHT_DESC LightDesc = {};
@@ -847,9 +847,9 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
      //    return E_FAIL;
 
     CMonster::MONSTER_DESC MonsterDesc{};
-    MonsterDesc.fAttack = 10.f;
-    MonsterDesc.fMaxHP = 100.f;
-    MonsterDesc.fMaxStamina = 100.f;
+    MonsterDesc.fAttack = 100.f;
+    MonsterDesc.fMaxHP = 1000.f;
+    MonsterDesc.fMaxStamina = 200.f;
     MonsterDesc.fMoveSpeed = 10.f;
     MonsterDesc.fSpeedPerSec = 3.f;
     MonsterDesc.fRotationPerSec = 180.f;

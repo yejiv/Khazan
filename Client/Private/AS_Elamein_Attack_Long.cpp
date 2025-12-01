@@ -30,7 +30,7 @@ void CAS_Elamein_Attack_Long::Update(CStateMachine* pFSM, CGameObject* pOwner, _
         }
         else if (m_eState == ATTACK_2)
         {
-            m_pMonData->pOwner->LockOnLerp(fTimeDelta, 10.f);
+            m_pMonData->pOwner->LockOnLerp(fTimeDelta, 4.f);
             pOwner->Get_Transform()->Go_Straight(3.5f * fTimeDelta);
             if (m_pMonData->pOwner->Check_Ranage("AttackRange"))
             {
@@ -40,7 +40,7 @@ void CAS_Elamein_Attack_Long::Update(CStateMachine* pFSM, CGameObject* pOwner, _
         }
         else if (m_eState == ATTACK_3)
         {
-            m_pMonData->pOwner->LockOnLerp(fTimeDelta, 10.f);
+            m_pMonData->pOwner->LockOnLerp(fTimeDelta, 4.f);
             if (m_pMonData->isAnimFinash)
             {
                 m_pMonData->iAnimIndex = 95;
@@ -49,7 +49,7 @@ void CAS_Elamein_Attack_Long::Update(CStateMachine* pFSM, CGameObject* pOwner, _
         }
         else if (m_eState == END)
         {
-            m_pMonData->pOwner->LockOnLerp(fTimeDelta, 10.f);
+            m_pMonData->pOwner->LockOnLerp(fTimeDelta, 4.f);
             if (m_pMonData->isAnimFinash)
             {
                 m_pMonData->eAttackState = CElamein::ATTACKSTATE::END;

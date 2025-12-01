@@ -36,28 +36,6 @@ void CAS_Dr_Melee_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
             m_eState = STAMIN;
             m_pMonData->iAnimIndex = 48;
         }
-
-        else if (m_pMonData->eHitType != HITREACTION::END)
-        {
-            m_eState = DAMAGE;
-            m_pMonData->iAnimIndex = 17;
-        }
-    }
-    else if (m_eState == DAMAGE)
-    {
-        m_pMonData->fGloggyTime -= fTimeDelta;
-
-        if (m_pMonData->fGloggyTime <= 0.f)
-        {
-            m_eState = STAMIN;
-            m_pMonData->iAnimIndex = 48;
-        }
-        else if (m_pMonData->isAnimFinash)
-        {
-            m_eState = LOOP;
-            m_pMonData->iAnimIndex = 25;
-            m_pMonData->eHitType = HITREACTION::END;
-        }
     }
     else if (m_eState == STAMIN)
     {

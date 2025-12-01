@@ -195,7 +195,7 @@
     <ClInclude Include="..\public\AS_Dr_Melee_Groggy.h" />
     <ClInclude Include="..\public\AS_Dr_Melee_LockOn.h" />
     <ClInclude Include="..\public\AS_Dr_Melee_Sleep.h" />
-    <ClInclude Include="..\public\AS_Dr_Melee_Walk.h" />
+    <ClInclude Include="..\public\AS_Dr_Melee_Turn.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Brutal.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Dead.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Groggy.h" />
@@ -275,7 +275,6 @@
     <ClInclude Include="..\Public\AS_Dr_Rampage_Attack_Rush.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Damage.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_Sleep.h" />
-    <ClInclude Include="..\Public\AS_Dr_Rampage_Walk.h" />
     <ClInclude Include="..\Public\AS_Dr_Rampage_LockOn.h" />
     <ClInclude Include="..\Public\AttackState_Yetuga.h" />
     <ClInclude Include="..\Public\Barrel.h" />
@@ -608,7 +607,7 @@
     <ClCompile Include="..\private\AS_Dr_Melee_Groggy.cpp" />
     <ClCompile Include="..\private\AS_Dr_Melee_LockOn.cpp" />
     <ClCompile Include="..\private\AS_Dr_Melee_Sleep.cpp" />
-    <ClCompile Include="..\private\AS_Dr_Melee_Walk.cpp" />
+    <ClCompile Include="..\private\AS_Dr_Melee_Turn.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Attack_Back.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Attack_Default.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Attack_Rush.cpp" />
@@ -617,7 +616,6 @@
     <ClCompile Include="..\Private\AS_Dr_Rampage_Dead.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Sleep.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_Groggy.cpp" />
-    <ClCompile Include="..\Private\AS_Dr_Rampage_Walk.cpp" />
     <ClCompile Include="..\Private\AS_Dr_Rampage_LockOn.cpp" />
     <ClCompile Include="..\Private\AS_Elamein_Attack_Middle.cpp" />
     <ClCompile Include="..\Private\AS_Elamein_Groggy.cpp" />

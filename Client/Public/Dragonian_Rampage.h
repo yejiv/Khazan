@@ -28,6 +28,10 @@ public:
         _float              fQuat = {};
         _float              fLook = {};
         _bool               isBland = { false };
+
+        _float              fDecreaseAlpha = {};
+        _float              fEdgeWidth = {};
+        _float4             fEdgeColor = {};
         //BT 판단용 변수
         _bool               isDamage = { false };
         _bool               is2Page = { false };
@@ -39,7 +43,7 @@ public:
         _float              fDeltaSpeed = {1.f};
 
         HITREACTION         eHitType = { HITREACTION::END };
-        
+        _int                iBrutalHit = {};
         //ETC
         _float              fGloggyTime = {};
         _uint               iAttackBody_State = {};
@@ -63,7 +67,7 @@ private:
     virtual ~CDragonian_Rampage() = default;
 
 public:
-    void                            LockOnLerp(_float fTimeDetla);
+    void                            LockOnLerp(_float fTimeDetla, _float fSpeed);
     MONDATA&                        Get_Data();
     void                            Move_F();
     void                            Hp_Visivle(_bool isVisivle);
@@ -72,11 +76,13 @@ public:
     _bool                           Check_Ranage(_float fRange);
     TARGET_DIR                      Get_DIR();
 public:
+    virtual void                    Creature_Release() override;
     virtual HRESULT					Initialize_Prototype(_int iLevel);
     virtual HRESULT					Initialize_Clone(void* pArg) override;
     virtual void					Priority_Update(_float fTimeDelta) override;
     virtual void					Update(_float fTimeDelta) override;
     virtual void					Late_Update(_float fTimeDelta) override;
+    virtual void				    Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) override;
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;

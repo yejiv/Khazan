@@ -12,7 +12,7 @@ NS_BEGIN(Client)
 class CDragonian_Melee final : public CMonster
 {
 public:
-    enum class MONSTATE { DEAD, GRORRY, BRUTAL, ATTACK, DAMAGE, LOCKON, SLEEP, WALK, END };
+    enum class MONSTATE { DEAD, GRORRY, BRUTAL, ATTACK, DAMAGE, LOCKON, SLEEP, TURN, END };
 
     typedef struct TagMonData{
         //Anim
@@ -21,8 +21,12 @@ public:
         _bool               isSleep = {false};
         _bool               isStateFiash = {false};
         _bool               isSlowWalk = {false};
-
+        _bool               isBland = { false };
         _float              fQuat = {};
+
+        _float              fDecreaseAlpha = {};
+        _float              fEdgeWidth = {};
+        _float4             fEdgeColor = {};
         //BT
         _bool               isChase = { false };
         _bool               isDamage = { false };
@@ -31,7 +35,7 @@ public:
         _bool               isLockOn = { false };
         _float              fAttackCool = {};
         _float              fAnimDeley = {};
-        
+        _int                iBrutalHit = {};
         HITREACTION         eHitType = { HITREACTION::END };
         //ETC
         _float              fGloggyTime = {};
@@ -56,7 +60,7 @@ private:
 
 public:
     MONDATA&                        Get_Data();
-    void                            LockOnLerp(_float fTimeDetla);
+    void                            LockOnLerp(_float fTimeDetla, _float fSpeed);
     void                            LockOn();
     void                            Hp_Visivle(_bool isVisivle);
     void                            Hp_Dead();
@@ -71,6 +75,7 @@ public:
     virtual void					Priority_Update(_float fTimeDelta) override;
     virtual void					Update(_float fTimeDelta) override;
     virtual void					Late_Update(_float fTimeDelta) override;
+    virtual void				    Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) override;
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;

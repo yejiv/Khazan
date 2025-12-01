@@ -22,9 +22,9 @@ CDragonian_Rampage::CDragonian_Rampage(const CDragonian_Rampage& Prototype)
 {
 }
 
-void CDragonian_Rampage::LockOnLerp(_float fTimeDetla)
+void CDragonian_Rampage::LockOnLerp(_float fTimeDetla, _float fSpeed)
 {
-    m_pTransformCom->LookAt_Lerp(m_pTarget->Get_Position(), fTimeDetla, 1.5f);
+    m_pTransformCom->LookAt_Lerp(m_pTarget->Get_Position(), fTimeDetla, fSpeed);
 }
 
 CDragonian_Rampage::MONDATA& CDragonian_Rampage::Get_Data()
@@ -50,7 +50,7 @@ void CDragonian_Rampage::Hp_Visivle(_bool isVisivle)
 void CDragonian_Rampage::Hp_Dead()
 {
     m_pUI_HP->Set_IsDead(true);
-    Safe_Release(m_pUI_HP);
+    m_pUI_HP = nullptr;
 }
 
 _bool CDragonian_Rampage::Check_Ranage(string strKey)
@@ -85,6 +85,13 @@ TARGET_DIR CDragonian_Rampage::Get_DIR()
     return Check_Dir(m_pTransformCom->Get_WorldMatrix(), m_pTarget->Get_Transform()->Get_State(STATE::POSITION));
 }
 
+void CDragonian_Rampage::Creature_Release()
+{
+    m_pHitBodyCom->Collision_Active(false);
+
+    __super::Creature_Release();
+}
+
 HRESULT CDragonian_Rampage::Initialize_Prototype(_int iLevel)
 {
     m_iPrototypeIndex = iLevel;
@@ -117,56 +124,12 @@ HRESULT CDragonian_Rampage::Initialize_Clone(void* pArg)
 
 void CDragonian_Rampage::Priority_Update(_float fTimeDelta)
 {
-    //m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
-
     if (!m_Data.isPageChange && *m_Data.pCulHp <= *m_Data.pMaxHp * 0.4f)
     {
         m_Data.isPageChange = true;
         m_Data.isLockOn = true;
     }
     CContainerObject::Priority_Update(fTimeDelta);
-
-    if (m_pGameInstance->Key_Down(DIK_M))
-    {
-        m_fCurrentHP = m_fMaxHP;
-        m_Data.isSleep = true;
-    }
-    else if (m_pGameInstance->Key_Down(DIK_B))
-        Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
-    else if (m_pGameInstance->Key_Down(DIK_N))
-        m_fCurrentStamina = 0;
-
-    if (m_pGameInstance->Key_Down(DIK_V))
-    {
-        Safe_Release(m_pHitBodyCom);
-        this->Remove_Component(TEXT("Com_HitBody"));
-        m_pHitBodyCom = nullptr;
-
-        _vector vMatScale{}, vMatQuat{}, vMatPos{};
-
-        CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-        BodyDesc.vExtent = { 2.2f, 1.f, 1.f };
-        BodyDesc.eMotion = EMotionType::Kinematic;
-        BodyDesc.eQuality = EMotionQuality::Discrete;
-        BodyDesc.eShapeType = SHAPE::BOX;
-        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-        BodyDesc.bIsTrigger = true;
-
-        _matrix BodyMat = XMLoadFloat4x4(m_pBodySocketMatrix) * m_pTransformCom->Get_WorldMatrix();
-        for (uint32_t i = 0; i < 3; i++)
-            BodyMat.r[i] = XMVector3Normalize(BodyMat.r[i]);
-
-        XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, BodyMat);
-
-        XMStoreFloat3(&BodyDesc.vPos, vMatPos);
-        XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
-
-        BodyDesc.vShapeOffset = _float3(-0.5f, -0.f, 0.f);
-        BodyDesc.pCollisionDesc = &m_tCollisionDesc;
-
-        CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_HitBody"), (CComponent**)&m_pHitBodyCom, &BodyDesc);
-
-    }
 }
 
 void CDragonian_Rampage::Update(_float fTimeDelta)
@@ -190,6 +153,14 @@ void CDragonian_Rampage::Update(_float fTimeDelta)
 void CDragonian_Rampage::Late_Update(_float fTimeDelta)
 {
     CContainerObject::Late_Update(fTimeDelta);
+}
+
+void CDragonian_Rampage::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
+{
+    if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
+        ++m_Data.iBrutalHit;
+
+    __super::Take_Damage(fDamage, eHitreaction, pGameObject);
 }
 
 void CDragonian_Rampage::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -419,13 +390,15 @@ HRESULT CDragonian_Rampage::Ready_AnimEvent()
 HRESULT CDragonian_Rampage::Ready_MonData()
 {
     m_Data.pOwner = this;
-    m_Data.fGloggyTime = 3.f;
+    m_Data.fGloggyTime = 7.f;
     m_Data.pCulHp = &m_fCurrentHP;
     m_Data.pMaxHp = &m_fMaxHP;
 
     m_Data.pCulStamina = &m_fCurrentStamina;
     m_Data.pMaxStamina = &m_fMaxStamina;
 
+    m_Data.fEdgeWidth = 0.1f;
+    m_Data.fEdgeColor = { 4.2f, 1.6f, 0.2f, 1.f };
     return S_OK;
 }
 
@@ -438,6 +411,7 @@ void CDragonian_Rampage::Update_UIHp()
 
 void CDragonian_Rampage::Update_Body(_float fTimeDelta)
 {
+    //m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
     _vector vMatScale{}, vMatQuat{}, vMatPos{};
     _matrix HitMat = XMLoadFloat4x4(m_pBodySocketMatrix);
     for (uint32_t i = 0; i < 3; i++)
@@ -468,6 +442,7 @@ void CDragonian_Rampage::Update_Body(_float fTimeDelta)
 
 void CDragonian_Rampage::Jump_Move_1()
 {
+    LockOnLerp(m_fTimeDelta, 3.f);
     m_pTransformCom->Go_Straight(2.f * m_fTimeDelta);
 }
 
@@ -477,7 +452,7 @@ void CDragonian_Rampage::Jump_Move_2()
     _vector vTargetPos = m_pTarget->Get_Transform()->Get_State(STATE::POSITION);
     m_pTransformCom->LookAt(vTargetPos);
 
-    _vector vOffsetPos = XMVectorLerp(vPos, vTargetPos, (m_pBody->Get_CulTrack() - 60.f) / 86.f);
+    _vector vOffsetPos = XMVectorLerp(vPos, vTargetPos, (m_pBody->Get_CulTrack() - 60.f) / 106.f);
     m_pTransformCom->Set_State(STATE::POSITION, vOffsetPos);
 }
 
