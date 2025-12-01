@@ -71,18 +71,27 @@ void CAS_CutScene_Start_Viper::Change_CutSceneState(CUTSCENE_STATE eNextState , 
     switch (m_eState)
     {
     case Client::CUTSCENE_STATE::SIT:
+    {
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::SIT));
         pViper->Set_ViperPosition(XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
         break;
+    }
+        
     case Client::CUTSCENE_STATE::LAND:
+    {
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::LAND));
         _vector vPosition = XMVectorSet(-31.938f, -29.986f, 201.162f, 1.f);
         pViper->Set_ViperPosition(vPosition);
         break;
+    }
+        
     case Client::CUTSCENE_STATE::STAND:
+    {
+        _vector vPosition = XMVectorSet(-31.938f, -29.986f, 201.162f, 1.f);
+        pViper->Set_ViperPosition(vPosition);
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::STAND));
         break;
-
+    }      
     }
    
 

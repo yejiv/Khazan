@@ -92,7 +92,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
 
     m_fRecoveryPerSec = 5.f;
 
-    if (m_ePhase == PHASE::PHASE1)
+    if (m_ePhase == PHASE::PHASE2)
     {
         //(-30.103f, -29.9f, 188.961f, 1.f)
         Set_PhaseWeapon_Phase2();

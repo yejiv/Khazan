@@ -3,12 +3,13 @@
 #include "ClientInstance.h"
 #include "Transform.h"
 #include "GameObject.h"
-#include "Obelisk.h"
 
 CSequence_Viper_CutScene::CSequence_Viper_CutScene()
     : m_pGameInstance{ CGameInstance::GetInstance() }
+    , m_pClientInstance { CClientInstance::GetInstance() }
 {
     Safe_AddRef(m_pGameInstance);
+    Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CSequence_Viper_CutScene::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
@@ -66,5 +67,5 @@ void CSequence_Viper_CutScene::Free()
     __super::Free();
 
     Safe_Release(m_pGameInstance);
-
+    Safe_Release(m_pClientInstance);
 }

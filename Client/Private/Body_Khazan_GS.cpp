@@ -105,44 +105,44 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     if(m_isActiveMotionTrail)
        m_pMotionTrailCom->Start_MotionTrail(fTimeDelta);
 
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
-    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
-        Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), true);
-    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
-        Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), false);
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
-        Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), true);
-    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
-        Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), false);
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
-        Trigger_MotionTrail(TEXT("MT_Common_Avoid"), true);
-    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
-        Trigger_MotionTrail(TEXT("MT_Common_Avoid"), false);
+    //if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
+    //    Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
+    //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
+    //    Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+    //if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
+    //    Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), true);
+    //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
+    //    Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), false);
+    //if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
+    //    Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), true);
+    //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
+    //    Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), false);
+    //if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
+    //    Trigger_MotionTrail(TEXT("MT_Common_Avoid"), true);
+    //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
+    //    Trigger_MotionTrail(TEXT("MT_Common_Avoid"), false);
 
 
     bool a =  m_pClientInstance->Is_CurrentSpear();
     bool b = m_pClientInstance->Is_CurrentGSword();
 
-    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT,fTimeDelta) && m_pGameInstance->Key_Down(DIK_M)){
-        m_pClientInstance->Lock_Skill((1 << 4) );
-        m_pClientInstance->Lock_Skill((1 << 8));
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Wind"), m_pParentTransform->Get_State(STATE::POSITION));
-    }
+    //if (m_pGameInstance->Key_Pressing(DIK_LSHIFT,fTimeDelta) && m_pGameInstance->Key_Down(DIK_M)){
+    //    m_pClientInstance->Lock_Skill((1 << 4) );
+    //    m_pClientInstance->Lock_Skill((1 << 8));
+    //    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Wind"), m_pParentTransform->Get_State(STATE::POSITION));
+    //}
 
-    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_N)){
-        m_pClientInstance->Lock_Skill((1 << 4));
-        m_pClientInstance->Lock_Skill((1 << 8));
-        m_pClientInstance->Unlock_Skill(1 << 4);
-    }
+    //if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_N)){
+    //    m_pClientInstance->Lock_Skill((1 << 4));
+    //    m_pClientInstance->Lock_Skill((1 << 8));
+    //    m_pClientInstance->Unlock_Skill(1 << 4);
+    //}
 
-    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_B)){
-        m_pClientInstance->Lock_Skill((1 << 4));
-        m_pClientInstance->Lock_Skill((1 << 8));
-        m_pClientInstance->Unlock_Skill(1 << 8);
-    }
+    //if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_B)){
+    //    m_pClientInstance->Lock_Skill((1 << 4));
+    //    m_pClientInstance->Lock_Skill((1 << 8));
+    //    m_pClientInstance->Unlock_Skill(1 << 8);
+    //}
 
 }
 

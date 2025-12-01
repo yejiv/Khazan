@@ -19,8 +19,8 @@ private:
 	virtual ~CUI_Fade() = default;
 
 public:
-	void								Fade_In(function<void()> FadeEvent);
-	void								Fade_Out(function<void()> FadeEvent);
+	void								Fade_In(function<void()> FadeEvent, _float fSpeed = 1.f);
+	void								Fade_Out(function<void()> FadeEvent, _float fSpeed = 1.f);
 	_bool								Fade_End() { return m_eFadeType == FADE_STATE::END; }
 public:
 	virtual HRESULT						Initialize_Prototype();
@@ -36,6 +36,8 @@ private:
 
 	FADE_STATE							m_eFadeType = { FADE_STATE::END };
 	function<void()>					m_FadeEvent;
+
+    _float                              m_fFadeSpeed = { 1.f };
 private:
 	HRESULT								Ready_Component();
 

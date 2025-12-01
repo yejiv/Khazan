@@ -93,11 +93,6 @@ void CLevel_Viper::Update(_float fTimeDelta)
 	//		return;
 	//}
 
-	if (m_pGameInstance->Key_Down(DIK_Q))
-	{
-		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
-	}
-
     if (m_pGameInstance->Key_Down(DIK_F1))
     {
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
