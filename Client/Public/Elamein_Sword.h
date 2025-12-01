@@ -24,6 +24,7 @@ public:
     }WEAPON_DESC;
 
 public:
+    
     void                        Add_Charge(_float fValue) { m_fChageValue = fValue; }
     void                        Reset_Charge() { m_isReset = true; }
 private:

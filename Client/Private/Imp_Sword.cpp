@@ -65,6 +65,8 @@ HRESULT CImp_Sword::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Rotation(XMConvertToRadians(-90.f), 0.f, 0.f);
 
+    
+
     return S_OK;
 }
 
@@ -83,9 +85,10 @@ void CImp_Sword::Update(_float fTimeDelta)
         &m_CombinedWorldMatrix,
         m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
     );
-
+    //Winner Winner 
 
     m_pBodyComp->Collision_Active(m_isOnAttackCollision);
+
     if (m_isOnAttackCollision)
     {
         _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
@@ -95,10 +98,11 @@ void CImp_Sword::Update(_float fTimeDelta)
 
         m_pBodyComp->Sync_Update(WeaponWorld);
         m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
+       
     }
-   
-    //XMStoreFloat4(&m_vTipPos,vPos);
     
+    
+
 }
 
 void CImp_Sword::Late_Update(_float fTimeDelta)
@@ -196,6 +200,7 @@ HRESULT CImp_Sword::Ready_Collision()
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.75f, 0.f);
+    
 
     m_tCollisionDesc.pGameObject = this;
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;

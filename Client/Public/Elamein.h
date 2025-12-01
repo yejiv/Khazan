@@ -108,6 +108,7 @@ private:
     class CElamein_Sword*           m_pSword = { nullptr };
     class CBlackBoard*              m_pBlackBoard = { nullptr };
     class CMon_HP*                  m_pUI_HP = { nullptr };
+    class CMeshTrail*               m_pMeshTrail = { nullptr };
 
     CBody*                          m_pHitBodyCom = { nullptr };
     CBody*                          m_pLeftLegCom = { nullptr };
@@ -125,6 +126,10 @@ private:
     _float                          m_fAccTime = {};
 
     _bool                           m_isHit = { true };
+
+    _float4                         m_vSword_End = {};
+    _float4                         m_vSword_Start = {};
+
 private:
     HRESULT                         Ready_Prototype();
 
@@ -137,8 +142,10 @@ private:
 
     void                            Update_UIHp();
     void                            Update_Body(_float fTimeDelta);
+    void                            Update_MeshTrail();
+
 public:
-    static CElamein*      Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
+    static CElamein*                Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;
     virtual void					Free() override;
 
