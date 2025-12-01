@@ -222,6 +222,9 @@ private:
     _float3 m_vNpcCamTargetPos = _float3(0.f, 0.f, 0.f);
     _float3 m_vNpcCamLookAt = _float3(0.f, 0.f, 0.f);
 
+
+    mutex m_CollMonsterMutex;
+
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
     virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;

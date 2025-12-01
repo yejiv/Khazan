@@ -1273,6 +1273,8 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("AsheFork_Atk_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         // 모션 트레일 시작
         Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), true);
+        m_isEnableMotionTrail = true;
+        m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("AsheFork_Atk_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         // 모션 트레일 끝
@@ -1281,12 +1283,15 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         Start_DefaultVignette();
         // 레디얼 블러
         Start_LongRadialBlur();
+        m_isEnableMotionTrail = false;
         });
 
     // 귀신 : 어둠의 그림자
     m_pModelCom->Register_Event("GhostLiberation_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         // 모션 트레일 시작
         Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), true);
+        m_isEnableMotionTrail = true;
+        m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("GhostLiberation_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         // 모션 트레일 끝
@@ -1295,6 +1300,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         Start_DefaultVignette();
         // 레디얼 블러
         Start_LongRadialBlur();
+        m_isEnableMotionTrail = false;
         });
 
     // 정면 돌파
@@ -1321,20 +1327,27 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         CClientInstance::GetInstance()->ActiveCamera_Shaking(0.7f, 1.5f);
         });
 
-    // 포워드 닷지
+
+    // 닷지
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        m_isEnableMotionTrail = true;
+        m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
+        m_isEnableMotionTrail = false;
         });
 
-    // 백 닷지
-    m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    // 닷지 어택
+    m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        m_isEnableMotionTrail = true;
+        m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
         });
-    m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+    m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
+        m_isEnableMotionTrail = false;
         });
 #pragma endregion
 
@@ -1347,9 +1360,6 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
 
     m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_BodyAttack->Collision_Active(true); m_isNotifyAttacking = true; });
   //  m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()  { m_pBodyCom_BodyAttack->Collision_Active(false); });
-
-    m_pModelCom->Register_Event("WeaponOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  m_pWSword->Set_Equipped(true);   m_pClientInstance->Set_PlayerInput(true); });
-    m_pModelCom->Register_Event("WeaponOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  m_pWSword->Set_Equipped(false);if(!Has_Status(CKhazan_GSword::INTERACTION_STATUE)) m_pClientInstance->Set_PlayerInput(false); });
 
     m_pModelCom->Register_Event("HEAL1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
         m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;

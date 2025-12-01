@@ -243,15 +243,6 @@ void CKhazan_Spear::Update(_float fTimeDelta)
         Clear_Injured();
     }
 
-    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
-    {
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_On"));
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
-    {       
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Com_Lantern_Off"));
-    }
-
     if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH) && m_EventInteract.isInCave() == false)
     {
         m_EffectTimeDelta += fTimeDelta;
@@ -476,11 +467,11 @@ void CKhazan_Spear::Update_Stats(_float fTimeDelta)
         m_pPlayerData->fCulStamina = 0.f;
         if (!Has_Status(STAMINA_EXHAUSTION)) {
             Add_Status(STAMINA_EXHAUSTION);
-            m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_StaminaExhaustion"));
+            m_pBody->Get_Model()->Set_AnimationSet("Set_StaminaExhaustion");
             m_pClientInstance->Set_PlayerInput(false);     //입력 막기 
         }
 
-        if (Has_Status(STAMINA_EXHAUSTION) && m_pBody->Get_Model()->IsFinished())
+        if (Has_Status(STAMINA_EXHAUSTION) && (m_pBody->Get_Model()->IsFinished() || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_StaminaExhaustion")))
         {
             Remove_Status(STAMINA_EXHAUSTION);
             m_pPlayerData->fCulStamina += 5.f;      //스태미나 약간 회복 
@@ -491,7 +482,10 @@ void CKhazan_Spear::Update_Stats(_float fTimeDelta)
     }
 
     /* idle, run, walk, 현재 스태미나가 닳아 있는 상태일 때*/
-    if (!Has_States() || (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_RUN | MOV::MOVE_WALK)) && m_pPlayerData->fCulStamina < m_pPlayerData->fMaxStamina)
+    if (!Has_States() 
+        || ((Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_RUN | MOV::MOVE_WALK)))
+        || ((Has_State(CAT::M_GUARD) && !Has_SubState(MOV::MOVE_SPRINT)))
+        && m_pPlayerData->fCulStamina < m_pPlayerData->fMaxStamina)
     {
         if (!Has_Status(STAMINA_RECOVERY))
         {
@@ -594,10 +588,11 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
         {
           
             Interaction_Input(fTimeDelta);
-            Guard_Input(fTimeDelta);
-            Skill_Input(fTimeDelta);
-            Attack_Input(fTimeDelta);
 
+                Guard_Input(fTimeDelta);
+                Skill_Input(fTimeDelta);
+                Attack_Input(fTimeDelta);
+ 
             // 공격 중일 때는 Move_Input을 완전히 차단
             if (!Has_State(CAT::M_ATTACK | CAT::M_GUARD | CAT::M_SKILL) && !m_pAnimAttack->Is_Attacking() && m_pAnimAttack)
                 Move_Input(fTimeDelta);
@@ -635,7 +630,8 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
         !Has_State(CAT::M_ATTACK | CAT::M_SKILL | CAT::M_DAMAGED | CAT::M_INTERACT ) &&
         !Has_SubState(MOV::MOVE_DODGE) &&
         !m_pAnimMove->IsDodgeing() &&
-        !m_pAnimAttack->Is_Attacking())
+        !m_pAnimAttack->Is_Attacking() &&
+        m_pClientInstance->Get_PlayerInput())
     {
         Apply_PlayerMovement(fTimeDelta);
     }
@@ -859,7 +855,7 @@ _bool CKhazan_Spear::Fall_Input(_float fTimeDelta)
         m_pAnimFall->Continue(fTimeDelta);
 
         // 착지 애니메이션 완료 체크
-        if (Has_Status(PRE_LAND) && m_pBody->Get_Model()->IsFinished())
+        if (Has_Status(PRE_LAND) && m_pBody->Get_Model()->Check_MinAnimationTime())
         {
             Remove_Status(FALLING | FALLING_ATTACK | PRE_LAND);
             Remove_State(CAT::M_FALL);
@@ -1091,7 +1087,7 @@ _bool CKhazan_Spear::Skill_Input(_float fTimeDelta)
     }
     
     /* 투지, 스태미나  스탯 확인 */
-   if (m_pPlayerData->fCulDoggedness < 1.f && m_pPlayerData->fCulStamina < m_pPlayerData->fUsedStamina)
+   if (m_pPlayerData->fCulDoggedness < 1.f || Has_Status(STAMINA_EXHAUSTION))
         return false; 
 
     if (m_pGameInstance->Key_Down(DIK_Q))
@@ -1178,7 +1174,7 @@ _bool CKhazan_Spear::Attack_Input(_float fTimeDelta)
         return false;
 
     /* 스태미나 확인 */
-    if (m_pPlayerData->fCulStamina < m_pPlayerData->fUsedStamina) {
+    if (Has_Status(STAMINA_EXHAUSTION)) {
         Clear_Step0();
         return false;
     }
@@ -1464,7 +1460,7 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
     if (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_DODGE) && m_pBody->Is_SpearFullExtension())
     {
         /* 닷지 : 스태미나 소모*/
-        if (m_pPlayerData->fCulStamina >= m_pPlayerData->fUsedStamina)
+        if (!Has_Status(STAMINA_EXHAUSTION))
         {
             CKhazan_Spear_Anim_Move::SPEAR_MOVE info;
             info.isEquipWeapon = Has_Status(WEA::SPEAR);
@@ -1474,7 +1470,7 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
             info.eDir = m_eDir;
             m_pAnimMove->Try_ChangeAnimation(info);
 
-            m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
+            m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina);
         }
         else
         {
@@ -1584,7 +1580,7 @@ void CKhazan_Spear::ExecuteAnimationExit()
 
 _bool CKhazan_Spear::ChangeGrabAnimation()
 {
-    if (m_pBody->Get_Model()->Check_MinAnimationTime())
+    if (m_pBody->Get_Model()->IsAnimationStart(m_iCurAnimIndex) &&  m_pBody->Get_Model()->Check_MinAnimationTime())
     {
         m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F");
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);

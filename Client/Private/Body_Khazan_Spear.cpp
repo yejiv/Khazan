@@ -115,22 +115,13 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
     if (m_isActiveMotionTrail) 
         m_pMotionTrailCom->Start_MotionTrail(fTimeDelta);
 
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
-    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
-        Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), true);
-    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
-        Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), false);
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
-        Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), true);
-    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
-        Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), false);
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
-        Trigger_MotionTrail(TEXT("MT_Common_Avoid"), true);
-    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
-        Trigger_MotionTrail(TEXT("MT_Common_Avoid"), false);
+    /* 모션트레일중 다른 애니메이션이 나올 시 끄기  */
+    if (m_isEnableMotionTrail && m_iCurMotionTrailAnimIndex != m_pModelCom->Get_CurAnimIndex())
+    {
+        m_isEnableMotionTrail = false;
+        Trigger_MotionTrail(TEXT(""), false);
+    }
+
 
 }
 
@@ -1001,11 +992,15 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         RBDesc.fDuration = 1.2f;
         RBDesc.vFadeTime = _float2(0.25f, 0.5f);
         m_pGameInstance->Start_RadialBlur(RBDesc);
+
+        m_isEnableMotionTrail = true;
+        m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
         });
 
     m_pModelCom->Register_Event("SprintAtk_Strong_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
         CClientInstance::GetInstance()->ActiveCamera_Shaking(0.7f, 0.5f);
+        m_isEnableMotionTrail = false;
         });
 
     // 강공격
@@ -1085,10 +1080,14 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
     m_pModelCom->Register_Event("StrongAtk_Charge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), true);
+
+        m_isEnableMotionTrail = true;
+        m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
         });
 
     m_pModelCom->Register_Event("StrongAtk_Charge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), false);
+        m_isEnableMotionTrail = false;
         });
 
     // 강습
@@ -1126,10 +1125,13 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         RBDesc.vFadeTime = _float2(0.25f, 0.5f);
         m_pGameInstance->Start_RadialBlur(RBDesc);
 
+        m_isEnableMotionTrail = true;
+        m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
         });
 
     m_pModelCom->Register_Event("SprintAtk_Fast_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+        m_isEnableMotionTrail = false;
         });
 
     // 그림자 참격
@@ -1168,21 +1170,28 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_pGameInstance->Start_Distortion(Desc);
         });
 
-    // 포워드 닷지
-    m_pModelCom->Register_Event("Dodge_F_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    // 닷지
+    m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
+        m_isEnableMotionTrail = true;
+        m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
         });
-    m_pModelCom->Register_Event("Dodge_F_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+    m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+        m_isEnableMotionTrail = false;
         });
 
-    // 백 닷지
-    m_pModelCom->Register_Event("Dodge_B_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    // 닷지 어택
+    m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
+        m_isEnableMotionTrail = true;
+        m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
         });
-    m_pModelCom->Register_Event("Dodge_B_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+    m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+        m_isEnableMotionTrail = false;
         });
+
 
 #pragma endregion
 
