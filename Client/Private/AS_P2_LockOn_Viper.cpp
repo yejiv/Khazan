@@ -25,6 +25,7 @@ void CAS_P2_LockOn_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_fTimeAcc = 0.f;
     m_fMinLockTime = 2.5f;
     m_fMaxLockTime = 10.f;
+    m_fAttackRange = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
 
     _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
     _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
@@ -85,10 +86,12 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     {
         if (fDotF > m_fDotThreshold)
             isLockOnFinished = true;
+        
+        if (fDist >= m_fAttackRange)
+            isLockOnFinished = true;
 
         if (fDist >= m_fEndDist)
             isLockOnFinished = true;
-
     }
 
     if (m_fTimeAcc >= m_fMaxLockTime)
@@ -131,8 +134,8 @@ void CAS_P2_LockOn_Viper::Update_Direction(CTransform* pOwnerTransform, CTransfo
 
 
     //DIRECTION ePrevDir = m_eDirState;
-
-    _float fDist = XMVectorGetX(XMVector3Length(vDir));
+    _vector vDiff = vTargetPos - vOwnerPos;
+    _float fDist = XMVectorGetX(XMVector3Length(vDiff));
     _bool isBackward = {false};    
     // �Ÿ���� �������� ����
 
@@ -144,7 +147,7 @@ void CAS_P2_LockOn_Viper::Update_Direction(CTransform* pOwnerTransform, CTransfo
     if (fDist < 300.f)
     {
         _float fChance = m_pGameInstance->Rand(0,1);
-        if (fChance > 0.4)
+        if (fChance < 0.4)
             isBackward = true;
     }
 
