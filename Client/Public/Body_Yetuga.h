@@ -91,6 +91,12 @@ private:
     // Shader
     _bool                   m_isEnableEdge = { true };
 
+private:
+    COLLISION_DESC				m_tCollision_RHDesc = {};
+    COLLISION_DESC				m_tCollision_LHDesc = {};
+    COLLISION_DESC				m_tCollision_Desc = {};
+
+
 public:
 	static CBody_Yetuga*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*	Clone(void* pArg) override;
