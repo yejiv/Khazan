@@ -22,6 +22,11 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
 {
     m_fTime += fTimeDelta;
 
+    if (m_fTime > 0.f && !m_isFadeOut)
+    {
+
+    }
+
     if (m_fTime >= 3.f)
         m_isEnd = true;
 }
