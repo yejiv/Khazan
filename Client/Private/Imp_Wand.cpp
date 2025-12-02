@@ -94,24 +94,33 @@ void CImp_Wand::Late_Update(_float fTimeDelta)
 
 HRESULT CImp_Wand::Render()
 {
-	if ( FAILED(Bind_ShaderResources()) )
-		return E_FAIL;
+    if (FAILED(Bind_ShaderResources()))
+        return E_FAIL;
 
-	_uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
+    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-	for ( size_t i = 0; i<iNumMeshes; i++ )
-	{
-		m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
+    _float fEdgeIntensity = 0.5f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+        return E_FAIL;
 
-		m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+    _float fShadeIntensity = 0.3f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
 
-		/*if ( FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)) )
-			return E_FAIL;*/
+    _float fDiffusePower = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fDiffusePower", &fDiffusePower, sizeof(_float))))
+        return E_FAIL;
 
-		m_pShaderCom->Begin(0);
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+        //m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
 
-		m_pModelCom->Render(i);
-	}
+        m_pShaderCom->Begin(10);
+        m_pModelCom->Render(i);
+    }
 
 	return S_OK;
 }

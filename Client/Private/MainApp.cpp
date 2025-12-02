@@ -371,6 +371,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 {
 	//텍스처
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_World_Talk"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Talk/Talk_Bg_%d.png"), 3)), E_FAIL);
+
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_UI_GuideTex"),
         CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/TutorialGuide/GuideTex_%d.dds"), 3)), E_FAIL);
 
@@ -580,6 +583,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_SkipButton"),
         CSkipButton::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TalkDanjinjar"),
+        CUI_Talk_Danjinjar::Create(m_pDevice, m_pContext)), E_FAIL);
 
 
 	CUIObject::UIOBJECT_DESC AnnounceDesc = {};

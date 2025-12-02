@@ -4,7 +4,8 @@
 
 class CAS_Dr_Melee_Brutal : public CAI_State
 {
-
+private:
+    enum FSMSTATE { START, END };
 private:
     CAS_Dr_Melee_Brutal();
     virtual ~CAS_Dr_Melee_Brutal() = default;
@@ -16,6 +17,8 @@ public:
 
 private:
     CDragonian_Melee::MONDATA*  m_pMonData = { nullptr };
+    FSMSTATE                        m_eState = { END };
+    _float                          m_fAccTime = {};
 
 public:
     static CAS_Dr_Melee_Brutal* Create();

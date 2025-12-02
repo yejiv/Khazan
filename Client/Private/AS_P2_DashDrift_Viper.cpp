@@ -20,6 +20,14 @@ void CAS_P2_DashDrift_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     pModel->Set_Animation(22);
 
+    CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+    //_bool isBerserker = pBB->Get_Value<_bool>(pViper->Get_Name(), "is_Berserker");  
+    //if (!isBerserker)
+        m_fMoveSpeed = 15.f;
+
+    m_fAttackRange = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+   
+
     m_eState = DRIFTSTATE::START;
 }
 
@@ -27,12 +35,29 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
 {
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
+    CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
 
-   
+
+    if (m_eState == DRIFTSTATE::LOOP)
+    {
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pViper->Get_Component(TEXT("Com_Transform")));
+        CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
+        CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
+        _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
+        _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+        pOwnerTransform->AI_Chase(vTargetPos, fTimeDelta, m_fMoveSpeed, m_fAttackRange);
+
+        _float fDist = pBB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+
+        if (fDist <= m_fAttackRange + 5.f || pBB->Get_Value<_bool>(pViper->Get_Name(),"isP2_Dash_Abort"))
+        {
+            m_eState = DRIFTSTATE::FINISH;
+            pModel->Set_Animation(20);
+        }
+    }
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
 
         switch (m_eState)
         {
@@ -42,19 +67,11 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
             pModel->Set_Animation(21);
         }
         break;
-        case Client::DRIFTSTATE::LOOP:
-        {
-            CTransform* pOwnerTransform = static_cast<CTransform*>(pViper->Get_Component(TEXT("Com_Tranform")));
-            //CTransform* pTarget
-            //pOwnerTransform->AI_Chase();
-
-            m_eState = DRIFTSTATE::FINISH;
-            pModel->Set_Animation(20);
-        }
-        break;
+      
         case Client::DRIFTSTATE::FINISH:
         {
             pBB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_DashDriftFinished",true);
+            pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2_Dash_Abort", false);
         }
         break;
         }

@@ -15,7 +15,6 @@ private:
 public:
     enum class PHASE                { PHASE1,CINEMATIC,PHASE2, END };
 
-
 public:
     class CBody_Viper*              Get_Body() const { return m_pBody; }
     class CBody_Cinematic_Viper*    Get_Cinematic_Body() const { return m_pCinematicBody; }
@@ -28,10 +27,11 @@ public:
     void                            Set_PhaseWeapon_Cinematic();
     void                            Set_PhaseWeapon_Phase2();
     void                            Viper_Land(_fvector vGoalPosition, _float fSpeed);
-
+    void                            Reset_Viper_Gravity();
 
 
     class CAS_CutScene_Start_Viper*       Get_Viper_CutSceneState();
+    class CFSM_Viper*           Get_Viper_FSM();
 
 
 public:
@@ -62,12 +62,18 @@ private:
     //HRESULT						Ready_AnimEffectEvent(CModel* pModel);
 
 private:
+    void							Pick_ViperRock();
+    void							Hold_ViperRock();
+    void							Throw_ViperRock();
+
+private:
     class CBody_Viper*              m_pBody = { nullptr };
     class CBody_Cinematic_Viper*    m_pCinematicBody = { nullptr };
     class CBody_Phase2_Viper*       m_pPahse2Body = { nullptr };
     class CTwinBlade_Viper*         m_pWeapon = { nullptr };
     class CCore_Viper*              m_pCore = { nullptr };
     class CTwinBlade_R_Viper*       m_pP2Weapon = { nullptr };
+    class CProjectile_Rock_Viper*   m_pRock = { nullptr };
 
     _bool							m_isLookAt = { false };
     _float							m_fTurnSpeed = { 8.f };
@@ -76,6 +82,7 @@ private:
 
     PHASE                           m_ePhase = { PHASE::END };
 
+    _float4x4*                      m_pThrowMatrix = {};
 
 public:
     static CViper*                  Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
