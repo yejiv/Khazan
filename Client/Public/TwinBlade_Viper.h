@@ -32,7 +32,12 @@ public:
         m_isROnAttackCollision = isToggle;
         m_isLOnAttackCollision = isToggle;
     }
-    _float4                 Get_SwordTip() const { return m_vTipPos; }
+    _float4                 Get_RightSwordTip() const { return m_vRightTipPos; }
+    _float4                 Get_LeftSwordTip() const { return m_vLeftTipPos; }
+    _float4                 Get_RightSowrdStartPos() const { return m_vRightBladeStartPos; }
+    _float4                 Get_LeftSwordStartPos() const { return m_vLeftBladeStartPos; }
+
+
     _float4                 Get_GrabPos() const { return m_vGrabPos; }
 
 
@@ -79,11 +84,19 @@ private:
     _float4x4               m_RightMatrix = {};
     _float4x4               m_LeftMatrix = {};
 
-    _float4                 m_vTipPos = {};
-    _float4                 m_vGrabPos = {};
+    // Ã¢ ³¯ Offset
+    _float4                 m_vRightTipPos = {};
+    _float4                 m_vLeftTipPos = {};
+    _float4                 m_vRightBladeStartPos = {};
+    _float4                 m_vLeftBladeStartPos = {};
 
+
+
+    _float4                 m_vGrabPos = {};
     _float3                 m_vLocalOffset = {};
 
+    COLLISION_DESC          m_tRightBladeDesc = {};
+    COLLISION_DESC          m_tLeftBladeDesc = {};
 
 public:
     static CTwinBlade_Viper*    Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

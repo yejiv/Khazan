@@ -13,7 +13,6 @@ void CAS_Dr_Rampage_Attack_Default::Enter(CStateMachine* pFSM, CGameObject* pOwn
     if (m_iAttackIndex >= ATTACK_END)
         m_iAttackIndex = 0;
 
-    m_pMonData->fDeltaSpeed = 1.5f;
     if(m_iAttackIndex == ATTACK1)
         m_pMonData->iAnimIndex = 31;
     else if (m_iAttackIndex == ATTACK2)
@@ -59,6 +58,7 @@ void CAS_Dr_Rampage_Attack_Default::Update(CStateMachine* pFSM, CGameObject* pOw
         }
         else if (m_eComboState == COMBOSTATE::END)
         {
+            m_pMonData->pOwner->LockOnLerp(fTimeDelta, 5.f);
             if (m_pMonData->isAnimFinash)
             {
                 m_pMonData->eAttack_State = CDragonian_Rampage::ATTACKSTATE::END;
@@ -67,6 +67,7 @@ void CAS_Dr_Rampage_Attack_Default::Update(CStateMachine* pFSM, CGameObject* pOw
     }
     else if (m_iAttackIndex == ATTACK3)
     {
+        m_pMonData->pOwner->LockOnLerp(fTimeDelta, 5.f);
         if (m_pMonData->isAnimFinash)
             m_pMonData->eAttack_State = CDragonian_Rampage::ATTACKSTATE::END;
     }
@@ -74,8 +75,7 @@ void CAS_Dr_Rampage_Attack_Default::Update(CStateMachine* pFSM, CGameObject* pOw
 
 void CAS_Dr_Rampage_Attack_Default::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    m_pMonData->fAttackCool = m_pGameInstance->Rand(3.f, 5.f);
-    m_pMonData->fDeltaSpeed = 1.f;
+    m_pMonData->fAttackCool = 3.5f;
 }
 
 void CAS_Dr_Rampage_Attack_Default::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)

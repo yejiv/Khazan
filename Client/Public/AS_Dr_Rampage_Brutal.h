@@ -5,6 +5,8 @@
 class CAS_Dr_Rampage_Brutal : public CAI_State
 {
 private:
+    enum FSMSTATE { START, END };
+private:
     CAS_Dr_Rampage_Brutal();
     virtual ~CAS_Dr_Rampage_Brutal() = default;
 
@@ -15,7 +17,9 @@ public:
 
 private:
     CDragonian_Rampage::MONDATA*    m_pMonData = { nullptr };
-
+    FSMSTATE                        m_eState = { END };
+    _float                          m_fAccTime = {};
+    _bool                           m_isF = {};
 public:
     static CAS_Dr_Rampage_Brutal*      Create();
     virtual void				    Free() override;
