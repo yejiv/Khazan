@@ -901,12 +901,12 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma region LOOKING_CORE
 
-    pModel->Register_Event("Looking_Core", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-        {
-            CTransform* pCoreTransform = static_cast<CTransform*>(m_pCore->Get_Component(TEXT("Com_Transform")));
-            m_pCore->Set_IsActive(true);
-            pCoreTransform->Rotation(XMConvertToRadians(-90.f), XMConvertToRadians(180.f), XMConvertToRadians(-90.f));
-        });
+    //pModel->Register_Event("Looking_Core", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+    //    {
+    //        CTransform* pCoreTransform = static_cast<CTransform*>(m_pCore->Get_Component(TEXT("Com_Transform")));
+    //        m_pCore->Set_IsActive(true);
+    //        pCoreTransform->Rotation(XMConvertToRadians(-90.f), XMConvertToRadians(180.f), XMConvertToRadians(-90.f));
+    //    });
 
     pModel->Register_Event("Remove_Core", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
