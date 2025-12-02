@@ -159,7 +159,13 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_AnimEvent(), E_FAIL);
     CHECK_FAILED(Ready_Components(), E_FAIL);
 
-    m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail")));
+
+    CMeshTrail::TRAIL_DESC MeshDsc;
+    MeshDsc.iTextureIdx = 9;
+    MeshDsc.fLifeTime = .25f;
+    MeshDsc.iDivisionCount = 10.f;
+
+    m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
 
     CUIObject::UIOBJECT_DESC Desc;
 
@@ -208,16 +214,17 @@ void CElamein::Update(_float fTimeDelta)
     m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
 
     _float4x4 m_vSwordMat = m_pSword->Get_CombindMat();
+    _vector m_vRot = { m_vSwordMat._21, m_vSwordMat._22, m_vSwordMat._23 };
     _vector vSwordPos = { m_vSwordMat._41, m_vSwordMat._42, m_vSwordMat._43 };
-    _vector vSwordStart = vSwordPos + XMVector3Normalize(m_pSword->Get_Transform()->Get_State(STATE::UP)) * -5.f;
-    _vector vSwordEnd = vSwordPos + XMVector3Normalize(m_pSword->Get_Transform()->Get_State(STATE::UP)) * 5.f;
+    _vector vSwordStart = vSwordPos - XMVector3Normalize(m_vRot) * 1.5f;
+    _vector vSwordEnd = vSwordPos + XMVector3Normalize(m_vRot) * 1.5f;
     XMStoreFloat4(&m_vSword_Start, XMVectorSetW(vSwordStart, 1.f));
-    XMStoreFloat4(&m_vSword_End, XMVectorSetW(vSwordStart, 1.f));
+    XMStoreFloat4(&m_vSword_End, XMVectorSetW(vSwordEnd, 1.f));
 
     m_pMeshTrail->Update(fTimeDelta);
-    m_pTalk->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
+    m_pTalk->Update_UITransform(vSwordStart);
     m_pTalk->Update(fTimeDelta);
-    Update_MeshTrail();
+    //Update_MeshTrail();
 }
 
 void CElamein::Late_Update(_float fTimeDelta)
