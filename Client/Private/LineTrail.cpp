@@ -19,6 +19,7 @@ HRESULT CLineTrail::Initialize_Prototype()
     m_iTextureIdx = 0;
     m_fLifeTime = 0.4f;
     m_iDivisionCount = 5;
+    m_vColor = { 1.f, 1.f, 1.f };
 
     return S_OK;
 }
@@ -35,6 +36,7 @@ HRESULT CLineTrail::Initialize_Clone(void* pArg)
         m_iTextureIdx = dsc->iTextureIdx;
         m_fLifeTime = dsc->fLifeTime;
         m_iDivisionCount = dsc->iDivisionCount;
+        m_vColor = dsc->vColor;
         if (m_iDivisionCount < 1)
         {
             MSG_BOX(TEXT("Division Count is too low"));
@@ -121,6 +123,36 @@ void CLineTrail::Add_ControlPoint(_fvector pos)
     newNode.fLifeTime = 0.f;
 
     m_ControlPoints.push_back(newNode);
+}
+
+const TRAIL_CONFIG& CLineTrail::Get_TrailConfig() const
+{
+    TRAIL_CONFIG Config{};
+
+    Config.fLifeTime = m_fLifeTime;
+    Config.iTextureIdx = m_iTextureIdx;
+    Config.iDivisionCount = m_iDivisionCount;
+    Config.vColor = m_vColor;
+
+    return Config;
+}
+
+void CLineTrail::Set_TrailConfig(const TRAIL_CONFIG& Config)
+{
+    m_fLifeTime = Config.fLifeTime;
+    m_iTextureIdx = Config.iTextureIdx;
+    m_iDivisionCount = Config.iDivisionCount;
+    m_vColor = Config.vColor;
+}
+
+_uint CLineTrail::Get_NumTrailTextures()
+{
+    return m_pTextureCom->Get_NumTextures();
+}
+
+ID3D11ShaderResourceView* CLineTrail::Get_TrailTexture(_uint iIndex)
+{
+    return m_pTextureCom->Get_Texture(iIndex);
 }
 
 HRESULT CLineTrail::Ready_Component(void* pArg)

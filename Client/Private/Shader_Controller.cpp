@@ -12,6 +12,7 @@
 #include "Khazan_GSword.h"
 #include "Body_Khazan_GS.h"
 #include "GSword_Khazan_GS.h"
+#include "Elamein.h"
 
 CShader_Controller::CShader_Controller()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
@@ -525,6 +526,66 @@ void CShader_Controller::Ready_Shader()
 
 				ImGui::Separator();
 			}
+
+            if (ImGui::CollapsingHeader("Mesh Trail"), ImGuiTreeNodeFlags_DefaultOpen)
+            {
+                const _char* ObjectTags[] = { "Elamein" };
+                ImGui::Combo("Mesh Trail Owner List", &m_iTrailOwnerIndex, ObjectTags, IM_ARRAYSIZE(ObjectTags));
+
+                // 고르면 해당 객체의 모션 트레일 정보 Get해서 띄우기
+                CElamein* pElamein = {};
+
+                switch (m_iTrailOwnerIndex)
+                {
+                case 0:
+                    pElamein = dynamic_cast<CElamein*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
+                    m_TrailConfig = pElamein->Get_TrailConfig();
+                    break;
+
+                default:
+                    m_iTrailOwnerIndex = -1;
+                    break;
+                }
+
+                if (0 == m_iTrailOwnerIndex)
+                {
+                    // 특정 설정이 바뀔 때 Set
+                    _bool isChanged = false;
+
+                    isChanged |= ImGui::SliderFloat("Trail LifeTime", &m_TrailConfig.fLifeTime, 0.f, 3.f, "%.3f");
+                    isChanged |= ImGui::SliderInt("Trail Division Count", reinterpret_cast<_int*>(&m_TrailConfig.iDivisionCount), 1, 10);
+                    isChanged |= ImGui::ColorEdit3("Trail Start Color", reinterpret_cast<_float*>(&m_TrailConfig.vColor));
+                    ImGui::BeginChild("Trail Texture", ImVec2(0, 70), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+                    for (_uint i = 0; i < pElamein->Get_NumTrailTextures(); ++i)
+                    {
+                        ID3D11ShaderResourceView* pSRV = pElamein->Get_TrailTexture(i);
+
+                        if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                        {
+                            isChanged = true;
+                            m_TrailConfig.iTextureIdx = i;
+                        }
+
+                        ImGui::SameLine();
+                    }
+
+                    ImGui::EndChild();
+
+                    if (true == isChanged)
+                    {
+                        switch (m_iTrailOwnerIndex)
+                        {
+                        case 0:
+                            pElamein = dynamic_cast<CElamein*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
+                            pElamein->Set_TrailConfig(m_TrailConfig);
+                            break;
+                        }
+                    }
+                }
+
+                ImGui::Separator();
+            }
 
             if (ImGui::CollapsingHeader("Motion Trail"), ImGuiTreeNodeFlags_DefaultOpen)
             {

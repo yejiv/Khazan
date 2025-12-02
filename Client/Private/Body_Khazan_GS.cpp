@@ -847,7 +847,7 @@ HRESULT CBody_Khazan_GS::Ready_Components()
     MeshDsc.iTextureIdx = 9;
     MeshDsc.fLifeTime = .25f;
     MeshDsc.iDivisionCount = 10.f;
-
+    MeshDsc.vColor = { 1.f, 1.f, 1.f };
     m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
 
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
