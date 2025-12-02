@@ -357,6 +357,7 @@
     <ClInclude Include="..\public\Popup_Reset.h" />
     <ClInclude Include="..\Public\Projectile_Boomarang.h" />
     <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h" />
+    <ClInclude Include="..\Public\Projectile_Rock_Viper.h" />
     <ClInclude Include="..\Public\Prop_Chunk.h" />
     <ClInclude Include="..\Public\Prop_Destructible.h" />
     <ClInclude Include="..\Public\Sequence_Data_Manager.h" />
@@ -793,6 +794,7 @@
     <ClCompile Include="..\private\Popup_Reset.cpp" />
     <ClCompile Include="..\Private\Projectile_Boomarang.cpp" />
     <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp" />
+    <ClCompile Include="..\Private\Projectile_Rock_Viper.cpp" />
     <ClCompile Include="..\Private\Prop_Chunk.cpp" />
     <ClCompile Include="..\Private\Prop_Destructible.cpp" />
     <ClCompile Include="..\Private\Sequence_Data_Manager.cpp" />

@@ -78,10 +78,10 @@ HRESULT CObelisk::Initialize_Clone(void* pArg)
 
 void CObelisk::Priority_Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_7))
-    {
-        Destory();
-    }
+    //if (m_pGameInstance->Key_Down(DIK_7))
+    //{
+    //    Destory();
+    //}
 
     for (auto Chunk : m_Chunks)
     {

@@ -126,47 +126,47 @@ void CDragonian_Rampage::Priority_Update(_float fTimeDelta)
     }
     CContainerObject::Priority_Update(fTimeDelta);
 
-    if (m_pGameInstance->Key_Down(DIK_M))
-    {
-        m_fCurrentHP = m_fMaxHP;
-        m_Data.isSleep = true;
-    }
-    else if (m_pGameInstance->Key_Down(DIK_B))
-        Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
-    else if (m_pGameInstance->Key_Down(DIK_N))
-        m_fCurrentStamina = 0;
+    //if (m_pGameInstance->Key_Down(DIK_M))
+    //{
+    //    m_fCurrentHP = m_fMaxHP;
+    //    m_Data.isSleep = true;
+    //}
+    //else if (m_pGameInstance->Key_Down(DIK_B))
+    //    Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
+    //else if (m_pGameInstance->Key_Down(DIK_N))
+    //    m_fCurrentStamina = 0;
 
-    if (m_pGameInstance->Key_Down(DIK_V))
-    {
-        Safe_Release(m_pHitBodyCom);
-        this->Remove_Component(TEXT("Com_HitBody"));
-        m_pHitBodyCom = nullptr;
+    //if (m_pGameInstance->Key_Down(DIK_V))
+    //{
+    //    Safe_Release(m_pHitBodyCom);
+    //    this->Remove_Component(TEXT("Com_HitBody"));
+    //    m_pHitBodyCom = nullptr;
 
-        _vector vMatScale{}, vMatQuat{}, vMatPos{};
+    //    _vector vMatScale{}, vMatQuat{}, vMatPos{};
 
-        CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-        BodyDesc.vExtent = { 2.2f, 1.f, 1.f };
-        BodyDesc.eMotion = EMotionType::Kinematic;
-        BodyDesc.eQuality = EMotionQuality::Discrete;
-        BodyDesc.eShapeType = SHAPE::BOX;
-        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-        BodyDesc.bIsTrigger = true;
+    //    CBody::BODY_BOXSHAPE_DESC BodyDesc{};
+    //    BodyDesc.vExtent = { 2.2f, 1.f, 1.f };
+    //    BodyDesc.eMotion = EMotionType::Kinematic;
+    //    BodyDesc.eQuality = EMotionQuality::Discrete;
+    //    BodyDesc.eShapeType = SHAPE::BOX;
+    //    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
+    //    BodyDesc.bIsTrigger = true;
 
-        _matrix BodyMat = XMLoadFloat4x4(m_pBodySocketMatrix) * m_pTransformCom->Get_WorldMatrix();
-        for (uint32_t i = 0; i < 3; i++)
-            BodyMat.r[i] = XMVector3Normalize(BodyMat.r[i]);
+    //    _matrix BodyMat = XMLoadFloat4x4(m_pBodySocketMatrix) * m_pTransformCom->Get_WorldMatrix();
+    //    for (uint32_t i = 0; i < 3; i++)
+    //        BodyMat.r[i] = XMVector3Normalize(BodyMat.r[i]);
 
-        XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, BodyMat);
+    //    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, BodyMat);
 
-        XMStoreFloat3(&BodyDesc.vPos, vMatPos);
-        XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
+    //    XMStoreFloat3(&BodyDesc.vPos, vMatPos);
+    //    XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
 
-        BodyDesc.vShapeOffset = _float3(-0.5f, -0.f, 0.f);
-        BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    //    BodyDesc.vShapeOffset = _float3(-0.5f, -0.f, 0.f);
+    //    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
-        CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_HitBody"), (CComponent**)&m_pHitBodyCom, &BodyDesc);
+    //    CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_HitBody"), (CComponent**)&m_pHitBodyCom, &BodyDesc);
 
-    }
+    //}
 }
 
 void CDragonian_Rampage::Update(_float fTimeDelta)

@@ -12,17 +12,19 @@ CUI_Fade::CUI_Fade(const CUI_Fade& Prototype)
 {
 }
 
-void CUI_Fade::Fade_In(function<void()> FadeEvent)
+void CUI_Fade::Fade_In(function<void()> FadeEvent, _float fSpeed)
 {
 	m_eFadeType = FADE_STATE::FADE_IN;
 	m_fAlpha = 1.f;
+    m_fFadeSpeed = fSpeed;
 	m_FadeEvent = FadeEvent;
 }
 
-void CUI_Fade::Fade_Out(function<void()> FadeEvent)
+void CUI_Fade::Fade_Out(function<void()> FadeEvent, _float fSpeed)
 {
 	m_eFadeType = FADE_STATE::FADE_OUT;
 	m_fAlpha = 0.f;
+    m_fFadeSpeed = fSpeed;
 	m_FadeEvent = FadeEvent;
 }
 
@@ -51,9 +53,9 @@ void CUI_Fade::Update(_float fTimeDelta)
 void CUI_Fade::Late_Update(_float fTimeDelta)
 {
 	if (m_eFadeType == FADE_STATE::FADE_IN)
-		m_fAlpha -= fTimeDelta;
+		m_fAlpha -= fTimeDelta * m_fFadeSpeed;
 	else if (m_eFadeType == FADE_STATE::FADE_OUT)
-		m_fAlpha += fTimeDelta;
+		m_fAlpha += fTimeDelta * m_fFadeSpeed;
 	if (m_eFadeType != FADE_STATE::END)
 	{
 		if (m_fAlpha >= 1.f || m_fAlpha <= 0.f)

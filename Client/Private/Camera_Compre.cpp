@@ -113,11 +113,6 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
 
 void CCamera_Compre::Priority_Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
-    {
-        m_isAniFix = false;
-    }
-
     if (m_fStartTime < 2.f)
     {
         m_fStartTime += fTimeDelta;

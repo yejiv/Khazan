@@ -54,7 +54,7 @@ void CJOH_Test1::Update(_float fTimeDelta)
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         int a = 10;
 
-    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
+  /*  if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
     {
         m_pModelCom->Set_Animation(++m_iCurrentAnimIndex);
     }
@@ -81,7 +81,7 @@ void CJOH_Test1::Update(_float fTimeDelta)
 
         m_pModelCom->Set_Animation(m_iCurrentAnimIndex);
         m_pModelCom->Set_AnimationLoop(true);
-    }
+    }*/
 }
 
 void CJOH_Test1::Late_Update(_float fTimeDelta)

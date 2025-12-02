@@ -56,12 +56,9 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
         CViper* pViper = static_cast<CViper*>(pOwner);
         CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+        pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
         //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
          //pViper->Consume_Stamina(10.f);
-
-        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_LOCKON),pViper);
-        
 
     }
 
@@ -274,7 +271,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
 
                 // 락온 거리 조건
-                if (fDist > fAttackRange && fDist <= fLockOnRange)
+                if (fDist > fAttackRange + 20.f && fDist <= fLockOnRange)
                     return true;
 
                 return false;
@@ -338,7 +335,6 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
 #pragma region COMBAT_PHASE2
 
-
     else if ("P2_SwingRound" == name)
     {
         return [pViper, this](CBlackBoard* BB)->_bool
@@ -384,12 +380,21 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
                 if (fHpRatio >= 0.6f)
                     return false;
 
+               // // HP가 60퍼 밑으로 내려가면
+               //_float fDiffScale = (0.4f - fHpRatio);
+               //// 최소 확률
+               //_float fMinChance = 0.15f;
+               //_float fChance = fMinChance + fDiffScale * 0.4f; // 최소 확률 + 확률 보정치
+               //// fDiffScale 이 커질 수록 확률이 증가 하게된다.
+
+               //// 여기다가 확률 추가
+               //if (m_pGameInstance->Rand(0, 1) > fChance)
+               //    return false;
 
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fJumpAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "JumpAttackRange");
-                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_DashDriftFinished");
 
-                if (fDist != 0 && fDist <= fJumpAttackRange)
+                if (fDist != 0  && fDist >= fJumpAttackRange)
                 {
                     return true;
                 }

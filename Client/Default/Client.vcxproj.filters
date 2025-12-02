@@ -1384,6 +1384,12 @@
     <Filter Include="02.GameObject\Interation_Object\Item">
       <UniqueIdentifier>{772ec527-b2a6-4f60-abbf-58a7da8b5241}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Projectile\Viper">
+      <UniqueIdentifier>{a9b656b2-5d11-42ad-8c36-b9ca956e09ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Viper\Rock">
+      <UniqueIdentifier>{8a3ed605-400a-4138-853b-9f076e58ceda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2598,8 +2604,6 @@
     <ClInclude Include="..\Public\Sequence_Viper_CutScene.h">
       <Filter>04.Sequence\Viper\CutScene</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Elamain.h">
-    </ClInclude>
     <ClInclude Include="..\public\Elamein.h">
       <Filter>02.GameObject\Creature\Monster\Elamain</Filter>
     </ClInclude>
@@ -2672,12 +2676,17 @@
     <ClInclude Include="..\Public\TwinBlade_R_Viper.h">
       <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBladeR</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\AS_P2_LockOn_Viper.h" />
     <ClInclude Include="..\Public\Interaction_Object.h">
       <Filter>02.GameObject\Interation_Object</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Interaction_Item.h">
       <Filter>02.GameObject\Interation_Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_LockOn_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\19.Lockon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Rock_Viper.h">
+      <Filter>02.GameObject\Projectile\Viper\Rock</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3873,8 +3882,6 @@
     <ClCompile Include="..\Private\Sequence_Viper_CutScene.cpp">
       <Filter>04.Sequence\Viper\CutScene</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Elamain.cpp">
-    </ClCompile>
     <ClCompile Include="..\private\Elamein.cpp">
       <Filter>02.GameObject\Creature\Monster\Elamain</Filter>
     </ClCompile>
@@ -3947,12 +3954,17 @@
     <ClCompile Include="..\Private\TwinBlade_R_Viper.cpp">
       <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBladeR</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\AS_P2_LockOn_Viper.cpp" />
     <ClCompile Include="..\Private\Interaction_Object.cpp">
       <Filter>02.GameObject\Interation_Object</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Interaction_Item.cpp">
       <Filter>02.GameObject\Interation_Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_LockOn_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\19.Lockon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Rock_Viper.cpp">
+      <Filter>02.GameObject\Projectile\Viper\Rock</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

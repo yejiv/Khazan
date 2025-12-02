@@ -52,11 +52,6 @@ void CLevel_Test::Update(_float fTimeDelta)
 	//		return;
 	//}
 
-	if (m_pGameInstance->Key_Down(DIK_Q))
-	{
-		m_pGameInstance->isPickRenderTargetPixel(TEXT("Target_Normal"));
-	}
-
 	if (m_pGameInstance->Key_Down(DIK_F1))
 	{
 		m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::TEST), ENUM_CLASS(CAMERATYPE::FREE));
