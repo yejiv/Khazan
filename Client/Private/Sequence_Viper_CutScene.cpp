@@ -7,11 +7,15 @@
 #include "Camera_Compre.h"
 #include "AS_CutScene_Start_Viper.h"
 #include "FSM_Viper.h"
+#include "CharacterVirtual.h"
+#include "Khazan_GSword.h"
+#include "AI_Controller_Viper.h"
 
-CSequence_Viper_CutScene::CSequence_Viper_CutScene(CViper* pViper)
+CSequence_Viper_CutScene::CSequence_Viper_CutScene(CViper* pViper, CKhazan_GSword* pKhazan)
     : m_pGameInstance{ CGameInstance::GetInstance() }
     , m_pClientInstance { CClientInstance::GetInstance() }
     , m_pViper { pViper } 
+    , m_pKhazan { pKhazan }
 {
     Safe_AddRef(m_pGameInstance);
     Safe_AddRef(m_pClientInstance);
@@ -20,6 +24,9 @@ CSequence_Viper_CutScene::CSequence_Viper_CutScene(CViper* pViper)
 HRESULT CSequence_Viper_CutScene::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 {
     m_pCamera = dynamic_cast<CCamera_Compre*>(m_pClientInstance->Get_ActiveCamera());    
+    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_1Phase_CutScene");
+    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_1Phase_CutScene2");
+
     return S_OK;
 }
 
@@ -38,7 +45,11 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
     // 카메라 애니메이션 재생
     if (m_fTime > 1.f && !m_isCameraSet)
     {
-        // 카메라 애니메이션 재생 시작
+        CCharacterVirtual* pCharVir = dynamic_cast<CCharacterVirtual*>(m_pKhazan->Get_Component(TEXT("Com_CharacterVirtual")));
+        pCharVir->Teleport(XMVectorSet(-22.907f, -29.976f, 153.761f, 1.f), m_pKhazan->Get_Transform()->Get_Rotation_Quat(), m_pKhazan->Get_Transform());
+        m_pKhazan->Get_Transform()->Look_Dir(XMVectorSet(-0.225f, 0.f, 0.974f, 0.f));
+        m_pClientInstance->Camera_Set_Animation(TEXT("Viper_1Phase_CutScene"));
+        m_isCameraSet = true;
     }
 
     // 1차 페이드 인
@@ -51,14 +62,14 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
     // 바이퍼 Sit 애니메이션 진행
     if (m_fTime > 2.5f && !m_isFirstScene)
     {
-        m_pViper->Get_Viper_FSM()->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), m_pViper);                
+        m_pViper->Get_Viper_FSM()->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), m_pViper);
         CAS_CutScene_Start_Viper* pCutSceneState = m_pViper->Get_Viper_CutSceneState();
         pCutSceneState->ViperScene_Sit(m_pViper);
         m_isFirstScene = true;
     }
 
     // 바이퍼 Sit 애니메이션 점프 뒤로 갈시 다음 애니메이션으로 재생
-    if (m_fTime > 31.f && !m_isFirstSceneEnd)
+    if (m_fTime > 30.0f && !m_isFirstSceneEnd)
     {
         CAS_CutScene_Start_Viper* pCutSceneState = m_pViper->Get_Viper_CutSceneState();
         pCutSceneState->ViperScene_Jump(m_pViper);
@@ -66,13 +77,23 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
     }
 
     // 카메라 떨어지는곳이 보이는곳으로 텔포
-    if (m_fTime > 31.5f && !m_isSecondCameraSet)
+    if (m_fTime > 31.3f && !m_isSecondCameraSet)
     {
+        CTransform* pCamera_Transform = m_pCamera->Get_Transform();
+        pCamera_Transform->Look_Dir(XMVectorSet(-0.143f, 0.505f, 0.851f, 0.f));
+        pCamera_Transform->Set_State(STATE::POSITION, XMVectorSet(-29.861f, -29.177f, 187.630f, 1.f));
+        m_pClientInstance->Camera_Set_Animation(TEXT("Viper_1Phase_CutScene2"));
         m_isSecondCameraSet = true;
     }
 
+    if (m_fTime > 32.f && !m_isLandEffect)
+    {
+        m_pClientInstance->ActiveCamera_Shaking(3.f, 1.f);
+        m_isLandEffect = true;
+    }
+
     // 점프 후 땅도착시 착지 애니메이션으로 전환
-    if (m_fTime > 33.5 && !m_isSecondSceneEnd)
+    if (m_fTime > 32.35f && !m_isSecondSceneEnd)
     {
         CAS_CutScene_Start_Viper* pCutSceneState = m_pViper->Get_Viper_CutSceneState();
         pCutSceneState->ViperScene_Land(m_pViper);
@@ -101,9 +122,47 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         m_isSecondFadeIn = true;
     }
 
+    if (m_fTime > 41.5f && !m_isRoarEffect)
+    {
+        // Distortion
+        DISTORTION_DESC Desc{};
+        _vector vCenterPos = XMVectorSet(-31.938f, -25.6f, 201.162f, 1.f);
+        _float fPosY = XMVectorGetY(vCenterPos);
+        _float fOffset = 2.f;
+        vCenterPos = XMVectorSetY(vCenterPos, fPosY + fOffset);
+        XMStoreFloat3(&Desc.vCenter, vCenterPos);
+        Desc.fRange = 0.6f;
+        Desc.fPower = 0.05f;
+        Desc.fDuration = 2.f;
+        Desc.vFadeTime = _float2(1.f, 0.2f);
+        Desc.fSpeed = 1.f;
+        Desc.iNoiseIndex = 17;
+        m_pGameInstance->Start_Distortion(Desc);
+
+
+
+        RADIAL_BLUR_DESC RadialDesc{};
+        RadialDesc.vCenterUV = _float2(0.5f, 0.5f);
+        RadialDesc.fSampleRadius = 0.05f;
+        RadialDesc.vMaskRadius = _float2(0.f, 0.3f);
+        RadialDesc.fExponent = 1.f;
+        RadialDesc.iNumSamples = 16;
+        RadialDesc.fAttenuation = 0.1f;
+        RadialDesc.fStrength = 1.f;
+        RadialDesc.fDuration = 2.f;
+        RadialDesc.vFadeTime = _float2(0.05f, 0.25f);
+        m_pGameInstance->Start_RadialBlur(RadialDesc);
+
+        m_isRoarEffect = true;
+    }
+
 
     if (m_fTime >= 45.f)
+    {
+        dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);        
         m_isEnd = true;
+    }
+        
 }
 
 void CSequence_Viper_CutScene::Pause()
@@ -131,9 +190,9 @@ _bool CSequence_Viper_CutScene::IsEnd() const
     return m_isEnd;
 }
 
-CSequence_Viper_CutScene* CSequence_Viper_CutScene::Create(CViper* pViper)
+CSequence_Viper_CutScene* CSequence_Viper_CutScene::Create(CViper* pViper, CKhazan_GSword* pKhazan)
 {
-    return new CSequence_Viper_CutScene(pViper);
+    return new CSequence_Viper_CutScene(pViper, pKhazan);
 }
 
 void CSequence_Viper_CutScene::Free()

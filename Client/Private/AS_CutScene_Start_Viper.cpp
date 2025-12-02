@@ -100,8 +100,9 @@ void CAS_CutScene_Start_Viper::Change_CutSceneState(CUTSCENE_STATE eNextState , 
 
     case Client::CUTSCENE_STATE::JUMP:
     {
-        pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::JUMP));
-        pViper->Set_ViperPosition(XMVectorSet(-30.838f, -8.453f, 199.893f, 1.f));
+        pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::JUMP));        
+        pViper->Set_Teleport(XMVectorSet(-30.838f, -5.35f, 199.893f, 1.f));
+        //pViper->Set_ViperPosition(XMVectorSet(-30.838f, -8.453f, 199.893f, 1.f));
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneSit", false);
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneJump", true);
         break;

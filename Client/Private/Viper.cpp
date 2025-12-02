@@ -484,6 +484,11 @@ void CViper::Set_ViperPosition(_fvector vPosition)
     m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 0.f));
 }
 
+void CViper::Set_Teleport(_fvector vPos)
+{
+    m_pCharVirCom->Teleport(vPos, m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+}
+
 
 
 HRESULT CViper::Ready_AnimEvent()

@@ -149,7 +149,10 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
         }
         else if (m_isBlendBack)
         {
-            Update_BlendBack(fTimeDelta);
+            if (m_iCameraType != ENUM_CLASS(CAMERATYPE::FREE))
+                Update_BlendBack(fTimeDelta);
+            else
+                m_isBlendBack = false;
         }
         else {
             if (m_iCameraType == ENUM_CLASS(CAMERATYPE::FREE))

@@ -54,6 +54,8 @@ public:
     void                            Grab_Check_End();
     void                            Set_ViperPosition(_fvector vPosition);
 
+    void Set_Teleport(_fvector vPos);
+
 private:
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();

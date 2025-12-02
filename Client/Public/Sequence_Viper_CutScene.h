@@ -14,7 +14,7 @@ NS_BEGIN(Client)
 class CSequence_Viper_CutScene : public ISeqInstance
 {
 private:
-    CSequence_Viper_CutScene(class CViper* pViper);
+    CSequence_Viper_CutScene(class CViper* pViper, class CKhazan_GSword* pKhazan);
     virtual ~CSequence_Viper_CutScene() = default;
 
 public:
@@ -45,6 +45,9 @@ private:
     _bool   m_isThirdScene = { false };
     _bool   m_isThirdSceneEnd = { false };
 
+
+    _bool   m_isLandEffect = { false };
+    _bool   m_isRoarEffect = { false };
     
     _bool   m_isEnd = { false };
 
@@ -53,9 +56,10 @@ private:
     class CViper* m_pViper = { nullptr };
     class CCamera_Compre* m_pCamera = { nullptr };
     class CSkipButton* m_pSkipButton = { nullptr };
+    class CKhazan_GSword* m_pKhazan = { nullptr };
 
 public:
-    static CSequence_Viper_CutScene* Create(class CViper* pViper);
+    static CSequence_Viper_CutScene* Create(class CViper* pViper, class CKhazan_GSword* pKhazan);
     virtual void Free() override;
 };
 
