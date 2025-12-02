@@ -1378,6 +1378,15 @@
     <Filter Include="02.GameObject\Interation_Object\Item">
       <UniqueIdentifier>{772ec527-b2a6-4f60-abbf-58a7da8b5241}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Projectile\Viper">
+      <UniqueIdentifier>{a9b656b2-5d11-42ad-8c36-b9ca956e09ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Projectile\Viper\Rock">
+      <UniqueIdentifier>{8a3ed605-400a-4138-853b-9f076e58ceda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Animation\Ladder">
+      <UniqueIdentifier>{878a082a-49da-448f-ae67-d7c41018076b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="92.AI\State\Dragonian_Melee\Turn">
       <UniqueIdentifier>{30695547-ff52-4c5f-8ee2-1d28b8935637}</UniqueIdentifier>
     </Filter>
@@ -2664,12 +2673,20 @@
     <ClInclude Include="..\Public\TwinBlade_R_Viper.h">
       <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBladeR</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\AS_P2_LockOn_Viper.h" />
     <ClInclude Include="..\Public\Interaction_Object.h">
       <Filter>02.GameObject\Interation_Object</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Interaction_Item.h">
       <Filter>02.GameObject\Interation_Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_LockOn_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\19.Lockon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Projectile_Rock_Viper.h">
+      <Filter>02.GameObject\Projectile\Viper\Rock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Khazan_GS_Anim_Ladder.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Ladder</Filter>
     </ClInclude>
     <ClInclude Include="..\public\AS_Dr_Melee_Turn.h">
       <Filter>92.AI\State\Dragonian_Melee\Turn</Filter>
@@ -3937,12 +3954,20 @@
     <ClCompile Include="..\Private\TwinBlade_R_Viper.cpp">
       <Filter>02.GameObject\Creature\Monster\Viper\Weapon\TwinBladeR</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\AS_P2_LockOn_Viper.cpp" />
     <ClCompile Include="..\Private\Interaction_Object.cpp">
       <Filter>02.GameObject\Interation_Object</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Interaction_Item.cpp">
       <Filter>02.GameObject\Interation_Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_LockOn_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\19.Lockon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Projectile_Rock_Viper.cpp">
+      <Filter>02.GameObject\Projectile\Viper\Rock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_GS_Anim_Ladder.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Ladder</Filter>
     </ClCompile>
     <ClCompile Include="..\private\AS_Dr_Melee_Turn.cpp">
       <Filter>92.AI\State\Dragonian_Melee\Turn</Filter>

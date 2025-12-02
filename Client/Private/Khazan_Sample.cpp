@@ -87,7 +87,7 @@ void CKhazan_Sample::Priority_Update(_float fTimeDelta)
 {
     __super::Priority_Update(fTimeDelta);
 
-    if (m_pGameInstance->Key_Down(DIK_F5))
+   /* if (m_pGameInstance->Key_Down(DIK_F5))
         m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(457.f, -12.f, 241.f, 1.f));
 
     XMStoreFloat4(&m_vPos, XMVectorSetW(m_pTransformCom->Get_State(STATE::POSITION), 1.f));
@@ -104,12 +104,12 @@ void CKhazan_Sample::Priority_Update(_float fTimeDelta)
         pObject->Setting_BrutalAttack(&m_vPos, 0.f);
 
         m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::TEST), TEXT("Layer_UI"), pObject);
-    }
+    }*/
 }
 
 void CKhazan_Sample::Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_R))
+    /*if (m_pGameInstance->Key_Down(DIK_R))
     {
         CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
         if (pDamage != nullptr)
@@ -145,11 +145,11 @@ void CKhazan_Sample::Update(_float fTimeDelta)
             pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::PLAYER, m_pTransformCom->Get_State(STATE::POSITION), 100);
             m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
         }
-    }
+    }*/
 
     if (m_isEnableControl)
     {
-        if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+      /*  if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
         {
             _float3     vPickedPos{};
             _bool isPicked = m_pGameInstance->isPicked(&vPickedPos);
@@ -158,7 +158,7 @@ void CKhazan_Sample::Update(_float fTimeDelta)
                 m_pTransformCom->Set_State(Engine::STATE::POSITION, XMVectorSetW(XMLoadFloat3(&vPickedPos), 1.f));
                 m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 1.f));
             }
-        }
+        }*/
 
         Update_State(fTimeDelta);
     }
@@ -434,44 +434,44 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
 
     if (!Has_State(ATTACK_ALL))
     {
-        if (m_pGameInstance->Key_Down(DIK_S))
-        {
-            ++m_isMove;
-            Add_DirState(DOWN);
-        }
-        if (m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta))
-        {
-            m_pTransformCom->Go_Backward(fTimeDelta * m_fMoveSpeed);
-        }
-        if (m_pGameInstance->Key_Up(DIK_S))
-        {
-            m_isMove = 0;
-            // m_isMove = m_isMove - 1 < 0 ? 0 : m_isMove - 1;
-            Remove_DirState(DOWN);
-        }
+        //if (m_pGameInstance->Key_Down(DIK_S))
+        //{
+        //    ++m_isMove;
+        //    Add_DirState(DOWN);
+        //}
+        //if (m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta))
+        //{
+        //    m_pTransformCom->Go_Backward(fTimeDelta * m_fMoveSpeed);
+        //}
+        //if (m_pGameInstance->Key_Up(DIK_S))
+        //{
+        //    m_isMove = 0;
+        //    // m_isMove = m_isMove - 1 < 0 ? 0 : m_isMove - 1;
+        //    Remove_DirState(DOWN);
+        //}
 
-        if (m_pGameInstance->Key_Down(DIK_W))
-        {
-            ++m_isMove;
-            Add_DirState(UP);
-        }
-        if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))
-        {
-            m_pTransformCom->Go_Straight(fTimeDelta * m_fMoveSpeed);
-        }
-        if (m_pGameInstance->Key_Up(DIK_W))
-        {
-            m_isMove = 0;
+        //if (m_pGameInstance->Key_Down(DIK_W))
+        //{
+        //    ++m_isMove;
+        //    Add_DirState(UP);
+        //}
+        //if (m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta))
+        //{
+        //    m_pTransformCom->Go_Straight(fTimeDelta * m_fMoveSpeed);
+        //}
+        //if (m_pGameInstance->Key_Up(DIK_W))
+        //{
+        //    m_isMove = 0;
 
-            //m_isMove = m_isMove - 1 < 0 ? 0 : m_isMove - 1;
-            Remove_DirState(UP);
-        }
+        //    //m_isMove = m_isMove - 1 < 0 ? 0 : m_isMove - 1;
+        //    Remove_DirState(UP);
+        //}
 
-        if (m_pGameInstance->Key_Pressing(DIK_A, fTimeDelta))
-            m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
+        //if (m_pGameInstance->Key_Pressing(DIK_A, fTimeDelta))
+        //    m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
 
-        if (m_pGameInstance->Key_Pressing(DIK_D, fTimeDelta))
-            m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * 1.f);
+        //if (m_pGameInstance->Key_Pressing(DIK_D, fTimeDelta))
+        //    m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * 1.f);
     }
 
     if (m_isMove > 0)
@@ -486,7 +486,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
     }
 
 
-    if (Has_State(WALK) && m_pGameInstance->Key_Down(DIK_LSHIFT))
+    /*if (Has_State(WALK) && m_pGameInstance->Key_Down(DIK_LSHIFT))
     {
         Add_State(RUN);
     }
@@ -644,7 +644,7 @@ void CKhazan_Sample::Key_Input(_float fTimeDelta)
         m_FastComboIndex = m_StrongComboIndex = 0;
 
         Add_State(ATTACK_BRUTAL);
-    }
+    }*/
     //if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_L))
     //{
     //    Clear_State();

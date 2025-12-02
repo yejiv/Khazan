@@ -95,21 +95,28 @@ void CAS_CutScene_2Phase_Viper::Change_CutSceneState(P2CUTSCENE_STATE eNextState
     {
     case Client::P2CUTSCENE_STATE::DOWN:
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::DOWN));
+        pViper->Set_PhaseWeapon_Cinematic();
+        pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
         break;
     case Client::P2CUTSCENE_STATE::PICKUP:
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::PICKUP));
+        pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
         break;
     case Client::P2CUTSCENE_STATE::INJURE:
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::INJURE));
+        pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
         break;
     case Client::P2CUTSCENE_STATE::HEMPTYSIS:
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::HEMPTYSIS));
+        pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
         break;
     case Client::P2CUTSCENE_STATE::CONGESTION:
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::CONGESTION));
+        pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
         break;
     case Client::P2CUTSCENE_STATE::HANDDN:
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::HANDDN));
+        pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
         break;
     }
    

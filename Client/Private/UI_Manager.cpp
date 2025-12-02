@@ -349,14 +349,14 @@ void CUI_Manager::UIObjectToRenderer()
 	m_pRenderUI.clear();
 }
 
-void CUI_Manager::Fade_In(function<void()> FadeEvent)
+void CUI_Manager::Fade_In(function<void()> FadeEvent, _float fSpeed)
 {
-	m_pFadeUI->Fade_In(FadeEvent);
+	m_pFadeUI->Fade_In(FadeEvent, fSpeed);
 }
 
-void CUI_Manager::Fade_Out(function<void()> FadeEvent)
+void CUI_Manager::Fade_Out(function<void()> FadeEvent, _float fSpeed)
 {
-	m_pFadeUI->Fade_Out(FadeEvent);
+	m_pFadeUI->Fade_Out(FadeEvent, fSpeed);
 }
 
 _bool CUI_Manager::Fade_End()

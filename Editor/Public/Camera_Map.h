@@ -27,6 +27,8 @@ public:
 	virtual void			Late_Update(_float fTimeDelta) override;
 	virtual HRESULT			Render() override;
 
+    void Set_MapCameraPosition(_float4 vPosition);
+
 private:
 	_float					m_fMouseSensor = { };
 
@@ -39,6 +41,9 @@ private:
 	_uint m_iPhase = { 0 };
 
 	_float3 m_vPrevPos = {};
+
+    _bool m_isCameraForceMove = { false };
+    _vector m_vForceMovePos = {};
 
 private:
 	void Preview_Setting();

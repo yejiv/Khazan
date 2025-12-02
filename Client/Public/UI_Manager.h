@@ -21,8 +21,8 @@ public:
 	void						UIObjectToRenderer();
 
 	//Fade 관련
-	void						Fade_In(function<void()> FadeEvent);
-	void						Fade_Out(function<void()> FadeEvent);
+	void						Fade_In(function<void()> FadeEvent, _float fSpeed);
+	void						Fade_Out(function<void()> FadeEvent, _float fSpeed);
 	_bool						Fade_End();
 
 	//UI 관련

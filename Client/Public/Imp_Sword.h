@@ -26,9 +26,8 @@ public:
     _matrix					Get_BoneMatrix(const _char* pBoneName);
     _float4x4               Get_CombinedMatrix() const { return m_CombinedWorldMatrix; }
     void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
-
-    _float4                 Get_SwordTip() const { return m_vTipPos; }
-    _float4                 Get_BladeStart() const { return m_vBladeStart; }
+    _float4                 Get_SwordTipPos() const { return m_vTipPos; }
+    _float4                 Get_BladeStartPos() const { return m_vBladeStartPos; }
 
 private:
     CImp_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -67,8 +66,7 @@ private:
     _float4x4*              m_pSocketMatrix = { nullptr };
 
     _float4                 m_vTipPos = {};
-    _float4                 m_vBladeStart = {};
-
+    _float4                 m_vBladeStartPos = {};
 private:
     _float4					m_vLockOnPoint = {};
 

@@ -1193,7 +1193,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         });
 
 
-#pragma endregion
+#pragma endregions
 
 
 #pragma region Collider  
@@ -1208,8 +1208,8 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         });
 #pragma endregion
 
-   // m_pModelCom->Register_Event("LanternOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {*m_isEquipLantern = true; });
-   // m_pModelCom->Register_Event("LanternOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { *m_isEquipLantern = false;  });
+    //m_pModelCom->Register_Event("LanternOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {*m_isEquipLantern = true; });
+    //m_pModelCom->Register_Event("LanternOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { *m_isEquipLantern = false;  });
      
     return S_OK;
 }
