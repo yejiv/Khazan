@@ -56,7 +56,10 @@ void CTwinBlade_Viper::Priority_Update(_float fTimeDelta)
 
 void CTwinBlade_Viper::Update(_float fTimeDelta)
 {
- 
+    m_pLeftBodyComp->Collision_Active(true);
+    m_pRightBodyComp->Collision_Active(true);
+
+
     if (CViper::PHASE::PHASE1 == m_pOwner->Get_Phase() && m_isActive)
     {
         _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
@@ -140,8 +143,30 @@ void CTwinBlade_Viper::Update(_float fTimeDelta)
         }
 
 
+        //RigthBodyDesc.vShapeOffset = _float3(-0.25f, 3.0f, 0.f); // Ä®³¯ ¿À¸¥ÂÊ ³¡ Offset
+        //RigthBodyDesc.vShapeOffset = _float3(0.2f, 1.2f, 0.f); // ¿À¸¥ ÂÊ Ä®³¯ ½ÃÀÛ OFfset
 
-        XMStoreFloat4(&m_vTipPos, vPos);
+        _matrix RightBladeStartOffset = XMMatrixTranslation(0.2f, 1.2f, 0.f);
+        _matrix RightBladeTipOffset = XMMatrixTranslation(-0.25f, 3.f, 0.f);
+
+
+        //LeftBodyDesc.vShapeOffset = _float3(0.25f, -3.0f, -0.f);// ¿ÞÂÊ Ä®³¯ ³¡ Offset
+        //LeftBodyDesc.vShapeOffset = _float3(-0.2f, -1.2f, -0.f); // ¿ÞÂÊ Ä®³¯ ½ÃÀÛ Offset
+
+        _matrix LeftBladeStartOffset = XMMatrixTranslation(0.25f, -3.f, 0.f);
+        _matrix LeftBladeTipOffset = XMMatrixTranslation(025.f, -1.2f, 0.f);
+
+        _matrix StartOffset = m_pTransformCom->Get_WorldMatrix() * RightBladeStartOffset * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix);
+        _matrix TipOffset = m_pTransformCom->Get_WorldMatrix() * RightBladeTipOffset * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix);
+
+        m_vRightBladeStartPos = _float4(StartOffset.r[3].m128_f32[0], StartOffset.r[3].m128_f32[1], StartOffset.r[3].m128_f32[2], 1.f);
+        m_vRightTipPos = _float4(TipOffset.r[3].m128_f32[0], TipOffset.r[3].m128_f32[1], TipOffset.r[3].m128_f32[2], 1.f);
+        
+        StartOffset = m_pTransformCom->Get_WorldMatrix() * LeftBladeStartOffset * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix);
+        TipOffset = m_pTransformCom->Get_WorldMatrix() * LeftBladeTipOffset * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix);
+
+        m_vLeftBladeStartPos = _float4(StartOffset.r[3].m128_f32[0], StartOffset.r[3].m128_f32[1], StartOffset.r[3].m128_f32[2], 1.f);
+        m_vLeftTipPos = _float4(TipOffset.r[3].m128_f32[0], TipOffset.r[3].m128_f32[1], TipOffset.r[3].m128_f32[2], 1.f);
     }
 
 
@@ -227,7 +252,8 @@ HRESULT CTwinBlade_Viper::Ready_Components()
 HRESULT CTwinBlade_Viper::Ready_Collision()
 {
     CBody::BODY_SPHERESHAPE_DESC RigthBodyDesc{};
-    RigthBodyDesc.fRadius = 2.f;
+    //RigthBodyDesc.fRadius = 2.f;
+    RigthBodyDesc.fRadius = 0.5f;
     RigthBodyDesc.eMotion = EMotionType::Kinematic;
     RigthBodyDesc.eQuality = EMotionQuality::Discrete;
     RigthBodyDesc.eShapeType = SHAPE::SPHERE;
@@ -246,8 +272,12 @@ HRESULT CTwinBlade_Viper::Ready_Collision()
     RigthBodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
     RigthBodyDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
+  
 
-    m_tCollisionDesc.pGameObject = this;
+    m_tRightBladeDesc.pGameObject = this;
+    m_tRightBladeDesc.strName = TEXT("Viper_RightBladeDesc");
+    m_tRightBladeDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+
     RigthBodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(
@@ -258,7 +288,8 @@ HRESULT CTwinBlade_Viper::Ready_Collision()
 
 
     CBody::BODY_SPHERESHAPE_DESC LeftBodyDesc{};
-    LeftBodyDesc.fRadius = 2.f;
+    //LeftBodyDesc.fRadius = 2.f;
+    LeftBodyDesc.fRadius = 0.5f;
     LeftBodyDesc.eMotion = EMotionType::Kinematic;
     LeftBodyDesc.eQuality = EMotionQuality::Discrete;
     LeftBodyDesc.eShapeType = SHAPE::SPHERE;
@@ -275,8 +306,12 @@ HRESULT CTwinBlade_Viper::Ready_Collision()
     LeftBodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
     LeftBodyDesc.vShapeOffset = _float3(0.f, -0.5f, 0.f);
+   
 
-    m_tCollisionDesc.pGameObject = this;
+    m_tLeftBladeDesc.pGameObject = this;
+    m_tLeftBladeDesc.strName = TEXT("Viper_LeftBladeDesc");
+    m_tLeftBladeDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+
     LeftBodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(
