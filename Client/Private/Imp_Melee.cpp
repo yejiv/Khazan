@@ -68,9 +68,9 @@ void CImp_Melee::Priority_Update(_float fTimeDelta)
 
 void CImp_Melee::Update(_float fTimeDelta)
 {
+    Update_SwordPos();
 
     m_pController->Update(this, fTimeDelta);
-
 
     if (m_isLookAt)
     {
@@ -238,15 +238,9 @@ HRESULT CImp_Melee::Ready_AnimEvent()
         });
 
     pModel->Register_Event("NontStopAttack2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-        m_isLookAt = true;
-        m_pWeapon->Set_OnAttackCollision(true);
-
-        _float4 vSwordTip = m_pWeapon->Get_SwordTipPos();
-        _float4 vBladeStart = m_pWeapon->Get_BladeStartPos();
-        _vector vTipPos = XMLoadFloat4(&vSwordTip);
-        _vector vBladeStartPos = XMLoadFloat4(&vBladeStart);
-
-        m_pMeshTrail->Add_ControlPoint(vTipPos, vBladeStartPos);
+        _vector vSwordStart = XMLoadFloat4(&m_vSwordStart);
+        _vector vSwordEnd = XMLoadFloat4(&m_vSwordEnd);
+        m_pMeshTrail->Add_ControlPoint(vSwordEnd, vSwordStart);
         });
 
     pModel->Register_Event("NontStopAttack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -312,7 +306,17 @@ HRESULT CImp_Melee::Ready_AnimEvent()
     return S_OK;
 }
 
+void CImp_Melee::Update_SwordPos()
+{
+    _float4x4 SwordMatrix = m_pWeapon->Get_CombindMat();
+    _vector vUp = { SwordMatrix._21, SwordMatrix._22, SwordMatrix._23 };
+    _vector vSwordPos = { SwordMatrix._41, SwordMatrix._42, SwordMatrix._43 };
 
+    _vector vSwordStart = vSwordPos + XMVector3Normalize(vUp) * 0.1f;
+    _vector vSwordEnd = vSwordPos + XMVector3Normalize(vUp) * 1.f;
+    XMStoreFloat4(&m_vSwordStart, XMVectorSetW(vSwordStart, 1.f));
+    XMStoreFloat4(&m_vSwordEnd, XMVectorSetW(vSwordEnd, 1.f));
+}
 
 CImp_Melee* CImp_Melee::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

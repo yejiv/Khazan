@@ -190,6 +190,8 @@ HRESULT CLineTrail::Bind_ShaderResources()
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTextureIdx)))
         return E_FAIL;
 
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vTrailColor", &m_vColor, sizeof(_float3))))
+        return E_FAIL;
 
     return S_OK;
 }

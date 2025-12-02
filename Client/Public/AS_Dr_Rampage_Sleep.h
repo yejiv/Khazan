@@ -18,6 +18,8 @@ public:
 private:
     CDragonian_Rampage::MONDATA*    m_pMonData = { nullptr };
     FSMSTATE                        m_eState = { FSMSTATE::END };
+    _bool                           m_isChange = {};
+
 public:
     static CAS_Dr_Rampage_Sleep*    Create();
     virtual void				    Free() override;

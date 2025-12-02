@@ -20,9 +20,7 @@ void CAS_Elamein_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
     if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
     {
         m_isChange ? m_isChange = false : m_isChange = true;
-
         m_isChange ? m_pMonData->iAnimIndex = 101 : m_pMonData->iAnimIndex = 83;
-
     }
  
     if (!m_pMonData->isSleep)

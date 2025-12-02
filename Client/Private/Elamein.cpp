@@ -236,7 +236,6 @@ void CElamein::Update(_float fTimeDelta)
    
     m_pController->Update(this, fTimeDelta);
     __super::Update(fTimeDelta);
-
     Update_UIHp();
     Update_Body(fTimeDelta);
 

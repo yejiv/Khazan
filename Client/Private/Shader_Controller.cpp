@@ -13,6 +13,10 @@
 #include "Body_Khazan_GS.h"
 #include "GSword_Khazan_GS.h"
 #include "Elamein.h"
+#include "Dragonian_Melee.h"
+#include "Dragonian_Rampage.h"
+#include "Projectile_Imp_MagicBall.h"
+#include "Imp_Melee.h"
 
 CShader_Controller::CShader_Controller()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
@@ -529,11 +533,13 @@ void CShader_Controller::Ready_Shader()
 
             if (ImGui::CollapsingHeader("Mesh Trail"), ImGuiTreeNodeFlags_DefaultOpen)
             {
-                const _char* ObjectTags[] = { "Elamein" };
+                const _char* ObjectTags[] = { "Elamein", "Dragonian_Melee", "Dragonian_Rampage", "Imp_MagicBall", "Imp_Sword" };
                 ImGui::Combo("Mesh Trail Owner List", &m_iTrailOwnerIndex, ObjectTags, IM_ARRAYSIZE(ObjectTags));
 
                 // 고르면 해당 객체의 모션 트레일 정보 Get해서 띄우기
                 CElamein* pElamein = {};
+                CDragonian_Melee* pDragonianMelee = {};
+                CDragonian_Rampage* pDragonianRampage = {};
 
                 switch (m_iTrailOwnerIndex)
                 {
@@ -542,12 +548,22 @@ void CShader_Controller::Ready_Shader()
                     m_TrailConfig = pElamein->Get_TrailConfig();
                     break;
 
+                case 1:
+                    pDragonianMelee = dynamic_cast<CDragonian_Melee*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
+                    m_TrailConfig = pDragonianMelee->Get_TrailConfig();
+                    break;
+
+                case 2:
+                    pDragonianRampage = dynamic_cast<CDragonian_Rampage*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
+                    m_TrailConfig = pDragonianRampage->Get_TrailConfig();
+                    break;
+
                 default:
                     m_iTrailOwnerIndex = -1;
                     break;
                 }
 
-                if (0 == m_iTrailOwnerIndex)
+                if (0 <= m_iTrailOwnerIndex)
                 {
                     // 특정 설정이 바뀔 때 Set
                     _bool isChanged = false;
@@ -557,17 +573,52 @@ void CShader_Controller::Ready_Shader()
                     isChanged |= ImGui::ColorEdit3("Trail Start Color", reinterpret_cast<_float*>(&m_TrailConfig.vColor));
                     ImGui::BeginChild("Trail Texture", ImVec2(0, 70), true, ImGuiWindowFlags_HorizontalScrollbar);
 
-                    for (_uint i = 0; i < pElamein->Get_NumTrailTextures(); ++i)
+                    switch (m_iTrailOwnerIndex)
                     {
-                        ID3D11ShaderResourceView* pSRV = pElamein->Get_TrailTexture(i);
-
-                        if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                    case 0:
+                        for (_uint i = 0; i < pElamein->Get_NumTrailTextures(); ++i)
                         {
-                            isChanged = true;
-                            m_TrailConfig.iTextureIdx = i;
-                        }
+                            ID3D11ShaderResourceView* pSRV = pElamein->Get_TrailTexture(i);
 
-                        ImGui::SameLine();
+                            if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                            {
+                                isChanged = true;
+                                m_TrailConfig.iTextureIdx = i;
+                            }
+
+                            ImGui::SameLine();
+                        }
+                        break;
+
+                    case 1:
+                        for (_uint i = 0; i < pDragonianMelee->Get_NumTrailTextures(); ++i)
+                        {
+                            ID3D11ShaderResourceView* pSRV = pDragonianMelee->Get_TrailTexture(i);
+
+                            if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                            {
+                                isChanged = true;
+                                m_TrailConfig.iTextureIdx = i;
+                            }
+
+                            ImGui::SameLine();
+                        }
+                        break;
+
+                    case 2:
+                        for (_uint i = 0; i < pDragonianRampage->Get_NumTrailTextures(); ++i)
+                        {
+                            ID3D11ShaderResourceView* pSRV = pDragonianRampage->Get_TrailTexture(i);
+
+                            if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                            {
+                                isChanged = true;
+                                m_TrailConfig.iTextureIdx = i;
+                            }
+
+                            ImGui::SameLine();
+                        }
+                        break;
                     }
 
                     ImGui::EndChild();
@@ -579,6 +630,16 @@ void CShader_Controller::Ready_Shader()
                         case 0:
                             pElamein = dynamic_cast<CElamein*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
                             pElamein->Set_TrailConfig(m_TrailConfig);
+                            break;
+
+                        case 1:
+                            pDragonianMelee = dynamic_cast<CDragonian_Melee*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
+                            pDragonianMelee->Set_TrailConfig(m_TrailConfig);
+                            break;
+
+                        case 2:
+                            pDragonianRampage = dynamic_cast<CDragonian_Rampage*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
+                            pDragonianRampage->Set_TrailConfig(m_TrailConfig);
                             break;
                         }
                     }
