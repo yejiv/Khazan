@@ -404,10 +404,10 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
         if (pMyDesc->strName == TEXT("Player_Attack1"))
         {
             isAttack = true;
-            pMonster->KnockBack(
-                XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION)
-                    - m_pParentTransform->Get_State(STATE::POSITION))
-                , 15.f, 50.f);
+            //pMonster->KnockBack(
+            //    XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION)
+            //        - m_pParentTransform->Get_State(STATE::POSITION))
+            //    , 15.f, 50.f);
             pMonster->Consume_Stamina(20.f);
         }
 

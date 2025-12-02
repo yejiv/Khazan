@@ -23,7 +23,6 @@ void CAS_Elamein_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
         if (m_pMonData->isAnimFinash)
         {
             m_eState = RELEASSE;
-            //작업 완료 후 살려야함
             m_pMonData->pOwner->Hp_Dead();
         }
     }

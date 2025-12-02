@@ -130,6 +130,10 @@ private:
     _float4                         m_vSword_End = {};
     _float4                         m_vSword_Start = {};
 
+
+    //UI테스트
+    class CUI_Talk_Danjinjar*       m_pTalk = { nullptr };
+
 private:
     HRESULT                         Ready_Prototype();
 

@@ -994,9 +994,6 @@
     <Filter Include="92.AI\State\Dragonian_Melee\Damage">
       <UniqueIdentifier>{b0cf5725-5084-45e2-9e7a-0b704f1f1eaf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Dragonian_Melee\Walk">
-      <UniqueIdentifier>{1cd011fb-aaa3-4ec5-a232-8198b16d3122}</UniqueIdentifier>
-    </Filter>
     <Filter Include="92.AI\State\Dragonian_Melee\LockOn">
       <UniqueIdentifier>{936eaedd-155e-41a3-81a7-80f4cc60e499}</UniqueIdentifier>
     </Filter>
@@ -1050,9 +1047,6 @@
     </Filter>
     <Filter Include="92.AI\State\Dragonian_Rampage\LockOn">
       <UniqueIdentifier>{e59c5c2e-1924-4288-9826-910f5d5975f2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="92.AI\State\Dragonian_Rampage\Walk">
-      <UniqueIdentifier>{015a53e8-1999-40e7-afc2-263af22654d4}</UniqueIdentifier>
     </Filter>
     <Filter Include="92.AI\State\Dragonian_Rampage\Attack_Back">
       <UniqueIdentifier>{d39b2609-4e39-4304-8b4b-a4fe3ad17cb0}</UniqueIdentifier>
@@ -1383,6 +1377,12 @@
     </Filter>
     <Filter Include="02.GameObject\Interation_Object\Item">
       <UniqueIdentifier>{772ec527-b2a6-4f60-abbf-58a7da8b5241}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Dragonian_Melee\Turn">
+      <UniqueIdentifier>{30695547-ff52-4c5f-8ee2-1d28b8935637}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Talk\Danjinjar">
+      <UniqueIdentifier>{fffe43d7-c56d-4ac8-987a-d7659500da8d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2358,9 +2358,6 @@
     <ClInclude Include="..\public\AS_Dr_Melee_Brutal.h">
       <Filter>92.AI\State\Dragonian_Melee\Brutal</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\AS_Dr_Melee_Walk.h">
-      <Filter>92.AI\State\Dragonian_Melee\Walk</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\AS_Dr_Melee_Sleep.h">
       <Filter>92.AI\State\Dragonian_Melee\Sleep</Filter>
     </ClInclude>
@@ -2453,9 +2450,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\AS_Dr_Rampage_LockOn.h">
       <Filter>92.AI\State\Dragonian_Rampage\LockOn</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\AS_Dr_Rampage_Walk.h">
-      <Filter>92.AI\State\Dragonian_Rampage\Walk</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\AS_Dr_Rampage_Sleep.h">
       <Filter>92.AI\State\Dragonian_Rampage\Sleep</Filter>
@@ -2598,8 +2592,6 @@
     <ClInclude Include="..\Public\Sequence_Viper_CutScene.h">
       <Filter>04.Sequence\Viper\CutScene</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Elamain.h">
-    </ClInclude>
     <ClInclude Include="..\public\Elamein.h">
       <Filter>02.GameObject\Creature\Monster\Elamain</Filter>
     </ClInclude>
@@ -2678,6 +2670,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Interaction_Item.h">
       <Filter>02.GameObject\Interation_Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Dr_Melee_Turn.h">
+      <Filter>92.AI\State\Dragonian_Melee\Turn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Talk_Danjinjar.h">
+      <Filter>02.GameObject\UI\Talk\Danjinjar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3654,9 +3652,6 @@
     <ClCompile Include="..\private\AS_Dr_Melee_Brutal.cpp">
       <Filter>92.AI\State\Dragonian_Melee\Brutal</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\AS_Dr_Melee_Walk.cpp">
-      <Filter>92.AI\State\Dragonian_Melee\Walk</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\AS_Dr_Melee_Sleep.cpp">
       <Filter>92.AI\State\Dragonian_Melee\Sleep</Filter>
     </ClCompile>
@@ -3722,9 +3717,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Dr_Rampage_LockOn.cpp">
       <Filter>92.AI\State\Dragonian_Rampage\LockOn</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\AS_Dr_Rampage_Walk.cpp">
-      <Filter>92.AI\State\Dragonian_Rampage\Walk</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\AS_Dr_Rampage_Sleep.cpp">
       <Filter>92.AI\State\Dragonian_Rampage\Sleep</Filter>
@@ -3873,8 +3865,6 @@
     <ClCompile Include="..\Private\Sequence_Viper_CutScene.cpp">
       <Filter>04.Sequence\Viper\CutScene</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Elamain.cpp">
-    </ClCompile>
     <ClCompile Include="..\private\Elamein.cpp">
       <Filter>02.GameObject\Creature\Monster\Elamain</Filter>
     </ClCompile>
@@ -3953,6 +3943,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Interaction_Item.cpp">
       <Filter>02.GameObject\Interation_Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Dr_Melee_Turn.cpp">
+      <Filter>92.AI\State\Dragonian_Melee\Turn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Talk_Danjinjar.cpp">
+      <Filter>02.GameObject\UI\Talk\Danjinjar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

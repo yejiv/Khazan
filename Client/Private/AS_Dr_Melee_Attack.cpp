@@ -20,6 +20,7 @@ void CAS_Dr_Melee_Attack::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAS_Dr_Melee_Attack::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
+    m_pMonData->pOwner->LockOnLerp(fTimeDelta, 3.f);
     if (m_pMonData->isAnimFinash)
     {
         m_pMonData->isAttack = false;
@@ -28,7 +29,7 @@ void CAS_Dr_Melee_Attack::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
 void CAS_Dr_Melee_Attack::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    m_pMonData->fAttackCool = m_pGameInstance->Rand(5.f, 9.f);
+    m_pMonData->fAttackCool = 2.f;
 }
 
 void CAS_Dr_Melee_Attack::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
