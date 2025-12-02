@@ -553,9 +553,9 @@ void CElevatorL::Gimmick_Event_Skip(_float fTimeDelta)
     }
     case EventHallElevator::UNLOCK_STATE::STEP_3:
     {
-        m_eAnimState = ANIM_STATE::IDLE;
-        m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-        m_pModelCom->AnimationLoop(true);
+        m_pModelCom->AnimationLoop(false);
+
+        m_isAnimChange = true;
 
         m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK2;
 
