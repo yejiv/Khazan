@@ -87,6 +87,16 @@ void CImp_Sword::Update(_float fTimeDelta)
     );
     //Winner Winner 
 
+   
+    _matrix BladeStartOffset = XMMatrixTranslation(0.f, 0.37f, 0.f);
+    _matrix BladeTipOffset = XMMatrixTranslation(0.f, 0.75f, 0.f);
+
+    _matrix StartOffset = m_pTransformCom->Get_WorldMatrix() * BladeStartOffset * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix);
+    _matrix TipOffset = m_pTransformCom->Get_WorldMatrix() * BladeTipOffset * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix);
+    
+    m_vBladeStartPos = _float4( StartOffset.r[3].m128_f32[0], StartOffset.r[3].m128_f32[1],StartOffset.r[3].m128_f32[2],1.f );
+    m_vTipPos = _float4( TipOffset.r[3].m128_f32[0], TipOffset.r[3].m128_f32[1],TipOffset.r[3].m128_f32[2],1.f);
+
     m_pBodyComp->Collision_Active(m_isOnAttackCollision);
 
     if (m_isOnAttackCollision)
@@ -100,9 +110,8 @@ void CImp_Sword::Update(_float fTimeDelta)
         m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
        
     }
+    //XMStoreFloat4(&m_vTipPos,vPos);
     
-    
-
 }
 
 void CImp_Sword::Late_Update(_float fTimeDelta)

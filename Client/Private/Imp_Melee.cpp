@@ -241,8 +241,8 @@ HRESULT CImp_Melee::Ready_AnimEvent()
         m_isLookAt = true;
         m_pWeapon->Set_OnAttackCollision(true);
 
-        _float4 vSwordTip = m_pWeapon->Get_SwordTip();
-        _float4 vBladeStart = m_pWeapon->Get_BladeStart();
+        _float4 vSwordTip = m_pWeapon->Get_SwordTipPos();
+        _float4 vBladeStart = m_pWeapon->Get_BladeStartPos();
         _vector vTipPos = XMLoadFloat4(&vSwordTip);
         _vector vBladeStartPos = XMLoadFloat4(&vBladeStart);
 

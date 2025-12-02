@@ -94,13 +94,13 @@ _bool CClientInstance::Item_Exist_ID(_uint iID)
 {
     return m_pDB_Manager->Exist_ID(iID);
 }
-void CClientInstance::Fade_In(function<void()> FadeEvent)
+void CClientInstance::Fade_In(function<void()> FadeEvent, _float fSpeed)
 {
-	m_pUI_Manager->Fade_In(FadeEvent);
+	m_pUI_Manager->Fade_In(FadeEvent, fSpeed);
 }
-void CClientInstance::Fade_Out(function<void()> FadeEvent)
+void CClientInstance::Fade_Out(function<void()> FadeEvent, _float fSpeed)
 {
-	m_pUI_Manager->Fade_Out(FadeEvent);
+	m_pUI_Manager->Fade_Out(FadeEvent, fSpeed);
 }
 _bool CClientInstance::Fade_End()
 {

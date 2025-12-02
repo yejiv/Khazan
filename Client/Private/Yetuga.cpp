@@ -90,23 +90,23 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
 
 void CYetuga::Priority_Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
-    {
-        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(537.354f, 18.684f, 221.961f, 1.f));
-        m_pCharVirCom->Teleport(XMVectorSet(537.354f, 18.684f, 221.961f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
-    }
+    //if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
+    //{
+    //    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(537.354f, 18.684f, 221.961f, 1.f));
+    //    m_pCharVirCom->Teleport(XMVectorSet(537.354f, 18.684f, 221.961f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
-    {
-        CAS_CutScene_Yetuga* Cut_Yetuga = Get_Yetuga_CutSceneState();
-        Cut_Yetuga->YetugaScene_Jump(this);        
-    }
+    //if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    //{
+    //    CAS_CutScene_Yetuga* Cut_Yetuga = Get_Yetuga_CutSceneState();
+    //    Cut_Yetuga->YetugaScene_Jump(this);        
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
-    {
-        CAS_CutScene_Yetuga* Cut_Yetuga = Get_Yetuga_CutSceneState();
-        Cut_Yetuga->YetugaScene_Land(this);
-    }
+    //if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+    //{
+    //    CAS_CutScene_Yetuga* Cut_Yetuga = Get_Yetuga_CutSceneState();
+    //    Cut_Yetuga->YetugaScene_Land(this);
+    //}
 
     CBlackBoard* pBB = m_pController->Get_BlackBoard();
 
@@ -158,11 +158,11 @@ void CYetuga::Update(_float fTimeDelta)
     //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
 #endif // _DEBUG
 
-    if (m_pGameInstance->Key_Down(DIK_Z))
-    {
-        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.947f, -11.952f, 226.f, 1.f));
-        m_pCharVirCom->Set_Position(XMVectorSet(516.947f, -11.952f, 226.f, 1.f));
-    }
+    //if (m_pGameInstance->Key_Down(DIK_Z))
+    //{
+    //    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.947f, -11.952f, 226.f, 1.f));
+    //    m_pCharVirCom->Set_Position(XMVectorSet(516.947f, -11.952f, 226.f, 1.f));
+    //}
 }
 
 void CYetuga::Late_Update(_float fTimeDelta)

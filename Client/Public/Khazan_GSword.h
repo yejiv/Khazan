@@ -52,28 +52,24 @@ public:
         BRUTAL_READY = 1 << 22, //브루탈공격 가능 범위 내에 옴
         BRUTAL_SUCCESS = 1 << 23,  //브루탈공격 함. 
 
-        EARLY_DODGING = 1 << 24,  
+        STATUE_MODE = 1 << 24, 
 
-        BLOCK_ATK_SKILL_GUARD = 1 << 25, //상호작용 조각상, 스태미나 떨어짐(공격,가드,스킬키 입력 안받음)
+        BLOCK_ATK_SKILL_GUARD = 1 << 25, //상호작용 조각상, 스태미나 떨어짐, 사다리 (공격,가드,스킬키 입력 안받음)
         STAMINA_EXHAUSTION  = 1 << 26, 
 
-        VIPER_GRAB = 1 << 27,
+        VIPER_GRAB = 1 << 27, //안쓸듯
 
-        /* 회전 */
-        //TURN180 = 1 << 20,
-        //TURN180_REQUESTED = 1 << 21, 
-        //TURN180_COMPLETE = 1 << 22,
-        //MOVE_AFTER_TURN = 1 << 23,
-        //JUST_COMPLETED_TURN180 = 1 << 24,
-        
+        LADDER_CLIMBING = 1 << 28,
+        LADDER_CLIMBING_ROTATION = 1 << 29,
+        LADDER_CLIMBING_END= 1 << 30,
+        LADDER_SPRINT = 1u << 31,
+
 
         STATUS_CLEARS = RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_FAST_ATTACK | SPRINT_AGAIN_REQUEST | LOCKON | CHARGING_STRONG_ATTACK
         | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST
-        | FALLING | FALLING_ATTACK | PRE_LAND  | DODGING | EARLY_DODGING
+        | FALLING | FALLING_ATTACK | PRE_LAND  | DODGING | STATUE_MODE
         | BRUTAL_BEGIN | BRUTAL_READY | BRUTAL_SUCCESS
-        | BLOCK_ATK_SKILL_GUARD | STAMINA_EXHAUSTION | VIPER_GRAB
-
-        /*| TURN180| TURN180_REQUESTED | TURN180_COMPLETE| MOVE_AFTER_TURN*/,
+        | BLOCK_ATK_SKILL_GUARD | STAMINA_EXHAUSTION | VIPER_GRAB | LADDER_CLIMBING | LADDER_CLIMBING_ROTATION  ,
 
     };
     enum PLAYER_CAMERA_DIR {
@@ -107,6 +103,9 @@ public:
     void    Set_Position(_float4 vPos);
 
 
+    void            EnterStatuePuzzle(); //조각상 돌리기 모드 on
+    void            ExitStatuePuzzle(); //조각상 돌리기 모드 off
+
 private:
     class CBody_Khazan_GS*              m_pBody = { nullptr };
     class CGSword_Khazan_GS*            m_pGSword = { nullptr };
@@ -117,6 +116,7 @@ private:
     class CKhazan_GS_Anim_Interaction*  m_pAnimInteraction = { nullptr };
     class CKhazan_GS_Anim_Damaged*      m_pAnimDamaged = { nullptr };
     class CKhazan_GS_Anim_Fall*         m_pAnimFall = { nullptr };
+    class CKhazan_GS_Anim_Ladder*       m_pAnimLadder = { nullptr };
 
     class CCamera_Compre*               m_pCamera = { nullptr };
     class CClientInstance*              m_pClientInstance = { nullptr };
@@ -180,12 +180,9 @@ private:
     _float2                     m_fIntervalStaminaRecovery = { 0.f, 0.25f };
     _float2                     m_fWaitStaminaRecovery = { 0.f, 1.f };
 
-    /* 180 turn */
-    //_float2                     m_f180TurnTime = { 0.f, 0.f };      // x: 경과시간, y: 회전 소요시간
-    //_vector                     m_v180TurnStartRot = {};            // 시작 회전
-    //_vector                     m_v180TurnEndRot = {};              // 목표 회전
-    //_uint                       m_iPrev180TurnSubState = {};
-    //_float                      m_fTurn180CooldownTime = {};
+    /* Ladder  Climb */
+    _float4                     m_fLadderClimbPos= { 0.f,0.f,0.f,0.f }; 
+
 
     /* ====== const ======*/
     const	_float				m_fMinSprintTime = { 0.15f };
@@ -205,6 +202,7 @@ private:
     const _float                m_fRayLength = { 8.f };
     const _float2               m_fRayZOffset = { 0.f, 0.5f };
 
+
     /* SnowEffect SpawnTime*/
 private:
     _float                      m_EffectTimeDelta;
@@ -221,6 +219,7 @@ private:
     _bool			Attack_Input(_float fTimeDelta);
     _bool			Guard_Input(_float fTimeDelta);
     _bool           Interaction_Input(_float fTimeDelta);
+    _bool           LadderClimb_Input(_float fTimeDelta);
 
     /* Animation  */
     void			Change_MoveIdle(_float fTimeDelta);
@@ -247,10 +246,6 @@ private:
     /* others,, */
     void            Check_IsInAir(_float fTimeDelta);
     void            Clear_Injured();
-
-public:
-    void            EnterStatuePuzzle(); //조각상 돌리기 모드 on
-    void            ExitStatuePuzzle(); //조각상 돌리기 모드 off
 
 private:
     HRESULT			Ready_Components();
