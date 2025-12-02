@@ -226,6 +226,9 @@ private:
 
 	LIGHT_DESC m_FixLightDesc = {};				// 수정할 조명 구조체
 
+    _bool m_isFixBatchLight = { false };             // 일괄 수정을 진행 할 경우 ( 점 조명 한정 )
+    LIGHT_DESC m_BatchOnLightDesc = {};         // 일괄 수정할 조명 구조체 ( 점 조명 한정 )
+
 	_char m_szFixLightTag[MAX_PATH] = {};		// 수정할 조명 태그
 	string m_strFixLightTag = {};				// 변환용
 

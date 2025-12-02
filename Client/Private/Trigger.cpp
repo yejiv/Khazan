@@ -41,8 +41,8 @@ void CTrigger::Priority_Update(_float fTimeDelta)
 
 void CTrigger::Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_L))
-        m_isRender = !m_isRender;
+    //if (m_pGameInstance->Key_Down(DIK_L))
+    //    m_isRender = !m_isRender;
 }
 
 void CTrigger::Late_Update(_float fTimeDelta)

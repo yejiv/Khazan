@@ -120,7 +120,7 @@ void CDragonian_Melee::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
 
-    if (m_pGameInstance->Key_Down(DIK_M))
+   /* if (m_pGameInstance->Key_Down(DIK_M))
     {
         m_fCurrentHP = m_fMaxHP;
         m_Data.isSleep = true;
@@ -129,6 +129,8 @@ void CDragonian_Melee::Priority_Update(_float fTimeDelta)
         m_fCurrentStamina = 0;
     else if (m_pGameInstance->Key_Down(DIK_B))
         Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
+        */
+
 }
 
 void CDragonian_Melee::Update(_float fTimeDelta)

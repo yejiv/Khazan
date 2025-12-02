@@ -83,7 +83,11 @@ void CBody_Khazan_GS::Priority_Update(_float fTimeDelta)
 
 void CBody_Khazan_GS::Update(_float fTimeDelta)
 {
-    m_isFinishedAnimation = m_pModelCom->Play_Animation(m_isNotifyAttacking ? fTimeDelta * 1.2f : fTimeDelta);
+    _float fTimeDeltaAdjsut = fTimeDelta;
+    if (m_isNotifyAttacking) fTimeDeltaAdjsut *= 1.2f;
+    if (Has_Status(CKhazan_GSword::LADDER_SPRINT))
+        fTimeDeltaAdjsut *= 2.f;
+    m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDeltaAdjsut);
 
     Update_CombinedMatrix();
 
@@ -105,44 +109,44 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     if(m_isActiveMotionTrail)
        m_pMotionTrailCom->Start_MotionTrail(fTimeDelta);
 
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
-    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
-        Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), true);
-    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
-        Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), false);
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
-        Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), true);
-    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
-        Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), false);
-    if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
-        Trigger_MotionTrail(TEXT("MT_Common_Avoid"), true);
-    if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
-        Trigger_MotionTrail(TEXT("MT_Common_Avoid"), false);
+    //if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
+    //    Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
+    //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
+    //    Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+    //if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
+    //    Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), true);
+    //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
+    //    Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), false);
+    //if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
+    //    Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), true);
+    //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
+    //    Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), false);
+    //if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
+    //    Trigger_MotionTrail(TEXT("MT_Common_Avoid"), true);
+    //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
+    //    Trigger_MotionTrail(TEXT("MT_Common_Avoid"), false);
 
 
     bool a =  m_pClientInstance->Is_CurrentSpear();
     bool b = m_pClientInstance->Is_CurrentGSword();
 
-    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT,fTimeDelta) && m_pGameInstance->Key_Down(DIK_M)){
-        m_pClientInstance->Lock_Skill((1 << 4) );
-        m_pClientInstance->Lock_Skill((1 << 8));
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Wind"), m_pParentTransform->Get_State(STATE::POSITION));
-    }
+    //if (m_pGameInstance->Key_Pressing(DIK_LSHIFT,fTimeDelta) && m_pGameInstance->Key_Down(DIK_M)){
+    //    m_pClientInstance->Lock_Skill((1 << 4) );
+    //    m_pClientInstance->Lock_Skill((1 << 8));
+    //    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Wind"), m_pParentTransform->Get_State(STATE::POSITION));
+    //}
 
-    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_N)){
-        m_pClientInstance->Lock_Skill((1 << 4));
-        m_pClientInstance->Lock_Skill((1 << 8));
-        m_pClientInstance->Unlock_Skill(1 << 4);
-    }
+    //if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_N)){
+    //    m_pClientInstance->Lock_Skill((1 << 4));
+    //    m_pClientInstance->Lock_Skill((1 << 8));
+    //    m_pClientInstance->Unlock_Skill(1 << 4);
+    //}
 
-    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_B)){
-        m_pClientInstance->Lock_Skill((1 << 4));
-        m_pClientInstance->Lock_Skill((1 << 8));
-        m_pClientInstance->Unlock_Skill(1 << 8);
-    }
+    //if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_B)){
+    //    m_pClientInstance->Lock_Skill((1 << 4));
+    //    m_pClientInstance->Lock_Skill((1 << 8));
+    //    m_pClientInstance->Unlock_Skill(1 << 8);
+    //}
 
 }
 
@@ -482,7 +486,7 @@ _float4x4* CBody_Khazan_GS::Get_BoneMatrix(const _char* pBoneName)
 
 void CBody_Khazan_GS::Set_GSword(CGSword_Khazan_GS* pGS)
 {
-    m_pWSword = pGS; Safe_AddRef(m_pWSword);
+    m_pGSword = pGS; Safe_AddRef(m_pGSword);
 }
 
 void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
@@ -1380,11 +1384,21 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
             m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp; }); //라크리마
     m_pModelCom->Register_Event("HEAL2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
-        
         m_pPlayerData->fCulHp += m_pPlayerData->fHealItemRegen;
         if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
             m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp; }); //힐템
 
+    m_pModelCom->Register_Event("WeaponOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGSword->Set_Equipped(true);
+            m_pClientInstance->Set_PlayerInput(true);
+        cout << "WeaponOn!!!" << endl;
+        });
+    m_pModelCom->Register_Event("WeaponOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGSword->Set_Equipped(false);
+        if (!Has_Status(CKhazan_GSword::STATUE_MODE))
+            m_pClientInstance->Set_PlayerInput(false);
+        cout << "WeaponOff!!!" << endl;
+        });
 #pragma endregion
 
     return S_OK;
@@ -1762,7 +1776,7 @@ void CBody_Khazan_GS::Free()
     if (m_pBrutalmonster)
         Safe_Release(m_pBrutalmonster);
 
-    Safe_Release(m_pWSword);
+    Safe_Release(m_pGSword);
     Safe_Release(m_pClientInstance);
 
     if (!m_isPrototype)

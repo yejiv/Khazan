@@ -93,7 +93,7 @@ public:
 private:
     class CClientInstance*      m_pClientInstance = { nullptr };
     class CTransform*           m_pParentTransform = { nullptr };
-    class CGSword_Khazan_GS*    m_pWSword = { nullptr };
+    class CGSword_Khazan_GS*    m_pGSword = { nullptr };
     class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 

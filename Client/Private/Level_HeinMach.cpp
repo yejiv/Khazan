@@ -8,6 +8,7 @@
 #include "Monster.h"
 #include "ClientInstance.h"
 #include "Khazan_Spear.h"
+#include "Khazan_GSword.h"
 #include "Sequence_HeinMach_Start.h"
 #include "Sequence_yetuga_CutScene.h"
 #include "Yetuga.h"

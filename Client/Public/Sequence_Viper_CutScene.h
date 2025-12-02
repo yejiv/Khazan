@@ -14,7 +14,7 @@ NS_BEGIN(Client)
 class CSequence_Viper_CutScene : public ISeqInstance
 {
 private:
-    CSequence_Viper_CutScene();
+    CSequence_Viper_CutScene(class CViper* pViper);
     virtual ~CSequence_Viper_CutScene() = default;
 
 public:
@@ -36,8 +36,14 @@ private:
     _bool   m_isCameraSet = { false };
     _bool   m_isFadeIn = { false };
     _bool   m_isFirstScene = { false };
+    _bool   m_isFirstSceneEnd = { false };
     _bool   m_isSecondCameraSet = { false };
     _bool   m_isSecondScene = { false };
+    _bool   m_isSecondSceneEnd = { false };
+    _bool   m_isSecondFadeOut = { false };
+    _bool   m_isSecondFadeIn = { false };
+    _bool   m_isThirdScene = { false };
+    _bool   m_isThirdSceneEnd = { false };
 
     
     _bool   m_isEnd = { false };
@@ -45,9 +51,11 @@ private:
     class CGameInstance* m_pGameInstance = { nullptr };
     class CClientInstance* m_pClientInstance = { nullptr };
     class CViper* m_pViper = { nullptr };
+    class CCamera_Compre* m_pCamera = { nullptr };
+    class CSkipButton* m_pSkipButton = { nullptr };
 
 public:
-    static CSequence_Viper_CutScene* Create();
+    static CSequence_Viper_CutScene* Create(class CViper* pViper);
     virtual void Free() override;
 };
 

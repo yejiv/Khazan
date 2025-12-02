@@ -4,7 +4,7 @@
 
 NS_BEGIN(Client)
 
-enum class  CUTSCENE_STATE { SIT = 77, LAND = 79, STAND = 80, END };
+enum class  CUTSCENE_STATE { SIT = 77, JUMP = 78, LAND = 79, STAND = 80, END };
 
 class CAS_CutScene_Start_Viper final : public CAI_State
 {
@@ -20,6 +20,7 @@ public:
 
 public:
     void                                ViperScene_Sit(class CViper* pViper);
+    void                                ViperScene_Jump(class CViper* pViper);
     void                                ViperScene_Land(class CViper* pViper);
     void                                ViperScene_Roar(class CViper* pViper);
     

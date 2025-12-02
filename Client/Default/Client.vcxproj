@@ -332,6 +332,7 @@
     <ClInclude Include="..\Public\Khazan_GS_Anim_Fall.h" />
     <ClInclude Include="..\Public\Khazan_GS_Anim_Guard.h" />
     <ClInclude Include="..\Public\Khazan_GS_Anim_Interaction.h" />
+    <ClInclude Include="..\public\Khazan_GS_Anim_Ladder.h" />
     <ClInclude Include="..\public\Khazan_GS_Anim_Move.h" />
     <ClInclude Include="..\public\Khazan_GS_InputHandler.h" />
     <ClInclude Include="..\public\Khazan_GS_StateMachine.h" />
@@ -356,6 +357,7 @@
     <ClInclude Include="..\public\Popup_Reset.h" />
     <ClInclude Include="..\Public\Projectile_Boomarang.h" />
     <ClInclude Include="..\public\Khazan_Spaer_Anim_Damaged.h" />
+    <ClInclude Include="..\Public\Projectile_Rock_Viper.h" />
     <ClInclude Include="..\Public\Prop_Chunk.h" />
     <ClInclude Include="..\Public\Prop_Destructible.h" />
     <ClInclude Include="..\Public\Sequence_Data_Manager.h" />
@@ -768,6 +770,7 @@
     <ClCompile Include="..\Private\Khazan_GS_Anim_Fall.cpp" />
     <ClCompile Include="..\Private\Khazan_GS_Anim_Guard.cpp" />
     <ClCompile Include="..\Private\Khazan_GS_Anim_Interaction.cpp" />
+    <ClCompile Include="..\private\Khazan_GS_Anim_Ladder.cpp" />
     <ClCompile Include="..\private\Khazan_GS_Anim_Move.cpp" />
     <ClCompile Include="..\private\Khazan_GS_InputHandler.cpp" />
     <ClCompile Include="..\private\Khazan_GS_StateMachine.cpp" />
@@ -792,6 +795,7 @@
     <ClCompile Include="..\private\Popup_Reset.cpp" />
     <ClCompile Include="..\Private\Projectile_Boomarang.cpp" />
     <ClCompile Include="..\private\Khazan_Spaer_Anim_Damaged.cpp" />
+    <ClCompile Include="..\Private\Projectile_Rock_Viper.cpp" />
     <ClCompile Include="..\Private\Prop_Chunk.cpp" />
     <ClCompile Include="..\Private\Prop_Destructible.cpp" />
     <ClCompile Include="..\Private\Sequence_Data_Manager.cpp" />

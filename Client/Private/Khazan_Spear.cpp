@@ -2694,8 +2694,8 @@ void CKhazan_Spear::Subscribe_Events()
                 m_pSpear->Set_Enble(true);
                 // m_pSpear->Equip();
                 static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
-                //Add_Status(SPEAR);
-               // Remove_Status(BAREHAND | INJURED);
+                Add_Status(SPEAR);
+                Remove_Status(BAREHAND | INJURED);
             }
             else
             {
@@ -2704,7 +2704,7 @@ void CKhazan_Spear::Subscribe_Events()
                 // m_pSpear->Equip();
                 static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
                 Add_Status(SPEAR);
-               // Remove_Status(BAREHAND | INJURED);
+                Remove_Status(BAREHAND | INJURED);
             }
         }  });
 

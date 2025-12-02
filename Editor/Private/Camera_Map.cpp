@@ -30,6 +30,12 @@ HRESULT CCamera_Map::Initialize_Clone(void* pArg)
 
 void CCamera_Map::Priority_Update(_float fTimeDelta)
 {
+    if (true == m_isCameraForceMove)
+    {
+        m_isCameraForceMove = false;
+        m_pTransformCom->Set_State(STATE::POSITION, m_vForceMovePos);
+    }
+
     Preview_Setting();
 
     Input(fTimeDelta);
@@ -50,6 +56,12 @@ void CCamera_Map::Late_Update(_float fTimeDelta)
 HRESULT CCamera_Map::Render()
 {
     return S_OK;
+}
+
+void CCamera_Map::Set_MapCameraPosition(_float4 vPosition)
+{
+    m_isCameraForceMove = true;
+    m_vForceMovePos = XMLoadFloat4(&vPosition);
 }
 
 void CCamera_Map::Preview_Setting()
