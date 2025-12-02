@@ -27,6 +27,7 @@ public:
     void                            Set_Weapon_Phase1();
     void                            Set_PhaseWeapon_Cinematic();
     void                            Set_PhaseWeapon_Phase2();
+    void                            Set_WeaponOff();
     void                            Viper_Land(_fvector vGoalPosition, _float fSpeed);
     void                            Reset_Viper_Gravity();
 
@@ -60,7 +61,7 @@ private:
     HRESULT							Ready_PartObjects();
     HRESULT							Ready_Projectiles();
     HRESULT							Ready_AnimEvent();
-    //HRESULT						Ready_AnimEffectEvent(CModel* pModel);
+    HRESULT						    Ready_AnimEffectEvent(CModel* pModel);
 
 private:
     void							Pick_ViperRock();
@@ -84,6 +85,9 @@ private:
     PHASE                           m_ePhase = { PHASE::END };
 
     _float4x4*                      m_pThrowMatrix = {};
+
+private: //임시!!! 발견하면 지워주세요 깜빡하고 못 지운 거
+    _uint                       tmpIdx;
 
 public:
     static CViper*                  Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

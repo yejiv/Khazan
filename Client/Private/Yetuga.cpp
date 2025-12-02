@@ -1618,7 +1618,7 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
 #pragma endregion
-    
+
 
     ////charge attack - 달리기 전에 왼발 구르기
     //pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -1675,8 +1675,8 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
             Q = XMQuaternionRotationMatrix(RotationMatrix);
         }
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice_Disappear"), Q, W.r[3]);
-        }); 
-    
+        });
+
     pModel->Register_Event("RushGrab_LandSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), m_pTransformCom->Get_State(STATE::POSITION));
         });

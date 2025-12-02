@@ -53,6 +53,13 @@ void CViper::Set_PhaseWeapon_Phase2()
     m_pP2Weapon->Set_IsActive(true);
 }
 
+void CViper::Set_WeaponOff()
+{
+    m_pWeapon->Set_IsActive(false);
+    m_pCore->Set_IsActive(false);
+    m_pP2Weapon->Set_IsActive(false);
+}
+
 void CViper::Viper_Land(_fvector vGoalPosition, _float fSpeed)
 {
     m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 0.f));
@@ -210,6 +217,15 @@ void CViper::Update(_float fTimeDelta)
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("Bip001-Spine2");
 
+    if (m_pGameInstance->Key_Down(DIK_P))
+    {
+        _float4 vPos = m_pWeapon->Get_RightSwordTip();
+        tmpIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), XMLoadFloat4(&vPos));
+    }
+    if (m_pGameInstance->Key_Down(DIK_O))
+    {
+        m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), tmpIdx);
+    }
 }
 
 void CViper::Late_Update(_float fTimeDelta)

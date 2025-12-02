@@ -98,7 +98,7 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         else
             m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-        m_pBT->Update();
+        //m_pBT->Update();
     }
 
     m_pFSM->Update(pOwner, fTimeDelta * m_fAnimSpeed);
