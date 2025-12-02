@@ -28,9 +28,16 @@ public:
     void    Jump(_float fTime) override;
     _bool   IsEnd() const override;
     SEQ_ID  GetId() const override { return m_Id; }
+
+public:
+    void Set_Skip(_bool isSkip) { m_isSkip = true; }
+
+public:
+    void Skip_KeyInput(_float fTimeDelta);
 private:
     SEQ_ID m_Id{};
     _float  m_fTime{ 0.f };
+    _float  m_fSkipTime = { 0.f };
 
     _bool   m_isFadeOut = { false };
     _bool   m_isCameraSet = { false };
@@ -45,9 +52,14 @@ private:
     _bool   m_isThirdScene = { false };
     _bool   m_isThirdSceneEnd = { false };
 
-
     _bool   m_isLandEffect = { false };
     _bool   m_isRoarEffect = { false };
+
+    _bool   m_isSkip = { false };
+    _bool   m_isSkipFadeOut = { false };
+    _bool   m_isSkipCameraSet = { false };
+    _bool   m_isSkipFadeIn = { false };
+    _bool   m_isSkipKey = { false };
     
     _bool   m_isEnd = { false };
 
