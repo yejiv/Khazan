@@ -1390,6 +1390,9 @@
     <Filter Include="02.GameObject\Projectile\Viper\Rock">
       <UniqueIdentifier>{8a3ed605-400a-4138-853b-9f076e58ceda}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\GSword\Controller\Animation\Ladder">
+      <UniqueIdentifier>{878a082a-49da-448f-ae67-d7c41018076b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2688,6 +2691,9 @@
     <ClInclude Include="..\Public\Projectile_Rock_Viper.h">
       <Filter>02.GameObject\Projectile\Viper\Rock</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Khazan_GS_Anim_Ladder.h">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Ladder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3965,6 +3971,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Projectile_Rock_Viper.cpp">
       <Filter>02.GameObject\Projectile\Viper\Rock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Khazan_GS_Anim_Ladder.cpp">
+      <Filter>02.GameObject\Creature\Khazan\GSword\Controller\Animation\Ladder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

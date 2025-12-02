@@ -333,6 +333,7 @@
     <ClInclude Include="..\Public\Khazan_GS_Anim_Fall.h" />
     <ClInclude Include="..\Public\Khazan_GS_Anim_Guard.h" />
     <ClInclude Include="..\Public\Khazan_GS_Anim_Interaction.h" />
+    <ClInclude Include="..\public\Khazan_GS_Anim_Ladder.h" />
     <ClInclude Include="..\public\Khazan_GS_Anim_Move.h" />
     <ClInclude Include="..\public\Khazan_GS_InputHandler.h" />
     <ClInclude Include="..\public\Khazan_GS_StateMachine.h" />
@@ -770,6 +771,7 @@
     <ClCompile Include="..\Private\Khazan_GS_Anim_Fall.cpp" />
     <ClCompile Include="..\Private\Khazan_GS_Anim_Guard.cpp" />
     <ClCompile Include="..\Private\Khazan_GS_Anim_Interaction.cpp" />
+    <ClCompile Include="..\private\Khazan_GS_Anim_Ladder.cpp" />
     <ClCompile Include="..\private\Khazan_GS_Anim_Move.cpp" />
     <ClCompile Include="..\private\Khazan_GS_InputHandler.cpp" />
     <ClCompile Include="..\private\Khazan_GS_StateMachine.cpp" />
