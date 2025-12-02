@@ -57,12 +57,11 @@ private:
     CShader*                m_pShaderCom = { nullptr };
     CModel*                 m_pModelCom = { nullptr };
     CTransform*             m_pOwnerTransform = { nullptr };
-
+    CBody*                  m_pBodyComp = { nullptr };
 
     _float4x4*              m_pSocketMatrix = { nullptr };
-
-    _float4                 m_vTipPos = {};
-
+    _float3                 m_vLocalOffset = {};
+    
 
 public:
     static CCore_Viper*         Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

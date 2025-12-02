@@ -46,12 +46,6 @@ HRESULT CTwinBlade_Viper::Initialize_Clone(void* pArg)
 
     m_pTransformCom->Rotation(0.1f, 3.14f, 1.f);
     
-   
-
- 
-    
-
-
 
     return S_OK;
 }
