@@ -196,8 +196,8 @@ void CElamein::Update(_float fTimeDelta)
     m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
 
     _vector vSwordPos = m_pSword->Get_Transform()->Get_State(STATE::POSITION);
-    _vector vSwordStart = vSwordPos * m_pSword->Get_Transform()->Get_State(STATE::UP) * -5.f;
-    _vector vSwordEnd = vSwordPos * m_pSword->Get_Transform()->Get_State(STATE::UP) * 5.f;
+    _vector vSwordStart = vSwordPos + m_pSword->Get_Transform()->Get_State(STATE::UP) * -5.f;
+    _vector vSwordEnd = vSwordPos + m_pSword->Get_Transform()->Get_State(STATE::UP) * 5.f;
     XMStoreFloat4(&m_vSword_Start, vSwordStart);
     XMStoreFloat4(&m_vSword_End, vSwordStart);
 
