@@ -17,12 +17,18 @@ CUI_Talk_Danjinjar::CUI_Talk_Danjinjar(const CUI_Talk_Danjinjar& Prototype)
 {
 }
 
+_bool CUI_Talk_Danjinjar::isTalking()
+{
+    return m_eTaking == TALKSTATE::END ? false : true;
+}
+
 HRESULT CUI_Talk_Danjinjar::On_Panel(_int iTalkIndex)
 {
     const DANJINJAR_DB* pData = CClientInstance::GetInstance()->Get_Data<DANJINJAR_DB>(iTalkIndex);
     
     CHECK_NULLPTR(pData, E_FAIL);
 
+    m_eTaking = TALKSTATE::TALKING;
     m_iNextEvent = pData->iNextIndex;
     m_wstrFullText = pData->wstrTalk;
     m_fTextSpeed = pData->fTextSpeed;
@@ -37,6 +43,7 @@ HRESULT CUI_Talk_Danjinjar::On_Panel(_int iTalkIndex)
 
 void CUI_Talk_Danjinjar::Off_Panel()
 {
+    m_eTaking = TALKSTATE::END;
     m_eAnimState = UIANIMSTATE::OFF;
 }
 

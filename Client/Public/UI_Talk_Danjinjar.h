@@ -12,6 +12,7 @@ NS_BEGIN(Client)
 class CUI_Talk_Danjinjar final : public CUI_Panel
 {
 private:
+    enum class TALKSTATE { TALKING, END };
     enum class UIANIMSTATE { ON, OFF, END};
 private:
     CUI_Talk_Danjinjar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -19,6 +20,7 @@ private:
     virtual ~CUI_Talk_Danjinjar() = default;
 
 public:
+    _bool                           isTalking();
     HRESULT                         On_Panel(_int iTalkIndex);
     void                            Off_Panel();
 public:
@@ -40,7 +42,7 @@ private:
     class CUI_WorldTextBox*         m_pText1 = { nullptr };
     _float							m_fAccTime = {};
     UIANIMSTATE						m_eAnimState = { UIANIMSTATE::END };
-
+    TALKSTATE                       m_eTaking = { TALKSTATE::END };
     _float                          m_fSpeedWeight = {};
 
     FMOD_CHANNEL*                   m_pChannel = { nullptr };
