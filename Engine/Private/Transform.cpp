@@ -232,6 +232,19 @@ void CTransform::LookAt_Lerp(_fvector vAt, _float fTimeDelta, _float fTurnSpeed)
 
 }
 
+void CTransform::LookAt_Revers(_fvector vAt)
+{
+    _vector		vLook = Get_State(STATE::POSITION) - vAt;
+    _vector		vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook);
+    _vector		vUp = XMVector3Cross(vLook, vRight);
+
+    _float3		vScaled = Get_Scaled();
+
+    Set_State(STATE::RIGHT, XMVector3Normalize(vRight) * vScaled.x);
+    Set_State(STATE::UP, XMVector3Normalize(vUp) * vScaled.y);
+    Set_State(STATE::LOOK, XMVector3Normalize(vLook) * vScaled.z);
+}
+
 void CTransform::Chase(_fvector vTargetPos, _float fTimeDelta, _float fLimit)
 {
 	_vector		vPosition = Get_State(STATE::POSITION);

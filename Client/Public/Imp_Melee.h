@@ -46,6 +46,7 @@ private:
     class CBody_Imp_Melee*          m_pBody = { nullptr };
     class CImp_Sword*               m_pWeapon = { nullptr };
     class CMon_HP*                  m_pUI_HP = { nullptr };
+    class CMeshTrail*               m_pMeshTrail = { nullptr };
 
     _bool                           m_isDetected = { false };
     _bool                           m_isLookAt = { false };

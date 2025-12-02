@@ -47,7 +47,7 @@ void CAS_Dr_Rampage_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
 
 void CAS_Dr_Rampage_Groggy::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    m_pMonData->fGloggyTime = 5.f;
+    m_pMonData->fGloggyTime = 7.f;
     m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isGroggy", false);
 
 }

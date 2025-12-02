@@ -35,6 +35,8 @@ public:
 	virtual HRESULT			Render() override;
 
 	void					Add_ControlPoint(_fvector pos);
+    void                    Set_TextureIndex(_uint iIndex) { m_iTextureIdx = iIndex; }
+    void                    Set_LifeTime(_float fLifeTime) { m_fLifeTime = fLifeTime; }
 
 protected:
 	virtual HRESULT			Ready_Component(void* pArg);

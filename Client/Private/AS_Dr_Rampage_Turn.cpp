@@ -20,7 +20,7 @@ void CAS_Dr_Rampage_Turn::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_pMonData->iAnimIndex = 49;
         m_fAngle = 180.f;
     }
-    else if (m_eDir == TARGET_DIR::R)
+    else if (m_eDir == TARGET_DIR::R )
     {
         m_pMonData->iAnimIndex = 48;
         m_fAngle = 90.f;
@@ -32,6 +32,8 @@ void CAS_Dr_Rampage_Turn::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     }
     else
         m_pMonData->isTurn = false;
+
+    m_pMonData->isAnimFinash = false;
 }
 
 void CAS_Dr_Rampage_Turn::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

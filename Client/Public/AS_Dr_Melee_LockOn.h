@@ -5,7 +5,7 @@
 class CAS_Dr_Melee_LockOn : public CAI_State
 {
 private:
-    enum AI_STATE { TURN, STAND, WALK, END};
+    enum class LOCKONSTATE { LOCKON_F, LOCKON_B, LOCKON_L, LOCKON_R, END };
 private:
     CAS_Dr_Melee_LockOn();
     virtual ~CAS_Dr_Melee_LockOn() = default;
@@ -16,12 +16,10 @@ public:
     virtual void				Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
 private:
-    CDragonian_Melee::MONDATA*  m_pMonData = { nullptr };
-    TARGET_DIR                  m_eDir = { TARGET_DIR::END };
-    _float                      m_fAngle = {};
-    AI_STATE                    m_eState = { AI_STATE::END };
-
-    _float                      m_fDeley = {};
+    CDragonian_Melee::MONDATA*      m_pMonData = { nullptr };
+    TARGET_DIR                      m_eDir = { TARGET_DIR::END };
+    _float                          m_fAccTime = {};
+    LOCKONSTATE                     m_eLockOn = { LOCKONSTATE::END };
 public:
     static CAS_Dr_Melee_LockOn* Create();
     virtual void				Free() override;

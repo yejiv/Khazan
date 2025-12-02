@@ -1,6 +1,7 @@
 #include "Projectile_Imp_MagicBall.h"
 #include "GameInstance.h"
 #include "Creature.h"
+#include "LineTrail.h"
 
 CProjectile_Imp_MagicBall::CProjectile_Imp_MagicBall(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CProjectile{pDevice,pContext}
@@ -38,12 +39,20 @@ HRESULT CProjectile_Imp_MagicBall::Initialize_Clone(void* pArg)
     if (m_fEffect)
         m_fEffect->ResetChildren();
 
+    CLineTrail::LINE_TRAIL_DESC Desc{};
+    Desc.fOffset = 3.f;
+    Desc.fLifeTime = 2.f;
+    Desc.iDivisionCount = 5.f;
+    Desc.iTextureIdx = 28;
+    m_pLineTrail = static_cast<CLineTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_LineTrail"), &Desc));
+
     return S_OK;
 }
 
 void CProjectile_Imp_MagicBall::Priority_Update(_float fTimeDelta)
 {
     m_fEffect->Priority_Update(fTimeDelta);
+    m_pLineTrail->Priority_Update(fTimeDelta);
 }
 
 void CProjectile_Imp_MagicBall::Update(_float fTimeDelta)
@@ -82,6 +91,8 @@ void CProjectile_Imp_MagicBall::Update(_float fTimeDelta)
 
     m_fEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
     m_fEffect->Update(fTimeDelta);
+    m_pLineTrail->Update(fTimeDelta);
+    m_pLineTrail->Add_ControlPoint(m_pTransformCom->Get_State(STATE::POSITION));
 }
 
 void CProjectile_Imp_MagicBall::Late_Update(_float fTimeDelta)
@@ -90,6 +101,7 @@ void CProjectile_Imp_MagicBall::Late_Update(_float fTimeDelta)
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
 
     m_fEffect->Late_Update(fTimeDelta);
+    m_pLineTrail->Late_Update(fTimeDelta);
 }
 
 HRESULT CProjectile_Imp_MagicBall::Render()
@@ -240,6 +252,7 @@ CGameObject* CProjectile_Imp_MagicBall::Clone(void* pArg)
 
 void CProjectile_Imp_MagicBall::Free()
 {
+    Safe_Release(m_pLineTrail);
     Safe_Release(m_pBody);
     Safe_Release(m_fEffect);
 
