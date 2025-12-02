@@ -67,11 +67,11 @@ public:
 
 
 public:
-    virtual HRESULT				Initialize();
+    virtual HRESULT				Initialize(class CGameObject* pOwner);
     virtual void				Update(class CGameObject* pOwner, _float fTimeDelta) override;
 
 public:
-    static CFSM_Viper*          Create();
+    static CFSM_Viper*          Create(class CGameObject* pOwner);
     virtual void				Free() override;
 };
 

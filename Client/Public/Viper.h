@@ -24,6 +24,7 @@ public:
     PHASE                           Get_Phase() const { return m_ePhase; }
 
     void                            Set_Phase(PHASE ePhase)  { m_ePhase = ePhase; }
+    void                            Set_Weapon_Phase1();
     void                            Set_PhaseWeapon_Cinematic();
     void                            Set_PhaseWeapon_Phase2();
     void                            Viper_Land(_fvector vGoalPosition, _float fSpeed);
@@ -31,7 +32,7 @@ public:
 
 
     class CAS_CutScene_Start_Viper*       Get_Viper_CutSceneState();
-    class CFSM_Viper*           Get_Viper_FSM();
+    class CFSM_Viper*               Get_Viper_FSM();
 
 
 public:

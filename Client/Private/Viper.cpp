@@ -31,14 +31,24 @@ _float4* CViper::Get_LockOnPosition()
     return m_vLockOnPosition;
 }
 
+void CViper::Set_Weapon_Phase1()
+{
+    m_pWeapon->Set_IsActive(true);
+    m_pCore->Set_IsActive(false);
+    m_pP2Weapon->Set_IsActive(false);
+}
+
 void CViper::Set_PhaseWeapon_Cinematic()
 {
     m_pWeapon->Set_IsActive(false);
     m_pCore->Set_IsActive(true);
+    m_pP2Weapon->Set_IsActive(false);
+
 }
 
 void CViper::Set_PhaseWeapon_Phase2()
 {
+    m_pWeapon->Set_IsActive(false);
     m_pCore->Set_IsActive(false);
     m_pP2Weapon->Set_IsActive(true);
 }
@@ -166,9 +176,33 @@ void CViper::Update(_float fTimeDelta)
         }
     }
 
-    if (m_pGameInstance->Key_Down(DIK_U))
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta, INPUT_TYPE::GAMEPLAY))
     {
-        m_ePhase = PHASE::CINEMATIC;
+        if (m_pGameInstance->Key_Down(DIK_U))
+        {
+            m_ePhase = PHASE::CINEMATIC;
+            Set_PhaseWeapon_Cinematic();
+        }
+
+        else if (m_pGameInstance->Key_Down(DIK_I))
+        {
+            m_ePhase = PHASE::PHASE2;
+            Set_PhaseWeapon_Phase2();
+
+        }
+
+        else if (m_pGameInstance->Key_Down(DIK_T))
+        {
+            m_ePhase = PHASE::PHASE1;
+            Set_Weapon_Phase1();
+        }
+
+        else if (m_pGameInstance->Key_Down(DIK_0))
+        {
+            Get_Viper_CutSceneState()->Start_CutSceneAnimation();
+        }
+
+
     }
 
 

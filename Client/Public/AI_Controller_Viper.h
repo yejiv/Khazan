@@ -50,8 +50,6 @@ private:
 
     }SKILLCOOLDOWN;
 
-
-
 public:
     virtual HRESULT				Initialize(class CCreature* pOwner);
     virtual void				Update(CGameObject* pOwner, _float fTimeDelta) override;
