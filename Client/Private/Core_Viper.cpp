@@ -142,7 +142,6 @@ HRESULT CCore_Viper::Render()
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0);
-
         m_pShaderCom->Begin(0);
         m_pModelCom->Render(i);
     }*/

@@ -67,7 +67,6 @@ private:
 
     _float4                 m_vTipPos = {};
     _float4                 m_vBladeStartPos = {};
-
 private:
     _float4					m_vLockOnPoint = {};
 

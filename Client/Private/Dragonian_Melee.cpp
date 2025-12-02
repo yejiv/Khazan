@@ -25,9 +25,9 @@ CDragonian_Melee::MONDATA& CDragonian_Melee::Get_Data()
     return m_Data;
 }
 
-void CDragonian_Melee::LockOnLerp(_float fTimeDetla)
+void CDragonian_Melee::LockOnLerp(_float fTimeDetla, _float fSpeed)
 {
-    m_pTransformCom->LookAt_Lerp(m_pTarget->Get_Position(), fTimeDetla, 1.5f);
+    m_pTransformCom->LookAt_Lerp(m_pTarget->Get_Position(), fTimeDetla, fSpeed);
 }
 
 void CDragonian_Melee::LockOn()
@@ -43,7 +43,7 @@ void CDragonian_Melee::Hp_Visivle(_bool isVisivle)
 void CDragonian_Melee::Hp_Dead()
 {
     m_pUI_HP->Set_IsDead(true);
-    Safe_Release(m_pUI_HP);
+    m_pUI_HP = nullptr;
 }
 
 void CDragonian_Melee::LookAt_Lerp(_float fTimeDelta)
@@ -118,21 +118,15 @@ void CDragonian_Melee::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
 
-    if (m_pGameInstance->Key_Down(DIK_M))
+   /* if (m_pGameInstance->Key_Down(DIK_M))
     {
         m_fCurrentHP = m_fMaxHP;
         m_Data.isSleep = true;
     }
-    else if (m_pGameInstance->Key_Down(DIK_V) && m_pGameInstance->Key_Pressing(DIK_LCONTROL, 0.f))
-        Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG, m_pTarget);
-    else if (m_pGameInstance->Key_Down(DIK_V) && m_pGameInstance->Key_Pressing(DIK_LSHIFT, 0.f))
-        Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK, m_pTarget);
-    else if (m_pGameInstance->Key_Down(DIK_V))
-        Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, m_pTarget);
     else if (m_pGameInstance->Key_Down(DIK_B) && m_pGameInstance->Key_Pressing(DIK_LCONTROL, 0.f))
         m_fCurrentStamina = 0;
     else if (m_pGameInstance->Key_Down(DIK_B))
-        Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
+        Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);*/
 
 }
 
@@ -154,11 +148,22 @@ void CDragonian_Melee::Update(_float fTimeDelta)
     _float4x4 LockOnMatrix{};
     XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
     m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
+
+    XMStoreFloat4(&m_vSword_Start, m_pWeapon->Get_Transform()->Get_State(STATE::POSITION) + m_pWeapon->Get_Transform()->Get_State(STATE::UP) * -1.f);
+    XMStoreFloat4(&m_vSword_End, m_pWeapon->Get_Transform()->Get_State(STATE::POSITION) + m_pWeapon->Get_Transform()->Get_State(STATE::UP) * 1.f);      
 }
 
 void CDragonian_Melee::Late_Update(_float fTimeDelta)
 {
     CContainerObject::Late_Update(fTimeDelta);
+}
+
+void CDragonian_Melee::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
+{
+    if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
+        ++m_Data.iBrutalHit;
+
+    __super::Take_Damage(fDamage, eHitreaction, pGameObject);
 }
 
 void CDragonian_Melee::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -331,6 +336,9 @@ HRESULT CDragonian_Melee::Ready_MonData()
     m_Data.pCulStamina = &m_fCurrentStamina;
     m_Data.pMaxStamina = &m_fMaxStamina;
 
+    m_Data.fEdgeWidth = 0.1f;
+    m_Data.fEdgeColor = { 4.2f, 1.6f, 0.2f, 1.f };
+
     return S_OK;
 }
 
@@ -351,7 +359,7 @@ void CDragonian_Melee::Update_WalkSpeed()
 
 void CDragonian_Melee::Attack_Move()
 {
-    LockOnLerp(m_fTimeDelta);
+    LockOnLerp(m_fTimeDelta, 3.f);
     Get_Transform()->Go_Straight(m_fTimeDelta);
 }
 

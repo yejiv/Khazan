@@ -61,23 +61,23 @@ void CCursor::Priority_Update(_float fTimeDelta)
 
 void CCursor::Update(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_COMMA, INPUT_TYPE::UI))
-    {
-        --m_iTrailTexIndex;
+    //if (m_pGameInstance->Key_Down(DIK_COMMA, INPUT_TYPE::UI))
+    //{
+    //    --m_iTrailTexIndex;
 
-        if (m_iTrailTexIndex < 0)
-            m_iTrailTexIndex = 21;
-        m_pScreenTrail->Set_TexIndex(m_iTrailTexIndex);
-    }
-    else if (m_pGameInstance->Key_Down(DIK_PERIOD, INPUT_TYPE::UI))
-    {
-        ++m_iTrailTexIndex;
+    //    if (m_iTrailTexIndex < 0)
+    //        m_iTrailTexIndex = 21;
+    //    m_pScreenTrail->Set_TexIndex(m_iTrailTexIndex);
+    //}
+    //else if (m_pGameInstance->Key_Down(DIK_PERIOD, INPUT_TYPE::UI))
+    //{
+    //    ++m_iTrailTexIndex;
 
-        if (m_iTrailTexIndex > 21)
-            m_iTrailTexIndex = 0;
+    //    if (m_iTrailTexIndex > 21)
+    //        m_iTrailTexIndex = 0;
 
-        m_pScreenTrail->Set_TexIndex(m_iTrailTexIndex);
-    }
+    //    m_pScreenTrail->Set_TexIndex(m_iTrailTexIndex);
+    //}
 
     if (*m_pInputType != INPUT_TYPE::GAMEPLAY)
 		UI_Mode();

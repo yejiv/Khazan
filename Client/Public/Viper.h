@@ -31,6 +31,7 @@ public:
 
 
     class CAS_CutScene_Start_Viper*       Get_Viper_CutSceneState();
+    class CFSM_Viper*           Get_Viper_FSM();
 
 
 public:

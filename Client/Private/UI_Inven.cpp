@@ -535,6 +535,7 @@ void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
         m_pGameInstance->PlaySoundOnce(TEXT("UI_skill_close (SFX).wav"));
 
 		EQUIPSLOT_TYPE eType = static_cast<EQUIPSLOT_TYPE>(pDesc->iIndex);
+
 		if (eType == EQUIPSLOT_TYPE::WEAPON)
 		{
 			m_iTapGroupIndex = ENUM_CLASS(TapGroup::WEAPON);
@@ -559,6 +560,12 @@ void CUI_Inven::Bubble_EventCall(BUBBLEEVENT* pArg)
 			Change_Tap(pDesc->iIndex - ENUM_CLASS(EQUIPSLOT_TYPE::QUICK_1));
             m_eState = INVEN_STATE::DEFAULT;
 		}
+
+        for (auto iGroupIndex : m_UpdateGroup[m_iTapGroupIndex])
+        {
+            for (auto Item : m_pItems[iGroupIndex])
+                Item->Set_Sale(false);
+        }
 	}
     else if (pDesc->eBubbleType == EVENT_TYPE::ITEM_RELEASE)
     {

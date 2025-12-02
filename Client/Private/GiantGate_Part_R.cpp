@@ -66,8 +66,8 @@ void CGiantGate_Part_R::Late_Update(_float fTimeDelta)
 
 HRESULT CGiantGate_Part_R::Render()
 {
-    if (m_pGameInstance->Key_Pressing(DIK_NUMPAD1, 0.f))
-        return S_OK;
+    //if (m_pGameInstance->Key_Pressing(DIK_NUMPAD1, 0.f))
+    //    return S_OK;
 
     CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CGiantGate_Part_R : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 

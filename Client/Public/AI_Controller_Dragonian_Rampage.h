@@ -32,17 +32,16 @@ private:
 private:
     HRESULT                                     Ready_FSM(class CCreature* pOwner);
 
+    BTNODESTATE                                 Damage_Check(CGameObject* pOwner);
+    BTNODESTATE                                 Damage(CGameObject* pOwner);
+    BTNODESTATE                                 Turn_Check(CGameObject* pOwner);
+    BTNODESTATE                                 Turn(CGameObject* pOwner);
     BTNODESTATE                                 Attack_Check(CGameObject* pOwner);
     BTNODESTATE                                 Attack_Rush(CGameObject* pOwner);
     BTNODESTATE                                 Attack_Back(CGameObject* pOwner);
     BTNODESTATE                                 Attack_Default(CGameObject* pOwner);
 
-    BTNODESTATE                                 Damage_Check(CGameObject* pOwner);
-    BTNODESTATE                                 Damage(CGameObject* pOwner);
-    BTNODESTATE                                 Turn_Check(CGameObject* pOwner);
-    BTNODESTATE                                 Turn(CGameObject* pOwner);
     BTNODESTATE                                 LockOn(CGameObject* pOwner);
-    BTNODESTATE                                 Walk(CGameObject* pOwner);
     BTNODESTATE                                 Sleep(CGameObject* pOwner);
 
 public:

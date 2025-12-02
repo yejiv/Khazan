@@ -85,7 +85,7 @@ HRESULT CFont_Face::FontAtlas_Setting()
     m_Buffer.assign(m_iTexWidth * m_iTexHeight, 0);
     
     _wstring preload = L"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789안녕하세요가나다라마바사아자차카타파하";
-    for (wchar_t ch : preload)
+    for (_tchar ch : preload)
     {
         if (FT_Load_Char(m_Face, ch, FT_LOAD_RENDER)) continue;
         FT_Bitmap& bmp = m_Face->glyph->bitmap;
@@ -97,7 +97,7 @@ HRESULT CFont_Face::FontAtlas_Setting()
             m_iRowH = 0;
         }
 
-        for (int y = 0; y < bmp.rows; ++y)
+        for (_uint y = 0; y < bmp.rows; ++y)
         {
             memcpy(&m_Buffer[(m_iPenY + y) * m_iTexWidth + m_iPenX], &bmp.buffer[y * bmp.pitch], bmp.width);
         }
@@ -164,7 +164,7 @@ HRESULT CFont_Face::Add_Glyphs(_tchar ch)
         }
     }
 
-    for (int y = 0; y < bmp.rows; ++y)
+    for (_uint y = 0; y < bmp.rows; ++y)
     {
         memcpy(&m_Buffer[(m_iPenY + y) * m_iTexWidth + m_iPenX],
             &bmp.buffer[y * bmp.pitch],
