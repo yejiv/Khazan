@@ -17,6 +17,7 @@
 #include "Khazan_GSword.h"
 #include "Camera_Compre.h"
 #include "Sequence_Viper_SecondPhase.h"
+#include "Sequence_Viper_CutScene.h"
 
 CLevel_Viper::CLevel_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -102,16 +103,18 @@ void CLevel_Viper::Update(_float fTimeDelta)
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
 
-    //if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    //if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
     //{
-    //    m_pClientInstance->Fade_Out(nullptr, 5.f);
-    //}
+    //    CViper* pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Viper")));
+    //    CSequence_Viper_CutScene* pSequence = CSequence_Viper_CutScene::Create(pViper);
 
-    //if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
-    //{
-    //    m_pClientInstance->Fade_In(nullptr, 5.f);
-    //}
+    //    SEQ_REQ_PLAY_DESC tPlayDesc{};
+    //    tPlayDesc.tId.iSeq = 100010;
+    //    tPlayDesc.pAsset = L"Viper_CutScene";
+    //    tPlayDesc.fStartTime = 0.f;
 
+    //    m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
+    //}
 	return;
 }
 

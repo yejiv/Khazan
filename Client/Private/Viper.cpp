@@ -61,6 +61,12 @@ CAS_CutScene_Start_Viper* CViper::Get_Viper_CutSceneState()
     return pCutSceneState;
 }
 
+CFSM_Viper* CViper::Get_Viper_FSM()
+{
+    CFSM_Viper* pFSM = static_cast<CFSM_Viper*>(m_pController->Get_State_Machine());
+    return pFSM;
+}
+
 HRESULT CViper::Initialize_Prototype()
 {
     
@@ -453,7 +459,7 @@ void CViper::Grab_Check_Begin()
     _matrix BoneWorld = m_pBody->Get_BoneMatrix("Bone_Wp_Hold");
 
     _vector vGrabPosition = BoneWorld.r[3];
-    _vector vOffset = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+    _vector vOffset = XMVectorSet(0.f, 0.f, 0.f, 0.f);    
     pTargetTransform->Set_State(STATE::POSITION, vGrabPosition + vOffset);
 
 }
@@ -475,6 +481,7 @@ void CViper::Set_ViperPosition(_fvector vPosition)
 {
     m_pTransformCom->Set_State(STATE::POSITION, vPosition);
     m_pCharVirCom->Set_Position(vPosition);
+    m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 0.f));
 }
 
 

@@ -14,7 +14,7 @@ NS_BEGIN(Client)
 class CSequence_Viper_CutScene : public ISeqInstance
 {
 private:
-    CSequence_Viper_CutScene(CViper* pViper);
+    CSequence_Viper_CutScene(class CViper* pViper);
     virtual ~CSequence_Viper_CutScene() = default;
 
 public:
@@ -55,7 +55,7 @@ private:
     class CSkipButton* m_pSkipButton = { nullptr };
 
 public:
-    static CSequence_Viper_CutScene* Create(CViper* pViper);
+    static CSequence_Viper_CutScene* Create(class CViper* pViper);
     virtual void Free() override;
 };
 
