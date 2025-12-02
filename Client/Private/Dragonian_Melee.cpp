@@ -148,6 +148,9 @@ void CDragonian_Melee::Update(_float fTimeDelta)
     _float4x4 LockOnMatrix{};
     XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
     m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
+
+    XMStoreFloat4(&m_vSword_Start, m_pWeapon->Get_Transform()->Get_State(STATE::POSITION) + m_pWeapon->Get_Transform()->Get_State(STATE::UP) * -1.f);
+    XMStoreFloat4(&m_vSword_End, m_pWeapon->Get_Transform()->Get_State(STATE::POSITION) + m_pWeapon->Get_Transform()->Get_State(STATE::UP) * 1.f);      
 }
 
 void CDragonian_Melee::Late_Update(_float fTimeDelta)

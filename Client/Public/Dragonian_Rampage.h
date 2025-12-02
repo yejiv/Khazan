@@ -110,6 +110,21 @@ private:
     _float                          m_fTimeDelta = {};
     _float                          m_fAccTime = {};
 
+    _float4                         m_vClawL_1_Start = {};
+    _float4                         m_vClawL_2_Start = {};
+    _float4                         m_vClawL_3_Start = {};
+    _float4                         m_vClawL_1_End = {};
+    _float4                         m_vClawL_2_End = {};
+    _float4                         m_vClawL_3_End = {};
+    _float4                         m_vClawR_1_Start = {};
+    _float4                         m_vClawR_2_Start = {};
+    _float4                         m_vClawR_3_Start = {};
+    _float4                         m_vClawR_1_End = {};
+    _float4                         m_vClawR_2_End = {};
+    _float4                         m_vClawR_3_End = {};
+
+    //UI테스트
+    class CUI_Talk_Danjinjar* m_pTalk = { nullptr };
 private:
     HRESULT                         Ready_Prototype();
 

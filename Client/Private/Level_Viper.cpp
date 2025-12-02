@@ -859,11 +859,11 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
     MonsterDesc.WorldMatrix.m[3][1] = -26.5f;
     MonsterDesc.WorldMatrix.m[3][2] = 182.409f;
 
-    MonsterDesc.strName = "Elamein";
+    MonsterDesc.strName = "Dragonian_Rampage";
     MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
 
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-        ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Elamein"), TIME_CHANNEL::WORLD, &MonsterDesc)))
+        ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"), TIME_CHANNEL::WORLD, &MonsterDesc)))
         return E_FAIL;
 
 

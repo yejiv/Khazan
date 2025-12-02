@@ -12,6 +12,9 @@
 
 #include "Mon_Hp.h"
 
+
+#include "UI_Talk_Danjinjar.h"
+
 CDragonian_Rampage::CDragonian_Rampage(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
 {
@@ -119,6 +122,14 @@ HRESULT CDragonian_Rampage::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Components(), E_FAIL);
 
 
+    CUIObject::UIOBJECT_DESC Desc;
+    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+    Desc.vLocalPos = { 0.f, 0.f };
+    Desc.vLocalSize = { 3.625f, 1.f };
+    Desc.szName = "Dangin_TalkUI";
+    m_pTalk = static_cast<CUI_Talk_Danjinjar*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TalkDanjinjar"), &Desc));
+    CHECK_NULLPTR(m_pTalk, E_FAIL);
+
     return S_OK;
 }
 
@@ -130,6 +141,7 @@ void CDragonian_Rampage::Priority_Update(_float fTimeDelta)
         m_Data.isLockOn = true;
     }
     CContainerObject::Priority_Update(fTimeDelta);
+    m_pTalk->Priority_Update(fTimeDelta);
 }
 
 void CDragonian_Rampage::Update(_float fTimeDelta)
@@ -148,11 +160,29 @@ void CDragonian_Rampage::Update(_float fTimeDelta)
     _float4x4 LockOnMatrix{};
     XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
     m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
+
+    XMStoreFloat4(&m_vClawL_1_Start, m_pClaw_L->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_L->Get_Transform()->Get_State(STATE::UP) * -1.f);
+    XMStoreFloat4(&m_vClawL_2_Start, m_pClaw_L->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_L->Get_Transform()->Get_State(STATE::UP) * -1.f);
+    XMStoreFloat4(&m_vClawL_3_Start, m_pClaw_L->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_L->Get_Transform()->Get_State(STATE::UP) * -1.f);
+    XMStoreFloat4(&m_vClawL_1_End, m_pClaw_L->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_L->Get_Transform()->Get_State(STATE::UP) * 1.f);
+    XMStoreFloat4(&m_vClawL_2_End, m_pClaw_L->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_L->Get_Transform()->Get_State(STATE::UP) * 1.f);
+    XMStoreFloat4(&m_vClawL_3_End, m_pClaw_L->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_L->Get_Transform()->Get_State(STATE::UP) * 1.f);
+
+    XMStoreFloat4(&m_vClawR_1_Start, m_pClaw_R->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_R->Get_Transform()->Get_State(STATE::UP) * -1.f);
+    XMStoreFloat4(&m_vClawR_2_Start, m_pClaw_R->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_R->Get_Transform()->Get_State(STATE::UP) * -1.f);
+    XMStoreFloat4(&m_vClawR_3_Start, m_pClaw_R->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_R->Get_Transform()->Get_State(STATE::UP) * -1.f);
+    XMStoreFloat4(&m_vClawR_1_End, m_pClaw_R->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_R->Get_Transform()->Get_State(STATE::UP) * 1.f);
+    XMStoreFloat4(&m_vClawR_2_End, m_pClaw_R->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_R->Get_Transform()->Get_State(STATE::UP) * 1.f);
+    XMStoreFloat4(&m_vClawR_3_End, m_pClaw_R->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_R->Get_Transform()->Get_State(STATE::UP) * 1.f);
+
+    m_pTalk->Update_UITransform(XMLoadFloat4(&m_vClawL_1_Start));
+    m_pTalk->Update(fTimeDelta);
 }
 
 void CDragonian_Rampage::Late_Update(_float fTimeDelta)
 {
     CContainerObject::Late_Update(fTimeDelta);
+    m_pTalk->Late_Update(fTimeDelta);
 }
 
 void CDragonian_Rampage::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
