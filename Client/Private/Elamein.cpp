@@ -11,6 +11,9 @@
 #include "AI_Controller_Elamein.h"
 
 #include "Mon_Hp.h"
+#include "MeshTrail.h"
+
+#include "UI_Talk_Danjinjar.h"
 
 CElamein::CElamein(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
@@ -42,7 +45,7 @@ void CElamein::Move_F()
     m_pTarget->Get_Position();
     m_pTransformCom->LookAt(m_pTarget->Get_Position());
 
-    _float fWorkSpeed =4.1f;
+    _float fWorkSpeed = 4.1f;
 
     m_pTransformCom->AI_Chase(m_pTarget->Get_Position(), m_fTimeDelta, fWorkSpeed);
 }
@@ -109,7 +112,7 @@ _float CElamein::Get_TrackPotion()
 
 void CElamein::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
 {
-    if (m_Data.fDodgeCool <= 0.f && m_Data.eHitType != HITREACTION::BRUTAL_ATTACK)
+    if (m_Data.fDodgeCool <= 0.f && m_Data.eHitType != HITREACTION::BRUTAL_ATTACK && m_Data.eAttackState == ATTACKSTATE::END)
     {
         m_pController->AI_ApplyDamage(pGameObject, fDamage, ENUM_CLASS(eHitreaction), 3.f);
     }
@@ -157,12 +160,31 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Components(), E_FAIL);
 
 
+    CMeshTrail::TRAIL_DESC MeshDsc;
+    MeshDsc.iTextureIdx = 9;
+    MeshDsc.fLifeTime = .25f;
+    MeshDsc.iDivisionCount = 10.f;
+
+    m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
+
+    CUIObject::UIOBJECT_DESC Desc;
+
+    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+    Desc.vLocalPos = { 0.f, 0.f };
+    Desc.vLocalSize = { 3.625f, 1.f };
+    Desc.szName = "Dangin_TalkUI";
+    m_pTalk = static_cast<CUI_Talk_Danjinjar*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TalkDanjinjar"), &Desc));
+    CHECK_NULLPTR(m_pTalk, E_FAIL);
+
     return S_OK;
 }
 
 void CElamein::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
+
+    m_pMeshTrail->Priority_Update(fTimeDelta);
+    m_pTalk->Priority_Update(fTimeDelta);
 }
 
 void CElamein::Update(_float fTimeDelta)
@@ -190,11 +212,27 @@ void CElamein::Update(_float fTimeDelta)
     _float4x4 LockOnMatrix{};
     XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
     m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
+
+    _float4x4 m_vSwordMat = m_pSword->Get_CombindMat();
+    _vector m_vRot = { m_vSwordMat._21, m_vSwordMat._22, m_vSwordMat._23 };
+    _vector vSwordPos = { m_vSwordMat._41, m_vSwordMat._42, m_vSwordMat._43 };
+    _vector vSwordStart = vSwordPos - XMVector3Normalize(m_vRot) * 1.5f;
+    _vector vSwordEnd = vSwordPos + XMVector3Normalize(m_vRot) * 1.5f;
+    XMStoreFloat4(&m_vSword_Start, XMVectorSetW(vSwordStart, 1.f));
+    XMStoreFloat4(&m_vSword_End, XMVectorSetW(vSwordEnd, 1.f));
+
+    m_pMeshTrail->Update(fTimeDelta);
+    m_pTalk->Update_UITransform(vSwordStart);
+    m_pTalk->Update(fTimeDelta);
+    //Update_MeshTrail();
 }
 
 void CElamein::Late_Update(_float fTimeDelta)
 {
     CContainerObject::Late_Update(fTimeDelta);
+    
+    m_pMeshTrail->Late_Update(fTimeDelta);
+    m_pTalk->Late_Update(fTimeDelta);
 }
 
 void CElamein::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -376,9 +414,9 @@ HRESULT CElamein::Ready_AnimEvent()
     pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
     pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
     pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
-    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
-    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
-    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
     pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 65; });
     pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 66; });
     pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
@@ -396,7 +434,7 @@ HRESULT CElamein::Ready_AnimEvent()
     pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
     pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
     pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
-    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
     pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 71; });
     pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
@@ -404,9 +442,11 @@ HRESULT CElamein::Ready_AnimEvent()
     pModel->Register_Event("ShieldStomp", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
     pModel->Register_Event("HeadCrusher", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("HeadCrusher", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
     pModel->Register_Event("HeadCrusher", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
     pModel->Register_Event("RapidSlash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("RapidSlash", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
     pModel->Register_Event("RapidSlash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
     pModel->Register_Event("JumpSmash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
@@ -448,6 +488,7 @@ HRESULT CElamein::Ready_MonData()
 
     m_Data.fEdgeWidth = 0.2f;
     m_Data.fEdgeColor = { 4.2f, 1.6f, 0.2f, 1.f };
+    m_Data.fAttackDamage = m_fAttack;
     return S_OK;
 }
 
@@ -486,6 +527,13 @@ void CElamein::Update_Body(_float fTimeDelta)
     }
 }
 
+void CElamein::Update_MeshTrail()
+{
+    _vector vSwordStart = XMLoadFloat4(&m_vSword_Start);
+    _vector vSwordEnd = XMLoadFloat4(&m_vSword_End);
+    m_pMeshTrail->Add_ControlPoint(vSwordEnd, vSwordStart);
+}
+
 void CElamein::Rush()
 {
     _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
@@ -520,6 +568,7 @@ CGameObject* CElamein::Clone(void* pArg)
 
 void CElamein::Free()
 {
+    Safe_Release(m_pMeshTrail);
     if (m_pUI_HP != nullptr)
     {
         m_pUI_HP->Set_IsDead(true);
@@ -530,4 +579,7 @@ void CElamein::Free()
     Safe_Release(m_pSword);
     Safe_Release(m_pShield);
     m_Data.pOwner = nullptr;
+
+
+    Safe_Release(m_pTalk);
 }

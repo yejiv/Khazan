@@ -45,7 +45,7 @@ void CAS_Dr_Rampage_Attack_Rush::Update(CStateMachine* pFSM, CGameObject* pOwner
         else if (m_eComboState == COMBOSTATE::LOOP)
         {
             m_fAccTime -= fTimeDelta;
-            pOwner->Get_Transform()->Go_Straight(7.f * fTimeDelta);
+            pOwner->Get_Transform()->Go_Straight(5.f * fTimeDelta);
             if (m_pMonData->pOwner->Check_Ranage("AttackRange") || m_fAccTime <= 0.f || m_pMonData->isWallCrushed)
             {
                 m_pMonData->iAnimIndex = 32;
@@ -57,6 +57,7 @@ void CAS_Dr_Rampage_Attack_Rush::Update(CStateMachine* pFSM, CGameObject* pOwner
         }
         else if (m_eComboState == COMBOSTATE::END)
         {
+            m_pMonData->pOwner->LockOnLerp(fTimeDelta, 6.f);
             if (m_pMonData->isAnimFinash)
             {
                 m_pMonData->eAttack_State = CDragonian_Rampage::ATTACKSTATE::END;
@@ -75,7 +76,11 @@ void CAS_Dr_Rampage_Attack_Rush::OnCollision(COLLISION_DESC* pDesc, _uint iColli
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_WEAK, nullptr);
+        if(m_isCombo)
+            pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+        else
+            pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_WEAK, nullptr);
+
     }
 }
 

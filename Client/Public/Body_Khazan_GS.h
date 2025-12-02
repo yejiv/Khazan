@@ -93,7 +93,7 @@ public:
 private:
     class CClientInstance*      m_pClientInstance = { nullptr };
     class CTransform*           m_pParentTransform = { nullptr };
-    class CGSword_Khazan_GS*    m_pWSword = { nullptr };
+    class CGSword_Khazan_GS*    m_pGSword = { nullptr };
     class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
@@ -243,6 +243,9 @@ private:
     void Start_DefaultVignette();
     void Start_DefaultRadialBlur();
     void Start_LongRadialBlur();
+    void Start_LongDistortion();
+    void Start_DefaultDistortion();
+    void Start_FullScreenDistortion();
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

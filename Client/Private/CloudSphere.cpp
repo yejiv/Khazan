@@ -58,8 +58,8 @@ void CCloudSphere::Update(_float fTimeDelta)
     m_fTimeAcc += fTimeDelta;
 
 #ifdef _DEBUG
-    if (m_pGameInstance->Key_Pressing(DIK_NUMPAD7, 0.f) && m_pGameInstance->Key_Pressing(DIK_NUMPAD8, 0.f) && m_pGameInstance->Key_Down(DIK_NUMPAD9))
-        m_isCloudWindow = !m_isCloudWindow;
+    //if (m_pGameInstance->Key_Pressing(DIK_NUMPAD7, 0.f) && m_pGameInstance->Key_Pressing(DIK_NUMPAD8, 0.f) && m_pGameInstance->Key_Down(DIK_NUMPAD9))
+    //    m_isCloudWindow = !m_isCloudWindow;
 #endif // _DEBUG
 
     if (false == m_isTransition)

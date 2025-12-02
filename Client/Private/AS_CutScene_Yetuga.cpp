@@ -102,7 +102,7 @@ void CAS_CutScene_Yetuga::Change_CutSceneState(CUTSCENE_STATE eNextState, CModel
     case Client::CUTSCENE_STATE::JUMP:
     {
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::JUMP));
-        _vector vGoalPos = XMVectorSet(-0.98, -0.08f, -0.17f, 1.f);
+        _vector vGoalPos = XMVectorSet(-0.98f, -0.08f, -0.17f, 1.f);
         pYetuga->Yetuga_Jump(vGoalPos, 30.f, 30.f);
     }
         break;

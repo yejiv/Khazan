@@ -69,20 +69,31 @@ void CDragonian_Claw_L::Update(_float fTimeDelta)
 
 void CDragonian_Claw_L::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this));
+    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this),);
 }
 
 HRESULT CDragonian_Claw_L::Render()
 {
     CHECK_FAILED(Bind_ShaderResources(), E_FAIL);
-
+    CHECK_FAILED(Bind_Dissolve(), E_FAIL);
     uint32_t iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    _float fEdgeIntensity = 0.8f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fShadeIntensity = 0.2f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
+
     for (uint32_t i = 0; i < iNumMeshes; i++)
     {
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
 
-        m_pShaderCom->Begin(0);
+        m_pShaderCom->Begin(9);
         m_pModelCom->Render(i);
     }
 
@@ -108,6 +119,9 @@ void CDragonian_Claw_L::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObject
 
 HRESULT CDragonian_Claw_L::Ready_Components()
 {
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Monster_Dissolve"),
+        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr), E_FAIL);
+
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom, nullptr), E_FAIL);
     CHECK_FAILED(CGameObject::Add_Component(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_DragonClaw_L"), TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr), E_FAIL);
 
@@ -150,6 +164,17 @@ HRESULT CDragonian_Claw_L::Bind_ShaderResources()
     return S_OK;
 }
 
+HRESULT CDragonian_Claw_L::Bind_Dissolve()
+{
+    CHECK_FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", 0), E_FAIL);
+
+    m_pShaderCom->Bind_RawValue("g_fDecreaseAlpha", &m_pData->fDecreaseAlpha, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeWidth", &m_pData->fEdgeWidth, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeColor", &m_pData->fEdgeColor, sizeof(_float4));
+
+    return S_OK;
+}
+
 CDragonian_Claw_L* CDragonian_Claw_L::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
 {
     CDragonian_Claw_L* pInstance = new CDragonian_Claw_L(pDevice, pContext);
@@ -181,5 +206,6 @@ void CDragonian_Claw_L::Free()
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
     Safe_Release(m_pBodyComp);
+    Safe_Release(m_pTextureCom);
 
 }

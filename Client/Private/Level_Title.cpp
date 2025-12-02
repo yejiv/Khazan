@@ -43,17 +43,17 @@ void CLevel_Title::Update(_float fTimeDelta)
         m_isPlayerSound = true;
         m_pGameInstance->PlaySoundLoop(TEXT("bgm_Title.wav"), 0.5f);
     }
-	if (m_pGameInstance->Key_Down(DIK_F8, INPUT_TYPE::UI))
-	{
-		if (!m_isOpenLevel) {
-            m_pGameInstance->StopAll();
-			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))))
-				return;
+	//if (m_pGameInstance->Key_Down(DIK_F8, INPUT_TYPE::UI))
+	//{
+	//	if (!m_isOpenLevel) {
+ //           m_pGameInstance->StopAll();
+	//		if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))))
+	//			return;
 
-			m_isOpenLevel = true;
+	//		m_isOpenLevel = true;
 
-		}
-	}
+	//	}
+	//}
 	if (m_eNextLevel != LEVEL::END)
 	{
         //m_pGameInstance->StopAll();

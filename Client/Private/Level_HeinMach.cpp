@@ -8,6 +8,7 @@
 #include "Monster.h"
 #include "ClientInstance.h"
 #include "Khazan_Spear.h"
+#include "Khazan_GSword.h"
 #include "Sequence_HeinMach_Start.h"
 #include "Sequence_yetuga_CutScene.h"
 #include "Yetuga.h"
@@ -39,7 +40,6 @@ HRESULT CLevel_HeinMach::Initialize()
 {
 #pragma region 수정된 코드
 
-    // 연동되지 않는 것들을 쓰레드풀로 돌리기
     //m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 
         //return S_OK;
@@ -338,9 +338,9 @@ HRESULT CLevel_HeinMach::Ready_Layer_Player(const _wstring& strLayerTag)
 	    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
 	    return E_FAIL;
 
-    /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
-        return E_FAIL;*/
+    //  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+    //      ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
+    //      return E_FAIL;
 
 	return S_OK;
 }
