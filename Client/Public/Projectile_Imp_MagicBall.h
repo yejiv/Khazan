@@ -45,8 +45,8 @@ public:
 private:
     CBody*                              m_pBody = { nullptr };
     _bool						        m_isCrashed = { false };
-    class CEffect_Prefab* m_fEffect = { nullptr };
-
+    class CEffect_Prefab*               m_fEffect = { nullptr };
+    class CLineTrail*                   m_pLineTrail = { nullptr };
 
 public:
     static CProjectile_Imp_MagicBall*   Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
