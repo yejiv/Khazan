@@ -54,8 +54,8 @@ public:
 
 #pragma region UI_MANGER
 	//Fade 관련
-	void						Fade_In(function<void()> FadeEvent = nullptr);
-	void						Fade_Out(function<void()> FadeEvent = nullptr);
+	void						Fade_In(function<void()> FadeEvent = nullptr, _float fSpeed = 1.f);
+	void						Fade_Out(function<void()> FadeEvent = nullptr, _float fSpeed = 1.f);
 	_bool						Fade_End();
 
 	//Event 관련

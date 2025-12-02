@@ -55,20 +55,28 @@ void CBody_Dragonian_Melee::Update(_float fTimeDelta)
 
         if (m_pData->fQuat != 0.f)
         {
-            m_pModelCom->Set_BlendTime(0.f);
+            if (!m_pData->isBland)
+            {
+                m_pModelCom->Set_BlendTime(0.f);
+                m_pData->isBland = true;
+            }
+            else
+                m_pModelCom->Set_BlendTime(0.25f);
+
             _vector vQuat = m_pData->pOwner->Get_Transform()->Get_Rotation_Quat();
             _vector vAddQuat = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(m_pData->fQuat));
             vQuat = XMQuaternionNormalize(XMQuaternionMultiply(vAddQuat, vQuat));
             m_pData->pOwner->Get_Transform()->Set_Quaternion(vQuat);
             m_pData->fQuat = 0.f;
-            m_pModelCom->Set_BlendTime(0.f);
+
         }
         else
             m_pModelCom->Set_BlendTime(0.25f);
+
     }
 
     Update_CombinedMatrix();
-    m_pData->isAnimFinash = m_pModelCom->Play_Animation(fTimeDelta); 
+    m_pData->isAnimFinash = m_pModelCom->Play_Animation(fTimeDelta);
 }
 
 void CBody_Dragonian_Melee::Late_Update(_float fTimeDelta)
@@ -82,18 +90,29 @@ HRESULT CBody_Dragonian_Melee::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
+    CHECK_FAILED(Bind_Dissolve(), E_FAIL);
+
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    _float fEdgeIntensity = 0.8f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fShadeIntensity = 0.2f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
 
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(0);
+        m_pShaderCom->Begin(17);
 
         m_pModelCom->Render(i);
     }
@@ -115,6 +134,9 @@ void CBody_Dragonian_Melee::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherOb
 
 HRESULT CBody_Dragonian_Melee::Ready_Components()
 {
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Monster_Dissolve"),
+        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr), E_FAIL);
+
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
@@ -142,7 +164,16 @@ HRESULT CBody_Dragonian_Melee::Bind_ShaderResources()
     return S_OK;
 }
 
+HRESULT CBody_Dragonian_Melee::Bind_Dissolve()
+{
+    CHECK_FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", 0), E_FAIL);
 
+    m_pShaderCom->Bind_RawValue("g_fDecreaseAlpha", &m_pData->fDecreaseAlpha, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeWidth", &m_pData->fEdgeWidth, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeColor", &m_pData->fEdgeColor, sizeof(_float4));
+
+    return S_OK;
+}
 
 CBody_Dragonian_Melee* CBody_Dragonian_Melee::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
 {
@@ -174,4 +205,5 @@ void CBody_Dragonian_Melee::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
+    Safe_Release(m_pTextureCom);
 }

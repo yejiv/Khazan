@@ -31,7 +31,7 @@ void CAS_Elamein_Attack_Enchant::Update(CStateMachine* pFSM, CGameObject* pOwner
     }
     else if (m_eState == LOOP)
     {
-        m_pMonData->pOwner->LockOnLerp(fTimeDelta, 10.f);
+        m_pMonData->pOwner->LockOnLerp(fTimeDelta, 4.f);
         pOwner->Get_Transform()->Go_Straight(3.5f * fTimeDelta);
         if (m_pMonData->pOwner->Check_Ranage("AttackRange"))
         {
@@ -41,7 +41,7 @@ void CAS_Elamein_Attack_Enchant::Update(CStateMachine* pFSM, CGameObject* pOwner
     }
     else if (m_eState == END)
     {
-        m_pMonData->pOwner->LockOnLerp(fTimeDelta, 6.f);
+        m_pMonData->pOwner->LockOnLerp(fTimeDelta, 4.f);
         if (m_pMonData->isAnimFinash)
         {
             m_pMonData->fSpecial_AttackCool = 30.f;

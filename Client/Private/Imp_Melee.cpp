@@ -7,6 +7,7 @@
 #include "ClientInstance.h"
 #include "Amount.h"
 #include "GameInstance.h"
+#include "MeshTrail.h"
 
 CImp_Melee::CImp_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
@@ -61,6 +62,8 @@ void CImp_Melee::Priority_Update(_float fTimeDelta)
         static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 100);
         m_isDeadFlag = true;
     }
+
+    m_pMeshTrail->Priority_Update(fTimeDelta);
 }
 
 void CImp_Melee::Update(_float fTimeDelta)
@@ -82,6 +85,8 @@ void CImp_Melee::Update(_float fTimeDelta)
     __super::Update(fTimeDelta);
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
+
+    m_pMeshTrail->Update(fTimeDelta);
 }
 
 void CImp_Melee::Late_Update(_float fTimeDelta)
@@ -104,8 +109,9 @@ void CImp_Melee::Late_Update(_float fTimeDelta)
         }
     }
 
-
     CContainerObject::Late_Update(fTimeDelta);
+
+    m_pMeshTrail->Late_Update(fTimeDelta);
 }
 
 HRESULT CImp_Melee::Render()
@@ -159,6 +165,8 @@ HRESULT CImp_Melee::Ready_Components()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
         return E_FAIL;
+
+    m_pMeshTrail = static_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), nullptr));
 
     return S_OK;
 }
@@ -227,6 +235,18 @@ HRESULT CImp_Melee::Ready_AnimEvent()
     pModel->Register_Event("NontStopAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = true;
         m_pWeapon->Set_OnAttackCollision(true);
+        });
+
+    pModel->Register_Event("NontStopAttack2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        m_isLookAt = true;
+        m_pWeapon->Set_OnAttackCollision(true);
+
+        _float4 vSwordTip = m_pWeapon->Get_SwordTipPos();
+        _float4 vBladeStart = m_pWeapon->Get_BladeStartPos();
+        _vector vTipPos = XMLoadFloat4(&vSwordTip);
+        _vector vBladeStartPos = XMLoadFloat4(&vBladeStart);
+
+        m_pMeshTrail->Add_ControlPoint(vTipPos, vBladeStartPos);
         });
 
     pModel->Register_Event("NontStopAttack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -318,6 +338,8 @@ CGameObject* CImp_Melee::Clone(void* pArg)
 
 void CImp_Melee::Free()
 {
+    Safe_Release(m_pMeshTrail);
+
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
 

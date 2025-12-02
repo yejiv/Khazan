@@ -48,11 +48,11 @@ void CAS_RightHand_5Hit_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollis
 
         if (4 == m_iComboCount)
         {
-            if (m_pGameInstance->Key_Down(DIK_F))
-            {
+            //if (m_pGameInstance->Key_Down(DIK_F))
+            //{
                 //CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
                 //pYetuga->Take_Damage(15.f, HITREACTION::KNOCKBACK_STRONG, nullptr);
-            }
+            //}
         }
     
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);

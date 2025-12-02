@@ -35,6 +35,7 @@ public:
 	virtual HRESULT			Render() override;
 
 	void					Add_ControlPoint(_fvector top, _gvector bottom);
+    void                    Set_TextureIndex(_uint iIndex) { m_iTextureIdx = iIndex; }
 
 private:
 	HRESULT					Ready_Component();
