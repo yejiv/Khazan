@@ -534,5 +534,7 @@ void CDragonian_Rampage::Free()
     Safe_Release(m_pBlackBoard);
     Safe_Release(m_pClaw_L);
     Safe_Release(m_pClaw_R);
+    Safe_Release(m_pHitBodyCom);
+    Safe_Release(m_pTaileCom);
     m_Data.pOwner = nullptr;
 }

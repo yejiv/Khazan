@@ -824,7 +824,8 @@ PS_OUT PS_MAIN_SHIELD_EMISSIVE(PS_IN In)
 
     if (vEmissive.g >= 0.95f)
     {
-        Out.vDiffuse.rgb = Out.vDiffuse.rgb + g_fEmissiveValue;    
+        float3 vColor = { 2.455f, 1.937f, 2.784f };
+        Out.vDiffuse.rgb = Out.vDiffuse.rgb + vColor * 0.3f * g_fEmissiveValue;
     }
     
     Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);

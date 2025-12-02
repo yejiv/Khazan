@@ -10,8 +10,6 @@
 
 #include "Mon_Hp.h"
 
-
-#include "UI_Talk_Danjinjar.h"
 CDragonian_Melee::CDragonian_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
 {
@@ -405,5 +403,6 @@ void CDragonian_Melee::Free()
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
     Safe_Release(m_pBlackBoard);
+    Safe_Release(m_pWeapon);
     
 }

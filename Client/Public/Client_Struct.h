@@ -112,6 +112,14 @@ namespace Client
         _int iNextIndex{};
 	}ANNOUNCE_TALK_DB;
 
+    typedef struct tag_Danginjar_DB
+    {
+        _wstring    wstrTalk{};
+        _int        iNextIndex{};
+        _float      fTextSpeed{};
+        _wstring    wstrSound{};
+    }DANJINJAR_DB;
+
 	typedef struct tag_Skill_DB
 	{
 		_int iType{};
