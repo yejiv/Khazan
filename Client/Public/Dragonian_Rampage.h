@@ -123,8 +123,6 @@ private:
     _float4                         m_vClawR_2_End = {};
     _float4                         m_vClawR_3_End = {};
 
-    //UI테스트
-    class CUI_Talk_Danjinjar* m_pTalk = { nullptr };
 private:
     HRESULT                         Ready_Prototype();
 
@@ -140,6 +138,8 @@ private:
 
     void                            Jump_Move_1();
     void                            Jump_Move_2();
+
+    void                            Update_WeaponPos();
 
 public:
     static CDragonian_Rampage*      Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);

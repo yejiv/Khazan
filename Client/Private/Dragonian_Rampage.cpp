@@ -12,9 +12,6 @@
 
 #include "Mon_Hp.h"
 
-
-#include "UI_Talk_Danjinjar.h"
-
 CDragonian_Rampage::CDragonian_Rampage(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
 {
@@ -121,15 +118,6 @@ HRESULT CDragonian_Rampage::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_AnimEvent(), E_FAIL);
     CHECK_FAILED(Ready_Components(), E_FAIL);
 
-
-    CUIObject::UIOBJECT_DESC Desc;
-    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
-    Desc.vLocalPos = { 0.f, 0.f };
-    Desc.vLocalSize = { 3.625f, 1.f };
-    Desc.szName = "Dangin_TalkUI";
-    m_pTalk = static_cast<CUI_Talk_Danjinjar*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TalkDanjinjar"), &Desc));
-    CHECK_NULLPTR(m_pTalk, E_FAIL);
-
     return S_OK;
 }
 
@@ -141,48 +129,6 @@ void CDragonian_Rampage::Priority_Update(_float fTimeDelta)
         m_Data.isLockOn = true;
     }
     CContainerObject::Priority_Update(fTimeDelta);
-    //if (m_pGameInstance->Key_Down(DIK_M))
-    //{
-    //    m_fCurrentHP = m_fMaxHP;
-    //    m_Data.isSleep = true;
-    //}
-    //else if (m_pGameInstance->Key_Down(DIK_B))
-    //    Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
-    //else if (m_pGameInstance->Key_Down(DIK_N))
-    //    m_fCurrentStamina = 0;
-
-    //if (m_pGameInstance->Key_Down(DIK_V))
-    //{
-    //    Safe_Release(m_pHitBodyCom);
-    //    this->Remove_Component(TEXT("Com_HitBody"));
-    //    m_pHitBodyCom = nullptr;
-
-    //    _vector vMatScale{}, vMatQuat{}, vMatPos{};
-
-    //    CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-    //    BodyDesc.vExtent = { 2.2f, 1.f, 1.f };
-    //    BodyDesc.eMotion = EMotionType::Kinematic;
-    //    BodyDesc.eQuality = EMotionQuality::Discrete;
-    //    BodyDesc.eShapeType = SHAPE::BOX;
-    //    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-    //    BodyDesc.bIsTrigger = true;
-
-    //    _matrix BodyMat = XMLoadFloat4x4(m_pBodySocketMatrix) * m_pTransformCom->Get_WorldMatrix();
-    //    for (uint32_t i = 0; i < 3; i++)
-    //        BodyMat.r[i] = XMVector3Normalize(BodyMat.r[i]);
-
-    //    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, BodyMat);
-
-    //    XMStoreFloat3(&BodyDesc.vPos, vMatPos);
-    //    XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
-
-    //    BodyDesc.vShapeOffset = _float3(-0.5f, -0.f, 0.f);
-    //    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
-
-    //    CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_HitBody"), (CComponent**)&m_pHitBodyCom, &BodyDesc);
-
-    //}
-    m_pTalk->Priority_Update(fTimeDelta);
 }
 
 void CDragonian_Rampage::Update(_float fTimeDelta)
@@ -202,28 +148,12 @@ void CDragonian_Rampage::Update(_float fTimeDelta)
     XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
     m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
 
-    XMStoreFloat4(&m_vClawL_1_Start, m_pClaw_L->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_L->Get_Transform()->Get_State(STATE::UP) * -1.f);
-    XMStoreFloat4(&m_vClawL_2_Start, m_pClaw_L->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_L->Get_Transform()->Get_State(STATE::UP) * -1.f);
-    XMStoreFloat4(&m_vClawL_3_Start, m_pClaw_L->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_L->Get_Transform()->Get_State(STATE::UP) * -1.f);
-    XMStoreFloat4(&m_vClawL_1_End, m_pClaw_L->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_L->Get_Transform()->Get_State(STATE::UP) * 1.f);
-    XMStoreFloat4(&m_vClawL_2_End, m_pClaw_L->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_L->Get_Transform()->Get_State(STATE::UP) * 1.f);
-    XMStoreFloat4(&m_vClawL_3_End, m_pClaw_L->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_L->Get_Transform()->Get_State(STATE::UP) * 1.f);
-
-    XMStoreFloat4(&m_vClawR_1_Start, m_pClaw_R->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_R->Get_Transform()->Get_State(STATE::UP) * -1.f);
-    XMStoreFloat4(&m_vClawR_2_Start, m_pClaw_R->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_R->Get_Transform()->Get_State(STATE::UP) * -1.f);
-    XMStoreFloat4(&m_vClawR_3_Start, m_pClaw_R->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_R->Get_Transform()->Get_State(STATE::UP) * -1.f);
-    XMStoreFloat4(&m_vClawR_1_End, m_pClaw_R->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_R->Get_Transform()->Get_State(STATE::UP) * 1.f);
-    XMStoreFloat4(&m_vClawR_2_End, m_pClaw_R->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_R->Get_Transform()->Get_State(STATE::UP) * 1.f);
-    XMStoreFloat4(&m_vClawR_3_End, m_pClaw_R->Get_Transform()->Get_State(STATE::POSITION) + m_pClaw_R->Get_Transform()->Get_State(STATE::UP) * 1.f);
-
-    m_pTalk->Update_UITransform(XMLoadFloat4(&m_vClawL_1_Start));
-    m_pTalk->Update(fTimeDelta);
+    Update_WeaponPos();
 }
 
 void CDragonian_Rampage::Late_Update(_float fTimeDelta)
 {
     CContainerObject::Late_Update(fTimeDelta);
-    m_pTalk->Late_Update(fTimeDelta);
 }
 
 void CDragonian_Rampage::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
@@ -525,6 +455,50 @@ void CDragonian_Rampage::Jump_Move_2()
 
     _vector vOffsetPos = XMVectorLerp(vPos, vTargetPos, (m_pBody->Get_CulTrack() - 60.f) / 106.f);
     m_pTransformCom->Set_State(STATE::POSITION, vOffsetPos);
+}
+
+void CDragonian_Rampage::Update_WeaponPos()
+{
+    _float4x4 m_vClawLMat = m_pClaw_L->Get_CombindMat();
+    _vector vClawLRight = XMVector3Normalize({ m_vClawLMat._11, m_vClawLMat._12, m_vClawLMat._13 });
+    _vector vClawLUp = XMVector3Normalize({ m_vClawLMat._21, m_vClawLMat._22, m_vClawLMat._23 });
+    _vector vClawLLook = XMVector3Normalize({ m_vClawLMat._31, m_vClawLMat._32, m_vClawLMat._33 });
+    _vector vClawLPos = { m_vClawLMat._41, m_vClawLMat._42, m_vClawLMat._43 };
+
+    _vector vClawLStart = vClawLPos - vClawLRight * 1.5f;
+    _vector vClawLEnd = vClawLPos - vClawLRight * 2.f - vClawLUp * 0.6f + vClawLLook * 0.25f;
+    XMStoreFloat4(&m_vClawL_1_Start, XMVectorSetW(vClawLStart, 1.f));
+    XMStoreFloat4(&m_vClawL_1_End, XMVectorSetW(vClawLEnd, 1.f));
+
+    vClawLStart = vClawLPos - vClawLRight * 1.5f - vClawLUp * 0.3f - vClawLLook * 0.2f;
+    vClawLEnd = vClawLPos - vClawLRight * 1.85f - vClawLUp * 0.72f - vClawLLook * 0.11f;
+    XMStoreFloat4(&m_vClawL_2_Start, XMVectorSetW(vClawLStart, 1.f));
+    XMStoreFloat4(&m_vClawL_2_End, XMVectorSetW(vClawLEnd, 1.f));
+
+    vClawLStart = vClawLPos - vClawLRight * 1.5f + vClawLUp * 0.f + vClawLLook * 0.4f;
+    vClawLEnd = vClawLPos - vClawLRight * 1.85f - vClawLUp * 0.5f + vClawLLook * 0.58f;
+    XMStoreFloat4(&m_vClawL_3_Start, XMVectorSetW(vClawLStart, 1.f));
+    XMStoreFloat4(&m_vClawL_3_End, XMVectorSetW(vClawLEnd, 1.f));
+
+    m_vClawLMat = m_pClaw_R->Get_CombindMat();
+    vClawLRight = XMVector3Normalize({ m_vClawLMat._11, m_vClawLMat._12, m_vClawLMat._13 });
+    vClawLUp = XMVector3Normalize({ m_vClawLMat._21, m_vClawLMat._22, m_vClawLMat._23 });
+    vClawLLook = XMVector3Normalize({ m_vClawLMat._31, m_vClawLMat._32, m_vClawLMat._33 });
+    vClawLPos = { m_vClawLMat._41, m_vClawLMat._42, m_vClawLMat._43 };
+    vClawLStart = vClawLPos - vClawLRight * 1.5f;
+    vClawLEnd = vClawLPos - vClawLRight * 2.1f + vClawLUp * 0.6f + vClawLLook * 0.25f;
+    XMStoreFloat4(&m_vClawR_1_Start, XMVectorSetW(vClawLStart, 1.f));
+    XMStoreFloat4(&m_vClawR_1_End, XMVectorSetW(vClawLEnd, 1.f));
+
+    vClawLStart = vClawLPos - vClawLRight * 1.6f + vClawLUp * 0.2f - vClawLLook * 0.35f;
+    vClawLEnd = vClawLPos - vClawLRight * 1.86f + vClawLUp * 0.7f - vClawLLook * 0.25f;
+    XMStoreFloat4(&m_vClawR_2_Start, XMVectorSetW(vClawLStart, 1.f));
+    XMStoreFloat4(&m_vClawR_2_End, XMVectorSetW(vClawLEnd, 1.f));
+
+    vClawLStart = vClawLPos - vClawLRight * 1.6f - vClawLUp * 0.f + vClawLLook * 0.45f;
+    vClawLEnd = vClawLPos - vClawLRight * 1.9f + vClawLUp * 0.5f + vClawLLook * 0.55f;
+    XMStoreFloat4(&m_vClawR_3_Start, XMVectorSetW(vClawLStart, 1.f));
+    XMStoreFloat4(&m_vClawR_3_End, XMVectorSetW(vClawLEnd, 1.f));
 }
 
 CDragonian_Rampage* CDragonian_Rampage::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)

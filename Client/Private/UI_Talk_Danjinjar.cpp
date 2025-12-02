@@ -33,28 +33,29 @@ void CUI_Talk_Danjinjar::Off_Panel()
 
 void CUI_Talk_Danjinjar::Update_UITransform(_vector vPos)
 {
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetZ(XMVectorSetX(XMVectorSetY(vPos, XMVectorGetY(vPos) + 2.5f), XMVectorGetX(vPos)), XMVectorGetZ(vPos)));
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetZ(XMVectorSetX(XMVectorSetY(vPos, XMVectorGetY(vPos)), XMVectorGetX(vPos)), XMVectorGetZ(vPos)));
 
     _float offsetY = sin(m_fSpeedWeight * 2.f) * 1.f * 0.5f
         + sin(m_fSpeedWeight * 2.f * 0.5f) * 1.f * 0.5f;
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetY(m_pTransformCom->Get_State(STATE::POSITION), XMVectorGetY(m_pTransformCom->Get_State(STATE::POSITION)) + offsetY * 0.02f));
-    m_pTransformCom->Rotation(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f));
 
     m_pTransformCom->Scale({ 2.625f, 1.f, 1.f });
+    m_pTransformCom->Scale({ 0.1f, 0.1f, 0.1f });
+
     m_vColor = { 1.f,1.f, 1.f, 1.f };
-    m_pTransformCom->LookAt_Revers(XMLoadFloat4(m_pGameInstance->Get_CamPosition()));
+    //m_pTransformCom->LookAt_Revers(XMLoadFloat4(m_pGameInstance->Get_CamPosition()));
 
     m_pText1->Update_UITransform(m_pTransformCom->Get_WorldMatrix());
     m_pText1->Set_LocalPos({ -0.4f, 0.3f, -0.001f, 1.f });
     m_pText1->Set_LocalSize({ 1.75f, 1.75f, 1.f });
     m_pText1->Set_Color({ 1.f,1.f,1.f,1.f });
-    m_pText1->Set_Text(TEXT("꺼져라"));
+    m_pText1->Set_Text(TEXT(""));
 
     m_pText2->Update_UITransform(m_pTransformCom->Get_WorldMatrix());
     m_pText2->Set_LocalPos({ -0.4f, 0.15f, -0.001f, 1.f });
     m_pText2->Set_LocalSize({ 1.75f, 1.75f, 1.f });
     m_pText2->Set_Color({ 1.f,1.f,1.f,1.f });
-    m_pText2->Set_Text(TEXT("닥쳐라"));
+    m_pText2->Set_Text(TEXT(""));
 }
 
 HRESULT CUI_Talk_Danjinjar::Initialize_Prototype()
