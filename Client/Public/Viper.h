@@ -19,11 +19,13 @@ public:
     class CBody_Viper*              Get_Body() const { return m_pBody; }
     class CBody_Cinematic_Viper*    Get_Cinematic_Body() const { return m_pCinematicBody; }
     class CBody_Phase2_Viper*       Get_P2Body() const { return m_pPahse2Body; }
+    class CCore_Viper*              Get_Core() { return m_pCore; }
 
     virtual _float4*                Get_LockOnPosition();
     PHASE                           Get_Phase() const { return m_ePhase; }
 
     void                            Set_Phase(PHASE ePhase)  { m_ePhase = ePhase; }
+    void                            Set_Weapon_Phase1();
     void                            Set_PhaseWeapon_Cinematic();
     void                            Set_PhaseWeapon_Phase2();
     void                            Viper_Land(_fvector vGoalPosition, _float fSpeed);
@@ -31,7 +33,8 @@ public:
 
 
     class CAS_CutScene_Start_Viper*       Get_Viper_CutSceneState();
-    class CFSM_Viper*           Get_Viper_FSM();
+    class CAS_CutScene_2Phase_Viper* Get_Phase2_Viper_CutSceneState();
+    class CFSM_Viper*               Get_Viper_FSM();
 
 
 public:

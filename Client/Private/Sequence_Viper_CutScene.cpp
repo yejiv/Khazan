@@ -69,7 +69,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         {
             m_pViper->Get_Viper_FSM()->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), m_pViper);
             CAS_CutScene_Start_Viper* pCutSceneState = m_pViper->Get_Viper_CutSceneState();
-            pCutSceneState->ViperScene_Sit(m_pViper);
+            //pCutSceneState->ViperScene_Sit(m_pViper);
+            pCutSceneState->Start_CutSceneAnimation();            
             m_isFirstScene = true;
         }
 
@@ -193,6 +194,7 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
 
         if (m_fSkipTime > 3.f && !m_isEnd)
         {
+            dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);
             m_isEnd = true;
         }
     }

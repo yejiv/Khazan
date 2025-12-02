@@ -14,6 +14,7 @@
 #include "AS_CutScene_Start_Viper.h"
 #include "FSM_Viper.h"
 #include "Projectile_Rock_Viper.h"
+#include "AS_CutScene_2Phase_Viper.h"
 
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -31,14 +32,24 @@ _float4* CViper::Get_LockOnPosition()
     return m_vLockOnPosition;
 }
 
+void CViper::Set_Weapon_Phase1()
+{
+    m_pWeapon->Set_IsActive(true);
+    m_pCore->Set_IsActive(false);
+    m_pP2Weapon->Set_IsActive(false);
+}
+
 void CViper::Set_PhaseWeapon_Cinematic()
 {
     m_pWeapon->Set_IsActive(false);
     m_pCore->Set_IsActive(true);
+    m_pP2Weapon->Set_IsActive(false);
+
 }
 
 void CViper::Set_PhaseWeapon_Phase2()
 {
+    m_pWeapon->Set_IsActive(false);
     m_pCore->Set_IsActive(false);
     m_pP2Weapon->Set_IsActive(true);
 }
@@ -58,6 +69,13 @@ CAS_CutScene_Start_Viper* CViper::Get_Viper_CutSceneState()
 {
     CFSM_Viper* pFSM = static_cast<CFSM_Viper*>(m_pController->Get_State_Machine());
     CAS_CutScene_Start_Viper* pCutSceneState = pFSM->Get_CutScene_Start_Viper();
+    return pCutSceneState;
+}
+
+CAS_CutScene_2Phase_Viper* CViper::Get_Phase2_Viper_CutSceneState()
+{
+    CFSM_Viper* pFSM = static_cast<CFSM_Viper*>(m_pController->Get_State_Machine());
+    CAS_CutScene_2Phase_Viper* pCutSceneState = pFSM->Get_Phase2_CutScene_Start_Viper();
     return pCutSceneState;
 }
 
@@ -166,9 +184,33 @@ void CViper::Update(_float fTimeDelta)
         }
     }
 
-    if (m_pGameInstance->Key_Down(DIK_U))
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta, INPUT_TYPE::GAMEPLAY))
     {
-        m_ePhase = PHASE::CINEMATIC;
+        if (m_pGameInstance->Key_Down(DIK_U))
+        {
+            m_ePhase = PHASE::CINEMATIC;
+            Set_PhaseWeapon_Cinematic();
+        }
+
+        else if (m_pGameInstance->Key_Down(DIK_I))
+        {
+            m_ePhase = PHASE::PHASE2;
+            //Set_PhaseWeapon_Phase2();
+
+        }
+
+        else if (m_pGameInstance->Key_Down(DIK_T))
+        {
+            m_ePhase = PHASE::PHASE1;
+            Set_Weapon_Phase1();
+        }
+
+        else if (m_pGameInstance->Key_Down(DIK_0))
+        {
+            Get_Viper_CutSceneState()->Start_CutSceneAnimation();
+        }
+
+
     }
 
 

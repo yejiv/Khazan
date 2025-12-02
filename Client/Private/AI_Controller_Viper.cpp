@@ -12,6 +12,7 @@ CAI_Controller_Viper::CAI_Controller_Viper()
 {
 }
 
+
 HRESULT CAI_Controller_Viper::Initialize(CCreature* pOwner)
 {
     CViper* pViper = static_cast<CViper*>(pOwner);
@@ -19,7 +20,7 @@ HRESULT CAI_Controller_Viper::Initialize(CCreature* pOwner)
     if (FAILED(__super::Initialize(pViper, pViper->Get_Name())))
         return E_FAIL;
 
-    m_pFSM = CFSM_Viper::Create();
+    m_pFSM = CFSM_Viper::Create(pOwner);
     if (nullptr == m_pFSM)
         return E_FAIL;
 
@@ -31,24 +32,27 @@ HRESULT CAI_Controller_Viper::Initialize(CCreature* pOwner)
 
 void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 {
-    // 누르면 컷신 모드 AS_CutScene_Start
-    if (m_pGameInstance->Key_Down(DIK_T))
+    
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
     {
-        CViper* pViper = static_cast<CViper*>(pOwner);
-        //CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        ////pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-        //pViper->Consume_Stamina(10.f);
-        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START),pViper);
+        if (m_pGameInstance->Key_Down(DIK_T))
+        {
+            CViper* pViper = static_cast<CViper*>(pOwner);
+            //CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+            ////pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+            //pViper->Consume_Stamina(10.f);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
 
-    }
+        }
 
-    if (m_pGameInstance->Key_Down(DIK_Y))
-    {
+        if (m_pGameInstance->Key_Down(DIK_Y))
+        {
 
-        CViper* pViper = static_cast<CViper*>(pOwner);
-        pViper->Set_PhaseWeapon_Cinematic();
-        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
+            CViper* pViper = static_cast<CViper*>(pOwner);
+            pViper->Set_PhaseWeapon_Cinematic();
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
 
+        }
     }
 
     if (m_pGameInstance->Key_Down(DIK_Z))
@@ -97,9 +101,8 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         m_pBT->Update();
     }
 
-
-
     m_pFSM->Update(pOwner, fTimeDelta * m_fAnimSpeed);
+
 }
 
 HRESULT CAI_Controller_Viper::Ready_Perception(CGameObject* pOwner, const AIPERCEPTION_DATA& Desc)

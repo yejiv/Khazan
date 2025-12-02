@@ -50,7 +50,6 @@ private:
     _bool   m_isSecondFadeOut = { false };
     _bool   m_isSecondFadeIn = { false };
     _bool   m_isThirdScene = { false };
-    _bool   m_isThirdSceneEnd = { false };
 
     _bool   m_isLandEffect = { false };
     _bool   m_isRoarEffect = { false };

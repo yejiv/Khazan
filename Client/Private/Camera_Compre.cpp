@@ -241,6 +241,24 @@ void CCamera_Compre::Update_Free(_float fTimeDelta)
         m_pTransformCom->Go_Right(fTimeDelta * 1.5f);
     }
 
+    if (m_pGameInstance->Key_Pressing(DIK_NUMPAD7, fTimeDelta, INPUT_TYPE::FORCE))
+    {
+        _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+        vPos.m128_f32[1] += 0.01f;
+
+        m_pTransformCom->Set_State(STATE::POSITION, vPos);
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_NUMPAD8, fTimeDelta, INPUT_TYPE::FORCE))
+    {
+        _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+        vPos.m128_f32[1] -= 0.01f;
+
+        m_pTransformCom->Set_State(STATE::POSITION, vPos);
+    }
+
     _int    iMouseMove = {};
     if (m_pGameInstance->Mouse_Pressing(MOUSEKEYSTATE::RB, INPUT_TYPE::FORCE))
     {

@@ -61,12 +61,10 @@ HRESULT CLevel_Viper::Initialize()
     for (_uint i = 0; i < VIPER_SUBLV; ++i)
     {
         CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-        //CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     }
     //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Laye0r_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-
-    CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Viper")), E_FAIL);
     CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
 
     //CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
@@ -103,25 +101,25 @@ void CLevel_Viper::Update(_float fTimeDelta)
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
 
-    //if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
-    //{
-    //    CViper* pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Viper")));
-    //    CKhazan_GSword* pKhazan = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
-    //    CSequence_Viper_CutScene* pSequence = CSequence_Viper_CutScene::Create(pViper, pKhazan);
+    if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
+    {
+        CViper* pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Viper")));
+        CKhazan_GSword* pKhazan = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+        CSequence_Viper_SecondPhase* pSequence = CSequence_Viper_SecondPhase::Create(pViper, pKhazan);
 
-    //    SEQ_REQ_PLAY_DESC tPlayDesc{};
-    //    tPlayDesc.tId.iSeq = 100010;
-    //    tPlayDesc.pAsset = L"Viper_CutScene";
-    //    tPlayDesc.fStartTime = 0.f;
+        SEQ_REQ_PLAY_DESC tPlayDesc{};
+        tPlayDesc.tId.iSeq = 100010;
+        tPlayDesc.pAsset = L"Viper_CutScene";
+        tPlayDesc.fStartTime = 0.f;
 
-    //    m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
-    //}
+        m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
+    }
 
-    //if (m_pGameInstance->Key_Down(DIK_NUMPAD0, INPUT_TYPE::FORCE))
-    //{
-    //    m_pClientInstance->Camera_Force_AniEnd();
-    //    m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
-    //}
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD0, INPUT_TYPE::FORCE))
+    {
+        m_pClientInstance->Camera_Force_AniEnd();
+        m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
+    }
 	return;
 }
 
@@ -817,6 +815,10 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, con
 
         if ("Viper" == MonsterData.MonsterKey[i])
         {
+            WorldMatrix._41 = -37.938f;
+            WorldMatrix._42 = -15.453f;
+            WorldMatrix._43 = 223.393f;
+
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
             MonsterDesc.fMaxHP = 100.f;
@@ -912,9 +914,11 @@ HRESULT CLevel_Viper::Ready_Shader_Settings()
 
 HRESULT CLevel_Viper::Ready_Sequence()
 {
-    CSequence_Viper_SecondPhase* pSequence = CSequence_Viper_SecondPhase::Create();
-    m_pClientInstance->Push_Sequence(TEXT("Viper_SecondPhase"), pSequence);
 
+    CViper* pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Viper")));
+    CKhazan_GSword* pKhazan = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+    CSequence_Viper_SecondPhase* pSequence = CSequence_Viper_SecondPhase::Create(pViper, pKhazan);
+    m_pClientInstance->Push_Sequence(TEXT("Viper_SecondPhase"), pSequence);
 
     return S_OK;
 }
