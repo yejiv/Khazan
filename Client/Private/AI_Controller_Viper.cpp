@@ -69,6 +69,30 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
     }
 
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    {
+        if(m_pGameInstance->Key_Down(DIK_B))
+        {
+            // 돌돌이
+            CViper* pViper = static_cast<CViper*>(pOwner);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::DIVOUR),pViper);
+        }
+        if (m_pGameInstance->Key_Down(DIK_N))
+        {
+            // 그로기 끝나면 소리지름
+            CViper* pViper = static_cast<CViper*>(pOwner);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::GROGGY), pViper);
+        }
+        if (m_pGameInstance->Key_Down(DIK_M))
+        {
+            // 잡기
+            CViper* pViper = static_cast<CViper*>(pOwner);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::STINGGRAB), pViper);
+        }
+
+    }
+
+
     if (m_pGameInstance->Key_Down(DIK_J))
     {
         m_isActiveController = true;
@@ -105,7 +129,7 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         else
             m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-        m_pBT->Update();
+        //m_pBT->Update();
     }
 
     m_pFSM->Update(pOwner, fTimeDelta * m_fAnimSpeed);
