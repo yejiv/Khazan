@@ -126,7 +126,8 @@ void CDragonian_Melee::Priority_Update(_float fTimeDelta)
     else if (m_pGameInstance->Key_Down(DIK_B) && m_pGameInstance->Key_Pressing(DIK_LCONTROL, 0.f))
         m_fCurrentStamina = 0;
     else if (m_pGameInstance->Key_Down(DIK_B))
-        Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);*/
+        Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
+        */
 
 }
 
@@ -145,12 +146,18 @@ void CDragonian_Melee::Update(_float fTimeDelta)
     Update_UIHp();
     Update_WalkSpeed();
 
-    _float4x4 LockOnMatrix{};
-    XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
-    m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
+    _float4x4 m_vSwordMat = m_pWeapon->Get_CombindMat();
+    _vector vClawLRight = XMVector3Normalize({ m_vSwordMat._11, m_vSwordMat._12, m_vSwordMat._13 });
+    _vector vClawLUp = XMVector3Normalize({ m_vSwordMat._21, m_vSwordMat._22, m_vSwordMat._23 });
+    _vector vClawLLook = XMVector3Normalize({ m_vSwordMat._31, m_vSwordMat._32, m_vSwordMat._33 });
 
-    XMStoreFloat4(&m_vSword_Start, m_pWeapon->Get_Transform()->Get_State(STATE::POSITION) + m_pWeapon->Get_Transform()->Get_State(STATE::UP) * -1.f);
-    XMStoreFloat4(&m_vSword_End, m_pWeapon->Get_Transform()->Get_State(STATE::POSITION) + m_pWeapon->Get_Transform()->Get_State(STATE::UP) * 1.f);      
+    _vector vSwordPos = { m_vSwordMat._41, m_vSwordMat._42, m_vSwordMat._43 };
+    _vector vSwordStart = vSwordPos + vClawLUp * 0.2f + vClawLRight * 0.25f;
+    _vector vSwordEnd = vSwordPos + vClawLUp * 1.45f - vClawLRight * 0.1f;
+    XMStoreFloat4(&m_vSword_Start, XMVectorSetW(vSwordStart, 1.f));
+    XMStoreFloat4(&m_vSword_End, XMVectorSetW(vSwordEnd, 1.f));
+
+
 }
 
 void CDragonian_Melee::Late_Update(_float fTimeDelta)
@@ -396,5 +403,6 @@ void CDragonian_Melee::Free()
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
     Safe_Release(m_pBlackBoard);
+    Safe_Release(m_pWeapon);
     
 }

@@ -113,6 +113,7 @@ private:
 
     _float4                         m_vSword_Start = {};
     _float4                         m_vSword_End = {};
+
 public:
     static CDragonian_Melee*        Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;

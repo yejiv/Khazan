@@ -16,6 +16,7 @@ public:
     void                        Update_UITransform(_matrix vParentMat);
     void                        Set_LocalPos(_vector vPos);
     void                        Set_LocalSize(_float3 vSize);
+    void                        Set_TextAlign(TEXT_ALIGN eAlign);
 public:
     virtual HRESULT				Initialize_Prototype() override;
     virtual HRESULT				Initialize_Clone(void* pArg) override;
