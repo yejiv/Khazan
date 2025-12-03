@@ -101,25 +101,25 @@ void CLevel_Viper::Update(_float fTimeDelta)
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
 
-   /* if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
-    {
-        CViper* pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Viper")));
-        CKhazan_GSword* pKhazan = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
-        CSequence_Viper_SecondPhase* pSequence = CSequence_Viper_SecondPhase::Create(pViper, pKhazan);
+    //if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
+    //{
+    //    CViper* pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Viper")));
+    //    CKhazan_GSword* pKhazan = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+    //    CSequence_Viper_SecondPhase* pSequence = CSequence_Viper_SecondPhase::Create(pViper, pKhazan);
 
-        SEQ_REQ_PLAY_DESC tPlayDesc{};
-        tPlayDesc.tId.iSeq = 100010;
-        tPlayDesc.pAsset = L"Viper_CutScene";
-        tPlayDesc.fStartTime = 0.f;
+    //    SEQ_REQ_PLAY_DESC tPlayDesc{};
+    //    tPlayDesc.tId.iSeq = 100010;
+    //    tPlayDesc.pAsset = L"Viper_CutScene";
+    //    tPlayDesc.fStartTime = 0.f;
 
-        m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
-    }
+    //    m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD0, INPUT_TYPE::FORCE))
-    {
-        m_pClientInstance->Camera_Force_AniEnd();
-        m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
-    }*/
+    //if (m_pGameInstance->Key_Down(DIK_NUMPAD0, INPUT_TYPE::FORCE))
+    //{
+    //    m_pClientInstance->Camera_Force_AniEnd();
+    //    m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
+    //}
 	return;
 }
 
