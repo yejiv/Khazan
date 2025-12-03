@@ -1,4 +1,5 @@
 #include "AS_Dr_Rampage_Sleep.h"
+#include "GameInstance.h"
 
 CAS_Dr_Rampage_Sleep::CAS_Dr_Rampage_Sleep()
 {
@@ -17,6 +18,12 @@ void CAS_Dr_Rampage_Sleep::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAS_Dr_Rampage_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+    {
+        m_isChange ? m_isChange = false : m_isChange = true;
+        m_isChange ? m_pMonData->iAnimIndex = 8 : m_pMonData->iAnimIndex = 38;
+    }
+
     if (m_eState == SLEEP && !m_pMonData->isSleep)
     {
         m_pMonData->iAnimIndex = 6;

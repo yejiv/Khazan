@@ -1,5 +1,6 @@
 #include "AS_Dr_Melee_Sleep.h"
 #include "Dragonian_Melee.h"
+#include "GameInstance.h"
 
 CAS_Dr_Melee_Sleep::CAS_Dr_Melee_Sleep()
 {
@@ -17,6 +18,12 @@ void CAS_Dr_Melee_Sleep::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAS_Dr_Melee_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+    {
+        m_isChange ? m_isChange = false : m_isChange = true;
+        m_isChange ? m_pMonData->iAnimIndex = 34 : m_pMonData->iAnimIndex = 20;
+    }
+
     if (m_eState == SLEEP && !m_pMonData->isSleep)
     {
         m_pMonData->iAnimIndex = 32;

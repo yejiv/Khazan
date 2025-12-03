@@ -14,7 +14,9 @@ protected:
 public:
 	class CStateMachine*		Get_State_Machine() const { return m_pFSM; }
     class CBlackBoard*          Get_BlackBoard() const { return m_pBB; }
+    _bool                       Get_ControllerActivate() { return m_isActiveController; }
     virtual void                Set_ControllerActivate(_bool isToggle) { m_isActiveController = isToggle; }
+    virtual void                Set_Active_FSM(_bool isToggle ) { m_isActiveFSM = isToggle; }
 
 public:
 	void						AI_MoveTo(class CGameObject* pOwner, class CGameObject* pTarget, _float fSpeedPerSec ,_float fLimit, _float fTimeDelta);
@@ -53,6 +55,7 @@ protected:
 	string						m_strMonstertag;
     _bool                       m_isActive = { true };
     _bool                       m_isActiveController = { false };
+    _bool                       m_isActiveFSM = { false };
 	class CStateMachine*		m_pFSM = { nullptr };
 	class CBehaviorTree*		m_pBT = { nullptr };
 	class CBlackBoard*			m_pBB = { nullptr };

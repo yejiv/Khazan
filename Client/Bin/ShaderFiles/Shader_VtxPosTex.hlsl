@@ -23,10 +23,11 @@ D3D11_INPUT_ELEMENT_DESC Elements[] =
 */
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D g_Texture;
-texture2D g_DepthTexture;
+Texture2D g_Texture;
+Texture2D g_DepthTexture;
 float4 g_vColor;
 float2 g_ViewportSize;
+float3 g_vTrailColor;
 
 struct VS_IN
 {
@@ -162,13 +163,14 @@ PS_WEIGHTBLEND_OUT PS_TRAIL(PS_IN In)
     //Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
     
     vector vEffectTexture = g_Texture.Sample(DefaultSampler, In.vTexcoord);
-    vector vFinalColor = float4(vEffectTexture.rgb, vEffectTexture.r);
+    vector vFinalColor = float4(g_vTrailColor * vEffectTexture.r, vEffectTexture.r);
     //vector vFinalColor = float4(1.f, 1.f, 1.f, vEffectTexture.r);
-     vFinalColor *= In.vTexcoord.x;
+    // 알파값 직접 지정해줄 시
+    //  vFinalColor.a *= g_vTrailColor.a;
+    vFinalColor.a *= In.vTexcoord.x;
      
     Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a);
     Out.vAccumAlpha.r = vFinalColor.a;
-    
     
     return Out;
 }

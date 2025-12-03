@@ -15,7 +15,8 @@ class CDragonian_Rampage final : public CMonster
 public:
     enum class MONSTATE { ATTACK_DEFAULT, ATTACK_BACK, ATTACK_RUSH, DEAD, GRORRY, BRUTAL, DAMAGE, TURN, LOCKON, SLEEP, WALK, PAGE2, END };
     enum class ATTACKSTATE { DEFAULT, RUSH, BACK, END};
-    enum class ATTACK_BODY : _uint { HAND_L = 1 << 0, HAND_R = 1 << 1, TAIL = 1 << 2, END = 1 << 3};
+    enum class ATTACK_BODY : _uint { HAND_L = 1 << 0, HAND_R = 1 << 1, TAIL = 1 << 2, END = 1 << 3 };
+    enum class CLAW { LEFT_1, LEFT_2, LEFT_3, RIGHT_1, RIGHT_2, RIGHT_3, END };
 
     typedef struct TagMonData_Rampage{
         //애니메이션 관련
@@ -61,6 +62,7 @@ public:
 
         ATTACKSTATE         eAttack_State = { ATTACKSTATE::END };
     }MONDATA;
+
 private:
     CDragonian_Rampage(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CDragonian_Rampage(const CDragonian_Rampage& Prototype);
@@ -75,6 +77,7 @@ public:
     _bool                           Check_Ranage(string strKey);
     _bool                           Check_Ranage(_float fRange);
     TARGET_DIR                      Get_DIR();
+
 public:
     virtual void                    Creature_Release() override;
     virtual HRESULT					Initialize_Prototype(_int iLevel);
@@ -83,6 +86,12 @@ public:
     virtual void					Update(_float fTimeDelta) override;
     virtual void					Late_Update(_float fTimeDelta) override;
     virtual void				    Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) override;
+
+public:
+    const TRAIL_CONFIG&             Get_TrailConfig() const;
+    void                            Set_TrailConfig(const TRAIL_CONFIG& Config);
+    _uint                           Get_NumTrailTextures();
+    ID3D11ShaderResourceView*       Get_TrailTexture(_uint iIndex);
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
@@ -95,6 +104,8 @@ private:
     class CDragonian_Claw_L*        m_pClaw_L = { nullptr };
     class CDragonian_Claw_R*        m_pClaw_R = { nullptr };
     class CMon_HP*                  m_pUI_HP = { nullptr };
+    class CMeshTrail*               m_pMeshTrail[ENUM_CLASS(CLAW::END)] = {};
+
     CBody*                          m_pHitBodyCom = { nullptr };
     CBody*                          m_pTaileCom = { nullptr };
 
@@ -140,6 +151,8 @@ private:
     void                            Jump_Move_2();
 
     void                            Update_WeaponPos();
+    void                            Update_MeshTrail_R();
+    void                            Update_MeshTrail_L();
 
 public:
     static CDragonian_Rampage*      Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);

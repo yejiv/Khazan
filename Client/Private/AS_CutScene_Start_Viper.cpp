@@ -13,8 +13,12 @@ CAS_CutScene_Start_Viper::CAS_CutScene_Start_Viper()
 void CAS_CutScene_Start_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CViper* pViper = static_cast<CViper*>(pOwner);
+    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
     CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     pTransform->Rotation(0,XMConvertToRadians(180.f),0.f);
+    m_fTimeHelper = 0.09f;
+    pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::SIT));
+    
 }
 
 void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -22,18 +26,10 @@ void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, 
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
 
-   
-    if (m_pGameInstance->Key_Down(DIK_0))
-        ViperScene_Sit(pViper);
-    else if (m_pGameInstance->Key_Down(DIK_1))
-        ViperScene_Jump(pViper);
-    else if (m_pGameInstance->Key_Down(DIK_2))
-        ViperScene_Land(pViper);
-    else if (m_pGameInstance->Key_Down(DIK_3))
-        ViperScene_Roar(pViper);
+    
 
-  
-    if (pModel->Play_Animation(fTimeDelta))
+
+    if (pModel->Play_Animation(fTimeDelta * m_fTimeHelper))
     {
         CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
 
@@ -100,8 +96,9 @@ void CAS_CutScene_Start_Viper::Change_CutSceneState(CUTSCENE_STATE eNextState , 
 
     case Client::CUTSCENE_STATE::JUMP:
     {
-        pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::JUMP));
-        pViper->Set_ViperPosition(XMVectorSet(-30.838f, -8.453f, 199.893f, 1.f));
+        pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::JUMP));        
+        pViper->Set_Teleport(XMVectorSet(-30.838f, -5.35f, 199.893f, 1.f));
+        //pViper->Set_ViperPosition(XMVectorSet(-30.838f, -8.453f, 199.893f, 1.f));
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneSit", false);
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneJump", true);
         break;

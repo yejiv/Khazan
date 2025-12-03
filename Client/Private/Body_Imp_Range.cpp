@@ -106,8 +106,12 @@ HRESULT CBody_Imp_Range::Render()
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
         return E_FAIL;
 
-    _float fDiffusePower = 5.f;
+    _float fDiffusePower = 3.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fDiffusePower", &fDiffusePower, sizeof(_float))))
+        return E_FAIL;
+
+    _float fBluePower = 1.5f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fBluePower", &fBluePower, sizeof(_float))))
         return E_FAIL;
 
     for (size_t i = 0; i < iNumMeshes; i++)

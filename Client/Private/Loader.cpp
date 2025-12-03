@@ -2223,8 +2223,8 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 
 #pragma region ���� ������Ʈ ���� : Ʈ����
 	/* Prototype_GameObject_Prop_Trigger */
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_HeinMach_Trigger"),
-		CHeinMach_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_Viper_Trigger"),
+		CViper_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma region Khazan
@@ -2323,6 +2323,9 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 
 #pragma region EFFECT
     Loading_For_Effect_Static(ENUM_CLASS(LEVEL::VIPER));
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Grap"))))
+        return E_FAIL;
 #pragma endregion
 
 

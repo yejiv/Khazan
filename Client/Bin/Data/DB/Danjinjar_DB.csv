@@ -1,6 +1,6 @@
-ID,Talk,NextTalk,TextSpeed,Sound,deleytime 0이면 유지
-1,여기에요 여기 !,0,5.5,Sound.wav,0
-2,테스트를 하는중 1-1,3,5.5,Sound.wav,3
-3,테스트를 하는중 1-2,0,11,Sound.wav,0
-4,춥다 추워,0,5.5,Sound.wav,0
-5,이잉이잉,0,5.5,Sound.wav,0
+ID,Talk,NextTalk,TextSpeed,Sound
+1,카잔님,2,5.5,Sound.wav
+2,닥쳐라,3,5.5,Sound.wav
+3,안녕하세요 제가 말이 심했네요 지금 몇 글자까지 출력할 수 있을 지 테스트하고 있어요,4,9.5,Sound.wav
+4,감사합니다,5,5.5,Sound.wav
+5,안녕히계세요,0,5.5,Sound.wav
