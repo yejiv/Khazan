@@ -52,7 +52,12 @@ void CCloudSphere::Priority_Update(_float fTimeDelta)
 void CCloudSphere::Update(_float fTimeDelta)
 {
     _float4 vOffsetPos = *m_pGameInstance->Get_CamPosition();
-    vOffsetPos.y -= 4.f;
+
+    if (LEVEL::VIPER != CClientInstance::GetInstance()->Get_CurrLevel())
+        vOffsetPos.y -= 4.f;
+    else
+        vOffsetPos.y -= 6.f;
+
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vOffsetPos));
 
     m_fTimeAcc += fTimeDelta;

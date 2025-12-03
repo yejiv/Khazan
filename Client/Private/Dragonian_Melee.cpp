@@ -9,11 +9,9 @@
 #include "AI_Controller_Dragonian_Melee.h"
 
 #include "Mon_Hp.h"
-
 #include "UI_Talk_Danjinjar.h"
 
 #include "MeshTrail.h"
-
 CDragonian_Melee::CDragonian_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
 {

@@ -23,6 +23,7 @@ public:
     void                    Set_LocalSize(_float3 vSize);
     HRESULT                 Setting_Texture(_int iTexPass, _float4 vUV);
     HRESULT                 Setting_Texture(_int iTexPass, const _wstring& strComponentTag);
+    HRESULT                 Setting_Texture(_int iTexPass, const _wstring& strComponentTag, _float4 vUV);
 
 public:
     virtual HRESULT			Initialize_Prototype() override;

@@ -475,6 +475,7 @@ PS_OUT PS_TEX_PROGRESS_CIRCLE_GAUGE_SKIP(PS_IN In)
   
     return Out;
 }
+
 technique11 DefaultTechnique
 {
     pass DefaultPass

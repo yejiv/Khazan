@@ -64,6 +64,17 @@ HRESULT CUI_WorldTex::Setting_Texture(_int iTexPass, const _wstring& strComponen
     return S_OK;
 }
 
+HRESULT CUI_WorldTex::Setting_Texture(_int iTexPass, const _wstring& strComponentTag, _float4 vUV)
+{
+    m_IsAtlas = false;
+    m_vUV[0] = vUV;
+    m_iTexPass = iTexPass;
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), strComponentTag,
+        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr), E_FAIL);
+
+    return S_OK;
+}
+
 HRESULT CUI_WorldTex::Initialize_Prototype()
 {
     return S_OK;

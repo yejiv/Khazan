@@ -240,8 +240,6 @@ void CElamein::Update(_float fTimeDelta)
     Update_Body(fTimeDelta);
 
     m_pMeshTrail->Update(fTimeDelta);
-
-    m_pTalk->Update_UITransform(vSwordStart);
     m_pTalk->Update(fTimeDelta);
 }
 

@@ -59,30 +59,6 @@ void CCore_Viper::Update(_float fTimeDelta)
        
         _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 
-        _float fMoveSpeed = 2.f;
-        _float3 offset = m_vLocalOffset;
-
-       if (m_pGameInstance->Key_Down(DIK_UP))
-           offset.y += fMoveSpeed * fTimeDelta;
-       if (m_pGameInstance->Key_Down(DIK_DOWN))
-           offset.y -= fMoveSpeed * fTimeDelta;
-
-       if (m_pGameInstance->Key_Down(DIK_LEFT))
-           offset.x -= fMoveSpeed * fTimeDelta;
-
-       if (m_pGameInstance->Key_Down(DIK_RIGHT))
-           offset.x += fMoveSpeed * fTimeDelta;
-
-       if (m_pGameInstance->Key_Down(DIK_L))
-           offset.z += fMoveSpeed * fTimeDelta;
-
-       if (m_pGameInstance->Key_Down(DIK_K))
-           offset.z -= fMoveSpeed * fTimeDelta;
-
-           m_vLocalOffset = offset;
-
-           
-
         for (uint32_t i = 0; i < 3; i++)
             BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
@@ -121,7 +97,7 @@ HRESULT CCore_Viper::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-   /* _float fEdgeIntensity = 0.5f;
+    _float fEdgeIntensity = 0.5f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
         return E_FAIL;
 
@@ -142,20 +118,20 @@ HRESULT CCore_Viper::Render()
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0);
-        m_pShaderCom->Begin(0);
-        m_pModelCom->Render(i);
-    }*/
-
-    uint32_t iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-    for (uint32_t i = 0; i < iNumMeshes; i++)
-    {
-        m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-        m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
-
-        m_pShaderCom->Begin(0);
+        m_pShaderCom->Begin(11);
         m_pModelCom->Render(i);
     }
+
+    //uint32_t iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    //for (uint32_t i = 0; i < iNumMeshes; i++)
+    //{
+    //    m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
+    //    m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+
+    //    m_pShaderCom->Begin(0);
+    //    m_pModelCom->Render(i);
+    //}
 
 
 

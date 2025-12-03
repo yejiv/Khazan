@@ -1,13 +1,14 @@
 #include "Viper_Trigger.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
-//#include "Sequence_HeinMach_Field.h"
-//#include "Sequence_HeinMach_Yetuga.h"
 #include "Camera_Compre.h"
 #include "Transform.h"
 #include "Creature.h"
 #include "UI_Tutorial.h"
 #include "SkySphere.h"
+#include "Viper.h"
+#include "Khazan_GSword.h"
+#include "Sequence_Viper_CutScene.h"
 
 CViper_Trigger::CViper_Trigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CTrigger { pDevice, pContext }
@@ -84,13 +85,6 @@ HRESULT CViper_Trigger::Ready_TriggerType(void* pArg)
 {
     if (m_strTriggerKey == "CutScene")
     {
-        /*
-        m_pViper_Field = CSequence_HeinMach_Field::Create(
-            dynamic_cast<CCamera_Compre*>(m_pClientInstance->Find_Camera(
-                ENUM_CLASS(LEVEL::HEINMACH),
-                CAMERATYPE::PLAYER))
-        );
-        */
     }
     else if (m_strTriggerKey == "Viper")
     {
@@ -128,13 +122,18 @@ void CViper_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
 
             m_isDead = true;
         }
-        else if (m_strTriggerKey == "Yetuga")
+        else if (m_strTriggerKey == "Viper")
         {
+            CViper* pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Viper")));
+            CKhazan_GSword* pKhazan = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+            CSequence_Viper_CutScene* pSequence = CSequence_Viper_CutScene::Create(pViper, pKhazan);
+
             SEQ_REQ_PLAY_DESC tPlayDesc{};
-            tPlayDesc.tId.iSeq = 1001;
-            tPlayDesc.pAsset = L"Yetuga_Cut";
+            tPlayDesc.tId.iSeq = 100010;
+            tPlayDesc.pAsset = L"Viper_CutScene";
             tPlayDesc.fStartTime = 0.f;
-            //m_pGameInstance->SEQ_AdoptAndPlay(m_pViper_Boss, tPlayDesc);
+
+            m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
             m_isDead = true;
         }
         else if (DAY_CIRCLE::NONE != m_eDayCircle)
