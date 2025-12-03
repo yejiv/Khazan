@@ -44,8 +44,9 @@ HRESULT CTwinBlade_Viper::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components())) return E_FAIL;
     if (FAILED(Ready_Collision())) return E_FAIL;
 
-    m_pTransformCom->Rotation(0.1f, 3.14f, 1.f);
-    
+    //m_pTransformCom->Rotation(0.1f, 3.14f, 1.f);
+    m_pTransformCom->Rotation(0.1f, 3.14f, 1.2f);
+    m_vLocalOffset = _float3(0.7f, 0.1f, 0.f);
 
     return S_OK;
 }
@@ -56,51 +57,26 @@ void CTwinBlade_Viper::Priority_Update(_float fTimeDelta)
 
 void CTwinBlade_Viper::Update(_float fTimeDelta)
 {
-    m_pLeftBodyComp->Collision_Active(true);
-    m_pRightBodyComp->Collision_Active(true);
-
-
     if (CViper::PHASE::PHASE1 == m_pOwner->Get_Phase() && m_isActive)
     {
         _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
         CBlackBoard* pBB = m_pOwner->Get_Controller()->Get_BlackBoard();
 
 
-        if (pBB->Get_Value<_bool>(m_pOwner->Get_Name(), "isStartCutSceneSit"))
-        {
-            //x = 0.700129509 y = 0.100012794 z = 2.01165676e-07
-            m_vLocalOffset = _float3(0.7f, 0.1f, 0.f);
-        }
-        else if (pBB->Get_Value<_bool>(m_pOwner->Get_Name(), "isStartCutSceneJump"))
+        //if (pBB->Get_Value<_bool>(m_pOwner->Get_Name(), "isStartCutSceneSit"))
+        //{
+        //    //x = 0.700129509 y = 0.100012794 z = 2.01165676e-07
+        //    m_vLocalOffset = _float3(0.7f, 0.1f, 0.f);
+        //}
+        if (pBB->Get_Value<_bool>(m_pOwner->Get_Name(), "isStartCutSceneJump"))
         {
             //m_vLocalOffset = {x=0.00000000 y=0.133346602 z=0.00000000 }
             m_vLocalOffset = _float3(0.f, 0.1334f, 0.f);
         }
-        else
+        else if(m_pOwner->Get_Controller()->Get_ControllerActivate())
         {
             m_vLocalOffset = _float3(0.f, 0.f, 0.f);
         }
-
-        //_float3 offset = m_vLocalOffset;
-
-      /*  if (m_pGameInstance->Key_Down(DIK_UP))
-            offset.y += fMoveSpeed * fTimeDelta;
-        if (m_pGameInstance->Key_Down(DIK_DOWN))
-            offset.y -= fMoveSpeed * fTimeDelta;
-
-        if (m_pGameInstance->Key_Down(DIK_LEFT))
-            offset.x -= fMoveSpeed * fTimeDelta;
-
-        if (m_pGameInstance->Key_Down(DIK_RIGHT))
-            offset.x += fMoveSpeed * fTimeDelta;
-
-        if (m_pGameInstance->Key_Down(DIK_L))
-            offset.z += fMoveSpeed * fTimeDelta;
-
-        if (m_pGameInstance->Key_Down(DIK_K))
-            offset.z -= fMoveSpeed * fTimeDelta;*/
-
-        //m_vLocalOffset = offset;
 
         for (uint32_t i = 0; i < 3; i++)
             BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
@@ -143,30 +119,19 @@ void CTwinBlade_Viper::Update(_float fTimeDelta)
         }
 
 
-        //RigthBodyDesc.vShapeOffset = _float3(-0.25f, 3.0f, 0.f); // Ä®³¯ ¿À¸¥ÂÊ ³¡ Offset
-        //RigthBodyDesc.vShapeOffset = _float3(0.2f, 1.2f, 0.f); // ¿À¸¥ ÂÊ Ä®³¯ ½ÃÀÛ OFfset
+        _float4x4 vSwordMat = m_CombinedWorldMatrix;
 
-        _matrix RightBladeStartOffset = XMMatrixTranslation(0.2f, 1.2f, 0.f);
-        _matrix RightBladeTipOffset = XMMatrixTranslation(-0.25f, 3.f, 0.f);
+        _vector m_vRot = { vSwordMat._21, vSwordMat._22, vSwordMat._23 };
+        _vector vSwordPos = { vSwordMat._41, vSwordMat._42, vSwordMat._43 };
+        _vector vSwordStart = vSwordPos + XMVector3Normalize(m_vRot) * 1.5f;
+        _vector vSwordEnd = vSwordPos + XMVector3Normalize(m_vRot) * 3.f;
+        XMStoreFloat4(&m_vLeftBladeStartPos, XMVectorSetW(vSwordStart, 1.f));
+        XMStoreFloat4(&m_vLeftTipPos, XMVectorSetW(vSwordEnd, 1.f));
+        vSwordStart = vSwordPos - XMVector3Normalize(m_vRot) * 1.5f;
+        vSwordEnd = vSwordPos - XMVector3Normalize(m_vRot) * 3.f;
+        XMStoreFloat4(&m_vRightBladeStartPos, XMVectorSetW(vSwordStart, 1.f));
+        XMStoreFloat4(&m_vRightTipPos, XMVectorSetW(vSwordEnd, 1.f));
 
-
-        //LeftBodyDesc.vShapeOffset = _float3(0.25f, -3.0f, -0.f);// ¿ÞÂÊ Ä®³¯ ³¡ Offset
-        //LeftBodyDesc.vShapeOffset = _float3(-0.2f, -1.2f, -0.f); // ¿ÞÂÊ Ä®³¯ ½ÃÀÛ Offset
-
-        _matrix LeftBladeStartOffset = XMMatrixTranslation(0.25f, -3.f, 0.f);
-        _matrix LeftBladeTipOffset = XMMatrixTranslation(025.f, -1.2f, 0.f);
-
-        _matrix StartOffset = m_pTransformCom->Get_WorldMatrix() * RightBladeStartOffset * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix);
-        _matrix TipOffset = m_pTransformCom->Get_WorldMatrix() * RightBladeTipOffset * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix);
-
-        m_vRightBladeStartPos = _float4(StartOffset.r[3].m128_f32[0], StartOffset.r[3].m128_f32[1], StartOffset.r[3].m128_f32[2], 1.f);
-        m_vRightTipPos = _float4(TipOffset.r[3].m128_f32[0], TipOffset.r[3].m128_f32[1], TipOffset.r[3].m128_f32[2], 1.f);
-        
-        StartOffset = m_pTransformCom->Get_WorldMatrix() * LeftBladeStartOffset * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix);
-        TipOffset = m_pTransformCom->Get_WorldMatrix() * LeftBladeTipOffset * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix);
-
-        m_vLeftBladeStartPos = _float4(StartOffset.r[3].m128_f32[0], StartOffset.r[3].m128_f32[1], StartOffset.r[3].m128_f32[2], 1.f);
-        m_vLeftTipPos = _float4(TipOffset.r[3].m128_f32[0], TipOffset.r[3].m128_f32[1], TipOffset.r[3].m128_f32[2], 1.f);
     }
 
 

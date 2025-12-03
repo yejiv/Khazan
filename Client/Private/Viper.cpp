@@ -54,6 +54,13 @@ void CViper::Set_PhaseWeapon_Phase2()
     m_pP2Weapon->Set_IsActive(true);
 }
 
+void CViper::Set_WeaponOff()
+{
+    m_pWeapon->Set_IsActive(false);
+    m_pCore->Set_IsActive(false);
+    m_pP2Weapon->Set_IsActive(false);
+}
+
 void CViper::Viper_Land(_fvector vGoalPosition, _float fSpeed)
 {
     m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 0.f));
@@ -119,7 +126,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
     }
 
-    m_ePhase = PHASE::PHASE1;
+    m_ePhase = PHASE::PHASE2;
 
  
     m_fRecoveryPerSec = 5.f;
@@ -218,6 +225,15 @@ void CViper::Update(_float fTimeDelta)
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("Bip001-Spine2");
 
+   /* if (m_pGameInstance->Key_Down(DIK_P))
+    {
+        _float4 vPos = m_pWeapon->Get_RightSwordTip();
+        tmpIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), XMLoadFloat4(&vPos));
+    }
+    if (m_pGameInstance->Key_Down(DIK_O))
+    {
+        m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), tmpIdx);
+    }*/
 }
 
 void CViper::Late_Update(_float fTimeDelta)
@@ -1419,7 +1435,7 @@ HRESULT CViper::Ready_AnimEvent()
     pP2Model->Register_Event("BackJump_1Attack_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
-            m_fTurnSpeed = 10.f;
+            m_fTurnSpeed = 20.f;
         });
 
     pP2Model->Register_Event("BackJump_1Attack_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -1447,7 +1463,7 @@ HRESULT CViper::Ready_AnimEvent()
     pP2Model->Register_Event("BackJump_2Attack_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
-            m_fTurnSpeed = 10.f;
+            m_fTurnSpeed = 20.f;
         });
 
     pP2Model->Register_Event("BackJump_2Attack_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -1477,13 +1493,20 @@ HRESULT CViper::Ready_AnimEvent()
             CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
             m_pCharVirCom->Jump(50.f, 7.f);
+            m_isLookAt = true;
+            m_fTurnSpeed = 30.f;
         });
 
     pP2Model->Register_Event("P2_JumpAttack_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            // 타겟 위치 + 타겟 룩 * offset
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            m_pCharVirCom->Start_Dive(vTargetPos, 80.f);
+            _vector vTargetLook = pTargetTransform->Get_State(STATE::LOOK);
+            vTargetLook = XMVector3Normalize(vTargetLook);
+            _float fOffset = 30.f;
+            _vector vLandPos = vTargetPos + vTargetLook * fOffset;
+            m_pCharVirCom->Start_Dive(vLandPos, 80.f);
 
             //m_pWeapon->Set_OnAttackCollision(true);
         });
@@ -1493,6 +1516,9 @@ HRESULT CViper::Ready_AnimEvent()
         {
             CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+
             m_pCharVirCom->Start_Dive(vTargetPos, 80.f);
 
             //m_pWeapon->Set_OnAttackCollision(true);
@@ -1520,19 +1546,21 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("P2_JumpAttack_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_isLookAt = false;
-            m_fTurnSpeed = 8.f;
+
 
         });
 
     pP2Model->Register_Event("P2_JumpAttack_Attack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
            // 오른손 무기 콜라이더ON
+
         });
 
     pP2Model->Register_Event("P2_JumpAttack_Attack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             // 오른손 무기 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
         });
 
 
@@ -1567,23 +1595,13 @@ HRESULT CViper::Ready_AnimEvent()
 #pragma region P2_SIDEJUMP_L
     pP2Model->Register_Event("P2_SideJumpL_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this,pP2Model]()
         {
-            //CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
-            //_vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            // _float fAnimRatio = pP2Model->MakeRatio();
-            //pTargetTransform->LookAt_Lerp(vTargetPos,fAnimRatio,1.f);
-
             m_isLookAt = true;
-            m_fTurnSpeed = 20.f;
+            m_fTurnSpeed = 30.f;
 
         });
 
     pP2Model->Register_Event("P2_SideJumpL_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
         {
-            //CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
-            //_vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            // _float fAnimRatio = pP2Model->MakeRatio();
-            //pTargetTransform->LookAt_Lerp(vTargetPos,fAnimRatio,1.f);
-
             m_isLookAt = false;
             m_fTurnSpeed = 8.f;
 
@@ -1595,25 +1613,13 @@ HRESULT CViper::Ready_AnimEvent()
 #pragma region P2_SIDEJUMP_R
     pP2Model->Register_Event("P2_SideJumpR_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
         {
-            //CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
-            //_vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            //_float fAnimRatio = pP2Model->MakeRatio();
-            //pTargetTransform->LookAt_Lerp(vTargetPos, fAnimRatio, 1.f);
-
             m_isLookAt = true;
-            m_fTurnSpeed = 20.f;
-
-
+            m_fTurnSpeed = 30.f;
         });
 
 
     pP2Model->Register_Event("P2_SideJumpR_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
         {
-            //CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
-            //_vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            // _float fAnimRatio = pP2Model->MakeRatio();
-            //pTargetTransform->LookAt_Lerp(vTargetPos,fAnimRatio,1.f);
-
             m_isLookAt = false;
             m_fTurnSpeed = 8.f;
 
@@ -1628,6 +1634,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("DashDrift_Pause", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
         {
+            m_isGhost = true;
             m_isLookAt = true;
             m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 1.f, 0.1f, 0.25f);
         });
@@ -1635,6 +1642,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("DashDrift_Pause", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
         {
+            m_isGhost = false;
             m_isLookAt = false;
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName,"isP2_Dash_Abort", true);
         });
@@ -1642,6 +1650,123 @@ HRESULT CViper::Ready_AnimEvent()
 
 
 #pragma endregion
+
+
+
+#pragma region P2_SWINGCOMBO
+    pP2Model->Register_Event("P2_SideJumpR_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 12.f;
+
+            
+        });
+    pP2Model->Register_Event("SwingCombo_Attack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            CBlackBoard* pBB = m_pController->Get_BlackBoard();
+            pBB->Set_Value(m_strName, "is_P2_ComboMove", true);
+        });
+    pP2Model->Register_Event("SwingCombo_Attack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
+        {
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+
+            CBlackBoard* pBB = m_pController->Get_BlackBoard();
+            pBB->Set_Value(m_strName, "is_P2_ComboMove", false);
+
+
+        });
+    pP2Model->Register_Event("SwingCombo_Look2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 12.f;
+        });
+    pP2Model->Register_Event("SwingCombo_Attack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            CBlackBoard* pBB = m_pController->Get_BlackBoard();
+            pBB->Set_Value(m_strName, "is_P2_ComboMove", true);
+        });
+    pP2Model->Register_Event("SwingCombo_Attack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
+        {
+            CBlackBoard* pBB = m_pController->Get_BlackBoard();
+            pBB->Set_Value(m_strName, "is_P2_ComboMove", false);
+        });
+
+    pP2Model->Register_Event("SwingCombo_Attack3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+
+            CBlackBoard* pBB = m_pController->Get_BlackBoard();
+            pBB->Set_Value(m_strName, "is_P2_ComboMove", true);
+
+        });
+    pP2Model->Register_Event("SwingCombo_Attack3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
+        {
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+
+            CBlackBoard* pBB = m_pController->Get_BlackBoard();
+            pBB->Set_Value(m_strName, "is_P2_ComboMove", false);
+        });
+
+    pP2Model->Register_Event("SwingCombo_Look4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 12.f;
+
+        });
+    pP2Model->Register_Event("SwingCombo_Attack4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            CBlackBoard* pBB = m_pController->Get_BlackBoard();
+            pBB->Set_Value(m_strName, "is_P2_ComboMove", true);
+        });
+    pP2Model->Register_Event("SwingCombo_Attack4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
+        {
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+
+            CBlackBoard* pBB = m_pController->Get_BlackBoard();
+            pBB->Set_Value(m_strName, "is_P2_ComboMove", false);
+        });
+
+    pP2Model->Register_Event("SwingCombo_Ghost", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            m_isGhost = true;
+        });
+
+    pP2Model->Register_Event("SwingCombo_Condition", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            CBlackBoard* pBB = m_pController->Get_BlackBoard();
+            _bool isBerserker = pBB->Get_Value<_bool>(m_strName, "is_Berserker");
+            if (!isBerserker)
+            {
+                pBB->Set_Value(m_strName, "isP2_Combo_Abort", true);
+                m_isGhost = false;
+            }
+        });
+
+    pP2Model->Register_Event("SwingCombo_Rush", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            CBlackBoard* pBB = m_pController->Get_BlackBoard();
+            pBB->Set_Value(m_strName, "is_P2_Rush", true);
+            Look_Target();
+
+        });
+
+    pP2Model->Register_Event("SwingCombo_Rush", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
+        {
+            CBlackBoard* pBB = m_pController->Get_BlackBoard();
+            pBB->Set_Value(m_strName, "is_P2_Rush", false);
+
+        });
+
+    pP2Model->Register_Event("SwingCombo_Ghost2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            m_isGhost = false;
+        });
+
+
+#pragma endregion
+
 
 
     return S_OK;

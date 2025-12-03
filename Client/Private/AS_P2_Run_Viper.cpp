@@ -18,7 +18,11 @@ void CAS_P2_Run_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
     pModel->Set_Animation(44);
     pModel->Set_AnimationLoop(true);
-    m_fSpeed = pBB->Get_Value<_float>(pViper->Get_Name(), "RunSpeed");
+    _bool isBerserker = pBB->Get_Value<_bool>(pViper->Get_Name(), "is_Berserker");
+    if (!isBerserker)
+        m_fSpeed = pBB->Get_Value<_float>(pViper->Get_Name(), "RunSpeed");
+    else
+        m_fSpeed = pBB->Get_Value<_float>(pViper->Get_Name(), "BerserkerSpeed");
 
 }
 

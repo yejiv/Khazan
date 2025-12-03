@@ -2323,6 +2323,9 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 
 #pragma region EFFECT
     Loading_For_Effect_Static(ENUM_CLASS(LEVEL::VIPER));
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Grap"))))
+        return E_FAIL;
 #pragma endregion
 
 

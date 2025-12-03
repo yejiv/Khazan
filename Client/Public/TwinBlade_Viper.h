@@ -21,8 +21,9 @@ public:
 
     }WEAPON_DESC;
 
+//m_vRightTipPos
 public:
-    _float4* Get_BonePointEX(const _char* pBoneName);
+    _float4*                Get_BonePointEX(const _char* pBoneName);
     _matrix					Get_BoneMatrix(const _char* pBoneName);
     _float4x4               Get_CombinedMatrix() const { return m_CombinedWorldMatrix; }
     void					Set_OnAttackCollision_L(_bool isToggle) { m_isLOnAttackCollision = isToggle; }
@@ -40,6 +41,7 @@ public:
 
     _float4                 Get_GrabPos() const { return m_vGrabPos; }
 
+    _matrix                 Get_CombinedMatrixEX() const { return XMLoadFloat4x4(&m_CombinedWorldMatrix); }
 
 private:
     CTwinBlade_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -78,30 +78,28 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
     _float fDotF = XMVectorGetX(XMVector3Dot(vDir, vBodyLook));
 
-    _float fDist = XMVectorGetX(XMVector3Length(vDir));
+    _float fDist = pBB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
 
     _bool isLockOnFinished = { false };
 
-    if (m_fTimeAcc >= m_fMinLockTime)
+    if (fDist <= m_fAttackRange)
+        isLockOnFinished = true;
+
+
+    else if (m_fTimeAcc >= m_fMinLockTime)
     {
         if (fDotF > m_fDotThreshold)
             isLockOnFinished = true;
         
-        if (fDist >= m_fAttackRange)
-            isLockOnFinished = true;
 
         if (fDist >= m_fEndDist)
             isLockOnFinished = true;
     }
 
-    if (m_fTimeAcc >= m_fMaxLockTime)
-        isLockOnFinished = true;
-
     if (isLockOnFinished)
     {
         pBB->Set_Value(pViper->Get_Name(), "isP2_LockOn_Finished", true);
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2LockOn", false);
-        //pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pOwner);
     }
     pModel->Play_Animation(fTimeDelta);
 
@@ -133,16 +131,10 @@ void CAS_P2_LockOn_Viper::Update_Direction(CTransform* pOwnerTransform, CTransfo
     _float fDotR = XMVectorGetX(XMVector3Dot(vDir,vRight));
 
 
-    //DIRECTION ePrevDir = m_eDirState;
     _vector vDiff = vTargetPos - vOwnerPos;
     _float fDist = XMVectorGetX(XMVector3Length(vDiff));
     _bool isBackward = {false};    
-    // �Ÿ���� �������� ����
 
-     /*if (fDotF < -0.7f)
-     {
-         m_eDirState = DIRECTION::B;
-     }*/
 
     if (fDist < 300.f)
     {
@@ -166,20 +158,18 @@ void CAS_P2_LockOn_Viper::Update_Direction(CTransform* pOwnerTransform, CTransfo
             m_eDirState = DIRECTION::L;
     }
 
-    // 방향 바뀔 때만 애니 다시 세팅
-    //if (ePrevDir != m_eDirState)
     {
         switch (m_eDirState)
         {
         case DIRECTION::F:
             pModel->Set_Animation(37); // 전진 락온
             m_fMoveSpeed = 0.5f;
-            m_fTurnSpeed = 0.5f;
+            m_fTurnSpeed = 2.5f;
             break;
         case DIRECTION::B:
             pModel->Set_Animation(36); // 후진 락온
             m_fMoveSpeed = 0.5f;
-            m_fTurnSpeed = 0.5f;
+            m_fTurnSpeed = 2.5f;
             break;
         case DIRECTION::L:
             pModel->Set_Animation(38);

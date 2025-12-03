@@ -35,22 +35,25 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
     
     if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
     {
-        if (m_pGameInstance->Key_Down(DIK_T))
+        if (m_pGameInstance->Key_Down(DIK_O))
         {
             CViper* pViper = static_cast<CViper*>(pOwner);
             //CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
             ////pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
             //pViper->Consume_Stamina(10.f);
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
+            //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHDRIFT), pViper);
+
 
         }
 
-        if (m_pGameInstance->Key_Down(DIK_Y))
+        if (m_pGameInstance->Key_Down(DIK_P))
         {
 
             CViper* pViper = static_cast<CViper*>(pOwner);
             pViper->Set_PhaseWeapon_Cinematic();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
+            //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGCOMBO), pViper);
 
         }
     }
@@ -67,7 +70,11 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
     }
 
     if (m_pGameInstance->Key_Down(DIK_J))
+    {
         m_isActiveController = true;
+        CViper* pViper = static_cast<CViper*>(pOwner);
+        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pOwner);
+    }
 
 
 
@@ -360,11 +367,11 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
 
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
-                _float fLockOnRange = BB->Get_Value<_float>(pViper->Get_Name(), "LockOnRange");
-                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SwingRoundFinished");
+                _float fChaseRnage = BB->Get_Value<_float>(pViper->Get_Name(), "ChaseRange");
 
-                if (fDist != 0 && fDist <= fLockOnRange)
+                if (fDist != 0 && fDist <= fChaseRnage)
                 {
+                    BB->Set_Value(pViper->Get_Name(), "AttackInterrupt", true);
                     return true;
                 }
                 else
@@ -397,9 +404,18 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fJumpAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "JumpAttackRange");
 
-                if (fDist != 0  && fDist >= fJumpAttackRange)
+                if (fDist != 0  && fDist <= fJumpAttackRange)
                 {
-                    return true;
+                    DIRECTION_INFO Info = {};
+                    Info.iDirFlag = BB->Get_Value<_uint>(pViper->Get_Name(), "TargetDirection");
+
+                    if (Info.Check_Flag(DIRECTION_INFO::DIR::F))
+                    {
+                        BB->Set_Value(pViper->Get_Name(), "AttackInterrupt", true);
+                        return true;
+                    }
+
+                    return false;
                 }
                 else
                     return false;
@@ -418,6 +434,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
                 if (fDist >= fAttackRange && fDist <= fLockOnRange)
                 {
+                    BB->Set_Value(pViper->Get_Name(), "AttackInterrupt", true);
                     return true;
                 }
                 else
@@ -437,11 +454,16 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
-                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SwingComboFinished");
 
                 if (fDist != 0 && fDist <= fAttackRange)
                 {
-                    return true;
+                    DIRECTION_INFO Info = {};
+                    Info.iDirFlag = BB->Get_Value<_uint>(pViper->Get_Name(), "TargetDirection");
+
+                    if (Info.Check_Flag(DIRECTION_INFO::DIR::F))
+                        return true;
+
+                    return false;
                 }
                 else
                     return false;
@@ -460,10 +482,11 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fRunRange = BB->Get_Value<_float>(pViper->Get_Name(), "RunRange");
-                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_JumpAttackFinished");
-
-                if (fDist != 0 && fDist <= fRunRange)
+                _float fChaseRange = BB->Get_Value<_float>(pViper->Get_Name(), "ChaseRange");
+                
+                if (fDist > fRunRange && fDist <= fChaseRange)
                 {
+                    BB->Set_Value(pViper->Get_Name(), "AttackInterrupt", true);
                     return true;
                 }
                 else
@@ -565,7 +588,6 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "RunRange");
 
-                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_FakeRunAttackFinished");
 
                 if (fDist != 0 && fDist <= fAttackRange)
                 {
@@ -584,8 +606,6 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
-
-                _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_HandSwing3HitFinished");
 
                 if (fDist != 0 && fDist <= fAttackRange)
                 {
@@ -729,11 +749,9 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
             {
 
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
-                _float fWalkRange = BB->Get_Value<_float>(pViper->Get_Name(), "WalkRange");
+                _float fChaseRange = BB->Get_Value<_float>(pViper->Get_Name(), "ChaseRange");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
-                _uint iStepCnt = BB->Get_Value<_uint>(pViper->Get_Name(), "WalkStepCount");
-
-                if ((fDist >= fAttackRange && fDist <= fWalkRange))
+                if ((fDist >= fAttackRange && fDist <= fChaseRange))
                     return true;
 
                 return false;
@@ -1245,7 +1263,6 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SwingRoundFinished"))
                 {
-                    // AttackInterrupt
                     return BTNODESTATE::SUCCESS;
                 }
 
@@ -1271,7 +1288,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_DashDriftFinished"))
                 {
-                    // AttackInterrupt
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isAttackInterrupt", false);
                     return BTNODESTATE::SUCCESS;
                 }
 
@@ -1296,11 +1313,12 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_ThrowRockFinished"))
                 {
-                    // AttackInterrupt
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isAttackInterrupt", false);
                     return BTNODESTATE::SUCCESS;
                 }
 
                 BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+                BB->Set_Value<_bool>(pViper->Get_Name(), "isAttackInterrupt", true);
 
                 pViper->Get_Controller()->Get_State_Machine()->
                     Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_THROWROCK), pViper);
@@ -1350,11 +1368,12 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_JumpAttackFinished"))
                 {
-                    // AttackInterrupt
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isAttackInterrupt", false);
                     return BTNODESTATE::SUCCESS;
                 }
 
                 BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+                BB->Set_Value<_bool>(pViper->Get_Name(), "isAttackInterrupt", true);
 
                 pViper->Get_Controller()->Get_State_Machine()->
                     Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_JUMPATTACK), pViper);
@@ -1486,7 +1505,6 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_FakeRunAttackFinished"))
                 {
-                    // AttackInterrupt
                     return BTNODESTATE::SUCCESS;
                 }
 
@@ -1692,9 +1710,13 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                 if (isGroggy)
                     return BTNODESTATE::FAILURE;
 
-
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+                _float fJumpAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "JumpAttackRange");
+
+
+                if (fDist < fJumpAttackRange)
+                    return BTNODESTATE::SUCCESS;
 
                 if (fDist < fAttackRange)
                     return BTNODESTATE::SUCCESS;
