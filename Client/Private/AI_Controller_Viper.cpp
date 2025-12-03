@@ -47,6 +47,17 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
         }
 
+        if (m_pGameInstance->Key_Down(DIK_Y))
+        {
+
+            CViper* pViper = static_cast<CViper*>(pOwner);
+            //pViper->Set_PhaseWeapon_Cinematic();
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
+
+        }
+
+
+
         if (m_pGameInstance->Key_Down(DIK_P))
         {
 

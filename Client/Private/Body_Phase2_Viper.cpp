@@ -96,6 +96,13 @@ HRESULT CBody_Phase2_Viper::Initialize_Clone(void* pArg)
     /* if (FAILED(Ready_Colliders()))
          return E_FAIL;*/
 
+    _matrix PreTransformMatrix = XMMatrixIdentity();
+    PreTransformMatrix = XMMatrixScaling(0.00013f, 0.00013f, 0.00013f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+    _float4x4 TempMatrix = {};
+    XMStoreFloat4x4(&TempMatrix, PreTransformMatrix);
+    m_pModelCom->Set_PreTransformMatrix(TempMatrix);
+
+
     return S_OK;
 }
 
