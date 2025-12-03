@@ -70,6 +70,7 @@
 #include "Dragonian_Melee.h"
 #include "Dragonian_Rampage.h"
 #include "Elamein.h"
+#include "Halberd.h"
 #pragma endregion
 
 #pragma region UI
@@ -2319,6 +2320,10 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Elamein"),
         CElamein::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Halberd"),
+        CHalberd::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
+        return E_FAIL;
 #pragma endregion
 
 #pragma region EFFECT
@@ -2328,7 +2333,13 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
         return E_FAIL;
 #pragma endregion
 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("ITEM_FX"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item"))))
+        return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Item"),
+        CInteraction_Item::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 	return S_OK;
 }
 

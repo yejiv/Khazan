@@ -1405,6 +1405,48 @@
     <Filter Include="02.GameObject\NPC\DanjinJar\Jar_3rd">
       <UniqueIdentifier>{200a2cf0-b07d-470b-9d80-979fa4f8d6e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Halberd">
+      <UniqueIdentifier>{274ddad8-6114-474b-9964-3b8a7d3f3e47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Halberd\Body">
+      <UniqueIdentifier>{9d347d5b-b234-4082-a09c-7096cf547a3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Halberd\Weapon">
+      <UniqueIdentifier>{a8777267-b6b1-4796-ac8e-c24efd8179b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Halberd">
+      <UniqueIdentifier>{ae802008-d8b1-486c-8f9c-ec02e67d23dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd">
+      <UniqueIdentifier>{9ce69278-8cc6-4b5a-a261-046b79c5749d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Attack_Default">
+      <UniqueIdentifier>{729508f2-cb6e-4348-83a6-73da0615f567}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Attack_Long">
+      <UniqueIdentifier>{fc8c7d10-44f2-4acd-93df-37ac57dce06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Brutal">
+      <UniqueIdentifier>{8c59cbe7-893b-49f3-9f76-1b034436b4f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Damage">
+      <UniqueIdentifier>{74f4574e-883d-4031-b15c-8dea61d9bf58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Dead">
+      <UniqueIdentifier>{6bf4490a-6aa6-4eb4-b99a-22fab39268b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Groggy">
+      <UniqueIdentifier>{45b99253-931c-4630-ad71-c05d12030126}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\LockOn">
+      <UniqueIdentifier>{5f037e99-e1ee-438a-a3d7-30e05b8383ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Sleep">
+      <UniqueIdentifier>{7ecb190c-b116-4d23-81d6-d87ffc5f6363}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Trun">
+      <UniqueIdentifier>{49a7cbdb-5ec0-400d-88f3-d0291504abb0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2718,6 +2760,45 @@
     <ClInclude Include="..\Public\Jar_3rd.h">
       <Filter>02.GameObject\NPC\DanjinJar\Jar_3rd</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Halberd.h">
+      <Filter>02.GameObject\Creature\Monster\Halberd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Halberd_Weapon.h">
+      <Filter>02.GameObject\Creature\Monster\Halberd\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Halberd.h">
+      <Filter>02.GameObject\Creature\Monster\Halberd\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AI_Controller_Halberd.h">
+      <Filter>92.AI\Controller\Halberd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Attack_default.h">
+      <Filter>92.AI\State\Halberd\Attack_Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Attack_Long.h">
+      <Filter>92.AI\State\Halberd\Attack_Long</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Brutal.h">
+      <Filter>92.AI\State\Halberd\Brutal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Damage.h">
+      <Filter>92.AI\State\Halberd\Damage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Dead.h">
+      <Filter>92.AI\State\Halberd\Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Groggy.h">
+      <Filter>92.AI\State\Halberd\Groggy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Turn.h">
+      <Filter>92.AI\State\Halberd\Trun</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Sleep.h">
+      <Filter>92.AI\State\Halberd\Sleep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_LockOn.h">
+      <Filter>92.AI\State\Halberd\LockOn</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4010,6 +4091,45 @@
     </ClCompile>
     <ClCompile Include="..\Private\Jar_3rd.cpp">
       <Filter>02.GameObject\NPC\DanjinJar\Jar_3rd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Halberd.cpp">
+      <Filter>02.GameObject\Creature\Monster\Halberd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Halberd_Weapon.cpp">
+      <Filter>02.GameObject\Creature\Monster\Halberd\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Halberd.cpp">
+      <Filter>02.GameObject\Creature\Monster\Halberd\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AI_Controller_Halberd.cpp">
+      <Filter>92.AI\Controller\Halberd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Attack_default.cpp">
+      <Filter>92.AI\State\Halberd\Attack_Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Attack_Long.cpp">
+      <Filter>92.AI\State\Halberd\Attack_Long</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Brutal.cpp">
+      <Filter>92.AI\State\Halberd\Brutal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Damage.cpp">
+      <Filter>92.AI\State\Halberd\Damage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Dead.cpp">
+      <Filter>92.AI\State\Halberd\Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Groggy.cpp">
+      <Filter>92.AI\State\Halberd\Groggy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Turn.cpp">
+      <Filter>92.AI\State\Halberd\Trun</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Sleep.cpp">
+      <Filter>92.AI\State\Halberd\Sleep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_LockOn.cpp">
+      <Filter>92.AI\State\Halberd\LockOn</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

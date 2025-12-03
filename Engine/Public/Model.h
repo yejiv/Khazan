@@ -105,6 +105,7 @@ public:
 
     void Set_BoneLocalRotation(_int iBone, _vector vLocal);
     void Set_BoneWorldRotation(_int iBone, _vector vWorld);
+    void Set_PreTransformMatrix(_float4x4 PreTransformMatrix) { m_PreTransformMatrix = PreTransformMatrix; }
 
     vector<_float3>		Get_VerticesPos(_uint iIndex);		//졸트
     vector<_uint>		Get_Indices(_uint iIndex);			//졸트
@@ -138,8 +139,7 @@ public:
     const			vector<_float4x4>& Get_PartLocalBoneMatrices() const { return m_PartLocalBoneMatrices; }
     void            Build_PartToMasterMap();
     void			Update_PartLocalBones();
-
-
+    
 public: 
     /* 모든 뼈 정보 */
     const vector<_float4x4>& Get_CachedBoneMatrices() const { return m_CachedBoneMatrices; }
