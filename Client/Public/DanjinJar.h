@@ -148,6 +148,9 @@ protected:
 
     void Set_Duration();
     _float Calculate_StepDistance(_float4 vPosition1, _float4 vPosition2);
+    _float Calculate_Distance(_vector vPosition1, _vector vPosition2);
+
+    void Check_OnPanel_TalkUI(_uint iTalkIndex, _float fLimitDistance = 0.f);
 
 public:
     virtual CGameObject* Clone(void* pArg) = 0;
