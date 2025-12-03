@@ -32,6 +32,7 @@ HRESULT CUI_Talk_Danjinjar::On_Panel(_int iTalkIndex)
     m_iNextEvent = pData->iNextIndex;
     m_wstrFullText = pData->wstrTalk;
     m_fTextSpeed = pData->fTextSpeed;
+    m_fDeleyTime = pData->fDeleyTime;
 
     m_IsUpdate = true;
     m_eAnimState = UIANIMSTATE::ON;
@@ -263,23 +264,47 @@ void CUI_Talk_Danjinjar::Update_Font(_float fTimeDelta)
         m_pText1->Set_LocalSize({ 2.f, 2.f, 1.f });
         m_pText1->Set_Color({ 1.f,1.f,1.f,1.f });
     }
-    if (m_wstrFullText.empty() && m_fTalktime >= 3.f)
+    if (m_wstrFullText.empty())
     {
-        if(m_iNextEvent == 0)
-            Off_Panel();
-        else
+        if (m_fDeleyTime <= 0.f && m_eTaking == TALKSTATE::NEXT)
         {
-            const DANJINJAR_DB* pData = CClientInstance::GetInstance()->Get_Data<DANJINJAR_DB>(m_iNextEvent);
-
-            if(pData == nullptr )
+            if (m_iNextEvent == 0)
                 Off_Panel();
+            else
+            {
+                const DANJINJAR_DB* pData = CClientInstance::GetInstance()->Get_Data<DANJINJAR_DB>(m_iNextEvent);
 
-            m_iNextEvent = pData->iNextIndex;
-            m_wstrFullText = pData->wstrTalk;
-            m_fTextSpeed = pData->fTextSpeed;
-            m_fTalktime = 0.f;
-            m_wstrCulText = {};
-            m_pText1->Set_Text(TEXT(""));
+                if (pData == nullptr)
+                    Off_Panel();
+
+                m_iNextEvent = pData->iNextIndex;
+                m_wstrFullText = pData->wstrTalk;
+                m_fTextSpeed = pData->fTextSpeed;
+                m_fDeleyTime = pData->fDeleyTime;
+                m_fTalktime = 0.f;
+                m_wstrCulText = {};
+                m_pText1->Set_Text(TEXT(""));
+            }
+        }
+        else if (m_fDeleyTime > 0.f && m_fTalktime >= m_fDeleyTime)
+        {
+            if (m_iNextEvent == 0)
+                Off_Panel();
+            else
+            {
+                const DANJINJAR_DB* pData = CClientInstance::GetInstance()->Get_Data<DANJINJAR_DB>(m_iNextEvent);
+
+                if (pData == nullptr)
+                    Off_Panel();
+
+                m_iNextEvent = pData->iNextIndex;
+                m_wstrFullText = pData->wstrTalk;
+                m_fTextSpeed = pData->fTextSpeed;
+                m_fDeleyTime = pData->fDeleyTime;
+                m_fTalktime = 0.f;
+                m_wstrCulText = {};
+                m_pText1->Set_Text(TEXT(""));
+            }
         }
     }
 }

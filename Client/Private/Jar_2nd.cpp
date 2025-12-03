@@ -2,6 +2,8 @@
 
 #include "GameInstance.h"
 
+#include "UI_Talk_Danjinjar.h"
+
 CJar_2nd::CJar_2nd(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CDanjinJar { pDevice, pContext }
 {
@@ -25,6 +27,8 @@ HRESULT CJar_2nd::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
+    CHECK_FAILED(Ready_TalkUI(pArg), E_FAIL);
+
     m_iStepState = STEP_STATE::STEP1;
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&m_DanjinJarStep.vStep1));
 
@@ -34,12 +38,16 @@ HRESULT CJar_2nd::Initialize_Clone(void* pArg)
 
     AnimChange(m_eAnimState);
 
+    m_pTalk->On_Panel(1);
+
     return S_OK;
 }
 
 void CJar_2nd::Priority_Update(_float fTimeDelta)
 {
     Find_Target();
+
+    __super::Priority_Update(fTimeDelta);
 }
 
 void CJar_2nd::Update(_float fTimeDelta)
@@ -51,6 +59,8 @@ void CJar_2nd::Update(_float fTimeDelta)
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         Animation_Change(fTimeDelta);
 
+    __super::Update(fTimeDelta);
+
     m_pTriggerCom->Sync_Update(m_pTransformCom);
     m_pTriggerCom->Update(fTimeDelta, m_pTransformCom);
 }
@@ -58,6 +68,8 @@ void CJar_2nd::Update(_float fTimeDelta)
 void CJar_2nd::Late_Update(_float fTimeDelta)
 {
     m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
+
+    __super::Late_Update(fTimeDelta);
 }
 
 HRESULT CJar_2nd::Render()
@@ -68,13 +80,10 @@ HRESULT CJar_2nd::Render()
 
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
-        if (2 <= i)
-        {
-            if (true == Skip_Mesh(i))
-                continue;
-            else
-                _int a = 10;
-        }
+        if (true == Skip_Mesh(i))
+            continue;
+        else
+            _int a = 10;
 
         Bind_Materials(i);
 
@@ -98,6 +107,20 @@ HRESULT CJar_2nd::Ready_Components(void* pArg)
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_NPC_DanjinJar_B"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CJar_2nd::Ready_TalkUI(void* pArg)
+{
+    CUIObject::UIOBJECT_DESC Desc;
+
+    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+    Desc.vLocalPos = { 0.f, 0.f };
+    Desc.vLocalSize = { 3.625f, 1.f };
+    Desc.szName = "DanjinJar_2nd_TalkUI";
+    m_pTalk = static_cast<CUI_Talk_Danjinjar*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TalkDanjinjar"), &Desc));
+    CHECK_NULLPTR(m_pTalk, E_FAIL);
 
     return S_OK;
 }
@@ -248,6 +271,28 @@ void CJar_2nd::Check_Step()
 
     switch (m_iStepState)
     {
+    case STEP1:
+        m_pTalk->On_Panel(1);
+        break;
+    case STEP2:
+        break;
+    case STEP3:
+        m_pTalk->On_Panel(2);        
+        break;
+    case STEP4:
+        
+        break;
+    case STEP5:
+        m_pTalk->On_Panel(4);
+        break;
+    case STEP6:
+        break;
+    case STEP7:
+        m_pTalk->On_Panel(5);
+        break;
+    case STEP8:
+        
+        break;
     case STEP9:
         isSkip = true;
         break;
@@ -260,6 +305,14 @@ void CJar_2nd::Check_Step()
     case STEP12:
         isSkip = true;
         break;
+    case STEP13:
+        break;
+    case STEP14:
+        break;
+    case STEP15:
+        break;
+    case STEP16:
+        break;
     }
 
     if (false == isSkip)
@@ -271,6 +324,7 @@ void CJar_2nd::Check_Step()
         m_vEndPos = Get_NextStepPos();
         if (0.f != m_vEndPos.w)
         {
+            Set_Duration();
             AnimChange(ANIM_STATE::WALK_LOOP, true);
             m_eMoveState = MOVE_STATE::MOVE;
             m_isMoveFlag = true;
@@ -362,6 +416,7 @@ void CJar_2nd::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _
         m_vEndPos = Get_NextStepPos();
         if (0.f != m_vEndPos.w)
         {
+            Set_Duration();
             AnimChange(ANIM_STATE::WALK_LOOP, true);
             m_eMoveState = MOVE_STATE::MOVE;
             m_isMoveFlag = true;

@@ -3,13 +3,15 @@
 #include "GameInstance.h"
 #include "ClientInstance.h"
 
+#include "UI_Talk_Danjinjar.h"
+
 CDanjinJar::CDanjinJar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CProp_Interactive{ pDevice, pContext }
+    : CProp_Interactive { pDevice, pContext }
 {
 }
 
 CDanjinJar::CDanjinJar(const CDanjinJar& Prototype)
-    : CProp_Interactive{ Prototype }
+    : CProp_Interactive { Prototype }
 {
 }
 
@@ -37,19 +39,27 @@ HRESULT CDanjinJar::Initialize_Clone(void* pArg)
     m_eJarType = pInfo->eJarType;
     m_DanjinJarStep = pInfo->StepPosition;
 
+    m_fDefaultLength = XMVectorGetX(XMVector4Length(XMLoadFloat4(&m_DanjinJarStep.vStep1) - XMLoadFloat4(&m_DanjinJarStep.vStep2)));
+
+    m_fMoveSpeed = 0.35f;
+
     return S_OK;
 }
 
 void CDanjinJar::Priority_Update(_float fTimeDelta)
 {
+    m_pTalk->Priority_Update(fTimeDelta);
 }
 
 void CDanjinJar::Update(_float fTimeDelta)
 {
+    m_pTalk->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
+    m_pTalk->Update(fTimeDelta);
 }
 
 void CDanjinJar::Late_Update(_float fTimeDelta)
 {
+    m_pTalk->Late_Update(fTimeDelta);
 }
 
 HRESULT CDanjinJar::Render()
@@ -192,7 +202,7 @@ bool CDanjinJar::Skip_Mesh(_uint iMeshIndex)
         break;
     case ANIM_STATE::DEACTIVE:
     case ANIM_STATE::DEACTIVE_IDLE:
-        if (MESH_CENTER == iMeshIndex || MESH_RIGHT == iMeshIndex || MESH_LEFT == iMeshIndex)
+        if (MESH_BODY == iMeshIndex || MESH_CENTER == iMeshIndex || MESH_RIGHT == iMeshIndex || MESH_LEFT == iMeshIndex)
             return true;
         break;
     }
@@ -250,9 +260,23 @@ void CDanjinJar::MoveToNextStep(_float4 vTargetPos, _float4 vStartPos, _float fT
     }
 }
 
+void CDanjinJar::Set_Duration()
+{
+    _float fDistance = Calculate_StepDistance(m_vStartPos, m_vEndPos);
+
+    m_fDuration = (fDistance / m_fDefaultLength) / m_fMoveSpeed;
+}
+
+_float CDanjinJar::Calculate_StepDistance(_float4 vPosition1, _float4 vPosition2)
+{
+    return XMVectorGetX(XMVector4Length(XMLoadFloat4(&vPosition1) - XMLoadFloat4(&vPosition2)));
+}
+
 void CDanjinJar::Free()
 {
     __super::Free();
 
     Safe_Release(m_pTriggerCom);
+
+    Safe_Release(m_pTalk);
 }

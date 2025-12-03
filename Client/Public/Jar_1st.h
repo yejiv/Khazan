@@ -43,11 +43,9 @@ public:
 private:
     _uint m_iStepState = {};
 
-    _float m_fFirstRatio = {};
-    _float m_fDistRatio = {};
-
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
+    HRESULT Ready_TalkUI(void* pArg);
     virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
 
 private:

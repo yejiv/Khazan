@@ -67,11 +67,12 @@ protected:
 
     enum SKIP_MESH_TYPE
     {
-        MESH_HEAD,
-        MESH_BODY,
-        MESH_LEFT,
-        MESH_RIGHT,
-        MESH_CENTER
+        MESH_BODY,              // 몸통
+        MESH_HEAD,              // 뚝배기
+        MESH_LEFT,              // 왼쪽 풀때기
+        MESH_RIGHT,             // 오른쪽 풀때기
+        MESH_CENTER             // 중앙 풀때기
+
     };
 
 public:
@@ -105,12 +106,17 @@ public:
 protected:
     CBody* m_pTriggerCom = { nullptr };
 
+    //UI테스트
+    class CUI_Talk_Danjinjar* m_pTalk = { nullptr };
+
     ANIM_STATE m_eAnimState = { ANIM_STATE::DANCE1_ACTIVE };
     MOVE_STATE m_eMoveState = { MOVE_STATE::IDLE };
 
     DANJINJAR_TYPE m_eJarType = { DANJINJAR_TYPE::A };
 
     DANJINJAR_STEP m_DanjinJarStep = {};
+
+    _float m_fDefaultLength = {};           // Step1 이랑 Step2 의 거리를 기본값으로 두고 나머지 거리의 속도 제어
 
     _bool m_isMoveFlag = { false };
 
@@ -119,6 +125,8 @@ protected:
 
     _float m_fLerpTime = { 0.f };           // fTimeDelta 누적 시간 ( 이동 )
     _float m_fDuration = { 0.f };           // 목적지까지 이동 시간
+
+    _float m_fMoveSpeed = { 1.f };          // 이동 속도
 
     _bool m_isFindTarget = { false };
     CTransform* m_pTargetCom = { nullptr };
@@ -137,6 +145,9 @@ protected:
     void Look_Target(_float fTimeDelta);
 
     void MoveToNextStep(_float4 vTargetPos, _float4 vStartPos, _float fTimeDelta, _uint& iStep);
+
+    void Set_Duration();
+    _float Calculate_StepDistance(_float4 vPosition1, _float4 vPosition2);
 
 public:
     virtual CGameObject* Clone(void* pArg) = 0;

@@ -118,6 +118,7 @@ namespace Client
         _int        iNextIndex{};
         _float      fTextSpeed{};
         _wstring    wstrSound{};
+        _float      fDeleyTime{};
     }DANJINJAR_DB;
 
 	typedef struct tag_Skill_DB
