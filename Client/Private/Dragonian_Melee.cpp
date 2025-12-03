@@ -9,7 +9,9 @@
 #include "AI_Controller_Dragonian_Melee.h"
 
 #include "Mon_Hp.h"
+#include "UI_Talk_Danjinjar.h"
 
+#include "MeshTrail.h"
 CDragonian_Melee::CDragonian_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
 {
@@ -111,6 +113,13 @@ HRESULT CDragonian_Melee::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_AnimEvent(),E_FAIL);
     CHECK_FAILED(Ready_Components(),E_FAIL);
     
+    CMeshTrail::TRAIL_DESC MeshDesc{};
+    MeshDesc.iTextureIdx = 11;
+    MeshDesc.fLifeTime = 0.25f;
+    MeshDesc.iDivisionCount = 10.f;
+    MeshDesc.vColor = _float3(1.58f, 1.788f, 1.592f);
+    m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
+
     return S_OK;
 }
 
@@ -128,7 +137,7 @@ void CDragonian_Melee::Priority_Update(_float fTimeDelta)
     else if (m_pGameInstance->Key_Down(DIK_B))
         Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
         */
-
+    m_pMeshTrail->Priority_Update(fTimeDelta);
 }
 
 void CDragonian_Melee::Update(_float fTimeDelta)
@@ -141,28 +150,30 @@ void CDragonian_Melee::Update(_float fTimeDelta)
     if (m_Data.fAnimDeley >= 0.f)
         m_Data.fAnimDeley -= fTimeDelta;
 
-    m_pController->Update(this, fTimeDelta);
-    __super::Update(fTimeDelta);
-    Update_UIHp();
-    Update_WalkSpeed();
-
     _float4x4 m_vSwordMat = m_pWeapon->Get_CombindMat();
     _vector vClawLRight = XMVector3Normalize({ m_vSwordMat._11, m_vSwordMat._12, m_vSwordMat._13 });
     _vector vClawLUp = XMVector3Normalize({ m_vSwordMat._21, m_vSwordMat._22, m_vSwordMat._23 });
     _vector vClawLLook = XMVector3Normalize({ m_vSwordMat._31, m_vSwordMat._32, m_vSwordMat._33 });
 
     _vector vSwordPos = { m_vSwordMat._41, m_vSwordMat._42, m_vSwordMat._43 };
-    _vector vSwordStart = vSwordPos + vClawLUp * 0.2f + vClawLRight * 0.25f;
-    _vector vSwordEnd = vSwordPos + vClawLUp * 1.45f - vClawLRight * 0.1f;
+    _vector vSwordStart = vSwordPos - vClawLUp * 0.45f + vClawLRight * 0.25f;
+    _vector vSwordEnd = vSwordPos + vClawLUp * 1.1f - vClawLRight * 0.2f;
     XMStoreFloat4(&m_vSword_Start, XMVectorSetW(vSwordStart, 1.f));
     XMStoreFloat4(&m_vSword_End, XMVectorSetW(vSwordEnd, 1.f));
 
+    m_pController->Update(this, fTimeDelta);
+    __super::Update(fTimeDelta);
+    Update_UIHp();
+    Update_WalkSpeed();
 
+    m_pMeshTrail->Update(fTimeDelta);
 }
 
 void CDragonian_Melee::Late_Update(_float fTimeDelta)
 {
     CContainerObject::Late_Update(fTimeDelta);
+
+    m_pMeshTrail->Late_Update(fTimeDelta);
 }
 
 void CDragonian_Melee::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
@@ -171,6 +182,26 @@ void CDragonian_Melee::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGa
         ++m_Data.iBrutalHit;
 
     __super::Take_Damage(fDamage, eHitreaction, pGameObject);
+}
+
+const TRAIL_CONFIG& CDragonian_Melee::Get_TrailConfig() const
+{
+    return m_pMeshTrail->Get_TrailConfig();
+}
+
+void CDragonian_Melee::Set_TrailConfig(const TRAIL_CONFIG& Config)
+{
+    m_pMeshTrail->Set_TrailConfig(Config);
+}
+
+_uint CDragonian_Melee::Get_NumTrailTextures()
+{
+    return m_pMeshTrail->Get_NumTrailTextures();
+}
+
+ID3D11ShaderResourceView* CDragonian_Melee::Get_TrailTexture(_uint iIndex)
+{
+    return m_pMeshTrail->Get_TrailTexture(iIndex);
 }
 
 void CDragonian_Melee::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -311,10 +342,10 @@ HRESULT CDragonian_Melee::Ready_AnimEvent()
     pModel->Register_Event("DoubleSwing_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
     pModel->Register_Event("DoubleSwing_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
 
-    pModel->Register_Event("DoubleSwing_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); });
-    pModel->Register_Event("DoubleSwing_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); });
-    pModel->Register_Event("DoubleSwing_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); });
-    pModel->Register_Event("DoubleSwing_4", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); });
+    pModel->Register_Event("DoubleSwing_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); Update_MeshTrail(); });
+    pModel->Register_Event("DoubleSwing_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); Update_MeshTrail(); });
+    pModel->Register_Event("DoubleSwing_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); Update_MeshTrail(); });
+    pModel->Register_Event("DoubleSwing_4", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); Update_MeshTrail(); });
 
     pModel->Register_Event("DoubleSwing_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
     pModel->Register_Event("DoubleSwing_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
@@ -324,8 +355,8 @@ HRESULT CDragonian_Melee::Ready_AnimEvent()
     pModel->Register_Event("HardSmash_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
     pModel->Register_Event("HardSmash_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
 
-    pModel->Register_Event("HardSmash_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); });
-    pModel->Register_Event("HardSmash_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); });
+    pModel->Register_Event("HardSmash_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); Update_MeshTrail(); });
+    pModel->Register_Event("HardSmash_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); Update_MeshTrail(); });
 
     pModel->Register_Event("HardSmash_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
     pModel->Register_Event("HardSmash_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
@@ -364,6 +395,13 @@ void CDragonian_Melee::Update_WalkSpeed()
         m_Data.fWarkSpeed = 1.6f;
 }
 
+void CDragonian_Melee::Update_MeshTrail()
+{
+    _vector vSwordStart = XMLoadFloat4(&m_vSword_Start);
+    _vector vSwordEnd = XMLoadFloat4(&m_vSword_End);
+    m_pMeshTrail->Add_ControlPoint(vSwordEnd, vSwordStart);
+}
+
 void CDragonian_Melee::Attack_Move()
 {
     LockOnLerp(m_fTimeDelta, 3.f);
@@ -394,6 +432,7 @@ CGameObject* CDragonian_Melee::Clone(void* pArg)
 
 void CDragonian_Melee::Free()
 {
+    Safe_Release(m_pMeshTrail);
     m_Data.pOwner = nullptr;
     if (m_pUI_HP != nullptr)
     {
@@ -403,6 +442,4 @@ void CDragonian_Melee::Free()
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
     Safe_Release(m_pBlackBoard);
-    Safe_Release(m_pWeapon);
-    
 }

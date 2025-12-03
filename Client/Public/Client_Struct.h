@@ -118,6 +118,7 @@ namespace Client
         _int        iNextIndex{};
         _float      fTextSpeed{};
         _wstring    wstrSound{};
+        _float      fDeleyTime{};
     }DANJINJAR_DB;
 
 	typedef struct tag_Skill_DB
@@ -192,4 +193,11 @@ namespace Client
         
 	}PLAYER_DATA;
 
+    typedef struct tagTrailConfig
+    {
+        float	        fLifeTime;
+        unsigned int    iTextureIdx;
+        unsigned int    iDivisionCount;
+        XMFLOAT3        vColor;
+    }TRAIL_CONFIG;
 }

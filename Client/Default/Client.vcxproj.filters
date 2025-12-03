@@ -1393,6 +1393,18 @@
     <Filter Include="02.GameObject\UI\Talk\Danjinjar">
       <UniqueIdentifier>{fffe43d7-c56d-4ac8-987a-d7659500da8d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar">
+      <UniqueIdentifier>{37e5ac3b-deb4-49f1-8f8d-6e88a21beb50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar\Jar_1st">
+      <UniqueIdentifier>{24a3a0c1-194a-42ce-ad60-905f2c568c00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar\Jar_2nd">
+      <UniqueIdentifier>{1a8a14c3-f143-4331-bcc2-c91b9bd1eee4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar\Jar_3rd">
+      <UniqueIdentifier>{200a2cf0-b07d-470b-9d80-979fa4f8d6e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2694,6 +2706,18 @@
     <ClInclude Include="..\public\UI_Talk_Danjinjar.h">
       <Filter>02.GameObject\UI\Talk\Danjinjar</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\DanjinJar.h">
+      <Filter>02.GameObject\NPC\DanjinJar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jar_1st.h">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_1st</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jar_2nd.h">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_2nd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jar_3rd.h">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_3rd</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -3974,6 +3998,18 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Talk_Danjinjar.cpp">
       <Filter>02.GameObject\UI\Talk\Danjinjar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DanjinJar.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jar_1st.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_1st</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jar_2nd.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_2nd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jar_3rd.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_3rd</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

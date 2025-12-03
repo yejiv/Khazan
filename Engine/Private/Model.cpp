@@ -1080,6 +1080,7 @@ void CModel::Update_RootMotion(_float fTimeDelta)
         _vector vDelta = XMVectorSubtract(vCurPos, m_RootMotionInfo.matPreRootMotion.r[3]);
         vDelta = XMVectorMultiply(vDelta, m_RootMotionInfo.vScale);
 
+       
         /* 델타 행렬 갱신 */
         m_RootMotionInfo.matDeltaRootMotion.r[3] = XMVectorSetW(vDelta, 0.f);
         m_RootMotionInfo.matDeltaRootMotion.r[0] = XMVectorSet(1.f, 0.f, 0.f, 0.f);

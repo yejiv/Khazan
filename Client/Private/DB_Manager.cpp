@@ -367,7 +367,7 @@ HRESULT CDB_Manager::Load_Danginjar_DB(const _tchar* pFilePath)
         data.iNextIndex = Read_UInt(ss);
         data.fTextSpeed = Read_float(ss);
         data.wstrSound = Read_WString(ss);
-
+        data.fDeleyTime = Read_float(ss);
         m_Danginjar_Data.emplace(ID, data);
     }
 
