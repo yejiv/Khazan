@@ -23,10 +23,10 @@ void CAS_P2_DashDrift_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
     //_bool isBerserker = pBB->Get_Value<_bool>(pViper->Get_Name(), "is_Berserker");  
     //if (!isBerserker)
-        m_fMoveSpeed = 15.f;
+        m_fMoveSpeed = 18.f;
 
     m_fAttackRange = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
-   
+
 
     m_eState = DRIFTSTATE::START;
 }
@@ -45,11 +45,12 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
         CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
         _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
         _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-        pOwnerTransform->AI_Chase(vTargetPos, fTimeDelta, m_fMoveSpeed, m_fAttackRange);
+        pViper->Get_Controller()->AI_MoveTo(pViper,pTarget,m_fMoveSpeed,10.f,fTimeDelta);
+        //pOwnerTransform->AI_Chase(vTargetPos, fTimeDelta, m_fMoveSpeed, m_fAttackRange);
 
         _float fDist = pBB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
 
-        if (fDist <= m_fAttackRange + 5.f || pBB->Get_Value<_bool>(pViper->Get_Name(),"isP2_Dash_Abort"))
+        if (fDist < 10 +0.1f || pBB->Get_Value<_bool>(pViper->Get_Name(),"isP2_Dash_Abort"))
         {
             m_eState = DRIFTSTATE::FINISH;
             pModel->Set_Animation(20);
@@ -70,6 +71,10 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
       
         case Client::DRIFTSTATE::FINISH:
         {
+            //CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
+            //CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Transform());
+            //_vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            //pViper->Get_Transform()->LookAt(vTargetPos);
             pBB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_DashDriftFinished",true);
             pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2_Dash_Abort", false);
         }

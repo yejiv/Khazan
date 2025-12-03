@@ -41,6 +41,8 @@ private:
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();
     HRESULT							Ready_AnimEvent();
+    void                            Update_SwordPos();
+    void                            Update_MeshTrail();
 
 private:
     class CBody_Imp_Melee*          m_pBody = { nullptr };
@@ -51,6 +53,8 @@ private:
     _bool                           m_isDetected = { false };
     _bool                           m_isLookAt = { false };
     _float							m_fTurnSpeed = { 10.f };
+
+    _float4                         m_vSwordStart{}, m_vSwordEnd{};
 
 public:
     static CImp_Melee*              Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

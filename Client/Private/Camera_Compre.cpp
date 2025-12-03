@@ -149,7 +149,10 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
         }
         else if (m_isBlendBack)
         {
-            Update_BlendBack(fTimeDelta);
+            if (m_iCameraType != ENUM_CLASS(CAMERATYPE::FREE))
+                Update_BlendBack(fTimeDelta);
+            else
+                m_isBlendBack = false;
         }
         else {
             if (m_iCameraType == ENUM_CLASS(CAMERATYPE::FREE))
@@ -236,6 +239,24 @@ void CCamera_Compre::Update_Free(_float fTimeDelta)
     if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta, INPUT_TYPE::FORCE))
     {
         m_pTransformCom->Go_Right(fTimeDelta * 1.5f);
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_NUMPAD7, fTimeDelta, INPUT_TYPE::FORCE))
+    {
+        _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+        vPos.m128_f32[1] += 0.01f;
+
+        m_pTransformCom->Set_State(STATE::POSITION, vPos);
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_NUMPAD8, fTimeDelta, INPUT_TYPE::FORCE))
+    {
+        _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+        vPos.m128_f32[1] -= 0.01f;
+
+        m_pTransformCom->Set_State(STATE::POSITION, vPos);
     }
 
     _int    iMouseMove = {};

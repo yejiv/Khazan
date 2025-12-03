@@ -164,6 +164,7 @@
     <ClInclude Include="..\Public\AIController_Edit.h" />
     <ClInclude Include="..\public\AnimationTool.h" />
     <ClInclude Include="..\Public\BigChest.h" />
+    <ClInclude Include="..\Public\DanjinJar.h" />
     <ClInclude Include="..\Public\Duimuk_Part.h" />
     <ClInclude Include="..\Public\ElevatorL.h" />
     <ClInclude Include="..\Public\Elevator_Inner.h" />
@@ -270,6 +271,7 @@
     <ClCompile Include="..\Private\AIController_Edit.cpp" />
     <ClCompile Include="..\private\AnimationTool.cpp" />
     <ClCompile Include="..\Private\BigChest.cpp" />
+    <ClCompile Include="..\Private\DanjinJar.cpp" />
     <ClCompile Include="..\Private\Duimuk_Part.cpp" />
     <ClCompile Include="..\Private\ElevatorL.cpp" />
     <ClCompile Include="..\Private\Elevator_Inner.cpp" />

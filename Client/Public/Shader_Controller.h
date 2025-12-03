@@ -94,6 +94,10 @@ private:
     LIGHT_TRANSITION_DESC   m_TargetLightDesc = {};
     _bool                   m_isRestoreLight = {};
 
+    // Effect Trail
+    _int                    m_iTrailOwnerIndex = { -1 };
+    TRAIL_CONFIG            m_TrailConfig = {};
+
 	LEVEL                   m_eCurrentLevel = { LEVEL::TITLE };
 	_bool                   m_isSelectLevel[ENUM_CLASS(LEVEL::END)];
 

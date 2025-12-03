@@ -736,6 +736,7 @@ HRESULT CMainApp::Ready_DB()
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::STATE, TEXT("../Bin/Data/DB/State_DB.csv")), E_FAIL);
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::ANNOUNCE_TALK, TEXT("../Bin/Data/DB/Announce_Talk_DB.csv")), E_FAIL);
 	CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::SKill, TEXT("../Bin/Data/DB/Skill_DB.csv")), E_FAIL);
+    CHECK_FAILED(m_pClientInstance->Load_Data(DATATYPE::DANJINJAL, TEXT("../Bin/Data/DB/Danjinjar_DB.csv")), E_FAIL);
 
 	return S_OK;
 }

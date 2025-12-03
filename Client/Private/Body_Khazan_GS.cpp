@@ -52,8 +52,8 @@ HRESULT CBody_Khazan_GS::Initialize_Clone(void* pArg)
     if (FAILED(Initialize_Equipment()))
         return E_FAIL;
 
-    if (FAILED(Ready_AnimationEvents()))
-        return E_FAIL;
+    /*if (FAILED(Ready_AnimationEvents()))
+        return E_FAIL;*/
 
     /* 뼈 행렬 가지고오기 */
     m_pMatGSwordBody = m_pModelCom->Get_BoneMatrix("FX_R_GSword_02");
@@ -847,7 +847,7 @@ HRESULT CBody_Khazan_GS::Ready_Components()
     MeshDsc.iTextureIdx = 9;
     MeshDsc.fLifeTime = .25f;
     MeshDsc.iDivisionCount = 10.f;
-
+    MeshDsc.vColor = { 1.f, 1.f, 1.f };
     m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
 
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};

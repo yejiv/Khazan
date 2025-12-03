@@ -19,19 +19,23 @@ public:
     class CBody_Viper*              Get_Body() const { return m_pBody; }
     class CBody_Cinematic_Viper*    Get_Cinematic_Body() const { return m_pCinematicBody; }
     class CBody_Phase2_Viper*       Get_P2Body() const { return m_pPahse2Body; }
+    class CCore_Viper*              Get_Core() { return m_pCore; }
 
     virtual _float4*                Get_LockOnPosition();
     PHASE                           Get_Phase() const { return m_ePhase; }
 
     void                            Set_Phase(PHASE ePhase)  { m_ePhase = ePhase; }
+    void                            Set_Weapon_Phase1();
     void                            Set_PhaseWeapon_Cinematic();
     void                            Set_PhaseWeapon_Phase2();
+    void                            Set_WeaponOff();
     void                            Viper_Land(_fvector vGoalPosition, _float fSpeed);
     void                            Reset_Viper_Gravity();
 
 
     class CAS_CutScene_Start_Viper*       Get_Viper_CutSceneState();
-    class CFSM_Viper*           Get_Viper_FSM();
+    class CAS_CutScene_2Phase_Viper* Get_Phase2_Viper_CutSceneState();
+    class CFSM_Viper*               Get_Viper_FSM();
 
 
 public:
@@ -54,12 +58,14 @@ public:
     void                            Grab_Check_End();
     void                            Set_ViperPosition(_fvector vPosition);
 
+    void Set_Teleport(_fvector vPos);
+
 private:
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();
     HRESULT							Ready_Projectiles();
     HRESULT							Ready_AnimEvent();
-    //HRESULT						Ready_AnimEffectEvent(CModel* pModel);
+    HRESULT						    Ready_AnimEffectEvent(CModel* pModel);
 
 private:
     void							Pick_ViperRock();
@@ -83,6 +89,9 @@ private:
     PHASE                           m_ePhase = { PHASE::END };
 
     _float4x4*                      m_pThrowMatrix = {};
+
+private: //임시!!! 발견하면 지워주세요 깜빡하고 못 지운 거
+    _uint                       tmpIdx;
 
 public:
     static CViper*                  Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

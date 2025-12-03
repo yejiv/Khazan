@@ -60,29 +60,63 @@ void CTwinBlade_R_Viper::Update(_float fTimeDelta)
 
     if (m_pOwner->Get_Controller()->Get_BlackBoard()->Get_Value<_bool>(m_pOwner->Get_Name(), "isP2LockOn"))
     {
-        // ¶ô¿Â Offset
+        // ë½ì˜¨ Offset
         _matrix tempMat = XMMatrixRotationZ(XMConvertToRadians(180.0f)) * XMMatrixRotationX(XMConvertToRadians(60.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f));
         XMStoreFloat4x4(&m_matOffset, tempMat);
+    }
+    else if (m_pOwner->Get_Controller()->Get_BlackBoard()->Get_Value<_bool>(m_pOwner->Get_Name(), "isP2Cinematic_Walk"))
+    {
+        _float fMoveSpeed = 2.f;
+        _float3 offset = m_vLocalOffset;
+
+        if (m_pGameInstance->Key_Down(DIK_UP))
+            offset.y += fMoveSpeed * fTimeDelta;
+        if (m_pGameInstance->Key_Down(DIK_DOWN))
+            offset.y -= fMoveSpeed * fTimeDelta;
+
+        if (m_pGameInstance->Key_Down(DIK_LEFT))
+            offset.x -= fMoveSpeed * fTimeDelta;
+
+        if (m_pGameInstance->Key_Down(DIK_RIGHT))
+            offset.x += fMoveSpeed * fTimeDelta;
+
+        if (m_pGameInstance->Key_Down(DIK_L))
+            offset.z += fMoveSpeed * fTimeDelta;
+
+        if (m_pGameInstance->Key_Down(DIK_K))
+            offset.z -= fMoveSpeed * fTimeDelta;
+
+        //m_vLocalOffset = { x = -0.833458841 y = 2.79396772e-06 z = 0.00000000 }
+        //m_vLocalOffset = offset;
+        m_vLocalOffset = _float3(-0.83, 0.f, 0.f);
     }
     else
     {
         _matrix tempMat = XMMatrixRotationZ(XMConvertToRadians(90.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f));
         XMStoreFloat4x4(&m_matOffset, tempMat);
+        m_vLocalOffset = _float3(0.f, 0.f, 0.f);
     }
 
 
     if (CViper::PHASE::PHASE2 == m_pOwner->Get_Phase() && m_isActive)
     {
-        // ë°”ë”” ?Œì¼“ ?”ë“œ
         _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+        
         for (_uint i = 0; i < 3; i++)
         {
             BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
         }
+
+        _matrix OffsetMatrix = XMMatrixTranslation(
+            m_vLocalOffset.x,
+            m_vLocalOffset.y,
+            m_vLocalOffset.z
+        );
+
       
         m_pModelCom->Update_BoneCombinedMatrices();
 
-        XMStoreFloat4x4(&m_CombinedWorldMatrix, XMLoadFloat4x4(&m_matOffset) * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+        XMStoreFloat4x4(&m_CombinedWorldMatrix, XMLoadFloat4x4(&m_matOffset) * OffsetMatrix * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
 
 
         m_pBodyComp->Collision_Active(m_isOnAttackCollision);
