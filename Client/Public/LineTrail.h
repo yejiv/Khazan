@@ -19,7 +19,8 @@ public:
 		_float	fLifeTime;
 		_uint	iTextureIdx;
 		_uint	iDivisionCount;
-	}LINE_TRAIL_DESC;
+        _float3 vColor;
+    }LINE_TRAIL_DESC;
 
 protected:
 	CLineTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
@@ -27,31 +28,34 @@ protected:
 	virtual ~CLineTrail() = default;
 
 public:
-	virtual HRESULT			Initialize_Prototype() override;
-	virtual HRESULT			Initialize_Clone(void* pArg) override;
-	virtual void			Priority_Update(_float fTimeDelta) override;
-	virtual void			Update(_float fTimeDelta) override;
-	virtual void			Late_Update(_float fTimeDelta) override;
-	virtual HRESULT			Render() override;
+	virtual HRESULT			    Initialize_Prototype() override;
+	virtual HRESULT			    Initialize_Clone(void* pArg) override;
+	virtual void			    Priority_Update(_float fTimeDelta) override;
+	virtual void			    Update(_float fTimeDelta) override;
+	virtual void			    Late_Update(_float fTimeDelta) override;
+	virtual HRESULT			    Render() override;
 
-	void					Add_ControlPoint(_fvector pos);
-    void                    Set_TextureIndex(_uint iIndex) { m_iTextureIdx = iIndex; }
-    void                    Set_LifeTime(_float fLifeTime) { m_fLifeTime = fLifeTime; }
-
-protected:
-	virtual HRESULT			Ready_Component(void* pArg);
-	HRESULT					Bind_ShaderResources();
-
-protected:
-	CTexture*				m_pTextureCom = { nullptr };
-	CVIBuffer_LineTrail*	m_pVIBufferCom = { nullptr };
-	CShader*				m_pShaderCom = { nullptr };
+	void					    Add_ControlPoint(_fvector pos);
+    const TRAIL_CONFIG&         Get_TrailConfig() const;
+    void                        Set_TrailConfig(const TRAIL_CONFIG& Config);
+    
+    _uint                       Get_NumTrailTextures();
+    ID3D11ShaderResourceView*   Get_TrailTexture(_uint iIndex);
 
 protected:
-	_float					m_fLifeTime;
+	virtual HRESULT			    Ready_Component(void* pArg);
+	HRESULT					    Bind_ShaderResources();
 
-	_uint					m_iTextureIdx;
-	_int					m_iDivisionCount;
+protected:
+	CTexture*				    m_pTextureCom = { nullptr };
+	CVIBuffer_LineTrail*	    m_pVIBufferCom = { nullptr };
+	CShader*				    m_pShaderCom = { nullptr };
+
+protected:
+    _float					    m_fLifeTime = {};
+    _uint					    m_iTextureIdx = {};
+    _int					    m_iDivisionCount = {};
+    _float3                     m_vColor = {};
 
 protected:
 	deque<CVIBuffer_LineTrail::LINE_TRAIL_POINT>	m_ControlPoints;

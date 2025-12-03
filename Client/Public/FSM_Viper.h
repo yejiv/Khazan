@@ -64,14 +64,15 @@ private:
 
 public:
     class CAS_CutScene_Start_Viper* Get_CutScene_Start_Viper();
+    class CAS_CutScene_2Phase_Viper* Get_Phase2_CutScene_Start_Viper();
 
 
 public:
-    virtual HRESULT				Initialize();
+    virtual HRESULT				Initialize(class CGameObject* pOwner);
     virtual void				Update(class CGameObject* pOwner, _float fTimeDelta) override;
 
 public:
-    static CFSM_Viper*          Create();
+    static CFSM_Viper*          Create(class CGameObject* pOwner);
     virtual void				Free() override;
 };
 

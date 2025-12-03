@@ -42,7 +42,7 @@ private:
 	HRESULT							Ready_PartObjects();
 	HRESULT							Ready_Projectiles();
 	HRESULT							Ready_AnimEvent();
-	HRESULT							Ready_AnimEffectEvent(CModel* pModel);
+	HRESULT							Ready_AnimEffectEvent(class CModel* pModel);
 
 private:
 	// ThrowBall

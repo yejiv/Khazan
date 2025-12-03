@@ -53,6 +53,7 @@ public:
         CDragonian_Melee*   pOwner = { nullptr };
  
     }MONDATA;
+
 private:
     CDragonian_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CDragonian_Melee(const CDragonian_Melee& Prototype);
@@ -69,6 +70,7 @@ public:
     _bool                           Check_AttackRanage(string strKey);
     _bool                           Check_Ranage(_float fRange);
     TARGET_DIR                      Get_DIR();
+
 public:
     virtual HRESULT					Initialize_Prototype(_int iLevel);
     virtual HRESULT					Initialize_Clone(void* pArg) override;
@@ -76,6 +78,12 @@ public:
     virtual void					Update(_float fTimeDelta) override;
     virtual void					Late_Update(_float fTimeDelta) override;
     virtual void				    Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) override;
+
+public:
+    const TRAIL_CONFIG&             Get_TrailConfig() const;
+    void                            Set_TrailConfig(const TRAIL_CONFIG& Config);
+    _uint                           Get_NumTrailTextures();
+    ID3D11ShaderResourceView*       Get_TrailTexture(_uint iIndex);
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
@@ -94,13 +102,16 @@ private:
 
     void                            Update_UIHp();
     void                            Update_WalkSpeed();
+    void                            Update_MeshTrail();
 
     void                            Attack_Move();
+
 private:
     class CBody_Dragonian_Melee*    m_pBody = { nullptr };
     class CBlackBoard*              m_pBlackBoard = { nullptr };
     class CDragonian_Sword*         m_pWeapon = { nullptr };
     class CMon_HP*                  m_pUI_HP = { nullptr };
+    class CMeshTrail*               m_pMeshTrail = { nullptr };
 
     _float4                         m_vHpPos = {};
     _float4x4*                      m_pHeadMatrix = { nullptr };
@@ -113,6 +124,7 @@ private:
 
     _float4                         m_vSword_Start = {};
     _float4                         m_vSword_End = {};
+
 public:
     static CDragonian_Melee*        Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;
