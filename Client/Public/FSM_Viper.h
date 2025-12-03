@@ -28,30 +28,32 @@ enum class VIPER_STATE_P1
     GROGGY,
     DODGE,
     DEAD,
+
+
     CUTSCENE_START,
     CUTSCENE_PHASE2,
 
     P2_RUN,
-    P2_HANDSTOMP,
-    P2_HANDSTOMPSTR,
-    P2_HANDSWING2HIT,
-    P2_HANDUPPER,
-    P2_SLASHDOUBLE,
-    P2_SLASHSTOMP,
-    P2_HANDSWING3HIT,
-    P2_FAKERUNATTACK,
-    P2_DASHUPPER,
-    P2_DASTUPPERSTR,
-    P2_BACKJUMP,
-    P2_SIDEMOVE,
-    P2_JUMPATTACK,
-    P2_SWINGCOMBO,
-    P2_THROWROCK,
-    P2_DASHDRIFT,
-    P2_SWINGROUND,
-    P2_ROAR,
-    P2_LOCKON,
-    END,
+    P2_HANDSTOMP, // 한손 찍기
+    P2_HANDSTOMPSTR, // 한손 늦게 찍기
+    P2_HANDSWING2HIT, // 손 두번 휘두루기
+    P2_HANDUPPER, // 어퍼컷
+    P2_SLASHDOUBLE, // 칼 두번 휘두루기
+    P2_SLASHSTOMP, // 칼 2번 휘두루고 찍기
+    P2_HANDSWING3HIT, // 이거 버림
+    P2_FAKERUNATTACK, // 근접 통과 점프 공격
+    P2_DASHUPPER, // 손쓸면서 달려와서 어퍼컷
+    P2_DASTUPPERSTR, // 위에 거 조금 느리게
+    P2_BACKJUMP, // 뒤로 닷지 이거 애니메이션 두개인데 스테이트 들어가서 하나씩 추가? // 불러요
+    P2_SIDEMOVE, // 옆으로 닷지
+    P2_JUMPATTACK, // 불러요
+    P2_SWINGCOMBO, // 5연타 후 돌진
+    P2_THROWROCK, // 돌던지기
+    P2_DASHDRIFT, // 불러요
+    P2_SWINGROUND, // 돌돌이
+    P2_ROAR, // 소리지르기
+    P2_LOCKON, // 락온
+    END, 
 };
 
 

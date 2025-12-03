@@ -61,9 +61,9 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
     if (m_pGameInstance->Key_Down(DIK_Z))
     {
 
-        CViper* pViper = static_cast<CViper*>(pOwner);
-        CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+        //CViper* pViper = static_cast<CViper*>(pOwner);
+        //CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+        //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
         //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
          //pViper->Consume_Stamina(10.f);
 
@@ -71,23 +71,26 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
     if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
     {
-        if(m_pGameInstance->Key_Down(DIK_B))
+
+        if (m_pGameInstance->Key_Down(DIK_B))
         {
-            // 돌돌이
+            m_pBB->Set_Value<_uint>(m_strMonstertag,"DebugIndex",0);
             CViper* pViper = static_cast<CViper*>(pOwner);
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::DIVOUR),pViper);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_BACKJUMP), pViper);
         }
+
         if (m_pGameInstance->Key_Down(DIK_N))
         {
-            // 그로기 끝나면 소리지름
+            m_pBB->Set_Value<_uint>(m_strMonstertag, "DebugIndex", 1);
             CViper* pViper = static_cast<CViper*>(pOwner);
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::GROGGY), pViper);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_JUMPATTACK), pViper);
         }
+
         if (m_pGameInstance->Key_Down(DIK_M))
         {
-            // 잡기
+            
             CViper* pViper = static_cast<CViper*>(pOwner);
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::STINGGRAB), pViper);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGROUND), pViper);
         }
 
     }

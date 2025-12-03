@@ -2350,6 +2350,10 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/scream"))))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("scream_high"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/scream_high"))))
+        return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("HandTrail_Up"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/HandTrail_Up"))))
         return E_FAIL;
@@ -2391,11 +2395,11 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Small"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Clients/Bin/Data/Effect/Baked/Viper/Twinkle_Small"))))
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Twinkle_Small"))))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Big"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Clients/Bin/Data/Effect/Baked/Viper/Twinkle_Big"))))
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Twinkle_Big"))))
         return E_FAIL;
 #pragma endregion
 

@@ -99,7 +99,7 @@ HRESULT CEffect_Point_Instance::Render()
 
 void CEffect_Point_Instance::Save_Data(ofstream& os)
 {
-    m_sData.fTurbulenceSampleSize = 0.1f;
+    //m_sData.fTurbulenceSampleSize = 0.1f;
     os.write(reinterpret_cast<char*>(&m_iEffect_Type), sizeof(_uint));
     os.write(reinterpret_cast<char*>(&m_sData), sizeof(PARTICLE_DESC));
 }
