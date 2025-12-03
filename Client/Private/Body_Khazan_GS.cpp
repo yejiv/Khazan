@@ -52,8 +52,8 @@ HRESULT CBody_Khazan_GS::Initialize_Clone(void* pArg)
     if (FAILED(Initialize_Equipment()))
         return E_FAIL;
 
-    if (FAILED(Ready_AnimationEvents()))
-        return E_FAIL;
+    /*if (FAILED(Ready_AnimationEvents()))
+        return E_FAIL;*/
 
     /* 뼈 행렬 가지고오기 */
     m_pMatGSwordBody = m_pModelCom->Get_BoneMatrix("FX_R_GSword_02");

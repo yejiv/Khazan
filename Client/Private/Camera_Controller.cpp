@@ -279,17 +279,28 @@ void CCamera_Controller::Ready_ImGui_Active_Camera_Info()
 	if (pCamera != nullptr)
 	{
 		CTransform* pTransform = dynamic_cast<CTransform*>(pCamera->Get_Component(TEXT("Com_Transform")));
-		_vector vPos = pTransform->Get_State(STATE::POSITION);
+        _vector vRight = pTransform->Get_State(STATE::RIGHT);
+        _vector vUp = pTransform->Get_State(STATE::UP);
 		_vector vLook = pTransform->Get_State(STATE::LOOK);
+        _vector vPos = pTransform->Get_State(STATE::POSITION);
 
 		ImGui::Begin("Active Camera Info");
 
-		_char szPosBuffer[MAX_PATH];
-		snprintf(szPosBuffer, sizeof(szPosBuffer), "X : %.2f, Y : %.2f, Z : %.2f", vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
-		ImGui::Text(szPosBuffer);
+        _char szRightBuffer[MAX_PATH];
+        snprintf(szRightBuffer, sizeof(szRightBuffer), "RIGHT  X : %.3f, Y : %.3f, Z : %.3f, W : %.3f", vRight.m128_f32[0], vRight.m128_f32[1], vRight.m128_f32[2], vRight.m128_f32[3]);
+        ImGui::Text(szRightBuffer);
+
+        _char szUpBuffer[MAX_PATH];
+        snprintf(szUpBuffer, sizeof(szUpBuffer), " UP X : %.3f, Y : %.3f, Z : %.3f, W : %.3f", vUp.m128_f32[0], vUp.m128_f32[1], vUp.m128_f32[2], vUp.m128_f32[3]);
+        ImGui::Text(szUpBuffer);
+		
 		_char szLookBuffer[MAX_PATH];
-		snprintf(szLookBuffer, sizeof(szLookBuffer), "X : %.2f, Y : %.2f, Z : %.2f, W : %.2f", vLook.m128_f32[0], vLook.m128_f32[1], vLook.m128_f32[2], vLook.m128_f32[3]);
+		snprintf(szLookBuffer, sizeof(szLookBuffer), " LOOK X : %.3f, Y : %.3f, Z : %.3f, W : %.3f", vLook.m128_f32[0], vLook.m128_f32[1], vLook.m128_f32[2], vLook.m128_f32[3]);
 		ImGui::Text(szLookBuffer);
+
+        _char szPosBuffer[MAX_PATH];
+        snprintf(szPosBuffer, sizeof(szPosBuffer), " POS X : %.3f, Y : %.3f, Z : %.3f", vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
+        ImGui::Text(szPosBuffer);
 
 		ImGui::End();
 

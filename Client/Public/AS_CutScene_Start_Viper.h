@@ -24,6 +24,8 @@ public:
     void                                ViperScene_Land(class CViper* pViper);
     void                                ViperScene_Roar(class CViper* pViper);
     
+public:
+    void                                Start_CutSceneAnimation() { m_fTimeHelper = 1.f; }
 
 
 private:
@@ -32,6 +34,7 @@ private:
 
 private:
     CUTSCENE_STATE                      m_eState = { CUTSCENE_STATE::END };
+    _float                              m_fTimeHelper = {};
 
 public:
     static CAS_CutScene_Start_Viper*    Create();

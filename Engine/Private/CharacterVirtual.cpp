@@ -799,6 +799,11 @@ void CCharacterVirtual::Teleport(_vector vPos, _vector qRot, CTransform* pTransf
     if (m_pCharVir == nullptr)
         return;
 
+    m_isDive = false;
+    m_isJump = false;
+    m_isOnLadder = false;
+    m_isPower = false;
+
     // 1) 위치 / 회전 즉시 세팅
     JPH::RVec3 jPos = RVec3(
         XMVectorGetX(vPos),

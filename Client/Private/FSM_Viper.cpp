@@ -63,7 +63,14 @@ CAS_CutScene_Start_Viper* CFSM_Viper::Get_CutScene_Start_Viper()
     return pCutScneState;
 }
 
-HRESULT CFSM_Viper::Initialize()
+CAS_CutScene_2Phase_Viper* CFSM_Viper::Get_Phase2_CutScene_Start_Viper()
+{
+    CAS_CutScene_2Phase_Viper* pCutScneState = static_cast<CAS_CutScene_2Phase_Viper*>(m_States[ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2)]);
+
+    return pCutScneState;
+}
+
+HRESULT CFSM_Viper::Initialize(CGameObject* pOwner)
 {
 #pragma region PHASE1
 
@@ -165,8 +172,9 @@ HRESULT CFSM_Viper::Initialize()
         return E_FAIL;
 
 
-    m_pCurrentState = m_States[ENUM_CLASS(VIPER_STATE_P1::IDLE)];
-    
+    //m_pCurrentState = m_States[ENUM_CLASS(VIPER_STATE_P1::IDLE)];
+    m_pCurrentState = m_States[ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START)];
+    m_pCurrentState->Enter(this,pOwner);
     if (nullptr == m_pCurrentState)
         return E_FAIL;
 
@@ -178,10 +186,10 @@ void CFSM_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
     __super::Update(pOwner,fTimeDelta);
 }
 
-CFSM_Viper* CFSM_Viper::Create()
+CFSM_Viper* CFSM_Viper::Create(CGameObject* pOwner)
 {
     CFSM_Viper* pInstance = new CFSM_Viper();
-    if (FAILED(pInstance->Initialize()))
+    if (FAILED(pInstance->Initialize(pOwner)))
     {
         Safe_Release(pInstance);
         MSG_BOX(TEXT("Failed Create : CFSM_Viper"));
