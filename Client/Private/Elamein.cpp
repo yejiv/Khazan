@@ -222,9 +222,10 @@ void CElamein::Update(_float fTimeDelta)
     XMStoreFloat4(&m_vSword_End, XMVectorSetW(vSwordEnd, 1.f));
 
     m_pMeshTrail->Update(fTimeDelta);
-    m_pTalk->Update_UITransform(vSwordStart);
+    //if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+    //    m_pTalk->On_Panel(1);
+    m_pTalk->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
     m_pTalk->Update(fTimeDelta);
-    //Update_MeshTrail();
 }
 
 void CElamein::Late_Update(_float fTimeDelta)

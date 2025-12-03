@@ -1,0 +1,6 @@
+ID,Talk,NextTalk,TextSpeed,Sound,deleytime 0이면 유지
+1,여기에요 여기 !,0,5.5,Sound.wav,0
+2,테스트를 하는중 1-1,3,5.5,Sound.wav,3
+3,테스트를 하는중 1-2,0,11,Sound.wav,0
+4,춥다 추워,0,5.5,Sound.wav,0
+5,이잉이잉,0,5.5,Sound.wav,0

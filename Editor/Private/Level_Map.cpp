@@ -460,7 +460,9 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 					ImGui::Text("PICKED POS");
 					ImGui::Text("X : %.3f", m_vPickedPos.x);
-					ImGui::Text("Y : %.3f", m_vPickedPos.y);
+                    ImGui::Text("Y : %.3f", m_vPickedPos.y); SAMELINE;
+                    if (ImGui::Button("COPY"))
+                        m_fAddPositionY = m_vPickedPos.y;
 					ImGui::Text("Z : %.3f", m_vPickedPos.z);
 
 					SEPARATOR;
@@ -945,6 +947,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
     m_Prototypes_Inter.push_back("NPC_Daphrona");
     m_Prototypes_Inter.push_back("NPC_Duimuk");
     m_Prototypes_Inter.push_back("NPC_Danjin");
+    m_Prototypes_Inter.push_back("DanjinJar");
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -1303,6 +1306,21 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Danjin"), TIME_CHANNEL::WORLD, &DanjinDesc), );
+                        }
+                else if ("DanjinJar" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CDanjinJar::DANJINJAR_DESC DanjinJarDesc = {};
+
+                    DanjinJarDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    DanjinJarDesc.eLevel = LEVEL::MAP;
+                    memcpy(DanjinJarDesc.szModelName, TEXT("DanjinJar"), sizeof(DanjinJarDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&DanjinJarDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    DanjinJarDesc.eInteractiveType = INTERACTIVE_TYPE::DANJINJAR;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DanjinJar"), TIME_CHANNEL::WORLD, &DanjinJarDesc), );
                 }
 #pragma endregion
 
@@ -1822,6 +1840,59 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 
                 ImGui::Text("== DANJIN ==");
                 SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::DANJINJAR == m_pFixPropObj->Get_InteractiveType())
+            {
+                CDanjinJar* pDanjinJar = static_cast<CDanjinJar*>(m_pFixPropObj);
+
+                ImGui::Text("== DANJIN JAR ==");
+                if (ImGui::Button("MODEL TYPE A"))
+                    pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::A);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE B"))
+                    pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::B);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE C"))
+                    pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::C);
+                SEPARATOR;
+
+                ImGui::Text("SETTING STEP");
+                if (ImGui::Button("STEP 1")) pDanjinJar->StepPositionSetting(0); SAMELINE;
+                if (ImGui::Button("STEP 2")) pDanjinJar->StepPositionSetting(1); SAMELINE;
+                if (ImGui::Button("STEP 3")) pDanjinJar->StepPositionSetting(2); SAMELINE;
+                if (ImGui::Button("STEP 4")) pDanjinJar->StepPositionSetting(3);
+                if (ImGui::Button("STEP 5")) pDanjinJar->StepPositionSetting(4); SAMELINE;
+                if (ImGui::Button("STEP 6")) pDanjinJar->StepPositionSetting(5); SAMELINE;
+                if (ImGui::Button("STEP 7")) pDanjinJar->StepPositionSetting(6); SAMELINE;
+                if (ImGui::Button("STEP 8")) pDanjinJar->StepPositionSetting(7);
+                if (ImGui::Button("STEP 9")) pDanjinJar->StepPositionSetting(8); SAMELINE;
+                if (ImGui::Button("STEP 10")) pDanjinJar->StepPositionSetting(9); SAMELINE;
+                if (ImGui::Button("STEP 11")) pDanjinJar->StepPositionSetting(10); SAMELINE;
+                if (ImGui::Button("STEP 12")) pDanjinJar->StepPositionSetting(11);
+                if (ImGui::Button("STEP 13")) pDanjinJar->StepPositionSetting(12); SAMELINE;
+                if (ImGui::Button("STEP 14")) pDanjinJar->StepPositionSetting(13); SAMELINE;
+                if (ImGui::Button("STEP 15")) pDanjinJar->StepPositionSetting(14); SAMELINE;
+                if (ImGui::Button("STEP 16")) pDanjinJar->StepPositionSetting(15);
+                SEPARATOR;
+                SEPARATOR;
+
+                ImGui::Text("MOVE STEP");
+                if (ImGui::Button("STEP 1##move")) pDanjinJar->MoveStepPosition(0); SAMELINE;
+                if (ImGui::Button("STEP 2##move")) pDanjinJar->MoveStepPosition(1); SAMELINE;
+                if (ImGui::Button("STEP 3##move")) pDanjinJar->MoveStepPosition(2); SAMELINE;
+                if (ImGui::Button("STEP 4##move")) pDanjinJar->MoveStepPosition(3);
+                if (ImGui::Button("STEP 5##move")) pDanjinJar->MoveStepPosition(4); SAMELINE;
+                if (ImGui::Button("STEP 6##move")) pDanjinJar->MoveStepPosition(5); SAMELINE;
+                if (ImGui::Button("STEP 7##move")) pDanjinJar->MoveStepPosition(6); SAMELINE;
+                if (ImGui::Button("STEP 8##move")) pDanjinJar->MoveStepPosition(7);
+                if (ImGui::Button("STEP 9##move")) pDanjinJar->MoveStepPosition(8); SAMELINE;
+                if (ImGui::Button("STEP 10##move")) pDanjinJar->MoveStepPosition(9); SAMELINE;
+                if (ImGui::Button("STEP 11##move")) pDanjinJar->MoveStepPosition(10); SAMELINE;
+                if (ImGui::Button("STEP 12##move")) pDanjinJar->MoveStepPosition(11);
+                if (ImGui::Button("STEP 13##move")) pDanjinJar->MoveStepPosition(12); SAMELINE;
+                if (ImGui::Button("STEP 14##move")) pDanjinJar->MoveStepPosition(13); SAMELINE;
+                if (ImGui::Button("STEP 15##move")) pDanjinJar->MoveStepPosition(14); SAMELINE;
+                if (ImGui::Button("STEP 16##move")) pDanjinJar->MoveStepPosition(15); SEPARATOR;
             }
 
 #pragma endregion
@@ -2414,6 +2485,11 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
                             INTERACTIVE_TYPE::DANJIN == m_pFixPropObj->Get_InteractiveType())
                         {
                             // NPC 일단 빈칸
+                        }
+
+                        if (INTERACTIVE_TYPE::DANJINJAR == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            //  항아리 일단 빈칸
                         }
 
 						m_isFixInteractObjectWindow = true;
@@ -4847,6 +4923,18 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
             {
                 // NPC 일단 공백
             }
+            if (INTERACTIVE_TYPE::DANJINJAR == eType)
+            {
+                CDanjinJar* pDanjinJar = static_cast<CDanjinJar*>(pProp);
+
+                CDanjinJar::DANJINJAR_TYPE eJarType = { pDanjinJar->Get_DanjinJar_ModelType() };
+
+                WriteFile(hObjectFile, &eJarType, sizeof(CDanjinJar::DANJINJAR_TYPE), &dwByte, nullptr);
+
+                CDanjinJar::DANJINJAR_STEP StepPosition = { pDanjinJar->Get_StepPosition() };
+
+                WriteFile(hObjectFile, &StepPosition, sizeof(CDanjinJar::DANJINJAR_STEP), &dwByte, nullptr);
+            }
 		}
 	}
 
@@ -5666,6 +5754,29 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Danjin"), TIME_CHANNEL::WORLD, &DanjinDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::DANJINJAR == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CDanjinJar::DANJINJAR_DESC DanjinJarDesc = {};
+
+                DanjinJarDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                DanjinJarDesc.eLevel = LEVEL::MAP;
+                memcpy(DanjinJarDesc.szModelName, TEXT("DanjinJar"), sizeof(DanjinJarDesc.szModelName));		// 프로토타입 태그명
+
+                DanjinJarDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                DanjinJarDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CDanjinJar::DANJINJAR_TYPE eJarType = {};
+
+                CHECK_FALSE(ReadFile(hObjectFile, &DanjinJarDesc.eJarType, sizeof(CDanjinJar::DANJINJAR_TYPE), &dwByte, nullptr), false);
+
+                CDanjinJar::DANJINJAR_STEP StepPosition = {};
+
+                CHECK_FALSE(ReadFile(hObjectFile, &DanjinJarDesc.StepPosition, sizeof(CDanjinJar::DANJINJAR_STEP), &dwByte, nullptr), false);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DanjinJar"), TIME_CHANNEL::WORLD, &DanjinJarDesc), false);
             }
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
