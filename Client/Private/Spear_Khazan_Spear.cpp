@@ -105,11 +105,11 @@ HRESULT CSpear_Khazan_Spear::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    _float fEdgeIntensity = 0.3f;
+    _float fEdgeIntensity = 1.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
         return E_FAIL;
 
-    _float fShadeIntensity = 0.2f;
+    _float fShadeIntensity = 0.5f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
         return E_FAIL;
 

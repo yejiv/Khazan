@@ -846,7 +846,7 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
     MeshDsc.iTextureIdx = 9;
     MeshDsc.fLifeTime = .25f;
     MeshDsc.iDivisionCount = 10.f;
-    MeshDsc.vColor = _float3(1.f, 1.f, 1.f);
+    MeshDsc.vColor = _float4(1.f, 1.f, 1.f, 1.f);
     m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
 
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
@@ -1621,7 +1621,7 @@ void CBody_Khazan_Spear::Set_BaseTrail()
     Config.fLifeTime = 0.25f;
     Config.iTextureIdx = 9;
     Config.iDivisionCount = 10;
-    Config.vColor = _float3(1.f, 1.f, 1.f);
+    Config.vColor = _float4(1.f, 1.f, 1.f, 1.f);
     m_pTrail->Set_TrailConfig(Config);
 }
 
@@ -1631,7 +1631,7 @@ void CBody_Khazan_Spear::Set_BlueTrail()
     Config.fLifeTime = 0.25f;
     Config.iTextureIdx = 8;
     Config.iDivisionCount = 10;
-    Config.vColor = _float3(2.569f, 2.569f, 3.529f);
+    Config.vColor = _float4(2.569f, 2.569f, 3.529f, 1.f);
     m_pTrail->Set_TrailConfig(Config);
 }
 
@@ -1641,7 +1641,7 @@ void CBody_Khazan_Spear::Set_RedTrail()
     Config.fLifeTime = 0.25f;
     Config.iTextureIdx = 8;
     Config.iDivisionCount = 10;
-    Config.vColor = _float3(3.529f, 2.569f, 2.569f);
+    Config.vColor = _float4(3.529f, 2.569f, 2.569f, 1.f);
     m_pTrail->Set_TrailConfig(Config);
 }
 

@@ -198,6 +198,7 @@ namespace Client
         float	        fLifeTime;
         unsigned int    iTextureIdx;
         unsigned int    iDivisionCount;
-        XMFLOAT3        vColor;
+        XMFLOAT4        vColor;
+        XMFLOAT4        vSubColor;
     }TRAIL_CONFIG;
 }
