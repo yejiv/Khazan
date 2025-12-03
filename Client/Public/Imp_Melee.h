@@ -42,6 +42,7 @@ private:
     HRESULT							Ready_PartObjects();
     HRESULT							Ready_AnimEvent();
     void                            Update_SwordPos();
+    void                            Update_MeshTrail();
 
 private:
     class CBody_Imp_Melee*          m_pBody = { nullptr };
