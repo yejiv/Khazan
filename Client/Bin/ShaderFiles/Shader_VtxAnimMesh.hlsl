@@ -78,6 +78,7 @@ float g_fGreenIntensity = 1.f;
 
 // Imp
 float g_fDiffusePower = 1.f;
+float g_fBluePower = 1.f;
 
 struct VS_IN
 {
@@ -942,6 +943,7 @@ PS_OUT PS_IMP(PS_IN In)
     Out.vDiffuse *= fShadeMask;
 
     // Diffuse 어두운 문제로 임의값 곱해주기 3~5
+    Out.vDiffuse.b *= g_fBluePower;
     Out.vDiffuse *= g_fDiffusePower;
     
     return Out;

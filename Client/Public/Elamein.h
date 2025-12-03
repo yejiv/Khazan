@@ -89,6 +89,13 @@ public:
     void                            Reset_Charge();
     _float                          Get_TrackPotion();
     virtual void				    Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) override;
+
+public:
+    const TRAIL_CONFIG&             Get_TrailConfig() const;
+    void                            Set_TrailConfig(const TRAIL_CONFIG& Config);
+    _uint                           Get_NumTrailTextures();
+    ID3D11ShaderResourceView*       Get_TrailTexture(_uint iIndex);
+
 public:
     virtual void                    Creature_Release() override;
     virtual HRESULT					Initialize_Prototype(_int iLevel);

@@ -11,6 +11,7 @@
 #include "AI_Controller_Dragonian_Rampage.h"
 
 #include "Mon_Hp.h"
+#include "MeshTrail.h"
 
 CDragonian_Rampage::CDragonian_Rampage(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
@@ -118,6 +119,16 @@ HRESULT CDragonian_Rampage::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_AnimEvent(), E_FAIL);
     CHECK_FAILED(Ready_Components(), E_FAIL);
 
+    for (_uint i = 0; i < ENUM_CLASS(CLAW::END); ++i)
+    {
+        CMeshTrail::TRAIL_DESC MeshDesc{};
+        MeshDesc.iTextureIdx = 2;
+        MeshDesc.fLifeTime = 0.6f;
+        MeshDesc.iDivisionCount = 10.f;
+        MeshDesc.vColor = _float3(2.176f, 1.824f, 1.176f);
+        m_pMeshTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
+    }
+
     return S_OK;
 }
 
@@ -129,6 +140,9 @@ void CDragonian_Rampage::Priority_Update(_float fTimeDelta)
         m_Data.isLockOn = true;
     }
     CContainerObject::Priority_Update(fTimeDelta);
+
+    for (auto& pMeshTrail : m_pMeshTrail)
+        pMeshTrail->Priority_Update(fTimeDelta);
 }
 
 void CDragonian_Rampage::Update(_float fTimeDelta)
@@ -138,22 +152,29 @@ void CDragonian_Rampage::Update(_float fTimeDelta)
     if (m_Data.fAttackCool >= 0.f)
         m_Data.fAttackCool -= fTimeDelta;
 
+    _float4x4 LockOnMatrix{};
+    XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
+    m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
+
+
     m_pController->Update(this, fTimeDelta);
     __super::Update(fTimeDelta);
     Update_UIHp();
     Update_Body(fTimeDelta);
 
-
-    _float4x4 LockOnMatrix{};
-    XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
-    m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
-
     Update_WeaponPos();
+    for (auto& pMeshTrail : m_pMeshTrail)
+        pMeshTrail->Update(fTimeDelta);
+    //  Update_MeshTrail_R();
+    //  Update_MeshTrail_L();
 }
 
 void CDragonian_Rampage::Late_Update(_float fTimeDelta)
 {
     CContainerObject::Late_Update(fTimeDelta);
+
+    for (auto& pMeshTrail : m_pMeshTrail)
+        pMeshTrail->Late_Update(fTimeDelta);
 }
 
 void CDragonian_Rampage::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
@@ -162,6 +183,27 @@ void CDragonian_Rampage::Take_Damage(_float fDamage, HITREACTION eHitreaction, C
         ++m_Data.iBrutalHit;
 
     __super::Take_Damage(fDamage, eHitreaction, pGameObject);
+}
+
+const TRAIL_CONFIG& CDragonian_Rampage::Get_TrailConfig() const
+{
+    return m_pMeshTrail[0]->Get_TrailConfig();
+}
+
+void CDragonian_Rampage::Set_TrailConfig(const TRAIL_CONFIG& Config)
+{
+    for (auto& pMeshTrail : m_pMeshTrail)
+        pMeshTrail->Set_TrailConfig(Config);
+}
+
+_uint CDragonian_Rampage::Get_NumTrailTextures()
+{
+    return m_pMeshTrail[0]->Get_NumTrailTextures();
+}
+
+ID3D11ShaderResourceView* CDragonian_Rampage::Get_TrailTexture(_uint iIndex)
+{
+    return m_pMeshTrail[0]->Get_TrailTexture(iIndex);
 }
 
 void CDragonian_Rampage::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -347,35 +389,47 @@ HRESULT CDragonian_Rampage::Ready_AnimEvent()
     pModel->Register_Event("JumpClaw_2_Move", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Jump_Move_2(); });
 
     pModel->Register_Event("JumpClaw_1_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State = (_uint)ATTACK_BODY::HAND_R | (_uint)ATTACK_BODY::HAND_L; });
+    pModel->Register_Event("JumpClaw_1_Attack", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); Update_MeshTrail_L(); });
     pModel->Register_Event("JumpClaw_1_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
     pModel->Register_Event("DoubleClaw_F_E_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L; });
     pModel->Register_Event("DoubleClaw_F_E_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R; });
+    pModel->Register_Event("DoubleClaw_F_E_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_L(); });
+    pModel->Register_Event("DoubleClaw_F_E_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); });
     pModel->Register_Event("DoubleClaw_F_E_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L; });
     pModel->Register_Event("DoubleClaw_F_E_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R;  });
 
     pModel->Register_Event("DoubleClaw_F_3_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R; });
     pModel->Register_Event("DoubleClaw_F_3_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L; });
+    pModel->Register_Event("DoubleClaw_F_3_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); });
+    pModel->Register_Event("DoubleClaw_F_3_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_L(); });
     pModel->Register_Event("DoubleClaw_F_3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; });
     pModel->Register_Event("DoubleClaw_F_3_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L;  });
 
     pModel->Register_Event("DoubleClaw_F_2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R; });
     pModel->Register_Event("DoubleClaw_F_2_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L; });
+    pModel->Register_Event("DoubleClaw_F_2_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); });
+    pModel->Register_Event("DoubleClaw_F_2_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_L(); });
     pModel->Register_Event("DoubleClaw_F_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; });
     pModel->Register_Event("DoubleClaw_F_2_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L;  });
 
-    pModel->Register_Event("DoubleClaw_F_2_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State = (_uint)ATTACK_BODY::HAND_R | (_uint)ATTACK_BODY::HAND_L; });
-    pModel->Register_Event("DoubleClaw_F_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    // ??
+    //  pModel->Register_Event("DoubleClaw_F_2_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State = (_uint)ATTACK_BODY::HAND_R | (_uint)ATTACK_BODY::HAND_L; });
+    //  pModel->Register_Event("DoubleClaw_F_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
     pModel->Register_Event("ChainCraw_F_Attack_1_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L; });
     pModel->Register_Event("ChainCraw_F_Attack_1_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R; });
+    pModel->Register_Event("ChainCraw_F_Attack_1_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_L(); });
+    pModel->Register_Event("ChainCraw_F_Attack_1_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); });
     pModel->Register_Event("ChainCraw_F_Attack_1_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L; });
     pModel->Register_Event("ChainCraw_F_Attack_1_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; this->m_Data.iAnimIndex = 16;  });
 
     pModel->Register_Event("ChainCraw_F_Attack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R; });
     pModel->Register_Event("ChainCraw_F_Attack_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L; });
     pModel->Register_Event("ChainCraw_F_Attack_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R; });
-
+    pModel->Register_Event("ChainCraw_F_Attack_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); });
+    pModel->Register_Event("ChainCraw_F_Attack_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_L(); });
+    pModel->Register_Event("ChainCraw_F_Attack_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); });
     pModel->Register_Event("ChainCraw_F_Attack_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; });
     pModel->Register_Event("ChainCraw_F_Attack_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L; });
     pModel->Register_Event("ChainCraw_F_Attack_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; });
@@ -383,6 +437,7 @@ HRESULT CDragonian_Rampage::Ready_AnimEvent()
     pModel->Register_Event("NextEvent_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAnimIndex = 15; });
 
     pModel->Register_Event("ChainCraw_F_Attack_2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State = (_uint)ATTACK_BODY::HAND_R | (_uint)ATTACK_BODY::HAND_L; });
+    pModel->Register_Event("ChainCraw_F_Attack_2_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); Update_MeshTrail_L(); });
     pModel->Register_Event("ChainCraw_F_Attack_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
     return S_OK;
@@ -466,7 +521,7 @@ void CDragonian_Rampage::Update_WeaponPos()
     _vector vClawLPos = { m_vClawLMat._41, m_vClawLMat._42, m_vClawLMat._43 };
 
     _vector vClawLStart = vClawLPos - vClawLRight * 1.5f;
-    _vector vClawLEnd = vClawLPos - vClawLRight * 2.f - vClawLUp * 0.6f + vClawLLook * 0.25f;
+    _vector vClawLEnd = vClawLPos - vClawLRight * 1.85f - vClawLUp * 0.6f + vClawLLook * 0.25f;
     XMStoreFloat4(&m_vClawL_1_Start, XMVectorSetW(vClawLStart, 1.f));
     XMStoreFloat4(&m_vClawL_1_End, XMVectorSetW(vClawLEnd, 1.f));
 
@@ -501,6 +556,36 @@ void CDragonian_Rampage::Update_WeaponPos()
     XMStoreFloat4(&m_vClawR_3_End, XMVectorSetW(vClawLEnd, 1.f));
 }
 
+void CDragonian_Rampage::Update_MeshTrail_R()
+{
+    _vector vClawStart_1 = XMLoadFloat4(&m_vClawR_1_Start);
+    _vector vClawEnd_1 = XMLoadFloat4(&m_vClawR_1_End);
+    m_pMeshTrail[ENUM_CLASS(CLAW::RIGHT_1)]->Add_ControlPoint(vClawStart_1, vClawEnd_1);
+
+    _vector vClawStart_2 = XMLoadFloat4(&m_vClawR_2_Start);
+    _vector vClawEnd_2 = XMLoadFloat4(&m_vClawR_2_End);
+    m_pMeshTrail[ENUM_CLASS(CLAW::RIGHT_2)]->Add_ControlPoint(vClawStart_2, vClawEnd_2);
+
+    _vector vClawStart_3 = XMLoadFloat4(&m_vClawR_3_Start);
+    _vector vClawEnd_3 = XMLoadFloat4(&m_vClawR_3_End);
+    m_pMeshTrail[ENUM_CLASS(CLAW::RIGHT_3)]->Add_ControlPoint(vClawStart_3, vClawEnd_3);
+}
+
+void CDragonian_Rampage::Update_MeshTrail_L()
+{
+    _vector vClawStart_1 = XMLoadFloat4(&m_vClawL_1_Start);
+    _vector vClawEnd_1 = XMLoadFloat4(&m_vClawL_1_End);
+    m_pMeshTrail[ENUM_CLASS(CLAW::LEFT_1)]->Add_ControlPoint(vClawStart_1, vClawEnd_1);
+
+    _vector vClawStart_2 = XMLoadFloat4(&m_vClawL_2_Start);
+    _vector vClawEnd_2 = XMLoadFloat4(&m_vClawL_2_End);
+    m_pMeshTrail[ENUM_CLASS(CLAW::LEFT_2)]->Add_ControlPoint(vClawStart_2, vClawEnd_2);
+
+    _vector vClawStart_3 = XMLoadFloat4(&m_vClawL_3_Start);
+    _vector vClawEnd_3 = XMLoadFloat4(&m_vClawL_3_End);
+    m_pMeshTrail[ENUM_CLASS(CLAW::LEFT_3)]->Add_ControlPoint(vClawStart_3, vClawEnd_3);
+}
+
 CDragonian_Rampage* CDragonian_Rampage::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
 {
     CDragonian_Rampage* pInstance = new CDragonian_Rampage(pDevice, pContext);
@@ -525,6 +610,9 @@ CGameObject* CDragonian_Rampage::Clone(void* pArg)
 
 void CDragonian_Rampage::Free()
 {
+    for (_uint i = 0; i < ENUM_CLASS(CLAW::END); ++i)
+        Safe_Release(m_pMeshTrail[i]);
+    
     if (m_pUI_HP != nullptr)
     {
         m_pUI_HP->Set_IsDead(true);

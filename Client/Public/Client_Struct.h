@@ -193,4 +193,11 @@ namespace Client
         
 	}PLAYER_DATA;
 
+    typedef struct tagTrailConfig
+    {
+        float	        fLifeTime;
+        unsigned int    iTextureIdx;
+        unsigned int    iDivisionCount;
+        XMFLOAT3        vColor;
+    }TRAIL_CONFIG;
 }

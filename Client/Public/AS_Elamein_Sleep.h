@@ -15,7 +15,7 @@ public:
 
 private:
     CElamein::MONDATA*              m_pMonData = { nullptr };
-
+    _bool                           m_isChange = {};
 public:
     static CAS_Elamein_Sleep*       Create();
     virtual void				    Free() override;
