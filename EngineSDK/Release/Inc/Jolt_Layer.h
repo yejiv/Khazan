@@ -8,7 +8,7 @@ class CJolt_BPLayerIF final : public BroadPhaseLayerInterface
 public:
 	explicit CJolt_BPLayerIF(_uint iNumObjectLayer) {
 		m_iNumObjectLayer = iNumObjectLayer;
-		m_ObjectToBroadPhase = new BroadPhaseLayer[m_iNumObjectLayer];
+        m_ObjectToBroadPhase = new BroadPhaseLayer[m_iNumObjectLayer];
 	}
 	virtual ~CJolt_BPLayerIF() {
 		Safe_Delete_Array(m_ObjectToBroadPhase);
@@ -55,7 +55,7 @@ public:
 		m_iNumObjectLayer = iNumObjectLayer;
 		m_ObjectLayerFilter = new _bool*[m_iNumObjectLayer];
 		for (_uint i = 0; i < m_iNumObjectLayer; ++i)
-			m_ObjectLayerFilter[i] = new _bool[m_iNumObjectLayer];
+            m_ObjectLayerFilter[i] = new _bool[m_iNumObjectLayer]{};
 	}
 	virtual ~CJolt_ObjectLayerPairFilter() {
 		for (_uint i = 0; i < m_iNumObjectLayer; ++i)
@@ -87,9 +87,9 @@ class CJolt_ObjectVsBPLayerFilter : public ObjectVsBroadPhaseLayerFilter
 public:
 	explicit CJolt_ObjectVsBPLayerFilter(_uint iNumObjectLayer) {
 		m_iNumObjectLayer = iNumObjectLayer;
-		m_ObjectVsBPLayerFilter = new _bool * [m_iNumObjectLayer];
-		for (_uint i = 0; i < m_iNumObjectLayer; ++i)
-			m_ObjectVsBPLayerFilter[i] = new _bool[ENUM_CLASS(JOLT_BP_LAYER::END)];
+		m_ObjectVsBPLayerFilter = new _bool*[m_iNumObjectLayer];
+        for (_uint i = 0; i < m_iNumObjectLayer; ++i)
+            m_ObjectVsBPLayerFilter[i] = new _bool[ENUM_CLASS(JOLT_BP_LAYER::END)]{};
 	}
 	virtual ~CJolt_ObjectVsBPLayerFilter() {
 		for (_uint i = 0; i < m_iNumObjectLayer; ++i)
@@ -114,5 +114,27 @@ private:
 	_uint						m_iNumObjectLayer = {};
 	_bool** m_ObjectVsBPLayerFilter = { nullptr };
 };
+class CJolt_ObjectLayerFilter final : public JPH::ObjectLayerFilter
+{
+public:
+	explicit CJolt_ObjectLayerFilter(_uint ilayers)
+		: m_iNumObjectLayer(ilayers), m_iAllow(ilayers, false) {
+	}   // 전부 false로 초기화
 
+// 이 레이어를 캐스트 대상으로 허용할지?
+	bool ShouldCollide(JPH::ObjectLayer layer) const override
+	{
+		return layer < m_iNumObjectLayer && m_iAllow[layer];
+	}
+
+	// 허용/비허용 설정
+	void SetUpAllow(JPH::ObjectLayer layer, bool isOn = true)
+	{
+		if (layer < m_iNumObjectLayer) m_iAllow[layer] = isOn;
+	}
+
+private:
+	_uint                 m_iNumObjectLayer{};
+	vector<_bool>    m_iAllow; 
+};
 NS_END

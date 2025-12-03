@@ -1,14 +1,14 @@
-#include "EnginePch.h"
 #include "../Public/Base.h"
 
 CBase::CBase()
 {
-	int a = 10;
-	int b = 10;
+
 }
 
 unsigned int CBase::AddRef()
 {
+	lock_guard<mutex> lock(m_Mutex);
+
 	return ++m_iRefCnt;
 }
 
@@ -18,7 +18,7 @@ unsigned int CBase::Release()
 	{
 		Free();
 
-		/* »èÁ¦ÇÑ´Ù. */
+		/* ì‚­ì œí•œë‹¤. */
 		delete this;
 
 		return 0;
@@ -28,8 +28,7 @@ unsigned int CBase::Release()
 		return m_iRefCnt--;
 	}
 }
-
+ 
 void CBase::Free()
 {
-
 }

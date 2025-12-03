@@ -1,58 +1,77 @@
 #pragma once
 #include "Base.h"
 #include "GameInstance.h"
+#include "Imgui_Header.h"
 
 NS_BEGIN(Engine)
 
 class CImgui_Manager final : public CBase
 {
 private:
-    CImgui_Manager();
+    CImgui_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual ~CImgui_Manager() = default;
 
 public:
-	// Initialize Ω√ø° ¿©µµøÏ ≈©±‚øÕ ∏ﬁ¥∫ ∏ÆΩ∫∆Æ∏¶ πﬁæ∆ø¬¥Ÿ.
-    HRESULT             Initialize(_uint iWinSizeX, _uint iWinSizeY, list<_wstring> Menu);
+	// Initialize ÏãúÏóê ÏúàÎèÑÏö∞ ÌÅ¨Í∏∞ÏôÄ Î©îÎâ¥ Î¶¨Ïä§Ìä∏Î•º Î∞õÏïÑÏò®Îã§.
+    HRESULT             Initialize(list<_wstring> Menu, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY);
     void                BeginFrame();
     void                Render();
     void                Shutdown();
 
+
+    HRESULT             CleanMenu(_wstring strMenu);
+    void                Clear_GizmoObject() { m_pGizmoObject = nullptr; }
+
 public:
-	// Widget √ﬂ∞°Ω√ø° ∏ﬁ¥∫ ¿Ã∏ß∞˙ ¿ß¡¨ «‘ºˆ∏¶ πﬁæ∆ø¬¥Ÿ.
+	// Widget Ï∂îÍ∞ÄÏãúÏóê Î©îÎâ¥ Ïù¥Î¶ÑÍ≥º ÏúÑÏ†Ø Ìï®ÏàòÎ•º Î∞õÏïÑÏò®Îã§.
     void                AddWidget(const _wstring Menu, const function<void()>& widget);
 public:
     _wstring            Get_OpenMenu_Name();
+
+public:
+    _bool HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+public:
+    void Render_Widet();
+    void Render_Docking();
+	void Render_Gizmo();
+
+public:
+    void Set_GizmoObject(class CGameObject* pGameObject) { m_pGizmoObject = pGameObject; }
+
+public:
+    void All_Clean();
 
 private:
     //ID3D11Device* m_pDevice = nullptr;
     //ID3D11DeviceContext* m_pContext = nullptr;
     //HWND  m_hWnd = nullptr;
 
-    ID3D11Device* g_pd3dDevice = { nullptr };
-    ID3D11DeviceContext* g_pd3dDeviceContext = { nullptr };
-    IDXGISwapChain* g_pSwapChain = { nullptr };
-    bool                     g_SwapChainOccluded = { false };
-    UINT                     g_ResizeWidth = { 0 };
-    UINT                     g_ResizeHeight = { 0 };
-    ID3D11RenderTargetView* g_mainRenderTargetView = { nullptr };
-    WNDCLASSEXW wc = {};
-    HWND hwnd = {};
+    
+    class CGameInstance* m_pGameInstance = nullptr;
+    ID3D11Device* m_pDevice = { nullptr };
+    ID3D11DeviceContext* m_pContext = { nullptr };
+	ID3D11RenderTargetView* m_pImgRTV = { nullptr };
+	ID3D11DepthStencilView* m_pImgDSV = { nullptr };
 
-    ImVec4 clear_color = ImVec4{ 0.45f, 0.55f, 0.60f, 1.00f };
-
-    map<_wstring, vector<function<void()>>> m_Widgets;
+    map<_wstring, vector<std::function<void()>>> m_Widgets;
 	map<_wstring, _bool> m_MenuOpen;
 	list<wstring> m_Menu;
 
-private:
-    bool                 CreateDeviceD3D(HWND hWnd);
-    void                 CleanupDeviceD3D();
-    void                 CreateRenderTarget();
-    void                 CleanupRenderTarget();
+    HWND m_hWnd = {};
+    _uint m_iWinSizeX = {};
+	_uint m_iWinSizeY = {};
 
+    ImGuiIO* m_io = { nullptr };
+
+    _bool m_bGizmoenabled = true;
+	ImGuizmo::OPERATION m_GizmoOp = ImGuizmo::TRANSLATE;
+	ImGuizmo::MODE m_GizmoMode = ImGuizmo::WORLD;
+
+    class CGameObject* m_pGizmoObject = { nullptr };
 
 public:
-    static CImgui_Manager* Create(_uint iWinSizeX, _uint iWinSizeY, list<wstring> Menu);
+    static CImgui_Manager* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, list<wstring> Menu, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY);
     virtual void Free() override;
 };
 

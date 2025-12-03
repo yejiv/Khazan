@@ -1,8 +1,9 @@
+
 #include "Engine_Shader_Defines.hlsli"
 
 
 
-/* 
+/*
 VTXPOSTEX
 LPCSTR SemanticName;
 UINT SemanticIndex;
@@ -11,9 +12,9 @@ UINT InputSlot;
 UINT AlignedByteOffset;
 D3D11_INPUT_CLASSIFICATION InputSlotClass;
 UINT InstanceDataStepRate;
-*/ 
+*/
 
-/* 
+/*
 D3D11_INPUT_ELEMENT_DESC Elements[] =
 {
     { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -22,13 +23,16 @@ D3D11_INPUT_ELEMENT_DESC Elements[] =
 */
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D g_Texture;
-texture2D g_DepthTexture;
+Texture2D g_Texture;
+Texture2D g_DepthTexture;
+float4 g_vColor;
+float2 g_ViewportSize;
+float3 g_vTrailColor;
 
 struct VS_IN
 {
     float3 vPosition : POSITION;
-    float2 vTexcoord : TEXCOORD0;    
+    float2 vTexcoord : TEXCOORD0;
 };
 
 struct VS_OUT
@@ -37,97 +41,171 @@ struct VS_OUT
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos : TEXCOORD2;
-    
+
 };
 
-/* Á¤Á¡½¦ÀÌ´õ : Á¤Á¡ À§Ä¡ÀÇ ½ºÆäÀÌ½º º¯È¯(·ÎÄÃ -> ¿ùµå -> ºä -> Åõ¿µ). */ 
-/*          : Á¤Á¡ÀÇ ±¸¼ºÀ» º¯°æ.(in:3°³, out:2°³ or 5°³) */
-/*          : Á¤Á¡ ´ÜÀ§(Á¤Á¡ ÇÏ³ª´ç VS_MAINÇÑ¹øÈ£Ãâ) */ 
+/* ì •ì ì‰ì´ë” : ì •ì  ìœ„ì¹˜ì˜ ìŠ¤í˜ì´ìŠ¤ ë³€í™˜(ë¡œì»¬ -> ì›”ë“œ -> ë·° -> íˆ¬ì˜). */
+/*          : ì •ì ì˜ êµ¬ì„±ì„ ë³€ê²½.(in:3ê°œ, out:2ê°œ or 5ê°œ) */
+/*          : ì •ì  ë‹¨ìœ„(ì •ì  í•˜ë‚˜ë‹¹ VS_MAINí•œë²ˆí˜¸ì¶œ) */
 VS_OUT VS_MAIN(VS_IN In)
 {
-    VS_OUT Out = (VS_OUT)0;    
-    
-    /* Á¤Á¡ÀÇ ·ÎÄÃÀ§Ä¡ * ¿ùµå * ºä * Åõ¿µ */ 
-        
+    VS_OUT Out = (VS_OUT) 0;
+
+    /* ì •ì ì˜ ë¡œì»¬ìœ„ì¹˜ * ì›”ë“œ * ë·° * íˆ¬ì˜ */
+
     float4x4 matWV, matWVP;
-    
+
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
-    
-    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);    
+
+    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
     Out.vProjPos = Out.vPosition;
-    
-    return Out;     
+
+    return Out;
 }
 
-/* /WÀ» ¼öÇàÇÑ´Ù. Åõ¿µ½ºÆäÀÌ½º·Î º¯È¯ */
-/* ºäÆ÷Æ®·Î º¯È¯ÇÏ°í.*/
-/* ·¡½ºÅÍ¶óÀÌÁî : ÇÈ¼¿À» ¸¸µç´Ù. */
+VS_OUT VS_TRAIL(VS_IN In)
+{
+    VS_OUT Out = (VS_OUT) 0;
+
+    float4x4 matVP = mul(g_ViewMatrix, g_ProjMatrix);
+
+    Out.vPosition = mul(float4(In.vPosition, 1.f), matVP);
+    Out.vTexcoord = In.vTexcoord;
+    Out.vWorldPos = float4(In.vPosition, 1.f);
+    Out.vProjPos = Out.vPosition;
+
+    return Out;
+}
+
+VS_OUT VS_SCREEN_TRAIL(VS_IN In)
+{
+    VS_OUT Out = (VS_OUT) 0;
+
+    // ìŠ¤í¬ë¦° ì¢Œí‘œ -> í´ë¦½ ê³µê°„(-1 ~ +1)ìœ¼ë¡œ ë³€í™˜
+    Out.vPosition.x = (In.vPosition.x / g_ViewportSize.x) * 2.0f - 1.0f;
+    Out.vPosition.y = (In.vPosition.y / g_ViewportSize.y) * -2.0f + 1.0f;
+    Out.vPosition.z = In.vPosition.z;
+    Out.vPosition.w = 1.0f;
+
+    Out.vTexcoord = In.vTexcoord;
+
+    return Out;
+}
+
+/* /Wì„ ìˆ˜í–‰í•œë‹¤. íˆ¬ì˜ìŠ¤í˜ì´ìŠ¤ë¡œ ë³€í™˜ */
+/* ë·°í¬íŠ¸ë¡œ ë³€í™˜í•˜ê³ .*/
+/* ë˜ìŠ¤í„°ë¼ì´ì¦ˆ : í”½ì…€ì„ ë§Œë“ ë‹¤. */
 
 struct PS_IN
 {
     float4 vPosition : SV_POSITION;
-    float2 vTexcoord : TEXCOORD0;    
+    float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos : TEXCOORD2;
 };
 
 struct PS_OUT
 {
-    float4 vColor : SV_TARGET0;
-    
+    float4 vColor : SV_TARGET0; 
 };
 
-/* ¸¸µç ÇÈ¼¿ °¢°¢¿¡ ´ëÇØ¼­ ÇÈ¼¿ ½¦ÀÌ´õ¸¦ ¼öÇàÇÑ´Ù. */
-/* ÇÈ¼¿ÀÇ »öÀ» °áÁ¤ÇÑ´Ù. */
+struct PS_WEIGHTBLEND_OUT
+{
+    float4 vAccumColor : SV_TARGET0;
+    float4 vAccumAlpha : SV_TARGET1;
+};
+
+/* ë§Œë“  í”½ì…€ ê°ê°ì— ëŒ€í•´ì„œ í”½ì…€ ì‰ì´ë”ë¥¼ ìˆ˜í–‰í•œë‹¤. */
+/* í”½ì…€ì˜ ìƒ‰ì„ ê²°ì •í•œë‹¤. */
 
 
 PS_OUT PS_MAIN(PS_IN In)
 {
-    PS_OUT Out = (PS_OUT) 0;    
-    
-    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
-    
-    return Out;    
+    PS_OUT Out = (PS_OUT) 0;
+
+    //Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    Out.vColor = g_vColor;
+
+    return Out;
 }
 
-PS_OUT PS_MAIN_BLEND(PS_IN In)
+PS_WEIGHTBLEND_OUT PS_MAIN_BLEND(PS_IN In)
 {
-    PS_OUT Out = (PS_OUT) 0;
-    
-    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
-    
+    PS_WEIGHTBLEND_OUT Out = (PS_WEIGHTBLEND_OUT) 0;
+
+    vector vFinalColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+
     float2 vTexcoord;
-    
+
     vTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
     vTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
-    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
+    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord); 
+
+    vFinalColor.a = vFinalColor.a * saturate(vDepthDesc.y - In.vProjPos.w);
     
+    float z = In.vProjPos.z / In.vProjPos.w;
+    float weight = max(1e-5, exp(-z * 0.57f)); 
+
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
+    Out.vAccumAlpha.r = vFinalColor.a;
+
+    return Out;
+}
+
+
+PS_WEIGHTBLEND_OUT PS_TRAIL(PS_IN In)
+{
+    PS_WEIGHTBLEND_OUT Out = (PS_WEIGHTBLEND_OUT) 0;
+
+    //Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
     
+    vector vEffectTexture = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    vector vFinalColor = float4(g_vTrailColor * vEffectTexture.r, vEffectTexture.r);
+    //vector vFinalColor = float4(1.f, 1.f, 1.f, vEffectTexture.r);
+    // ì•ŒíŒŒê°’ ì§ì ‘ ì§€ì •í•´ì¤„ ì‹œ
+    //  vFinalColor.a *= g_vTrailColor.a;
+    vFinalColor.a *= In.vTexcoord.x;
+     
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a);
+    Out.vAccumAlpha.r = vFinalColor.a;
     
-    Out.vColor.a = Out.vColor.a * saturate(vDepthDesc.y - In.vProjPos.w);
+    return Out;
+}
+
+PS_OUT PS_SCREEN_TRAIL(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    //Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vEffectTexture = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    vector vFinalColor = float4(vEffectTexture.rgb, vEffectTexture.r);
+    //vector vFinalColor = float4(1.f, 1.f, 1.f, vEffectTexture.r);
+    vFinalColor *= In.vTexcoord.x; 
+    Out.vColor = vFinalColor;  
     
     return Out;
 }
 
 technique11 DefaultTechnique
 {
-    /* Æ¯Á¤ ÆĞ½º¸¦ ÀÌ¿ëÇØ¼­ Á¡Á¤À» ±×·Á³Â´Ù. */
-    /* ÇÏ³ªÀÇ ¸ğµ¨À» ±×·Á³Â´Ù. */ 
-    /* ¸ğµ¨ÀÇ »óÈ²¿¡ µû¶ó ´Ù¸¥ ½¦ÀÌµù ±â¹ı ¼¼Æ®(¸í¾Ï + ¸²¶óÀÌÆ® + ½ºÆåÅ§·¯ + ³ë¸Ö¸Ê + ssao )¸¦ ¸Ô¿©ÁÖ±âÀ§ÇØ¼­ */
+    /* íŠ¹ì • íŒ¨ìŠ¤ë¥¼ ì´ìš©í•´ì„œ ì ì •ì„ ê·¸ë ¤ëƒˆë‹¤. */
+    /* í•˜ë‚˜ì˜ ëª¨ë¸ì„ ê·¸ë ¤ëƒˆë‹¤. */
+    /* ëª¨ë¸ì˜ ìƒí™©ì— ë”°ë¼ ë‹¤ë¥¸ ì‰ì´ë”© ê¸°ë²• ì„¸íŠ¸(ëª…ì•” + ë¦¼ë¼ì´íŠ¸ + ìŠ¤í™í˜ëŸ¬ + ë…¸ë©€ë§µ + ssao )ë¥¼ ë¨¹ì—¬ì£¼ê¸°ìœ„í•´ì„œ */
     pass DefaultPass
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-        VertexShader = compile vs_5_0 VS_MAIN();   
+        VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 
-    
+
     pass DefaultPass1
     {
         SetRasterizerState(RS_Default);
@@ -139,12 +217,31 @@ technique11 DefaultTechnique
 
     }
 
-    ///* Á¤Á¡ÀÇ Á¤º¸¿¡ µû¶ó ½¦ÀÌ´õ ÆÄÀÏÀ» ÀÛ¼ºÇÑ´Ù. */
-    ///* Á¤Á¡ÀÇ Á¤º¸°¡ °°Áö¸¸ ¿ÏÀüÈ÷ ´Ù¸¥ Ãë±ŞÀ» ÇÏ´À ¤¤°´Ã¼³ª ¸ğµ¨À» ±×¸®´Â ¹æ½Ä -> ·»´õ¸µ¹æ½Ä¿¡ Â÷ÀÌ°¡ »ı±æ ¼ö ÀÖ´Ù. */ 
+    pass TrailPass
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetBlendState(BS_WeightBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_TRAIL();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_TRAIL();
+    }
+
+    pass ScreenTrailPass
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_WeightBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_SCREEN_TRAIL();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SCREEN_TRAIL();
+    }
+
+    ///* ì •ì ì˜ ì •ë³´ì— ë”°ë¼ ì‰ì´ë” íŒŒì¼ì„ ì‘ì„±í•œë‹¤. */
+    ///* ì •ì ì˜ ì •ë³´ê°€ ê°™ì§€ë§Œ ì™„ì „íˆ ë‹¤ë¥¸ ì·¨ê¸‰ì„ í•˜ëŠ ã„´ê°ì²´ë‚˜ ëª¨ë¸ì„ ê·¸ë¦¬ëŠ” ë°©ì‹ -> ë Œë”ë§ë°©ì‹ì— ì°¨ì´ê°€ ìƒê¸¸ ìˆ˜ ìˆë‹¤. */ 
     //pass DefaultPass1
     //{
     //    VertexShader = compile vs_5_0 VS_MAIN1();
 
-    //}
-
+    //} 
 }

@@ -108,19 +108,27 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>EditorPch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Debug/Inc/;../../EngineSDK/Debug/Inc/DirectXTK/;../../EngineSDK/Debug/Inc/fmod/;../../EngineSDK/Debug/Inc/Fx11/;../../EngineSDK/Debug/Inc/assimp/;../../EngineSDK/Debug/Inc/ImGui/;../../EngineSDK/Debug/Inc/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Debug/Inc/;../../EngineSDK/Debug/Inc/DirectXTK/;../../EngineSDK/Debug/Inc/fmod/;../../EngineSDK/Debug/Inc/Fx11/;../../EngineSDK/Debug/Inc/assimp/;../../EngineSDK/Debug/Inc/ImGui/;../../EngineSDK/Debug/Inc/Jolt/;../../EngineSDK/Debug/Inc/Guizmo/</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>EditorPch.h</ForcedIncludeFiles>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../EngineSDK/Debug/Lib/</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Engine.lib;DirectXTKd.lib;Joltd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Engine.lib;DirectXTKd.lib;Joltd.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -128,12 +136,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>EditorPch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Release/Inc/;../../EngineSDK/Release/Inc/DirectXTK/;../../EngineSDK/Release/Inc/fmod/;../../EngineSDK/Release/Inc/Fx11/;../../EngineSDK/Release/Inc/assimp/;../../EngineSDK/Release/Inc/ImGui/;../../EngineSDK/Release/Inc/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../../EngineSDK/Release/Inc/;../../EngineSDK/Release/Inc/DirectXTK/;../../EngineSDK/Release/Inc/fmod/;../../EngineSDK/Release/Inc/Fx11/;../../EngineSDK/Release/Inc/assimp/;../../EngineSDK/Release/Inc/ImGui/;../../EngineSDK/Release/Inc/Jolt/;../../EngineSDK/Release/Inc/Guizmo/</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>EditorPch.h</ForcedIncludeFiles>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,31 +151,228 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../EngineSDK/Release/Lib/</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Engine.lib;DirectXTK.lib;Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Engine.lib;DirectXTK.lib;Jolt.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Public\EditorPch.h" />
+    <ClInclude Include="..\Public\AIController_Edit.h" />
+    <ClInclude Include="..\public\AnimationTool.h" />
+    <ClInclude Include="..\Public\BigChest.h" />
+    <ClInclude Include="..\Public\DanjinJar.h" />
+    <ClInclude Include="..\Public\Duimuk_Part.h" />
+    <ClInclude Include="..\Public\ElevatorL.h" />
+    <ClInclude Include="..\Public\Elevator_Inner.h" />
+    <ClInclude Include="..\Public\Elevator_Mid.h" />
+    <ClInclude Include="..\Public\Elevator_Outer.h" />
+    <ClInclude Include="..\Public\E_Body_Khazan_Spear.h" />
+    <ClInclude Include="..\Public\Camera_Compre.h" />
+    <ClInclude Include="..\Public\Camera_Effect.h" />
+    <ClInclude Include="..\Public\Camera_Map.h" />
+    <ClInclude Include="..\Public\Camera_UI.h" />
+    <ClInclude Include="..\Public\CloudSphere.h" />
+    <ClInclude Include="..\Public\Debug_Controller.h" />
+    <ClInclude Include="..\Public\Door_Gear.h" />
+    <ClInclude Include="..\Public\Editor_Animation.h" />
+    <ClInclude Include="..\Public\Editor_Bone.h" />
+    <ClInclude Include="..\Public\Editor_Channel.h" />
+    <ClInclude Include="..\Public\Camera_Shader.h" />
     <ClInclude Include="..\Public\Editor_Defines.h" />
+    <ClInclude Include="..\Public\Editor_Mesh.h" />
+    <ClInclude Include="..\Public\Editor_MeshMaterial.h" />
+    <ClInclude Include="..\public\Editor_Model.h" />
+    <ClInclude Include="..\Public\Editor_ModelMesh_Instance.h" />
+    <ClInclude Include="..\Public\Editor_Model_Instance.h" />
+    <ClInclude Include="..\public\Editor_TempCamera.h" />
+    <ClInclude Include="..\public\Edit_Interface_UI.h" />
+    <ClInclude Include="..\Public\Edit_Monster.h" />
+    <ClInclude Include="..\public\Edit_UIBackGround.h" />
+    <ClInclude Include="..\public\Edit_UIBase.h" />
+    <ClInclude Include="..\Public\Effect_Element.h" />
+    <ClInclude Include="..\Public\Effect_Mesh_Instance.h" />
+    <ClInclude Include="..\Public\Effect_Point_Instance.h" />
+    <ClInclude Include="..\Public\Effect_Prefab.h" />
+    <ClInclude Include="..\Public\Effect_Sprite.h" />
+    <ClInclude Include="..\Public\Effect_Terrain.h" />
+    <ClInclude Include="..\Public\ElevatorS.h" />
+    <ClInclude Include="..\Public\Elevator_Gear.h" />
+    <ClInclude Include="..\Public\GearGate.h" />
+    <ClInclude Include="..\Public\GiantGate.h" />
+    <ClInclude Include="..\Public\GiantGate_Part_L.h" />
+    <ClInclude Include="..\Public\GiantGate_Part_R.h" />
+    <ClInclude Include="..\Public\NPC_Danjin.h" />
+    <ClInclude Include="..\Public\NPC_Duimuk.h" />
+    <ClInclude Include="..\Public\NPC_Daphrona.h" />
+    <ClInclude Include="..\Public\UnLockGear.h" />
+    <ClInclude Include="..\Public\IronGate.h" />
+    <ClInclude Include="..\Public\IronGate_Lock.h" />
+    <ClInclude Include="..\Public\IronGate_Part_L.h" />
+    <ClInclude Include="..\Public\IronGate_Part_R.h" />
+    <ClInclude Include="..\public\JOH_EditorModelTest.h" />
+    <ClInclude Include="..\Public\E_Khazan_Spear.h" />
+    <ClInclude Include="..\Public\Ladder.h" />
+    <ClInclude Include="..\Public\Ladder_Bottom.h" />
+    <ClInclude Include="..\Public\Ladder_Middle.h" />
+    <ClInclude Include="..\Public\Ladder_Support.h" />
+    <ClInclude Include="..\Public\Ladder_Top.h" />
+    <ClInclude Include="..\Public\Level_AI.h" />
+    <ClInclude Include="..\Public\Level_Animation.h" />
+    <ClInclude Include="..\Public\Level_Camera.h" />
     <ClInclude Include="..\Public\Level_Editor.h" />
+    <ClInclude Include="..\Public\Level_Effect.h" />
+    <ClInclude Include="..\Public\Lever_Gear.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
+    <ClInclude Include="..\Public\Level_Map.h" />
+    <ClInclude Include="..\Public\Level_Shader.h" />
+    <ClInclude Include="..\Public\Level_UI.h" />
+    <ClInclude Include="..\Public\Lever.h" />
+    <ClInclude Include="..\Public\LineTrail.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
+    <ClInclude Include="..\Public\MapEditor_Header.h" />
+    <ClInclude Include="..\Public\MapObject.h" />
+    <ClInclude Include="..\Public\Map_Light.h" />
+    <ClInclude Include="..\Public\Map_Spawn.h" />
+    <ClInclude Include="..\Public\Map_Terrain.h" />
+    <ClInclude Include="..\Public\Slate_Switch.h" />
+    <ClInclude Include="..\Public\Statue.h" />
+    <ClInclude Include="..\Public\Statue_Deco.h" />
+    <ClInclude Include="..\Public\Statue_Plate.h" />
+    <ClInclude Include="..\Public\Trigger.h" />
+    <ClInclude Include="..\Public\Map_TestPlayer.h" />
+    <ClInclude Include="..\Public\MeshTrail.h" />
+    <ClInclude Include="..\public\Player_Shader.h" />
+    <ClInclude Include="..\Public\Prop.h" />
+    <ClInclude Include="..\Public\Prop_Animated.h" />
+    <ClInclude Include="..\Public\Prop_Dynamic.h" />
+    <ClInclude Include="..\Public\Prop_Interactive.h" />
+    <ClInclude Include="..\Public\Prop_Object.h" />
+    <ClInclude Include="..\Public\Prop_Preview.h" />
+    <ClInclude Include="..\Public\Prop_Static.h" />
+    <ClInclude Include="..\Public\Prop_Test.h" />
+    <ClInclude Include="..\Public\ScreenTrail.h" />
+    <ClInclude Include="..\Public\SkySphere.h" />
+    <ClInclude Include="..\public\Terrain_Shader.h" />
+    <ClInclude Include="..\Public\BladeNexus.h" />
+    <ClInclude Include="..\Public\TombStone.h" />
+    <ClInclude Include="..\Public\VerticalGate.h" />
     <ClInclude Include="Editor.h" />
+    <ClInclude Include="EditorPch.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Private\EditorPch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="..\Private\AIController_Edit.cpp" />
+    <ClCompile Include="..\private\AnimationTool.cpp" />
+    <ClCompile Include="..\Private\BigChest.cpp" />
+    <ClCompile Include="..\Private\DanjinJar.cpp" />
+    <ClCompile Include="..\Private\Duimuk_Part.cpp" />
+    <ClCompile Include="..\Private\ElevatorL.cpp" />
+    <ClCompile Include="..\Private\Elevator_Inner.cpp" />
+    <ClCompile Include="..\Private\Elevator_Mid.cpp" />
+    <ClCompile Include="..\Private\Elevator_Outer.cpp" />
+    <ClCompile Include="..\Private\E_Body_Khazan_Spear.cpp" />
+    <ClCompile Include="..\Private\Camera_Compre.cpp" />
+    <ClCompile Include="..\Private\Camera_Effect.cpp" />
+    <ClCompile Include="..\Private\Camera_Map.cpp" />
+    <ClCompile Include="..\Private\Camera_UI.cpp" />
+    <ClCompile Include="..\Private\CloudSphere.cpp" />
+    <ClCompile Include="..\Private\Debug_Controller.cpp" />
+    <ClCompile Include="..\Private\Door_Gear.cpp" />
+    <ClCompile Include="..\Private\Editor_Animation.cpp" />
+    <ClCompile Include="..\Private\Editor_Bone.cpp" />
+    <ClCompile Include="..\Private\Editor_Channel.cpp" />
+    <ClCompile Include="..\Private\Editor_Mesh.cpp" />
+    <ClCompile Include="..\Private\Editor_MeshMaterial.cpp" />
+    <ClCompile Include="..\private\Editor_Model.cpp" />
+    <ClCompile Include="..\Private\Editor_ModelMesh_Instance.cpp" />
+    <ClCompile Include="..\Private\Editor_Model_Instance.cpp" />
+    <ClCompile Include="..\private\Editor_TempCamera.cpp" />
+    <ClCompile Include="..\private\Edit_Interface_UI.cpp" />
+    <ClCompile Include="..\Private\Edit_Monster.cpp" />
+    <ClCompile Include="..\private\Edit_UIBackGround.cpp" />
+    <ClCompile Include="..\private\Edit_UIBase.cpp" />
+    <ClCompile Include="..\Private\Effect_Element.cpp" />
+    <ClCompile Include="..\Private\Effect_Mesh_Instance.cpp" />
+    <ClCompile Include="..\Private\Effect_Point_Instance.cpp" />
+    <ClCompile Include="..\Private\Effect_Prefab.cpp" />
+    <ClCompile Include="..\Private\Effect_Sprite.cpp" />
+    <ClCompile Include="..\Private\Effect_Terrain.cpp" />
+    <ClCompile Include="..\Private\ElevatorS.cpp" />
+    <ClCompile Include="..\Private\Elevator_Gear.cpp" />
+    <ClCompile Include="..\Private\GearGate.cpp" />
+    <ClCompile Include="..\Private\GiantGate.cpp" />
+    <ClCompile Include="..\Private\GiantGate_Part_L.cpp" />
+    <ClCompile Include="..\Private\GiantGate_Part_R.cpp" />
+    <ClCompile Include="..\Private\NPC_Danjin.cpp" />
+    <ClCompile Include="..\Private\NPC_Duimuk.cpp" />
+    <ClCompile Include="..\Private\NPC_Daphrona.cpp" />
+    <ClCompile Include="..\Private\UnLockGear.cpp" />
+    <ClCompile Include="..\Private\IronGate.cpp" />
+    <ClCompile Include="..\Private\IronGate_Lock.cpp" />
+    <ClCompile Include="..\Private\IronGate_Part_L.cpp" />
+    <ClCompile Include="..\Private\IronGate_Part_R.cpp" />
+    <ClCompile Include="..\private\JOH_EditorModelTest.cpp" />
+    <ClCompile Include="..\Private\Camera_Shader.cpp" />
+    <ClCompile Include="..\Private\E_Khazan_Spear.cpp" />
+    <ClCompile Include="..\Private\Ladder.cpp" />
+    <ClCompile Include="..\Private\Ladder_Bottom.cpp" />
+    <ClCompile Include="..\Private\Ladder_Middle.cpp" />
+    <ClCompile Include="..\Private\Ladder_Support.cpp" />
+    <ClCompile Include="..\Private\Ladder_Top.cpp" />
+    <ClCompile Include="..\Private\Level_AI.cpp" />
+    <ClCompile Include="..\Private\Level_Animation.cpp" />
+    <ClCompile Include="..\Private\Level_Camera.cpp" />
     <ClCompile Include="..\Private\Level_Editor.cpp" />
+    <ClCompile Include="..\Private\Level_Effect.cpp" />
+    <ClCompile Include="..\Private\Lever_Gear.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
+    <ClCompile Include="..\Private\Level_Map.cpp" />
+    <ClCompile Include="..\Private\Level_Shader.cpp" />
+    <ClCompile Include="..\Private\Level_UI.cpp" />
+    <ClCompile Include="..\Private\Lever.cpp" />
+    <ClCompile Include="..\Private\LineTrail.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
+    <ClCompile Include="..\Private\MapObject.cpp" />
+    <ClCompile Include="..\Private\Map_Light.cpp" />
+    <ClCompile Include="..\Private\Map_Spawn.cpp" />
+    <ClCompile Include="..\Private\Map_Terrain.cpp" />
+    <ClCompile Include="..\Private\Slate_Switch.cpp" />
+    <ClCompile Include="..\Private\Statue.cpp" />
+    <ClCompile Include="..\Private\Statue_Deco.cpp" />
+    <ClCompile Include="..\Private\Statue_Plate.cpp" />
+    <ClCompile Include="..\Private\Trigger.cpp" />
+    <ClCompile Include="..\Private\Map_TestPlayer.cpp" />
+    <ClCompile Include="..\Private\MeshTrail.cpp" />
+    <ClCompile Include="..\private\Player_Shader.cpp" />
+    <ClCompile Include="..\Private\Prop.cpp" />
+    <ClCompile Include="..\Private\Prop_Animated.cpp" />
+    <ClCompile Include="..\Private\Prop_Dynamic.cpp" />
+    <ClCompile Include="..\Private\Prop_Interactive.cpp" />
+    <ClCompile Include="..\Private\Prop_Object.cpp" />
+    <ClCompile Include="..\Private\Prop_Preview.cpp" />
+    <ClCompile Include="..\Private\Prop_Static.cpp" />
+    <ClCompile Include="..\Private\Prop_Test.cpp" />
+    <ClCompile Include="..\Private\ScreenTrail.cpp" />
+    <ClCompile Include="..\Private\SkySphere.cpp" />
+    <ClCompile Include="..\private\Terrain_Shader.cpp" />
+    <ClCompile Include="..\Private\BladeNexus.cpp" />
+    <ClCompile Include="..\Private\TombStone.cpp" />
+    <ClCompile Include="..\Private\VerticalGate.cpp" />
     <ClCompile Include="Editor.cpp" />
+    <ClCompile Include="EditorPch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">EditorPch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">EditorPch.h</PrecompiledHeaderFile>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Editor.rc" />
@@ -173,6 +380,9 @@
   <ItemGroup>
     <Image Include="Editor.ico" />
     <Image Include="small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Edit_UI.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -18,14 +18,23 @@ private:
 	CTransform(const CTransform& Prototype) = delete;
 	virtual ~CTransform() = default;
 
-public:	
+public:
+	virtual HRESULT Initialize_Prototype();
+	virtual HRESULT Initialize_Clone(void* pArg);
+
+public:
+	HRESULT Bind_Shader_Resource(class CShader* pShader, const _char* pConstantName);
+	HRESULT Bind_Shader_Resource(class CDeferredShader* pShader, const _char* pConstantName);
+    HRESULT Bind_PrevWorldMatrix(class CShader* pShader, const _char* pConstantName);
+
+public:
 	_vector Get_State(STATE eState) const {
 		return XMLoadFloat4(reinterpret_cast<const _float4*>(&m_WorldMatrix.m[ENUM_CLASS(eState)]));
-	}	
+	}
 
 	_float3 Get_Scaled() const {
 		return _float3(
-			XMVectorGetX(XMVector3Length(Get_State(STATE::RIGHT))), 
+			XMVectorGetX(XMVector3Length(Get_State(STATE::RIGHT))),
 			XMVectorGetX(XMVector3Length(Get_State(STATE::UP))),
 			XMVectorGetX(XMVector3Length(Get_State(STATE::LOOK)))
 		);
@@ -35,6 +44,10 @@ public:
 		return XMLoadFloat4x4(&m_WorldMatrix);
 	}
 
+    _matrix Get_PrevWorldMatrix() {
+        return XMLoadFloat4x4(&m_PrevWorldMatrix);
+    }
+
 	const _float4x4* Get_WorldMatrixPtr() {
 		return &m_WorldMatrix;
 	}
@@ -43,21 +56,34 @@ public:
 		return XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_WorldMatrix));
 	}
 
+	void Set_WorldMatrix_4x4(_float4x4 WorldMatrix) {
+		m_WorldMatrix = WorldMatrix;
+	}
+
+	void Set_WorldMatrix(_matrix WorldMatrix) {
+		XMStoreFloat4x4(&m_WorldMatrix, WorldMatrix);
+	}
+
 	void Set_State(STATE eState, _fvector vState) {
 		XMStoreFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[ENUM_CLASS(eState)]), vState);
 	}
 
-public:
-	virtual HRESULT Initialize_Prototype();
-	virtual HRESULT Initialize_Clone(void* pArg);
+	void Set_Quaternion(_vector vQuaternion);
+	_vector Get_Rotation_Quat();
 
-public:
-	HRESULT Bind_Shader_Resource(class CShader* pShader, const _char* pConstantName);
+	_float Get_RotationPerSec() { return m_fRotationPerSec; }
+	_float Get_SpeedPerSec() { return m_fSpeedPerSec; }
+
+	void	Set_RotationPerSec(_float fRotationPerSec) { m_fRotationPerSec = fRotationPerSec; }
+	void	Set_SpeedPerSec(_float fSpeedPerSec) { m_fSpeedPerSec = fSpeedPerSec; }
+
+    void    Cache_PrevWorldMatrix() { m_PrevWorldMatrix = m_WorldMatrix; }
 
 public:
 	void Scale(_float3 vScale);
 	void Scaling(_float3 vScale);
-	void Go_Straight(_float fTimeDelta, class CNavigation* pNavigation = nullptr);
+
+	void Go_Straight(_float fTimeDelta);
 	void Go_Left(_float fTimeDelta);
 	void Go_Right(_float fTimeDelta);
 	void Go_Backward(_float fTimeDelta);
@@ -65,9 +91,16 @@ public:
 	void Rotation(_float fX, _float fY, _float fZ);
 	void Turn(_fvector vAxis, _float fTimeDelta);
 	void LookAt(_fvector vAt);
+	void LookAt_Lerp(_fvector vAt, _float fTimeDelta, _float fTurnSpeed);
+    void LookAt_Revers(_fvector vAt);
 	void Chase(_fvector vTargetPos, _float fTimeDelta, _float fLimit = 0.f);
+	void AI_Chase(_fvector vTargetPos, _float fTimeDelta, _float SpeedPerSec ,_float fLimit = 0.f);
+	void Look_Dir(_fvector vDir);    
+
 private:
 	_float4x4				m_WorldMatrix = {};
+    _float4x4				m_PrevWorldMatrix = {};
+
 	_float					m_fSpeedPerSec = {};
 	_float					m_fRotationPerSec = {};
 	_float3					m_vAngles = {};	

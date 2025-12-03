@@ -1,11 +1,13 @@
-#include "EnginePch.h"
 #include "Layer.h"
-
+#include "GameInstance.h"
 #include "GameObject.h"
 
-CLayer::CLayer()
-{
 
+
+CLayer::CLayer()
+	: m_pGameInstance { CGameInstance::GetInstance()}
+{
+	Safe_AddRef(m_pGameInstance);
 }
 
 CComponent* CLayer::Get_Component(const _wstring& strComponentTag, _uint iIndex)
@@ -48,11 +50,86 @@ void CLayer::Update(_float fTimeDelta)
 
 void CLayer::Late_Update(_float fTimeDelta)
 {
-	for (auto& pGameObject : m_GameObjects)
+	for (auto it = m_GameObjects.begin(); it != m_GameObjects.end(); )
 	{
-		if (nullptr != pGameObject)
-			pGameObject->Late_Update(fTimeDelta);
+		if ((*it)->Get_IsDead() && !(*it)->Get_IsPool())
+		{
+			m_DeadGameObjects.push_back((*it));
+			it = m_GameObjects.erase(it);
+		}
+		else if ((*it)->Get_IsDead() && (*it)->Get_IsPool())
+		{
+			m_pGameInstance->Reset_PoolObject((*it));
+			it = m_GameObjects.erase(it);
+		}
+		else
+		{
+			if (nullptr != (*it))
+				(*it)->Late_Update(fTimeDelta);
+			++it;
+		}
+
 	}
+}
+
+void CLayer::PoolObject_Back()
+{
+    for (auto it = m_GameObjects.begin(); it != m_GameObjects.end(); )
+    {
+        if ((*it)->Get_IsPool())
+        {
+            m_pGameInstance->Reset_PoolObject((*it));
+            if ((*it)->Get_IsDead())
+                int a = 0;
+            it = m_GameObjects.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+
+    }
+
+    for (auto it = m_DeadGameObjects.begin(); it != m_DeadGameObjects.end(); )
+    {
+        if ((*it)->Get_IsPool())
+        {
+            m_pGameInstance->Reset_PoolObject((*it));
+            if ((*it)->Get_IsDead())
+                int a = 0;
+            it = m_GameObjects.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+
+    }
+}
+
+void CLayer::DeadObject_Clear()
+{
+    for (auto it = m_DeadGameObjects.begin(); it != m_DeadGameObjects.end(); )
+    {
+        if ((*it)->Get_IsDead() && !(*it)->Get_IsPool())
+        {
+            Safe_Release(*it);
+        }
+        else if ((*it)->Get_IsPool())
+        {
+            m_pGameInstance->Reset_PoolObject((*it));
+            if ((*it)->Get_IsDead())
+                int a = 0;
+            it = m_GameObjects.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+
+    }
+
+	m_DeadGameObjects.clear();
 }
 
 CLayer* CLayer::Create()
@@ -64,9 +141,16 @@ void CLayer::Free()
 {
 	__super::Free();
 
-	for (auto& pGameObject : m_GameObjects)
+	for (auto& pGameObject : m_DeadGameObjects)
 		Safe_Release(pGameObject);
 
+	m_DeadGameObjects.clear();
+
+    for (auto& pGameObject : m_GameObjects)
+        Safe_Release(pGameObject);
+	
 	m_GameObjects.clear();
+
+	Safe_Release(m_pGameInstance);
 	
 }

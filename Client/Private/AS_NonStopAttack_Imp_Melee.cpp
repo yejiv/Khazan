@@ -1,0 +1,56 @@
+#include "AS_NonStopAttack_Imp_Melee.h"
+#include "Imp_Melee.h"
+#include "GameInstance.h"
+#include "Body_Imp_Melee.h"
+#include "BlackBoard.h"
+#include "AI_Controller.h"
+#include "FSM_Imp_Melee.h"
+
+
+CAS_NonStopAttack_Imp_Melee::CAS_NonStopAttack_Imp_Melee()
+{
+}
+
+void CAS_NonStopAttack_Imp_Melee::Enter(CStateMachine* pFSM, CGameObject* pOwner)
+{
+    CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
+    CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
+    pModel->Set_Animation(29);
+}
+
+void CAS_NonStopAttack_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
+{
+    CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
+    CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
+
+    if (pModel->Play_Animation(fTimeDelta))
+    {
+        CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
+        pBB->Set_Value<_bool>(pImp->Get_Name(), "isNonStopAttackFinished", true);
+        pFSM->Change_State(ENUM_CLASS(IMPMELEE_STATE::IDLE), pOwner);
+    }
+}
+
+void CAS_NonStopAttack_Imp_Melee::Exit(CStateMachine* pFSM, CGameObject* pOwner)
+{
+}
+
+void CAS_NonStopAttack_Imp_Melee::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->Take_Damage(10,HITREACTION::KNOCKBACK_WEAK,nullptr);
+    }
+}
+
+CAS_NonStopAttack_Imp_Melee* CAS_NonStopAttack_Imp_Melee::Create()
+{
+    return new CAS_NonStopAttack_Imp_Melee();
+}
+
+void CAS_NonStopAttack_Imp_Melee::Free()
+{
+    __super::Free();
+}

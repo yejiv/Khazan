@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "Body_Player.h"
 #include "GameInstance.h"
 
@@ -26,7 +25,7 @@ HRESULT CBody_Player::Initialize_Prototype()
     return S_OK;
 }
 
-HRESULT CBody_Player::Initialize(void* pArg)
+HRESULT CBody_Player::Initialize_Clone(void* pArg)
 {
     BODY_DESC* pDesc = static_cast<BODY_DESC*>(pArg);
     m_pParentState = pDesc->pState;
@@ -37,7 +36,9 @@ HRESULT CBody_Player::Initialize(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pModelCom->Set_Animation(3, true);
+    //m_pModelCom->Set_Animation(3, true);
+    m_pModelCom->Set_AnimationLoop(true);
+    m_pModelCom->Set_Animation(3);
 
     return S_OK;
 }
@@ -51,12 +52,14 @@ void CBody_Player::Update(_float fTimeDelta)
 {
     if (*m_pParentState & CPlayer::RUN)
     {
-        m_pModelCom->Set_Animation(4, true);
+        m_pModelCom->Set_AnimationLoop(true);
+        m_pModelCom->Set_Animation(4);
     }
 
     if (*m_pParentState & CPlayer::IDLE)
     {
-        m_pModelCom->Set_Animation(3, true);
+        m_pModelCom->Set_AnimationLoop(true);
+        m_pModelCom->Set_Animation(3);
     }
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
@@ -68,7 +71,7 @@ void CBody_Player::Update(_float fTimeDelta)
 
 void CBody_Player::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this)))
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
     //if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
     //    return;
@@ -112,11 +115,10 @@ HRESULT CBody_Player::Render_Shadow()
     if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_CombinedWorldMatrix)))
         return E_FAIL;
 
-    /* 그림자를 표현하고하는 특수한 광원을 정의하고 그 광원이 바라본 장면응로서 플레이어를 그려준다. */
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_ShadowLight_Transform_Float4x4(D3DTS::VIEW))))
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_LightViewMatrix", m_pGameInstance->Get_ShadowLightMatrix(D3DTS::VIEW))))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_ShadowLight_Transform_Float4x4(D3DTS::PROJ))))
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_LightProjMatrix", m_pGameInstance->Get_ShadowLightMatrix(D3DTS::PROJ))))
         return E_FAIL;
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
@@ -141,7 +143,7 @@ HRESULT CBody_Player::Ready_Components()
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STAGE1), TEXT("Prototype_Component_Model_Fiona"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fiona"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
@@ -181,7 +183,7 @@ CGameObject* CBody_Player::Clone(void* pArg)
 {
     CBody_Player* pInstance = new CBody_Player(*this);
 
-    if (FAILED(pInstance->Initialize(pArg)))
+    if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
         MSG_BOX(TEXT("Failed to Created : CBody_Player"));
         Safe_Release(pInstance);
@@ -196,5 +198,5 @@ void CBody_Player::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
-    Safe_Release(m_pColliderCom);
+    //Safe_Release(m_pColliderCom);
 }

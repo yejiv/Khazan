@@ -1,4 +1,3 @@
-#include "EditorPch.h"
 #include "Level_Editor.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
@@ -10,24 +9,21 @@ CLevel_Editor::CLevel_Editor(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 
 HRESULT CLevel_Editor::Initialize()
 {
-
-	/* ÇöÀç ·¹º§À» ±¸¼ºÇØÁÖ±â À§ÇÑ °´Ã¼µéÀ» »ı¼ºÇÑ´Ù. */
+	/* í˜„ì¬ ë ˆë²¨ì„ êµ¬ì„±í•´ì£¼ê¸° ìœ„í•œ ê°ì²´ë“¤ì„ ìƒì„±í•œë‹¤. */
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
-
 
 	return S_OK;
 }
 
 void CLevel_Editor::Update(_float fTimeDelta)
 {
-
 	return;
 }
 
 HRESULT CLevel_Editor::Render()
 {
-	SetWindowText(g_hWnd, TEXT("·Î°í·¹º§ÀÔ´Ï´Ù."));
+	SetWindowText(g_hWnd, TEXT("ì—ë””í„° ë ˆë²¨ì…ë‹ˆë‹¤."));
 
 	return S_OK;
 }
@@ -59,7 +55,5 @@ CLevel_Editor* CLevel_Editor::Create(ID3D11Device* pDevice, ID3D11DeviceContext*
 void CLevel_Editor::Free()
 {
 	__super::Free();
-
-
 
 }

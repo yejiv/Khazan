@@ -11,126 +11,128 @@ namespace Engine
 
 #pragma region BASE
 
-	typedef struct tagInt2
-	{
-		int x;
-		int y;
-	}INT2_DATA;
+    typedef struct tagInt2
+    {
+        int x;
+        int y;
+    }INT2_DATA;
 
-	typedef struct tagInt3
-	{
-		int x;
-		int y;
-		int z;
-	}INT3_DATA;
+    typedef struct tagInt3
+    {
+        int x;
+        int y;
+        int z;
+    }INT3_DATA;
 
-	typedef struct tagInt4
-	{
-		int x;
-		int y;
-		int z;
-		int w;
-	}INT4_DATA;
+    typedef struct tagInt4
+    {
+        int x;
+        int y;
+        int z;
+        int w;
+    }INT4_DATA;
 
-	typedef struct tagUInt2
-	{
-		unsigned int x;
-		unsigned int y;
-	}UINT2_DATA;
+    typedef struct tagUInt2
+    {
+        unsigned int x;
+        unsigned int y;
+    }UINT2_DATA;
 
-	typedef struct tagUInt3
-	{
-		unsigned int x;
-		unsigned int y;
-		unsigned int z;
-	}UINT3_DATA;
+    typedef struct tagUInt3
+    {
+        unsigned int x;
+        unsigned int y;
+        unsigned int z;
+    }UINT3_DATA;
 
-	typedef struct tagUInt4
-	{
-		unsigned int x;
-		unsigned int y;
-		unsigned int z;
-		unsigned int w;
-	}UINT4_DATA;
+    typedef struct tagUInt4
+    {
+        unsigned int x;
+        unsigned int y;
+        unsigned int z;
+        unsigned int w;
+    }UINT4_DATA;
 
-	typedef struct tagFloat2
-	{
-		float x;
-		float y;
-	}FLOAT2_DATA;
+    typedef struct tagFloat2
+    {
+        float x;
+        float y;
 
-	typedef struct tagFloat3
-	{
-		float x;
-		float y;
-		float z;
+        tagFloat2() : x(0.f), y(0.f) {}
+        tagFloat2(float _x, float _y) : x(_x), y(_y) {}
+    }FLOAT2_DATA;
 
-        tagFloat3() : x(0.f), y(0.f), z(0.f) {}             // ±‚∫ª ª˝º∫¿⁄
-        tagFloat3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}                        // ¥Î¿‘ ª˝º∫¿⁄
+    typedef struct tagFloat3
+    {
+        float x;
+        float y;
+        float z;
 
-	}FLOAT3_DATA;
+        tagFloat3() : x(0.f), y(0.f), z(0.f) {}
+        tagFloat3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
 
-	typedef struct tagFloat4
-	{
-		float x;
-		float y;
-		float z;
-		float w;
+    }FLOAT3_DATA;
 
-        tagFloat4() : x(0.f), y(0.f), z(0.f) {}             // ±‚∫ª ª˝º∫¿⁄
-        tagFloat4(float _x, float _y, float _z, float _w) : x(_x), y(_y), z(_z), w(_w) {}       // ¥Î¿‘ ª˝º∫¿⁄
+    typedef struct tagFloat4
+    {
+        float x;
+        float y;
+        float z;
+        float w;
 
-	}FLOAT4_DATA;
+        tagFloat4() : x(0.f), y(0.f), z(0.f) {}
+        tagFloat4(float _x, float _y, float _z, float _w) : x(_x), y(_y), z(_z), w(_w) {}
 
-	typedef struct tagFloat4x4
-	{
-		FLOAT4_DATA m1;
-		FLOAT4_DATA m2;
-		FLOAT4_DATA m3;
-		FLOAT4_DATA m4;
+    }FLOAT4_DATA;
 
-		//  πËø≠√≥∑≥ ¡¢±Ÿ ∞°¥…«œ∞‘ ∏∏µÍ
-		FLOAT4_DATA& operator[](int index){return *(&m1 + index);}
-		const FLOAT4_DATA& operator[](int index) const{return *(&m1 + index);}
+    typedef struct tagFloat4x4
+    {
+        FLOAT4_DATA m1;
+        FLOAT4_DATA m2;
+        FLOAT4_DATA m3;
+        FLOAT4_DATA m4;
 
-		void SaveBinary(std::ofstream& ofs) const { ofs.write((char*)this, sizeof(*this)); }
-		void LoadBinary(std::ifstream& ifs) { ifs.read((char*)this, sizeof(*this)); }
+        FLOAT4_DATA& operator[](int index) { return *(&m1 + index); }
+        const FLOAT4_DATA& operator[](int index) const { return *(&m1 + index); }
 
-	}FLOAT4X4_DATA;
+        void SaveBinary(std::ofstream& ofs) const { ofs.write((char*)this, sizeof(*this)); }
+        void LoadBinary(std::ifstream& ifs) { ifs.read((char*)this, sizeof(*this)); }
+
+    }FLOAT4X4_DATA;
 
 #pragma endregion
 
 #pragma region Animation
 
-	typedef struct tagVertexMeshSet
-	{
-		FLOAT3_DATA					position;
-		FLOAT3_DATA					normal;
-		FLOAT3_DATA					tangent;
-		FLOAT3_DATA					binormal;
-		FLOAT2_DATA					texcoord;
+    typedef struct tagVertexMeshSet
+    {
+        FLOAT3_DATA					position;
+        FLOAT3_DATA					normal;
+        FLOAT3_DATA					tangent;
+        FLOAT3_DATA					binormal;
+        FLOAT2_DATA					texcoord;
 
-		//ANIM
-		UINT4_DATA					blendIndex;
-		FLOAT4_DATA					blendWeight;
+        //ANIM
+        UINT4_DATA					blendIndex;
+        FLOAT4_DATA					blendWeight;
 
-		void SaveBinary(std::ofstream& ofs) const { ofs.write((char*)this, sizeof(*this)); }
-		void LoadBinary(std::ifstream& ifs) { ifs.read((char*)this, sizeof(*this)); }
+        void SaveBinary(std::ofstream& ofs) const { ofs.write((char*)this, sizeof(*this)); }
+        void LoadBinary(std::ifstream& ifs) { ifs.read((char*)this, sizeof(*this)); }
 
-	}MESH_VERTEX_DATA;
+    }MESH_VERTEX_DATA;
 
 
-	typedef struct tagKeyFrameDataSet
-	{
-		FLOAT3_DATA  scale;
-		FLOAT4_DATA  rotation;
-		FLOAT3_DATA  translation;
-		float		 trackPostion;
+    typedef struct tagKeyFrameDataSet
+    {
+        FLOAT3_DATA  scale;
+        FLOAT4_DATA  rotation;
+        FLOAT3_DATA  translation;
+        float		 trackPostion;
 
-		void SaveBinary(std::ofstream& ofs) const { ofs.write((char*)this, sizeof(*this)); }
-		void LoadBinary(std::ifstream& ifs) { ifs.read((char*)this, sizeof(*this)); }
+        void SaveBinary(std::ofstream& ofs) const { ofs.write((char*)this, sizeof(*this)); }
+        void LoadBinary(std::ifstream& ifs) { ifs.read((char*)this, sizeof(*this)); }
 
-	}KEYFRAME_DATA;
+    }KEYFRAME_DATA;
 
     typedef struct tagMeshDataSet
     {
@@ -382,40 +384,10 @@ namespace Engine
 
     }CHANNEL_DATA;
 
-    typedef struct tagAnimationSetUp
+    typedef struct tagAnimationSetData
     {
-        /* ±‚∫ª º≥¡§ */
-        std::string             strName = { "DefaultAnim" };
-        bool                    isLoop = { false };
-        unsigned int            iDirection = { 0 }; // πÊ«‚¿Ã æ¯¿∏∏È 0, 1~24 πÊ«‚¿Ã ¿÷¿Ω ≈¨∂Ûø°º≠ enum class ∏∏µÈæÓº≠ ¿˚øÎ
-
-        /* ±∏∞£ ∫∞ Ω√∞£ ¡∂¿˝*/
-        bool                    isAnimTimeControl = { false };
-        vector<FLOAT3_DATA>     vecAnimTimeControlFrame;   // x: Ω√¿€ «¡∑π¿”, y: ≥° «¡∑π¿”, z: πËº”
-
-        /* æ÷¥œ∏ﬁ¿Ãº« ºº∆Æ  */
-        bool                    isAnimSet = { false };   //æ÷¥œ∏ﬁ¿Ãº« ºº∆Æ¿”?
-        std::string             strAnimSetName = { "DefaultAnimSet" }; //æ÷¥œ∏ﬁ¿Ãº« ºº∆Æ ¿Ã∏ß (¿Ã∞…∑Œ ∞¸∏Æ)
-        vector<std::string>     vecAnimSet; // ¿⁄Ω≈¿ª ∆˜«‘«— ºº∆Æ æ÷¥œ∏ﬁ¿Ãº« ¿Ã∏ßµÈ º¯º≠¥Î∑Œ ¿˙¿Â
-        unsigned int            iAnimSetSelfIndex = {}; // vecAnimSet¿« ¿⁄Ω≈¿« ¿Œµ¶Ω∫
-        unsigned int            iTransitionType = {}; //¥Ÿ¿Ω ∆‰¿Ã¡Ó∑Œ ≥—æÓ∞°¥¬ ¡∂∞«  0 : Auto, 1 : Flag, 2 : Input, 3 : Manual (≈¨∂Ûø° enum class ∏∏µÈ¿⁄)
-        bool                    isWaitForComplete = { true };   //æ÷¥œ∏ﬁ¿Ãº« ¿¸∫Œ ≥°≥™∞Ì ¥Ÿ¿Ω¿∏∑Œ ≥—æÓ∞°? / ¡ÔΩ√ ≥—æÓ∞°?
-        // bool                    isAnimSetImmediatelyNext; //¡ÔΩ√ ≥—æÓ∞°?
-        float                   fAnimSetBlendOutTime = { 0.15f };   //≥°≥™∞Ì æ÷¥œ∏ﬁ¿Ãº« ∞£ ∫Ì∑£µ˘ Ω√∞£
-        float                   fAnimSetBlendInTime = { 0.15f };    //Ω√¿€ Ω√ æ÷¥œ∏ﬁ¿Ãº« ∞£ ∫Ì∑£µ˘ Ω√∞£
-
-        /* ∑Á∆Æ ∏º« */
-        bool                    isRootMotion = { false };    //∑Á∆Æ∏º« ªÁøÎ«“∞≈æﬂ?
-        bool                    isApplyRootRotation = { false };     // »∏¿¸µµ ¿˚øÎ?
-        bool                    isApplyRootPosition = { false };      // ¿ßƒ°µµ ¿˚øÎ?
-        FLOAT3_DATA             RootMitionScale;     //(x,y,z,)√‡ æÓ∂≤∞Õ∏∏ ¿˚øÎ«“∞«¡ˆ 
-
-        /* ¿Ã∫•∆Æ */
-        bool                    isEvent = { false }; // ¿Ã∫•∆Æ∞° ¿÷¥¬¡ˆ
-        bool                    isTriggerOnce = { false };    // ∑Á«¡ Ω√ «—π¯∏∏? (±‚∫ª false)
-        bool                    isTriggerOnExit = { false };  // ∫Ì∑ªµÂ æ∆øÙ Ω√ø°µµ πﬂµø?
-        vector<FLOAT2_DATA>     vecEventFrames; //x : start, y: end(¥‹πﬂº∫¿Ã∏È 0)
-        vector<std::string>     vecEventKeys;
+        std::string             strAnimSetName = { "DefaultAnimSet" };  
+        std::vector<int>        vecAnimIndices;                           
 
         void SaveBinary(std::ofstream& ofs) const
         {
@@ -425,47 +397,102 @@ namespace Engine
                 ofs.write(s.data(), len);
                 };
 
-            // ±‚∫ª º≥¡§
+            write_string(strAnimSetName);
+
+            uint32_t count = static_cast<uint32_t>(vecAnimIndices.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (int idx : vecAnimIndices)
+                ofs.write((char*)&idx, sizeof(int));
+        }
+        void LoadBinary(std::ifstream& ifs)
+        {
+            auto read_string = [&]() -> std::string {
+                uint32_t len;
+                ifs.read((char*)&len, sizeof(len));
+                std::string s(static_cast<size_t>(len), '\0');
+                ifs.read(&s[0], len);
+                return s;
+                };
+
+            strAnimSetName = read_string();
+
+            uint32_t count;
+            ifs.read((char*)&count, sizeof(count));
+            vecAnimIndices.resize(static_cast<size_t>(count));
+            for (auto& idx : vecAnimIndices)
+                ifs.read((char*)&idx, sizeof(int));
+        }
+
+    }ANIMATION_SET_DATA;
+
+    typedef struct tagAnimationSetUp
+    {
+        /* Í∏∞Î≥∏Ï†ïÎ≥¥ */
+        std::string             strName = { "DefaultAnim" };
+        bool                    isLoop = { false };
+        unsigned int            iDirection = { 0 };                         // Î∞©Ìñ• DIRECTION
+
+        /* Ïï†ÎãàÎ©îÏù¥ÏÖò Ï†ÑÌôò ÏÑ§Ï†ï (Ïï†ÎãàÎ©îÏù¥ÏÖò ÏÑ∏Ìä∏Ïóê ÏÇ¨Ïö©Ìï† ÏòàÏ†ï) */
+        unsigned int            iTransitionType = { 0 };                    // Ï†ÑÌôò Ï°∞Í±¥ (0:Auto, 1:Flag, 2:Input, 3:Manual)
+        bool                    isWaitForComplete = { false };               // ÏôÑÎ£å ÎåÄÍ∏∞ Ïó¨Î∂Ä true: Ï†ÑÌôòÌï† Îïå Ïï†ÎãàÎ©îÏù¥ÏÖòÏù¥ Îã§ ÎÅùÎÇòÍ≥† Ï†ÑÌôòÌïòÍ≤†Îã§. / false : Î∞îÎ°ú Ï†ÑÌôòÌïòÍ≤†Îã§.
+        float                   fBlendOutTime = { 0.15f };                  // Î∏îÎ†åÎìú ÏïÑÏõÉ ÏãúÍ∞Ñ (Ïï†ÎãàÎ©îÏù¥ÏÖò ÏµúÏÜåÎ≥¥Ïû• ÏãúÍ∞ÑÏúºÎ°ú Î∞îÍøî ÏÇ¨Ïö©ÌïòÍ≤†Ïùå)
+        float                   fBlendInTime = { 0.15f };                   // Î∏îÎ†åÎìú Ïù∏ ÏãúÍ∞Ñ (Ïï†ÎãàÎ©îÏù¥ÏÖòÏ§ë Í∞ÄÏû• Îπ†Î•¥Í≤å Î≥ÄÌï† Ïàò ÏûàÎäî ÏãúÍ∞Ñ (ex. Îã∑ÏßÄÏï†ÎãàÎ©îÏù¥ÏÖò Ïó∞Í≥Ñ))
+
+        /* Î£®Ìä∏ Î™®ÏÖò */
+        bool                    isRootMotion = { true };                   // Î£®Ìä∏ Î™®ÏÖò ÏÇ¨Ïö© Ïó¨Î∂Ä
+        bool                    isIgnoreRootRot = { false };            // ÌöåÏ†Ñ Ï†ÅÏö© Ïó¨Î∂Ä
+        bool                    isApplyRootPosition = { true };            // ÏúÑÏπò Ï†ÅÏö© Ïó¨Î∂Ä
+        bool                    isIgnoreRootPos = { false };                 // Îß§ ÌîÑÎ†àÏûÑ Î£®Ìä∏Î≥∏ ÏúÑÏπòÍ∞í 0
+        bool                    isIgnoreRootPosFirstFrame = { true };       //Ï≤´ Î≤àÏß∏ ÌîÑÎ†àÏûÑÎßå Î£®Ìä∏Î≥∏ ÏúÑÏπòÍ∞í 0
+        bool                    isAbsoluteRootPosition = { false };         //Î£®Ìä∏Î≥∏Ïù¥ Ï†àÎåÄ ÏúÑÏπòÎ°ú ÏãúÏûëÌïòÎäî Ïï†ÎÇòÎ©îÏù¥ÏÖòÏóê ÏÇ¨Ïö©(Ïò§ÌîÑÏÖã ÌïÑÏöî) (ex- ÏïûÏúºÎ°ú Í∞ÄÎäî ÏΩ§Î≥¥Í≥µÍ≤© 2,3Î≤àÏß∏Í∞ôÏùÄÍ≤ΩÏö∞)
+        FLOAT3_DATA             RootMitionScale = FLOAT3_DATA(1.f, 1.f, 1.f);  // Ï∂ïÎ≥Ñ Ï†ÅÏö© Ïä§ÏºÄÏùº
+
+        /* Ïù¥Î≤§Ìä∏ */
+        bool                    isEvent = { false };                        // Ïù¥Î≤§Ìä∏ Ï°¥Ïû¨ Ïó¨Î∂Ä
+        //bool                  isTriggerOnce = { false };       =1<<0      // Î£®ÌîÑ Ïãú Ìïú Î≤àÎßå Î∞úÎèô
+        //bool					isTriggerOnEnter = { true };     =1<<1      // Î≤îÏúÑ ÏßÑÏûÖ Ïãú Î∞úÎèô
+        //bool					isTriggerOnExit = { false };     =1<<2      // Î≤îÏúÑ ÌÉàÏ∂ú Ïãú Î∞úÎèô
+        //bool					isTriggerContinuous = { false }; =1<<3      // Î≤îÏúÑ ÎÇ¥ÏóêÏÑú Í≥ÑÏÜç Î∞úÎèô
+        std::vector<unsigned int>   vecEventTriggers;                       // Ïù¥Î≤§Ìä∏ Î∞úÎèô Ï°∞Í±¥ Î™®Ïùå
+        std::vector<FLOAT2_DATA>    vecEventFrames;                         // Ïù¥Î≤§Ìä∏ ÌîÑÎ†àÏûÑ (x: start, y: end)
+        std::vector<std::string>    vecEventKeys;                           // Ïù¥Î≤§Ìä∏ ÌÇ§
+        void SaveBinary(std::ofstream& ofs) const
+        {
+            auto write_string = [&](const std::string& s) {
+                uint32_t len = static_cast<uint32_t>(s.size());
+                ofs.write((char*)&len, sizeof(len));
+                ofs.write(s.data(), len);
+                };
+
             write_string(strName);
             ofs.write((char*)&isLoop, sizeof(isLoop));
             ofs.write((char*)&iDirection, sizeof(iDirection));
 
-            // ±∏∞£ ∫∞ Ω√∞£ ¡∂¿˝
-            ofs.write((char*)&isAnimTimeControl, sizeof(isAnimTimeControl));
-            uint32_t count = static_cast<uint32_t>(vecAnimTimeControlFrame.size());
-            ofs.write((char*)&count, sizeof(count));
-            for (const auto& frame : vecAnimTimeControlFrame)
-            {
-                ofs.write((char*)&frame, sizeof(FLOAT3_DATA));
-            }
-
-            // æ÷¥œ∏ﬁ¿Ãº« ºº∆Æ
-            ofs.write((char*)&isAnimSet, sizeof(isAnimSet));
-            write_string(strAnimSetName);
-
-            count = static_cast<uint32_t>(vecAnimSet.size());
-            ofs.write((char*)&count, sizeof(count));
-            for (const auto& animName : vecAnimSet)
-            {
-                write_string(animName);
-            }
-
-            ofs.write((char*)&iAnimSetSelfIndex, sizeof(iAnimSetSelfIndex));
             ofs.write((char*)&iTransitionType, sizeof(iTransitionType));
             ofs.write((char*)&isWaitForComplete, sizeof(isWaitForComplete));
-            ofs.write((char*)&fAnimSetBlendOutTime, sizeof(fAnimSetBlendOutTime));
-            ofs.write((char*)&fAnimSetBlendInTime, sizeof(fAnimSetBlendInTime));
+            ofs.write((char*)&fBlendOutTime, sizeof(fBlendOutTime));
+            ofs.write((char*)&fBlendInTime, sizeof(fBlendInTime));
 
-            // ∑Á∆Æ ∏º«
             ofs.write((char*)&isRootMotion, sizeof(isRootMotion));
-            ofs.write((char*)&isApplyRootRotation, sizeof(isApplyRootRotation));
+            ofs.write((char*)&isIgnoreRootRot, sizeof(isIgnoreRootRot));
             ofs.write((char*)&isApplyRootPosition, sizeof(isApplyRootPosition));
+            ofs.write((char*)&isIgnoreRootPos, sizeof(isIgnoreRootPos));
+            ofs.write((char*)&isIgnoreRootPosFirstFrame, sizeof(isIgnoreRootPosFirstFrame));
+            ofs.write((char*)&isAbsoluteRootPosition, sizeof(isAbsoluteRootPosition));
             ofs.write((char*)&RootMitionScale, sizeof(FLOAT3_DATA));
 
-            // ¿Ã∫•∆Æ
+            // event
             ofs.write((char*)&isEvent, sizeof(isEvent));
-            ofs.write((char*)&isTriggerOnce, sizeof(isTriggerOnce));
-            ofs.write((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+            //ofs.write((char*)&isTriggerOnce, sizeof(isTriggerOnce));
+            //ofs.write((char*)&isTriggerOnEnter, sizeof(isTriggerOnEnter));
+            //ofs.write((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+            //ofs.write((char*)&isTriggerContinuous, sizeof(isTriggerContinuous));
+            uint32_t count = static_cast<uint32_t>(vecEventTriggers.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (const auto& frame : vecEventTriggers)
+            {
+                ofs.write((char*)&frame, sizeof(unsigned int));
+            }
 
             count = static_cast<uint32_t>(vecEventFrames.size());
             ofs.write((char*)&count, sizeof(count));
@@ -491,48 +518,38 @@ namespace Engine
                 return s;
                 };
 
-            // ±‚∫ª º≥¡§
             strName = read_string();
             ifs.read((char*)&isLoop, sizeof(isLoop));
             ifs.read((char*)&iDirection, sizeof(iDirection));
 
-            // ±∏∞£ ∫∞ Ω√∞£ ¡∂¿˝
-            ifs.read((char*)&isAnimTimeControl, sizeof(isAnimTimeControl));
-            uint32_t count;
-            ifs.read((char*)&count, sizeof(count));
-            vecAnimTimeControlFrame.resize(static_cast<size_t>(count));
-            for (auto& frame : vecAnimTimeControlFrame)
-            {
-                ifs.read((char*)&frame, sizeof(FLOAT3_DATA));
-            }
-
-            // æ÷¥œ∏ﬁ¿Ãº« ºº∆Æ
-            ifs.read((char*)&isAnimSet, sizeof(isAnimSet));
-            strAnimSetName = read_string();
-
-            ifs.read((char*)&count, sizeof(count));
-            vecAnimSet.resize(static_cast<size_t>(count));
-            for (auto& animName : vecAnimSet)
-            {
-                animName = read_string();
-            }
-
-            ifs.read((char*)&iAnimSetSelfIndex, sizeof(iAnimSetSelfIndex));
             ifs.read((char*)&iTransitionType, sizeof(iTransitionType));
             ifs.read((char*)&isWaitForComplete, sizeof(isWaitForComplete));
-            ifs.read((char*)&fAnimSetBlendOutTime, sizeof(fAnimSetBlendOutTime));
-            ifs.read((char*)&fAnimSetBlendInTime, sizeof(fAnimSetBlendInTime));
+            ifs.read((char*)&fBlendOutTime, sizeof(fBlendOutTime));
+            ifs.read((char*)&fBlendInTime, sizeof(fBlendInTime));
 
-            // ∑Á∆Æ ∏º«
             ifs.read((char*)&isRootMotion, sizeof(isRootMotion));
-            ifs.read((char*)&isApplyRootRotation, sizeof(isApplyRootRotation));
+            ifs.read((char*)&isIgnoreRootRot, sizeof(isIgnoreRootRot));
             ifs.read((char*)&isApplyRootPosition, sizeof(isApplyRootPosition));
+            ifs.read((char*)&isIgnoreRootPos, sizeof(isIgnoreRootPos));
+            ifs.read((char*)&isIgnoreRootPosFirstFrame, sizeof(isIgnoreRootPosFirstFrame));
+            ifs.read((char*)&isAbsoluteRootPosition, sizeof(isAbsoluteRootPosition));
             ifs.read((char*)&RootMitionScale, sizeof(FLOAT3_DATA));
 
-            // ¿Ã∫•∆Æ
+            // event
             ifs.read((char*)&isEvent, sizeof(isEvent));
-            ifs.read((char*)&isTriggerOnce, sizeof(isTriggerOnce));
-            ifs.read((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+            //ifs.read((char*)&isTriggerOnce, sizeof(isTriggerOnce));
+            //ifs.read((char*)&isTriggerOnEnter, sizeof(isTriggerOnEnter));
+            //ifs.read((char*)&isTriggerOnExit, sizeof(isTriggerOnExit));
+            //ifs.read((char*)&isTriggerContinuous, sizeof(isTriggerContinuous));
+
+            uint32_t count;
+
+            ifs.read((char*)&count, sizeof(count));
+            vecEventTriggers.resize(static_cast<size_t>(count));
+            for (auto& frame : vecEventTriggers)
+            {
+                ifs.read((char*)&frame, sizeof(unsigned int));
+            }
 
             ifs.read((char*)&count, sizeof(count));
             vecEventFrames.resize(static_cast<size_t>(count));
@@ -555,8 +572,9 @@ namespace Engine
         std::string		strName;
         float			fDuration;
         float			fTickPerSecond;
+        float           fAnimationBlendTime = { 0.25f };
         unsigned int    iNumChannels;
-
+        unsigned int    iRotationType = { 0 };
         std::vector< CHANNEL_DATA> vecChannels;
 
         ANIMATION_SETUP_DATA    animSetup;
@@ -568,7 +586,9 @@ namespace Engine
             ofs.write(strName.data(), len);
             ofs.write((char*)&fDuration, sizeof(fDuration));
             ofs.write((char*)&fTickPerSecond, sizeof(fTickPerSecond));
+            ofs.write((char*)&fAnimationBlendTime, sizeof(fAnimationBlendTime));
             ofs.write((char*)&iNumChannels, sizeof(iNumChannels));
+            ofs.write((char*)&iRotationType, sizeof(iRotationType));
 
             uint32_t count = static_cast<uint32_t>(vecChannels.size());
             ofs.write((char*)&count, sizeof(count));
@@ -585,7 +605,9 @@ namespace Engine
 
             ifs.read((char*)&fDuration, sizeof(fDuration));
             ifs.read((char*)&fTickPerSecond, sizeof(fTickPerSecond));
+            ifs.read((char*)&fAnimationBlendTime, sizeof(fAnimationBlendTime));
             ifs.read((char*)&iNumChannels, sizeof(iNumChannels));
+            ifs.read((char*)&iRotationType, sizeof(iRotationType));
 
             uint32_t count;
             ifs.read((char*)&count, sizeof(count));
@@ -608,7 +630,8 @@ namespace Engine
 
     typedef struct tagAnimationSummariesDataSet
     {
-		std::vector<ANIMATION_SUMMARY_DATA> vecSummaries;
+        std::vector<ANIMATION_SUMMARY_DATA> vecSummaries;
+        std::vector<Engine::ANIMATION_SET_DATA>     vecAnimationSets;  
 
     }ANIMATION_SUMMARIES_DATA;
 
@@ -624,18 +647,20 @@ namespace Engine
         unsigned int				iNumAnimations;
         FLOAT4X4_DATA				vPreTransformMatrix;
 
-        std::vector<Engine::MESH_DATA>			vecMeshes;
-        std::vector<Engine::MATERIAL_DATA>		vecMaterials;
+        std::vector<Engine::MESH_DATA>			    vecMeshes;
+        std::vector<Engine::MATERIAL_DATA>		    vecMaterials;
+        std::vector<Engine::BONE_DATA>			    vecBones;
 
         //ANIM
-        std::vector<Engine::BONE_DATA>			vecBones;
-        std::vector<Engine::ANIMATION_DATA>		vecAnimation;
+        std::vector<Engine::ANIMATION_DATA>		    vecAnimation;
+        std::vector<Engine::ANIMATION_SET_DATA>     vecAnimationSets; 
 
         ~tagModelDataSet() {
             vecMeshes.clear();
             vecMaterials.clear();
             vecBones.clear();
             vecAnimation.clear();
+            vecAnimationSets.clear();
         };
 
         void SaveBinary(std::ofstream& ofs) const
@@ -673,6 +698,11 @@ namespace Engine
             ofs.write((char*)&count, sizeof(count));
             for (auto& anim : vecAnimation)
                 anim.SaveBinary(ofs);
+
+            count = static_cast<uint32_t>(vecAnimationSets.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (auto& animSet : vecAnimationSets)
+                animSet.SaveBinary(ofs);
         }
         void LoadBinary(std::ifstream& ifs)
         {
@@ -712,6 +742,11 @@ namespace Engine
             vecAnimation.resize(static_cast<size_t>(count));
             for (auto& anim : vecAnimation)
                 anim.LoadBinary(ifs);
+
+            ifs.read((char*)&count, sizeof(count));
+            vecAnimationSets.resize(static_cast<size_t>(count));
+            for (auto& animSet : vecAnimationSets)
+                animSet.LoadBinary(ifs);
         }
 
     }MODEL_DATA;
@@ -747,6 +782,36 @@ namespace Engine
 
     }JSON_MAP_DATA;
 
+    typedef struct tagJsonPrototypeDataSet
+    {
+        unsigned int iNumPrototypes{};
+
+        std::vector<string> PrototypeTag{};
+        std::vector<string> FileName{};
+        std::vector<string> FilePath{};
+
+    }JSON_MAP_PROTOTYPE_DATA;
+
+    typedef struct tagJsonTriggerDataSet
+    {
+        unsigned int iNumTrigger{};
+
+        std::vector<FLOAT4X4_DATA> WorldMatrix{};
+        std::vector<string> TriggerKey{};
+
+    }JSON_MAP_TRIGGER_DATA;
+
+    typedef struct tagJsonMonsterSpawnDataSet
+    {
+        unsigned int iNumMonster{};
+
+        std::vector<FLOAT4X4_DATA> WorldMatrix{};
+        std::vector<string> MonsterKey{};
+        std::vector<_int> SubLevel{};
+
+    }JSON_MAP_MONSTER_SPAWN_DATA;
+
+
 #pragma endregion
 
 
@@ -755,69 +820,153 @@ namespace Engine
 
 #pragma endregion
 
+#pragma region AI
+
+    typedef struct tagAI_PerceptionData
+    {
+        string strMonsterType;
+        string strFileName;
+        vector<string> CallbackTags;
+
+        float   fRadius = {};
+        float   fFov = {};
+        float   fLoseSightTime = {};
+        float   fCheckInterval = {};
+        float   fFovCos = {};
+        bool    isRequireLineOfSight = { false };
+        float   fHeightOffset = {};
+        float   fAggroHoldTime = {};
+
+    }AIPERCEPTION_DATA;
+
+
+    typedef struct tagAI_BlackBoardData
+    {
+        string strMonsterType;
+        unordered_map<string, nlohmann::json> Values;
+
+    }AIBLACKBOARD_DATA;
+
+    typedef struct tagAI_BehaviorTreeNodeData
+    {
+        string                              strNodeName;
+        string                              strNodeType;
+        string                              strSubtype;
+
+        //vector<tagAI_BehaviorTreeNodeData>   Children;
+        // Ìè¨Ïù∏ÌÑ∞ Í∏∞Î∞òÏúºÎ°ú Î≥ÄÍ≤Ω
+        vector<tagAI_BehaviorTreeNodeData*>    Children;
+        
+        // ÏóêÎîîÌÑ∞ÏóêÏÑú Ìä∏Î¶¨ ÎÖ∏Îìú ÏàòÏ†ïÏö© Î≥ÄÏàò
+        tagAI_BehaviorTreeNodeData*          Parent = { nullptr };
+
+        float                               fCoolDownTime = {};
+        unsigned int                        iRepeatCount = {};
+
+        string                              strCallbackFunction;
+        float                               fWaitTime = {};
+       
+    }AIBTNODE_DATA;
+
+    typedef struct AI_BehaviorTreeNodeData
+    {
+        string                  MonsterType;
+        AIBTNODE_DATA           RootNode;
+
+    }AI_BTDATA;
+
+#pragma endregion
+
+
 
 #pragma region Serialization / Deserialization
 
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(INT2_DATA, x, y);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(INT3_DATA, x, y, z);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(INT4_DATA, x, y, z, w);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(INT2_DATA, x, y);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(INT3_DATA, x, y, z);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(INT4_DATA, x, y, z, w);
 
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(UINT2_DATA, x, y);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(UINT3_DATA, x, y, z);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(UINT4_DATA, x, y, z, w);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(UINT2_DATA, x, y);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(UINT3_DATA, x, y, z);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(UINT4_DATA, x, y, z, w);
 
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT2_DATA, x, y);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT3_DATA, x, y, z);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT4_DATA, x, y, z, w);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT2_DATA, x, y);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT3_DATA, x, y, z);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT4_DATA, x, y, z, w);
 
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT4X4_DATA, m1, m2, m3, m4);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(FLOAT4X4_DATA, m1, m2, m3, m4);
 
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MESH_VERTEX_DATA, position, normal, tangent, binormal, texcoord, blendIndex, blendWeight);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(KEYFRAME_DATA, scale, rotation, translation, trackPostion);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MESH_DATA,
-		iMaterialIndex,
-		iNumVertices,
-		iVertexStride,
-		iNumIndices,
-		iIndexStride,
-		iNumVertexBuffers,
-		iIndexFormat,
-		iPrimitiveType,
-		iNumFace,
-		strName,
-		iNumBones,
-		vecBoneIndices,
-		vecOffsetMatrices,
-		vecVertices,
-		vecIndices
-	);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MATERIAL_DATA, iNumTextures, vecExts, vecFullPaths);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BONE_DATA, iParentBoneIndex, strName, transformationMatrix);
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(CHANNEL_DATA, strName, iBoneIndex, iNumKeyFrame, vecKeyFrames);
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_DATA, strName, fDuration, fTickPerSecond, iNumChannels, vecChannels, animSetup);
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SUMMARY_DATA, strName, fDuration, fTickPerSecond, iNumChannels, animSetup);
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SUMMARIES_DATA, vecSummaries);
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SETUP_DATA,
-        strName, isLoop, iDirection,
-        isAnimTimeControl, vecAnimTimeControlFrame,
-        isAnimSet, strAnimSetName, vecAnimSet, iAnimSetSelfIndex, iTransitionType,
-        isWaitForComplete, fAnimSetBlendOutTime, fAnimSetBlendInTime,
-        isRootMotion, isApplyRootRotation, isApplyRootPosition, RootMitionScale,
-        isEvent, isTriggerOnce, isTriggerOnExit, vecEventFrames, vecEventKeys
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MESH_VERTEX_DATA, position, normal, tangent, binormal, texcoord, blendIndex, blendWeight);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(KEYFRAME_DATA, scale, rotation, translation, trackPostion);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MESH_DATA,
+        iMaterialIndex,
+        iNumVertices,
+        iVertexStride,
+        iNumIndices,
+        iIndexStride,
+        iNumVertexBuffers,
+        iIndexFormat,
+        iPrimitiveType,
+        iNumFace,
+        strName,
+        iNumBones,
+        vecBoneIndices,
+        vecOffsetMatrices,
+        vecVertices,
+        vecIndices
     );
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MODEL_DATA,
-		strModelFilePath,
-		strModelName,
-		iModelType,
-		iNumMeshes,
-		iNumMaterials,
-		iNumAnimations,
-		vPreTransformMatrix,
-		vecMeshes,
-		vecMaterials,
-		vecBones,
-		vecAnimation
-	);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MATERIAL_DATA, iNumTextures, vecExts, vecFullPaths);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BONE_DATA, iParentBoneIndex, strName, transformationMatrix);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(CHANNEL_DATA, strName, iBoneIndex, iNumKeyFrame, vecKeyFrames);
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SET_DATA,strAnimSetName,vecAnimIndices);
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SETUP_DATA,
+        strName,
+        isLoop,
+        iDirection,
+        iTransitionType,
+        isWaitForComplete,
+        fBlendOutTime,
+        fBlendInTime,
+        isRootMotion,
+        isIgnoreRootRot,
+        isApplyRootPosition,
+        isIgnoreRootPos,
+        isIgnoreRootPosFirstFrame,
+        isAbsoluteRootPosition,
+        RootMitionScale,
+        isEvent,
+        //isTriggerOnce,
+        //isTriggerOnEnter,
+        //isTriggerOnExit,
+        //isTriggerContinuous,
+        vecEventTriggers,
+        vecEventFrames,
+        vecEventKeys
+    );
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_DATA, strName, fDuration, fTickPerSecond, iNumChannels, iRotationType, vecChannels, animSetup);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SUMMARY_DATA, strName, fDuration, fTickPerSecond, iNumChannels, animSetup);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ANIMATION_SUMMARIES_DATA, vecSummaries, vecAnimationSets);
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MODEL_DATA,
+        strModelFilePath,
+        strModelName,
+        iModelType,
+        iNumMeshes,
+        iNumMaterials,
+        iNumAnimations,
+        vPreTransformMatrix,
+        vecMeshes,
+        vecMaterials,
+        vecBones,
+        vecAnimation,
+        vecAnimationSets
+    );
+
+#pragma endregion
+
+#pragma region Map
 
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_DATA,
         strModelName,
@@ -831,6 +980,53 @@ namespace Engine
         vScale,
         vRotation
     );
+    // ÌîÑÎ°úÌÜ†ÌÉÄÏûÖ Í¥ÄÎ†® ÌÉúÍ∑∏, Ïù¥Î¶Ñ, Í≤ΩÎ°ú ÏßÅÎ†¨Ìôî
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_PROTOTYPE_DATA, iNumPrototypes, PrototypeTag, FileName, FilePath);
+
+    // Ìä∏Î¶¨Í±∞ Í∞úÏàò, ÌñâÎ†¨, Ìä∏Î¶¨Í±∞ ÌÇ§ ÏßÅÎ†¨Ìôî
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_TRIGGER_DATA, iNumTrigger, WorldMatrix, TriggerKey);
+
+    // Î™¨Ïä§ÌÑ∞ Í∞úÏàò, ÌñâÎ†¨, Î™¨Ïä§ÌÑ∞ ÌÇ§ ÏßÅÎ†¨Ìôî
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JSON_MAP_MONSTER_SPAWN_DATA, iNumMonster, WorldMatrix, MonsterKey, SubLevel);
+
+#pragma endregion
+
+#pragma region AI
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AIPERCEPTION_DATA, 
+        strMonsterType,
+        strFileName,
+        CallbackTags,
+        fRadius,
+        fFov,
+        fLoseSightTime,
+        fCheckInterval,
+        fFovCos,
+        isRequireLineOfSight,
+        fHeightOffset,
+        fAggroHoldTime
+    );
+
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AIBLACKBOARD_DATA,
+        strMonsterType,
+        Values);
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AIBTNODE_DATA,
+        strNodeName,
+        strNodeType,
+        strSubtype,
+        //Children,
+        fCoolDownTime,
+        iRepeatCount,
+        strCallbackFunction,
+        fWaitTime
+        )
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AI_BTDATA,
+        MonsterType,
+        RootNode)
+
 
 #pragma endregion
 

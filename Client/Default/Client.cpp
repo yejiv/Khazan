@@ -1,6 +1,5 @@
 ﻿// Client.cpp : 애플리케이션에 대한 진입점을 정의합니다.
 //
-#include "pch.h"
 #include "framework.h"
 #include "Client.h"
 
@@ -36,6 +35,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: 여기에 코드를 입력합니다.
+
+#ifdef _DEBUG
+    AllocConsole();     // Console Create
+
+    FILE* pOut = { nullptr };
+    FILE* pIn = { nullptr };
+    freopen_s(&pOut, "CONOUT$", "w", stdout);
+    freopen_s(&pOut, "CONOUT$", "w", stderr);
+    freopen_s(&pIn, "CONIN$", "r", stdin);
+
+    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD prev_mode;
+    GetConsoleMode(hInput, &prev_mode);
+
+    prev_mode &= ~ENABLE_QUICK_EDIT_MODE;
+    prev_mode &= ~ENABLE_INSERT_MODE;
+    prev_mode |= ENABLE_EXTENDED_FLAGS;
+
+    SetConsoleMode(hInput, prev_mode);
+#endif
+
+
     CMainApp* pMainApp = { nullptr };
 
     // 전역 문자열을 초기화합니다.
@@ -65,8 +86,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     if (FAILED(pGameInstance->Add_Timer(TEXT("Timer_60"))))
         return FALSE;
 
-    _float          fTimeAcc = {};
-
+    _float          fTimeAcc = 0.f;
     // 기본 메시지 루프입니다:
     while (true)
     {
@@ -83,9 +103,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
 
-        fTimeAcc += pGameInstance->Get_TimeDelta(TEXT("Timer_Default"));
+        const float dt_unscaled = pGameInstance->Get_TimeDelta(TEXT("Timer_Default"));
+        pGameInstance->Update_HitStop(dt_unscaled);
 
-        if (/*fTimeAcc >= 1.f / 60.0f*/1)
+        fTimeAcc += dt_unscaled;
+
+        
+
+        if (fTimeAcc >= 1.f / 60.0f)
         {
             pGameInstance->Compute_TimeDelta(TEXT("Timer_60"));
 
@@ -177,6 +202,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+#ifdef _DEBUG
+    CGameInstance* pGameInstance = CGameInstance::GetInstance();
+    if (pGameInstance->HandleWndProc(hWnd, message, wParam, lParam))
+        return true;
+#endif
+
     switch (message)
     {
     case WM_COMMAND:

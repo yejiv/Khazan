@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "Level_Manager.h"
 #include "GameInstance.h"
 
@@ -12,7 +11,7 @@ CLevel_Manager::CLevel_Manager()
 
 HRESULT CLevel_Manager::Open_Level(_uint iLevelID, CLevel* pNewLevel)
 {
-	/* ±âÁ¸·¹º§¿ë ÀÚ¿øÀ» ÆÄ±«ÇÑ´Ù. */
+	/* ê¸°ì¡´ë ˆë²¨ìš© ìì›ì„ íŒŒê´´í•œë‹¤. */
 	if (FAILED(Clear_Resources()))
 		return E_FAIL;
 

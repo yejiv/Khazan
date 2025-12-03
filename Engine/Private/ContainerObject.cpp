@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "ContainerObject.h"
 #include "PartObject.h"
 
@@ -16,6 +15,11 @@ CContainerObject::CContainerObject(const CContainerObject& Prototype)
 
 }
 
+CComponent* CContainerObject::Get_Component(const _wstring& strComponentTag)
+{
+    return __super::Get_Component(strComponentTag);
+}
+
 CComponent* CContainerObject::Get_Component(const _wstring& strPartTag, const _wstring& strComponentTag)
 {
     CPartObject*        pPartObject = Find_PartObject(strPartTag);
@@ -27,7 +31,6 @@ CComponent* CContainerObject::Get_Component(const _wstring& strPartTag, const _w
 
 HRESULT CContainerObject::Initialize_Prototype()
 {
-
 
     return S_OK;
 }

@@ -1,11 +1,13 @@
 #pragma once
 
 #pragma warning(disable : 4251)
-
+#pragma warning(disable : 4267)
+#pragma warning(disable : 4244)
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
 #include <DirectXCollision.h>
+#include <SimpleMath.h>
 
 
 #define DIRECTINPUT_VERSION 0x0800
@@ -29,25 +31,34 @@
 
 using namespace DirectX;
 
-#pragma once
-
-#ifdef new
-#pragma push_macro("new")
-#undef new
-#endif
-
 #include <Jolt.h>
 #include <Core/JobSystemThreadPool.h>
 #include <Physics/PhysicsSystem.h>
 #include <Physics/Body/BodyInterface.h>
+#include <Physics/Character/CharacterVirtual.h>
 #include <RegisterTypes.h>
 #include <Core/TempAllocator.h>
-
+#include <Jolt/Physics/Body/BodyID.h>
+#include <Core/Factory.h>
+#include <Jolt/Physics/PhysicsScene.h>
+#include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
+#include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
+#include <Jolt/Physics/Collision/Shape/BoxShape.h>
+#include <Jolt/Physics/Collision/Shape/SphereShape.h>
+#include <Jolt/Physics/Collision/Shape/StaticCompoundShape.h>
+#include <Jolt/Physics/Collision/Shape/MeshShape.h>
+#include <Jolt/Physics/Collision/RayCast.h>
+#include <Jolt/Physics/Collision/CastResult.h>
+#include <Jolt/Physics/Collision/NarrowPhaseQuery.h>
+#include <Jolt/Physics//Collision/CollisionCollectorImpl.h>
+#include <Jolt/Physics/Collision/GroupFilterTable.h>
+#include <Jolt/Physics/Collision/Shape/CylinderShape.h>
+#include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
+#include <Jolt/Physics/Collision/Shape/ScaledShape.h>
 using namespace JPH;
 
-#ifdef new
-#pragma pop_macro("new") // DBG_NEW 복원
-#endif
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #include "fmod.h"
 #include "fmod.hpp"
@@ -62,9 +73,20 @@ using namespace JPH;
 #include <ctime>
 #include <random>
 #include <io.h>
+#include <thread>
+#include <mutex>
+#include <queue>
+#include <future>
+#include <any>
+#include <deque>
+#include <filesystem>
+#include <strsafe.h>
+#include <iostream>
+#include <typeindex>
+#include <typeinfo>
+
 using namespace std;
-
-
+using namespace std::chrono_literals;
 namespace Engine
 {
 	static const unsigned int g_iMaxNumBones = 512;
@@ -74,51 +96,23 @@ namespace Engine
 
 	const unsigned int g_iMaxWidth = 8192;
 	const unsigned int g_iMaxHeight = 4608;
+
+	const float g_fGravity = -9.81f;
+
 }
+
+#define PI 3.14159f
 
 #include "Engine_Enum.h"
 #include "Engine_Macro.h"
 #include "Engine_Struct.h"
 #include "Engine_Typedef.h"
 #include "Engine_Function.h"
-
-
-
-#ifdef _DEBUG
-
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-
-#ifndef DBG_NEW 
-
-#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ ) 
-#define new DBG_NEW 
-
-#endif
-#endif
-//#ifdef _DEBUG
-//#define _CRTDBG_MAP_ALLOC
-//#include <crtdbg.h>
-//struct LeakDumpAtEnd {
-//	~LeakDumpAtEnd() { _CrtDumpMemoryLeaks(); }
-//} g_LeakDumpAtEnd;
-//#endif
-//#ifdef _DEBUG
-//#define _CRTDBG_MAP_ALLOC
-//#include <crtdbg.h>
-//struct LeakWatch {
-//    LeakWatch() {
-//        // 자동 누수 덤프
-//        _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-//        // 필요하면 보고 형식/대상 설정
-//        _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
-//        _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
-//        _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
-//    }
-//} gLeakWatch;
-//#endif
-
+#include "Engine_Json.h"
+#include "Engine_ConstantBuffer.h"
+#include "Engine_Sequence.h"
+#include "Imgui_Header.h"
+#include "Debug_Header.h"
 
 using namespace Engine;
 

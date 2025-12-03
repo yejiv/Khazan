@@ -15,9 +15,22 @@ public:
 	HRESULT Add_RenderTarget(const _wstring& strTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vClearColor);
 	HRESULT Bind_ShaderResource(const _wstring& strTargetTag, class CShader* pShader, const _char* pConstantName);
 	HRESULT Add_MRT(const _wstring& strMRTTag, const _wstring& strTargetTag);
-	HRESULT Begin_MRT(const _wstring& strMRTTag, ID3D11DepthStencilView* pDSV, _bool isClear);
+	HRESULT Begin_MRT(const _wstring& strMRTTag, _bool isClear, ID3D11DepthStencilView* pDSV);
 	HRESULT End_MRT();
 	HRESULT Copy_Resource(const _wstring& strTargetTag, ID3D11Texture2D* pSourTexture);
+    HRESULT Copy_Resource(const _wstring& strDestTargetTag, const _wstring& strSourTargetTag);
+
+	void Backup_RT();	// BackBuffer, DSV Î≥¥Í¥Ä(Î∞±ÏóÖ)
+	void Restore_RT();	// BackBuffer, DSV Î≥µÏõê(Î≥µÍµ¨)
+
+public:
+	HRESULT Apply_MRT_OnContext(const wstring& mrtTag,
+		ID3D11DeviceContext* pCtx,
+		ID3D11DepthStencilView* pDSV,
+		bool isClear);
+
+	// (ÏÑ†ÌÉù) ÌòÑÏû¨ DSVÎ•º AddRefÌï¥ÏÑú ÎèåÎ†§Ï£ºÎäî Ìï®Ïàò
+	ID3D11DepthStencilView* Get_CurrentDSV_AddRef();
 
 
 #ifdef _DEBUG
@@ -27,14 +40,14 @@ public:
 #endif
 
 private:
-	ID3D11Device* m_pDevice = { nullptr };
-	ID3D11DeviceContext* m_pContext = { nullptr };
+	ID3D11Device*				m_pDevice = { nullptr };
+	ID3D11DeviceContext*		m_pContext = { nullptr };
 
-	ID3D11RenderTargetView* m_pBackBuffer = { nullptr };
-	ID3D11DepthStencilView* m_pOriginalDSV = { nullptr };
+	ID3D11RenderTargetView*		m_pBackBuffer = { nullptr };
+	ID3D11DepthStencilView*		m_pOriginalDSV = { nullptr };
+
 private:
 	map<const _wstring, class CRenderTarget*>			m_RenderTargets;
-	/* ¿Âƒ°ø° µøΩ√ø° πŸ¿Œµ˘µ«æÓæﬂ«“ ≈∏∞ŸµÈ¿ª πÃ∏Æ ∏æ∆º≠ ¿˙¿Â«ÿ≥ı¥¬¥Ÿ .*/
 	map<const _wstring, list<class CRenderTarget*>>		m_MRTs;
 
 private:

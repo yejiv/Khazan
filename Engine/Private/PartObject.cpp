@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "PartObject.h"
 #include "Transform.h"
 
@@ -59,6 +58,5 @@ void CPartObject::Update_CombinedMatrix(){
 void CPartObject::Free()
 {
 	__super::Free();
-
 
 }

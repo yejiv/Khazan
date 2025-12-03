@@ -1,15 +1,14 @@
-#include "EnginePch.h"
 #include "Picking.h"
 #include "GameInstance.h"
 
 CPicking::CPicking(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : m_pDevice { pDevice }
-    , m_pContext { pContext }    
-    , m_pGameInstance { CGameInstance::GetInstance() }
+    : m_pDevice{ pDevice }
+    , m_pContext{ pContext }
+    , m_pGameInstance{ CGameInstance::GetInstance() }
 {
     Safe_AddRef(m_pGameInstance);
     Safe_AddRef(m_pDevice);
-    Safe_AddRef(m_pContext); 
+    Safe_AddRef(m_pContext);
 }
 
 HRESULT CPicking::Initialize(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
@@ -17,8 +16,8 @@ HRESULT CPicking::Initialize(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
     D3D11_TEXTURE2D_DESC	TextureDesc;
     ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
 
-    /* ±íÀÌ ¹öÆÛÀÇ ÇÈ¼¿Àº ¹é¹öÆÛÀÇ ÇÈ¼¿°ú °¹¼ö°¡ µ¿ÀÏÇØ¾ß¸¸ ±íÀÌ ÅØ½ºÆ®°¡ °¡´ÉÇØÁø´Ù. */
-    /* ÇÈ¼¿ÀÇ ¼ö°¡ ´Ù¸£¸é ¾Æ¿¡ ·»´õ¸µÀ» ¸øÇÔ. */
+    /* ê¹Šì´ ë²„í¼ì˜ í”½ì…€ì€ ë°±ë²„í¼ì˜ í”½ì…€ê³¼ ê°¯ìˆ˜ê°€ ë™ì¼í•´ì•¼ë§Œ ê¹Šì´ í…ìŠ¤íŠ¸ê°€ ê°€ëŠ¥í•´ì§„ë‹¤. */
+    /* í”½ì…€ì˜ ìˆ˜ê°€ ë‹¤ë¥´ë©´ ì•„ì— ë Œë”ë§ì„ ëª»í•¨. */
     TextureDesc.Width = iWinSizeX;
     TextureDesc.Height = iWinSizeY;
     TextureDesc.MipLevels = 1;
@@ -28,8 +27,8 @@ HRESULT CPicking::Initialize(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
     TextureDesc.SampleDesc.Quality = 0;
     TextureDesc.SampleDesc.Count = 1;
 
-    TextureDesc.Usage = D3D11_USAGE_STAGING/* Á¤Àû */;
-    /* ÃßÈÄ¿¡ ¾î¶² ¿ëµµ·Î ¹ÙÀÎµù µÉ ¼ö ÀÖ´Â ViewÅ¸ÀÔÀÇ ÅØ½ºÃÄ¸¦ ¸¸µé±âÀ§ÇÑ Texture2DÀÔ´Ï±î? */
+    TextureDesc.Usage = D3D11_USAGE_STAGING/* ì •ì  */;
+    /* ì¶”í›„ì— ì–´ë–¤ ìš©ë„ë¡œ ë°”ì¸ë”© ë  ìˆ˜ ìˆëŠ” Viewíƒ€ì…ì˜ í…ìŠ¤ì³ë¥¼ ë§Œë“¤ê¸°ìœ„í•œ Texture2Dì…ë‹ˆê¹Œ? */
     TextureDesc.BindFlags = 0;
     TextureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
     TextureDesc.MiscFlags = 0;
@@ -47,47 +46,168 @@ HRESULT CPicking::Initialize(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
 
 void CPicking::Update()
 {
-    /* ¸Å ÇÁ·¹ÀÓ ±íÀÌ Á¤º¸¸¦ ÀúÀåÇÑ Å¸°ÙÀ» º¹»ç¹Ş¾Æ¿ÀÀÚ. */
+    /* ë§¤ í”„ë ˆì„ ì›”ë“œ ì •ë³´ë¥¼ ì €ì¥í•œ íƒ€ê²Ÿì„ ë³µì‚¬ë°›ì•„ì˜¤ì. */
     // m_pContext->CopyResource();
 
-    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("Target_Depth"), m_pTexture2D)))
-        return;
-
-    D3D11_MAPPED_SUBRESOURCE        SubResource{};
-    if (FAILED(m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_READ, 0, &SubResource)))
-        return ;
-    
-    memcpy(m_pPixels, SubResource.pData, sizeof(_float4) * m_iWinSizeX * m_iWinSizeY);    
-
-    m_pContext->Unmap(m_pTexture2D, 0);
-
-
-    
-    GetCursorPos(&m_ptMouse);
-    ScreenToClient(m_hWnd, &m_ptMouse);
 }
 
 _bool CPicking::isPicked(_float3* pOut)
 {
-    _uint       iIndex = m_ptMouse.y * m_iWinSizeX + m_ptMouse.x;
-
-    if (0.0f == m_pPixels[iIndex].w)
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("RT_World"), m_pTexture2D)))
         return false;
 
-    _vector     vPosition = {};
+    D3D11_MAPPED_SUBRESOURCE        SubResource{};
+    if (FAILED(m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_READ, 0, &SubResource)))
+        return false;
 
-    /* Åõ¤Ğ¿µ°ø°£»óÀÇ ÁÂÇ¥. */
-    vPosition = XMVectorSetX(vPosition, m_ptMouse.x / (m_iWinSizeX * 0.5f) - 1.f);
-    vPosition = XMVectorSetY(vPosition, m_ptMouse.y / (m_iWinSizeY * -0.5f) + 1.f);
-    vPosition = XMVectorSetZ(vPosition, m_pPixels[iIndex].x);
-    vPosition = XMVectorSetW(vPosition, 1.f);
+    memcpy(m_pPixels, SubResource.pData, sizeof(_float4) * m_iWinSizeX * m_iWinSizeY);
 
-    vPosition = XMVector3TransformCoord(vPosition, m_pGameInstance->Get_Transform_Matrix_Inverse(D3DTS::PROJ));
-    vPosition = XMVector3TransformCoord(vPosition, m_pGameInstance->Get_Transform_Matrix_Inverse(D3DTS::VIEW));
+    m_pContext->Unmap(m_pTexture2D, 0);
+
+    GetCursorPos(&m_ptMouse);
+    ScreenToClient(m_hWnd, &m_ptMouse);
+
+    if (0 > m_ptMouse.x || static_cast<_long>(m_iWinSizeX) < m_ptMouse.x || 0 > m_ptMouse.y || static_cast<_long>(m_iWinSizeY) < m_ptMouse.y)
+        return false;
+
+    _uint       iIndex = m_ptMouse.y * m_iWinSizeX + m_ptMouse.x;
+
+    if (0.0f == m_pPixels[iIndex].x && 0.0f == m_pPixels[iIndex].y && 0.0f == m_pPixels[iIndex].z && 0.0f == m_pPixels[iIndex].w)
+        return false;
+
+    _vector     vPosition = { m_pPixels[iIndex].x, m_pPixels[iIndex].y, m_pPixels[iIndex].z, 1.f };
 
     XMStoreFloat3(pOut, vPosition);
 
     return true;
+}
+
+_bool CPicking::isPicked(_float3* pOut, _uint* iObjectID)
+{
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("RT_World"), m_pTexture2D)))
+        return false;
+
+    D3D11_MAPPED_SUBRESOURCE        SubResource{};
+    if (FAILED(m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_READ, 0, &SubResource)))
+        return false;
+
+    memcpy(m_pPixels, SubResource.pData, sizeof(_float4) * m_iWinSizeX * m_iWinSizeY);
+
+    m_pContext->Unmap(m_pTexture2D, 0);
+
+    GetCursorPos(&m_ptMouse);
+    ScreenToClient(m_hWnd, &m_ptMouse);
+
+    // í™”ë©´ë°–ìœ¼ë¡œ ë‚˜ê°€ìˆì„ë•Œ í”¼í‚¹ ì˜ˆì™¸ì²˜ë¦¬
+    if (0 > m_ptMouse.x || static_cast<_long>(m_iWinSizeX) < m_ptMouse.x || 0 > m_ptMouse.y || static_cast<_long>(m_iWinSizeY) < m_ptMouse.y)
+        return false;
+
+    _uint       iIndex = m_ptMouse.y * m_iWinSizeX + m_ptMouse.x;
+
+    if (0.0f == m_pPixels[iIndex].x && 0.0f == m_pPixels[iIndex].y && 0.0f == m_pPixels[iIndex].z && 0.0f == m_pPixels[iIndex].w)
+        return false;
+
+    _vector     vPosition = { m_pPixels[iIndex].x, m_pPixels[iIndex].y, m_pPixels[iIndex].z, m_pPixels[iIndex].w };
+
+    *iObjectID = static_cast<_uint>(roundf(m_pPixels[iIndex].w));
+    XMStoreFloat3(pOut, vPosition);
+
+    return true;
+}
+
+_bool CPicking::isPicked(_float3* pOutPosition, _float3* pOutNormal)
+{
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("RT_World"), m_pTexture2D)))
+        return false;
+
+    D3D11_MAPPED_SUBRESOURCE        SubResource{};
+    if (FAILED(m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_READ, 0, &SubResource)))
+        return false;
+
+    memcpy(m_pPixels, SubResource.pData, sizeof(_float4) * m_iWinSizeX * m_iWinSizeY);
+
+    m_pContext->Unmap(m_pTexture2D, 0);
+
+    GetCursorPos(&m_ptMouse);
+    ScreenToClient(m_hWnd, &m_ptMouse);
+
+    if (0 > m_ptMouse.x || static_cast<_long>(m_iWinSizeX) < m_ptMouse.x || 0 > m_ptMouse.y || static_cast<_long>(m_iWinSizeY) < m_ptMouse.y)
+        return false;
+
+    _uint       iIndex = m_ptMouse.y * m_iWinSizeX + m_ptMouse.x;
+
+    if (0.0f == m_pPixels[iIndex].x && 0.0f == m_pPixels[iIndex].y && 0.0f == m_pPixels[iIndex].z && 0.0f == m_pPixels[iIndex].w)
+        return false;
+
+    _vector     vPosition = { m_pPixels[iIndex].x, m_pPixels[iIndex].y, m_pPixels[iIndex].z, 1.f };
+
+    XMStoreFloat3(pOutPosition, vPosition);
+
+    // Normal
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(TEXT("RT_Normal"), m_pTexture2D)))
+        return false;
+
+    if (FAILED(m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_READ, 0, &SubResource)))
+        return false;
+
+    // RowPitch ê³ ë ¤í•´ì„œ í•´ë‹¹ í”½ì…€ ìœ„ì¹˜ë¡œ ì ‘ê·¼
+    BYTE* pRow0 = reinterpret_cast<BYTE*>(SubResource.pData);
+    size_t pixelBytes = 8; // R16G16B16A16_UNORM â†’ 4ì±„ë„ * 2ë°”ì´íŠ¸ = 8ë°”ì´íŠ¸
+    BYTE* pPixelAddr = pRow0 + (size_t)m_ptMouse.y * SubResource.RowPitch + (size_t)m_ptMouse.x * pixelBytes;
+
+    // í”½ì…€ ë°ì´í„° í•´ì„
+    WORD* pUShort = reinterpret_cast<WORD*>(pPixelAddr);
+
+    // 0~1 ë²”ìœ„ ë³µì›
+    _float nx = pUShort[0] / 65535.0f;
+    _float ny = pUShort[1] / 65535.0f;
+    _float nz = pUShort[2] / 65535.0f;
+
+    // Unmap
+    m_pContext->Unmap(m_pTexture2D, 0);
+
+    // 0~1 â†’ -1~1 ì–¸íŒ©
+    _float3 vNormal;
+    vNormal.x = nx * 2.0f - 1.0f;
+    vNormal.y = ny * 2.0f - 1.0f;
+    vNormal.z = nz * 2.0f - 1.0f;
+
+    // ì •ê·œí™” (ë°˜ë“œì‹œ)
+    _vector vN = XMVector3Normalize(XMLoadFloat3(&vNormal));
+    XMStoreFloat3(pOutNormal, vN);
+
+    return true;
+}
+
+_float4 CPicking::isPickRenderTargetPixel(_wstring strRenderTargetTag)
+{
+    if (FAILED(m_pGameInstance->Copy_RT_Resource(strRenderTargetTag, m_pTexture2D)))
+        return _float4(0.f, 0.f, 0.f, 0.f);
+
+    D3D11_MAPPED_SUBRESOURCE        SubResource{};
+    if (FAILED(m_pContext->Map(m_pTexture2D, 0, D3D11_MAP_READ, 0, &SubResource)))
+        return _float4(0.f, 0.f, 0.f, 0.f);
+
+    memcpy(m_pPixels, SubResource.pData, sizeof(_float4) * m_iWinSizeX * m_iWinSizeY);
+
+    m_pContext->Unmap(m_pTexture2D, 0);
+
+    GetCursorPos(&m_ptMouse);
+    ScreenToClient(m_hWnd, &m_ptMouse);
+
+    // í™”ë©´ë°–ìœ¼ë¡œ ë‚˜ê°€ìˆì„ë•Œ í”¼í‚¹ ì˜ˆì™¸ì²˜ë¦¬
+    if (0 > m_ptMouse.x || static_cast<_long>(m_iWinSizeX) < m_ptMouse.x || 0 > m_ptMouse.y || static_cast<_long>(m_iWinSizeY) < m_ptMouse.y)
+    {
+        MSG_BOX(TEXT("í™”ë©´ ë°–ì…ë‹ˆë‹¤."));
+
+        return _float4(0.f, 0.f, 0.f, 0.f);
+    }
+
+    _uint       iIndex = m_ptMouse.y * m_iWinSizeX + m_ptMouse.x;
+
+    _float4     vPixel = { m_pPixels[iIndex].x, m_pPixels[iIndex].y, m_pPixels[iIndex].z, m_pPixels[iIndex].w };
+
+    return vPixel;
 }
 
 CPicking* CPicking::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)

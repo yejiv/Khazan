@@ -1,13 +1,84 @@
 #include "Engine_Shader_Defines.hlsli"
 
+unsigned int g_MtrlFlags = { 0 };
+
+bool IsFlag(unsigned int iMask)
+{
+    return (g_MtrlFlags & iMask) != 0;
+}
+
+static const unsigned int M_DIFFUSE       = (1 << 0);
+static const unsigned int M_NORMAL        = (1 << 1);
+static const unsigned int M_EMISSIVE      = (1 << 2);
+static const unsigned int M_SPECULAR      = (1 << 3);
+static const unsigned int M_METALIC       = (1 << 4);
+static const unsigned int M_ROUGHNESS     = (1 << 5);
+
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
-/*¿Á¡˙*/
-texture2D g_DiffuseTexture;
+matrix g_LightViewMatrix, g_LightProjMatrix;
 
-/* ∏µ® ¿¸√º ª¿±‚¡ÿ(x) */
-/* ∆Ø¡§ ∏ﬁΩ√ø° øµ«‚§∑∏£ ¡÷¥¬ ª¿µÈ */
+Texture2D g_DiffuseTexture, g_NormalTexture, g_SpecularTexture;
+
+Texture2D g_EmissiveTexture, g_MetalicTexture, g_RoughnessTexture;
+Texture2D g_MetalnessTexture;
+Texture2D g_DissolveTexture;
+
+bool g_isDiffuse = false;
+bool g_isNormal = false;
+bool g_isEmissive = false;
+bool g_isSpecular = false;
+bool g_isMetalic = false;
+bool g_isRoughness = false;
+
+// Í∑ÄÍ≤Ä Í¥ÄÎ†® Ï†ÑÏó≠ Î≥ÄÏàò
+bool g_isBNEye = false;
+
+/* Î™®Îç∏ Ï†ÑÏ≤¥ ÎºàÍ∏∞Ï§Ä(x) */
+/* ÌäπÏ†ï Î©îÏãúÏóê ÏòÅÌñ•„ÖáÎ•¥ Ï£ºÎäî ÎºàÎì§ */
 matrix g_BoneMatrices[512];
+
+float g_fEmissiveIntensity = 1.f;
+bool g_isEnableEmissive, g_isEnableBloom;
+
+// Outline
+float g_fOutlineSize = 0.001f;
+float3 g_vOutlineColor = { 1.f, 0.f, 1.f };
+
+// Edge
+bool g_isEnableEdge = true;
+float g_fEdgeIntensity, g_fShadeIntensity;
+float4 g_vCamPosition;
+
+// Test
+float2 g_vLifeTime;
+float3 g_vStartColor, g_vTargetColor;
+float g_fRimPower, g_fRimLightIntensity;
+
+// Í∑ÄÍ≤Ä
+float g_fColorRatio;
+float3 g_vRimColor;
+
+// Blink RimLight
+float g_fTimeDelta;
+float g_fCycleSpeed;
+float g_fRimEmissive;
+
+//Ïù¥ÎØ∏ÏãúÎ∏å
+float g_fEmissiveValue;
+
+//ÎîîÏ£®Î∏å
+float   g_fDecreaseAlpha;
+float   g_fEdgeWidth;
+float4  g_fEdgeColor;
+
+// Viper
+bool g_HasEmissive;
+float g_fGreenIntensity = 1.f;
+
+// Imp
+float g_fDiffusePower = 1.f;
+float g_fBluePower = 1.f;
 
 struct VS_IN
 {
@@ -24,20 +95,17 @@ struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
     float4 vNormal : NORMAL;
+    float4 vTangent : TANGENT;
+    float4 vBinormal : BINORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos : TEXCOORD2;
 };
 
-/* ¡§¡°Ω¶¿Ã¥ı : ¡§¡° ¿ßƒ°¿« Ω∫∆‰¿ÃΩ∫ ∫Ø»Ø(∑Œƒ√ -> ø˘µÂ -> ∫‰ -> ≈ıøµ). */ 
-/*          : ¡§¡°¿« ±∏º∫¿ª ∫Ø∞Ê.(in:3∞≥, out:2∞≥ or 5∞≥) */
-/*          : ¡§¡° ¥‹¿ß(¡§¡° «œ≥™¥Á VS_MAIN«—π¯»£√‚) */ 
 VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out = (VS_OUT) 0;
-    
-    /* ¡§¡°¿« ∑Œƒ√¿ßƒ° * ø˘µÂ * ∫‰ * ≈ıøµ */ 
-    
+
     float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
     
     matrix BoneMatrix =
@@ -56,9 +124,12 @@ VS_OUT VS_MAIN(VS_IN In)
     
     Out.vPosition = mul(vPosition, matWVP);
     Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix));
+    Out.vBinormal = normalize(mul(float4(In.vBinormal, 0.f), g_WorldMatrix));
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(vPosition, g_WorldMatrix);
     Out.vProjPos = Out.vPosition;
+    
     return Out;
 }
 
@@ -68,11 +139,9 @@ struct VS_OUT_SHADOW
     float4 vProjPos : TEXCOORD0;    
 };
 
-
 VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 {
     VS_OUT_SHADOW Out;
-      /* ¡§¡°¿« ∑Œƒ√¿ßƒ° * ø˘µÂ * ∫‰ * ≈ıøµ */ 
     
     float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
     
@@ -86,29 +155,58 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
     
     float4x4 matWV, matWVP;
     
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
+    matWV = mul(g_WorldMatrix, g_LightViewMatrix);
+    matWVP = mul(matWV, g_LightProjMatrix);
     
     Out.vPosition = mul(vPosition, matWVP);
     Out.vProjPos = Out.vPosition;
     
     return Out;
-
 }
 
+struct VS_OUT_OUTLINE
+{
+    float4 vPosition : SV_POSITION;
+    float fDepth : TEXCOORD0;
+};
 
-/* /W¿ª ºˆ«‡«—¥Ÿ. ≈ıøµΩ∫∆‰¿ÃΩ∫∑Œ ∫Ø»Ø */
-/* ∫‰∆˜∆Æ∑Œ ∫Ø»Ø«œ∞Ì.*/
-/* ∑°Ω∫≈Õ∂Û¿Ã¡Ó : «»ºø¿ª ∏∏µÁ¥Ÿ. */
+VS_OUT_OUTLINE VS_MAIN_OUTLINE(VS_IN In)
+{
+    VS_OUT_OUTLINE Out;
+      /* ?Ï†ô?Ï†è?ÏìΩ Êø°ÏíñÎ∫Ñ?ÏêûÁßª? * ?Ïç°?Î±∂ * ÈÖâ? * ?Îãæ?ÏÅ∫ */ 
+    
+    float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
+    
+    matrix BoneMatrix =
+        g_BoneMatrices[In.vBlendIndex.x] * In.vBlendWeight.x +
+        g_BoneMatrices[In.vBlendIndex.y] * In.vBlendWeight.y +
+        g_BoneMatrices[In.vBlendIndex.z] * In.vBlendWeight.z +
+        g_BoneMatrices[In.vBlendIndex.w] * fWeightW;
+    
+    vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
+    
+    vPosition.xyz += In.vNormal * g_fOutlineSize;
+    
+    float4x4 matWV, matWVP;
+    
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+    
+    Out.vPosition = mul(vPosition, matWVP);
+    Out.fDepth = Out.vPosition.z / Out.vPosition.w;
+    
+    return Out;
+}
 
 struct PS_IN
 {
     float4 vPosition : SV_POSITION;
     float4 vNormal : NORMAL;
+    float4 vTangent : TANGENT;
+    float4 vBinormal : BINORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
     float4 vProjPos : TEXCOORD2;
-
 };
 
 struct PS_OUT
@@ -116,30 +214,108 @@ struct PS_OUT
     float4 vDiffuse : SV_TARGET0;
     float4 vNormal : SV_TARGET1;
     float4 vDepth : SV_TARGET2;
+    float4 vWorld : SV_TARGET3;
+    float4 vSpecular : SV_TARGET4;
+    float4 vEmissive : SV_TARGET5;
 };
-
-/* ∏∏µÁ «»ºø ∞¢∞¢ø° ¥Î«ÿº≠ «»ºø Ω¶¿Ã¥ı∏¶ ºˆ«‡«—¥Ÿ. */
-/* «»ºø¿« ªˆ¿ª ∞·¡§«—¥Ÿ. */
-
 
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    vector      vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 0.f;
+    //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    // Test
+    if (g_isEnableEdge)
+    {
+        float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+        float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+        float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // ÏùåÏòÅ Î≥¥Í∞Ñ 0Ïù∏ Î∂ÄÎ∂ÑÏù∏ 0.5, 1Ïù∏ Î∂ÄÎ∂ÑÏùÄ ÏõêÏÉâ
+        Out.vDiffuse *= fEdgeMask;
+        Out.vDiffuse *= fShadeMask;
+    }
+
+    return Out;
+}
+
+PS_OUT PS_MAIN_NONPICK(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
     
     if (vMtrlDiffuse.a < 0.3f)
         discard;
     
     Out.vDiffuse = vMtrlDiffuse;
-    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
-    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 1.f;
+    //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    // Test
+    if (g_isEnableEdge)
+    {
+        float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+        float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // ÏùåÏòÅ Î≥¥Í∞Ñ 0Ïù∏ Î∂ÄÎ∂ÑÏù∏ 0.5, 1Ïù∏ Î∂ÄÎ∂ÑÏùÄ ÏõêÏÉâ
+        Out.vDiffuse *= fEdgeMask;
+        Out.vDiffuse *= fShadeMask;
+    }
+    
     return Out;
 }
 
-
-PS_OUT PS_MAIN_NONPICK(PS_IN In)
+struct PS_IN_OUTLINE
 {
+    float4 vPosition : SV_POSITION;
+    float fDepth : TEXCOORD0;
+};
+
+struct PS_OUT_OUTLINE
+{
+    float4 vOutline : SV_TARGET0;
+};
+
+PS_OUT_OUTLINE PS_MAIN_OUTLINE(PS_IN_OUTLINE In)
+{
+    PS_OUT_OUTLINE Out = (PS_OUT_OUTLINE) 0;
+    
+    Out.vOutline.rgb = g_vOutlineColor;
+    Out.vOutline.a = In.fDepth;
+    
+    return Out;
+}
+
+PS_OUT PS_MAIN_DEBUG(PS_IN In)
+{
+    // NonBlend Â™õÏïπÍªú
+    
     PS_OUT Out = (PS_OUT) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
@@ -147,39 +323,635 @@ PS_OUT PS_MAIN_NONPICK(PS_IN In)
     if (vMtrlDiffuse.a < 0.3f)
         discard;
     
-    Out.vDiffuse = vMtrlDiffuse;
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+
+    //  Out.vDiffuse = vMtrlDiffuse;
+    // Alpha Rim Light Test
+    //  Out.vDiffuse.a = 0.f;
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 1.f;
+    
+    if (true == g_isEnableEmissive)
+        Out.vDiffuse.rgb *= g_fEmissiveIntensity;
+    
+    return Out;
+}
+
+struct PS_OUT_EMISSIVE
+{
+    float4 vPostScene : SV_TARGET0;
+    float4 vEmissive : SV_TARGET1;
+};
+
+PS_OUT_EMISSIVE PS_MAIN_DEBUG_EMISSIVE(PS_IN In)
+{
+    // NonLight, Blend Test
+    
+    PS_OUT_EMISSIVE Out = (PS_OUT_EMISSIVE) 0;
+    
+    //  vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    //  
+    //  if (vMtrlDiffuse.a < 0.3f)
+    //      discard;
+    
+    // Alpha Rim Light Test
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    // Rim Light
+    vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+    
+    float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+    fRim = pow(fRim, g_fRimPower);
+
+    float fLifeRatio = g_vLifeTime.x / g_vLifeTime.y;
+    
+    float3 vFinalColor = lerp(g_vStartColor, g_vTargetColor, fLifeRatio);
+    float fFinalAlpha = 1.f - fLifeRatio;
+    
+    // Rim Color * Rim * Rim Light Intensity * Emissive Intensity
+    Out.vPostScene = float4(vFinalColor, fFinalAlpha) * fRim * g_fRimLightIntensity * g_fEmissiveIntensity;
+    
+    return Out;
+}
+
+PS_OUT PS_SIMPLE_COLOR_VIEW(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    Out.vDiffuse = (1.f, 1.f, 1.f, 1.f);
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
-    return Out;
-}
-
-struct PS_IN_SHADOW
-{
-    float4 vPosition : SV_POSITION;
-    float4 vProjPos : TEXCOORD0;
-};
-
-struct PS_OUT_SHADOW
-{
-    float4 vLightDepth : SV_TARGET0;
-};
-
-PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN_SHADOW In)
-{
-    PS_OUT_SHADOW Out;
-    
-    Out.vLightDepth = float4(In.vProjPos.w / 1000.0f, 0.f, 0.f, 0.f);    
+    Out.vWorld = In.vWorldPos;
     
     return Out;
 }
 
+PS_OUT PS_BLADENEXUS(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+        float3 vNormal = vMtrlNormal.xyz * 2.f - 1.f;
+        
+        float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+        vNormal = mul(vNormal, WorldMatrix);
+        
+        vMtrlNormal = float4(normalize(vNormal.xyz), 0.f);
+    }
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+        vMtrlSpecular.a = 0.f;
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+        //  float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMtrlMetalic.r);
+        //  float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMtrlMetalic.g); // ÏùåÏòÅ Î≥¥Í∞Ñ 0Ïù∏ Î∂ÄÎ∂ÑÏù∏ 0.5, 1Ïù∏ Î∂ÄÎ∂ÑÏùÄ ÏõêÏÉâ
+        
+        float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMtrlMetalic.r);
+        float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMtrlMetalic.g);
+        
+        Out.vDiffuse *= fEdgeMask;
+        Out.vDiffuse *= fShadeMask;
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_ROUGHNESS))
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    //  Out.vDiffuse = vMtrlDiffuse * vMtrlSpecular * g_fEmissiveIntensity;
+    vMtrlDiffuse.g = 0.f;
+    Out.vDiffuse = lerp(vMtrlDiffuse, vMtrlSpecular, g_fColorRatio) * g_fEmissiveIntensity;
+    //  Out.vDiffuse = vMtrlMetalic;
+    // Out.vDiffuse = vMtrlSpecular * 10.f;
+    
+    Out.vNormal = vector(vMtrlNormal);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    //  Out.vEmissive = vMtrlEmissive;
+    
+    //  Out.vEmissive = vMtrlSpecular * 2.f;
+
+    return Out;
+}
+
+PS_OUT PS_MAP_ANIM(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_ROUGHNESS))
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.a = 0.f;
+    Out.vEmissive = vMtrlEmissive;
+
+    return Out;
+}
+
+PS_OUT PS_LANTERN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
+    Out.vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    float fEmissvie = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord).g;
+
+    Out.vEmissive = float4(fEmissvie, fEmissvie, fEmissvie, 1.f);
+    //  Out.vEmissive *= 2.f;
+    
+    return Out;
+}
+
+struct PS_OUT_VELOCITY
+{
+    float4 vVelocity : SV_TARGET0;
+};
+
+PS_OUT_VELOCITY PS_MOTIONVECTOR(PS_IN In)
+{
+    PS_OUT_VELOCITY Out = (PS_OUT_VELOCITY) 0;
+    
+    Out.vVelocity = float4(1.f, 0.f, 0.f, 1.f);
+    
+    return Out;
+}
+
+PS_OUT PS_BLINK_UNLOCK_GEAR(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_ROUGHNESS))
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+
+    // Emissive
+    float fMask = vMtrlEmissive.b;
+    vMtrlDiffuse += vMtrlDiffuse * fMask * g_fEmissiveIntensity;
+    
+    // Rim Light
+    vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+    float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+    fRim = pow(fRim, g_fRimPower);
+    
+    // Blink Cycle = cos = (-1 ~ 1) + 1 -> (0 ~ 2) * RimIntensity / 2 => 0 ~ 1
+    float fFinalIntensity = g_fRimLightIntensity / 2.f * (1.f + cos(g_fTimeDelta * g_fCycleSpeed));
+
+    float3 vRimColor = g_vRimColor * fRim * fFinalIntensity;
+
+    Out.vDiffuse.rgb = vMtrlDiffuse.rgb + vRimColor * g_fRimEmissive; // Rim Emissive
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular * 0.1f;
+    Out.vSpecular.a = 0.f;
+    //  Out.vEmissive = vMtrlEmissive;
+    
+    return Out;
+}
+
+PS_OUT PS_UNLOCK_GEAR(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_ROUGHNESS))
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    float fMask = vMtrlEmissive.b;
+
+    vMtrlDiffuse += vMtrlDiffuse * fMask * g_fEmissiveIntensity;
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular * 0.1f;
+    Out.vSpecular.a = 0.f;
+    //  Out.vEmissive = vMtrlEmissive;
+
+    return Out;
+}
+
+PS_OUT PS_ELEVATOR_L(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_ROUGHNESS))
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+
+    Out.vDiffuse = vMtrlDiffuse * vMtrlSpecular.r * g_fEmissiveIntensity;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    //  Out.vSpecular = vMtrlSpecular * 0.1f;
+    //  Out.vSpecular.a = 0.f;
+    //  Out.vEmissive = vMtrlEmissive;
+
+    return Out;
+}
+
+PS_OUT PS_MAIN_HAIR_EMISSIVE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    float4 vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    float4 vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
+    Out.vSpecular.a = 1.f;
+    Out.vSpecular.rgb = vSpecular.rgb * 1.f;
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // ÏùåÏòÅ Î≥¥Í∞Ñ 0Ïù∏ Î∂ÄÎ∂ÑÏù∏ 0.5, 1Ïù∏ Î∂ÄÎ∂ÑÏùÄ ÏõêÏÉâ
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+    
+    vEmissive.b *= g_fEmissiveValue;
+    Out.vDiffuse = Out.vDiffuse + (vEmissive * 1.f);
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+    
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
+    
+    return Out;
+}
+
+
+PS_OUT PS_MAIN_SHIELD_EMISSIVE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    float4 vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 1.f;
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+   
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // ÏùåÏòÅ Î≥¥Í∞Ñ 0Ïù∏ Î∂ÄÎ∂ÑÏù∏ 0.5, 1Ïù∏ Î∂ÄÎ∂ÑÏùÄ ÏõêÏÉâ
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+
+    if (vEmissive.g >= 0.95f)
+    {
+        float3 vColor = { 2.455f, 1.937f, 2.784f };
+        Out.vDiffuse.rgb = Out.vDiffuse.rgb + vColor * 0.3f * g_fEmissiveValue;
+    }
+    
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
+    
+    return Out;
+}
+
+PS_OUT PS_MAIN_DISSOLVE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 1.f;
+    //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g);
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+    
+    
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
+    return Out;
+}
+
+PS_OUT PS_VIPER(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+
+    float4 vEmissiveDesc = float4(0.f, 0.f, 0.f, 0.f);
+    if (g_HasEmissive)
+        vEmissiveDesc = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 0.f;
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // ÏùåÏòÅ Î≥¥Í∞Ñ 0Ïù∏ Î∂ÄÎ∂ÑÏù∏ 0.5, 1Ïù∏ Î∂ÄÎ∂ÑÏùÄ ÏõêÏÉâ
+    vMtrlDiffuse *= fEdgeMask;
+    vMtrlDiffuse *= fShadeMask;
+    
+    vMtrlDiffuse.g *= g_fGreenIntensity;
+    
+    float fMask = vEmissiveDesc.g;    
+    vMtrlDiffuse += vMtrlDiffuse * fMask * g_fEmissiveIntensity;
+
+    Out.vDiffuse = vMtrlDiffuse;
+    
+    return Out;
+}
+
+PS_OUT PS_IMP(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 0.f;
+    //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // ÏùåÏòÅ Î≥¥Í∞Ñ 0Ïù∏ Î∂ÄÎ∂ÑÏù∏ 0.5, 1Ïù∏ Î∂ÄÎ∂ÑÏùÄ ÏõêÏÉâ
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+
+    // Diffuse Ïñ¥ÎëêÏö¥ Î¨∏Ï†úÎ°ú ÏûÑÏùòÍ∞í Í≥±Ìï¥Ï£ºÍ∏∞ 3~5
+    Out.vDiffuse.b *= g_fBluePower;
+    Out.vDiffuse *= g_fDiffusePower;
+    
+    return Out;
+}
 
 technique11 DefaultTechnique
 {
-    /* ∆Ø¡§ ∆–Ω∫∏¶ ¿ÃøÎ«ÿº≠ ¡°¡§¿ª ±◊∑¡≥¬¥Ÿ. */
-    /* «œ≥™¿« ∏µ®¿ª ±◊∑¡≥¬¥Ÿ. */ 
-    /* ∏µ®¿« ªÛ»≤ø° µ˚∂Û ¥Ÿ∏• Ω¶¿Ãµ˘ ±‚π˝ ºº∆Æ(∏Ìæœ + ∏≤∂Û¿Ã∆Æ + Ω∫∆Â≈ß∑Ø + ≥Î∏÷∏  + ssao )∏¶ ∏‘ø©¡÷±‚¿ß«ÿº≠ */
-    pass DefaultPass
+    pass DefaultPass        // 0 Î≤à
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -190,7 +962,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 
-    pass NonPick
+    pass NonPick            // 1 Î≤à
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -201,7 +973,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_NONPICK();
     }
 
-    pass Shadow
+    pass Cascade // Depth Only          // 2 Î≤à
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -209,6 +981,207 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN_SHADOW();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
+        PixelShader = NULL;
+    }
+
+    pass Outline                        // 3 Î≤à
+    {
+        SetRasterizerState(RS_Cull_CW);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN_OUTLINE();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_OUTLINE();
+    }
+
+    pass Debug                          // 4 Î≤à
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DEBUG();
+    }
+
+    pass DebugNonLight                  // 5 Î≤à
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DEBUG_EMISSIVE();
+    }
+
+    pass DebugBlend                     // 6 Î≤à
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DEBUG_EMISSIVE();
+    }
+
+    pass SimpleColorView                // 7 Î≤à
+    {
+
+        SetRasterizerState(RS_Wireframe);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_SIMPLE_COLOR_VIEW();
+    }
+
+    // Í∑ÄÍ≤Ä Ìå®Ïä§        ( 8Î≤à )
+    pass BladeNexusPass
+    {
+
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_BLADENEXUS();
+    }
+
+    // Îßµ Ïï†Îãò Ìå®Ïä§        ( 9Î≤à )
+    pass MapAnimPass
+    {
+
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAP_ANIM();
+    }
+
+    // Î†åÌÑ¥ Ìå®Ïä§        ( 10Î≤à )
+    pass Lantern
+    {
+
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_LANTERN();
+    }
+
+    // Î™®ÏÖò Î≤°ÌÑ∞ Ìå®Ïä§        ( 11Î≤à )
+    pass MotionVector
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MOTIONVECTOR();
+    }
+
+    // ÍπúÎπ°Ïù¥Îäî Î¶º ÎùºÏù¥Ìä∏ (ÌôúÏÑ±ÌôîÎêú Ïò§Î∏åÏ†ùÌä∏Ïö©) Ìå®Ïä§        ( 12Î≤à )
+    pass BlinkUnlockGear
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_BLINK_UNLOCK_GEAR();
+    }
+
+    // Ïñ∏ÎùΩ Í∏∞Ïñ¥ Ìå®Ïä§        ( 13Î≤à )
+    pass UnlockGear
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_UNLOCK_GEAR();
+    }
+
+    // ÏóòÎ†àÎ≤†Ïù¥ÌÑ∞ L Ìå®Ïä§        ( 14Î≤à )
+    pass ElevatorL
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_ELEVATOR_L();
+    }
+
+    // Ïù¥ÎØ∏ÏãúÎ∏å Ï∂îÍ∞Ä         ( 15Î≤à )
+    pass PS_MAIN_HAIR_EMISSIVE_15
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_HAIR_EMISSIVE();
+    }
+    // Ïù¥ÎØ∏ÏãúÎ∏å Ï∂îÍ∞Ä         ( 16Î≤à )
+    pass PS_MAIN_SHIELD_EMISSIVE_16
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_SHIELD_EMISSIVE();
+    }
+    // Ïù¥ÎØ∏ÏãúÎ∏å Ï∂îÍ∞Ä         ( 17Î≤à )
+    pass PS_MAIN_DISSOLVE_17
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE();
+    }
+
+    // Î∞îÏù¥Ìçº Ìå®Ïä§        ( 18Î≤à )
+    pass Viper
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_VIPER();
+    }
+
+    // ÏûÑÌîÑ Ìå®Ïä§        ( 19Î≤à )
+    pass Imp
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_IMP();
     }
 }

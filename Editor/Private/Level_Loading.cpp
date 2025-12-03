@@ -1,10 +1,16 @@
-#include "EditorPch.h"
 #include "Level_Loading.h"
 
 #include "Loader.h"
 #include "GameInstance.h"
 
 #include "Level_Editor.h"
+#include "Level_Map.h"
+#include "Level_Animation.h"
+#include "Level_Effect.h"
+#include "Level_UI.h"
+#include "Level_Shader.h"
+#include "Level_Camera.h"
+#include "Level_AI.h"
 
 CLevel_Loading::CLevel_Loading(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -15,11 +21,11 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 {
 	m_eNextLevelID = eNextLevelID;
 
-	/* ÇöÀç ·¹º§À» ±¸¼ºÇØÁÖ±â À§ÇÑ °´Ã¼µéÀ» »ý¼ºÇÑ´Ù. */
+	/* í˜„ìž¬ ë ˆë²¨ì„ êµ¬ì„±í•´ì£¼ê¸° ìœ„í•œ ê°ì²´ë“¤ì„ ìƒì„±í•œë‹¤. */
 	if (FAILED(Ready_GameObjects()))
 		return E_FAIL;
 
-	/* ´ÙÀ½ ·¹º§À» À§ÇÑ ·ÎµùÀÛ¾÷À» ½ÃÀÛ ÇÑ´Ù. */
+	/* ë‹¤ìŒ ë ˆë²¨ì„ ìœ„í•œ ë¡œë”©ìž‘ì—…ì„ ì‹œìž‘ í•œë‹¤. */
 	if (FAILED(Ready_LoadingThread()))
 		return E_FAIL;
 
@@ -28,15 +34,39 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 
 void CLevel_Loading::Update(_float fTimeDelta)
 {
-	if (true == m_pLoader->isFinished() &&
-		GetKeyState(VK_SPACE) & 0x8000)
+	if (true == m_pLoader->isFinished())
 	{
+		CleanImgui();
+		m_pGameInstance->Destroy_Jolt();
+		m_pGameInstance->Initialize_Jolt(ENUM_CLASS(COLLISION_LAYER::END));
+		Ready_ObjectLayer();
 		CLevel* pNewLevel = { nullptr };
 
 		switch (m_eNextLevelID)
 		{
 		case LEVEL::EDITOR:
 			pNewLevel = CLevel_Editor::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::MAP:
+			pNewLevel = CLevel_Map::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::ANIMATION:
+			pNewLevel = CLevel_Animation::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::EFFECT:
+			pNewLevel = CLevel_Effect::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::UI:
+			pNewLevel = CLevel_UI::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::SHADER:
+			pNewLevel = CLevel_Shader::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::CAMERA:
+			pNewLevel = CLevel_Camera::Create(m_pDevice, m_pContext);
+			break;
+		case LEVEL::AI:
+			pNewLevel = CLevel_AI::Create(m_pDevice, m_pContext);
 			break;
 		}
 
@@ -47,7 +77,7 @@ void CLevel_Loading::Update(_float fTimeDelta)
 
 HRESULT CLevel_Loading::Render()
 {
-	/* »ý¼ºÇØ³õÀº °´Ã¼µéÀ» ·»´õÇÑ´Ù. */
+	/* ìƒì„±í•´ë†“ì€ ê°ì²´ë“¤ì„ ë Œë”í•œë‹¤. */
 	m_pLoader->Show_LoadingText();
 
 	return S_OK;
@@ -63,6 +93,35 @@ HRESULT CLevel_Loading::Ready_LoadingThread()
 	m_pLoader = CLoader::Create(m_pDevice, m_pContext, m_eNextLevelID);
 	if (nullptr == m_pLoader)
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_Loading::CleanImgui()
+{
+#ifdef _DEBUG
+	m_pGameInstance->CleanMenu(TEXT("Animation"));
+	m_pGameInstance->CleanMenu(TEXT("Map"));
+	m_pGameInstance->CleanMenu(TEXT("Effect"));
+	m_pGameInstance->CleanMenu(TEXT("Model"));
+	m_pGameInstance->CleanMenu(TEXT("UI"));
+	m_pGameInstance->CleanMenu(TEXT("Shader"));
+	m_pGameInstance->CleanMenu(TEXT("Camera"));
+#endif
+	return S_OK;
+}
+
+HRESULT CLevel_Loading::Ready_ObjectLayer()
+{
+	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+	m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+
+	m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(COLLISION_LAYER::MONSTER));
+
+	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::PLAYER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+	m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::MONSTER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+
+	m_pGameInstance->Set_PhysicsSystem();
 
 	return S_OK;
 }

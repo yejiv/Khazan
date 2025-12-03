@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "Prototype_Manager.h"
 #include "GameObject.h"
 #include "Component.h"
@@ -62,10 +61,29 @@ void CPrototype_Manager::Clear(_uint iLevelIndex)
 	m_pPrototypes[iLevelIndex].clear();
 }
 
+_bool CPrototype_Manager::Already_Registered_Prototype(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag)
+{
+	auto iter = m_pPrototypes[iPrototypeLevelIndex].find(strPrototypeTag);
+
+	if (iter == m_pPrototypes[iPrototypeLevelIndex].end())
+		return false;
+
+	return true;
+}
+
+CBase* CPrototype_Manager::Find_Prototype_ForPreview(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag)
+{
+	auto	iter = m_pPrototypes[iPrototypeLevelIndex].find(strPrototypeTag);
+
+	if (iter == m_pPrototypes[iPrototypeLevelIndex].end())
+		return nullptr;
+
+	return iter->second;
+}
 
 CBase* CPrototype_Manager::Find_Prototype(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag)
 {
-	/* ÀÌÁøÅ½»ö */
+	/* ì´ì§„íƒìƒ‰ */
 	auto	iter = m_pPrototypes[iPrototypeLevelIndex].find(strPrototypeTag);
 
 	if (iter == m_pPrototypes[iPrototypeLevelIndex].end())

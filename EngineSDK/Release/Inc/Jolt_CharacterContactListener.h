@@ -1,41 +1,29 @@
 #pragma once
 #include "Engine_Defines.h"
 
-#ifdef new
-#pragma push_macro("new")
-#undef new
-#endif
-
-#include <Jolt/Physics/Character/CharacterVirtual.h>
-#include <Jolt/Physics/Body/BodyID.h>
-
-#ifdef new
-#pragma pop_macro("new")
-#endif
-
 NS_BEGIN(Engine)
 
-// JPH ³×ÀÓ½ºÆäÀÌ½º¸¦ ÀÚÁÖ ¾²¸é using ÇØµµ OK
+// JPH ë„¤ì„ìŠ¤í˜ì´ìŠ¤ë¥¼ ìì£¼ ì“°ë©´ using í•´ë„ OK
 // using namespace JPH;
 
 class CJolt_CharacterContactListener final : public JPH::CharacterContactListener
 {
 public:
     explicit CJolt_CharacterContactListener(class BodyInterface* pBodyInterface);
-    ~CJolt_CharacterContactListener() override = default;
+    ~CJolt_CharacterContactListener() override;
 
-    // ---- CharacterContactListener ÀÎÅÍÆäÀÌ½º ----
-    // (1) ¹Ùµğ¿Í Á¢ÃË °¡´ÉÇÑÁö(ÇÊ¿äÇÏ¸é ÇÊÅÍ¸µ)
+    // ---- CharacterContactListener ì¸í„°í˜ì´ìŠ¤ ----
+    // (1) ë°”ë””ì™€ ì ‘ì´‰ ê°€ëŠ¥í•œì§€(í•„ìš”í•˜ë©´ í•„í„°ë§)
     bool OnContactValidate(const JPH::CharacterVirtual* inCharacter,
         const JPH::BodyID& inBodyID2,
         const JPH::SubShapeID& inSubShapeID2) override;
 
-    // (2) ´Ù¸¥ Ä³¸¯ÅÍ¿Í Á¢ÃË °¡´ÉÇÑÁö
+    // (2) ë‹¤ë¥¸ ìºë¦­í„°ì™€ ì ‘ì´‰ ê°€ëŠ¥í•œì§€
     bool OnCharacterContactValidate(const JPH::CharacterVirtual* inCharacter,
         const JPH::CharacterVirtual* inOtherCharacter,
         const JPH::SubShapeID& inSubShapeID2) override;
 
-    // (3) ÃÖÃÊ Á¢ÃË
+    // (3) ìµœì´ˆ ì ‘ì´‰
     void OnContactAdded(const JPH::CharacterVirtual* inCharacter,
         const JPH::BodyID& inBodyID2,
         const JPH::SubShapeID& inSubShapeID2,
@@ -43,7 +31,7 @@ public:
         JPH::Vec3Arg inContactNormal,
         JPH::CharacterContactSettings& ioSettings) override;
 
-    // (4) Á¢ÃË À¯Áö
+    // (4) ì ‘ì´‰ ìœ ì§€
     void OnContactPersisted(const JPH::CharacterVirtual* inCharacter,
         const JPH::BodyID& inBodyID2,
         const JPH::SubShapeID& inSubShapeID2,
@@ -51,7 +39,7 @@ public:
         JPH::Vec3Arg inContactNormal,
         JPH::CharacterContactSettings& ioSettings) override;
 
-    // (5) Á¢ÃË Á¾·á
+    // (5) ì ‘ì´‰ ì¢…ë£Œ
     void OnContactRemoved(const JPH::CharacterVirtual* inCharacter,
         const JPH::BodyID& inBodyID2,
         const JPH::SubShapeID& inSubShapeID2) override;
@@ -69,6 +57,7 @@ public:
 
 private:
     class BodyInterface* m_pBodyInterface = { nullptr };
+	class CGameInstance* m_pGameInstance = { nullptr };
 };
 
 NS_END // Engine

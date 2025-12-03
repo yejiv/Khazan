@@ -13,6 +13,12 @@ private:
 public:
 	class CComponent* Get_Component(const _wstring& strComponentTag, _uint iIndex);
 	class CGameObject* Get_GameObject(_uint iIndex);
+	class CGameObject* Get_BackGameObject() { return m_GameObjects.back(); }
+	TIME_CHANNEL		Get_TimeChannel() { return m_eTimeChannel; }
+    list<class CGameObject*> Get_GameObjects() { return m_GameObjects; }
+
+public:
+	void				Set_TimeChannel(TIME_CHANNEL eChannel) { m_eTimeChannel = eChannel; }
 
 public:
 	HRESULT Add_GameObject(class CGameObject* pGameObject) {
@@ -25,8 +31,18 @@ public:
 	void Late_Update(_float fTimeDelta);
 
 
+    void PoolObject_Back();
+
+
+	void DeadObject_Clear();
+
 private:
 	list<class CGameObject*>			m_GameObjects;
+	list<class CGameObject*>			m_DeadGameObjects;
+
+	class CGameInstance*				m_pGameInstance = { nullptr };
+
+	TIME_CHANNEL						m_eTimeChannel = { TIME_CHANNEL::WORLD };
 
 public:
 	static CLayer* Create();

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="99.Defines">
@@ -28,6 +28,333 @@
     <Filter Include="01.Levels\Loading\Loader">
       <UniqueIdentifier>{0d5a345c-2601-483f-b8a3-0e1c2812da63}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels\Map">
+      <UniqueIdentifier>{218421f6-e6c4-438d-8352-5cc04b731f41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Animaion">
+      <UniqueIdentifier>{847d5f1b-3b70-4065-a997-cf6a69175996}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Effect">
+      <UniqueIdentifier>{324d42db-5584-4fe9-ab17-3425f37b4103}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\UI">
+      <UniqueIdentifier>{0827b30f-22d4-4821-8a1a-41dfbb4129c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect">
+      <UniqueIdentifier>{d433a194-b6ad-4b74-abce-fb441b9e4f20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility">
+      <UniqueIdentifier>{8af11899-cd8c-4c1c-9e9c-0e1c7815e687}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model">
+      <UniqueIdentifier>{f8290d34-b690-4a76-a627-22800eebfcb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Mesh">
+      <UniqueIdentifier>{3d2e8d7a-8f71-4dfd-a290-cd57167ad382}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Material">
+      <UniqueIdentifier>{97bc533d-459d-4a8d-9729-a3aaa5ea6321}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Bone">
+      <UniqueIdentifier>{1993a2a4-ffd2-400b-853f-87d8dd52bd42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Animation">
+      <UniqueIdentifier>{3cb67361-25cb-4c61-be4d-de9667c4a984}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Animation\Channel">
+      <UniqueIdentifier>{01695c3e-bb05-486c-abe9-841d6a03417f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Animation">
+      <UniqueIdentifier>{e1a4d636-4d3d-4832-addd-a3350a40898b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Animation\99.Test Model">
+      <UniqueIdentifier>{176dafb7-64ef-446d-9e9b-d912ec4436c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject">
+      <UniqueIdentifier>{075ffa50-4648-46d7-8809-549850f8d418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop">
+      <UniqueIdentifier>{7b6dad04-350e-4d24-bf0a-c068d78f35d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Map\Header">
+      <UniqueIdentifier>{5e903afb-5ae0-44e4-a388-6f6c034a1f9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Camera">
+      <UniqueIdentifier>{204d72f1-296c-4b94-ade6-47085c5a8ef9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Animation\98.Temp Camera">
+      <UniqueIdentifier>{6219a60c-d70b-437e-ab90-77b6097d02bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI">
+      <UniqueIdentifier>{bb5dba1f-c3b3-40d9-89e6-690cab87d409}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Model_Instance">
+      <UniqueIdentifier>{9eb5cf18-0fa7-4e8d-8cb0-24ca18f5cc48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\00.Model\Model_Instance\Mesh">
+      <UniqueIdentifier>{2d0c3b35-7725-4676-8466-84104fa198df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Map_Terrain">
+      <UniqueIdentifier>{0b49104a-5252-4909-9887-78adc1dd0a3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\01.Static">
+      <UniqueIdentifier>{d6e4346f-5e62-4072-b95a-6ca52ffe1423}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\02.Animated">
+      <UniqueIdentifier>{3e57a2ee-d5f1-4f9b-98be-a3172b0aa61f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive">
+      <UniqueIdentifier>{01fa6e41-9a0b-49f9-beb2-94bb1b33d21c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\00.Object">
+      <UniqueIdentifier>{bec6786b-1289-42dc-b5b7-86382507e079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Shader">
+      <UniqueIdentifier>{a549f4c0-e8c1-476c-9791-1cd9bb77ed65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Animation\00.Tool">
+      <UniqueIdentifier>{4e0957cc-3379-4f01-8418-eb13b3a25d11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\99.Test">
+      <UniqueIdentifier>{8d549d97-64bc-4532-b39f-57afcbe1b890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\UIObject">
+      <UniqueIdentifier>{ae99f8d7-25ec-468b-ae68-1f418b765720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\UIObject\Edit_UIBase">
+      <UniqueIdentifier>{eccd855e-251f-4aa4-8664-e62a1a78fbb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\UIObject\Edit_UI_BackGround">
+      <UniqueIdentifier>{8d7aefd8-cecd-4523-9c0c-54e03365f10b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\UIObject\Edit_Interface_UI">
+      <UniqueIdentifier>{c2874f68-5968-4ffe-a9ee-ed6978d80911}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.ShaderFiles">
+      <UniqueIdentifier>{02932267-8bb3-4b5a-89a9-63274f4f484e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab">
+      <UniqueIdentifier>{a38f577c-e541-4184-89f1-841bf12cc6b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element">
+      <UniqueIdentifier>{30fa168a-dc2c-42a1-8d51-a24135657190}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance">
+      <UniqueIdentifier>{135bad33-cab5-41ae-8e98-9d7c864a932d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance">
+      <UniqueIdentifier>{d1137416-3acf-4abb-98cb-c18a7e984b53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader">
+      <UniqueIdentifier>{b98c614c-025a-41eb-a67a-7f8bc46825fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Camera">
+      <UniqueIdentifier>{73507ee3-ca91-4db0-bb47-9b7b03480d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Terrain">
+      <UniqueIdentifier>{81b63c04-fa83-4a3a-96f5-b9f89191f19d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Camera">
+      <UniqueIdentifier>{7d233cc1-7a34-471a-af71-d26921cf9cc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Terrain">
+      <UniqueIdentifier>{2471b629-34a2-4ea1-9a72-0a4b0cebb5d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\04.Dynamic">
+      <UniqueIdentifier>{b894b6f2-b4eb-404c-a0ab-abc15884b661}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite">
+      <UniqueIdentifier>{4bce57e8-b335-4b18-86b0-70fd515a5461}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Camera">
+      <UniqueIdentifier>{fe38b2f3-d49f-4cfe-8f49-120fba3d8e6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Player">
+      <UniqueIdentifier>{b9c07b19-01a4-4a39-988f-659175d6709c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Debug">
+      <UniqueIdentifier>{8a110978-4120-468f-a7af-916b749bdac2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Camera">
+      <UniqueIdentifier>{8cb9fb9c-e1e4-4801-b84e-9828dcd0bfbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera">
+      <UniqueIdentifier>{c074dc76-9d87-44b7-a131-1bc504dbef6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Camera\Compre">
+      <UniqueIdentifier>{d84468eb-f793-43e3-9c4a-a7dc03bc2177}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Test">
+      <UniqueIdentifier>{e0b884a2-65ea-4277-996f-ccd58319de93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\98.Preview">
+      <UniqueIdentifier>{c9c828e3-489d-4584-850d-ef3ebe71f812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\AI">
+      <UniqueIdentifier>{f35b6446-ec06-4177-8fb1-a85bdf8080b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\AI">
+      <UniqueIdentifier>{339ddb88-cdf0-412e-9f24-55f795efd49a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\AI\Controller">
+      <UniqueIdentifier>{f97bf7c7-5eae-45f8-ad24-12e95da56f03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\AI\Monster">
+      <UniqueIdentifier>{4218dc4b-df2a-4240-b370-b0437149faf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\00.BladeNexus">
+      <UniqueIdentifier>{b8391e45-28ae-487d-981e-929edaff648b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Map_Trigger">
+      <UniqueIdentifier>{990a8953-99fb-4a0d-932c-aeb9f3b4d8e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\01.BigChest">
+      <UniqueIdentifier>{3cfa6e48-cb6a-489b-894a-7cd434d2148c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail">
+      <UniqueIdentifier>{23336d8f-b49c-4d2a-a8b0-2baf902fbd16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\MeshTrail">
+      <UniqueIdentifier>{92517f09-02ed-4642-89e6-18111d0361f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Sky">
+      <UniqueIdentifier>{c39f273c-ce44-4269-9200-f2f0e77106d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\LineTrail">
+      <UniqueIdentifier>{09c3ca49-3bb5-459d-aea8-8dd64aa164b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Effect\Trail\LineTrail\ScreenTrail">
+      <UniqueIdentifier>{1c0dc89f-df51-443c-9aa3-83300d8a860f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\02.TombStone">
+      <UniqueIdentifier>{2bf29804-d405-4e56-b93b-c082d1d474fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Monster">
+      <UniqueIdentifier>{dda5801c-8b51-4c02-a8ca-0386e8d4eb81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Light">
+      <UniqueIdentifier>{8b923b78-6723-45df-90ec-f9dc00bd6e7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS">
+      <UniqueIdentifier>{da6043e2-ddfb-44dc-8ac9-65a290e82a25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\00.Gear">
+      <UniqueIdentifier>{80e72505-ca3e-49fc-9c25-0d2c6de587b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\01.Slate">
+      <UniqueIdentifier>{28163f91-82e9-4b96-87f5-c86be3df14ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\04.Lever">
+      <UniqueIdentifier>{17946d75-2a56-4173-a524-733ed8513695}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\05.Gear">
+      <UniqueIdentifier>{9bc615e2-b31c-4e44-a4a4-9c7b3cf7383d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear">
+      <UniqueIdentifier>{76d246d6-54b7-4963-a3a7-c29f74861b04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Player\Test">
+      <UniqueIdentifier>{4efb7951-3bc5-4cb1-a5cd-517cac6afce2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Player\Creature">
+      <UniqueIdentifier>{34c515b2-0cc9-42c6-838d-808c38bbdaf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Player\Creature\Khazan_Spear">
+      <UniqueIdentifier>{2ef60926-428b-4645-941b-312e78aad06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Shader\Player\Creature\Khazan_Spear\Body">
+      <UniqueIdentifier>{0685344d-6782-4a3b-8afd-9bba86c38ff7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\06.Statue">
+      <UniqueIdentifier>{24ddf31b-a69e-4658-9050-c8655c0eaa43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Deco">
+      <UniqueIdentifier>{ee5b2c06-bc4a-4af8-8c08-4ff6e824f984}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Plate">
+      <UniqueIdentifier>{86ea869c-0278-4d60-81d0-5ef6705a01e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\07.VerticalGate">
+      <UniqueIdentifier>{862ee731-fa08-4f38-9dd8-5db82902b110}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\08.IronGate">
+      <UniqueIdentifier>{dfa30688-1ea4-497c-92d4-7c217323b2ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part">
+      <UniqueIdentifier>{e0a0764a-2b50-4178-9386-fa4de11355f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Lock">
+      <UniqueIdentifier>{e108a4dd-d4ee-4ec1-aaf0-a2ecd0c3f35e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Left">
+      <UniqueIdentifier>{71f0f0f3-040e-4a9a-9007-abbfc186a96b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Right">
+      <UniqueIdentifier>{cb5b7fd7-347c-4067-bc39-e81fe81cd005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder">
+      <UniqueIdentifier>{4a32cba8-964a-45e4-868a-643d9e2396e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Top">
+      <UniqueIdentifier>{ee07b1c5-11dc-4f10-9a0f-53dd35274911}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom">
+      <UniqueIdentifier>{6e226c8a-4e0d-4441-b379-fd6b9221faa6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom\Support">
+      <UniqueIdentifier>{eac75b3a-236b-4b53-bd46-03c3155a5b20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Middle">
+      <UniqueIdentifier>{9ad2d95f-b384-4dbd-b7f9-5408fcc9ab6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\10.GearGate">
+      <UniqueIdentifier>{2626eb1b-b972-4950-80e4-b3a23eefe83c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\10.GearGate\Door_Gear">
+      <UniqueIdentifier>{a22ba3a5-385e-426b-8bf4-0ce42b0ef93a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\11.UnLockGear">
+      <UniqueIdentifier>{00dc5308-1c5b-4064-a4e9-f2eed6ae55f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL">
+      <UniqueIdentifier>{8e366142-09de-4739-b175-a57924d82b14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL\Elevator_Inner">
+      <UniqueIdentifier>{ae941f93-df1a-4878-b8be-130153256a01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL\Elevator_Mid">
+      <UniqueIdentifier>{9b24f774-ee59-4203-a1b3-17ad4aac5b47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL\Elevator_Outer">
+      <UniqueIdentifier>{2ed6f907-2e61-4aea-a5ca-605b56de468c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate">
+      <UniqueIdentifier>{dfee662e-921b-49bf-a64b-efa3940783b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate\Right">
+      <UniqueIdentifier>{c6d6d37e-ad40-4c73-9835-f6550ca2efd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate\Left">
+      <UniqueIdentifier>{5027d2d0-5487-47e6-b7f8-02a5df67e1fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\14.NPC">
+      <UniqueIdentifier>{f7697513-8ee3-4170-b46d-b62f3c1bf31d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Danjin">
+      <UniqueIdentifier>{4bfd260c-69e1-439c-8733-fb68b3971f3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk">
+      <UniqueIdentifier>{eb3838f7-d129-4fa6-a44d-6211db7e63bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk\Part">
+      <UniqueIdentifier>{e7bc52f9-9edf-49a6-9625-d5592b3e8369}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Daphrona">
+      <UniqueIdentifier>{69e4adcd-7547-413d-9956-b394b20dd7be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\15.DanjinJar">
+      <UniqueIdentifier>{03821a9a-b032-41d6-b429-91ed5adea00c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -41,9 +368,6 @@
     </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>98.Default</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\EditorPch.h">
-      <Filter>97.pch</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MainApp.h">
       <Filter>00.MainApp</Filter>
@@ -59,6 +383,297 @@
     </ClInclude>
     <ClInclude Include="..\Public\Level_Editor.h">
       <Filter>01.Levels\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Animation.h">
+      <Filter>01.Levels\Animaion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Effect.h">
+      <Filter>01.Levels\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Map.h">
+      <Filter>01.Levels\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_UI.h">
+      <Filter>01.Levels\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Editor_Model.h">
+      <Filter>03.Utility\00.Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Channel.h">
+      <Filter>03.Utility\00.Model\Animation\Channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Mesh.h">
+      <Filter>03.Utility\00.Model\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_MeshMaterial.h">
+      <Filter>03.Utility\00.Model\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\JOH_EditorModelTest.h">
+      <Filter>02.GameObject\Animation\99.Test Model</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorPch.h">
+      <Filter>97.pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MapObject.h">
+      <Filter>02.GameObject\MapObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Static.h">
+      <Filter>02.GameObject\MapObject\Prop\01.Static</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Animated.h">
+      <Filter>02.GameObject\MapObject\Prop\02.Animated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Interactive.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop.h">
+      <Filter>02.GameObject\MapObject\Prop</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MapEditor_Header.h">
+      <Filter>01.Levels\Map\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Shader.h">
+      <Filter>02.GameObject\Shader\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Terrain_Shader.h">
+      <Filter>02.GameObject\Shader\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Map.h">
+      <Filter>02.GameObject\MapObject\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Editor_TempCamera.h">
+      <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_UI.h">
+      <Filter>02.GameObject\UI\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_ModelMesh_Instance.h">
+      <Filter>03.Utility\00.Model\Model_Instance\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Model_Instance.h">
+      <Filter>03.Utility\00.Model\Model_Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Map_Terrain.h">
+      <Filter>02.GameObject\MapObject\Map_Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Object.h">
+      <Filter>02.GameObject\MapObject\Prop\00.Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Shader.h">
+      <Filter>01.Levels\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Test.h">
+      <Filter>02.GameObject\MapObject\Prop\99.Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Edit_UIBackGround.h">
+      <Filter>02.GameObject\UI\UIObject\Edit_UI_BackGround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Edit_Interface_UI.h">
+      <Filter>02.GameObject\UI\UIObject\Edit_Interface_UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Edit_UIBase.h">
+      <Filter>02.GameObject\UI\UIObject\Edit_UIBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Prefab.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Element.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Point_Instance.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Effect.h">
+      <Filter>02.GameObject\Effect\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Terrain.h">
+      <Filter>02.GameObject\Effect\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Mesh_Instance.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Sprite.h">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Dynamic.h">
+      <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Debug_Controller.h">
+      <Filter>02.GameObject\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Camera.h">
+      <Filter>01.Levels\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Compre.h">
+      <Filter>02.GameObject\Camera\Compre</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Player_Shader.h">
+      <Filter>02.GameObject\Shader\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Map_TestPlayer.h">
+      <Filter>02.GameObject\MapObject\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Prop_Preview.h">
+      <Filter>02.GameObject\MapObject\Prop\98.Preview</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_AI.h">
+      <Filter>01.Levels\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AIController_Edit.h">
+      <Filter>02.GameObject\AI\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Edit_Monster.h">
+      <Filter>02.GameObject\AI\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Animation.h">
+      <Filter>03.Utility\00.Model\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BladeNexus.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\00.BladeNexus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Trigger.h">
+      <Filter>02.GameObject\MapObject\Map_Trigger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BigChest.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\01.BigChest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SkySphere.h">
+      <Filter>02.GameObject\MapObject\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MeshTrail.h">
+      <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CloudSphere.h">
+      <Filter>02.GameObject\MapObject\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LineTrail.h">
+      <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ScreenTrail.h">
+      <Filter>02.GameObject\Effect\Trail\LineTrail\ScreenTrail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Editor_Bone.h">
+      <Filter>03.Utility\00.Model\Bone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TombStone.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\02.TombStone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Map_Spawn.h">
+      <Filter>02.GameObject\MapObject\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ElevatorS.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Map_Light.h">
+      <Filter>02.GameObject\MapObject\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Elevator_Gear.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\00.Gear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Slate_Switch.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\01.Slate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Lever.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\04.Lever</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Door_Gear.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\10.GearGate\Door_Gear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Lever_Gear.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\E_Khazan_Spear.h">
+      <Filter>02.GameObject\Shader\Player\Creature\Khazan_Spear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\E_Body_Khazan_Spear.h">
+      <Filter>02.GameObject\Shader\Player\Creature\Khazan_Spear\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Player_Shader.h">
+      <Filter>02.GameObject\Shader\Player\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Statue_Deco.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Deco</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Statue_Plate.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Plate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Statue.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VerticalGate.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\07.VerticalGate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IronGate.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IronGate_Lock.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Lock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IronGate_Part_L.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Left</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\IronGate_Part_R.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Right</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Top.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Top</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Bottom.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Support.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom\Support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder_Middle.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Middle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Ladder.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GearGate.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\10.GearGate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UnLockGear.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\11.UnLockGear</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ElevatorL.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Elevator_Inner.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL\Elevator_Inner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Elevator_Mid.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL\Elevator_Mid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Elevator_Outer.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL\Elevator_Outer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AnimationTool.h">
+      <Filter>02.GameObject\Animation\00.Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GiantGate.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GiantGate_Part_L.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate\Left</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\GiantGate_Part_R.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate\Right</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC_Daphrona.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Daphrona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC_Danjin.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Danjin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC_Duimuk.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Duimuk_Part.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk\Part</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DanjinJar.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\15.DanjinJar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -78,9 +693,6 @@
     <ClCompile Include="Editor.cpp">
       <Filter>98.Default</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\EditorPch.cpp">
-      <Filter>97.pch</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\MainApp.cpp">
       <Filter>00.MainApp</Filter>
     </ClCompile>
@@ -93,5 +705,295 @@
     <ClCompile Include="..\Private\Level_Editor.cpp">
       <Filter>01.Levels\Editor</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Level_Animation.cpp">
+      <Filter>01.Levels\Animaion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Effect.cpp">
+      <Filter>01.Levels\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Map.cpp">
+      <Filter>01.Levels\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_UI.cpp">
+      <Filter>01.Levels\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Editor_Model.cpp">
+      <Filter>03.Utility\00.Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Bone.cpp">
+      <Filter>03.Utility\00.Model\Bone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Channel.cpp">
+      <Filter>03.Utility\00.Model\Animation\Channel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Mesh.cpp">
+      <Filter>03.Utility\00.Model\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_MeshMaterial.cpp">
+      <Filter>03.Utility\00.Model\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\JOH_EditorModelTest.cpp">
+      <Filter>02.GameObject\Animation\99.Test Model</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorPch.cpp">
+      <Filter>97.pch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MapObject.cpp">
+      <Filter>02.GameObject\MapObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Static.cpp">
+      <Filter>02.GameObject\MapObject\Prop\01.Static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Animated.cpp">
+      <Filter>02.GameObject\MapObject\Prop\02.Animated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Interactive.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop.cpp">
+      <Filter>02.GameObject\MapObject\Prop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Shader.cpp">
+      <Filter>02.GameObject\Shader\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Terrain_Shader.cpp">
+      <Filter>02.GameObject\Shader\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Map.cpp">
+      <Filter>02.GameObject\MapObject\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Editor_TempCamera.cpp">
+      <Filter>02.GameObject\Animation\98.Temp Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_UI.cpp">
+      <Filter>02.GameObject\UI\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_ModelMesh_Instance.cpp">
+      <Filter>03.Utility\00.Model\Model_Instance\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Model_Instance.cpp">
+      <Filter>03.Utility\00.Model\Model_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map_Terrain.cpp">
+      <Filter>02.GameObject\MapObject\Map_Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Object.cpp">
+      <Filter>02.GameObject\MapObject\Prop\00.Object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Shader.cpp">
+      <Filter>01.Levels\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AnimationTool.cpp">
+      <Filter>02.GameObject\Animation\00.Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Test.cpp">
+      <Filter>02.GameObject\MapObject\Prop\99.Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Edit_UIBackGround.cpp">
+      <Filter>02.GameObject\UI\UIObject\Edit_UI_BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Edit_Interface_UI.cpp">
+      <Filter>02.GameObject\UI\UIObject\Edit_Interface_UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Edit_UIBase.cpp">
+      <Filter>02.GameObject\UI\UIObject\Edit_UIBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Prefab.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Element.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Point_Instance.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Point_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Effect.cpp">
+      <Filter>02.GameObject\Effect\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Terrain.cpp">
+      <Filter>02.GameObject\Effect\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Mesh_Instance.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Mesh_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Sprite.cpp">
+      <Filter>02.GameObject\Effect\Effect_Prefab\Effect_Element\Effect_Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Dynamic.cpp">
+      <Filter>02.GameObject\MapObject\Prop\04.Dynamic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Debug_Controller.cpp">
+      <Filter>02.GameObject\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Camera.cpp">
+      <Filter>01.Levels\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Compre.cpp">
+      <Filter>02.GameObject\Camera\Compre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map_TestPlayer.cpp">
+      <Filter>02.GameObject\MapObject\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Prop_Preview.cpp">
+      <Filter>02.GameObject\MapObject\Prop\98.Preview</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_AI.cpp">
+      <Filter>01.Levels\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AIController_Edit.cpp">
+      <Filter>02.GameObject\AI\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Edit_Monster.cpp">
+      <Filter>02.GameObject\AI\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Editor_Animation.cpp">
+      <Filter>03.Utility\00.Model\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BladeNexus.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\00.BladeNexus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Trigger.cpp">
+      <Filter>02.GameObject\MapObject\Map_Trigger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BigChest.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\01.BigChest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SkySphere.cpp">
+      <Filter>02.GameObject\MapObject\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MeshTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\MeshTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CloudSphere.cpp">
+      <Filter>02.GameObject\MapObject\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\LineTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\LineTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ScreenTrail.cpp">
+      <Filter>02.GameObject\Effect\Trail\LineTrail\ScreenTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TombStone.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\02.TombStone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map_Spawn.cpp">
+      <Filter>02.GameObject\MapObject\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ElevatorS.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Map_Light.cpp">
+      <Filter>02.GameObject\MapObject\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Elevator_Gear.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\00.Gear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Slate_Switch.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\03.ElevatorS\01.Slate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Lever.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\04.Lever</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Door_Gear.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\10.GearGate\Door_Gear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Lever_Gear.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\05.Gear\00.Lever_Gear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\E_Khazan_Spear.cpp">
+      <Filter>02.GameObject\Shader\Player\Creature\Khazan_Spear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\E_Body_Khazan_Spear.cpp">
+      <Filter>02.GameObject\Shader\Player\Creature\Khazan_Spear\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Player_Shader.cpp">
+      <Filter>02.GameObject\Shader\Player\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue_Deco.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Deco</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue_Plate.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue\Plate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Statue.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\06.Statue</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VerticalGate.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\07.VerticalGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate_Lock.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Lock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate_Part_L.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Left</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\IronGate_Part_R.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\08.IronGate\Part\Right</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Top.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Top</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Bottom.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Support.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Bottom\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder_Middle.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder\Middle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ladder.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\09.Ladder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GearGate.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\10.GearGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UnLockGear.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\11.UnLockGear</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ElevatorL.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Elevator_Inner.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL\Elevator_Inner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Elevator_Mid.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL\Elevator_Mid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Elevator_Outer.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\12.ElevatorL\Elevator_Outer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GiantGate.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GiantGate_Part_L.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate\Left</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\GiantGate_Part_R.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\13.GiantGate\Right</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Daphrona.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Daphrona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Danjin.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Danjin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Duimuk.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Duimuk_Part.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk\Part</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DanjinJar.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\15.DanjinJar</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxPosTex_Edit_UI.hlsl">
+      <Filter>96.ShaderFiles</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

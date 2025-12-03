@@ -9,7 +9,7 @@
 #include "Jolt/Renderer/DebugRendererSimple.h"
 
 #ifdef new
-#pragma pop_macro("new") // DBG_NEW º¹¿ø
+#pragma pop_macro("new") // DBG_NEW ë³µì›
 #endif
 NS_BEGIN(Engine)
 

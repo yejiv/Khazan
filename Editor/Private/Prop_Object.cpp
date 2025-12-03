@@ -1,0 +1,257 @@
+#include "Prop_Object.h"
+
+#include "GameInstance.h"
+
+CProp_Object::CProp_Object(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+    : CProp { pDevice, pContext }
+{
+}
+
+CProp_Object::CProp_Object(const CProp_Object& Prototype)
+    : CProp { Prototype }
+{
+}
+
+HRESULT CProp_Object::Initialize_Prototype()
+{
+    CHECK_FAILED(__super::Initialize_Prototype(), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CProp_Object::Initialize_Clone(void* pArg)
+{
+    CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
+
+    CHECK_FAILED(Ready_Components(pArg), E_FAIL);
+
+    PROP_OBJECT_DESC* pDesc = static_cast<PROP_OBJECT_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
+
+    m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
+
+    return S_OK;
+}
+
+void CProp_Object::Priority_Update(_float fTimeDelta)
+{
+}
+
+void CProp_Object::Update(_float fTimeDelta)
+{
+    if (true == (m_Properties.isCollider && m_Properties.isBackGround))
+        return;
+
+    if (true == m_Properties.isSnow)
+    {
+        if (true == m_Properties.isIce)
+            m_eShaderPass = SHADER_PASS::SNOWMAP_ICE;
+        else
+            m_eShaderPass = SHADER_PASS::SNOWMAP;
+    }
+    else if (false == (m_Properties.isCollider && m_Properties.isBackGround))
+    {
+        if (true == m_Properties.isIce)
+            m_eShaderPass = SHADER_PASS::MAP_ICE;
+        else
+            m_eShaderPass = SHADER_PASS::MAP;
+    }
+}
+
+void CProp_Object::Late_Update(_float fTimeDelta)
+{
+    /*
+    if (true == m_Properties.isBackGround)
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::PRIORITY, this);
+    else if (true == m_Properties.isBlended)
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this);
+    else
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::NONBLEND, this);
+
+    if (true == m_Properties.isShadow)
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this);
+    */
+    if (false == m_isCheckRender)
+    {
+        if (m_pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(STATE::POSITION), 50.f))
+            m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+    }
+    else
+    {
+        _bool isRender = { false };
+
+        if (true == m_pRenderProperties->isSnow && m_Properties.isSnow == m_pRenderProperties->isSnow)
+            isRender = true;
+        if (true == m_pRenderProperties->isCollider && m_Properties.isCollider == m_pRenderProperties->isCollider)
+            isRender = true;
+        if (true == m_pRenderProperties->isIce && m_Properties.isIce == m_pRenderProperties->isIce)
+            isRender = true;
+        if (true == m_pRenderProperties->isInstance && m_Properties.isInstance == m_pRenderProperties->isInstance)
+            isRender = true;
+        if (true == m_pRenderProperties->isShadow && m_Properties.isShadow == m_pRenderProperties->isShadow)
+            isRender = true;
+        if (true == m_pRenderProperties->isBackGround && m_Properties.isBackGround == m_pRenderProperties->isBackGround)
+            isRender = true;
+        if (true == m_pRenderProperties->isPlant && m_Properties.isPlant == m_pRenderProperties->isPlant)
+            isRender = true;
+
+        if (0 > *m_pRenderSubLevel && isRender == true)
+        {
+            isRender = true;
+        }
+        else if (*m_pRenderSubLevel == m_iSubLevel && isRender == true)
+        {
+            isRender = true;
+        }
+        else if (*m_pRenderSubLevel != m_iSubLevel)
+            isRender = false;
+
+        _bool isRenderProperties = { false == *m_pRenderProperties };
+
+        if (true == isRenderProperties || true == isRender)
+        {
+            if (m_pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(STATE::POSITION), 50.f))
+                m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+        }
+    }
+}
+
+HRESULT CProp_Object::Render()
+{
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
+
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    for (_uint i = 0; i < iNumMeshes; ++i)
+    {
+        Bind_Materials(i);
+
+        if (SHADER_PASS::SNOWMAP == m_eShaderPass || SHADER_PASS::SNOWMAP_ICE == m_eShaderPass)
+            CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
+
+        if (SHADER_PASS::SOLIDFRAME == m_eShaderPass)
+        {
+            _float4 vWireColor = { 0.6f, 0.f, 0.6f, 1.f };
+
+            m_pShaderCom->Bind_RawValue("g_vColor", &vWireColor, sizeof(_float4));
+        }
+
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(m_eShaderPass)), E_FAIL);
+
+        CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
+
+        if (SHADER_PASS::SOLIDFRAME == m_eShaderPass)
+        {
+            _float4 vWireColor = { 1.f, 1.f, 0.f, 1.f };
+
+            m_pShaderCom->Bind_RawValue("g_vColor", &vWireColor, sizeof(_float4));
+
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(SHADER_PASS::WIREFRAME)), E_FAIL);
+
+            CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
+        }
+    }
+
+    return S_OK;
+}
+
+HRESULT CProp_Object::Ready_Components(void* pArg)
+{
+    PROP_OBJECT_DESC* pDesc = static_cast<PROP_OBJECT_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
+
+    LEVEL eLevel = pDesc->eLevel;
+    CHECK_EQUAL(LEVEL::END, eLevel, E_FAIL);
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
+        TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), m_szModelName,
+        TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CProp_Object::Bind_ShaderResources()
+{
+    // 월드 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
+
+    // 뷰 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
+
+    // 투영 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
+
+    // 맵 오브젝트 ID 쉐이더에 바인딩
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_iMapObjectID", &m_iMapObjectID, sizeof(_uint)), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CProp_Object::Bind_Materials(_uint iMeshIndex)
+{
+    m_iMtrlFlags = 0;
+
+    if (true == (m_Properties.isCollider && m_Properties.isBackGround))
+    {
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0);
+
+        m_iMtrlFlags &= ~M_NORMAL;
+        m_iMtrlFlags &= ~M_EMISSIVE;
+        m_iMtrlFlags &= ~M_SPECULAR;
+
+        m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
+
+        return S_OK;
+    }
+
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+        m_iMtrlFlags |= M_DIFFUSE;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
+        m_iMtrlFlags |= M_NORMAL;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
+        m_iMtrlFlags |= M_EMISSIVE;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
+        m_iMtrlFlags |= M_SPECULAR;
+
+    m_iMtrlFlags &= ~M_EMISSIVE;
+    m_iMtrlFlags &= ~M_SPECULAR;
+
+    m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
+
+    return S_OK;
+}
+
+CProp_Object* CProp_Object::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+{
+    CProp_Object* pInstance = new CProp_Object(pDevice, pContext);
+
+    if (FAILED(pInstance->Initialize_Prototype()))
+    {
+        MSG_BOX(TEXT("Failed to Created : CProp_Object"));
+        Safe_Release(pInstance);
+    }
+
+    return pInstance;
+}
+
+CGameObject* CProp_Object::Clone(void* pArg)
+{
+    CProp_Object* pInstance = new CProp_Object(*this);
+
+    if (FAILED(pInstance->Initialize_Clone(pArg)))
+    {
+        MSG_BOX(TEXT("Failed to Cloned : CProp_Object"));
+        Safe_Release(pInstance);
+    }
+
+    return pInstance;
+}
+
+void CProp_Object::Free()
+{
+    __super::Free();
+
+    Safe_Release(m_pModelCom);
+}

@@ -12,14 +12,15 @@ protected:
 	virtual ~CContainerObject() = default;
 
 public:
+    virtual class CComponent* Get_Component(const _wstring& strComponentTag);
 	class CComponent* Get_Component(const _wstring& strPartTag, const _wstring& strComponentTag);
-
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize_Clone(void* pArg) override;
 	virtual void Priority_Update(_float fTimeDelta) override;
 	virtual void Update(_float fTimeDelta) override;
+
 	virtual void Late_Update(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
@@ -28,6 +29,7 @@ protected:
 
 protected:
 	HRESULT Add_PartObject(const _wstring& strPartObjectTag, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
+public:
 	class CPartObject* Find_PartObject(const _wstring& strPartObjectTag);
 
 public:

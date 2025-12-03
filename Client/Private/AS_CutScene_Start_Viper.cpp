@@ -1,0 +1,135 @@
+#include "AS_CutScene_Start_Viper.h"
+#include "AI_Controller.h"
+#include "FSM_Viper.h"
+#include "Viper.h"
+#include "Body_Viper.h"
+#include "GameInstance.h"
+
+CAS_CutScene_Start_Viper::CAS_CutScene_Start_Viper()
+{
+
+}
+
+void CAS_CutScene_Start_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
+{
+    CViper* pViper = static_cast<CViper*>(pOwner);
+    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+    CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+    pTransform->Rotation(0,XMConvertToRadians(180.f),0.f);
+    m_fTimeHelper = 0.09f;
+    pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::SIT));
+    
+}
+
+void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
+{
+    CViper* pViper = static_cast<CViper*>(pOwner);
+    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+
+    
+
+
+    if (pModel->Play_Animation(fTimeDelta * m_fTimeHelper))
+    {
+        CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+
+        if (m_eState == CUTSCENE_STATE::JUMP)
+        {
+            
+        }
+        else if (m_eState == CUTSCENE_STATE::STAND)
+        {
+            pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneJump", false);
+        }
+    }
+   
+}
+
+void CAS_CutScene_Start_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
+{
+
+}
+
+void CAS_CutScene_Start_Viper::ViperScene_Sit(CViper* pViper)
+{
+    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+    Change_CutSceneState(CUTSCENE_STATE::SIT, pModel, pViper);
+    
+}
+
+void CAS_CutScene_Start_Viper::ViperScene_Jump(CViper* pViper)
+{
+    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+    Change_CutSceneState(CUTSCENE_STATE::JUMP, pModel, pViper);
+}
+
+void CAS_CutScene_Start_Viper::ViperScene_Land(CViper* pViper)
+{
+    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+    Change_CutSceneState(CUTSCENE_STATE::LAND, pModel, pViper);
+}
+
+void CAS_CutScene_Start_Viper::ViperScene_Roar(CViper* pViper)
+{
+    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+    Change_CutSceneState(CUTSCENE_STATE::STAND, pModel, pViper);
+}
+
+void CAS_CutScene_Start_Viper::Change_CutSceneState(CUTSCENE_STATE eNextState , CModel* pModel, CViper* pViper)
+{
+    if (m_eState == eNextState)
+        return;
+
+    CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+
+    m_eState = eNextState;
+    
+    switch (m_eState)
+    {
+    case Client::CUTSCENE_STATE::SIT:
+    {
+        pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::SIT));
+        pViper->Set_ViperPosition(XMVectorSet(-37.938f, -15.453f, 223.393f, 1.f));
+        pBB->Set_Value<_bool>(pViper->Get_Name(),"isStartCutSceneSit",true);
+        break;
+    }
+
+    case Client::CUTSCENE_STATE::JUMP:
+    {
+        pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::JUMP));        
+        pViper->Set_Teleport(XMVectorSet(-30.838f, -5.35f, 199.893f, 1.f));
+        //pViper->Set_ViperPosition(XMVectorSet(-30.838f, -8.453f, 199.893f, 1.f));
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneSit", false);
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneJump", true);
+        break;
+    }        
+    case Client::CUTSCENE_STATE::LAND:
+    {
+        pViper->Reset_Viper_Gravity();
+        pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::LAND));
+        _vector vPosition = XMVectorSet(-31.938f, -29.986f, 201.162f, 1.f);
+        pViper->Set_ViperPosition(vPosition);
+        break;
+    }       
+    case Client::CUTSCENE_STATE::STAND:
+    {
+        pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::STAND));
+        _vector vPosition = XMVectorSet(-31.938f, -29.986f, 198.162f, 1.f);
+        pViper->Set_ViperPosition(vPosition);
+        break;
+    }                    
+    }
+   
+
+}
+
+
+CAS_CutScene_Start_Viper* CAS_CutScene_Start_Viper::Create()
+{
+    return new CAS_CutScene_Start_Viper;
+}
+
+void CAS_CutScene_Start_Viper::Free()
+{
+    __super::Free();
+}

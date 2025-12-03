@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "Object_Manager.h"
 #include "GameInstance.h"
 
@@ -31,6 +30,15 @@ CGameObject* CObject_Manager::Get_GameObject(_uint iLayerLevelIndex, const _wstr
 	return pLayer->Get_GameObject(iIndex);
 }
 
+CGameObject* CObject_Manager::Get_BackGameObject(_uint iLayerLevelIndex, const _wstring& strLayerTag)
+{
+	CLayer* pLayer = Find_Layer(iLayerLevelIndex, strLayerTag);
+	if (pLayer == nullptr)
+		return nullptr;
+
+	return 	pLayer->Get_BackGameObject();
+}
+
 HRESULT CObject_Manager::Initialize(_uint iNumLevels)
 {
 	m_pLayers = new map<const _wstring, CLayer*>[iNumLevels];
@@ -40,12 +48,28 @@ HRESULT CObject_Manager::Initialize(_uint iNumLevels)
 	return S_OK;
 }
 
-HRESULT CObject_Manager::Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg)
+HRESULT CObject_Manager::Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, TIME_CHANNEL eTimeChannel, _uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, void* pArg)
 {
 	CGameObject* pGameObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, pArg));
 	if (nullptr == pGameObject)
 		return E_FAIL;
 
+	CLayer* pLayer = Find_Layer(iLayerLevelIndex, strLayerTag);
+	if (nullptr == pLayer)
+	{
+ 		pLayer = CLayer::Create();
+		pLayer->Add_GameObject(pGameObject);
+		pLayer->Set_TimeChannel(eTimeChannel);
+		m_pLayers[iLayerLevelIndex].emplace(strLayerTag, pLayer);
+	}
+	else
+		pLayer->Add_GameObject(pGameObject);
+
+	return S_OK;
+}
+
+HRESULT CObject_Manager::Push_GameObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, TIME_CHANNEL eTimeChannel, CGameObject* pGameObject)
+{
 	CLayer* pLayer = Find_Layer(iLayerLevelIndex, strLayerTag);
 	if (nullptr == pLayer)
 	{
@@ -59,38 +83,38 @@ HRESULT CObject_Manager::Add_GameObject_ToLayer(_uint iLayerLevelIndex, const _w
 	return S_OK;
 }
 
-void CObject_Manager::Priority_Update(_float fTimeDelta)
-{
-	for (size_t i = 0; i < m_iNumLevels; i++)
-	{
-		for (auto& Pair : m_pLayers[i])
-		{
-			if(nullptr != Pair.second)
-				Pair.second->Priority_Update(fTimeDelta);
-		}
-	}
-}
-
-void CObject_Manager::Update(_float fTimeDelta)
+void CObject_Manager::Priority_Update(TIME_DELTA tTimeDelta)
 {
 	for (size_t i = 0; i < m_iNumLevels; i++)
 	{
 		for (auto& Pair : m_pLayers[i])
 		{
 			if (nullptr != Pair.second)
-				Pair.second->Update(fTimeDelta);
+				Pair.second->Priority_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(Pair.second->Get_TimeChannel())]);
 		}
 	}
 }
 
-void CObject_Manager::Late_Update(_float fTimeDelta)
+void CObject_Manager::Update(TIME_DELTA tTimeDelta)
 {
 	for (size_t i = 0; i < m_iNumLevels; i++)
 	{
 		for (auto& Pair : m_pLayers[i])
 		{
 			if (nullptr != Pair.second)
-				Pair.second->Late_Update(fTimeDelta);
+				Pair.second->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(Pair.second->Get_TimeChannel())]);
+		}
+	}
+}
+
+void CObject_Manager::Late_Update(TIME_DELTA tTimeDelta)
+{
+	for (size_t i = 0; i < m_iNumLevels; i++)
+	{
+		for (auto& Pair : m_pLayers[i])
+		{
+			if (nullptr != Pair.second)
+				Pair.second->Late_Update(tTimeDelta.TimeDeltas[ENUM_CLASS(Pair.second->Get_TimeChannel())]);
 		}
 	}
 }
@@ -102,9 +126,18 @@ void CObject_Manager::Clear(_uint iLevelIndex)
 
 	for (auto& Pair : m_pLayers[iLevelIndex])
 	{		
+        Pair.second->PoolObject_Back();
 		Safe_Release(Pair.second);
 	}
 	m_pLayers[iLevelIndex].clear();
+}
+
+void CObject_Manager::Static_Clear()
+{
+	for (auto& Pair : m_pLayers[m_pGameInstance->Get_StaticLevel()])
+	{     
+		Pair.second->DeadObject_Clear();
+	}
 }
 
 CLayer* CObject_Manager::Find_Layer(_uint iLayerLevelIndex, const _wstring& strLayerTag)

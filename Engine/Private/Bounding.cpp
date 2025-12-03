@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 //#include "Bounding.h"
 //
 //CBounding::CBounding(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

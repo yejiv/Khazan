@@ -1,0 +1,67 @@
+#include "MapObject.h"
+
+#include "GameInstance.h"
+
+CMapObject::CMapObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+    : CContainerObject { pDevice, pContext }
+{
+}
+
+CMapObject::CMapObject(const CMapObject& Prototype)
+    : CContainerObject { Prototype }
+{
+}
+
+HRESULT CMapObject::Initialize_Prototype()
+{
+    CHECK_FAILED(__super::Initialize_Prototype(), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CMapObject::Initialize_Clone(void* pArg)
+{
+    MAPOBJECT_DESC* pDesc = static_cast<MAPOBJECT_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
+
+    m_iMapObjectID = pDesc->iMapObjectID;
+
+    m_eInteractiveType = pDesc->eInteractiveType;
+
+    if (INTERACTIVE_TYPE::CHECKPOINT == m_eInteractiveType)
+        m_iBladeNexusID = pDesc->iBladeNexus_ID;
+
+    if (INTERACTIVE_TYPE::CHEST == m_eInteractiveType)
+        m_ItemBox = pDesc->ItemBox;
+
+    CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
+
+    return S_OK;
+}
+
+void CMapObject::Priority_Update(_float fTimeDelta)
+{
+    __super::Priority_Update(fTimeDelta);
+}
+
+void CMapObject::Update(_float fTimeDelta)
+{
+    __super::Update(fTimeDelta);
+}
+
+void CMapObject::Late_Update(_float fTimeDelta)
+{
+    __super::Late_Update(fTimeDelta);
+}
+
+HRESULT CMapObject::Render()
+{
+    return S_OK;
+}
+
+void CMapObject::Free()
+{
+    __super::Free();
+
+    Safe_Release(m_pShaderCom);
+}

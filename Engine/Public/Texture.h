@@ -13,7 +13,12 @@ private:
 
 public:
 	virtual HRESULT Initialize_Prototype(const _tchar* pTextureFilePath, _uint iNumTextures);
+	virtual HRESULT Initialize_Prototype(const _tchar* pTextureFilePath, vector<const _tchar*> VecTexture);
 	virtual HRESULT Initialize_Clone(void* pArg) override;
+
+public:
+	_uint						Get_NumTextures() { return m_iNumTextures; }
+	ID3D11ShaderResourceView*	Get_Texture(_uint iTextureIndex);
 
 public:
 	HRESULT Bind_Shader_Resource(class CShader* pShader, const _char* pConstantName, _uint iTextureIndex);
@@ -25,6 +30,7 @@ private:
 
 public:
 	static CTexture* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _tchar* pTextureFilePath, _uint iNumTextures);
+	static CTexture* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _tchar* pTextureFilePath, vector<const _tchar*> VecTexture);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 

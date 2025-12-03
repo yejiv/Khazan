@@ -1,7 +1,16 @@
-#include "pch.h"
 #include "Level_Title.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
+
 #include "Level_Loading.h"
+
+#include "UIObject.h"
+#include "Damage_Text.h"
+
+#include "Sequence_Dummy.h"
+#include "UI_Announce_MapName.h"
+
+#include "SkipButton.h"
 
 CLevel_Title::CLevel_Title(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel { pDevice, pContext }
@@ -10,29 +19,59 @@ CLevel_Title::CLevel_Title(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 HRESULT CLevel_Title::Initialize()
 {
-
-	/* ÇöÀç ·¹º§À» ±¸¼ºÇØÁÖ±â À§ÇÑ °´Ã¼µéÀ» »ý¼ºÇÑ´Ù. */
+	/* í˜„ìž¬ ë ˆë²¨ì„ êµ¬ì„±í•´ì£¼ê¸° ìœ„í•œ ê°ì²´ë“¤ì„ ìƒì„±í•œë‹¤. */
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
+	CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
+
+    m_iEventID = m_pGameInstance->Subscribe_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), [&](const EVENT_LEVEL_CHANGE& e)
+		{
+			m_eNextLevel = static_cast<LEVEL>(e.iLevel);
+		});
+
+	m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
+	CClientInstance::GetInstance()->Fade_In();
 
 	return S_OK;
 }
 
 void CLevel_Title::Update(_float fTimeDelta)
 {
-	if (GetKeyState(VK_RETURN) & 0x8000)
+    if (!m_isPlayerSound)
+    {
+        m_isPlayerSound = true;
+        m_pGameInstance->PlaySoundLoop(TEXT("bgm_Title.wav"), 0.5f);
+    }
+	//if (m_pGameInstance->Key_Down(DIK_F8, INPUT_TYPE::UI))
+	//{
+	//	if (!m_isOpenLevel) {
+ //           m_pGameInstance->StopAll();
+	//		if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::VIPER))))
+	//			return;
+
+	//		m_isOpenLevel = true;
+
+	//	}
+	//}
+	if (m_eNextLevel != LEVEL::END)
 	{
-		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::STAGE1))))
-			return;
+        //m_pGameInstance->StopAll();
+		if (!m_isOpenLevel) {
+            m_pGameInstance->StopAll();
+			if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel))))
+				return;
+			m_isOpenLevel = true;
+		}
 	}
+
 
 	return;
 }
 
 HRESULT CLevel_Title::Render()
 {
-	SetWindowText(g_hWnd, TEXT("·Î°í·¹º§ÀÔ´Ï´Ù."));
+	SetWindowText(g_hWnd, TEXT("ë¡œê³ ë ˆë²¨ìž…ë‹ˆë‹¤."));
 
 	return S_OK;
 }
@@ -42,6 +81,154 @@ HRESULT CLevel_Title::Ready_Layer_BackGround(const _wstring& strLayerTag)
 	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TITLE), strLayerTag,
 	//	ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_BackGround"))))
 	//	return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_Title::Ready_Layer_UI()
+{
+    CUIObject::UIOBJECT_DESC Desc = {};
+
+#ifndef _DEBUG
+	Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
+	Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	Desc.szName = "LogoBG";
+	Desc.fDepth = 10;
+
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TITLE), TEXT("Layer_UI"),
+		ENUM_CLASS(LEVEL::TITLE), TEXT("Prototype_GameObject_Logo_BG"), TIME_CHANNEL::WORLD, &Desc)))
+		return E_FAIL;
+#endif
+
+	Desc.vLocalSize = { 48.f, 48.f };
+	Desc.vLocalPos = { 0.f, 0.f };
+	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+	Desc.szName = "Cursor";
+	Desc.fDepth = 0.5f;
+
+	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Cursor"), TIME_CHANNEL::WORLD, &Desc)))
+		return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::TITLE), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::TITLE),
+        TEXT("../Bin/Resources/UI/UIData/Logo.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Tutorial.json"))))
+        return E_FAIL;
+
+
+    Desc.vLocalSize = { g_iWinSizeX, g_iWinSizeY };
+    Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+    Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    Desc.szName = "Announce";
+    Desc.fDepth = 2;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+        ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_Result"), TIME_CHANNEL::WORLD, &Desc)))
+        return E_FAIL;
+
+    Desc.vLocalSize = { 1042.f, 168.f };
+    Desc.vLocalPos = { g_iWinSizeX >> 1, g_iWinSizeY >> 1 };
+    Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    Desc.szName = "Announce";
+    Desc.fDepth = 2;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+        ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Announce_Over"), TIME_CHANNEL::WORLD, &Desc)))
+        return E_FAIL;
+
+    Desc.vLocalSize = { 46.f, 46.f };
+    Desc.vLocalPos = { g_iWinSizeX - 200, g_iWinSizeY - 50 };
+    Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
+    Desc.szName = "SkipButton";
+    Desc.fDepth = 1;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"),
+        ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_SkipButton"), TIME_CHANNEL::WORLD, &Desc)))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/HUD.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Inven.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/MainMenu.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/BladeNexus.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/State.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/ItemInfo_Other.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/ItemInfo_Weapon.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/ItemInfo_Equip.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/BossHp.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/HUD_Amount.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/BladeNexus_Map.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Skill.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Skill_Info.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/SkillQuickSlot.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Lachryma_Info.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Gold_Info.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Store.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Popup_Reset.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Popup_Item.json"))))
+        return E_FAIL;
+
+    if (FAILED(CClientInstance::GetInstance()->Load_UIData(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), ENUM_CLASS(LEVEL::STATIC),
+        TEXT("../Bin/Resources/UI/UIData/Collection_Info.json"))))
+        return E_FAIL;
 
 	return S_OK;
 }
@@ -63,8 +250,6 @@ CLevel_Title* CLevel_Title::Create(ID3D11Device* pDevice, ID3D11DeviceContext* p
 
 void CLevel_Title::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), m_iEventID);
 	__super::Free();
-
-
-
 }

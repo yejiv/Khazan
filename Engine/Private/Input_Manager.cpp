@@ -1,6 +1,35 @@
-#include "EnginePch.h"
 #include "Input_Manager.h"
 #include "Input_Device.h"
+
+inline bool IsDownEdge(const _byte* prev, const _byte* curr, _ubyte k) {
+    const bool p = (prev[k] & 0x80) != 0;
+    const bool c = (curr[k] & 0x80) != 0;
+    return (!p && c);
+}
+
+inline bool IsUpEdge(const _byte* prev, const _byte* curr, _ubyte k) {
+    const bool p = (prev[k] & 0x80) != 0;
+    const bool c = (curr[k] & 0x80) != 0;
+    return (p && !c);
+}
+
+inline bool IsPressing(const _byte* curr, _ubyte k) {
+    return (curr[k] & 0x80) != 0;
+}
+
+inline bool MouseIsDownEdge(const DIMOUSESTATE& prev, const DIMOUSESTATE& curr, int b) {
+    const bool p = (prev.rgbButtons[b] & 0x80) != 0;
+    const bool c = (curr.rgbButtons[b] & 0x80) != 0;
+    return (!p && c);
+}
+inline bool MouseIsUpEdge(const DIMOUSESTATE& prev, const DIMOUSESTATE& curr, int b) {
+    const bool p = (prev.rgbButtons[b] & 0x80) != 0;
+    const bool c = (curr.rgbButtons[b] & 0x80) != 0;
+    return (p && !c);
+}
+inline bool MouseIsPressing(const DIMOUSESTATE& curr, int b) {
+    return (curr.rgbButtons[b] & 0x80) != 0;
+}
 
 CInput_Manager::CInput_Manager()
 {
@@ -20,98 +49,72 @@ void CInput_Manager::Update()
     m_pInput_Device->Update();
 }
 
-_bool CInput_Manager::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, _float* pPressingTime)
+_bool CInput_Manager::Key_Pressing(_ubyte byKeyID, _float fTimeDelta, INPUT_TYPE eType, _float* pPressingTime)
 {
-    if ((m_pInput_Device->Get_DIKeyState(byKeyID)) & 0x8000)
-    {
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return false;
+
+    const _byte* curr = m_pInput_Device->GetKeyCurr();
+    if (IsPressing(curr, byKeyID)) {
         m_fPressingTime[byKeyID] += fTimeDelta;
-        if (pPressingTime != nullptr)
-            *pPressingTime = m_fPressingTime[byKeyID];
+        if (pPressingTime) *pPressingTime = m_fPressingTime[byKeyID];
         return true;
     }
-    return false;
-}
-
-_bool CInput_Manager::Key_Down(_ubyte byKeyID)
-{
-    if (!(m_bKeyState_Down[byKeyID]) && ((m_pInput_Device->Get_DIKeyState(byKeyID)) & 0x8000))
-    {
-        m_bKeyState_Down[byKeyID] = !m_bKeyState_Down[byKeyID];
+    else {
+        // 누르지 않으면 시간 초기화(원하면 유지해도 됨)
         m_fPressingTime[byKeyID] = 0.f;
-        return true;
-    }
-
-    if ((m_bKeyState_Down[byKeyID]) && !((m_pInput_Device->Get_DIKeyState(byKeyID)) & 0x8000))
-    {
-        m_bKeyState_Down[byKeyID] = !m_bKeyState_Down[byKeyID];
+        if (pPressingTime) *pPressingTime = 0.f;
         return false;
     }
+}
+
+_bool CInput_Manager::Key_Down(_ubyte byKeyID, INPUT_TYPE eType)
+{
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return false;
+    return IsDownEdge(m_pInput_Device->GetKeyPrev(), m_pInput_Device->GetKeyCurr(), byKeyID);
+}
+
+_bool CInput_Manager::Key_Up(_ubyte byKeyID, INPUT_TYPE eType)
+{
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return false;
+    return IsUpEdge(m_pInput_Device->GetKeyPrev(), m_pInput_Device->GetKeyCurr(), byKeyID);
+
+}
+
+_bool CInput_Manager::Mouse_Pressing(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
+{
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return false;
+    return MouseIsPressing(m_pInput_Device->GetMouseCurr(), ENUM_CLASS(eMouse));
 
     return false;
 }
 
-_bool CInput_Manager::Key_Up(_ubyte byKeyID)
+_bool CInput_Manager::Mouse_Down(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-
-    if (!m_bKeyState_Up[byKeyID] && ((m_pInput_Device->Get_DIKeyState(byKeyID)) & 0x8000))
-    {
-        m_bKeyState_Up[byKeyID] = !m_bKeyState_Up[byKeyID];
-        return false;
-    }
-    if (m_bKeyState_Up[byKeyID] && !((m_pInput_Device->Get_DIKeyState(byKeyID)) & 0x8000))
-    {
-        m_bKeyState_Up[byKeyID] = !m_bKeyState_Up[byKeyID];
-        return true;
-    }
-    return false;
-
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return false;
+    return MouseIsDownEdge(m_pInput_Device->GetMousePrev(), m_pInput_Device->GetMouseCurr(), ENUM_CLASS(eMouse));
 }
 
-_bool CInput_Manager::Mouse_Pressing(MOUSEKEYSTATE eMouse)
+_bool CInput_Manager::Mouse_Up(MOUSEKEYSTATE eMouse, INPUT_TYPE eType)
 {
-    if ((m_pInput_Device->Get_DIMouseState(eMouse)) & 0x8000)
-        return true;
-
-    return false;
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return false;
+    return MouseIsUpEdge(m_pInput_Device->GetMousePrev(), m_pInput_Device->GetMouseCurr(), ENUM_CLASS(eMouse));
 }
 
-_bool CInput_Manager::Mouse_Down(MOUSEKEYSTATE eMouse)
+_long CInput_Manager::Mouse_Move(MOUSEMOVESTATE eMouseState, INPUT_TYPE eType)
 {
-    if (!(m_bMouseState_Down[ENUM_CLASS(eMouse)]) && ((m_pInput_Device->Get_DIMouseState(eMouse)) & 0x8000))
-    {
-        m_bMouseState_Down[ENUM_CLASS(eMouse)] = !m_bMouseState_Down[ENUM_CLASS(eMouse)];
-        return true;
+    if (m_eInputType != eType && eType != INPUT_TYPE::FORCE) return 0;
+    const auto& ms = m_pInput_Device->GetMouseCurr();
+    switch (eMouseState) {
+    case MOUSEMOVESTATE::X: return ms.lX;
+    case MOUSEMOVESTATE::Y: return ms.lY;
+    case MOUSEMOVESTATE::WHEEL: return ms.lZ; // 휠
     }
-
-    if ((m_bMouseState_Down[ENUM_CLASS(eMouse)]) && !((m_pInput_Device->Get_DIMouseState(eMouse)) & 0x8000))
-    {
-        m_bMouseState_Down[ENUM_CLASS(eMouse)] = !m_bMouseState_Down[ENUM_CLASS(eMouse)];
-        return false;
-    }
-
-    return false;
+    return 0;
 }
 
-_bool CInput_Manager::Mouse_Up(MOUSEKEYSTATE eMouse)
+void CInput_Manager::Change_InputType(INPUT_TYPE eType)
 {
-    if (!(m_bMouseState_Up[ENUM_CLASS(eMouse)]) && ((m_pInput_Device->Get_DIMouseState(eMouse)) & 0x8000))
-    {
-        m_bMouseState_Up[ENUM_CLASS(eMouse)] = !m_bMouseState_Up[ENUM_CLASS(eMouse)];
-        return false;
-    }
-
-    if ((m_bMouseState_Up[ENUM_CLASS(eMouse)]) && !((m_pInput_Device->Get_DIMouseState(eMouse)) & 0x8000))
-    {
-        m_bMouseState_Up[ENUM_CLASS(eMouse)] = !m_bMouseState_Up[ENUM_CLASS(eMouse)];
-        return true;
-    }
-
-    return false;
-}
-
-_long CInput_Manager::Mouse_Move(MOUSEMOVESTATE eMouseState)
-{
-    return m_pInput_Device->Get_DIMouseMove(eMouseState);
+    m_eInputType = eType;
 }
 
 CInput_Manager* CInput_Manager::Create(HINSTANCE hInst, HWND hWnd)

@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "QuadTree.h"
 #include "GameInstance.h"
 
@@ -62,7 +61,7 @@ void CQuadTree::Culling(CGameInstance* pGameInstance, const _float3* pVertexPosi
 				isDraw[i] = m_pNeighbor[i]->isDraw(pGameInstance, pVertexPositions);
 		}
 
-		/* ³× ¹æÇâ ÀÌ¿ôÀÌ ¸ðµÎ ³ª¿Í °°Àº »çÀÌÁî·Î ±×·ÁÁú ¶§ */
+		/* ë„¤ ë°©í–¥ ì´ì›ƒì´ ëª¨ë‘ ë‚˜ì™€ ê°™ì€ ì‚¬ì´ì¦ˆë¡œ ê·¸ë ¤ì§ˆ ë•Œ */
 		if (true == isDraw[NEIGHBOR_LEFT] &&
 			true == isDraw[NEIGHBOR_TOP] &&
 			true == isDraw[NEIGHBOR_RIGHT] &&
@@ -96,16 +95,16 @@ void CQuadTree::Culling(CGameInstance* pGameInstance, const _float3* pVertexPosi
 		iRC = (m_iCorners[CORNER_RT] + m_iCorners[CORNER_RB]) >> 1;
 		iBC = (m_iCorners[CORNER_LB] + m_iCorners[CORNER_RB]) >> 1;
 
-		/* ³× ¹æÇâ ÀÌ¿ôÀÌ ¸ðµÎ ³ª¿Í °°Àº »çÀÌÁî·Î ±×·ÁÁö´Â °ÍÀÌ ¾Æ´Ò¶§ */
-		/* ³× ¹æÇâ Áß ¾î´ÀÂÊÀÌ ³ªº¸´Ù ´õ ºÐ¿­µÇ¾î ±×·ÁÁö´ÂÁö »öÃâ.  */
+		/* ë„¤ ë°©í–¥ ì´ì›ƒì´ ëª¨ë‘ ë‚˜ì™€ ê°™ì€ ì‚¬ì´ì¦ˆë¡œ ê·¸ë ¤ì§€ëŠ” ê²ƒì´ ì•„ë‹ë•Œ */
+		/* ë„¤ ë°©í–¥ ì¤‘ ì–´ëŠìª½ì´ ë‚˜ë³´ë‹¤ ë” ë¶„ì—´ë˜ì–´ ê·¸ë ¤ì§€ëŠ”ì§€ ìƒ‰ì¶œ.  */
 
 
-		/* ¿ÞÂÊ ÇÏ´Ü »ï°¢ÇüÀÌ ±×·ÁÁú ¼ö ÀÖ´Â Á¶°ÇÀÌ¶ó¸é. */
+		/* ì™¼ìª½ í•˜ë‹¨ ì‚¼ê°í˜•ì´ ê·¸ë ¤ì§ˆ ìˆ˜ ìžˆëŠ” ì¡°ê±´ì´ë¼ë©´. */
 		if (true == isIn[0] ||
 			true == isIn[2] ||
 			true == isIn[3])
 		{
-			/* ¿ÞÂÊÀÌ ¹üÀÎÀÎÁö? */
+			/* ì™¼ìª½ì´ ë²”ì¸ì¸ì§€? */
 			if (false == isDraw[NEIGHBOR_LEFT])
 			{
 				pIndices[(*pNumIndices)++] = m_iCorners[CORNER_LT];
@@ -122,7 +121,7 @@ void CQuadTree::Culling(CGameInstance* pGameInstance, const _float3* pVertexPosi
 				pIndices[(*pNumIndices)++] = m_iCenter;
 				pIndices[(*pNumIndices)++] = m_iCorners[CORNER_LB];
 			}
-			/* ¾Æ·¡ÂÊÀÌ ¹üÀÎÀÎÁö? */
+			/* ì•„ëž˜ìª½ì´ ë²”ì¸ì¸ì§€? */
 			if (false == isDraw[NEIGHBOR_BOTTOM])
 			{
 				pIndices[(*pNumIndices)++] = m_iCorners[CORNER_LB];
@@ -182,7 +181,7 @@ void CQuadTree::Culling(CGameInstance* pGameInstance, const _float3* pVertexPosi
 		return;
 	}
 
-	/* ³» ÄõµåÆ®¸®¶û ÀýµÎÃ¼°¡ °ãÃÆ´Ï? \*/
+	/* ë‚´ ì¿¼ë“œíŠ¸ë¦¬ëž‘ ì ˆë‘ì²´ê°€ ê²¹ì³¤ë‹ˆ? \*/
 	_float		fRange = XMVector3Length(XMLoadFloat3(&pVertexPositions[m_iCorners[CORNER_LT]]) - XMLoadFloat3(&pVertexPositions[m_iCenter])).m128_f32[0];
 
 	if (true == pGameInstance->isIn_Frustum_LocalSpace(XMLoadFloat3(&pVertexPositions[m_iCenter]), fRange))

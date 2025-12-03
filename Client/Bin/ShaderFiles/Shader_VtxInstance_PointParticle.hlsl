@@ -1,52 +1,76 @@
 #include "Engine_Shader_Defines.hlsli"
 
-matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D g_DiffuseTexture;
+float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+float4 g_vCamPosition;
 
-vector g_vCamPosition;
+float4 g_vSourceColor = float4(1.f, 1.f, 1.f, 1.f);
+float g_fSizeRatio = 1.f;
+
+bool g_MaskScrollYDir;
+bool g_MaskScrollInv;
+float g_MaskScrollSpeed;
+
+bool g_IsEmissive = false;
+bool g_IsDisolve = false;
+bool g_IsBillboard;
+
+float g_numCols, g_numRows;
+float g_FrameIdx;
+
+float g_EdgeWidth;
+float4 g_EdgeColor; 
+texture2D g_DiffuseTexture;
+texture2D g_MaskTexture;
+texture2D g_DisolveTexture;
+texture2D g_DepthTexture;
 
 struct VS_IN
 {
-    float3 vPosition : POSITION;   
+    float3 vPosition : POSITION;
     
     row_major float4x4 TransformMatrix : WORLD;
-    
-    //float4 vRight : TEXCOORD1;
-    //float4 vUp : TEXCOORD2;
-    //float4 vLook : TEXCOORD3;
-    //float4 vTranslation : TEXCOORD4;
-    
-    float2 vLifeTime : TEXCOORD0;
+
+    float3 vPrevPosition : TEXCOORD0;
+    float bDead : TEXCOORD1;
+    float2 vLifeTime : TEXCOORD2;
 };
 
-struct VS_OUT
+struct VS_DEFAULT_OUT
 {
-    float4 vPosition : POSITION;
+    float4 vPosition : SV_POSITION;
     float fSize : PSIZE;
     float2 vLifeTime : TEXCOORD0;
+    float bDead : TEXCOORD1;
+    float4 vPrevPosition : TEXCOORD2;
 };
 
-/* ¡§¡°Ω¶¿Ã¥ı : ¡§¡° ¿ßƒ°¿« Ω∫∆‰¿ÃΩ∫ ∫Ø»Ø(∑Œƒ√ -> ø˘µÂ -> ∫‰ -> ≈ıøµ). */ 
-/*          : ¡§¡°¿« ±∏º∫¿ª ∫Ø∞Ê.(in:3∞≥, out:2∞≥ or 5∞≥) */
-/*          : ¡§¡° ¥‹¿ß(¡§¡° «œ≥™¥Á VS_MAIN«—π¯»£√‚) */ 
-VS_OUT VS_MAIN(VS_IN In)
+VS_DEFAULT_OUT VS_MAIN(VS_IN In)
 {
-    VS_OUT Out = (VS_OUT)0;    
- 
-    vector vPosition = mul(float4(In.vPosition, 1.f), In.TransformMatrix);
+    VS_DEFAULT_OUT Out = (VS_DEFAULT_OUT) 0;
     
+    float4 vPosition = mul(float4(In.vPosition, 1.f), In.TransformMatrix);
+    
+    float4x4 prevMatrix = In.TransformMatrix;
+    prevMatrix._41_42_43 = float4(In.vPrevPosition, 1.f);
+    float4 vPrevPosition = mul(float4(In.vPosition, 1.f), prevMatrix);
+
     Out.vPosition = mul(vPosition, g_WorldMatrix);
+    Out.vPrevPosition = mul(vPrevPosition, g_WorldMatrix);
+        
     Out.fSize = length(In.TransformMatrix._11_12_13);
     Out.vLifeTime = In.vLifeTime;
-    
-    return Out;     
+    Out.bDead = In.bDead;
+
+    return Out;
 }
 
 struct GS_IN
 {
-    float4 vPosition : POSITION;
+    float4 vPosition : SV_POSITION;
     float fSize : PSIZE;
     float2 vLifeTime : TEXCOORD0;
+    float bDead : TEXCOORD1;
+    float4 vPrevPosition : TEXCOORD2;
 };
 
 struct GS_OUT
@@ -54,39 +78,83 @@ struct GS_OUT
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0;
     float2 vLifeTime : TEXCOORD1;
+    float bDead : TEXCOORD2;
+    float4 vPrevPosition : TEXCOORD3;
+    float4 vProjPos : TEXCOORD4;
+    float vFrame : TEXCOORD5;
 };
-
-//GS_MAIN(triangle GS_IN In[3])
-//GS_MAIN(line GS_IN In[2])
 
 [maxvertexcount(6)]
 void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
 {
     GS_OUT Out[4];
     
-    vector vRight, vUp, vLook;
+    vector vRight;
+    vector vUp;
+    vector vLook;
     
-    vLook = g_vCamPosition - In[0].vPosition;
-    vRight = normalize(vector(cross(float3(0.f, 1.f, 0.f), vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
-    vUp = normalize(vector(cross(vLook.xyz, vRight.xyz), 0.f)) * In[0].fSize * 0.5f;
+    float legnth = length(In[0].vPosition - In[0].vPrevPosition);
     
-    matrix matVP = mul(g_ViewMatrix, g_ProjMatrix);
+    if (legnth < 0.01f || g_IsBillboard)
+    {
+        vLook = g_vCamPosition - In[0].vPosition;
+        vRight = normalize(vector(cross(float3(0.f, 1.f, 0.f), vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
+        vUp = normalize(vector(cross(vLook.xyz, vRight.xyz), 0.f)) * In[0].fSize * g_fSizeRatio * 0.5f;
+    }
+    else
+    {
+        vUp = normalize(In[0].vPosition - In[0].vPrevPosition) * In[0].fSize * g_fSizeRatio * 0.5f;
+        vLook = normalize(g_vCamPosition - In[0].vPosition);
+        vRight = normalize(vector(cross(vUp.xyz, vLook.xyz), 0.f)) * In[0].fSize * 0.5f;
+        vUp += (In[0].vPosition - In[0].vPrevPosition) * 0.8f;
+    }
     
-    Out[0].vPosition = mul(In[0].vPosition + vRight + vUp, matVP);
+    
+    float Width = 1.0f / g_numCols;
+    float Height = 1.0f / g_numRows;
+    
+    float startU = (g_FrameIdx % g_numCols) * Width;
+    float startV = floor(g_FrameIdx / g_numCols) * Height;
+    
+    matrix matrVP = mul(g_ViewMatrix, g_ProjMatrix);
+    
+    float frame = (g_FrameIdx + 1) / (g_numCols * g_numRows);
+    
+    Out[0].vPosition = mul(In[0].vPosition + vRight + vUp, matrVP);
+    Out[0].vProjPos = Out[0].vPosition;;
     Out[0].vTexcoord = float2(0.f, 0.f);
-    Out[0].vLifeTime = In[0].vLifeTime;    
+    Out[0].vTexcoord = float2(startU, startV) + (Out[0].vTexcoord * float2(Width, Height));
+    Out[0].vLifeTime = In[0].vLifeTime;
+    Out[0].bDead = In[0].bDead;
+    Out[0].vPrevPosition = In[0].vPrevPosition;
+    Out[0].vFrame = frame;
     
-    Out[1].vPosition = mul(In[0].vPosition - vRight + vUp, matVP);
+    Out[1].vPosition = mul(In[0].vPosition - vRight + vUp, matrVP);
+    Out[1].vProjPos = Out[1].vPosition;
     Out[1].vTexcoord = float2(1.f, 0.f);
+    Out[1].vTexcoord = float2(startU, startV) + (Out[1].vTexcoord * float2(Width, Height));
     Out[1].vLifeTime = In[0].vLifeTime;
+    Out[1].bDead = In[0].bDead;
+    Out[1].vPrevPosition = In[0].vPrevPosition;
+    Out[1].vFrame = frame;
     
-    Out[2].vPosition = mul(In[0].vPosition - vRight - vUp, matVP);
+    Out[2].vPosition = mul(In[0].vPosition - vRight - vUp, matrVP);
+    Out[2].vProjPos = Out[2].vPosition;
     Out[2].vTexcoord = float2(1.f, 1.f);
+    Out[2].vTexcoord = float2(startU, startV) + (Out[2].vTexcoord * float2(Width, Height));
     Out[2].vLifeTime = In[0].vLifeTime;
+    Out[2].bDead = In[0].bDead;
+    Out[2].vPrevPosition = In[0].vPrevPosition;
+    Out[2].vFrame = frame;
     
-    Out[3].vPosition = mul(In[0].vPosition + vRight - vUp, matVP);
+    Out[3].vPosition = mul(In[0].vPosition + vRight - vUp, matrVP);
+    Out[3].vProjPos = Out[3].vPosition;
     Out[3].vTexcoord = float2(0.f, 1.f);
-    Out[3].vLifeTime = In[0].vLifeTime;    
+    Out[3].vTexcoord = float2(startU, startV) + (Out[3].vTexcoord * float2(Width, Height));
+    Out[3].vLifeTime = In[0].vLifeTime;
+    Out[3].bDead = In[0].bDead;
+    Out[3].vPrevPosition = In[0].vPrevPosition; 
+    Out[3].vFrame = frame;
     
     Vertices.Append(Out[0]);
     Vertices.Append(Out[1]);
@@ -99,58 +167,133 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> Vertices)
     Vertices.RestartStrip();
 }
 
-/* /W¿ª ºˆ«‡«—¥Ÿ. ≈ıøµΩ∫∆‰¿ÃΩ∫∑Œ ∫Ø»Ø */
-/* ∫‰∆˜∆Æ∑Œ ∫Ø»Ø«œ∞Ì.*/
-/* ∑°Ω∫≈Õ∂Û¿Ã¡Ó : «»ºø¿ª ∏∏µÁ¥Ÿ. */
-
-struct PS_IN
+struct PS_DEFAULT_IN
 {
     float4 vPosition : SV_POSITION;
-    float2 vTexcoord : TEXCOORD0;    
+    float2 vTexcoord : TEXCOORD0;
     float2 vLifeTime : TEXCOORD1;
+    float bDead : TEXCOORD2;
+    float4 vPrevPosition : TEXCOORD3;
+    float4 vProjPos : TEXCOORD4;
+    float vFrame : TEXCOORD5;
 };
 
 struct PS_OUT
 {
-    float4 vColor : SV_TARGET0;
-    
+    float4 vAccumColor : SV_TARGET0;
+    float4 vAccumAlpha : SV_TARGET1;
 };
 
-/* ∏∏µÁ «»ºø ∞¢∞¢ø° ¥Î«ÿº≠ «»ºø Ω¶¿Ã¥ı∏¶ ºˆ«‡«—¥Ÿ. */
-/* «»ºø¿« ªˆ¿ª ∞·¡§«—¥Ÿ. */
-
-
-PS_OUT PS_MAIN(PS_IN In)
+float Mask_Scrolling(float2 vLifetime, float2 vTexcoord)
 {
-    PS_OUT Out = (PS_OUT) 0;    
+    float safeProgress = saturate(vLifetime.x * g_MaskScrollSpeed / vLifetime.y) * 2; // 0 ~ 2   Í∑∏ÎãàÍπå 0 Ïù¥Î©¥ -2. 1Ïù¥Î©¥ 0Ïù¥ ÎêòÏñ¥ÏïºÌï®
+    //float maskOffset = (safeProgress * 2.0f) - 2.0f; // -2 ~ 2 Ïù¥Í±∞ ÎÅùÍπåÏßÄ ÎèåÎ¶¨Í∏∞Î°úÏàò „Öì„Öá
+    float maskOffset = safeProgress - 1.0f;
+    float2 maskUV; //-2 -1
     
-    Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    if (g_MaskScrollYDir)
+    {
+        if (g_MaskScrollInv)
+            maskUV = float2(vTexcoord.x, vTexcoord.y - maskOffset);
+        else
+            maskUV = float2(vTexcoord.x, vTexcoord.y + maskOffset);
+    }
+    else
+    {
+        if (g_MaskScrollInv)
+            maskUV = float2(vTexcoord.x - maskOffset, vTexcoord.y);
+        else
+            maskUV = float2(vTexcoord.x + maskOffset, vTexcoord.y);
+    }
+
+    float maskValue = g_MaskTexture.Sample(ClampSampler, maskUV).r;
     
-    if (Out.vColor.a < 0.3f)
+    return maskValue;
+}
+
+
+float4 Dissolve(float4 InColor, float fDecreaseAlpha, float2 UV)
+{
+    float4 rt = InColor;
+    
+    float noise = g_DisolveTexture.Sample(PointSampler, UV).r;
+    
+    if (noise < fDecreaseAlpha)
+    {
+        rt.a = 0.f;
+        return rt;
+    }
+    
+    float edgeStart = fDecreaseAlpha;
+    float edgeEnd = fDecreaseAlpha + g_EdgeWidth;
+    float edgeFactor = smoothstep(edgeStart, edgeEnd, noise);
+    rt = lerp(g_EdgeColor * 2.f, InColor, edgeFactor);
+    
+    return rt;
+}
+
+
+PS_OUT PS_MAIN(PS_DEFAULT_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    if (In.bDead)
         discard;
     
-    Out.vColor = 1.f;
+    vector vMask = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vFinalColor = g_vSourceColor;
+    vFinalColor.a *= vMask.r;
     
+    //vFinalColor.a = max(max(vMask.r, vMask.g), vMask.b);
+    
+    if (vFinalColor.a <= 0)
+        discard;
+    
+    if (g_MaskScrollSpeed)
+        vFinalColor.a = vFinalColor.a * Mask_Scrolling(In.vLifeTime, In.vTexcoord);
+     
+    float fDecreaseAlpha;  
+    
+    fDecreaseAlpha = 1.0f - abs((In.vLifeTime.x / In.vLifeTime.y) * 2.0f - 1.0f); 
+    
+    if (g_IsDisolve == false) //Ïä§ÌîÑÎùºÏù¥Ìä∏ Ï§ëÏóêÏÑú, ÎùºÏù¥ÌîÑÌÉÄÏûÑÏù¥ Ï†ÅÏùÄ Í±¥ ÏïàÌïúÎã§.
+        vFinalColor.a *= fDecreaseAlpha;
+    else
+        vFinalColor = Dissolve(vFinalColor, (In.vLifeTime.x / In.vLifeTime.y), In.vTexcoord);
+    
+    if (vFinalColor.a <= 0)
+        discard;
+
+    //vFinalColor.xyz *= (g_vSourceColor.a + 1.5);
+    
+    /* Soft Effect */
+    //float2 vTexcoord;
+    //vTexcoord.x = (In.vProjPos.x / In.vProjPos.w) * 0.5f + 0.5f;
+    //vTexcoord.y = (In.vProjPos.y / In.vProjPos.w) * -0.5f + 0.5f;
+    //vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexcoord);
+    //vFinalColor.a = vFinalColor.a * saturate(vDepthDesc.y - In.vProjPos.w);
+    
+    /* Blend Weight */
+    float z = In.vProjPos.z / In.vProjPos.w; // 0..1 depth
+    float weight = max(1e-5, exp(-z));
+    Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
+    Out.vAccumAlpha.r = vFinalColor.a;
+
+    //Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a * weight, 0.f); 
     return Out;
 }
 
-
-
-
 technique11 DefaultTechnique
 {
-    /* ∆Ø¡§ ∆–Ω∫∏¶ ¿ÃøÎ«ÿº≠ ¡°¡§¿ª ±◊∑¡≥¬¥Ÿ. */
-    /* «œ≥™¿« ∏µ®¿ª ±◊∑¡≥¬¥Ÿ. */ 
-    /* ∏µ®¿« ªÛ»≤ø° µ˚∂Û ¥Ÿ∏• Ω¶¿Ãµ˘ ±‚π˝ ºº∆Æ(∏Ìæœ + ∏≤∂Û¿Ã∆Æ + Ω∫∆Â≈ß∑Ø + ≥Î∏÷∏  + ssao )∏¶ ∏‘ø©¡÷±‚¿ß«ÿº≠ */
-    pass DefaultPass
+    pass DefaultPass // 0
     {
-        SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-        VertexShader = compile vs_5_0 VS_MAIN();   
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_DepthTestOnly, 0);
+        SetBlendState(BS_WeightBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = compile gs_5_0 GS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN();
     }
-
-   
 }
+ 

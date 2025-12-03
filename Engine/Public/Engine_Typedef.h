@@ -8,6 +8,7 @@ namespace Engine
 	typedef		signed char					_byte;
 	typedef		unsigned char				_ubyte;
 	typedef		char						_char;
+	typedef		unsigned char				_uchar;
 
 	typedef		wchar_t						_tchar;
 	typedef		wstring						_wstring;
@@ -25,13 +26,13 @@ namespace Engine
 	typedef		float						_float;	
 	typedef		double						_double;
 
-	/* ÀúÀå¿ë º¤ÅÍ¿Í Çà·Ä */
+	/* ì €ì¥ìš© ë²¡í„°ì™€ í–‰ë ¬ */
 	typedef		XMFLOAT2					_float2;
 	typedef		XMFLOAT3					_float3;
 	typedef		XMFLOAT4					_float4;
 	typedef		XMFLOAT4X4					_float4x4;
 
-	/* ¿¬»ê¿ë º¤ÅÍ¿Í Çà·Ä 64ºñÆ® È¯°æ¿¡¼­ SIMD(º´·Ä)¿¬»ê */
+	/* ì—°ì‚°ìš© ë²¡í„°ì™€ í–‰ë ¬ 64ë¹„íŠ¸ í™˜ê²½ì—ì„œ SIMD(ë³‘ë ¬)ì—°ì‚° */
 	typedef		XMVECTOR					_vector;
 	typedef		FXMVECTOR					_fvector;
 	typedef		GXMVECTOR					_gvector;

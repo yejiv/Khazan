@@ -6,22 +6,8 @@
 #undef new
 #endif
 
-#include <Jolt/Physics/PhysicsSystem.h>
-#include <Jolt/Physics/Body/BodyID.h>
-#include <Jolt/Physics/Body/BodyInterface.h>
-
-#include <Jolt/Physics/PhysicsScene.h>
-#include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
-#include <Jolt/Physics/Collision/Shape/CylinderShape.h>
-#include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
-#include <Jolt/Physics/Collision/Shape/BoxShape.h>
-#include <Jolt/Physics/Collision/Shape/SphereShape.h>
-#include <Jolt/Physics/Collision/Shape/StaticCompoundShape.h>
-#include <Jolt/Physics/Collision/Shape/MeshShape.h>
-#include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
-
 #ifdef new
-#pragma pop_macro("new") // DBG_NEW º¹¿ø
+#pragma pop_macro("new") // DBG_NEW ë³µì›
 #endif
 
 NS_BEGIN(Engine)
@@ -37,7 +23,7 @@ public:
 		EMotionType	eMotion = EMotionType::Static;
 		_uint		iObjectLayer;
 
-		_float		fFriction = 0.8f;
+		_float		fFriction = 0.2f;
 		_float		fRestitution = 0.0f;
 
 		_bool		bStartActive = true;
@@ -45,12 +31,18 @@ public:
 
 		_float3		vShapeOffset = { 0.f, 0.f, 0.f };
 		_float4		vShapeRotation = { 0.f, 0.f, 0.f, 1.f };
-		// Dynamic Àü¿ë ¿É¼Ç
-		_float          fMass = 1.0f; // ÇÊ¿ä ½Ã »ç¿ë
+		// Dynamic ì „ìš© ì˜µì…˜
+		_float          fMass = 1.0f; // í•„ìš” ì‹œ ì‚¬ìš©
 		EMotionQuality  eQuality = EMotionQuality::Discrete;
-		_float		fAngularDamping = 0.5;
+		_float		fAngularDamping = 0.05f;
+        _float      fLinearDamping = 0.05f;
 
-		class CGameObject* pGameObject = nullptr;
+		_float		fGravity = 1.f;
+
+        _bool       isCollideKinematicVsNonDynamic = false;
+
+		//class CGameObject* pGameObject = nullptr;
+		COLLISION_DESC* pCollisionDesc = nullptr;
 	}BODY_DESC;
 
 	typedef struct tagBoxShape : BODY_DESC
@@ -72,11 +64,13 @@ public:
 	typedef struct tagMeshShape : BODY_DESC
 	{
 		class CModel* pModel = { nullptr };
+		class CTransform* pTransform = { nullptr };
 	}BODY_MESHSHAPE_DESC;
 
 	typedef struct tagConvexShape : BODY_DESC
 	{
 		class CModel* pModel = { nullptr };
+        class CTransform* pTransform = { nullptr };
 	}BODY_CONVEXSHAPE_DESC;
 private:
 	CBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -92,35 +86,56 @@ public:
 	virtual void Update(_float fTimeDelta, class CTransform* pTransform) override;
 	virtual void Sync_Update(class CTransform* pTransform) override;
 
+	virtual void Update(_float fTimeDelta, _matrix WorldMatirx, _vector& outQuatRotation, _vector& outPosition);
+	virtual void Sync_Update(_matrix WorldMatirx);
+    
 public:
 	void	Activate(_bool isActivate) { true == isActivate ? m_pBodyInterface->ActivateBody(m_BodyID) : m_pBodyInterface->DeactivateBody(m_BodyID); }
 	void	OnGravity(_bool isGravity) { m_pBodyInterface->SetGravityFactor(m_BodyID, isGravity); }
+
+public:
+    void    Set_Gravity(_float fGravity) { m_pBodyInterface->SetGravityFactor(m_BodyID, fGravity); }
 
 public:
 	void	Add_Force(_float fMass);
 	void	Add_Torque(_float fMass);
 	void	Add_Impulse(_float fMass);
 
+    void Add_ImpulseDir(_float3 vImpulse);
+
+    void Add_AngularImpulseDir(_float3 vAngularImpulse);
+
+    void ApplyExplosion(const _float3& vExplosionPos, _float fBaseImpulse, _float fBaseTorque);
+
 public:
 	void	Set_Velocity(const _float3& vVelocity);
 
+	void	Collision_Active(_bool isActive);
+
 public:
 	virtual void	Set_PosRot(_vector vPos, _vector vRot);
+    void           Set_Pos(_vector vPos);
 	BodyID           Get_BodyID() const { return m_BodyID; }
 	EMotionType      Get_Motion() const { return m_eMotion; }
+
+    _vector         Get_Pos();
+    _vector         Get_Rot();
 
 
 private:
 	Body* m_pBody = { nullptr };
 	BodyID			m_BodyID;
+    vector<BodyID> m_MeshBodyIDs;
 	BodyInterface* m_pBodyInterface = { nullptr };
 
-	// º¸Á¶ ÀúÀå
+	// ë³´ì¡° ì €ìž¥
 	EMotionType				m_eMotion = EMotionType::Static;
 	_uint					m_iObjectLayer = 0;
 
 private:
 	const JPH::Array<Vec3> ConvertToArrayVec3(CModel* pModel);
+	const JPH::Array<Vec3> ConvertToArrayVec3(CModel* pModel, _uint iMeshIndex, const Vec3& vScale);
+    JPH::Array<Vec3> ConvertToHullPoints(CModel* pModel, _uint iMeshIndex, const Vec3& vScale, Vec3& outCenter, _float& outNormalizeScale);
 	const JPH::Array<Float3> ConvertToArrayFloat3(CModel* pModel, _uint iIndex);
 	const JPH::Array<IndexedTriangle> ConvertToArrayTri(CModel* pModel, _uint iIndex);
 	void Make_MeshShape(BODY_MESHSHAPE_DESC* pDesc);

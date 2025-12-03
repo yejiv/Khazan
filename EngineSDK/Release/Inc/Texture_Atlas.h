@@ -35,8 +35,8 @@ private:
 	vector<ID3D11ShaderResourceView*>			m_SRVs;
 	vector<
 		unordered_map<string, ATLASFRAMEDATA>>	m_AtlasDatas;
-	_int										m_iTexSizeX = {};
-	_int										m_iTexSizeY = {};
+	vector <_int>								m_TexSizeX;
+	vector <_int>								m_TexSizeY;
 	_uint										m_iNumTextures = {};
 
 public:

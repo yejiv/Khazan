@@ -11,14 +11,13 @@ private:
 	virtual ~CRenderTarget() = default;
 
 public:
-	ID3D11RenderTargetView* Get_RTV() const {
-		return m_pRTV;
-	}
+	ID3D11RenderTargetView* Get_RTV() const { return m_pRTV; }
+    ID3D11Texture2D* Get_Texture2D() const { return m_pTexture2D; }
 
 public:
 	HRESULT Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vClearColor);
 	HRESULT Bind_ShaderResource(class CShader* pShader, const _char* pConstantName);	void Clear();
-	HRESULT Copy_Resource(ID3D11Texture2D* pSourTexture);
+	HRESULT Copy_Resource(ID3D11Texture2D* pDestTexture);
 
 #ifdef _DEBUG
 public:

@@ -1,6 +1,4 @@
-#include "EnginePch.h"
 #include "GameObject.h"
-
 #include "GameInstance.h"
 
 CGameObject::CGameObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -17,6 +15,7 @@ CGameObject::CGameObject(const CGameObject& Prototype)
 	: m_pDevice{ Prototype.m_pDevice }
 	, m_pContext{ Prototype.m_pContext }
 	, m_pGameInstance{ CGameInstance::GetInstance() }
+    , m_iPrototypeIndex {Prototype.m_iPrototypeIndex }
 {
 	Safe_AddRef(m_pGameInstance);
 	Safe_AddRef(m_pDevice);
@@ -39,6 +38,15 @@ HRESULT CGameObject::Initialize_Prototype()
 
 HRESULT CGameObject::Initialize_Clone(void* pArg)
 {
+	m_isPrototype = false;
+
+    if (pArg != nullptr)
+    {
+        GAMEOBJECT_DESC* pDesc = static_cast<GAMEOBJECT_DESC*>(pArg);
+        m_iLevelIndex = pDesc->iLevelIndex;
+    }
+    
+
 	m_pTransformCom = CTransform::Create(m_pDevice, m_pContext);
 	if (nullptr == m_pTransformCom)
 		return E_FAIL;
@@ -46,7 +54,7 @@ HRESULT CGameObject::Initialize_Clone(void* pArg)
 	if (FAILED(m_pTransformCom->Initialize_Clone(pArg)))
 		return E_FAIL;	
 
-	m_Components.emplace(TEXT("Com_Transform"), m_pTransformCom);		
+	m_Components.emplace(TEXT("Com_Transform"), m_pTransformCom);
 
 	Safe_AddRef(m_pTransformCom);
 
@@ -70,6 +78,36 @@ HRESULT CGameObject::Render()
 	return S_OK;
 }
 
+HRESULT CGameObject::Deferred_Render(ID3D11DeviceContext* pDeferredContext)
+{
+	return S_OK;
+}
+
+_vector CGameObject::Get_Position()
+{
+    return m_pTransformCom->Get_State(STATE::POSITION);
+}
+
+_vector CGameObject::Get_Look()
+{
+    return m_pTransformCom->Get_State(STATE::LOOK);
+}
+
+_vector CGameObject::Get_Right()
+{
+    return m_pTransformCom->Get_State(STATE::RIGHT);
+}
+
+_vector CGameObject::Get_Up()
+{
+    return m_pTransformCom->Get_State(STATE::UP);
+}
+
+CTransform* CGameObject::Get_Transform()
+{
+    return m_pTransformCom;
+}
+
 HRESULT CGameObject::Add_Component(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, const _wstring& strComponentTag, CComponent** ppOut, void* pArg)
 {
 	if (nullptr != Get_Component(strComponentTag))
@@ -84,6 +122,27 @@ HRESULT CGameObject::Add_Component(_uint iPrototypeLevelIndex, const _wstring& s
 	*ppOut = pComponent;
 
 	Safe_AddRef(pComponent);
+
+	return S_OK;
+}
+
+HRESULT CGameObject::Add_Component(const _wstring& strComponentTag, CComponent* pComponent)
+{
+	m_Components.emplace(strComponentTag, pComponent);
+
+	return S_OK;
+}
+
+HRESULT CGameObject::Remove_Component(const _wstring& strComponentTag)
+{
+	CComponent* pComponent = Get_Component(strComponentTag);
+
+	if (nullptr == pComponent)
+		return E_FAIL;
+
+	Safe_Release(pComponent);
+
+	m_Components.erase(strComponentTag);
 
 	return S_OK;
 }

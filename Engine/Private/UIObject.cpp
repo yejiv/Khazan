@@ -1,55 +1,76 @@
-#include "EnginePch.h"
 #include "UIObject.h"
-#include "Transform.h"
+#include "GameInstance.h"
 
 CUIObject::CUIObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CGameObject { pDevice, pContext }
+    :CGameObject{ pDevice,pContext }
 {
 }
 
 CUIObject::CUIObject(const CUIObject& Prototype)
-	: CGameObject{ Prototype}
+    :CGameObject(Prototype)
+    , m_iLevel(Prototype.m_iLevel)
 {
+
+}
+
+void CUIObject::Get_Data(VTXINSTANCE_UI& pOutData)
+{
+    XMStoreFloat4(&pOutData.vRight, m_pTransformCom->Get_WorldMatrix().r[0]);
+    XMStoreFloat4(&pOutData.vUp, m_pTransformCom->Get_WorldMatrix().r[1]);
+    XMStoreFloat4(&pOutData.vLook, m_pTransformCom->Get_WorldMatrix().r[2]);
+    XMStoreFloat4(&pOutData.vPosition, m_pTransformCom->Get_WorldMatrix().r[3]);
+
+    pOutData.iTexPass = m_iTexPass;
+    pOutData.iShaderPass = m_iShaderPass;
+    pOutData.fAlpha = m_fAlpha;
+    pOutData.vUV = m_vUV[m_iState];
+    pOutData.vColor = m_vColor;
+    pOutData.fDepth = m_fDepth;
 }
 
 HRESULT CUIObject::Initialize_Prototype()
 {
-	return S_OK;
+    return S_OK;
 }
 
 HRESULT CUIObject::Initialize_Clone(void* pArg)
 {
-	if (nullptr == pArg)
-		return E_FAIL;
+    if (nullptr == pArg)
+        return E_FAIL;
 
-	if (FAILED(__super::Initialize_Clone(pArg)))
-		return E_FAIL;
+    UIOBJECT_DESC* pDesc = static_cast<UIOBJECT_DESC*>(pArg);
 
-	UIOBJECT_DESC* pDesc = static_cast<UIOBJECT_DESC*>(pArg);
+    m_iUIType = pDesc->iUIType;
 
-	m_fX = pDesc->fX;
-	m_fY = pDesc->fY;
-	m_fSizeX = pDesc->fSizeX;
-	m_fSizeY = pDesc->fSizeY;
+    if (m_iUIType < 0)
+        return E_FAIL;
 
-	/* 정해놓은 상태대로 유아이를 그리기위해서 월드행렬의 상태를 조절한다.(Transform) */
-	/* 뷰, 투영행렬을 직교투영에 맞게끔 생성한다.(Interface) */
+    m_vLocalPos = pDesc->vLocalPos;
+    m_vLocalSize = pDesc->vLocalSize;
+    m_szName = pDesc->szName;
+    m_UIBubbleCallBack = pDesc->BubbleEvent;
+    m_fDepth = pDesc->fDepth;
 
-	/*D3DXMatrixOrthoLH();*/
+    if (FAILED(__super::Initialize_Clone(pArg)))
+        return E_FAIL;
 
-	D3D11_VIEWPORT			Viewport{};
+    D3D11_VIEWPORT			Viewport{};
+    _uint			iNumViewports = { 1 };
 
-	_uint			iNumViewports = { 1 };
+    m_pContext->RSGetViewports(&iNumViewports, &Viewport);
 
-	m_pContext->RSGetViewports(&iNumViewports, &Viewport);	
+    XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
+    XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(Viewport.Width, Viewport.Height, 0.f, 1.f));
 
-	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
-    XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(Viewport.Width, Viewport.Height, 0.0f, 1.f));
+    m_iWinSizeX = static_cast<const _uint>(Viewport.Width);
+    m_iWinSizeY = static_cast<const _uint>(Viewport.Height);
 
-	m_iWinSizeX = Viewport.Width;
-	m_iWinSizeY = Viewport.Height;
+    m_pTransformCom->Scale(_float3{ m_vLocalSize.x, m_vLocalSize.y, 1.f });
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(
+        m_vLocalPos.x - m_iWinSizeX * 0.5f,
+        -m_vLocalPos.y + m_iWinSizeY * 0.5f, 0.f, 1.f));
 
-	return S_OK;
+    return S_OK;
 }
 
 void CUIObject::Priority_Update(_float fTimeDelta)
@@ -66,27 +87,147 @@ void CUIObject::Late_Update(_float fTimeDelta)
 
 HRESULT CUIObject::Render()
 {
-	return S_OK;
+    return S_OK;
 }
 
-
-
-
-
-
-
-HRESULT CUIObject::Begin()
+void CUIObject::Add_Renderer()
 {
-	/* 트랜스폼이 들고 있는 월드 행렬이 fx, fy, fsizex, fsizey로 뷰포트상에  그려질 수 있도록 보정한다. */
-	m_pTransformCom->Scale(_float3(m_fSizeX, m_fSizeY, 1.f));
-	m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_fX - m_iWinSizeX * 0.5f, -m_fY + m_iWinSizeY * 0.5f, 0.f, 1.f));
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::UI, this)))
+        return;
+}
 
-	return S_OK;
+void CUIObject::Update_Visible(_bool bisVisible)
+{
+    m_isVisible = bisVisible;
+}
+
+void CUIObject::Update_Transform(CUIObject* pParent, _float2 vPos)
+{
+    if (pParent == nullptr)
+    {
+        m_vWorldPos.x = vPos.x;
+        m_vWorldPos.y = vPos.y;
+    }
+    else
+    {
+        m_vWorldPos.x = pParent->Get_WolrdPos().x + m_vLocalPos.x;
+        m_vWorldPos.y = pParent->Get_WolrdPos().y + m_vLocalPos.y;
+    }
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_vWorldPos.x - m_iWinSizeX * 0.5f, -m_vWorldPos.y + m_iWinSizeY * 0.5f, 0.f, 1.f));
+}
+
+void CUIObject::Update_Scaling(_float fSize)
+{
+    m_pTransformCom->Scale(_float3{ m_vLocalSize.x * fSize, m_vLocalSize.y * fSize, 1.f });
+}
+
+void CUIObject::Update_Rotation(_float fAngle)
+{
+    m_pTransformCom->Set_Quaternion(XMQuaternionRotationRollPitchYaw
+    (XMConvertToRadians(m_vAngle.x)
+        , XMConvertToRadians(m_vAngle.y)
+        , XMConvertToRadians(m_vAngle.z + fAngle)
+    ));
+}
+
+void CUIObject::Update_Alpha(_float fAlpha)
+{
+    m_fAlpha = fAlpha;
+}
+
+void CUIObject::Update_Track(_float fAccTime)
+{
+    if (fAccTime >= m_Track.back().fTrackPosition)
+    {
+        return;
+    }
+    if (fAccTime == 0.f)
+        m_iCurrentKeyFrameIndex = 0;
+
+    while (fAccTime >= m_Track[m_iCurrentKeyFrameIndex + 1].fTrackPosition)
+        m_iCurrentKeyFrameIndex++;
+
+    _float fRatio = (fAccTime - m_Track[m_iCurrentKeyFrameIndex].fTrackPosition) /
+        (m_Track[m_iCurrentKeyFrameIndex + 1].fTrackPosition - m_Track[m_iCurrentKeyFrameIndex].fTrackPosition);
+
+    //((1.f - fRatio) * First) + (fRatio * Second);
+    //Size
+    _float fSize = ((1.f - fRatio) * m_Track[m_iCurrentKeyFrameIndex].fSize) + (fRatio * m_Track[m_iCurrentKeyFrameIndex + 1].fSize);
+    Update_Scaling(fSize);
+
+    //Alpha
+    _float fAlpha = ((1.f - fRatio) * m_Track[m_iCurrentKeyFrameIndex].fAlpha) + (fRatio * m_Track[m_iCurrentKeyFrameIndex + 1].fAlpha);
+    Update_Alpha(fAlpha);
+
+    //Angle
+    _float fAngle = ((1.f - fRatio) * m_Track[m_iCurrentKeyFrameIndex].fAngle) + (fRatio * m_Track[m_iCurrentKeyFrameIndex + 1].fAngle);
+    Update_Rotation(fAngle);
+
+    //Pos
+    _int iTrackIndex[4] = {};
+
+    if (m_iCurrentKeyFrameIndex <= 0)
+        iTrackIndex[0] = 0;
+    else
+        iTrackIndex[0] = m_iCurrentKeyFrameIndex - 1;
+
+    iTrackIndex[1] = m_iCurrentKeyFrameIndex;
+    iTrackIndex[2] = m_iCurrentKeyFrameIndex + 1;
+
+    if (m_iCurrentKeyFrameIndex + 1 >= m_Track.size() - 1)
+        iTrackIndex[3] = m_iCurrentKeyFrameIndex + 1;
+    else
+        iTrackIndex[3] = m_iCurrentKeyFrameIndex + 2;
+
+    _vector p0 = { m_Track[iTrackIndex[0]].vTransloation.x, m_Track[iTrackIndex[0]].vTransloation.y, 1.f };
+    _vector p1 = { m_Track[iTrackIndex[1]].vTransloation.x, m_Track[iTrackIndex[1]].vTransloation.y, 1.f };
+    _vector p2 = { m_Track[iTrackIndex[2]].vTransloation.x, m_Track[iTrackIndex[2]].vTransloation.y, 1.f };
+    _vector p3 = { m_Track[iTrackIndex[3]].vTransloation.x, m_Track[iTrackIndex[3]].vTransloation.y, 1.f };
+
+    _float2 fPos = {};
+    XMStoreFloat2(&fPos, XMVectorCatmullRom(p0, p1, p2, p3, fRatio));
+    Update_Transform(nullptr, fPos);
+}
+
+HRESULT CUIObject::Update_Switch(void* pArg)
+{
+    m_IsUpdate ? m_IsUpdate = false : m_IsUpdate = true;
+    return S_OK;
+}
+
+void CUIObject::Bubble_EventCall(BUBBLEEVENT* pArg)
+{
+    if (m_UIBubbleCallBack == nullptr)
+        return;
+
+    m_UIBubbleCallBack(pArg);
+}
+
+HRESULT CUIObject::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void* pArg)
+{
+    return S_OK;
+}
+
+void CUIObject::Insert_Bubble(std::function<void(BUBBLEEVENT* pArg)> BubbleEvent)
+{
+    m_UIBubbleCallBack = BubbleEvent;
+}
+
+_bool CUIObject::IsPick(HWND hWnd)
+{
+    _float fX = m_vWorldPos.x;
+    _float fY = m_vWorldPos.y;
+
+    RECT	rcRect = { LONG(fX - (m_vLocalSize.x * 0.5f)), LONG(fY - (m_vLocalSize.y * 0.5f)), LONG(fX + (m_vLocalSize.x * 0.5f)), LONG(fY + (m_vLocalSize.y * 0.5f)) };
+
+    POINT ptMouse{};
+    GetCursorPos(&ptMouse);
+    ScreenToClient(hWnd, &ptMouse);
+
+    return PtInRect(&rcRect, ptMouse);
 }
 
 void CUIObject::Free()
 {
-	__super::Free();
-
-
+    __super::Free();
 }

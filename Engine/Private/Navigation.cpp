@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "Navigation.h"
 #include "Cell.h"
 
@@ -86,7 +85,7 @@ _bool CNavigation::isMove(_fvector vPosition)
 		return true;
 	else
 	{
-		if (-1 != iNeighborIndex)/*¤Ó¤·¿ôÀÌ ÀÖÀ¸¸é */
+		if (-1 != iNeighborIndex)/*ã…£ã…‡ì›ƒì´ ìˆìœ¼ë©´ */
 		{
 			while (true)
 			{
@@ -102,7 +101,7 @@ _bool CNavigation::isMove(_fvector vPosition)
 			return true;
 		}
 		else
-			/* ÀÌ¿ôÀÌ ¾øÀ¸¸é */
+			/* ì´ì›ƒì´ ì—†ìœ¼ë©´ */
 			return false;
 	}
 }

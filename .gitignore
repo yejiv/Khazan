@@ -2,20 +2,55 @@
 x64/
 
 *.txt
-*.json
-*.dat
 *.png
 *.dds
+*.cso
+*.pdb
+*.exe
+*.fbx
+*.ini
+*.exp
+*.pskx
+*.jpg
+*.json
 
+Client.exp
 Client.exe
 Client.pdb
+Client/Bin/Debug
+Client/Bin/Release
+Client/Bin/Resources/.*
 
-Engine.dll
-Engine.lib
+# JYP IGNORE
+Client/Bin/Resources/Models/Environment/Prop/Json/
+Client/Bin/Resources/Map/
+Client/Bin/Data/Map/
+Client/Bin/MapResources/
+Client/Bin/*.bat
+Client/Bin/*.ps1
+# =================
+
+Editor.exp
+Editor.exe
+Editor.pdb
+Editor/Bin/Debug
+Editor/Bin/Release
+
 Engine.exp
+Engine.exe
 Engine.pdb
-data/
+Engine.dll
+Engine/Bin/Debug
+Engine/Bin/Release
+
+EngineSDK/
+EngineSDK/Debug/
+EngineSDK/Release/
+
+Editor/Default/imgui.ini
 
 *.vcxproj merge=union
 *.vcxproj.filters merge=union
 *.sln merge=union
+
+

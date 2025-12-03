@@ -1,7 +1,6 @@
-﻿// Editor.cpp : 애플리케이션에 대한 진입점을 정의합니다.
+// Editor.cpp : 애플리케이션에 대한 진입점을 정의합니다.
 //
 
-#include "EditorPch.h"
 #include "framework.h"
 #include "Editor.h"
 
@@ -12,9 +11,7 @@
 
 // 전역 변수:
 HWND g_hWnd;
-HWND g_hWnd_Imgui;
-HINSTANCE g_hInst;
-HINSTANCE hInst;                                // 현재 인스턴스입니다.
+HINSTANCE g_hInst;                             // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 
@@ -29,6 +26,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
+#ifdef _DEBUG
+    AllocConsole();     // Console Create
+
+    FILE* pOut = { nullptr };
+    FILE* pIn = { nullptr };
+    freopen_s(&pOut, "CONOUT$", "w", stdout);
+    freopen_s(&pOut, "CONOUT$", "w", stderr);
+    freopen_s(&pIn, "CONIN$", "r", stdin);
+
+    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD prev_mode;
+    GetConsoleMode(hInput, &prev_mode);
+
+    prev_mode &= ~ENABLE_QUICK_EDIT_MODE;
+    prev_mode &= ~ENABLE_INSERT_MODE;
+    prev_mode |= ENABLE_EXTENDED_FLAGS;
+
+    SetConsoleMode(hInput, prev_mode);
+#endif
+
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -62,8 +79,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     if (FAILED(pGameInstance->Add_Timer(TEXT("Timer_60"))))
         return FALSE;
 
-    _float          fTimeAcc = {};
-
+    _float          fTimeAcc = 0.f;
     // 기본 메시지 루프입니다:
     while (true)
     {
@@ -80,9 +96,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
 
-        fTimeAcc += pGameInstance->Get_TimeDelta(TEXT("Timer_Default"));
+        const float dt_unscaled = pGameInstance->Get_TimeDelta(TEXT("Timer_Default"));
+        pGameInstance->Update_HitStop(dt_unscaled);
 
-        if (/*fTimeAcc >= 1.f / 60.0f*/1)
+        fTimeAcc += dt_unscaled;
+
+
+
+        if (fTimeAcc >= 1.f / 60.0f)
         {
             pGameInstance->Compute_TimeDelta(TEXT("Timer_60"));
 
@@ -97,6 +118,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     Safe_Release(pMainApp);
 
     return (int)msg.wParam;
+
 }
 
 
@@ -174,6 +196,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+#ifdef _DEBUG
+    CGameInstance* pGameInstance = CGameInstance::GetInstance();
+    if (pGameInstance->HandleWndProc(hWnd, message, wParam, lParam))
+        return true;
+#endif
+
     switch (message)
     {
     case WM_COMMAND:
@@ -183,7 +211,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             switch (wmId)
             {
             case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+                DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);

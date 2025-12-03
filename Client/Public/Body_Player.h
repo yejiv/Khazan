@@ -29,16 +29,20 @@ public:
 
 public:
 	virtual HRESULT Initialize_Prototype();
-	virtual HRESULT Initialize(void* pArg);
+	virtual HRESULT Initialize_Clone(void* pArg);
 	virtual void Priority_Update(_float fTimeDelta);
 	virtual void Update(_float fTimeDelta);
 	virtual void Late_Update(_float fTimeDelta);
 	virtual HRESULT Render();
 	virtual HRESULT Render_Shadow() override;
+
+public:
+	CModel* Get_Model() { return m_pModelCom; }
+
 private:
 	CShader* m_pShaderCom = { nullptr };
 	CModel* m_pModelCom = { nullptr };
-	CCollider* m_pColliderCom = { nullptr };
+	//CCollider* m_pColliderCom = { nullptr };
 
 private:
 	_uint* m_pParentState = { nullptr };

@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "RenderTarget.h"
 
 #include "Shader.h"
@@ -26,7 +25,7 @@ HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixel
 	TextureDesc.SampleDesc.Count = 1;
 
 	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
-	TextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	TextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 	TextureDesc.CPUAccessFlags = 0;
 	TextureDesc.MiscFlags = 0;
 
@@ -54,9 +53,10 @@ void CRenderTarget::Clear()
 	m_pContext->ClearRenderTargetView(m_pRTV, reinterpret_cast<_float*>(&m_vClearColor));
 }
 
-HRESULT CRenderTarget::Copy_Resource(ID3D11Texture2D* pSourTexture)
+HRESULT CRenderTarget::Copy_Resource(ID3D11Texture2D* pDestTexture)
 {
-	m_pContext->CopyResource(pSourTexture, m_pTexture2D);
+    // 복사를 받을 대상, 복사할 대상
+	m_pContext->CopyResource(pDestTexture, m_pTexture2D);
 
 	return S_OK;
 }

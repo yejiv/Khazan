@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "PipeLine.h"
 
 CPipeLine::CPipeLine()
@@ -25,6 +24,16 @@ const _float4x4* CPipeLine::Get_Transform_Float4x4_Inverse(D3DTS eTransformState
 	return &m_TransformMatrixInverse[ENUM_CLASS(eTransformState)];
 }
 
+_matrix CPipeLine::Get_PrevTransform_Matrix(D3DTS eTransformState) const
+{
+    return XMLoadFloat4x4(&m_PrevTransformMatrices[ENUM_CLASS(eTransformState)]);
+}
+
+const _float4x4* CPipeLine::Get_PrevTransform_Float4x4(D3DTS eTransformState) const
+{
+    return &m_PrevTransformMatrices[ENUM_CLASS(eTransformState)];
+}
+
 const _float4* CPipeLine::Get_CamPosition() const
 {
 	return &m_vCamPosition;
@@ -40,12 +49,28 @@ void CPipeLine::Set_Transform(D3DTS eTransformState, const _float4x4& Matrix)
 	m_TransformMatrices[ENUM_CLASS(eTransformState)] = Matrix;
 }
 
+void CPipeLine::Set_PrevTransform(D3DTS eTransformState, _fmatrix Matrix)
+{
+    XMStoreFloat4x4(&m_PrevTransformMatrices[ENUM_CLASS(eTransformState)], Matrix);
+}
+
+void CPipeLine::Set_PrevTransform(D3DTS eTransformState, const _float4x4& Matrix)
+{
+    m_PrevTransformMatrices[ENUM_CLASS(eTransformState)] = Matrix;
+}
+
+//_float CPipeLine::DistanceCam(const _float3& vPos)
+//{
+//	return XMVector3Length(*Get_CamPosition() - vPos).m128_f32[0];
+//}
+
 HRESULT CPipeLine::Initialize()
 {
 	for (size_t i = 0; i < ENUM_CLASS(D3DTS::END); i++)
 	{
 		XMStoreFloat4x4(&m_TransformMatrices[i], XMMatrixIdentity());
-		XMStoreFloat4x4(&m_TransformMatrixInverse[i], XMMatrixIdentity());
+        XMStoreFloat4x4(&m_TransformMatrixInverse[i], XMMatrixIdentity());
+        XMStoreFloat4x4(&m_PrevTransformMatrices[i], XMMatrixIdentity());
 	}
 
 	return S_OK;

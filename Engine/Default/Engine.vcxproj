@@ -112,17 +112,19 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;ENGINE_EXPORTS;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;JPH_DEBUG_RENDERER;JPH_PROFILE_ENABLED;JPH_OBJECT_STREAM;JPH_USE_AVX2;JPH_USE_AVX;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../public/;../public/ImGui/;../public/assimp/;../public/DirectXTK/;../public/fmod/;../public/Fx11/;../public/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../public/ImGui/;../public/assimp/;../public/DirectXTK/;../public/fmod/;../public/Fx11/;../public/Jolt/;../public/Guizmo/</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>EnginePch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ForcedIncludeFiles>EnginePch.h</ForcedIncludeFiles>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;dxguid.lib;Effects11d.lib;DirectXTKd.lib;fmodL_vc.lib;dinput8.lib;assimp-vc143-mtd.lib;Joltd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;Effects11d.lib;DirectXTKd.lib;fmodL_vc.lib;dinput8.lib;assimp-vc143-mtd.lib;Joltd.lib;freetyped.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../ThirdPartyLib/Debug/</AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
@@ -144,9 +146,13 @@ call Copy.bat</Command>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;ENGINE_EXPORTS;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;JPH_DEBUG_RENDERER;JPH_PROFILE_ENABLED;JPH_OBJECT_STREAM;JPH_USE_AVX2;JPH_USE_AVX;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../public/;../public/ImGui/;../public/assimp/;../public/DirectXTK/;../public/fmod/;../public/Fx11/;../public/Jolt/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../public/;../public/ImGui/;../public/assimp/;../public/DirectXTK/;../public/fmod/;../public/Fx11/;../public/Jolt/;../public/Guizmo/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ForcedIncludeFiles>EnginePch.h</ForcedIncludeFiles>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>EnginePch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,7 +160,7 @@ call Copy.bat</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;dxguid.lib;dinput8.lib;Effects11.lib;DirectXTK.lib;assimp-vc143-mt.lib;fmod_vc.lib;Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;dinput8.lib;Effects11.lib;DirectXTK.lib;assimp-vc143-mt.lib;fmod_vc.lib;Jolt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../ThirdPartyLib/Release/</AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
@@ -169,21 +175,51 @@ call Copy.bat</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\Action_Node.cpp" />
+    <ClCompile Include="..\Private\AI_Controller.cpp" />
+    <ClCompile Include="..\Private\AI_State.cpp" />
     <ClCompile Include="..\private\Animation.cpp" />
+    <ClCompile Include="..\private\AnimationTransitionManager.cpp" />
     <ClCompile Include="..\Private\Base.cpp" />
+    <ClCompile Include="..\Private\BehaviorTree.cpp" />
+    <ClCompile Include="..\Private\BlackBoard.cpp" />
+    <ClCompile Include="..\private\CSM.cpp" />
+    <ClCompile Include="..\private\MotionBlur.cpp" />
+    <ClCompile Include="..\private\MotionTrail.cpp" />
+    <ClCompile Include="..\private\RadialBlur.cpp" />
+    <ClCompile Include="..\private\GaussianBlur.cpp" />
+    <ClCompile Include="..\Private\Body.cpp" />
     <ClCompile Include="..\private\Bone.cpp" />
-    <ClCompile Include="..\private\Bounding.cpp" />
-    <ClCompile Include="..\private\Bounding_AABB.cpp" />
-    <ClCompile Include="..\Private\Bounding_OBB.cpp" />
-    <ClCompile Include="..\Private\Bounding_Sphere.cpp" />
+    <ClCompile Include="..\Private\BTNode.cpp" />
     <ClCompile Include="..\private\Camera.cpp" />
     <ClCompile Include="..\private\Cell.cpp" />
     <ClCompile Include="..\private\Channel.cpp" />
-    <ClCompile Include="..\private\Collider.cpp" />
+    <ClCompile Include="..\Private\Composite_Node.cpp" />
+    <ClCompile Include="..\Private\Condition_Node.cpp" />
+    <ClCompile Include="..\Private\CoolDown_Nodel.cpp" />
+    <ClCompile Include="..\private\Decal.cpp" />
+    <ClCompile Include="..\private\Decal_Manager.cpp" />
+    <ClCompile Include="..\Private\Decorator_Node.cpp" />
+    <ClCompile Include="..\Private\DeferredShader.cpp" />
+    <ClCompile Include="..\Private\Distortion.cpp" />
+    <ClCompile Include="..\Private\Effect_Element.cpp" />
+    <ClCompile Include="..\Private\Effect_Manager.cpp" />
+    <ClCompile Include="..\private\LUT.cpp" />
+    <ClCompile Include="..\Private\Prefab.cpp" />
+    <ClCompile Include="..\private\Fog.cpp" />
+    <ClCompile Include="..\private\Font_Face.cpp" />
+    <ClCompile Include="..\private\Font_Renderer.cpp" />
+    <ClCompile Include="..\Private\InterruptibleSelector_Node.cpp" />
+    <ClCompile Include="..\Private\Inverter_Node.cpp" />
+    <ClCompile Include="..\Private\Jolt_CharacterContactListener.cpp" />
+    <ClCompile Include="..\Private\CharacterVirtual.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
-    <ClCompile Include="..\private\ContainerObject.cpp" />
-    <ClCompile Include="..\private\CustomFont.cpp" />
+    <ClCompile Include="..\private\ComputeShader.cpp" />
+    <ClCompile Include="..\private\ComputeShader_Manager.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
+    <ClCompile Include="..\Private\Event_Manager.cpp" />
+    <ClCompile Include="..\Private\Jolt_ContactListener.cpp" />
+    <ClCompile Include="..\private\ContainerObject.cpp" />
     <ClCompile Include="..\private\Font_Manager.cpp" />
     <ClCompile Include="..\private\Frustum.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
@@ -192,6 +228,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Imgui_Manager.cpp" />
     <ClCompile Include="..\Private\Input_Device.cpp" />
     <ClCompile Include="..\Private\Input_Manager.cpp" />
+    <ClCompile Include="..\Private\Jolt_Layer.cpp" />
     <ClCompile Include="..\Private\Jolt_Manager.cpp" />
     <ClCompile Include="..\Private\Layer.cpp" />
     <ClCompile Include="..\Private\Level.cpp" />
@@ -200,60 +237,200 @@ call Copy.bat</Command>
     <ClCompile Include="..\private\Light_Manager.cpp" />
     <ClCompile Include="..\Private\Mesh.cpp" />
     <ClCompile Include="..\private\MeshMaterial.cpp" />
+    <ClCompile Include="..\Private\Octree.cpp" />
+    <ClCompile Include="..\Private\Perception.cpp" />
+    <ClCompile Include="..\Private\Repeater_Node.cpp" />
+    <ClCompile Include="..\Private\Selector_Node.cpp" />
+    <ClCompile Include="..\Private\SequenceAdapter.cpp" />
+    <ClCompile Include="..\Private\Sequence_Manager.cpp" />
+    <ClCompile Include="..\Private\Sequence_Node.cpp" />
+    <ClCompile Include="..\private\SSAO.cpp" />
+    <ClCompile Include="..\Private\StateMachine.cpp" />
+    <ClCompile Include="..\private\Texture_Atlas.cpp" />
     <ClCompile Include="..\private\Model.cpp" />
+    <ClCompile Include="..\Private\ModelMesh_Instance.cpp" />
+    <ClCompile Include="..\Private\Model_Instance.cpp" />
     <ClCompile Include="..\private\Navigation.cpp" />
     <ClCompile Include="..\Private\Object_Manager.cpp" />
     <ClCompile Include="..\private\PartObject.cpp" />
-    <ClCompile Include="..\Private\EnginePch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="..\Private\Jolt_DebugRenderer.cpp" />
     <ClCompile Include="..\private\Picking.cpp" />
     <ClCompile Include="..\private\PipeLine.cpp" />
+    <ClCompile Include="..\Private\Pool_Manager.cpp" />
     <ClCompile Include="..\Private\Prototype_Manager.cpp" />
     <ClCompile Include="..\private\QuadTree.cpp" />
     <ClCompile Include="..\Private\Renderer.cpp" />
     <ClCompile Include="..\private\RenderTarget.cpp" />
+    <ClCompile Include="..\Private\Resource_Manager.cpp" />
+    <ClCompile Include="..\Private\RigidBody.cpp" />
     <ClCompile Include="..\private\Shader.cpp" />
     <ClCompile Include="..\private\Shadow.cpp" />
     <ClCompile Include="..\Private\Sound_Manager.cpp" />
     <ClCompile Include="..\private\Target_Manager.cpp" />
     <ClCompile Include="..\private\Texture.cpp" />
+    <ClCompile Include="..\Private\ThreadPool.cpp" />
     <ClCompile Include="..\Private\Timer.cpp" />
     <ClCompile Include="..\Private\Timer_Manager.cpp" />
     <ClCompile Include="..\private\Transform.cpp" />
     <ClCompile Include="..\private\UIObject.cpp" />
+    <ClCompile Include="..\private\UIParent.cpp" />
+    <ClCompile Include="..\Private\UtilityAction_Node.cpp" />
+    <ClCompile Include="..\Private\UtilitySelector_Node.cpp" />
     <ClCompile Include="..\private\VIBuffer.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Cell.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Cube.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Instance.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_LineTrail.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp" />
+    <ClCompile Include="..\private\VIBuffer_Instance_UI.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Point.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Point_Instance.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_QuadTrail.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
-    <ClCompile Include="..\Private\VIBuffer_Rect_Instance.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui_demo.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui_draw.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui_impl_dx11.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui_impl_win32.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui_tables.cpp" />
-    <ClCompile Include="..\Public\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="..\private\Vignette.cpp" />
+    <ClCompile Include="..\Private\Wait_Node.cpp" />
+    <ClCompile Include="..\Public\Guizmo\ImGuizmo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ForcedIncludeFiles>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ForcedIncludeFiles>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_demo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ForcedIncludeFiles>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">DISABLE_CRTDBG_NEW;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">DISABLE_CRTDBG_NEW;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_impl_dx11.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ForcedIncludeFiles>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_impl_win32.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ForcedIncludeFiles>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_tables.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ForcedIncludeFiles>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Public\ImGui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ForcedIncludeFiles>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="EnginePch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">EnginePch.h</PrecompiledHeaderFile>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\Action_Node.h" />
+    <ClInclude Include="..\Public\AI_Controller.h" />
+    <ClInclude Include="..\Public\AI_State.h" />
     <ClInclude Include="..\public\Animation.h" />
+    <ClInclude Include="..\public\AnimationTransitionManager.h" />
     <ClInclude Include="..\Public\Base.h" />
+    <ClInclude Include="..\Public\BehaviorTree.h" />
+    <ClInclude Include="..\Public\BlackBoard.h" />
+    <ClInclude Include="..\public\CSM.h" />
+    <ClInclude Include="..\Public\Debug_Header.h" />
+    <ClInclude Include="..\public\GaussianBlur.h" />
+    <ClInclude Include="..\Public\Body.h" />
+    <ClInclude Include="..\Public\BodyDrawFilter.h" />
     <ClInclude Include="..\public\Bone.h" />
-    <ClInclude Include="..\public\Bounding.h" />
-    <ClInclude Include="..\public\Bounding_AABB.h" />
-    <ClInclude Include="..\Public\Bounding_OBB.h" />
-    <ClInclude Include="..\Public\Bounding_Sphere.h" />
+    <ClInclude Include="..\Public\BTNode.h" />
+    <ClInclude Include="..\Public\BTNode_Defines.h" />
     <ClInclude Include="..\public\Camera.h" />
     <ClInclude Include="..\public\Cell.h" />
     <ClInclude Include="..\public\Channel.h" />
-    <ClInclude Include="..\public\Collider.h" />
+    <ClInclude Include="..\Public\Composite_Node.h" />
+    <ClInclude Include="..\Public\Condition_Node.h" />
+    <ClInclude Include="..\Public\CoolDown_Nodel.h" />
+    <ClInclude Include="..\public\Decal.h" />
+    <ClInclude Include="..\public\Decal_Manager.h" />
+    <ClInclude Include="..\Public\Decorator_Node.h" />
+    <ClInclude Include="..\Public\DeferredShader.h" />
+    <ClInclude Include="..\Public\Distortion.h" />
+    <ClInclude Include="..\Public\Effect_Element.h" />
+    <ClInclude Include="..\Public\Effect_Manager.h" />
+    <ClInclude Include="..\Public\Imgui_Header.h" />
+    <ClInclude Include="..\public\LUT.h" />
+    <ClInclude Include="..\public\MotionBlur.h" />
+    <ClInclude Include="..\public\MotionTrail.h" />
+    <ClInclude Include="..\Public\Prefab.h" />
+    <ClInclude Include="..\public\Fog.h" />
+    <ClInclude Include="..\public\Engine_Sequence.h" />
+    <ClInclude Include="..\Public\Guizmo\ImGuizmo.h" />
+    <ClInclude Include="..\Public\ImGui\imconfig.h" />
+    <ClInclude Include="..\Public\ImGui\imgui.h" />
+    <ClInclude Include="..\Public\ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="..\Public\ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="..\Public\ImGui\imgui_internal.h" />
+    <ClInclude Include="..\Public\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="..\Public\ImGui\imstb_textedit.h" />
+    <ClInclude Include="..\Public\ImGui\imstb_truetype.h" />
+    <ClInclude Include="..\public\Font_Face.h" />
+    <ClInclude Include="..\public\Font_Renderer.h" />
+    <ClInclude Include="..\Public\InterruptibleSelector_Node.h" />
+    <ClInclude Include="..\Public\Inverter_Node.h" />
+    <ClInclude Include="..\Public\Jolt_CharacterContactListener.h" />
+    <ClInclude Include="..\Public\CharacterVirtual.h" />
     <ClInclude Include="..\Public\Component.h" />
-    <ClInclude Include="..\public\ContainerObject.h" />
-    <ClInclude Include="..\public\CustomFont.h" />
+    <ClInclude Include="..\public\ComputeShader.h" />
+    <ClInclude Include="..\public\ComputeShader_Manager.h" />
     <ClInclude Include="..\Public\DebugDraw.h" />
+    <ClInclude Include="..\Public\Engine_ConstantBuffer.h" />
+    <ClInclude Include="..\Public\Event_Manager.h" />
+    <ClInclude Include="..\Public\Engine_Json.h" />
+    <ClInclude Include="..\Public\Jolt_ContactListener.h" />
+    <ClInclude Include="..\public\ContainerObject.h" />
     <ClInclude Include="..\Public\Engine_Defines.h" />
     <ClInclude Include="..\Public\Engine_Enum.h" />
     <ClInclude Include="..\Public\Engine_Function.h" />
@@ -265,17 +442,10 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\GameInstance.h" />
     <ClInclude Include="..\Public\GameObject.h" />
     <ClInclude Include="..\Public\Graphic_Device.h" />
-    <ClInclude Include="..\Public\ImGui\imconfig.h" />
-    <ClInclude Include="..\Public\ImGui\imgui.h" />
-    <ClInclude Include="..\Public\ImGui\imgui_impl_dx11.h" />
-    <ClInclude Include="..\Public\ImGui\imgui_impl_win32.h" />
-    <ClInclude Include="..\Public\ImGui\imgui_internal.h" />
-    <ClInclude Include="..\Public\ImGui\imstb_rectpack.h" />
-    <ClInclude Include="..\Public\ImGui\imstb_textedit.h" />
-    <ClInclude Include="..\Public\ImGui\imstb_truetype.h" />
     <ClInclude Include="..\Public\Imgui_Manager.h" />
     <ClInclude Include="..\Public\Input_Device.h" />
     <ClInclude Include="..\Public\Input_Manager.h" />
+    <ClInclude Include="..\Public\Jolt_Layer.h" />
     <ClInclude Include="..\Public\Jolt_Manager.h" />
     <ClInclude Include="..\Public\Layer.h" />
     <ClInclude Include="..\Public\Level.h" />
@@ -284,40 +454,77 @@ call Copy.bat</Command>
     <ClInclude Include="..\public\Light_Manager.h" />
     <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\public\MeshMaterial.h" />
+    <ClInclude Include="..\Public\Octree.h" />
+    <ClInclude Include="..\Public\Perception.h" />
+    <ClInclude Include="..\Public\Perception_Defines.h" />
+    <ClInclude Include="..\public\RadialBlur.h" />
+    <ClInclude Include="..\Public\Repeater_Node.h" />
+    <ClInclude Include="..\Public\Selector_Node.h" />
+    <ClInclude Include="..\Public\SequenceAdapter.h" />
+    <ClInclude Include="..\public\Sequence_Interface.h" />
+    <ClInclude Include="..\Public\Sequence_Manager.h" />
+    <ClInclude Include="..\Public\Sequence_Node.h" />
+    <ClInclude Include="..\public\SSAO.h" />
+    <ClInclude Include="..\Public\StateMachine.h" />
+    <ClInclude Include="..\public\Texture_Atlas.h" />
     <ClInclude Include="..\public\Model.h" />
+    <ClInclude Include="..\Public\ModelMesh_Instance.h" />
+    <ClInclude Include="..\Public\Model_Instance.h" />
     <ClInclude Include="..\public\Navigation.h" />
     <ClInclude Include="..\Public\Object_Manager.h" />
     <ClInclude Include="..\public\PartObject.h" />
-    <ClInclude Include="..\Public\EnginePch.h" />
+    <ClInclude Include="..\Public\Jolt_DebugRenderer.h" />
     <ClInclude Include="..\public\Picking.h" />
     <ClInclude Include="..\public\PipeLine.h" />
+    <ClInclude Include="..\Public\Pool_Manager.h" />
     <ClInclude Include="..\Public\Prototype_Manager.h" />
     <ClInclude Include="..\public\QuadTree.h" />
     <ClInclude Include="..\Public\Renderer.h" />
     <ClInclude Include="..\public\RenderTarget.h" />
+    <ClInclude Include="..\Public\Resource_Manager.h" />
+    <ClInclude Include="..\Public\RigidBody.h" />
     <ClInclude Include="..\public\Shader.h" />
     <ClInclude Include="..\public\Shadow.h" />
     <ClInclude Include="..\Public\Sound_Manager.h" />
     <ClInclude Include="..\public\Target_Manager.h" />
     <ClInclude Include="..\public\Texture.h" />
+    <ClInclude Include="..\Public\ThreadPool.h" />
     <ClInclude Include="..\Public\Timer.h" />
     <ClInclude Include="..\Public\Timer_Manager.h" />
     <ClInclude Include="..\public\Transform.h" />
     <ClInclude Include="..\public\UIObject.h" />
+    <ClInclude Include="..\public\UIParent.h" />
+    <ClInclude Include="..\Public\UtilityAction_Node.h" />
+    <ClInclude Include="..\Public\UtilityScore.h" />
+    <ClInclude Include="..\Public\UtilitySelector_Node.h" />
     <ClInclude Include="..\public\VIBuffer.h" />
     <ClInclude Include="..\Public\VIBuffer_Cell.h" />
     <ClInclude Include="..\Public\VIBuffer_Cube.h" />
     <ClInclude Include="..\public\VIBuffer_Instance.h" />
+    <ClInclude Include="..\Public\VIBuffer_LineTrail.h" />
+    <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h" />
+    <ClInclude Include="..\public\VIBuffer_Instance_UI.h" />
+    <ClInclude Include="..\Public\VIBuffer_Point.h" />
     <ClInclude Include="..\Public\VIBuffer_Point_Instance.h" />
+    <ClInclude Include="..\Public\VIBuffer_QuadTrail.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
-    <ClInclude Include="..\Public\VIBuffer_Rect_Instance.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
+    <ClInclude Include="..\public\Vignette.h" />
+    <ClInclude Include="..\Public\Wait_Node.h" />
+    <ClInclude Include="EnginePch.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Bin\ShaderFiles\Engine_Shader_Deferred_Function.hlsli" />
+    <None Include="..\Bin\ShaderFiles\Engine_Shader_Deferred_Global_Constant.hlsli" />
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli" />
+    <None Include="..\Bin\ShaderFiles\Engine_Shader_Function.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Cell.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Decal.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Model_Instance_Compute.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_MotionTrail.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Point_Instance_Compute.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Deferred.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

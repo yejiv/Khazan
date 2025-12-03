@@ -11,24 +11,27 @@ private:
 	virtual ~CPool_Manager() = default;
 
 public:
-	HRESULT Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, const _wstring& strPoolTag, void* pArg, _uint iCount = 1);
-	class CPool* Pop_PoolObject(const _wstring& strPoolTag);
-	HRESULT Reset_PoolObject(class CPool* pPoolObject);
+	HRESULT Initialize(_uint iNumLevels);
+
+public:
+	HRESULT Add_PoolObject(_uint iPrototypeLevelIndex, const _wstring strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strPoolTag, void* pArg, _uint iCount = 1);
+	class CGameObject* Pop_PoolObject(_uint iLayerLevelIndex, const _wstring& strPoolTag);
 	HRESULT Reset_PoolObject(class CGameObject* pGameObject);
 
-	void Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CPool* pPoolObject);
+	void Push_PoolObject_ToLayer(_uint iLayerLevelIndex, const _wstring& strLayerTag, CGameObject* pGameObject);
 
-	void Clear();
+	void Clear(_uint iLevelIndex);
 
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };
-	map<const _wstring, deque<class CPool*>>			m_Pools;
+	map<const _wstring, deque<class CGameObject*>>*			m_pPools;
+	_uint	m_iNumLevels;
 
 private:
-	deque<class CPool*>* Find_Pool(const _wstring& strPoolTag);
+	deque<class CGameObject*>* Find_Pool(_uint iLayerLevelIndex, const _wstring& strPoolTag);
 
 public:
-	static CPool_Manager* Create();
+	static CPool_Manager* Create(_uint iNumLevels);
 	virtual void Free() override;
 };
 

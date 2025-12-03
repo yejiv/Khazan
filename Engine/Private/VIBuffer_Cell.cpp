@@ -1,4 +1,3 @@
-#include "EnginePch.h"
 #include "VIBuffer_Cell.h"
 
 CVIBuffer_Cell::CVIBuffer_Cell(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -90,7 +89,7 @@ CComponent* CVIBuffer_Cell::Clone(void* pArg)
 {
 	CVIBuffer_Cell* pInstance = new CVIBuffer_Cell(*this);
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(pInstance->Initialize_Clone(pArg)))
 	{
 		MSG_BOX(TEXT("Failed to Cloned : CVIBuffer_Cell"));
 		Safe_Release(pInstance);

@@ -24,6 +24,7 @@ private:
 	CGameInstance* m_pGameInstance = { nullptr };
 	ID3D11Device* m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pContext = { nullptr };
+	class CDebug_Controller* m_pDebug = { nullptr };
 
 #ifdef _DEBUG
 	_tchar					m_szFPS[MAX_PATH] = {};
@@ -34,6 +35,10 @@ private:
 private:
 	HRESULT Ready_Prototype_ForStatic();
 	HRESULT Start_Level(LEVEL eStartLevelID);
+
+private:
+	void Ready_DefaultImgui();
+	void Ready_Debug();
 
 public:
 	static CMainApp* Create();

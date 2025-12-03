@@ -1,9 +1,11 @@
-#include "EnginePch.h"
 #include "Input_Device.h"
 
 CInput_Device::CInput_Device(void)
 {
-
+	ZeroMemory(m_byKeyStateCurr, sizeof(m_byKeyStateCurr));
+	ZeroMemory(m_byKeyStatePrev, sizeof(m_byKeyStatePrev));
+	ZeroMemory(&m_tMouseStateCurr, sizeof(m_tMouseStateCurr));
+	ZeroMemory(&m_tMouseStatePrev, sizeof(m_tMouseStatePrev));
 }
 
 HRESULT CInput_Device::Ready_InputDev(HINSTANCE hInst, HWND hWnd)
@@ -39,8 +41,20 @@ HRESULT CInput_Device::Ready_InputDev(HINSTANCE hInst, HWND hWnd)
 
 void CInput_Device::Update(void)
 {
-	m_pKeyBoard->GetDeviceState(256, m_byKeyState);
-	m_pMouse->GetDeviceState(sizeof(m_tMouseState), &m_tMouseState);
+	memcpy(m_byKeyStatePrev, m_byKeyStateCurr, sizeof(m_byKeyStateCurr));
+	m_tMouseStatePrev = m_tMouseStateCurr;
+
+	HRESULT hrKey = m_pKeyBoard->GetDeviceState(256, m_byKeyStateCurr);
+	if (FAILED(hrKey)) {
+		m_pKeyBoard->Acquire();
+		ZeroMemory(m_byKeyStateCurr, sizeof(m_byKeyStateCurr));
+	}
+
+	HRESULT hrMouse = m_pMouse->GetDeviceState(sizeof(m_tMouseStateCurr), &m_tMouseStateCurr);
+	if (FAILED(hrMouse)) {
+		m_pMouse->Acquire();
+		ZeroMemory(&m_tMouseStateCurr, sizeof(m_tMouseStateCurr));
+	}
 }
 
 CInput_Device* CInput_Device::Create(HINSTANCE hInst, HWND hWnd)

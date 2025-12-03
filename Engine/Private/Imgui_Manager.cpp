@@ -1,22 +1,23 @@
-#include "EnginePch.h"
 #include "Imgui_Manager.h"
+#include "GameInstance.h"
+#include "GameObject.h"
 
-extern LRESULT WINAPI ImGui_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-CImgui_Manager::CImgui_Manager()
+CImgui_Manager::CImgui_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+    : m_pDevice{ pDevice }
+    , m_pContext{ pContext }
+    , m_pGameInstance { CGameInstance::GetInstance()}
 {
+    Safe_AddRef(m_pDevice);
+    Safe_AddRef(m_pContext);
+    Safe_AddRef(m_pGameInstance);
 }
 
-HRESULT CImgui_Manager::Initialize(_uint iWinSizeX, _uint iWinSizeY, list<wstring> Menu)
+HRESULT CImgui_Manager::Initialize(list<wstring> Menu, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
 {
-
-#if  defined(_CLIENT) && !defined(_EDITOR)
-    // Make process DPI aware and obtain main monitor scale
-    ImGui_ImplWin32_EnableDpiAwareness();
-    float main_scale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
-#endif // !_CLIENT
-
     m_Menu = Menu;
+    m_hWnd = hWnd;
+    m_iWinSizeX = iWinSizeX;
+	m_iWinSizeY = iWinSizeY;
 
 	for (auto Menu : m_Menu)
 	{
@@ -34,45 +35,34 @@ HRESULT CImgui_Manager::Initialize(_uint iWinSizeX, _uint iWinSizeY, list<wstrin
 		++MenuIndex;
 	}
 
-    // Create application window
-    wc = { sizeof(wc), CS_CLASSDC, ImGui_WndProcHandler, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ImGui Example", nullptr };
-    ::RegisterClassExW(&wc);
-    hwnd = ::CreateWindowW(wc.lpszClassName, L"Dear ImGui DirectX11 Example", WS_OVERLAPPEDWINDOW, 100, 100, iWinSizeX, iWinSizeY, nullptr, nullptr, wc.hInstance, nullptr);
-
-    // Initialize Direct3D
-    if (!CreateDeviceD3D(hwnd))
-    {
-        CleanupDeviceD3D();
-        ::UnregisterClassW(wc.lpszClassName, wc.hInstance);
-        return 1;
-    }
-
     // Show the window
-    ::ShowWindow(hwnd, SW_SHOWDEFAULT);
-    ::UpdateWindow(hwnd);
+    //::ShowWindow(m_hWnd, SW_SHOWDEFAULT);
+    //::UpdateWindow(m_hWnd);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
-
-#if  defined(_CLIENT) && !defined(_EDITOR)
-   // Setup scaling
+    m_io = &(ImGui::GetIO());
+    m_io->Fonts->AddFontFromFileTTF("../../Client/Bin/Resources/Font/DNFForgedBlade-Medium.ttf", 18.f, NULL, m_io->Fonts->GetGlyphRangesKorean());
     ImGuiStyle& style = ImGui::GetStyle();
-    style.ScaleAllSizes(main_scale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
-    style.FontScaleDpi = main_scale;        // Set initial font scale. (using io.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
-#endif // !_CLIENT
+    m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    m_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+    m_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+    if (m_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplWin32_Init(m_hWnd);
+    ImGui_ImplDX11_Init(m_pDevice, m_pContext);
 
 
-    // Setup Platform/Renderer backends
-    ImGui_ImplWin32_Init(hwnd);
-    ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
+    IM_ASSERT(m_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable);
+    IM_ASSERT(m_io->BackendFlags & ImGuiBackendFlags_PlatformHasViewports);
+    IM_ASSERT(m_io->BackendFlags & ImGuiBackendFlags_RendererHasViewports);
+
     return S_OK;
 }
 
@@ -82,58 +72,55 @@ void CImgui_Manager::BeginFrame()
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-
-    //ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-    if (ImGui::BeginMainMenuBar())
-    {
-        for (auto& widget : m_Widgets)
-        {
-            _wstring OpenMenu = Get_OpenMenu_Name();
-            if (ImGui::BeginMenu(WStringToAnsi(OpenMenu).c_str()))
-            {
-                ImGui::MenuItem(WStringToAnsi(widget.first).c_str(), nullptr, &m_MenuOpen[widget.first]);
-                ImGui::EndMenu();
-            }
-        }
-        ImGui::EndMainMenuBar();
-    }
-
-
-	for (auto& Menu : m_Widgets)
-	{
-		if (m_MenuOpen[Menu.first])
-		{
-            for (auto& Widget : Menu.second)
-            {
-                Widget();
-            }
-		}
-	}
+    Render_Docking();
+    Render_Gizmo();
+    Render_Widet();
 }
 
 void CImgui_Manager::Render()
 {
     // Rendering
     ImGui::Render();
-    const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
-    g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
-    g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	m_io = &(ImGui::GetIO());
+    if (m_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        m_pImgRTV = nullptr;
+        m_pImgDSV = nullptr;
+        m_pContext->OMGetRenderTargets(1, &m_pImgRTV, &m_pImgDSV);
 
-    // Present
-    HRESULT hr = g_pSwapChain->Present(1, 0);   // Present with vsync
-    g_SwapChainOccluded = (hr == DXGI_STATUS_OCCLUDED);
+        ImGui::UpdatePlatformWindows();         
+        ImGui::RenderPlatformWindowsDefault(); 
+
+        m_pContext->OMSetRenderTargets(1, &m_pImgRTV, m_pImgDSV);
+        if (m_pImgRTV) m_pImgRTV->Release();
+        if (m_pImgDSV) m_pImgDSV->Release();
+    }
+
+    //m_pGameInstance->Present_SwapChain(1, 0);
 }
 
 void CImgui_Manager::Shutdown()
 {
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
-    ImGui::DestroyContext();
 
-    CleanupDeviceD3D();
-    ::DestroyWindow(hwnd);
-    ::UnregisterClassW(wc.lpszClassName, wc.hInstance);
+     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+     ImGui::DestroyPlatformWindows();
+
+    ImGui::DestroyContext();
+}
+
+HRESULT CImgui_Manager::CleanMenu(_wstring strMenu)
+{
+    auto iter = m_Widgets.find(strMenu);
+
+    if (iter == m_Widgets.end())
+        return E_FAIL;
+
+    iter->second.clear();
+
+    return true;
 }
 
 void CImgui_Manager::AddWidget(const _wstring Menu, const function<void()>& widget)
@@ -152,91 +139,187 @@ _wstring CImgui_Manager::Get_OpenMenu_Name()
     return TEXT("Menu");
 }
 
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParm, LPARAM lParm);
 
-LRESULT WINAPI ImGui_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+_bool CImgui_Manager::HandleWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
-        return true;
+    return ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam);
+}
 
-    switch (msg)
+void CImgui_Manager::Render_Widet()
+{
+    for (auto& Menu : m_Widgets)
     {
-    case WM_SIZE:
-        if (wParam == SIZE_MINIMIZED)
-            return 0;
+        if (m_MenuOpen[Menu.first])
+        {
+            for (auto& Widget : Menu.second)
+            {
+                Widget();
+            }
+        }
+    }
+}
 
-        return 0;
-    case WM_SYSCOMMAND:
-        if ((wParam & 0xfff0) == SC_KEYMENU)
-            return 0;
-        break;
-    case WM_DESTROY:
-        ::PostQuitMessage(0);
-        return 0;
+void CImgui_Manager::Render_Docking()
+{
+    // --- DockSpace Host ---
+    const ImGuiViewport* vp = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(vp->WorkPos);
+    ImGui::SetNextWindowSize(vp->WorkSize);
+    ImGui::SetNextWindowViewport(vp->ID);
+
+    ImGuiWindowFlags hostFlags = ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoBringToFrontOnFocus |
+        ImGuiWindowFlags_NoNavFocus |
+        ImGuiWindowFlags_MenuBar |
+        ImGuiWindowFlags_NoBackground;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+
+    ImGuiDockNodeFlags dockFlags = ImGuiDockNodeFlags_PassthruCentralNode;
+
+    if (ImGui::Begin("###DockSpaceHost", nullptr, hostFlags))
+    {
+        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0, 0), dockFlags);
+
+        if (ImGui::BeginMenuBar())
+        {
+            for (auto& widget : m_Widgets)
+            {
+                _wstring OpenMenu = Get_OpenMenu_Name();
+                if (ImGui::BeginMenu(WStringToAnsi(OpenMenu).c_str()))
+                {
+                    ImGui::MenuItem(WStringToAnsi(widget.first).c_str(), nullptr, &m_MenuOpen[widget.first]);
+                    ImGui::EndMenu();
+                }
+            }
+            ImGui::EndMenuBar();
+        }
+    }
+    ImGui::End();
+    ImGui::PopStyleVar(3);
+
+    ImGui::SetNextWindowDockID(0, ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
+}
+
+void CImgui_Manager::Render_Gizmo()
+{
+    if (m_pGizmoObject == nullptr)
+        return;
+
+    ImGuiViewport* vp = ImGui::GetMainViewport();
+    ImGuizmo::BeginFrame();
+    ImGuizmo::SetOrthographic(false);
+    ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList(vp));
+    ImGuizmo::SetRect(vp->Pos.x, vp->Pos.y, vp->Size.x, vp->Size.y);
+
+    float viewM[16];
+    XMStoreFloat4x4((XMFLOAT4X4*)viewM, m_pGameInstance->Get_Transform_Matrix(D3DTS::VIEW));
+    float projM[16];
+    XMStoreFloat4x4((XMFLOAT4X4*)projM, m_pGameInstance->Get_Transform_Matrix(D3DTS::PROJ));
+
+    CTransform* pTransform = dynamic_cast<CTransform*>(m_pGizmoObject->Get_Component(TEXT("Com_Transform")));
+    if (!pTransform)
+        return;
+
+    XMFLOAT4X4 worldFloat;
+    XMStoreFloat4x4(&worldFloat, pTransform->Get_WorldMatrix());
+    float objM[16];
+    memcpy(objM, &worldFloat, sizeof(float) * 16);
+
+    // 조작 모드 전환
+    if (m_pGameInstance->Key_Down(DIK_F1))
+        m_GizmoOp = ImGuizmo::TRANSLATE;
+    if (m_pGameInstance->Key_Down(DIK_F2))
+        m_GizmoOp = ImGuizmo::ROTATE;
+    if (m_pGameInstance->Key_Down(DIK_F3))
+        m_GizmoOp = ImGuizmo::SCALE;
+
+    // F4/F5 로 모드 전환
+    if (m_pGameInstance->Key_Down(DIK_F4))
+    {
+        if (ImGuizmo::WORLD == m_GizmoMode)
+            m_GizmoMode = ImGuizmo::LOCAL;
+        else if (ImGuizmo::LOCAL == m_GizmoMode)
+            m_GizmoMode = ImGuizmo::WORLD;
     }
 
-    return ::DefWindowProcW(hWnd, msg, wParam, lParam);
+    // 스냅 설정
+    bool useSnap = false;
+    float snap[3] = { 0.25f, 15.0f, 0.1f };
+    float* pSnap = nullptr;
+
+    // Shift / Ctrl / Alt 키로 단위 스냅 활성화
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, 0.0001f))
+    {
+        useSnap = true;
+        snap[0] = 5.0f;     // 이동 5
+        snap[1] = 15.0f;    // 회전 15도
+        snap[2] = 0.002f;   // 스케일 0.002
+    }
+    else if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, 0.0001f))
+    {
+        useSnap = true;
+        snap[0] = 1.0f;     // 이동 1
+        snap[1] = 5.0f;     // 회전 5도
+        snap[2] = 0.001f;   // 스케일 0.001
+    }
+    else if (m_pGameInstance->Key_Pressing(DIK_LALT, 0.0001f))
+    {
+        useSnap = true;
+        snap[0] = 0.5f;     // 이동 0.5
+        snap[1] = 1.0f;     // 회전 1도
+        snap[2] = 0.0005f;  // 스케일 0.0005
+    }
+
+    if (useSnap)
+    {
+        if (m_GizmoOp == ImGuizmo::TRANSLATE) pSnap = &snap[0];
+        else if (m_GizmoOp == ImGuizmo::ROTATE) pSnap = &snap[1];
+        else if (m_GizmoOp == ImGuizmo::SCALE) pSnap = &snap[2];
+    }
+
+    ImGuizmo::SetGizmoSizeClipSpace(0.15f * vp->DpiScale);
+
+    bool changed = ImGuizmo::Manipulate(
+        viewM,
+        projM,
+        m_GizmoOp,
+        m_GizmoMode,  // F4/F5 로 수동 전환된 모드 사용
+        objM,
+        nullptr,
+        pSnap
+    );
+
+    if (changed)
+    {
+        XMMATRIX newWorld = XMLoadFloat4x4((XMFLOAT4X4*)objM);
+        pTransform->Set_WorldMatrix(newWorld);
+    }
 }
 
-bool CImgui_Manager::CreateDeviceD3D(HWND hWnd)
+void CImgui_Manager::All_Clean()
 {
-    // Setup swap chain
-    DXGI_SWAP_CHAIN_DESC sd;
-    ZeroMemory(&sd, sizeof(sd));
-    sd.BufferCount = 2;
-    sd.BufferDesc.Width = 0;
-    sd.BufferDesc.Height = 0;
-    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    sd.BufferDesc.RefreshRate.Numerator = 60;
-    sd.BufferDesc.RefreshRate.Denominator = 1;
-    sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sd.OutputWindow = hWnd;
-    sd.SampleDesc.Count = 1;
-    sd.SampleDesc.Quality = 0;
-    sd.Windowed = TRUE;
-    sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-
-    UINT createDeviceFlags = 0;
-    //createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-    D3D_FEATURE_LEVEL featureLevel;
-    const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
-    HRESULT res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
-    if (res == DXGI_ERROR_UNSUPPORTED) // Try high-performance WARP software driver if hardware is not available.
-        res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
-    if (res != S_OK)
-        return false;
-
-    CreateRenderTarget();
-    return true;
+    for (auto Menu : m_Widgets)
+    {
+        Menu.second.clear();
+    }
 }
 
-void CImgui_Manager::CleanupDeviceD3D()
+CImgui_Manager* CImgui_Manager::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, list<wstring> Menu, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
 {
-    CleanupRenderTarget();
-    if (g_pSwapChain) { g_pSwapChain->Release(); g_pSwapChain = nullptr; }
-    if (g_pd3dDeviceContext) { g_pd3dDeviceContext->Release(); g_pd3dDeviceContext = nullptr; }
-    if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = nullptr; }
-}
+    CImgui_Manager* pInstance = new CImgui_Manager(pDevice, pContext);
 
-void CImgui_Manager::CreateRenderTarget()
-{
-    ID3D11Texture2D* pBackBuffer;
-    g_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
-    g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_mainRenderTargetView);
-    pBackBuffer->Release();
-}
-
-void CImgui_Manager::CleanupRenderTarget()
-{
-    if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = nullptr; }
-}
-
-CImgui_Manager* CImgui_Manager::Create(_uint iWinSizeX, _uint iWinSizeY, list<wstring> Menu)
-{
-    CImgui_Manager* pInstance = new CImgui_Manager();
-
-    if (FAILED(pInstance->Initialize(iWinSizeX, iWinSizeY, Menu)))
+    if (FAILED(pInstance->Initialize(Menu, hWnd, iWinSizeX, iWinSizeY)))
     {
         MSG_BOX(TEXT("Failed to Created : CObject_Manager"));
         Safe_Release(pInstance);
@@ -249,8 +332,18 @@ void CImgui_Manager::Free()
 {
     __super::Free();
 
+    Shutdown();
+
     for (auto Menu : m_Widgets)
     {
 		Menu.second.clear();
     }
+
+    /*if (m_pImgRTV) m_pImgRTV->Release();
+    if (m_pImgDSV) m_pImgDSV->Release();*/
+	if (m_io) { m_io = nullptr; }
+
+    Safe_Release(m_pDevice);
+    Safe_Release(m_pContext);
+    Safe_Release(m_pGameInstance);
 }

@@ -1,157 +1,137 @@
 #pragma once
 #include "Base.h"
+#include "Jolt_Layer.h"
+#include "Jolt_ContactListener.h"
+#include "Jolt_CharacterContactListener.h"
+#include "BodyDrawFilter.h"
 
-
-#ifdef new
-#pragma push_macro("new")
-#undef new
-#endif
-
-#include <Core/Factory.h>
-
-#ifdef new
-#pragma pop_macro("new") // DBG_NEW ∫πø¯
+#ifdef _DEBUG
+#include "Jolt_DebugRenderer.h"
 #endif
 
 NS_BEGIN(Engine)
 
-// -------------------------------
-// ObjectLayer/BroadPhaseLayer ¡§¿«
-// -------------------------------
-namespace JoltLayers
-{
-    // ≥ ¿« øÎµµø° ∏¬∞‘ ¥√∑¡ Ω·µµ µ 
-    static constexpr ObjectLayer    NON_MOVING = 0;
-    static constexpr ObjectLayer    MOVING = 1;
-    static constexpr ObjectLayer    SENSOR = 2;
-    static constexpr uint32         NUM_LAYERS = 3;
-}
-
-// ∫Í∑ŒµÂ∆‰¿Ã¡Ó ∑π¿ÃæÓ (∞£¥‹ ∏≈«Œ: 0=¡§¿˚, 1=µø¿˚)
-namespace JoltBPLayers
-{
-    static constexpr BroadPhaseLayer NON_MOVING(0);
-    static constexpr BroadPhaseLayer MOVING(1);
-    static constexpr uint32          NUM_LAYERS = 2;
-}
-
-// BroadPhaseLayerInterface ±∏«ˆ
-class CJolt_BPLayerIF final : public BroadPhaseLayerInterface
-{
-public:
-    CJolt_BPLayerIF() = default;
-    virtual uint32      GetNumBroadPhaseLayers() const override { return JoltBPLayers::NUM_LAYERS; }
-    virtual BroadPhaseLayer GetBroadPhaseLayer(ObjectLayer inLayer) const override
-    {
-        switch (inLayer)
-        {
-        case JoltLayers::NON_MOVING: return JoltBPLayers::NON_MOVING;
-        case JoltLayers::MOVING:     return JoltBPLayers::MOVING;
-        case JoltLayers::SENSOR:     return JoltBPLayers::MOVING;
-        default:                     return JoltBPLayers::MOVING;
-        }
-    }
-#if defined(JPH_EXTERNAL_PROFILE) || defined(JPH_PROFILE_ENABLED)
-    virtual const char* GetBroadPhaseLayerName(BroadPhaseLayer inLayer) const override
-    {
-        switch ((uint32)inLayer.GetValue())
-        {
-        case 0: return "NON_MOVING";
-        case 1: return "MOVING";
-        default: return "UNKNOWN";
-        }
-    }
-#endif
-};
-
-// ObjectLayer °Í BroadPhaseLayer √Êµπ « ≈Õ
-class CJolt_ObjectVsBPLayerFilter final : public ObjectVsBroadPhaseLayerFilter
-{
-public:
-    virtual bool ShouldCollide(ObjectLayer inLayer1, BroadPhaseLayer inLayer2) const override
-    {
-        if (inLayer1 == JoltLayers::NON_MOVING) return inLayer2 == JoltBPLayers::MOVING;
-        if (inLayer1 == JoltLayers::MOVING)     return true; // µø¿˚¿∫ ¿¸∫Œ ∞ÀªÁ
-        if (inLayer1 == JoltLayers::SENSOR)     return inLayer2 == JoltBPLayers::MOVING;
-        return true;
-    }
-};
-
-// ObjectLayer °Í ObjectLayer √Êµπ « ≈Õ
-class CJolt_ObjectLayerPairFilter final : public ObjectLayerPairFilter
-{
-public:
-    virtual bool ShouldCollide(ObjectLayer inObject1, ObjectLayer inObject2) const override
-    {
-        if (inObject1 == JoltLayers::SENSOR || inObject2 == JoltLayers::SENSOR)
-            return true; // ºæº≠¥¬ ∏µŒøÕ ¡¢√À √º≈© (ø¯«œ∏È πŸ≤„)
-        if (inObject1 == JoltLayers::NON_MOVING && inObject2 == JoltLayers::NON_MOVING)
-            return false; // ¡§¿˚-¡§¿˚ π´Ω√
-        return true;
-    }
-};
-
-// Contact Listener (ø…º«: « ø‰ Ω√ ¡¢√À ¿Ã∫•∆Æ »≈)
-class CJolt_ContactListener final : public ContactListener
-{
-public:
-    virtual ValidateResult    OnContactValidate(const Body& inBody1, const Body& inBody2, RVec3Arg inBaseOffset, const CollideShapeResult& inCollisionResult) override
-    {
-        // ±‚∫ª: ∏µŒ «„øÎ
-        return ValidateResult::AcceptAllContactsForThisBodyPair;
-    }
-    virtual void OnContactAdded(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold, ContactSettings& ioSettings) override {}
-    virtual void OnContactPersisted(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold, ContactSettings& ioSettings) override {}
-    virtual void OnContactRemoved(const SubShapeIDPair& inSubShapePair) override {}
-};
-
-// -------------------------------
-// Jolt Manager
-// -------------------------------
 class CJolt_Manager final : public CBase
 {
+public:
+    struct RayCastDesc
+    {
+        _float3 vStart;
+        _float3 vEnd;
+        ColorArg vColor;
+    };
 private:
-    CJolt_Manager();
+    CJolt_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual ~CJolt_Manager() = default;
 
 public:
-    // √ ±‚»≠/¡æ∑·/Ω∫≈‹
-    HRESULT Initialize(_uint iMaxBodies = 10240, _uint iNumBodyMutexes = 0, _uint iMaxBodyPairs = 65536, _uint iMaxContactConstraints = 65536, _uint iJobThreadCount = 0);
+    // Ï¥àÍ∏∞Ìôî/Ï¢ÖÎ£å/Ïä§ÌÖù
+    HRESULT Initialize(_uint iNumObjectLayer);
     void    Update(_float fDeltaTime);
-    void    Clear(); // ∏µÁ πŸµ ¡¶∞≈
 
-    // ∆Ì¿« ¡¢±Ÿ¿⁄
-    PhysicsSystem& Get_PhysicsSystem() { return m_Physics; }
-    BodyInterface& Get_BodyInterface() { return m_Physics.GetBodyInterface(); }
+    Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
+    CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);
 
-    // µπˆ±◊øÎ ¡ﬂ∑¬/Ω∫≈‹ ∞Ì¡§∞™ º≥¡§
-    void    Set_Gravity(const Vec3& vGravity) { m_Physics.SetGravity(vGravity); }
-    Vec3    Get_Gravity() const { return m_Physics.GetGravity(); }
+    HRESULT				Set_PhysicsSystem();
+    void				Set_ObjectToBP(_uint iObjectLayer, _uint iBPLayer) {
+        m_pBPLayerIF->SetUp_ObjectToBP(iObjectLayer, iBPLayer);
+    };
+    void				Set_ObjectFilter(_uint iSrc, _uint iDst) {
+        m_pObjectLayerPairFilter->SetUp_ObjectFilter(iSrc, iDst);
+    };
+    void				Set_ObjectVsBPFilter(_uint iObjectLayer, _uint iBPLayer) {
+        m_pObjectVsBPLayerFilter->SetUp_ObjectVsBPFilter(iObjectLayer, iBPLayer);
+    };
+    void				Set_ObjectLayerFilter(_uint iObjectLayer, _bool isOn) {
+        m_pObjectLayerFilter->SetUpAllow(iObjectLayer, isOn);
+    };
+#ifdef _DEBUG
+    void				Set_DrawFilter(_uint iObjectLayer) {
+        m_DrawFilter->SetUp_LayerToFilter(iObjectLayer);
+    };
+    void				Remove_DrawFilter(_uint iObjectLayer) {
+        m_DrawFilter->Remove_LayerToFilter(iObjectLayer);
+    };
+#endif
+    void Set_Gravity(_vector vGravity);
+    void Reset_Gravity(); 
+
 
 public:
-    // ø£¡¯ ∏≈¥œ¿˙ ∆–≈œ
-    static CJolt_Manager* Create();
+    void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
+    void CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting);
+    void CharVir_RefreshContact(CharacterVirtual* pCharVir, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
+
+public:
+    CharacterVirtual* Find_CharacterVirtual(CharacterID id);
+	void Remove_CharacterVirtual(CharacterID id);
+
+    void Push_BodyDesc(BodyID id, uint64 pBodyDesc);
+    uint64 Find_BodyDesc(BodyID id);
+    void Remove_BodyDesc(BodyID id);
+
+    void Destroy_Body(BodyID& id);
+
+public:
+    _bool RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal = nullptr);
+
+//public:
+//    void Clear();
+#ifdef _DEBUG
+
+public:
+    void Test();
+    void Debug_Render();
+    void RayCast_Render_Clear();
+#endif
+private:
+    ID3D11Device* m_pDevice = { nullptr };
+    ID3D11DeviceContext* m_pContext = { nullptr };
+    class CGameInstance* m_pGameInstance = { nullptr };
+
+    // ÌïÑÏàò Íµ¨ÏÑ±ÏöîÏÜå
+    PhysicsSystem* m_pPhysics = { nullptr };
+    TempAllocatorImpl* m_pTempAlloc = { nullptr };
+    JobSystemThreadPool* m_pJobSystem = { nullptr };
+
+    PhysicsSettings		m_PhysicsSetting;
+
+    // Î†àÏù¥Ïñ¥/ÌïÑÌÑ∞/Î¶¨Ïä§ÎÑà
+    CJolt_BPLayerIF*                     m_pBPLayerIF = { nullptr };
+    CJolt_ObjectLayerPairFilter*         m_pObjectLayerPairFilter = { nullptr };
+    CJolt_ObjectVsBPLayerFilter*         m_pObjectVsBPLayerFilter = { nullptr };
+    CJolt_ContactListener*               m_pContactListener = { nullptr };
+    CJolt_CharacterContactListener*      m_pCharContactListener = { nullptr };
+    CharacterVsCharacterCollisionSimple* m_pCharVsCharCollision = { nullptr };
+    CJolt_ObjectLayerFilter*             m_pObjectLayerFilter = { nullptr };
+    GroupFilterTable*                    m_pGroupFilterTable = { nullptr };
+
+	map<CharacterID, CharacterVirtual*>  m_CharacterVirtuals;
+
+    map<BodyID, uint64>                 m_BodyDescs;
+
+    vector<RayCastDesc>  m_RayCasts;
+private:
+    // ÏÉùÏÑ± ÌååÎùºÎØ∏ÌÑ∞ Î≥¥Í¥Ä(ÏÑ†ÌÉù)
+    _uint m_iMaxBodies = { 2048 };
+    _uint m_iNumBodyMutexes = {};
+    _uint m_iMaxBodyPairs = { 2048 };
+    _uint m_iMaxContactConstraints = { 2048 };
+    _uint m_iJobThreadCount = {};
+
+    _uint m_iNumObjectLayer = {};
+
+#ifdef _DEBUG
+private:
+    CJolt_DebugRenderer* m_pDebugRenderer = { nullptr };
+    BodyManager::DrawSettings m_DrawSetting;
+    DrawOnlyLayers* m_DrawFilter;
+#endif
+
+public:
+    // ÏóîÏßÑ Îß§ÎãàÏ†Ä Ìå®ÌÑ¥
+    static CJolt_Manager* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iNumObjectLayer);
     virtual void Free() override;
-
-private:
-    // « ºˆ ±∏º∫ø‰º“
-    PhysicsSystem           m_Physics;
-    TempAllocatorImpl*      m_pTempAlloc = nullptr;
-    JobSystemThreadPool*    m_pJobSystem = nullptr;
-
-    // ∑π¿ÃæÓ/« ≈Õ/∏ÆΩ∫≥ 
-    CJolt_BPLayerIF             m_BPLayerIF;
-    CJolt_ObjectVsBPLayerFilter m_ObjectVsBPLayerFilter;
-    CJolt_ObjectLayerPairFilter m_ObjectPairFilter;
-    CJolt_ContactListener       m_ContactListener;
-
-private:
-    // ª˝º∫ ∆ƒ∂ÛπÃ≈Õ ∫∏∞¸(º±≈√)
-    _uint m_iMaxBodies = 0;
-    _uint m_iNumBodyMutexes = 0;
-    _uint m_iMaxBodyPairs = 0;
-    _uint m_iMaxContactConstraints = 0;
-    _uint m_iJobThreadCount = 0;
 };
 
 NS_END
