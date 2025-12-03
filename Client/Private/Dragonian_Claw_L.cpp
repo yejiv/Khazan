@@ -69,7 +69,7 @@ void CDragonian_Claw_L::Update(_float fTimeDelta)
 
 void CDragonian_Claw_L::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this),);
+   CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this),);
 }
 
 HRESULT CDragonian_Claw_L::Render()

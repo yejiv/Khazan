@@ -101,10 +101,9 @@ void CAS_CutScene_2Phase_Viper::Change_CutSceneState(P2CUTSCENE_STATE eNextState
     switch (m_eState)
     {
     case Client::P2CUTSCENE_STATE::DOWN:
-        //pModel->Set_AnimationBlend(false);
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::DOWN));
         pViper->Get_Core()->Set_IsActive(false);
-
+        pViper->Set_WeaponOff();
         pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
         break;
     case Client::P2CUTSCENE_STATE::PICKUP:
@@ -118,7 +117,6 @@ void CAS_CutScene_2Phase_Viper::Change_CutSceneState(P2CUTSCENE_STATE eNextState
         pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
         break;
     case Client::P2CUTSCENE_STATE::HEMPTYSIS:
-        //pModel->Set_AnimationBlend(true);
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::HEMPTYSIS));
         pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
         break;

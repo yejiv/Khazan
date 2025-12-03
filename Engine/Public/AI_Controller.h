@@ -14,6 +14,7 @@ protected:
 public:
 	class CStateMachine*		Get_State_Machine() const { return m_pFSM; }
     class CBlackBoard*          Get_BlackBoard() const { return m_pBB; }
+    _bool                       Get_ControllerActivate() { return m_isActiveController; }
     virtual void                Set_ControllerActivate(_bool isToggle) { m_isActiveController = isToggle; }
     virtual void                Set_Active_FSM(_bool isToggle ) { m_isActiveFSM = isToggle; }
 

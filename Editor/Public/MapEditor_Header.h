@@ -68,6 +68,9 @@
 #include "Duimuk_Part.h"                 // 두이무크 파츠
 #include "NPC_Danjin.h"                  // 단진 ( 랜턴 상인 )
 
+// Interactive ( 항아리 요정 )
+#include "DanjinJar.h"                   // 항아리 요정
+
 // Properties Test
 #include "Prop_Test.h"
 

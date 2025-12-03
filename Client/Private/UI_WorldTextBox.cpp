@@ -41,6 +41,11 @@ void CUI_WorldTextBox::Set_LocalSize(_float3 vSize)
     m_pTransformCom->Scale(vSize);
 }
 
+void CUI_WorldTextBox::Set_TextAlign(TEXT_ALIGN eAlign)
+{
+    m_eTextAlign = eAlign;
+}
+
 HRESULT CUI_WorldTextBox::Initialize_Prototype()
 {
     return S_OK;
@@ -52,6 +57,7 @@ HRESULT CUI_WorldTextBox::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Component(), E_FAIL);
 
     m_pTransformCom->Set_WorldMatrix(XMMatrixIdentity());
+    m_eTextAlign = TEXT_ALIGN::LEFT_CENTER;
     return S_OK;
 }
 
@@ -84,7 +90,7 @@ HRESULT CUI_WorldTextBox::Render()
     CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
     m_pShaderCom->Begin(3);
 
-    m_pGameInstance->DrawTextWorld(m_wstrTexttag, m_wstrText, m_vWorldPos.x + m_iPivotX, m_vWorldPos.y + m_iPivotY, m_vColor, TEXT_ALIGN::LEFT_CENTER,XMLoadFloat4x4(&m_CombinedWorldMatrix));
+    m_pGameInstance->DrawTextWorld(m_wstrTexttag, m_wstrText, m_vWorldPos.x + m_iPivotX, m_vWorldPos.y + m_iPivotY, m_vColor,m_eTextAlign,XMLoadFloat4x4(&m_CombinedWorldMatrix));
 
     return S_OK;
 }

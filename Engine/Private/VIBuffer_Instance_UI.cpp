@@ -1,3 +1,4 @@
+
 #include "VIBuffer_Instance_UI.h"
 
 CVIBuffer_Instance_UI::CVIBuffer_Instance_UI(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

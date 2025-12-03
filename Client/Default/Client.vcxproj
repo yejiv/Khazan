@@ -290,6 +290,7 @@
     <ClInclude Include="..\Public\Body_Phase2_Viper.h" />
     <ClInclude Include="..\Public\Body_Viper.h" />
     <ClInclude Include="..\Public\Core_Viper.h" />
+    <ClInclude Include="..\Public\DanjinJar.h" />
     <ClInclude Include="..\public\Dragonian_Claw_L.h" />
     <ClInclude Include="..\public\Dragonian_Claw_R.h" />
     <ClInclude Include="..\public\Dragonian_Sword.h" />
@@ -324,6 +325,9 @@
     <ClInclude Include="..\Public\IronGate_Part_L.h" />
     <ClInclude Include="..\Public\IronGate_Part_R.h" />
     <ClInclude Include="..\public\ItemInfo_RandomEffect.h" />
+    <ClInclude Include="..\Public\Jar_1st.h" />
+    <ClInclude Include="..\Public\Jar_2nd.h" />
+    <ClInclude Include="..\Public\Jar_3rd.h" />
     <ClInclude Include="..\public\Khazan_GSword.h" />
     <ClInclude Include="..\public\Khazan_GS_Animation.h" />
     <ClInclude Include="..\public\Khazan_GS_AnimationController.h" />
@@ -661,6 +665,7 @@
     <ClCompile Include="..\Private\Body_Phase2_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp" />
     <ClCompile Include="..\Private\Core_Viper.cpp" />
+    <ClCompile Include="..\Private\DanjinJar.cpp" />
     <ClCompile Include="..\private\Dragonian_Claw_L.cpp" />
     <ClCompile Include="..\private\Dragonian_Claw_R.cpp" />
     <ClCompile Include="..\private\Dragonian_Sword.cpp" />
@@ -762,6 +767,9 @@
     <ClCompile Include="..\Private\IronGate_Part_L.cpp" />
     <ClCompile Include="..\Private\IronGate_Part_R.cpp" />
     <ClCompile Include="..\private\ItemInfo_RandomEffect.cpp" />
+    <ClCompile Include="..\Private\Jar_1st.cpp" />
+    <ClCompile Include="..\Private\Jar_2nd.cpp" />
+    <ClCompile Include="..\Private\Jar_3rd.cpp" />
     <ClCompile Include="..\private\Khazan_GSword.cpp" />
     <ClCompile Include="..\private\Khazan_GS_Animation.cpp" />
     <ClCompile Include="..\private\Khazan_GS_AnimationController.cpp" />

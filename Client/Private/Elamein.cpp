@@ -125,6 +125,26 @@ void CElamein::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject
     }
 }
 
+const TRAIL_CONFIG& CElamein::Get_TrailConfig() const
+{
+    return m_pMeshTrail->Get_TrailConfig();
+}
+
+void CElamein::Set_TrailConfig(const TRAIL_CONFIG& Config)
+{
+    m_pMeshTrail->Set_TrailConfig(Config);
+}
+
+_uint CElamein::Get_NumTrailTextures()
+{
+    return m_pMeshTrail->Get_NumTrailTextures();
+}
+
+ID3D11ShaderResourceView* CElamein::Get_TrailTexture(_uint iIndex)
+{
+    return m_pMeshTrail->Get_TrailTexture(iIndex);
+}
+
 void CElamein::Creature_Release()
 {
     m_isHit = false;
@@ -159,16 +179,14 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_AnimEvent(), E_FAIL);
     CHECK_FAILED(Ready_Components(), E_FAIL);
 
-
-    CMeshTrail::TRAIL_DESC MeshDsc;
-    MeshDsc.iTextureIdx = 9;
-    MeshDsc.fLifeTime = .25f;
-    MeshDsc.iDivisionCount = 10.f;
-
-    m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
+    CMeshTrail::TRAIL_DESC MeshDesc{};
+    MeshDesc.iTextureIdx = 20;
+    MeshDesc.fLifeTime = 0.4f;
+    MeshDesc.iDivisionCount = 10.f;
+    MeshDesc.vColor = _float3(2.455f, 1.937f, 2.784f);
+    m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
     CUIObject::UIOBJECT_DESC Desc;
-
     Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
     Desc.vLocalPos = { 0.f, 0.f };
     Desc.vLocalSize = { 3.625f, 1.f };
@@ -203,28 +221,26 @@ void CElamein::Update(_float fTimeDelta)
     if (m_Data.fLong_AttackCool > 0.f)
         m_Data.fLong_AttackCool -= fTimeDelta;
 
+    _float4x4 LockOnMatrix{};
+    XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
+    m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
+
+    _float4x4 SwordMatrix = m_pSword->Get_CombindMat();
+    _vector vUp = { SwordMatrix._21, SwordMatrix._22, SwordMatrix._23 };
+    _vector vSwordPos = { SwordMatrix._41, SwordMatrix._42, SwordMatrix._43 };
+
+    _vector vSwordStart = vSwordPos + XMVector3Normalize(vUp) * 0.1f;
+    _vector vSwordEnd = vSwordPos + XMVector3Normalize(vUp) * 1.f;
+    XMStoreFloat4(&m_vSword_Start, XMVectorSetW(vSwordStart, 1.f));
+    XMStoreFloat4(&m_vSword_End, XMVectorSetW(vSwordEnd, 1.f));
+   
     m_pController->Update(this, fTimeDelta);
     __super::Update(fTimeDelta);
     Update_UIHp();
     Update_Body(fTimeDelta);
 
-
-    _float4x4 LockOnMatrix{};
-    XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
-    m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
-
-    _float4x4 m_vSwordMat = m_pSword->Get_CombindMat();
-    _vector m_vRot = { m_vSwordMat._21, m_vSwordMat._22, m_vSwordMat._23 };
-    _vector vSwordPos = { m_vSwordMat._41, m_vSwordMat._42, m_vSwordMat._43 };
-    _vector vSwordStart = vSwordPos - XMVector3Normalize(m_vRot) * 1.5f;
-    _vector vSwordEnd = vSwordPos + XMVector3Normalize(m_vRot) * 1.5f;
-    XMStoreFloat4(&m_vSword_Start, XMVectorSetW(vSwordStart, 1.f));
-    XMStoreFloat4(&m_vSword_End, XMVectorSetW(vSwordEnd, 1.f));
-
     m_pMeshTrail->Update(fTimeDelta);
-    m_pTalk->Update_UITransform(vSwordStart);
     m_pTalk->Update(fTimeDelta);
-    //Update_MeshTrail();
 }
 
 void CElamein::Late_Update(_float fTimeDelta)
@@ -414,9 +430,9 @@ HRESULT CElamein::Ready_AnimEvent()
     pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
     pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
     pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
-    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
-    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
-    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
     pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 65; });
     pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 66; });
     pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
@@ -424,17 +440,17 @@ HRESULT CElamein::Ready_AnimEvent()
     pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
     pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
     pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
-    pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
-    pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
-    pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); });
     pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 68; });
     pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 69; });
     pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
     pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
     pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
-    pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {LockOnLerp(m_fTimeDelta, 4.f); });
-    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
     pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 71; });
     pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
@@ -453,6 +469,7 @@ HRESULT CElamein::Ready_AnimEvent()
     pModel->Register_Event("JumpSmash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
     pModel->Register_Event("GuardCounter", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State = (_uint)ATTACK_BODY::SHILED | (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("GuardCounter", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
     pModel->Register_Event("GuardCounter", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
     pModel->Register_Event("Arranged_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
@@ -463,6 +480,12 @@ HRESULT CElamein::Ready_AnimEvent()
     pModel->Register_Event("Arranged_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
     pModel->Register_Event("Arranged_5_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
     pModel->Register_Event("Arranged_5_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+
+    pModel->Register_Event("Arranged_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
+    pModel->Register_Event("Arranged_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
+    pModel->Register_Event("Arranged_3_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
+    pModel->Register_Event("Arranged_5_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
+    pModel->Register_Event("Arranged_5_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
 
     pModel->Register_Event("Arranged_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 84; });
     pModel->Register_Event("Arranged_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 85; });
