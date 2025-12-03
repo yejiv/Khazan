@@ -138,6 +138,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_pCharVirCom->Set_Position(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
     }
 
+   
+
 
     return S_OK;
 }

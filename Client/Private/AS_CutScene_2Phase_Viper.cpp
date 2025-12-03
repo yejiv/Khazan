@@ -76,6 +76,8 @@ void CAS_CutScene_2Phase_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner,
                     ViperScene_PullOut(pViper);
                 else if (m_pGameInstance->Key_Down(DIK_2))
                     ViperScene_Walk(pViper);
+                else
+                    ViperScene_PullOut(pViper);
             }
             pModel->Play_Animation(fTimeDelta);
         }
