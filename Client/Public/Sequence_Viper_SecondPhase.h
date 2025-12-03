@@ -82,8 +82,6 @@ private:
     _bool m_isCameraSet14 = { false };
     _bool m_isCameraSet15 = { false };
 
-    queue<class CObelisk*> m_Obelisks;
-
     _bool   m_isSkip = { false };
     _bool   m_isSkipFadeOut = { false };
     _bool   m_isSkipCameraSet = { false };
@@ -91,6 +89,8 @@ private:
     _bool   m_isSkipKey = { false };
 
     _bool   m_isEnd = { false };
+
+    queue<class CObelisk*> m_Obelisks;
 
     class CGameInstance* m_pGameInstance = { nullptr };
     class CClientInstance* m_pClientInstance = { nullptr };
