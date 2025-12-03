@@ -89,9 +89,9 @@ private:
     PHASE                           m_ePhase = { PHASE::END };
 
     _float4x4*                      m_pThrowMatrix = {};
+    COLLISION_DESC                  m_tViperCollisionDesc = {};
 
-private: //임시!!! 발견하면 지워주세요 깜빡하고 못 지운 거
-    _uint                       tmpIdx;
+
 
 public:
     static CViper*                  Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

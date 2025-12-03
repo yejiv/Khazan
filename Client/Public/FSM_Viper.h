@@ -27,7 +27,6 @@ enum class VIPER_STATE_P1
     HIT,
     GROGGY,
     DODGE,
-    DEAD,
     CUTSCENE_START,
     CUTSCENE_PHASE2,
 
@@ -51,6 +50,8 @@ enum class VIPER_STATE_P1
     P2_SWINGROUND,
     P2_ROAR,
     P2_LOCKON,
+    P2_BERSERKERJUMP,
+    P2_DEAD,
     END,
 };
 

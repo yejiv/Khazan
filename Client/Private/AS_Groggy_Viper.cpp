@@ -7,6 +7,7 @@
 #include "Body_Viper.h"
 #include "ClientInstance.h"
 #include "Target_BrutalAttack.h"
+#include "Body_Phase2_Viper.h"
 
 CAS_Groggy_Viper::CAS_Groggy_Viper()
     :m_fGroggyTime{ 7.f }
@@ -18,98 +19,199 @@ void CAS_Groggy_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_fCurrentTime = 0.f;
 
     CViper* pViper = static_cast<CViper*>(pOwner);
-    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
 
+
+    if (CViper::PHASE::PHASE1 == pViper->Get_Phase())
+    {
+        CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+        pModel->Set_Animation(33);
+    }
+
+    else if (CViper::PHASE::PHASE2 == pViper->Get_Phase())
+    {
+        CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
+        pModel->Set_Animation(29);
+    }
+
+    m_eState = GROGGY::START;
 
     m_vBonePosition = pViper->Get_LockOnPosition();
 
-    m_eState = GROGGY::START;
-    pModel->Set_Animation(33);
+   
 
 }
 
 void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
     CViper* pViper = static_cast<CViper*>(pOwner);
-    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
 
-    switch (m_eState)
+    if (CViper::PHASE::PHASE1 == pViper->Get_Phase())
     {
-    case GROGGY::START:
-        if (pModel->Play_Animation(fTimeDelta))
+        CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+
+        switch (m_eState)
         {
-            m_eState = GROGGY::LOOP;
-            pModel->Set_Animation(32);
-            m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
-            if (nullptr == m_pBrutalAttack)
-                return;
-            Safe_AddRef(m_pBrutalAttack);
+        case GROGGY::START:
+            if (pModel->Play_Animation(fTimeDelta))
+            {
+                m_eState = GROGGY::LOOP;
+                pModel->Set_Animation(32);
+                m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+                if (nullptr == m_pBrutalAttack)
+                    return;
+                Safe_AddRef(m_pBrutalAttack);
 
-            m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_UI"), m_pBrutalAttack);
-            m_pBrutalAttack->Setting_BrutalAttack(m_vBonePosition, m_fGroggyTime);
-        }
-        break;
+                m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_UI"), m_pBrutalAttack);
+                m_pBrutalAttack->Setting_BrutalAttack(m_vBonePosition, m_fGroggyTime);
+            }
+            break;
 
-    case GROGGY::LOOP:
-        m_fCurrentTime += fTimeDelta;
-        pModel->Play_Animation(fTimeDelta);
+        case GROGGY::LOOP:
+            m_fCurrentTime += fTimeDelta;
+            pModel->Play_Animation(fTimeDelta);
 
 
-        if (m_fCurrentTime >= m_fGroggyTime)
-        {
-            m_eState = GROGGY::RECOVERY;
-            pModel->Set_Animation(31);
+            if (m_fCurrentTime >= m_fGroggyTime)
+            {
+                m_eState = GROGGY::RECOVERY;
+                pModel->Set_Animation(31);
 
-            if (m_isBrutalAttackSuccess)
+                if (m_isBrutalAttackSuccess)
+                {
+                    CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+                    HITREACTION eHitreaction =
+                        static_cast<HITREACTION>(pBB->Get_Value<_uint>(pViper->Get_Name(), "DamageType"));
+
+                    if (HITREACTION::GROGGY == eHitreaction)
+                    {
+                        m_pBrutalAttack->Off_BrutalAttack();
+                        Safe_Release(m_pBrutalAttack);
+                        m_isBrutalAttackSuccess = false;
+                    }
+                }
+            }
+
+            else
             {
                 CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
                 HITREACTION eHitreaction =
                     static_cast<HITREACTION>(pBB->Get_Value<_uint>(pViper->Get_Name(), "DamageType"));
-
-                if (HITREACTION::GROGGY == eHitreaction)
+                if (HITREACTION::BRUTAL_ATTACK == eHitreaction)
                 {
                     m_pBrutalAttack->Off_BrutalAttack();
-                    Safe_Release(m_pBrutalAttack);
                     m_isBrutalAttackSuccess = false;
+                    pModel->Set_Animation(24);
+                    pViper->Set_RequestRecoveryStamina(true);
                 }
             }
-        }
 
-        else
-        {
-            CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
-            HITREACTION eHitreaction =
-                static_cast<HITREACTION>(pBB->Get_Value<_uint>(pViper->Get_Name(), "DamageType"));
-            if (HITREACTION::BRUTAL_ATTACK == eHitreaction)
+            break;
+
+        case GROGGY::RECOVERY:
+            if (pModel->Play_Animation(fTimeDelta))
             {
-                m_pBrutalAttack->Off_BrutalAttack();
-                m_isBrutalAttackSuccess = false;
-                pModel->Set_Animation(24);
+                m_eState = GROGGY::END;
+                pModel->Set_Animation(42);
                 pViper->Set_RequestRecoveryStamina(true);
             }
+            break;
+
+        case GROGGY::END:
+            pViper->Recovery_Stamina(fTimeDelta * 10.f);
+
+            if (pModel->Play_Animation(fTimeDelta))
+            {
+                pViper->Set_RequestRecoveryStamina(false);
+                CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+                pBB->Set_Value<_bool>(pViper->Get_Name(), "isGroggyFinished", true);
+            }
+            break;
         }
+    }
 
-        break;
 
-    case GROGGY::RECOVERY:
-        if (pModel->Play_Animation(fTimeDelta))
+    else if (CViper::PHASE::PHASE2 == pViper->Get_Phase())
+    {
+        CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
+
+        switch (m_eState)
         {
-            m_eState = GROGGY::END;
-            pModel->Set_Animation(42);
-            pViper->Set_RequestRecoveryStamina(true);
-        }
-        break;
+        case GROGGY::START:
+            if (pModel->Play_Animation(fTimeDelta))
+            {
+                m_eState = GROGGY::LOOP;
+                pModel->Set_Animation(28);
+                m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+                if (nullptr == m_pBrutalAttack)
+                    return;
+                Safe_AddRef(m_pBrutalAttack);
 
-    case GROGGY::END:
-        pViper->Recovery_Stamina(fTimeDelta * 10.f);
+                m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_UI"), m_pBrutalAttack);
+                m_pBrutalAttack->Setting_BrutalAttack(m_vBonePosition, m_fGroggyTime);
+            }
+            break;
 
-        if (pModel->Play_Animation(fTimeDelta))
-        {
-            pViper->Set_RequestRecoveryStamina(false);
-            CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
-            pBB->Set_Value<_bool>(pViper->Get_Name(), "isGroggyFinished", true);
+        case GROGGY::LOOP:
+            m_fCurrentTime += fTimeDelta;
+            pModel->Play_Animation(fTimeDelta);
+
+
+            if (m_fCurrentTime >= m_fGroggyTime)
+            {
+                m_eState = GROGGY::RECOVERY;
+                pModel->Set_Animation(27);
+
+                if (m_isBrutalAttackSuccess)
+                {
+                    CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+                    HITREACTION eHitreaction =
+                        static_cast<HITREACTION>(pBB->Get_Value<_uint>(pViper->Get_Name(), "DamageType"));
+
+                    if (HITREACTION::GROGGY == eHitreaction)
+                    {
+                        m_pBrutalAttack->Off_BrutalAttack();
+                        Safe_Release(m_pBrutalAttack);
+                        m_isBrutalAttackSuccess = false;
+                    }
+                }
+            }
+
+            else
+            {
+                CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+                HITREACTION eHitreaction =
+                    static_cast<HITREACTION>(pBB->Get_Value<_uint>(pViper->Get_Name(), "DamageType"));
+                if (HITREACTION::BRUTAL_ATTACK == eHitreaction)
+                {
+                    m_pBrutalAttack->Off_BrutalAttack();
+                    m_isBrutalAttackSuccess = false;
+                    pModel->Set_Animation(5);
+                    pViper->Set_RequestRecoveryStamina(true);
+                }
+            }
+
+            break;
+
+        case GROGGY::RECOVERY:
+            if (pModel->Play_Animation(fTimeDelta))
+            {
+                m_eState = GROGGY::END;
+                pModel->Set_Animation(43);
+                pViper->Set_RequestRecoveryStamina(true);
+            }
+            break;
+
+        case GROGGY::END:
+            pViper->Recovery_Stamina(fTimeDelta * 10.f);
+
+            if (pModel->Play_Animation(fTimeDelta))
+            {
+                pViper->Set_RequestRecoveryStamina(false);
+                CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+                pBB->Set_Value<_bool>(pViper->Get_Name(), "isGroggyFinished", true);
+            }
+            break;
         }
-        break;
     }
 
 }
