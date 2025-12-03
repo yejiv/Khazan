@@ -105,12 +105,21 @@ HRESULT CSpear_Khazan_Spear::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    _float fEdgeIntensity = 0.3f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fShadeIntensity = 0.2f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
+
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-
-        /*if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_DIFFUSE, 0)
-            return E_FAIL;        */
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0);
 
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
@@ -251,13 +260,13 @@ HRESULT CSpear_Khazan_Spear::Ready_Components()
     MTDesc.pOwnerMasterModel = m_pModelCom;
     MTDesc.HasPartModels = false;
     MTDesc.Config.vLifeTime = { 0.f, 0.3f };
-    MTDesc.Config.vStartColor = { 1.f, 1.f, 1.f };
-    MTDesc.Config.vTargetColor = { 1.f, 1.f, 1.f };
+    MTDesc.Config.vStartColor = { 0.25f, 0.25f, 0.5f };
+    MTDesc.Config.vTargetColor = { 0.5f, 0.5f, 0.5f };
     MTDesc.Config.fRimPower = 2.f;
     MTDesc.Config.fRimIntensity = 1.f;
     MTDesc.Config.fEmissiveIntensity = 2.f;
     MTDesc.Config.isIndividualColor = true;
-    MTDesc.Config.fColorUpdateSpeed = 1000.f;
+    MTDesc.Config.fColorUpdateSpeed = 1500.f;
     MTDesc.Config.fInterval = 0.1f;
     MTDesc.Config.iMaxFrames = 10.f;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),

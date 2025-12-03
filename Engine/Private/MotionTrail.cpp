@@ -362,7 +362,20 @@ HRESULT CMotionTrail::Ready_CachedConfig()
         config.fColorUpdateSpeed = 1000.f;
         config.fInterval = 0.1f;
         config.iMaxFrames = 10.f;
-        m_CachedConfig.emplace( TEXT("MT_Common_WhiteDefault"), config );
+        m_CachedConfig.emplace(TEXT("MT_Common_WhiteDefault"), config);
+    }
+    {
+        config.vLifeTime = { 0.f, 0.3f };
+        config.vStartColor = { 0.25f, 0.25f, 0.5f };
+        config.vTargetColor = { 0.5f, 0.5f, 0.5f };
+        config.fRimPower = 2.f;
+        config.fRimIntensity = 1.f;
+        config.fEmissiveIntensity = 2.5f;
+        config.isIndividualColor = true;
+        config.fColorUpdateSpeed = 1500.f;
+        config.fInterval = 0.1f;
+        config.iMaxFrames = 10.f;
+        m_CachedConfig.emplace(TEXT("MT_Common_BlueGray"), config);
     }
     {
         config.vLifeTime = { 0.f, 0.3f };
@@ -405,8 +418,8 @@ HRESULT CMotionTrail::Ready_CachedConfig()
     }
     {
         config.vLifeTime = { 0.f, 0.3f };
-        config.vStartColor = { 1.f, 0.f, 0.f };
-        config.vTargetColor = { 1.f, 0.f, 0.f };
+        config.vStartColor = { 0.7f, 0.f, 0.f };
+        config.vTargetColor = { 0.5f, 0.f, 0.f };
         config.fRimPower = 2.f;
         config.fRimIntensity = 1.f;
         config.fEmissiveIntensity = 2.f;
