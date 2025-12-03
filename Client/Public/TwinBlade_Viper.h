@@ -86,7 +86,7 @@ private:
     _float4x4               m_RightMatrix = {};
     _float4x4               m_LeftMatrix = {};
 
-    // Ã¢ ³¯ Offset
+    // ì°½ ë‚  Offset
     _float4                 m_vRightTipPos = {};
     _float4                 m_vLeftTipPos = {};
     _float4                 m_vRightBladeStartPos = {};

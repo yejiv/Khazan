@@ -64,6 +64,7 @@ private:
 
 public:
     class CAS_CutScene_Start_Viper* Get_CutScene_Start_Viper();
+    class CAS_CutScene_2Phase_Viper* Get_Phase2_CutScene_Start_Viper();
 
 
 public:

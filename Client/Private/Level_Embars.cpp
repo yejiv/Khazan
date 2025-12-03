@@ -770,6 +770,35 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_NPC_Duimuk"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
+        case INTERACTIVE_TYPE::DANJINJAR:
+        {
+            CDanjinJar::DANJINJAR_INFO JarInfo = {};
+
+            CHECK_FALSE(ReadFile(hFile, &JarInfo.eJarType, sizeof(CDanjinJar::DANJINJAR_TYPE), &dwByte, nullptr), E_FAIL);
+
+            CHECK_FALSE(ReadFile(hFile, &JarInfo.StepPosition, sizeof(CDanjinJar::DANJINJAR_STEP), &dwByte, nullptr), E_FAIL);
+
+            ObjectDesc.pOtherDesc = &JarInfo;
+
+            _wstring strPrototypeTag = {};
+
+            switch (JarInfo.eJarType)
+            {
+            case CDanjinJar::DANJINJAR_TYPE::A:
+                strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_1st");
+                break;
+            case CDanjinJar::DANJINJAR_TYPE::B:
+                strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_2nd");
+                break;
+            case CDanjinJar::DANJINJAR_TYPE::C:
+                strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_3rd");
+                break;
+            }
+
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), strPrototypeTag, TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+
+            break;
+        }
         default:
             MSG_BOX(TEXT("잉 있으면 안되는디"));
             break;

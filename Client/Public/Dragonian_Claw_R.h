@@ -57,7 +57,6 @@ private:
     HRESULT                     Ready_Collision();
     HRESULT					    Bind_ShaderResources();
     HRESULT                     Bind_Dissolve();
-
 public:
     static CDragonian_Claw_R*    Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*        Clone(void* pArg) override;

@@ -29,6 +29,7 @@ private:
 	unordered_map<_uint, STATE_DATA>		m_StateData = {};
 	unordered_map<_uint, ANNOUNCE_TALK_DB>	m_Announce_Talk_Data = {};
 	unordered_map<_uint, SKILL_DB>			m_Skill_Data = {};
+    unordered_map<_uint, DANJINJAR_DB>	    m_Danginjar_Data = {};
     vector<_uint>                           m_ItemIndex;
 
 	
@@ -44,7 +45,7 @@ private:
 	HRESULT									Load_StateDB(const _tchar* pFilePath);
 	HRESULT									Load_Announce_TalkDB(const _tchar* pFilePath);
 	HRESULT									Load_Skill_DB(const _tchar* pFilePath);
-
+    HRESULT									Load_Danginjar_DB(const _tchar* pFilePath);
 
 public:
 	static CDB_Manager*						Create();
@@ -99,6 +100,13 @@ inline const SKILL_DB* CDB_Manager::Get_Data<SKILL_DB>(_uint iID) const
 {
 	auto Data = m_Skill_Data.find(iID);
 	return (Data != m_Skill_Data.end()) ? &Data->second : nullptr;
+}
+
+template <>
+inline const DANJINJAR_DB* CDB_Manager::Get_Data<DANJINJAR_DB>(_uint iID) const
+{
+    auto Data = m_Danginjar_Data.find(iID);
+    return (Data != m_Danginjar_Data.end()) ? &Data->second : nullptr;
 }
 
 //Table접근

@@ -63,6 +63,13 @@ CAS_CutScene_Start_Viper* CFSM_Viper::Get_CutScene_Start_Viper()
     return pCutScneState;
 }
 
+CAS_CutScene_2Phase_Viper* CFSM_Viper::Get_Phase2_CutScene_Start_Viper()
+{
+    CAS_CutScene_2Phase_Viper* pCutScneState = static_cast<CAS_CutScene_2Phase_Viper*>(m_States[ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2)]);
+
+    return pCutScneState;
+}
+
 HRESULT CFSM_Viper::Initialize(CGameObject* pOwner)
 {
 #pragma region PHASE1

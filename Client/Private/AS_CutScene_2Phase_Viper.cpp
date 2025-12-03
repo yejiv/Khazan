@@ -6,6 +6,7 @@
 #include "Body_Cinematic_Viper.h"
 #include "Body_Phase2_Viper.h"
 #include "GameInstance.h"
+#include "Core_Viper.h"
 
 CAS_CutScene_2Phase_Viper::CAS_CutScene_2Phase_Viper()
 {
@@ -101,6 +102,7 @@ void CAS_CutScene_2Phase_Viper::Change_CutSceneState(P2CUTSCENE_STATE eNextState
     {
     case Client::P2CUTSCENE_STATE::DOWN:
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::DOWN));
+        pViper->Get_Core()->Set_IsActive(false);
         pViper->Set_WeaponOff();
         pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
         break;

@@ -60,7 +60,7 @@ void CTwinBlade_R_Viper::Update(_float fTimeDelta)
 
     if (m_pOwner->Get_Controller()->Get_BlackBoard()->Get_Value<_bool>(m_pOwner->Get_Name(), "isP2LockOn"))
     {
-        // ∂Ùø¬ Offset
+        // ÎùΩÏò® Offset
         _matrix tempMat = XMMatrixRotationZ(XMConvertToRadians(180.0f)) * XMMatrixRotationX(XMConvertToRadians(60.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f));
         XMStoreFloat4x4(&m_matOffset, tempMat);
     }

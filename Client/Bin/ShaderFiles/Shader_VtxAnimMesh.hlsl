@@ -78,6 +78,7 @@ float g_fGreenIntensity = 1.f;
 
 // Imp
 float g_fDiffusePower = 1.f;
+float g_fBluePower = 1.f;
 
 struct VS_IN
 {
@@ -824,7 +825,8 @@ PS_OUT PS_MAIN_SHIELD_EMISSIVE(PS_IN In)
 
     if (vEmissive.g >= 0.95f)
     {
-        Out.vDiffuse.rgb = Out.vDiffuse.rgb + g_fEmissiveValue;    
+        float3 vColor = { 2.455f, 1.937f, 2.784f };
+        Out.vDiffuse.rgb = Out.vDiffuse.rgb + vColor * 0.3f * g_fEmissiveValue;
     }
     
     Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
@@ -941,6 +943,7 @@ PS_OUT PS_IMP(PS_IN In)
     Out.vDiffuse *= fShadeMask;
 
     // Diffuse 어두운 문제로 임의값 곱해주기 3~5
+    Out.vDiffuse.b *= g_fBluePower;
     Out.vDiffuse *= g_fDiffusePower;
     
     return Out;

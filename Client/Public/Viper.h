@@ -19,6 +19,7 @@ public:
     class CBody_Viper*              Get_Body() const { return m_pBody; }
     class CBody_Cinematic_Viper*    Get_Cinematic_Body() const { return m_pCinematicBody; }
     class CBody_Phase2_Viper*       Get_P2Body() const { return m_pPahse2Body; }
+    class CCore_Viper*              Get_Core() { return m_pCore; }
 
     virtual _float4*                Get_LockOnPosition();
     PHASE                           Get_Phase() const { return m_ePhase; }
@@ -33,6 +34,7 @@ public:
 
 
     class CAS_CutScene_Start_Viper*       Get_Viper_CutSceneState();
+    class CAS_CutScene_2Phase_Viper* Get_Phase2_Viper_CutSceneState();
     class CFSM_Viper*               Get_Viper_FSM();
 
 
@@ -55,6 +57,8 @@ public:
     void                            Grab_Check_Begin();
     void                            Grab_Check_End();
     void                            Set_ViperPosition(_fvector vPosition);
+
+    void Set_Teleport(_fvector vPos);
 
 private:
     HRESULT							Ready_Components();
@@ -86,7 +90,7 @@ private:
 
     _float4x4*                      m_pThrowMatrix = {};
 
-private: //ÀÓ½Ã!!! ¹ß°ßÇÏ¸é Áö¿öÁÖ¼¼¿ä ±ôºýÇÏ°í ¸ø Áö¿î °Å
+private: //ìž„ì‹œ!!! ë°œê²¬í•˜ë©´ ì§€ì›Œì£¼ì„¸ìš” ê¹œë¹¡í•˜ê³  ëª» ì§€ìš´ ê±°
     _uint                       tmpIdx;
 
 public:

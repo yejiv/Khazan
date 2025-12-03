@@ -352,6 +352,9 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Daphrona">
       <UniqueIdentifier>{69e4adcd-7547-413d-9956-b394b20dd7be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\15.DanjinJar">
+      <UniqueIdentifier>{03821a9a-b032-41d6-b429-91ed5adea00c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -669,6 +672,9 @@
     <ClInclude Include="..\Public\Duimuk_Part.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk\Part</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\DanjinJar.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\15.DanjinJar</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -980,6 +986,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Duimuk_Part.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Duimuk\Part</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DanjinJar.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\15.DanjinJar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

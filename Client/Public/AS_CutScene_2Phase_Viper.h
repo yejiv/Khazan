@@ -21,6 +21,7 @@ public:
 private:
     void                                Change_CutSceneState(P2CUTSCENE_STATE eNextState, class CModel* pModel, class CViper* pViper);
 
+public:
     void                                ViperScene_Down(class CViper* pViper);
     void                                ViperScene_PickUp(class CViper* pViper);
     void                                ViperScene_Injure(class CViper* pViper);

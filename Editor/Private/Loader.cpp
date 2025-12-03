@@ -367,6 +367,22 @@ HRESULT CLoader::Loading_For_Map_Level()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_NPC_Danjin001/C_NPC_Danjin001.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 항아리 요정
+
+    /* Prototype_Component_Model_NPC_DanjinJar_A */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_NPC_DanjinJar_A"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_M_DanjinJar/C_M_DanjinJar.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_NPC_DanjinJar_B */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_NPC_DanjinJar_B"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_M_DanjinJar_B/C_M_DanjinJar_B.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_NPC_DanjinJar_C */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_NPC_DanjinJar_C"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_M_DanjinJar_C/C_M_DanjinJar_C.dat")), E_FAIL);
+
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거 모델 원형 ( 야매? )
@@ -603,6 +619,12 @@ HRESULT CLoader::Loading_For_Map_Level()
     /* Prototype_GameObject_Prop_NPC_Danjin */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Danjin"),
         CNPC_Danjin::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 항아리 요정
+    /* Prototype_GameObject_Prop_DanjinJar */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DanjinJar"),
+        CDanjinJar::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion

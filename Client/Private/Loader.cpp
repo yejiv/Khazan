@@ -1601,6 +1601,20 @@ HRESULT CLoader::Loading_For_Embars_Model()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_I_Duimuk_Abacus/C_I_Duimuk_Abacus.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 항아리 요정
+    /* Prototype_Component_Model_NPC_DanjinJar_A */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_NPC_DanjinJar_A"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_M_DanjinJar/C_M_DanjinJar.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_NPC_DanjinJar_B */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_NPC_DanjinJar_B"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_M_DanjinJar_B/C_M_DanjinJar_B.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_NPC_DanjinJar_C */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_NPC_DanjinJar_C"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_M_DanjinJar_C/C_M_DanjinJar_C.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거
@@ -1852,6 +1866,20 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     /* Prototype_GameObject_Prop_NPC_Duimuk_Part */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Duimuk_Part"),
         CDuimuk_Part::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 항아리 요정
+    /* Prototype_GameObject_Prop_NPC_Jar_1st */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_1st"),
+        CJar_1st::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Jar_2nd */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_2nd"),
+        CJar_2nd::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Jar_3rd */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_3rd"),
+        CJar_3rd::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion
@@ -2195,8 +2223,8 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 
 #pragma region ���� ������Ʈ ���� : Ʈ����
 	/* Prototype_GameObject_Prop_Trigger */
-	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_HeinMach_Trigger"),
-		CHeinMach_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
+	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Prop_Viper_Trigger"),
+		CViper_Trigger::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma region Khazan

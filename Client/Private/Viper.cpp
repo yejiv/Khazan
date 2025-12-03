@@ -14,6 +14,7 @@
 #include "AS_CutScene_Start_Viper.h"
 #include "FSM_Viper.h"
 #include "Projectile_Rock_Viper.h"
+#include "AS_CutScene_2Phase_Viper.h"
 
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -78,6 +79,13 @@ CAS_CutScene_Start_Viper* CViper::Get_Viper_CutSceneState()
     return pCutSceneState;
 }
 
+CAS_CutScene_2Phase_Viper* CViper::Get_Phase2_Viper_CutSceneState()
+{
+    CFSM_Viper* pFSM = static_cast<CFSM_Viper*>(m_pController->Get_State_Machine());
+    CAS_CutScene_2Phase_Viper* pCutSceneState = pFSM->Get_Phase2_CutScene_Start_Viper();
+    return pCutSceneState;
+}
+
 CFSM_Viper* CViper::Get_Viper_FSM()
 {
     CFSM_Viper* pFSM = static_cast<CFSM_Viper*>(m_pController->Get_State_Machine());
@@ -118,7 +126,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
     }
 
-    m_ePhase = PHASE::PHASE2;
+    m_ePhase = PHASE::PHASE1;
 
  
     m_fRecoveryPerSec = 5.f;
@@ -194,7 +202,7 @@ void CViper::Update(_float fTimeDelta)
         else if (m_pGameInstance->Key_Down(DIK_I))
         {
             m_ePhase = PHASE::PHASE2;
-            Set_PhaseWeapon_Phase2();
+            //Set_PhaseWeapon_Phase2();
 
         }
 
@@ -532,6 +540,11 @@ void CViper::Set_ViperPosition(_fvector vPosition)
     m_pTransformCom->Set_State(STATE::POSITION, vPosition);
     m_pCharVirCom->Set_Position(vPosition);
     m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 0.f));
+}
+
+void CViper::Set_Teleport(_fvector vPos)
+{
+    m_pCharVirCom->Teleport(vPos, m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
 }
 
 
