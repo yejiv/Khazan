@@ -44,6 +44,10 @@ HRESULT CBody_Elamein::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_pModelCom->Set_OwnerTransform(&m_CombinedWorldMatrix);
+
+    _float4x4 PreTransformMatrix;
+    XMStoreFloat4x4(&PreTransformMatrix, XMMatrixScaling(0.00012, 0.00012, 0.00012) * XMMatrixRotationY(XMConvertToRadians(180.0f)));
+    m_pModelCom->Set_PreTransformMatrix(PreTransformMatrix);
     return S_OK;
 }
 
