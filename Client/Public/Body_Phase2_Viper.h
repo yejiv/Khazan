@@ -54,7 +54,7 @@ private:
     HRESULT					Ready_Components();
     HRESULT					Bind_ShaderResources();
     void					Carculate_Matrix(_float fTimeDelta);
-    void                    Carculate_BakckMatrix(_float fTimeDelta);
+    //void                    Carculate_BakckMatrix(_float fTimeDelta);
 
 private:
     HRESULT					Ready_Colliders();
@@ -66,6 +66,7 @@ private:
     CShader*                m_pShaderCom = { nullptr };
     CModel*                 m_pModelCom = { nullptr };
     CTransform*             m_pOwnerTransform = { nullptr };
+    CBody*                  m_pLeftHandBody = { nullptr };
 
 private:
     _float3					m_vThrowPoint = {};
@@ -73,7 +74,7 @@ private:
     _float4x4               m_LeftHandMatrix = {};
 private:
     _bool					m_isOnAttackCollision = { false };
-
+    COLLISION_DESC          m_tPhase2CollisionDesc = {};
 public:
     static CBody_Phase2_Viper*  Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CGameObject*        Clone(void* pArg) override;

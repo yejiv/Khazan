@@ -93,8 +93,8 @@ HRESULT CBody_Phase2_Viper::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    /* if (FAILED(Ready_Colliders()))
-         return E_FAIL;*/
+     if (FAILED(Ready_Colliders()))
+         return E_FAIL;
 
     _matrix PreTransformMatrix = XMMatrixIdentity();
     PreTransformMatrix = XMMatrixScaling(0.00013f, 0.00013f, 0.00013f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
@@ -113,8 +113,23 @@ void CBody_Phase2_Viper::Priority_Update(_float fTimeDelta)
 
 void CBody_Phase2_Viper::Update(_float fTimeDelta)
 {
+
+    m_isOnAttackCollision = true;
+
     if (CViper::PHASE::PHASE2 == m_pOwner->Get_Phase())
     {
+        if (m_isOnAttackCollision)
+        {
+            m_pLeftHandBody->Collision_Active(true);
+            Carculate_Matrix(fTimeDelta);
+
+        }
+        else
+        {
+            m_pLeftHandBody->Collision_Active(false);
+        }
+
+
         Update_CombinedMatrix();
     }
 
@@ -232,27 +247,16 @@ HRESULT CBody_Phase2_Viper::Bind_ShaderResources()
 void CBody_Phase2_Viper::Carculate_Matrix(_float fTimeDelta)
 {
 
-    //_float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
-    //XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
-    //_vector vOutQuat, vOutPos;
-    //m_pRH_BodyCom->Sync_Update(XMLoadFloat4x4(&m_RightHandMatrix));
-    //m_pRH_BodyCom->Update(fTimeDelta, XMLoadFloat4x4(&m_RightHandMatrix), vOutQuat, vOutPos);
+    _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-L-Finger2");
+    _vector vOutQuat, vOutPos;
+    XMStoreFloat4x4(&m_LeftHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
+    m_pLeftHandBody->Sync_Update(XMLoadFloat4x4(&m_LeftHandMatrix));
+    m_pLeftHandBody->Update(fTimeDelta, XMLoadFloat4x4(&m_LeftHandMatrix), vOutQuat, vOutPos);
 
-    //m_RightHandMatrix._41 = vOutPos.m128_f32[0];
-    //m_RightHandMatrix._42 = vOutPos.m128_f32[1];
-    //m_RightHandMatrix._43 = vOutPos.m128_f32[2];
-    //m_RightHandMatrix._44 = 1.f;
-
-
-    //BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_L");
-    //XMStoreFloat4x4(&m_LeftHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
-    //m_pLH_BodyCom->Sync_Update(XMLoadFloat4x4(&m_LeftHandMatrix));
-    //m_pLH_BodyCom->Update(fTimeDelta, XMLoadFloat4x4(&m_LeftHandMatrix), vOutQuat, vOutPos);
-
-    //m_LeftHandMatrix._41 = vOutPos.m128_f32[0];
-    //m_LeftHandMatrix._42 = vOutPos.m128_f32[1];
-    //m_LeftHandMatrix._43 = vOutPos.m128_f32[2];
-    //m_LeftHandMatrix._44 = vOutPos.m128_f32[3];
+    m_LeftHandMatrix._41 = vOutPos.m128_f32[0];
+    m_LeftHandMatrix._42 = vOutPos.m128_f32[1];
+    m_LeftHandMatrix._43 = vOutPos.m128_f32[2];
+    m_LeftHandMatrix._44 = vOutPos.m128_f32[3];
 
 
 }
@@ -260,26 +264,29 @@ void CBody_Phase2_Viper::Carculate_Matrix(_float fTimeDelta)
 
 HRESULT CBody_Phase2_Viper::Ready_Colliders()
 {
-    /* CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
+     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
-     BodyDesc.fRadius = 2.f;
+     BodyDesc.fRadius = 1.5f;
      BodyDesc.eMotion = EMotionType::Kinematic;
      BodyDesc.eQuality = EMotionQuality::Discrete;
      BodyDesc.eShapeType = SHAPE::SPHERE;
      BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Weapon_R");
-     XMStoreFloat4x4(&m_RightHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
+     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix("Bip001-L-Finger2");
+     XMStoreFloat4x4(&m_LeftHandMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
      _vector vScale, vQuat, vTrans;
-     XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_RightHandMatrix));
+     XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_LeftHandMatrix));
      BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
      BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
      BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-     m_tCollisionDesc.pGameObject = this;
-     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+     m_tPhase2CollisionDesc.pGameObject = this;
+     m_tPhase2CollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+     m_tPhase2CollisionDesc.strName = TEXT("Phase2LeftHand");
+
+     BodyDesc.pCollisionDesc = &m_tPhase2CollisionDesc;
      BodyDesc.bIsTrigger = true;
      if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-         TEXT("Com_Body_RH"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
-         return E_FAIL;*/
+         TEXT("Com_Body_LH"), reinterpret_cast<CComponent**>(&m_pLeftHandBody), &BodyDesc)))
+         return E_FAIL;
 
     return S_OK;
 }
@@ -314,6 +321,7 @@ void CBody_Phase2_Viper::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
+    Safe_Release(m_pLeftHandBody);
 
     __super::Free();
 

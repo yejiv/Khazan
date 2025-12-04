@@ -1447,6 +1447,12 @@
     <Filter Include="92.AI\State\Halberd\Trun">
       <UniqueIdentifier>{49a7cbdb-5ec0-400d-88f3-d0291504abb0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\20.Dead">
+      <UniqueIdentifier>{2e896ed2-eb24-4a20-b7ac-6d943906e184}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\21.BerserkerJump">
+      <UniqueIdentifier>{802c0476-eaa3-4985-985e-67355fc54671}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2799,6 +2805,12 @@
     <ClInclude Include="..\Public\AS_Halberd_LockOn.h">
       <Filter>92.AI\State\Halberd\LockOn</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_Dead_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\20.Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_BerserkerJump_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\21.BerserkerJump</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4130,6 +4142,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Halberd_LockOn.cpp">
       <Filter>92.AI\State\Halberd\LockOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_Dead_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\20.Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_BerserkerJump_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\21.BerserkerJump</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
