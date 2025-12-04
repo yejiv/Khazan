@@ -2775,8 +2775,6 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         }
         case INTERACTIVE_TYPE::STATUE:
         {
-			isDone = false;
-			if (m_pBody->Get_Model()->IsFinished())  isDone = true;
 			break;
         }
         case INTERACTIVE_TYPE::IRONGATE:
