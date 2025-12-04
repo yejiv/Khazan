@@ -68,6 +68,7 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
     if (m_fCurrentHP <= 0.f)
     {
         m_pController->AI_Terminate_All();
+        m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isDead", true);
     }
     
     CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));

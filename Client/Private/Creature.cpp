@@ -82,7 +82,8 @@ HRESULT CCreature::Render()
 
 void CCreature::Creature_Release()
 {
-    m_pCharVirCom->Fake_Release();
+    //m_pCharVirCom->Fake_Release();
+    m_isGhost = true;
     m_isDead = true;
     m_isActive = false;
 }

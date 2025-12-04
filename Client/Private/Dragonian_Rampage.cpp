@@ -13,6 +13,7 @@
 #include "Mon_Hp.h"
 #include "MeshTrail.h"
 
+#include "Target_BrutalAttack.h"
 CDragonian_Rampage::CDragonian_Rampage(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
 {
@@ -86,6 +87,23 @@ TARGET_DIR CDragonian_Rampage::Get_DIR()
     return Check_Dir(m_pTransformCom->Get_WorldMatrix(), m_pTarget->Get_Transform()->Get_State(STATE::POSITION));
 }
 
+void CDragonian_Rampage::BurutalUI_On(_float fTime)
+{
+    m_pBrutalAttack = nullptr;
+    m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+    m_pBrutalAttack->Setting_BrutalAttack(m_vLockOnPosition, fTime);
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
+}
+
+void CDragonian_Rampage::BurutalUI_Off()
+{
+    if (m_pBrutalAttack == nullptr)
+        return;
+
+    m_pBrutalAttack->Off_BrutalAttack();
+    m_pBrutalAttack = nullptr;
+}
+
 void CDragonian_Rampage::Creature_Release()
 {
     m_pHitBodyCom->Collision_Active(false);
@@ -125,9 +143,11 @@ HRESULT CDragonian_Rampage::Initialize_Clone(void* pArg)
         MeshDesc.iTextureIdx = 2;
         MeshDesc.fLifeTime = 0.6f;
         MeshDesc.iDivisionCount = 10.f;
-        MeshDesc.vColor = _float3(2.176f, 1.824f, 1.176f);
+        MeshDesc.vColor = _float4(2.176f, 1.824f, 1.176f, 1.f);
         m_pMeshTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
     }
+
+    m_fRecoveryPerSec = 10.f;
 
     return S_OK;
 }
@@ -143,6 +163,14 @@ void CDragonian_Rampage::Priority_Update(_float fTimeDelta)
 
     for (auto& pMeshTrail : m_pMeshTrail)
         pMeshTrail->Priority_Update(fTimeDelta);
+
+    m_isRequestRecoveryStamina = m_Data.isStamina_Regen;
+    if (m_Data.isStamina_Regen)
+    {
+        Recovery_Stamina(fTimeDelta * 12.f);
+        if (m_fCurrentStamina == m_fMaxStamina)
+            m_Data.isStamina_Regen = false;
+    }
 }
 
 void CDragonian_Rampage::Update(_float fTimeDelta)
@@ -613,10 +641,12 @@ void CDragonian_Rampage::Free()
     for (_uint i = 0; i < ENUM_CLASS(CLAW::END); ++i)
         Safe_Release(m_pMeshTrail[i]);
     
+    if (m_pBrutalAttack != nullptr)
+        m_pBrutalAttack->Off_BrutalAttack();
+
     if (m_pUI_HP != nullptr)
-    {
         m_pUI_HP->Set_IsDead(true);
-    }
+
     __super::Free();
     Safe_Release(m_pBody);
     Safe_Release(m_pBlackBoard);

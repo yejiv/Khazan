@@ -15,6 +15,8 @@ void CAS_Dr_Melee_Groggy::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     m_pMonData->iAnimIndex = 26;
     m_eState = START;
+    m_pMonData->fGloggyTime = 5.f;
+    m_pMonData->pOwner->BurutalUI_On(m_pMonData->fGloggyTime);
 }
 
 void CAS_Dr_Melee_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -35,6 +37,9 @@ void CAS_Dr_Melee_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
         {
             m_eState = STAMIN;
             m_pMonData->iAnimIndex = 48;
+            m_pMonData->pOwner->BurutalUI_Off();
+            m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isGroggy", false);
+
         }
     }
     else if (m_eState == STAMIN)
@@ -43,22 +48,23 @@ void CAS_Dr_Melee_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
         {
             m_eState = END;
             m_pMonData->iAnimIndex = 33;
+
         }
     }
     else
     {
         if (m_pMonData->isAnimFinash)
         {
-            *m_pMonData->pCulStamina = *m_pMonData->pMaxStamina;
+            m_pMonData->isStamina_Regen = true;
+            m_pMonData->eHitType = HITREACTION::END;
         }
     }
 }
 
 void CAS_Dr_Melee_Groggy::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+    m_pMonData->pOwner->BurutalUI_Off();
     m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isGroggy", false);
-
-    m_pMonData->fGloggyTime = 10.f;
 }
 
 CAS_Dr_Melee_Groggy* CAS_Dr_Melee_Groggy::Create()
