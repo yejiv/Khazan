@@ -62,7 +62,7 @@ void CBigChest::Update(_float fTimeDelta)
     {
         // 열고 닫기
         m_pModelCom->Set_Animation(m_eAnimState);
-        m_pModelCom->Set_AnimationLoop(false);
+        m_pModelCom->AnimationLoop(false);
     }
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
