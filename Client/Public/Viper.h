@@ -23,19 +23,23 @@ public:
 
     virtual _float4*                Get_LockOnPosition();
     PHASE                           Get_Phase() const { return m_ePhase; }
+    _vector                         Get_CutSceneLook() const { return XMLoadFloat3(&m_vCutSceneLook); }
 
     void                            Set_Phase(PHASE ePhase);
     void                            Set_Weapon_Phase1();
     void                            Set_PhaseWeapon_Cinematic();
     void                            Set_PhaseWeapon_Phase2();
     void                            Set_WeaponOff();
+    void                            Set_CutSceneLook(_float3 vLook) { m_vCutSceneLook = vLook; }
     void                            Viper_Land(_fvector vGoalPosition, _float fSpeed);
     void                            Reset_Viper_Gravity();
+    
 
 
-    class CAS_CutScene_Start_Viper*       Get_Viper_CutSceneState();
-    class CAS_CutScene_2Phase_Viper* Get_Phase2_Viper_CutSceneState();
-    class CFSM_Viper*               Get_Viper_FSM();
+
+    class CAS_CutScene_Start_Viper*         Get_Viper_CutSceneState();
+    class CAS_CutScene_2Phase_Viper*        Get_Phase2_Viper_CutSceneState();
+    class CFSM_Viper*                       Get_Viper_FSM();
 
 
 public:
@@ -57,6 +61,7 @@ public:
     void                            Grab_Check_Begin();
     void                            Grab_Check_End();
     void                            Set_ViperPosition(_fvector vPosition);
+    
 
     void Set_Teleport(_fvector vPos);
 
@@ -93,9 +98,12 @@ private:
 
     _float4x4*                      m_pThrowMatrix = {};
     COLLISION_DESC                  m_tViperCollisionDesc = {};
+    _float3                         m_vCutSceneLook = {};
+
 
 private:
     _uint                           m_iRotFX_Idx;
+    _uint                           tmpIdx;
 
 public:
     static CViper*                  Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

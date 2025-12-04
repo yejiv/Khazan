@@ -111,7 +111,28 @@ void CTwinBlade_R_Viper::Update(_float fTimeDelta)
         }
     }
 
-   
+    _float4x4 vSwordMat = m_CombinedWorldMatrix;
+
+    // 성은아
+    // 집좀 가라 좀..
+    // 언제까지 사우나 갈거니..
+    // 짐좀 가라...
+    // 가라 좀...
+    // 아아라라라라라라라라라라라라라ㅏㄹ라라라라라라라라라라ㅏ랄
+    // 권 : 권성은 
+    // 성 : 성은아
+    // 은 : 은제 집갈거니 도대체..
+    ////////////////////////////////////////////////////////////
+    // 권 : 권투하는
+    // 성 : 성은이는
+    // 은 : 은갈치
+    _vector m_vRot = { vSwordMat._21, vSwordMat._22, vSwordMat._23 };
+    _vector m_vRight = { vSwordMat._11,vSwordMat._12,vSwordMat._13 };
+    _vector vSwordPos = { vSwordMat._41, vSwordMat._42, vSwordMat._43 };
+    _vector vSwordStart = vSwordPos + XMVector3Normalize(m_vRot) * -0.7f + XMVector3Normalize(m_vRight) * -0.3f;
+    _vector vSwordEnd = vSwordPos + XMVector3Normalize(m_vRot) * 2.f + XMVector3Normalize(m_vRight) * 0.3f;
+    XMStoreFloat4(&m_vBladeStatrtPos, XMVectorSetW(vSwordStart, 1.f));
+    XMStoreFloat4(&m_vBladeTipPos, XMVectorSetW(vSwordEnd, 1.f));
 
 }
 

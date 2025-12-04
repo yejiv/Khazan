@@ -140,9 +140,6 @@ HRESULT CViper::Initialize_Clone(void* pArg)
 
     m_ePhase = PHASE::PHASE1;
 
-    //m_ePhase = PHASE::PHASE2;
-
- 
     m_fRecoveryPerSec = 5.f;
 
     if (m_ePhase == PHASE::PHASE2)
@@ -255,15 +252,15 @@ void CViper::Update(_float fTimeDelta)
         m_vLockOnPosition = m_pPahse2Body->Get_BonePointEX("Bip001-Spine2");
 
 
-   /* if (m_pGameInstance->Key_Down(DIK_P))
+   if (m_pGameInstance->Key_Down(DIK_P))
     {
-        _float4 vPos = m_pWeapon->Get_RightSwordTip();
+        _float4 vPos = m_pP2Weapon->Get_BladeStartTipPos();
         tmpIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), XMLoadFloat4(&vPos));
     }
     if (m_pGameInstance->Key_Down(DIK_O))
     {
         m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), tmpIdx);
-    }*/
+    }
 }
 
 void CViper::Late_Update(_float fTimeDelta)

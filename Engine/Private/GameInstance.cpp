@@ -1412,9 +1412,9 @@ void CGameInstance::Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG Co
 #pragma endregion
 
 #pragma region SEQUENCE_MANAGER
-HRESULT CGameInstance::SEQ_AdoptAndPlay(ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc)
+HRESULT CGameInstance::SEQ_AdoptAndPlay(ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc, _bool isInit)
 {
-	return m_pSequence_Manager->AdoptAndPlay(pSeq, tDesc);
+	return m_pSequence_Manager->AdoptAndPlay(pSeq, tDesc, isInit);
 }
 
 void CGameInstance::SEQ_EnqueueAdopt(ISeqInstance* pSeq, const SEQ_REQ_PLAY_DESC& tDesc)

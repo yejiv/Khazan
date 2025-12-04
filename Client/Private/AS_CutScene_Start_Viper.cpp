@@ -16,6 +16,10 @@ void CAS_CutScene_Start_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
     CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     pTransform->Rotation(0,XMConvertToRadians(180.f),0.f);
+    _vector vCutSceneLook = pTransform->Get_State(STATE::LOOK);
+    _float3 vTempLook = {};
+    XMStoreFloat3(&vTempLook, vCutSceneLook);
+    pViper->Set_CutSceneLook(vTempLook);
     m_fTimeHelper = 0.09f;
     pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::SIT));
     
