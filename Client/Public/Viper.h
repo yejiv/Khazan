@@ -24,7 +24,7 @@ public:
     virtual _float4*                Get_LockOnPosition();
     PHASE                           Get_Phase() const { return m_ePhase; }
 
-    void                            Set_Phase(PHASE ePhase)  { m_ePhase = ePhase; }
+    void                            Set_Phase(PHASE ePhase);
     void                            Set_Weapon_Phase1();
     void                            Set_PhaseWeapon_Cinematic();
     void                            Set_PhaseWeapon_Phase2();

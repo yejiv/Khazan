@@ -32,6 +32,15 @@ _float4* CViper::Get_LockOnPosition()
     return m_vLockOnPosition;
 }
 
+void CViper::Set_Phase(PHASE ePhase)
+{
+    m_ePhase = ePhase;
+    if (m_ePhase == PHASE::PHASE2)
+    {
+        dynamic_cast<CFSM_Viper*>(dynamic_cast<CAI_Controller_Viper*>(m_pController)->Get_State_Machine())->Get_Phase2_CutScene_Start_Viper()->ViperScene_PullOut(this);
+    }
+}
+
 void CViper::Set_Weapon_Phase1()
 {
     m_pWeapon->Set_IsActive(true);
@@ -138,6 +147,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_pCharVirCom->Set_Position(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
     }
 
+   
+
 
     return S_OK;
 }
@@ -164,6 +175,11 @@ void CViper::Priority_Update(_float fTimeDelta)
 
 void CViper::Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
+    {
+        m_isGhost = true;
+    }
+
     m_pController->Update(this, fTimeDelta);
 
     if (m_fCurrentHP >= 0.f)
