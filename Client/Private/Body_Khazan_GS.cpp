@@ -89,6 +89,12 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
         fTimeDeltaAdjsut *= 2.f;
     m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDeltaAdjsut);
 
+    for (auto pPart : m_RenderParts)
+    {
+        if (pPart)
+            pPart->Reset_PartLocalBonesFlag();
+    }
+
     Update_CombinedMatrix();
 
     Update_Colliders(fTimeDelta);
@@ -108,6 +114,19 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     m_pMotionTrailCom->Update(fTimeDelta);
     if(m_isActiveMotionTrail)
        m_pMotionTrailCom->Start_MotionTrail(fTimeDelta);
+
+    /* 모션트레일중 다른 애니메이션이 나올 시 끄기  */
+    if (m_isEnableAnimEvent && m_iCurAnimEventIndex != m_pModelCom->Get_CurAnimIndex())
+    {
+        m_isEnableAnimEvent = false;
+        Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), false);
+    }
+    
+    if (m_isEableGiantHuntEvent && m_iCurAnimEventIndex != m_pModelCom->Get_CurAnimIndex())
+    {
+        m_isEableGiantHuntEvent = false;
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), m_iFXIdx_Spining);
+    }
 
     //  FX_Trail();
 
@@ -288,7 +307,8 @@ void CBody_Khazan_GS::Render_Part(CModel* pModel)
     if (nullptr == pModel)
         return;
 
-    pModel->Update_PartLocalBones();
+    pModel->Update_PartLocalBones_Once();
+    //pModel->Update_PartLocalBones();
 
     _uint iNumMeshes = pModel->Get_NumMeshes();
 
@@ -347,7 +367,8 @@ void CBody_Khazan_GS::Render_Part_MotionVector(CModel* pModel)
     if (nullptr == pModel)
         return;
 
-    pModel->Update_PartLocalBones();
+    pModel->Update_PartLocalBones_Once();
+    //pModel->Update_PartLocalBones();
 
     _uint iNumMeshes = pModel->Get_NumMeshes();
 
@@ -564,6 +585,7 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
 
 _bool CBody_Khazan_GS::Check_BrutalAttack(_float fTimeDelta)
 {
+
     /* 범위 내에 브루탈 가능 개체가 없으면  */
     if (!Has_Status(CKhazan_GSword::BRUTAL_BEGIN)) {
         return false;
@@ -1157,6 +1179,8 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger1"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);  
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("particle"), m_pParentTransform->Get_State(STATE::POSITION));
         Start_DefaultDistortion();
+        m_isEableGiantHuntEvent = true;
+        m_iCurAnimEventIndex = m_pModelCom->Get_CurAnimIndex();
         });
 
     m_pModelCom->Register_Event("GS_Soulbringer_Land_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
@@ -1172,6 +1196,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
         // 이미시브 데칼
         Spawn_EmissiveDecal(false);
+        m_isEableGiantHuntEvent = false;
         });
 
     m_pModelCom->Register_Event("GS_AsheFork_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -1325,8 +1350,8 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("AsheFork_Atk_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         // 모션 트레일 시작
         Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), true);
-        m_isEnableMotionTrail = true;
-        m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
+        m_isEnableAnimEvent = true;
+        m_iCurAnimEventIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("AsheFork_Atk_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         // 모션 트레일 끝
@@ -1335,15 +1360,15 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         Start_DefaultVignette();
         // 레디얼 블러
         Start_LongRadialBlur();
-        m_isEnableMotionTrail = false;
+        m_isEnableAnimEvent = false;
         });
 
     // 귀신 : 어둠의 그림자
     m_pModelCom->Register_Event("GhostLiberation_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         // 모션 트레일 시작
         Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), true);
-        m_isEnableMotionTrail = true;
-        m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
+        m_isEnableAnimEvent = true;
+        m_iCurAnimEventIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("GhostLiberation_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         // 모션 트레일 끝
@@ -1352,7 +1377,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         Start_DefaultVignette();
         // 레디얼 블러
         Start_LongRadialBlur();
-        m_isEnableMotionTrail = false;
+        m_isEnableAnimEvent = false;
         });
 
     // 정면 돌파
@@ -1369,37 +1394,37 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         });
 
     // 전투의 굴레
-    m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), true);
-        Start_LongRadialBlur();
-        Start_DefaultVignette();
-        });
-    m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), false);
-        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.7f, 1.5f);
-        });
+    //m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    //    Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), true);
+    //    Start_LongRadialBlur();
+    //    Start_DefaultVignette();
+    //    });
+    //m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+    //    Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), false);
+    //    CClientInstance::GetInstance()->ActiveCamera_Shaking(0.7f, 1.5f);
+    //    });
 
 
     // 닷지
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
-        m_isEnableMotionTrail = true;
-        m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
+        m_isEnableAnimEvent = true;
+        m_iCurAnimEventIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
-        m_isEnableMotionTrail = false;
+        m_isEnableAnimEvent = false;
         });
 
     // 닷지 어택
     m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
-        m_isEnableMotionTrail = true;
-        m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
+        m_isEnableAnimEvent = true;
+        m_iCurAnimEventIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
-        m_isEnableMotionTrail = false;
+        m_isEnableAnimEvent = false;
         });
 #pragma endregion
 
@@ -1412,6 +1437,10 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
 
     m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_BodyAttack->Collision_Active(true); m_isNotifyAttacking = true; });
   //  m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()  { m_pBodyCom_BodyAttack->Collision_Active(false); });
+
+    m_pModelCom->Register_Event("AttackCollisionOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        m_pBodyCom_Attack->Collision_Active(false); 
+        });
 
     m_pModelCom->Register_Event("HEAL1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
         m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;

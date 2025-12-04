@@ -138,7 +138,9 @@ public:
     const			vector<_float4x4>& Get_PartLocalBoneMatrices() const { return m_PartLocalBoneMatrices; }
     void            Build_PartToMasterMap();
     void			Update_PartLocalBones();
-    
+    void            Reset_PartLocalBonesFlag() { m_isPartLocalBonesUpdated = false; }
+    void            Update_PartLocalBones_Once();  // 프레임당 1회만 실행
+
 public: 
     /* 모든 뼈 정보 */
     const vector<_float4x4>& Get_CachedBoneMatrices() const { return m_CachedBoneMatrices; }
@@ -221,6 +223,7 @@ private:
     vector<_float4x4>					m_PartLocalBoneMatrices;  //파츠 로컬 본 행렬
     _bool								m_isMaterSkeleton = { false };
     _bool								m_isSharedSkeleton = { false };
+    _bool                               m_isPartLocalBonesUpdated = { false };
 
 	/* const val */
 	const _float					    m_fBaseRootMotionBlendTime = { 0.15f };   /* 만약 블랜딩 시간이 안써져있으면 사용할 기본 블랜딩 시간 */

@@ -3788,13 +3788,14 @@ void CKhazan_Spear::Free()
     Safe_Release(m_pCamera);
     Safe_Release(m_pBody);
     Safe_Release(m_pSpear);
+    Safe_Release(m_pLantern);
     Safe_Release(m_pAnimMove);
     Safe_Release(m_pAnimAttack);
     Safe_Release(m_pAnimGuard);
     Safe_Release(m_pAnimInteraction);
     Safe_Release(m_pAnimDamaged);
     Safe_Release(m_pAnimFall);
-    Safe_Release(m_pLantern);
+
      //Safe_Release(m_pASMachine);
     // Safe_Release(m_pASManager);
 }
