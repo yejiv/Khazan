@@ -18,10 +18,16 @@ public:
     virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
     virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
+public:
+    virtual void OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
+
+
+
 private:
     _float                              m_fSpeed = {};
     FAKERUNATTACKSTATE                  m_eState = { FAKERUNATTACKSTATE::END };
     _float                              m_fAnimSpeed = {};
+
 
 public:
     static CAS_P2_FakeRunAttack_Viper*  Create();

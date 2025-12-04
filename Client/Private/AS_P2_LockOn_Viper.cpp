@@ -100,6 +100,7 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     {
         pBB->Set_Value(pViper->Get_Name(), "isP2_LockOn_Finished", true);
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2LockOn", false);
+        pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE),pViper);
     }
     pModel->Play_Animation(fTimeDelta);
 
