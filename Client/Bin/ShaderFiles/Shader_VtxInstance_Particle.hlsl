@@ -196,6 +196,8 @@ PS_OUT PS_MAIN(PS_IN In)
     {
         float noise = g_DissolveTexture.Sample(PointSampler, fScrolledEffectUV).r;
         vFinalColor = Dissolve(fDecreaseAlpha, noise, g_EdgeWidth, g_EdgeColor, vFinalColor);
+        vFinalColor.a -= fDecreaseAlpha;
+
     }
     
     if (g_MaskScrollSpeed)
@@ -269,8 +271,10 @@ PS_NORMAL_OUT PS_NORMAL_MAIN(PS_NORMAL_IN In)
         discard;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    vector vSourColor = float4(g_vSourceColor.xyz, max(max(vMtrlDiffuse.r, vMtrlDiffuse.g), vMtrlDiffuse.b));
-    vector vFinalColor = vSourColor * vMtrlDiffuse;
+    //vector vSourColor = float4(g_vSourceColor.xyz, max(max(vMtrlDiffuse.r, vMtrlDiffuse.g), vMtrlDiffuse.b));
+    //vector vFinalColor = vSourColor * vMtrlDiffuse;
+    vector vFinalColor = g_vSourceColor;
+    vFinalColor.a *= vMtrlDiffuse.r;
     
     if (g_IsFresnel)
     {
@@ -284,7 +288,8 @@ PS_NORMAL_OUT PS_NORMAL_MAIN(PS_NORMAL_IN In)
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
      
-    Out.vDiffuse = vFinalColor * (g_vSourceColor.a + 1); 
+    //Out.vDiffuse = vFinalColor * (g_vSourceColor.a + 1); 
+    Out.vDiffuse = vFinalColor;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 1.f);
     Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     

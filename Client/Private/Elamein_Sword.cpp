@@ -31,6 +31,10 @@ HRESULT CElamein_Sword::Initialize_Clone(void* pArg)
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
     m_pTransformCom->Rotation(XMConvertToRadians(0.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
     CHECK_FAILED(Ready_Components(), E_FAIL);
+    _float4x4 PreTransformMatrix;
+    XMStoreFloat4x4(&PreTransformMatrix, XMMatrixScaling(0.00012, 0.00012, 0.00012) * XMMatrixRotationY(XMConvertToRadians(180.0f)));
+    m_pModelCom->Set_PreTransformMatrix(PreTransformMatrix);
+
     CHECK_FAILED(Ready_Collision(), E_FAIL);
 
 
@@ -133,7 +137,7 @@ HRESULT CElamein_Sword::Ready_Components()
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr), E_FAIL);
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom, nullptr), E_FAIL);
-    CHECK_FAILED(CGameObject::Add_Component(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_Elamein_Sword"), TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr), E_FAIL);
+    CHECK_FAILED(CGameObject::Add_Component(m_iPrototypeIndex, TEXT("Prototype_Component_Elamein_Sword"), TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr), E_FAIL);
 
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
 

@@ -24,7 +24,7 @@ public:
     virtual _float4*                Get_LockOnPosition();
     PHASE                           Get_Phase() const { return m_ePhase; }
 
-    void                            Set_Phase(PHASE ePhase)  { m_ePhase = ePhase; }
+    void                            Set_Phase(PHASE ePhase);
     void                            Set_Weapon_Phase1();
     void                            Set_PhaseWeapon_Cinematic();
     void                            Set_PhaseWeapon_Phase2();
@@ -65,12 +65,15 @@ private:
     HRESULT							Ready_PartObjects();
     HRESULT							Ready_Projectiles();
     HRESULT							Ready_AnimEvent();
-    HRESULT						    Ready_AnimEffectEvent(CModel* pModel);
+    HRESULT						    Ready_AnimEffectEvent();
 
 private:
     void							Pick_ViperRock();
     void							Hold_ViperRock();
     void							Throw_ViperRock();
+     
+private:
+    _vector                         Decompose_Rotation(_matrix W, _vector localRot = { 0.f, 0.f, 0.f, 0.f }, _vector offset = { 0.f, 0.f, 0.f, 1.f });
 
 private:
     class CBody_Viper*              m_pBody = { nullptr };
@@ -91,7 +94,8 @@ private:
     _float4x4*                      m_pThrowMatrix = {};
     COLLISION_DESC                  m_tViperCollisionDesc = {};
 
-
+private:
+    _uint                           m_iRotFX_Idx;
 
 public:
     static CViper*                  Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

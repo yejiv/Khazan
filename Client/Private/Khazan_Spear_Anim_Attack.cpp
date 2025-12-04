@@ -349,7 +349,7 @@ _bool CKhazan_Spear_Anim_Attack::Try_SkillAttack(_uint iSkill)
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
     m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina * 2.4f;
-    m_pPlayerData->fCulDoggedness -= 1.f;
+    // m_pPlayerData->fCulDoggedness -= 1.f;
     m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage + 35.f;
 
     cout << "Try_SkillAttack " << endl;

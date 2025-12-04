@@ -28,13 +28,13 @@ HRESULT CInteraction_Item::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    if (FAILED(Ready_Effect()))
+    if (FAILED(Ready_Effect(pArg)))
         return E_FAIL;
 
-    if (FAILED(Ready_Guide()))
+    if (FAILED(Ready_Guide(pArg)))
         return E_FAIL;
 
-    if (FAILED(Ready_Collision()))
+    if (FAILED(Ready_Collision(pArg)))
         return E_FAIL;
 
     m_strName = "Interaction_Item";
@@ -66,18 +66,18 @@ HRESULT CInteraction_Item::Initialize_Clone(void* pArg)
 
 void CInteraction_Item::Priority_Update(_float fTimeDelta)
 {
-    //m_pEffect->Priority_Update(fTimeDelta);
+    m_pEffect->Priority_Update(fTimeDelta);
 }
 
 void CInteraction_Item::Update(_float fTimeDelta)
 {
-    //m_pEffect->Update(fTimeDelta);
+    m_pEffect->Update(fTimeDelta);
     Item_Check();
 }
 
 void CInteraction_Item::Late_Update(_float fTimeDelta)
 {
-   //m_pEffect->Late_Update(fTimeDelta);
+   m_pEffect->Late_Update(fTimeDelta);
 }
 
 HRESULT CInteraction_Item::Render()
@@ -137,28 +137,28 @@ void CInteraction_Item::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObject
     }
 }
 
-HRESULT CInteraction_Item::Ready_Components()
+HRESULT CInteraction_Item::Ready_Components(void* pArg)
 {
 
     return S_OK;
 }
 
-HRESULT CInteraction_Item::Bind_ShaderResources()
+HRESULT CInteraction_Item::Bind_ShaderResources(void* pArg)
 {
 
     return S_OK;
 }
 
-HRESULT CInteraction_Item::Ready_Effect()
+HRESULT CInteraction_Item::Ready_Effect(void* pArg)
 {
-    m_pEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("ITEM_FX")));
+    m_pEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevelIndex, TEXT("ITEM_FX")));
 
     if (m_pEffect)
         m_pEffect->ResetChildren();
     return S_OK;
 }
 
-HRESULT CInteraction_Item::Ready_Guide()
+HRESULT CInteraction_Item::Ready_Guide(void* pArg)
 {
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
@@ -172,7 +172,7 @@ HRESULT CInteraction_Item::Ready_Guide()
     return S_OK;
 }
 
-HRESULT CInteraction_Item::Ready_Collision()
+HRESULT CInteraction_Item::Ready_Collision(void* pArg)
 {
     CBody::BODY_BOXSHAPE_DESC BodyDesc{};
     BodyDesc.vExtent = _float3(0.5f, 0.5f, 0.5f);
@@ -227,17 +227,17 @@ void CInteraction_Item::Reset()
 {
     if (m_pGuide == nullptr) {
 
-        Ready_Guide();            
+        Ready_Guide(nullptr);
     }
 
     if (m_pEffect == nullptr)
     {
-        Ready_Effect();
+        Ready_Effect(nullptr);
     }
 
     if (m_pBodyCom == nullptr)
     {
-        Ready_Collision();
+        Ready_Collision(nullptr);
     }
 }
 
