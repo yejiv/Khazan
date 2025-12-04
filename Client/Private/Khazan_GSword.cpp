@@ -2495,12 +2495,12 @@ HRESULT CKhazan_GSword::Ready_Collision()
     m_tCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
     m_tCollisionDesc.strName = TEXT("Khazan_Body");
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
-    tCharVirDesc.vStickToFloorStepDown = _float3(0.f, -0.45f, 0);
+    tCharVirDesc.vStickToFloorStepDown = _float3(0.f, -0.5f, 0);
     tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.8f, 0.f);
-    tCharVirDesc.fWalkStairsMinStepForward = 0.08f;
-    tCharVirDesc.fWalkStairsStepForwardTest = 0.25f;    
-    tCharVirDesc.vWalkStairsStepDownExtra = _float3(0.f, 0.3f, 0.f);
-    tCharVirDesc.fWalkStairsCosAngleForwardContact = cosf(XMConvertToRadians(75.f));
+    tCharVirDesc.fWalkStairsMinStepForward = 0.05f;
+    tCharVirDesc.fWalkStairsStepForwardTest = 0.3f;    
+    tCharVirDesc.vWalkStairsStepDownExtra = _float3(0.f, -0.25f, 0.f);
+    tCharVirDesc.fWalkStairsCosAngleForwardContact = cosf(XMConvertToRadians(60.f));
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
