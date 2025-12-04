@@ -200,7 +200,7 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
     MeshDesc.iTextureIdx = 20;
     MeshDesc.fLifeTime = 0.4f;
     MeshDesc.iDivisionCount = 10.f;
-    MeshDesc.vColor = _float3(2.455f, 1.937f, 2.784f);
+    MeshDesc.vColor = _float4(2.455f, 1.937f, 2.784f, 1.f);
     m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
     m_fRecoveryPerSec = 10.f;

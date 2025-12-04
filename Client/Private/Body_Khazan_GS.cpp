@@ -109,6 +109,8 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     if(m_isActiveMotionTrail)
        m_pMotionTrailCom->Start_MotionTrail(fTimeDelta);
 
+    //  FX_Trail();
+
     //if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
     //    Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
     //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
@@ -695,12 +697,33 @@ void CBody_Khazan_GS::Start_MotionTrail(_float fDuration)
     m_pMotionTrailCom->Start_MotionTrail(fDuration);
 }
 
+const TRAIL_CONFIG& CBody_Khazan_GS::Get_TrailConfig() const
+{
+    return m_pTrail->Get_TrailConfig();
+}
+
+void CBody_Khazan_GS::Set_TrailConfig(const TRAIL_CONFIG& Config)
+{
+    m_pTrail->Set_TrailConfig(Config);
+}
+
+_uint CBody_Khazan_GS::Get_NumTrailTextures()
+{
+    return m_pTrail->Get_NumTrailTextures();
+}
+
+ID3D11ShaderResourceView* CBody_Khazan_GS::Get_TrailTexture(_uint iIndex)
+{
+    return m_pTrail->Get_TrailTexture(iIndex);
+}
+
 void CBody_Khazan_GS::Update_Colliders(_float fTimeDelta)
 {
     _matrix matParent = XMLoadFloat4x4(m_pParentMatrix);
     _vector vOutQuat, vOutPos;
 
     const _matrix matWorld_GSwordTip = XMLoadFloat4x4(m_pMatGSwordTip) * matParent;
+    XMStoreFloat4x4(&m_matWorldGSwordTip_nJolt, matWorld_GSwordTip);
     m_pBodyCom_Attack->Sync_Update(matWorld_GSwordTip);
     m_pBodyCom_Attack->Update(fTimeDelta, matWorld_GSwordTip, vOutQuat, vOutPos);
     XMStoreFloat4x4(&m_matWorldGSwordTip, matWorld_GSwordTip);
@@ -720,6 +743,8 @@ void CBody_Khazan_GS::Update_Colliders(_float fTimeDelta)
     m_pBodyCom_RangeAttack->Sync_Update(matParent);
     m_pBodyCom_Search->Sync_Update(matParent);
 
+
+    
 }
 
 void CBody_Khazan_GS::Check_Guarding(_float fTimeDelta)
@@ -844,10 +869,11 @@ HRESULT CBody_Khazan_GS::Ready_Components()
     }
 
     CMeshTrail::TRAIL_DESC MeshDsc;
-    MeshDsc.iTextureIdx = 9;
-    MeshDsc.fLifeTime = .25f;
+    MeshDsc.iTextureIdx = 22;
+    MeshDsc.fLifeTime = 0.3f;
     MeshDsc.iDivisionCount = 10.f;
-    MeshDsc.vColor = { 1.f, 1.f, 1.f };
+    MeshDsc.vColor = { 0.5f, 0.f, 0.f, 7.843f };
+    MeshDsc.vSubColor = { 0.f, 0.f, 0.f, 2.f };
     m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
 
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
@@ -1041,7 +1067,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("GS_WeakAtk02_SowardFX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt));
         m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), m_iFXIdx_Spining, rot, XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]); 
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]); 
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke"), XMLoadFloat4x4(&m_matWorldGSwordTip_nJolt).r[3]); 
         });
 
     m_pModelCom->Register_Event("GS_WeakAtk02_SowardFX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -1089,7 +1115,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         if (Has_Status(CKhazan_GSword::CHARGING_STRONG_ATTACK)) //차징 됨
         {
             if (m_pClientInstance->Is_UsedSkill(CPlayerData_Manager::GSWORDSKILL::MANIFESTSTRENGTH))    //강기발현 
-                m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke_Red"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);  
+                m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke_Red"), XMLoadFloat4x4(&m_matWorldGSwordTip_nJolt).r[3]);  
             else
                 ; // 그냥 차징 강공
         }
@@ -1136,7 +1162,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("GS_Soulbringer_Land_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt));
         m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), m_iFXIdx_Spining, rot, XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke"), XMLoadFloat4x4(&m_matWorldGSwordTip_nJolt).r[3]);
         });
 
     m_pModelCom->Register_Event("GS_Soulbringer_Land_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -1200,7 +1226,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         });
 
     m_pModelCom->Register_Event("GS_GhostSlash_Trail1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke"), XMLoadFloat4x4(&m_matWorldGSwordTip_nJolt).r[3]);
         });
 
     m_pModelCom->Register_Event("GS_GhostSlash_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -1228,7 +1254,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         });
 
     m_pModelCom->Register_Event("GS_GhostLiberation_Landing", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke"), XMLoadFloat4x4(&m_matWorldGSwordTip_nJolt).r[3]);
         _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt));
         m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), m_iFXIdx_Spining, rot, XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);
         });
@@ -1257,7 +1283,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         });
 
     m_pModelCom->Register_Event("GS_Apocalypse_Land", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke_Red"), XMLoadFloat4x4(&m_matWorldGSwordTip).r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Smoke_Red"), XMLoadFloat4x4(&m_matWorldGSwordTip_nJolt).r[3]);
         });
 
     m_pModelCom->Register_Event("GS_Apocalypse_Land", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -1266,6 +1292,15 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
         Spawn_LinearBloodDecal();
         });
+
+    // Trail
+    m_pModelCom->Register_Event("WeakAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("WeakAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("WeakAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("StrongAtk_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("GhostSlashAtk_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("GhostSlashCharge_Turn_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("ChargeCrash_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
 
 #pragma endregion
 
@@ -1733,6 +1768,17 @@ void CBody_Khazan_GS::Start_FullScreenDistortion()
     Desc.fSpeed = 2.f;
     Desc.iNoiseIndex = 15;
     m_pGameInstance->Start_Distortion(Desc);
+}
+
+void CBody_Khazan_GS::FX_Trail()
+{
+    _matrix SwordTipMatrix = XMLoadFloat4x4(&m_matWorldGSwordTip_nJolt);
+    _matrix SwordHandMatrix = XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt);
+    _vector vTipUp = SwordTipMatrix.r[0];
+    _vector vTipPos = SwordTipMatrix.r[3];
+    _vector vHandPos = SwordHandMatrix.r[3];
+    //  _vector vHandPos = SwordWorldMatrix.r[3];
+    m_pTrail->Add_ControlPoint(vTipPos, vHandPos);
 }
 
 CBody_Khazan_GS* CBody_Khazan_GS::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

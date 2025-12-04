@@ -136,7 +136,7 @@ HRESULT CDragonian_Melee::Initialize_Clone(void* pArg)
     MeshDesc.iTextureIdx = 11;
     MeshDesc.fLifeTime = 0.25f;
     MeshDesc.iDivisionCount = 10.f;
-    MeshDesc.vColor = _float3(1.58f, 1.788f, 1.592f);
+    MeshDesc.vColor = _float4(1.58f, 1.788f, 1.592f, 1.f);
     m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
     m_fRecoveryPerSec = 10.f;
