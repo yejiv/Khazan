@@ -89,7 +89,7 @@ void CTwinBlade_R_Viper::Update(_float fTimeDelta)
 
         ////m_vLocalOffset = { x = -0.833458841 y = 2.79396772e-06 z = 0.00000000 }
         ////m_vLocalOffset = offset;
-        m_vLocalOffset = _float3(-0.83, 0.f, 0.f);
+        m_vLocalOffset = _float3(-0.83f, 0.f, 0.f);
     }
     else
     {
@@ -133,8 +133,16 @@ void CTwinBlade_R_Viper::Update(_float fTimeDelta)
         }
     }
 
-   
+    _float4x4 vSwordMat = m_CombinedWorldMatrix;
 
+    _vector vUp = { vSwordMat._21, vSwordMat._22, vSwordMat._23 };
+    _vector vRight = { vSwordMat._11,vSwordMat._12,vSwordMat._13 };
+
+    _vector vSwordPos = { vSwordMat._41, vSwordMat._42, vSwordMat._43 };
+    _vector vSwordStart = vSwordPos - XMVector3Normalize(vUp) * 0.5f - XMVector3Normalize(vRight) * 0.3f;
+    _vector vSwordEnd = vSwordPos + XMVector3Normalize(vUp) * 2.f + XMVector3Normalize(vRight) * 0.3f;
+    XMStoreFloat4(&m_vBladeStartPos, XMVectorSetW(vSwordStart, 1.f));
+    XMStoreFloat4(&m_vBladeTipPos, XMVectorSetW(vSwordEnd, 1.f));
 }
 
 void CTwinBlade_R_Viper::Late_Update(_float fTimeDelta)

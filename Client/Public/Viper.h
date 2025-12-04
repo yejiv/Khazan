@@ -15,6 +15,8 @@ private:
 public:
     enum class PHASE                { PHASE1,CINEMATIC,PHASE2, END };
     enum class TWINBLADE            { LEFT, RIGHT, END };
+    enum class TWINBLADE_R          { SWORD, FINGER0, FINGER1, FINGER2, END };
+    enum class EYE                  { LEFT, RIGHT, END };
 
 public:
     class CBody_Viper*              Get_Body() const { return m_pBody; }
@@ -39,7 +41,7 @@ public:
     class CFSM_Viper*               Get_Viper_FSM();
 
 public:
-    const TRAIL_CONFIG&             Get_TrailConfig() const;
+    TRAIL_CONFIG                    Get_TrailConfig() const;
     void                            Set_TrailConfig(const TRAIL_CONFIG& Config);
     _uint                           Get_NumTrailTextures();
     ID3D11ShaderResourceView*       Get_TrailTexture(_uint iIndex);
@@ -80,7 +82,10 @@ private:
      
 private:
     _vector                         Decompose_Rotation(_matrix W, _vector localRot = { 0.f, 0.f, 0.f, 0.f }, _vector offset = { 0.f, 0.f, 0.f, 1.f });
-    void                            FX_Trail();
+    void                            FX_1PhaseTrail();
+    void                            FX_2PhaseHandTrail();
+    void                            FX_2PhaseSwordTrail();
+    void                            FX_2PhaseEyeTrail();
 
 private:
     class CBody_Viper*              m_pBody = { nullptr };
@@ -90,7 +95,9 @@ private:
     class CCore_Viper*              m_pCore = { nullptr };
     class CTwinBlade_R_Viper*       m_pP2Weapon = { nullptr };
     class CProjectile_Rock_Viper*   m_pRock = { nullptr };
-    class CMeshTrail*               m_pMeshTrail[ENUM_CLASS(TWINBLADE::END)] = {};
+    class CMeshTrail*               m_p1PhaseTrail[ENUM_CLASS(TWINBLADE::END)] = {};
+    class CMeshTrail*               m_p2PhaseTrail[ENUM_CLASS(TWINBLADE_R::END)] = {};
+    class CLineTrail*               m_pLineTrail[ENUM_CLASS(EYE::END)] = {};
 
     _bool							m_isLookAt = { false };
     _float							m_fTurnSpeed = { 8.f };
