@@ -30,6 +30,7 @@ public:
     void    Update(_float fDeltaTime);
 
     Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
+    Body* CreateAndAdd_SoftBody(const SoftBodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
     CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);
 
     HRESULT				Set_PhysicsSystem();
@@ -74,6 +75,11 @@ public:
 
 public:
     _bool RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal = nullptr);
+
+public:
+    PhysicsSystem* Get_Jolt() { return m_pPhysics; }
+    BodyInterface* Get_BodyInterface() { return &(m_pPhysics->GetBodyInterface()); }
+    const BodyLockInterfaceLocking* Get_BodyLockInterface() { return &(m_pPhysics->GetBodyLockInterface()); }    
 
 //public:
 //    void Clear();

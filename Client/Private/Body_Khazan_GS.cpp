@@ -8,6 +8,7 @@
 #include "Damage_Text.h"
 #include "MeshTrail.h"
 #include "Target_BrutalAttack.h"
+#include "SoftBody.h"
 
 #include "Monster.h"
 
@@ -90,6 +91,7 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDeltaAdjsut);
 
     Update_CombinedMatrix();
+    //m_pSoftBody->Update_SoftBody_Pelvis(fTimeDelta, XMLoadFloat4x4(m_pParentMatrix));
 
     Update_Colliders(fTimeDelta);
 
@@ -127,7 +129,6 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     //    Trigger_MotionTrail(TEXT("MT_Common_Avoid"), true);
     //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
     //    Trigger_MotionTrail(TEXT("MT_Common_Avoid"), false);
-
 
     bool a =  m_pClientInstance->Is_CurrentSpear();
     bool b = m_pClientInstance->Is_CurrentGSword();
@@ -894,6 +895,23 @@ HRESULT CBody_Khazan_GS::Ready_Components()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
         TEXT("Com_MotionTrail"), reinterpret_cast<CComponent**>(&m_pMotionTrailCom), &MTDesc)))
         return E_FAIL;
+
+    //CSoftBody::SOFTBODY_DESC SoftBodyDesc;
+    //SoftBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::CLOTH);    
+    //SoftBodyDesc.FixBoneMatrix = Get_BoneMatrix("Bip001-Pelvis");
+
+    //_matrix BoneWorldMatrix = XMLoadFloat4x4(m_pParentMatrix) * XMLoadFloat4x4(Get_BoneMatrix("Bip001-Pelvis"));
+    //_vector vScale, vTrans, vQuat;
+    //XMMatrixDecompose(&vScale, &vTrans, &vQuat, BoneWorldMatrix);
+    //_float4 vvQuat;
+    //XMStoreFloat4(&vvQuat, vQuat);
+    //SoftBodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+    //SoftBodyDesc.vQuat = vvQuat;
+    //SoftBodyDesc.pModel = m_AllParts[TEXT("Prisoner_Leg3")];
+    //SoftBodyDesc.iMeshIndex = 0;
+    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_SoftBody"),
+    //    TEXT("Com_SoftBody"), reinterpret_cast<CComponent**>(&m_pSoftBody), &SoftBodyDesc)))
+    //    return E_FAIL;
 
     return S_OK;
 
@@ -1856,4 +1874,5 @@ void CBody_Khazan_GS::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
+    Safe_Release(m_pSoftBody);
 }

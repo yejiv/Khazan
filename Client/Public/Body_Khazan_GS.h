@@ -101,6 +101,7 @@ private:
     class CTransform*           m_pParentTransform = { nullptr };
     class CGSword_Khazan_GS*    m_pGSword = { nullptr };
     class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
+    class CSoftBody*            m_pSoftBody = { nullptr };
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
     CShader*                    m_pShaderCom = { nullptr };

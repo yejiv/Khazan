@@ -106,7 +106,6 @@ void CLevel_Viper::Update(_float fTimeDelta)
     {
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
-
    /* if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
     {
         CViper* pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Viper")));
@@ -122,7 +121,7 @@ void CLevel_Viper::Update(_float fTimeDelta)
     }
 
     if (m_pGameInstance->Key_Down(DIK_NUMPAD0, INPUT_TYPE::FORCE))
-    {
+    { 
         m_pClientInstance->Camera_Force_AniEnd();
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
     }*/
@@ -401,8 +400,7 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
             ObeliskDesc.iIndex = iDestIndex;
             CObelisk* pObelisk = dynamic_cast<CObelisk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Obelisk"), &ObeliskDesc));
             pSeq->Push_Obelisk(pObelisk);
-            m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag, pObelisk);
-
+            m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag, pObelisk);            
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
                 ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Obelisk"), TIME_CHANNEL::WORLD, &ObeliskDesc)))
                 return E_FAIL;

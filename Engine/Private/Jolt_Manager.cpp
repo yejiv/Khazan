@@ -84,6 +84,21 @@ Body* CJolt_Manager::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, 
     return body;
 }
 
+Body* CJolt_Manager::CreateAndAdd_SoftBody(const SoftBodyCreationSettings& BodySetting, BodyInterface** pBodyInterface)
+{
+    Body* body = m_pPhysics->GetBodyInterface().CreateSoftBody(BodySetting);
+    if (body == nullptr)
+        return nullptr;
+
+    m_pPhysics->GetBodyInterface().AddBody(body->GetID(), EActivation::Activate);
+
+    *pBodyInterface = &m_pPhysics->GetBodyInterface();
+
+    m_BodyDescs.emplace(body->GetID(), body->GetUserData());
+
+    return body;
+}
+
 CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface)
 {
     CharacterVirtual* pCharVir = new CharacterVirtual(inSettings, inPosition, inRotation, inUserData, m_pPhysics);

@@ -55,6 +55,9 @@ using namespace DirectX;
 #include <Jolt/Physics/Collision/Shape/CylinderShape.h>
 #include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 #include <Jolt/Physics/Collision/Shape/ScaledShape.h>
+#include <Jolt/Physics/SoftBody/SoftBodyCreationSettings.h>
+#include <Jolt/Physics/SoftBody/SoftBodySharedSettings.h>
+#include <Jolt/Physics/SoftBody/SoftBodyMotionProperties.h>
 using namespace JPH;
 
 #include <ft2build.h>
