@@ -253,9 +253,9 @@ void CS_TURBULENCE(uint3 DTid : SV_DispatchThreadID)
     float2 offset2 = float2(sin(g_TotalTime * 1.37f), cos(g_TotalTime * 1.91f)) * 0.5f;
     float2 offset3 = float2(sin(g_TotalTime * 0.77f), cos(g_TotalTime * 1.21f)) * 0.5f;
     
-    float forceX = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.yz * 0.1f + offset1, 0).r - 0.5f) * 2.f;
-    float forceY = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xz * 0.1f + offset2, 0).r - 0.5f) * 2.f;
-    float forceZ = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xy * 0.1f + offset3, 0).r - 0.5f) * 2.f;
+    float forceX = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.yz * g_TurblunceSampleSize + offset1, 0).r - 0.5f) * 2.f;
+    float forceY = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xz * g_TurblunceSampleSize + offset2, 0).r - 0.5f) * 2.f;
+    float forceZ = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xy * g_TurblunceSampleSize + offset3, 0).r - 0.5f) * 2.f;
 
     float3 noiseDir = normalize(float3(forceX, forceY, forceZ));
 

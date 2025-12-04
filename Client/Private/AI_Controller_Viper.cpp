@@ -73,13 +73,38 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
     if (m_pGameInstance->Key_Down(DIK_Z))
     {
-
         CViper* pViper = static_cast<CViper*>(pOwner);
         CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
         pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
         //pViper->Consume_Stamina(10.f);
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    {
+
+        if (m_pGameInstance->Key_Down(DIK_B))
+        {
+            m_pBB->Set_Value<_uint>(m_strMonstertag,"DebugIndex",0);
+            CViper* pViper = static_cast<CViper*>(pOwner);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_BACKJUMP), pViper);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_N))
+        {
+            m_pBB->Set_Value<_uint>(m_strMonstertag, "DebugIndex", 1);
+            CViper* pViper = static_cast<CViper*>(pOwner);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_JUMPATTACK), pViper);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_M))
+        {
+            
+            CViper* pViper = static_cast<CViper*>(pOwner);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGROUND), pViper);
+        }
 
     }
+
 
     if (m_pGameInstance->Key_Down(DIK_J))
     {
@@ -117,8 +142,9 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         else
             m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-        //if(!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
-            //m_pBT->Update();
+        if(!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
+            m_pBT->Update();
+
     }
 
     m_pFSM->Update(pOwner, fTimeDelta * m_fAnimSpeed);

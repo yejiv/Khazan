@@ -102,7 +102,6 @@ HRESULT CBody_Phase2_Viper::Initialize_Clone(void* pArg)
     XMStoreFloat4x4(&TempMatrix, PreTransformMatrix);
     m_pModelCom->Set_PreTransformMatrix(TempMatrix);
 
-
     return S_OK;
 }
 

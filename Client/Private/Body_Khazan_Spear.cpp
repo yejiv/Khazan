@@ -944,15 +944,11 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         _vector S, Q, T;
 
         if (!XMMatrixDecompose(&S, &Q, &T, W))
-        {
-
-            XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-
-
+        { 
+            XMFLOAT4X4 m; XMStoreFloat4x4(&m, W); 
             _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
             _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-            _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-
+            _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f)); 
 
             _matrix RotationMatrix(
                 r0,
@@ -963,8 +959,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
             Q = XMQuaternionRotationMatrix(RotationMatrix);
         }
-        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiralSpear_SpearFX"), EffectID_SpiralSpear, Q, W.r[3]);
-
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiralSpear_SpearFX"), EffectID_SpiralSpear, Q, W.r[3]); 
         });
 
     m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp_Stop", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -993,6 +988,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         UpdateSpearWind(false); 
         FX_Trail(); 
     });
+
     m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
 
     m_pModelCom->Register_Event("SpaceTimeCutter_Trail0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_BlueTrail(); });

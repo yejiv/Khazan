@@ -91,7 +91,7 @@ HRESULT CBody_Viper::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     if (FAILED(Ready_Components()))
-        return E_FAIL;
+        return E_FAIL; 
 
    /* if (FAILED(Ready_Colliders()))
         return E_FAIL;*/
@@ -244,8 +244,7 @@ void CBody_Viper::Carculate_Matrix(_float fTimeDelta)
     //m_LeftHandMatrix._44 = vOutPos.m128_f32[3];
 
 
-}
-
+} 
 
 HRESULT CBody_Viper::Ready_Colliders()
 {
