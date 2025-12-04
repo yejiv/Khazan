@@ -273,8 +273,11 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Check(CGameObject* pOwner)
     }
     else if (m_pMonData->pOwner->Check_Ranage("AttackRange"))
     {
-        if(eDir == TARGET_DIR::FL || eDir == TARGET_DIR::FR || eDir == TARGET_DIR::F)
+        if (eDir == TARGET_DIR::FL || eDir == TARGET_DIR::FR || eDir == TARGET_DIR::F)
+        {
             m_pMonData->eAttack_State = CDragonian_Rampage::ATTACKSTATE::DEFAULT;
+            return BTNODESTATE::SUCCESS;
+        }
         else
             return BTNODESTATE::FAILURE;
     }  

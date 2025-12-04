@@ -52,6 +52,7 @@ public:
         _float              fWarkSpeed = { 10.f };
         CDragonian_Melee*   pOwner = { nullptr };
  
+        _bool               isStamina_Regen = {};
     }MONDATA;
 
 private:
@@ -71,6 +72,8 @@ public:
     _bool                           Check_Ranage(_float fRange);
     TARGET_DIR                      Get_DIR();
 
+    void                            BurutalUI_On(_float fTime);
+    void                            BurutalUI_Off();
 public:
     virtual HRESULT					Initialize_Prototype(_int iLevel);
     virtual HRESULT					Initialize_Clone(void* pArg) override;
@@ -124,6 +127,8 @@ private:
 
     _float4                         m_vSword_Start = {};
     _float4                         m_vSword_End = {};
+
+    class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
 
 public:
     static CDragonian_Melee*        Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);

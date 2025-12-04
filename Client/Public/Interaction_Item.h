@@ -53,11 +53,11 @@ public:
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
 private:
-    HRESULT Ready_Components();
-    HRESULT Bind_ShaderResources();
-    HRESULT Ready_Effect();
-    HRESULT Ready_Guide();
-    HRESULT Ready_Collision();
+    HRESULT Ready_Components(void* pArg);
+    HRESULT Bind_ShaderResources(void* pArg);
+    HRESULT Ready_Effect(void* pArg);
+    HRESULT Ready_Guide(void* pArg);
+    HRESULT Ready_Collision(void* pArg);
 
 public:
     static CInteraction_Item* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

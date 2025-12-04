@@ -19,7 +19,7 @@ HRESULT CMeshTrail::Initialize_Prototype()
     m_iTextureIdx = 0;
     m_fLifeTime = 0.4f;
     m_iDivisionCount = 5;
-    m_vColor = { 1.f, 1.f, 1.f };
+    m_vColor = { 1.f, 1.f, 1.f, 1.f };
 
     return S_OK;
 }
@@ -37,6 +37,7 @@ HRESULT CMeshTrail::Initialize_Clone(void* pArg)
         m_fLifeTime = dsc->fLifeTime;
         m_iDivisionCount = dsc->iDivisionCount;
         m_vColor = dsc->vColor;
+        m_vSubColor = dsc->vSubColor;
         if (m_iDivisionCount < 1)
         {
             MSG_BOX(TEXT("Division Count is too low"));
@@ -144,6 +145,7 @@ const TRAIL_CONFIG& CMeshTrail::Get_TrailConfig() const
     Config.iTextureIdx = m_iTextureIdx;
     Config.iDivisionCount = m_iDivisionCount;
     Config.vColor = m_vColor;
+    Config.vSubColor = m_vSubColor;
 
     return Config;
 }
@@ -154,6 +156,7 @@ void CMeshTrail::Set_TrailConfig(const TRAIL_CONFIG& Config)
     m_iTextureIdx = Config.iTextureIdx;
     m_iDivisionCount = Config.iDivisionCount;
     m_vColor = Config.vColor;
+    m_vSubColor = Config.vSubColor;
 }
 
 _uint CMeshTrail::Get_NumTrailTextures()
@@ -194,7 +197,10 @@ HRESULT CMeshTrail::Bind_ShaderResources()
     if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", m_iTextureIdx)))
         return E_FAIL;
 
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_vTrailColor", &m_vColor, sizeof(_float3))))
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vTrailColor", &m_vColor, sizeof(_float4))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vTrailSubColor", &m_vSubColor, sizeof(_float4))))
         return E_FAIL;
 
     return S_OK;

@@ -130,6 +130,13 @@ private:
     _float m_fTargetHalfFovCos = { 0.f };
     _float m_fTargetMaxDistance = { 20.f };
 
+    _float m_fLockPitchDownClampDeg = -35.f;
+    _float m_fLockPitchUpClampDeg = 25.f;
+
+    // 적용 거리
+    _float m_fLockClampNearDist = 3.f;
+    _float m_fLockClampFarDist = 8.f;
+
 
     // 특정위치에서 강제 이동시 보간
     _bool m_isBlendBack = { false };

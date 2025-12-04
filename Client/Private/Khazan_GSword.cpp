@@ -2481,14 +2481,14 @@ HRESULT CKhazan_GSword::Ready_Collision()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.75f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 1.2f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    tCharVirDesc.fRadius = 0.3f;
-    tCharVirDesc.fHeight = 1.f;
-    tCharVirDesc.fMaxSlopeAngle = 45.f;
+    tCharVirDesc.fRadius = 1.f;
+    tCharVirDesc.fHeight = 0.8f;
+    tCharVirDesc.fMaxSlopeAngle = 60.f;
     tCharVirDesc.fMass = 60.f;
     tCharVirDesc.fMaxStrength = 0.f;
-    tCharVirDesc.fPredictiveContactDistance = 0.3f;
+    tCharVirDesc.fPredictiveContactDistance = 0.2f;
     tCharVirDesc.iMaxConstraintIterations = 20;
     tCharVirDesc.fCollisionTolerance = 0.03f;
     tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
@@ -2497,9 +2497,11 @@ HRESULT CKhazan_GSword::Ready_Collision()
     m_tCollisionDesc.strName = TEXT("Khazan_Body");
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
     tCharVirDesc.vStickToFloorStepDown = _float3(0.f, -0.5f, 0);
-    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.5f, 0.f);
-    tCharVirDesc.fWalkStairsMinStepForward = 0.06f;
-    tCharVirDesc.fWalkStairsStepForwardTest = 0.15f;
+    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.8f, 0.f);
+    tCharVirDesc.fWalkStairsMinStepForward = 0.05f;
+    tCharVirDesc.fWalkStairsStepForwardTest = 0.3f;    
+    tCharVirDesc.vWalkStairsStepDownExtra = _float3(0.f, -0.25f, 0.f);
+    tCharVirDesc.fWalkStairsCosAngleForwardContact = cosf(XMConvertToRadians(60.f));
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
@@ -2617,8 +2619,6 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         }
         case INTERACTIVE_TYPE::STATUE:
         {
-            isDone = false;
-            if (m_pBody->Get_Model()->IsFinished())  isDone = true;
             break;
         }
         case INTERACTIVE_TYPE::IRONGATE:

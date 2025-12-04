@@ -5,9 +5,8 @@
 #include "BehaviorTree.h"
 #include "GameInstance.h"
 #include "Perception.h"
-#include "UI_Inven.h"
 #include "ClientInstance.h"
-#include "Amount.h"
+
 
 
 CAI_Controller_Yetuga::CAI_Controller_Yetuga()
@@ -32,15 +31,14 @@ HRESULT CAI_Controller_Yetuga::Initialize(CCreature* pOwner)
 void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 {
      
-    if (m_pGameInstance->Key_Down(DIK_T))
+    if (m_pGameInstance->Key_Down(DIK_Z))
     {
-        //CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-        //CGameObject* pTarget =  m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        ////pYetuga->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-        //pYetuga->Consume_Stamina(10.f);
 
-        //m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::CUTSCENE), pOwner);
-        m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::CUTSCENE), pOwner);
+        CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+        CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+        pYetuga->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK, pTarget);
+        //pViper->Consume_Stamina(10.f);
+
     }
 
 
@@ -63,7 +61,8 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
         else
             m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-        m_pBT->Update();
+        if (!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
+            m_pBT->Update();
     }
 
 	
@@ -136,11 +135,7 @@ CONDITION CAI_Controller_Yetuga::GetCallbackCondition(CGameObject* pOwner, const
 
                 if (pYetuga->Get_CurrentHP() <= 0.f)
                 {
-                    static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1001);
-                    static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1002);
-                    static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1003);
-                    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 1000);
-
+                   
                     return true;
 
                 }

@@ -32,6 +32,15 @@ _float4* CViper::Get_LockOnPosition()
     return m_vLockOnPosition;
 }
 
+void CViper::Set_Phase(PHASE ePhase)
+{
+    m_ePhase = ePhase;
+    if (m_ePhase == PHASE::PHASE2)
+    {
+        dynamic_cast<CFSM_Viper*>(dynamic_cast<CAI_Controller_Viper*>(m_pController)->Get_State_Machine())->Get_Phase2_CutScene_Start_Viper()->ViperScene_PullOut(this);
+    }
+}
+
 void CViper::Set_Weapon_Phase1()
 {
     m_pWeapon->Set_IsActive(true);
@@ -142,6 +151,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_pCharVirCom->Set_Position(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
     }
 
+   
+
 
     return S_OK;
 }
@@ -168,6 +179,11 @@ void CViper::Priority_Update(_float fTimeDelta)
 
 void CViper::Update(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
+    {
+        m_isGhost = true;
+    }
+
     m_pController->Update(this, fTimeDelta);
 
     if (m_fCurrentHP >= 0.f)
@@ -230,11 +246,13 @@ void CViper::Update(_float fTimeDelta)
        m_pCharVirCom->Set_Position(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
    }
 
-
-
     __super::Update(fTimeDelta);
 
-    m_vLockOnPosition = m_pBody->Get_BonePointEX("Bip001-Spine2");
+    if(m_ePhase == PHASE::PHASE1)
+        m_vLockOnPosition = m_pBody->Get_BonePointEX("Bip001-Spine2");
+    else if(m_ePhase == PHASE::PHASE2)
+        m_vLockOnPosition = m_pPahse2Body->Get_BonePointEX("Bip001-Spine2");
+
 
    /* if (m_pGameInstance->Key_Down(DIK_P))
     {
@@ -333,37 +351,7 @@ void CViper::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLL
 
 HRESULT CViper::Ready_Components()
 {
-    //CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
-    //_float3 vPos{};
-    //_float4 vQuat{};
-
-    //XMStoreFloat3(&vPos, m_pTransformCom->Get_State(STATE::POSITION));
-    //XMStoreFloat4(&vQuat, m_pTransformCom->Get_Rotation_Quat());
-    //tCharVirDesc.eShapeType = SHAPE::CAPSULE;
-    //tCharVirDesc.vPos = vPos;
-    //tCharVirDesc.vQuat = vQuat;
-    //tCharVirDesc.vShapeOffset = _float3(0.f, 4.1f, 0.f);
-    //tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
-    //tCharVirDesc.fRadius = 2.f;
-    //tCharVirDesc.fHeight = 4.f;
-    //tCharVirDesc.fMaxSlopeAngle = 45.f;
-    //tCharVirDesc.fMass = 10.f;
-    //tCharVirDesc.fMaxStrength = 0.f;
-    //tCharVirDesc.fPredictiveContactDistance = 0.3f;
-    //tCharVirDesc.iMaxConstraintIterations = 20;
-    //tCharVirDesc.fCollisionTolerance = 0.03f;
-    //tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
-
-    //m_tCollisionDesc.pGameObject = this;
-    ////pCollDesc.pInfo = ?? // �ۼ��ϱ�
-    //tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
-
-    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
-    //    TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
-    //    return E_FAIL;
-
-    //m_pCharVirCom->Collision_Active(true);
-
+   
     CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
     _float3 vPos{};
     _float4 vQuat{};
@@ -380,9 +368,11 @@ HRESULT CViper::Ready_Components()
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 
-    m_tCollisionDesc.pGameObject = this;
+    m_tViperCollisionDesc.pGameObject = this;
+    m_tViperCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
+    m_tViperCollisionDesc.strName = TEXT("Viper_Collider");
     //pCollDesc.pInfo = ?? // 작성하기
-    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+    tCharVirDesc.pCollisionDesc = &m_tViperCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
@@ -980,6 +970,14 @@ HRESULT CViper::Ready_AnimEvent()
  
 #pragma endregion
 
+#pragma region DOWN
+    pModel->Register_Event("CutScene_Down_Conceal_W", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            Set_WeaponOff();
+        });
+#pragma endregion
+
+
 #pragma region LOOKING_CORE
 
     //pModel->Register_Event("Looking_Core", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
@@ -996,7 +994,6 @@ HRESULT CViper::Ready_AnimEvent()
 
 
 #pragma endregion
-
 
 #pragma region START_CINEMATIC_JUMP
 
@@ -1015,7 +1012,6 @@ HRESULT CViper::Ready_AnimEvent()
 
 
 #pragma endregion
-
 
 #pragma region START_CINNEMATIC_LANDING
 
@@ -1653,7 +1649,6 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("DashDrift_Pause", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
         {
-            m_isGhost = false;
             m_isLookAt = false;
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName,"isP2_Dash_Abort", true);
         });
@@ -1676,6 +1671,10 @@ HRESULT CViper::Ready_AnimEvent()
         {
             CBlackBoard* pBB = m_pController->Get_BlackBoard();
             pBB->Set_Value(m_strName, "is_P2_ComboMove", true);
+
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
         });
     pP2Model->Register_Event("SwingCombo_Attack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
         {
@@ -1696,6 +1695,10 @@ HRESULT CViper::Ready_AnimEvent()
         {
             CBlackBoard* pBB = m_pController->Get_BlackBoard();
             pBB->Set_Value(m_strName, "is_P2_ComboMove", true);
+
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
         });
     pP2Model->Register_Event("SwingCombo_Attack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
         {
@@ -1708,6 +1711,9 @@ HRESULT CViper::Ready_AnimEvent()
 
             CBlackBoard* pBB = m_pController->Get_BlackBoard();
             pBB->Set_Value(m_strName, "is_P2_ComboMove", true);
+
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
 
         });
     pP2Model->Register_Event("SwingCombo_Attack3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
@@ -1729,12 +1735,14 @@ HRESULT CViper::Ready_AnimEvent()
         {
             CBlackBoard* pBB = m_pController->Get_BlackBoard();
             pBB->Set_Value(m_strName, "is_P2_ComboMove", true);
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         });
     pP2Model->Register_Event("SwingCombo_Attack4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
         {
             m_isLookAt = false;
             m_fTurnSpeed = 8.f;
-
+            m_isGhost = true;
             CBlackBoard* pBB = m_pController->Get_BlackBoard();
             pBB->Set_Value(m_strName, "is_P2_ComboMove", false);
         });
@@ -1759,18 +1767,22 @@ HRESULT CViper::Ready_AnimEvent()
         {
             CBlackBoard* pBB = m_pController->Get_BlackBoard();
             pBB->Set_Value(m_strName, "is_P2_Rush", true);
-            Look_Target();
-
+            m_isGhost = true;
+            CTransform* pTargetTransform = m_pTarget->Get_Transform();
+            _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            m_pTransformCom->LookAt(vTargetPos);
+            m_pTransformCom->Set_SpeedPerSec(0.65f);
+            
         });
 
     pP2Model->Register_Event("SwingCombo_Rush", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
         {
             CBlackBoard* pBB = m_pController->Get_BlackBoard();
             pBB->Set_Value(m_strName, "is_P2_Rush", false);
-
+            m_pTransformCom->Set_SpeedPerSec(3.f);
         });
 
-    pP2Model->Register_Event("SwingCombo_Ghost2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+    pP2Model->Register_Event("SwingCombo_Ghost2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
         {
             m_isGhost = false;
         });
@@ -2172,7 +2184,9 @@ void CViper::Free()
     Safe_Release(m_pCore);
     Safe_Release(m_pPahse2Body);
     Safe_Release(m_pP2Weapon);
-    Safe_Release(m_pRock);
+
+    if (m_pRock)
+        m_pRock->Set_IsDead(true);
 
     __super::Free();
 }
