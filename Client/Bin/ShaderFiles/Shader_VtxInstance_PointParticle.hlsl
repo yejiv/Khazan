@@ -241,10 +241,12 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
         discard;
     
     vector vMask = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    vector vFinalColor = g_vSourceColor;
-    vFinalColor.a *= vMask.r;
     
-    //vFinalColor.a = max(max(vMask.r, vMask.g), vMask.b);
+    if (vMask.r <= 0)
+        discard;
+    
+    vector vFinalColor = g_vSourceColor * vMask.r;
+    vFinalColor.a *= vMask.r;
     
     if (vFinalColor.a <= 0)
         discard;

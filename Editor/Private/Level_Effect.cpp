@@ -381,7 +381,7 @@ void CLevel_Effect::GetParticleColor()
 
 	if (m_EffectType == 0)
 	{
-		const char* textures[] = { "test0", "test1", "test2",  "test3",  "flare", "Fire_Sprite", "Fire_Sprite2",  "flare",  "blood", "BloomParticle", "GuardParticle" };
+		const char* textures[] = { "test0", "test1", "test2",  "test3",  "flare", "Fire_Sprite", "Fire_Sprite2",  "flare",  "blood", "BloomParticle", "GuardParticle", "Smoke2" };
 		ImGui::Combo("Point Particles Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 	}
 	else if (m_EffectType == 1)
