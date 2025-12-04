@@ -90,6 +90,12 @@ public:
     void                        Trigger_MotionTrail(const _wstring& strKey, _bool isActive) { if (m_OnMotionTrailCallBack)m_OnMotionTrailCallBack(strKey, isActive); }
     void                        On_MotionTrail(const _wstring strKey, _bool isActive) { m_pMotionTrailCom->Set_Config(strKey); m_isActiveMotionTrail = isActive; }
 
+public:
+    const TRAIL_CONFIG&         Get_TrailConfig() const;
+    void                        Set_TrailConfig(const TRAIL_CONFIG& Config);
+    _uint                       Get_NumTrailTextures();
+    ID3D11ShaderResourceView*   Get_TrailTexture(_uint iIndex);
+
 private:
     class CClientInstance*      m_pClientInstance = { nullptr };
     class CTransform*           m_pParentTransform = { nullptr };
@@ -144,6 +150,7 @@ private:
     _float4x4                   m_matWorldGSwordBody_nJolt;
     _float4x4*                  m_pMatGSwordTip = { nullptr };  // 칼 끝 로컬행렬
     _float4x4			        m_matWorldGSwordTip;                 // 칼 끝 월드행렬
+    _float4x4			        m_matWorldGSwordTip_nJolt;                 // 칼 끝 월드행렬
 
 
     _matrix				        m_Offset_Matrix = {};   //블랜더와 축이 달라서 사용.
@@ -246,6 +253,7 @@ private:
     void Start_LongDistortion();
     void Start_DefaultDistortion();
     void Start_FullScreenDistortion();
+    void FX_Trail();
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

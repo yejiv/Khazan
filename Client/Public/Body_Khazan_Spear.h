@@ -85,6 +85,12 @@ public:
     void                        Trigger_MotionTrail(const _wstring& strKey, _bool isActive) { if (m_OnMotionTrailCallBack)m_OnMotionTrailCallBack(strKey, isActive); }
     void                        On_MotionTrail(const _wstring strKey, _bool isActive) { m_pMotionTrailCom->Set_Config(strKey); m_isActiveMotionTrail = isActive; }
 
+public:
+    const TRAIL_CONFIG&         Get_TrailConfig() const;
+    void                        Set_TrailConfig(const TRAIL_CONFIG& Config);
+    _uint                       Get_NumTrailTextures();
+    ID3D11ShaderResourceView*   Get_TrailTexture(_uint iIndex);
+
 
     _bool       Is_SpearFullExtension() const { return m_isSpearFullExtension; }
     _bool       Get_IsAttackCollisionActive() { return m_isSpearTipActive; }
@@ -207,6 +213,9 @@ private:
     void	FX_StrongAtk_Charge_Blust6(_fvector pos);
     void	FX_StrongAtk_Charge_BlustSmall(_fvector pos);
     void	Spear_Spike();
+    void    Set_BaseTrail();
+    void    Set_BlueTrail();
+    void    Set_RedTrail();
 
     //void	UpdateTrail();
 

@@ -62,6 +62,7 @@ public:
         _float*             pMaxStamina = { nullptr };
         _float*             pCulStamina = { nullptr };
 
+        _bool               isStamina_Regen = {};
         _float              fWarkSpeed = { 10.f };
         CElamein* pOwner = { nullptr };
 
@@ -74,7 +75,8 @@ private:
 public:
     void                            LockOnLerp(_float fTimeDetla, _float fSpeed);
     void                            LockOn();
-
+    void                            BurutalUI_On(_float fTime);
+    void                            BurutalUI_Off();
     void                            Rush();
 
     MONDATA&                        Get_Data();
@@ -137,9 +139,7 @@ private:
     _float4                         m_vSword_End = {};
     _float4                         m_vSword_Start = {};
 
-
-    //UI테스트
-    class CUI_Talk_Danjinjar*       m_pTalk = { nullptr };
+    class CTarget_BrutalAttack*     m_pBrutalAttack = { nullptr };
 
 private:
     HRESULT                         Ready_Prototype();

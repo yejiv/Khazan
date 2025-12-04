@@ -49,6 +49,8 @@ private:
 
     HRESULT Ready_Shader_Settings();
 
+    HRESULT Ready_Item();
+
     _bool Wait_All_Futures();
 
 

@@ -27,7 +27,7 @@ Texture2D g_Texture;
 Texture2D g_DepthTexture;
 float4 g_vColor;
 float2 g_ViewportSize;
-float3 g_vTrailColor;
+float4 g_vTrailColor, g_vTrailSubColor;
 
 struct VS_IN
 {
@@ -163,10 +163,12 @@ PS_WEIGHTBLEND_OUT PS_TRAIL(PS_IN In)
     //Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
     
     vector vEffectTexture = g_Texture.Sample(DefaultSampler, In.vTexcoord);
-    vector vFinalColor = float4(g_vTrailColor * vEffectTexture.r, vEffectTexture.r);
+    float4 vFinalColor = lerp(g_vTrailSubColor, g_vTrailColor, vEffectTexture.r);
+    
+    //  vector vFinalColor = float4(g_vTrailColor.rgb * vEffectTexture.r, vEffectTexture.r);
     //vector vFinalColor = float4(1.f, 1.f, 1.f, vEffectTexture.r);
     // 알파값 직접 지정해줄 시
-    //  vFinalColor.a *= g_vTrailColor.a;
+    vFinalColor.a *= vEffectTexture.r;
     vFinalColor.a *= In.vTexcoord.x;
      
     Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a);

@@ -33,10 +33,10 @@ public:
         m_isROnAttackCollision = isToggle;
         m_isLOnAttackCollision = isToggle;
     }
-    _float4                 Get_RightSwordTip() const { return m_vRightTipPos; }
-    _float4                 Get_LeftSwordTip() const { return m_vLeftTipPos; }
-    _float4                 Get_RightSowrdStartPos() const { return m_vRightBladeStartPos; }
-    _float4                 Get_LeftSwordStartPos() const { return m_vLeftBladeStartPos; }
+    _vector                 Get_RightSwordTip() const { return XMLoadFloat4(&m_vRightTipPos); }
+    _vector                 Get_LeftSwordTip() const { return XMLoadFloat4(&m_vLeftTipPos); }
+    _vector                 Get_RightSowrdStartPos() const { return XMLoadFloat4(&m_vRightBladeStartPos); }
+    _vector                 Get_LeftSwordStartPos() const { return XMLoadFloat4(&m_vLeftBladeStartPos); }
 
 
     _float4                 Get_GrabPos() const { return m_vGrabPos; }

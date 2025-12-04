@@ -310,6 +310,11 @@ void CLevel_Effect::Edit_Element_List()
 			m_PrefabPrototype->RemoveEffect(m_iChildrenIdx);
 			m_iChildrenIdx = 0;
 		}
+        if (ImGui::Button("Copy"))
+        {
+            m_PrefabPrototype->CopyEffect(m_iChildrenIdx);
+            m_iChildrenIdx = 0;
+        }
 		m_iPrevChildrenIdx = m_iChildrenIdx;
 	}
 }
@@ -376,7 +381,7 @@ void CLevel_Effect::GetParticleColor()
 
 	if (m_EffectType == 0)
 	{
-		const char* textures[] = { "test0", "test1", "test2",  "test3",  "flare", "Fire_Sprite", "Fire_Sprite2",  "flare",  "blood", "BloomParticle"};
+		const char* textures[] = { "test0", "test1", "test2",  "test3",  "flare", "Fire_Sprite", "Fire_Sprite2",  "flare",  "blood", "BloomParticle", "GuardParticle" };
 		ImGui::Combo("Point Particles Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 	}
 	else if (m_EffectType == 1)
@@ -399,7 +404,7 @@ void CLevel_Effect::GetParticleColor()
                                         "FastAtk_1", "FastAtk_2L", "FastAtk_2R", "FastAtk_3L", "FastAtk_3R", "Grapple_Atk_2", "CounterATK", "DodgeATK", "FastATK1","FastATK2_L", "FastATK2_R",  "FastATK3_L" ,  "FastATK3_R", "FastATK4",
                                         "StrongAtk0", "StrongAtk1", "FastAtk03_Slash", "GrappleAtk02_Slash", "StrongAtk03_Slash"
                                         , "Cylinder_003", "Cylinder_003_02", "Cylinder_003_Noise" , "Spine", "Circle_002" ,"Sphere","CircleTwist", "CircleTwist2", "Plane" , "circle001", "circle002", "Ice",  "Rock", "Crystal", "Ring_Twist"
-                                        , "CircleMesh0", "CircleMesh1", "CircleMesh2", "CircleMesh3", "CircleMesh4", "CircleMesh5", "ViperHandTrail" };
+                                        , "CircleMesh0", "CircleMesh1", "CircleMesh2", "CircleMesh3", "CircleMesh4", "CircleMesh5", "ViperHandTrail" , "Viper_Sphere_Verticle_Trail" };
 
 		ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 	}

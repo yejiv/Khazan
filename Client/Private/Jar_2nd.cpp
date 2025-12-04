@@ -38,7 +38,7 @@ HRESULT CJar_2nd::Initialize_Clone(void* pArg)
 
     AnimChange(m_eAnimState);
 
-    m_pTalk->On_Panel(1);
+    m_fMoveSpeed = 0.75f;
 
     return S_OK;
 }
@@ -82,14 +82,33 @@ HRESULT CJar_2nd::Render()
     {
         if (true == Skip_Mesh(i))
             continue;
-        else
-            _int a = 10;
+
+        _float fShadeIntensity = 3.f;
+        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float)), E_FAIL);
+
+        _float fEdgeIntensity = 1.f;
+
+        switch (i)
+        {
+        case MESH_BODY:
+            fEdgeIntensity = 1.2f;
+            break;
+        case MESH_HEAD:
+            break;
+        case MESH_CENTER:
+        case MESH_LEFT:
+        case MESH_RIGHT:
+            fEdgeIntensity = 2.6f;
+            break;
+        }
+
+        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float)), E_FAIL);
 
         Bind_Materials(i);
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(20), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -152,8 +171,6 @@ HRESULT CJar_2nd::Bind_Materials(_uint iMeshIndex)
 
 void CJar_2nd::Animation_Update(_float fTimeDelta)
 {
-#pragma region KEEP
-
     if (MOVE_STATE::MOVE == m_eMoveState)
         return;
 
@@ -208,9 +225,6 @@ void CJar_2nd::Animation_Update(_float fTimeDelta)
         AnimChange(ANIM_STATE::DEACTIVE, false, true);
         break;
     }
-
-#pragma endregion
-
 }
 
 void CJar_2nd::Animation_Change(_float fTimeDelta)
@@ -267,49 +281,43 @@ void CJar_2nd::Update_Step(_float fTimeDelta)
 
 void CJar_2nd::Check_Step()
 {
+    if (MOVE_STATE::MOVE == m_eMoveState)
+        return;
+
     _bool isSkip = false;
 
     switch (m_iStepState)
     {
     case STEP1:
-        m_pTalk->On_Panel(1);
+        Check_OnPanel_TalkUI(301, 9.5f);
         break;
     case STEP2:
+        Check_OnPanel_TalkUI(310);
         break;
     case STEP3:
-        m_pTalk->On_Panel(2);        
-        break;
     case STEP4:
-        
-        break;
     case STEP5:
-        m_pTalk->On_Panel(4);
-        break;
     case STEP6:
+        isSkip = true;
         break;
     case STEP7:
-        m_pTalk->On_Panel(5);
+        Check_OnPanel_TalkUI(311, 7.5f);
         break;
     case STEP8:
-        
-        break;
     case STEP9:
-        isSkip = true;
-        break;
     case STEP10:
-        isSkip = true;
-        break;
     case STEP11:
-        isSkip = true;
-        break;
     case STEP12:
         isSkip = true;
         break;
     case STEP13:
+        Check_OnPanel_TalkUI(318, 7.5f);
         break;
     case STEP14:
+        isSkip = true;
         break;
     case STEP15:
+        Check_OnPanel_TalkUI(319, 4.5f);
         break;
     case STEP16:
         break;
@@ -340,63 +348,48 @@ _float4 CJar_2nd::Get_NextStepPos()
     {
     case STEP1:
         vTargetPos = m_DanjinJarStep.vStep2;
-        m_fDuration = 1.f;
         break;
     case STEP2:
         vTargetPos = m_DanjinJarStep.vStep3;
-        m_fDuration = 1.f;
         break;
     case STEP3:
         vTargetPos = m_DanjinJarStep.vStep4;
-        m_fDuration = 1.f;
         break;
     case STEP4:
         vTargetPos = m_DanjinJarStep.vStep5;
-        m_fDuration = 1.f;
         break;
     case STEP5:
         vTargetPos = m_DanjinJarStep.vStep6;
-        m_fDuration = 1.f;
         break;
     case STEP6:
         vTargetPos = m_DanjinJarStep.vStep7;
-        m_fDuration = 1.f;
         break;
     case STEP7:
         vTargetPos = m_DanjinJarStep.vStep8;
-        m_fDuration = 1.f;
         break;
     case STEP8:
         vTargetPos = m_DanjinJarStep.vStep9;
-        m_fDuration = 1.f;
         break;
     case STEP9:
         vTargetPos = m_DanjinJarStep.vStep10;
-        m_fDuration = 1.f;
         break;
     case STEP10:
         vTargetPos = m_DanjinJarStep.vStep11;
-        m_fDuration = 1.f;
         break;
     case STEP11:
         vTargetPos = m_DanjinJarStep.vStep12;
-        m_fDuration = 1.f;
         break;
     case STEP12:
         vTargetPos = m_DanjinJarStep.vStep13;
-        m_fDuration = 1.f;
         break;
     case STEP13:
         vTargetPos = m_DanjinJarStep.vStep14;
-        m_fDuration = 1.f;
         break;
     case STEP14:
         vTargetPos = m_DanjinJarStep.vStep15;
-        m_fDuration = 1.f;
         break;
     case STEP15:
         vTargetPos = m_DanjinJarStep.vStep16;
-        m_fDuration = 1.f;
         break;
     case STEP16:
         break;
@@ -410,12 +403,14 @@ void CJar_2nd::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
-    if (false == m_isMoveFlag)
+    if (false == m_isMoveFlag && /*m_pTalk->isEmptyNextEvent() && */m_pTalk->isTalkingEnd())
     {
         XMStoreFloat4(&m_vStartPos, m_pTransformCom->Get_State(STATE::POSITION));
         m_vEndPos = Get_NextStepPos();
         if (0.f != m_vEndPos.w)
         {
+            if (false == m_pTalk->isExistNextTalk())
+                m_pTalk->Off_Panel();
             Set_Duration();
             AnimChange(ANIM_STATE::WALK_LOOP, true);
             m_eMoveState = MOVE_STATE::MOVE;
@@ -429,7 +424,20 @@ void CJar_2nd::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
-
+    if (false == m_isMoveFlag && /*m_pTalk->isEmptyNextEvent() && */m_pTalk->isTalkingEnd())
+    {
+        XMStoreFloat4(&m_vStartPos, m_pTransformCom->Get_State(STATE::POSITION));
+        m_vEndPos = Get_NextStepPos();
+        if (0.f != m_vEndPos.w)
+        {
+            if (false == m_pTalk->isExistNextTalk())
+                m_pTalk->Off_Panel();
+            Set_Duration();
+            AnimChange(ANIM_STATE::WALK_LOOP, true);
+            m_eMoveState = MOVE_STATE::MOVE;
+            m_isMoveFlag = true;
+        }
+    }
 }
 
 void CJar_2nd::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)

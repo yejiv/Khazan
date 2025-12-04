@@ -168,10 +168,10 @@ void CKhazan_GSword::Update(_float fTimeDelta)
     //    m_pTransformCom->Set_State(STATE::POSITION, vpos);
     //    //m_pCharVirCom->Set_Gravity(g_fGravity);
     //    //m_vGravity = XMVectorSet(0.f, 0.F, 0.f, 0.f);
-    if (m_pGameInstance->Key_Down(DIK_B))
+   /* if (m_pGameInstance->Key_Down(DIK_B))
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));
     if (m_pGameInstance->Key_Down(DIK_N))
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_UnArmed"));
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_UnArmed"));*/
 
 
     if (m_isEnableControl)
@@ -221,12 +221,13 @@ void CKhazan_GSword::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
-    if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH) && m_EventInteract.isInCave() == false)
+    if ((m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH) || m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::VIPER)) 
+        && m_EventInteract.isInCave() == false)
     {
         m_EffectTimeDelta += fTimeDelta;
         if (m_EffectTimeDelta > 2.f)
         {
-            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Snow_Once"), m_pTransformCom->Get_State(STATE::POSITION));
+            m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Snow_Once"), m_pTransformCom->Get_State(STATE::POSITION));
             m_EffectTimeDelta = 0.f;
         }
     }
@@ -2618,8 +2619,6 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         }
         case INTERACTIVE_TYPE::STATUE:
         {
-            isDone = false;
-            if (m_pBody->Get_Model()->IsFinished())  isDone = true;
             break;
         }
         case INTERACTIVE_TYPE::IRONGATE:

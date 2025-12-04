@@ -19,7 +19,8 @@ public:
 		_float	fLifeTime;
 		_uint	iTextureIdx;
 		_uint	iDivisionCount;
-        _float3 vColor;
+        _float4 vColor;
+        _float4 vSubColor;
     }LINE_TRAIL_DESC;
 
 protected:
@@ -55,7 +56,8 @@ protected:
     _float					    m_fLifeTime = {};
     _uint					    m_iTextureIdx = {};
     _int					    m_iDivisionCount = {};
-    _float3                     m_vColor = {};
+    _float4                     m_vColor = {};
+    _float4                     m_vSubColor = {};
 
 protected:
 	deque<CVIBuffer_LineTrail::LINE_TRAIL_POINT>	m_ControlPoints;

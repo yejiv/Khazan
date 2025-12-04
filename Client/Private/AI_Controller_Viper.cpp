@@ -47,16 +47,6 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
         }
 
-        if (m_pGameInstance->Key_Down(DIK_Y))
-        {
-
-            CViper* pViper = static_cast<CViper*>(pOwner);
-            //pViper->Set_PhaseWeapon_Cinematic();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
-
-        }
-
-
 
         if (m_pGameInstance->Key_Down(DIK_P))
         {
@@ -67,18 +57,54 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
             m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGCOMBO), pViper);
 
         }
+
+
+
+        if (m_pGameInstance->Key_Down(DIK_Y))
+        {
+
+            CViper* pViper = static_cast<CViper*>(pOwner);
+            //pViper->Set_PhaseWeapon_Cinematic();
+            //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
+            m_pBB->Set_Value<_bool>(m_strMonstertag, "is_Berserker", true);
+
+        }
     }
 
     if (m_pGameInstance->Key_Down(DIK_Z))
     {
-
         CViper* pViper = static_cast<CViper*>(pOwner);
         CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
         pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-        //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-         //pViper->Consume_Stamina(10.f);
+        //pViper->Consume_Stamina(10.f);
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    {
+
+        if (m_pGameInstance->Key_Down(DIK_B))
+        {
+            m_pBB->Set_Value<_uint>(m_strMonstertag,"DebugIndex",0);
+            CViper* pViper = static_cast<CViper*>(pOwner);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_BACKJUMP), pViper);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_N))
+        {
+            m_pBB->Set_Value<_uint>(m_strMonstertag, "DebugIndex", 1);
+            CViper* pViper = static_cast<CViper*>(pOwner);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_JUMPATTACK), pViper);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_M))
+        {
+            
+            CViper* pViper = static_cast<CViper*>(pOwner);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGROUND), pViper);
+        }
 
     }
+
 
     if (m_pGameInstance->Key_Down(DIK_J))
     {
@@ -116,7 +142,9 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         else
             m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-        m_pBT->Update();
+        if(!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
+            m_pBT->Update();
+
     }
 
     m_pFSM->Update(pOwner, fTimeDelta * m_fAnimSpeed);
@@ -181,16 +209,13 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
                 BB->Set_Value<_bool>(pViper->Get_Name(), "DamageInterrupt", false);
 
-
                 if (pViper->Get_CurrentHP() <= 0.f)
                 {
                    /* static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1001);
                     static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1002);
                     static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1003);
                     static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 1000);*/
-
                     return true;
-
                 }
                 else
                     return false;
@@ -356,6 +381,40 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
 #pragma region COMBAT_PHASE2
 
+
+    else if ("P2_BerserkerJump" == name)
+    {
+        return [pViper, this](CBlackBoard* BB)->_bool
+            {
+
+                _bool isBerserker = BB->Get_Value<_bool>(pViper->Get_Name(), "is_Berserker");
+
+                if (!isBerserker)
+                    return false;
+
+                _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
+                _float fJumpRnage = BB->Get_Value<_float>(pViper->Get_Name(), "JumpAttackRange");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+
+                if (fDist > fAttackRange + 10.f && fDist <= fJumpRnage)
+                {
+                    _float fChance = m_pGameInstance->Rand(0.f,1.f);
+
+                    if (fChance >= 0)
+                        BB->Set_Value<_uint>(pViper->Get_Name(), "BerserkerJumpCount", 1);
+                    else
+                        BB->Set_Value<_uint>(pViper->Get_Name(), "BerserkerJumpCount", 0);
+
+                    return true;
+                }
+                else
+                    return false;
+            };
+            }
+
+
+
+
     else if ("P2_SwingRound" == name)
     {
         return [pViper, this](CBlackBoard* BB)->_bool
@@ -414,8 +473,9 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fJumpAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "JumpAttackRange");
+                _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
 
-                if (fDist != 0  && fDist <= fJumpAttackRange)
+                if (fDist > fAttackRange + 10.f && fDist <= fJumpAttackRange)
                 {
                     DIRECTION_INFO Info = {};
                     Info.iDirFlag = BB->Get_Value<_uint>(pViper->Get_Name(), "TargetDirection");
@@ -1156,15 +1216,13 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
-                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isDeadFinished"))
+               /* if (BB->Get_Value<_bool>(pViper->Get_Name(), "isDeadFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
-                }
-
-                BB->Set_Value(pViper->Get_Name(), "isDead", true);
+                }*/
 
                 pViper->Get_Controller()->Get_State_Machine()->
-                    Change_State(ENUM_CLASS(VIPER_STATE_P1::DEAD), pViper);
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DEAD), pViper);
                 return BTNODESTATE::RUNNING;
             };
     }
@@ -1261,6 +1319,33 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
             };
     }
    
+
+    else if ("P2_BerserkerJump" == name)
+    {
+
+        return [pViper](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+
+                if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_BerserkerJumpFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                pViper->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_BERSERKERJUMP), pViper);
+
+                return BTNODESTATE::RUNNING;
+            };
+            }
+
+
+
 
     else if ("P2_SwingRound" == name)
     {
@@ -2234,6 +2319,23 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
 
 #pragma region COMBAT_PHASE2
 
+    else if ("P2_BerserkerJump" == name)
+    {
+        return [pViper](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_BerserkerJumpFinished", false);
+                    BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                }
+            };
+    }
 
     else if ("P2_Roar" == name)
     {
@@ -2871,7 +2973,7 @@ INTERRUPTCONDITION CAI_Controller_Viper::GetCallbackInterruptCondition(CGameObje
     {
         return [pViper](CBlackBoard* BB)
             {
-                if (BB->Get_Value<_bool>(pViper->Get_Name(), "isDead"))
+                if (BB->Get_Value<_bool>(pViper->Get_Name(),"isDead"))
                     return true;
 
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))

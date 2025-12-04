@@ -1,0 +1,152 @@
+#pragma once
+#include "Monster.h"
+#include "Client_Defines.h"
+#include "BlackBoard.h"
+
+NS_BEGIN(Engine)
+class CModel;
+class CBody;
+NS_END
+
+NS_BEGIN(Client)
+
+class CHalberd final : public CMonster
+{
+public:
+    enum class MONSTATE { DEAD, GRORRY, BRUTAL, ATTACK_LONG, ATTACK_DEFAULT, DAMAGE, TURN, LOCKON, SLEEP, END };
+    enum class ATTACKSTATE { DEFAULT, LONG, END };
+
+    typedef struct TagMonData_Halberd{
+        //애니메이션 관련
+        _int                iAnimIndex = {};
+        _bool               isAnimFinash = {false};
+        _bool               isSleep = {false};
+        _bool               isStateFiash = {false};
+        _bool               isTurn = { false };
+        _float              fQuat = {};
+        _float              fLook = {};
+        _bool               isBland = { false };
+
+        _float              fDecreaseAlpha = {};
+        _float              fEdgeWidth = {};
+        _float4             fEdgeColor = {};
+
+        //BT 판단용 변수       
+        _bool               isDamage = { false };
+        _bool               isWallCrushed = { false };
+
+        _float              fLong_AttackCool = {};
+        _float              fAttackCool = {};
+        _float              fSpecial_AttackCool = {};
+        _float              fDeltaSpeed = {1.f};
+
+        HITREACTION         eHitType = { HITREACTION::END };
+        _int                iBrutalHit = {};
+
+        //ETC
+        _float              fGloggyTime = {};
+        _bool               isAttack_Collinder = {};
+
+        //스테이터스
+        _float              fAttackDamage = {};
+        ATTACKSTATE         eAttackState = {};
+        _float*             pMaxHp = { nullptr };
+        _float*             pCulHp = { nullptr };
+        _float*             pMaxStamina = { nullptr };
+        _float*             pCulStamina = { nullptr };
+
+        _bool               isStamina_Regen = {};
+        _float              fWarkSpeed = { 10.f };
+        CHalberd*           pOwner = { nullptr };
+
+    }MONDATA;
+private:
+    CHalberd(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    CHalberd(const CHalberd& Prototype);
+    virtual ~CHalberd() = default;
+
+public:
+    void                            LockOnLerp(_float fTimeDetla, _float fSpeed);
+    void                            LockOn();
+    void                            BurutalUI_On(_float fTime);
+    void                            BurutalUI_Off();
+    void                            Rush();
+
+    MONDATA&                        Get_Data();
+    void                            Move_F();
+    void                            Hp_Visivle(_bool isVisivle);
+    void                            Hp_Dead();
+    _bool                           Check_Ranage(string strKey);
+    _bool                           Check_Ranage(_float fRange);
+    TARGET_DIR                      Get_DIR();
+
+    _float                          Get_TrackPotion();
+
+public:
+    const TRAIL_CONFIG&             Get_TrailConfig() const;
+    void                            Set_TrailConfig(const TRAIL_CONFIG& Config);
+    _uint                           Get_NumTrailTextures();
+    ID3D11ShaderResourceView*       Get_TrailTexture(_uint iIndex);
+
+public:
+    virtual void                    Creature_Release() override;
+    virtual HRESULT					Initialize_Prototype(_int iLevel);
+    virtual HRESULT					Initialize_Clone(void* pArg) override;
+    virtual void					Priority_Update(_float fTimeDelta) override;
+    virtual void					Update(_float fTimeDelta) override;
+    virtual void					Late_Update(_float fTimeDelta) override;
+
+public:
+    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
+
+private:
+    class CBody_Halberd*            m_pBody = { nullptr };
+    class CHalberd_Weapon*          m_pWeapon = { nullptr };
+    class CBlackBoard*              m_pBlackBoard = { nullptr };
+    class CMon_HP*                  m_pUI_HP = { nullptr };
+    class CMeshTrail*               m_pMeshTrail = { nullptr };
+
+    CBody*                          m_pHitBodyCom = { nullptr };
+
+    _float4x4*                      m_pBodySocketMatrix = { nullptr };
+    _float4x4*                      m_pLockOnSocketMatrix = { nullptr };
+    _float4                         m_vLockOnPos = {};
+
+    _float4                         m_vHpPos = {};
+    _float4x4*                      m_pHeadMatrix = { nullptr };
+    MONDATA                         m_Data = {};
+
+    _float                          m_fTimeDelta = {};
+    _float                          m_fAccTime = {};
+
+    _bool                           m_isHit = { true };
+
+    _float4                         m_vSword_End = {};
+    _float4                         m_vSword_Start = {};
+
+    class CTarget_BrutalAttack*     m_pBrutalAttack = {nullptr};
+
+private:
+    HRESULT                         Ready_Prototype();
+
+    HRESULT                         Ready_ETC();
+    HRESULT							Ready_Components();
+    HRESULT							Ready_PartObjects();
+    HRESULT							Ready_AnimEvent();
+
+    HRESULT							Ready_MonData();
+
+    void                            Update_UIHp();
+    void                            Update_Body(_float fTimeDelta);
+    void                            Update_MeshTrail();
+
+public:
+    static CHalberd*                Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
+    virtual CGameObject*            Clone(void* pArg) override;
+    virtual void					Free() override;
+
+};
+
+NS_END

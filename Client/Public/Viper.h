@@ -65,12 +65,15 @@ private:
     HRESULT							Ready_PartObjects();
     HRESULT							Ready_Projectiles();
     HRESULT							Ready_AnimEvent();
-    HRESULT						    Ready_AnimEffectEvent(CModel* pModel);
+    HRESULT						    Ready_AnimEffectEvent();
 
 private:
     void							Pick_ViperRock();
     void							Hold_ViperRock();
     void							Throw_ViperRock();
+     
+private:
+    _vector                         Decompose_Rotation(_matrix W, _vector localRot = { 0.f, 0.f, 0.f, 0.f }, _vector offset = { 0.f, 0.f, 0.f, 1.f });
 
 private:
     class CBody_Viper*              m_pBody = { nullptr };
@@ -89,9 +92,10 @@ private:
     PHASE                           m_ePhase = { PHASE::END };
 
     _float4x4*                      m_pThrowMatrix = {};
+    COLLISION_DESC                  m_tViperCollisionDesc = {};
 
-private: //임시!!! 발견하면 지워주세요 깜빡하고 못 지운 거
-    _uint                       tmpIdx;
+private:
+    _uint                           m_iRotFX_Idx;
 
 public:
     static CViper*                  Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

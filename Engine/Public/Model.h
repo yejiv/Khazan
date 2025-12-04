@@ -138,8 +138,7 @@ public:
     const			vector<_float4x4>& Get_PartLocalBoneMatrices() const { return m_PartLocalBoneMatrices; }
     void            Build_PartToMasterMap();
     void			Update_PartLocalBones();
-
-
+    
 public: 
     /* 모든 뼈 정보 */
     const vector<_float4x4>& Get_CachedBoneMatrices() const { return m_CachedBoneMatrices; }
