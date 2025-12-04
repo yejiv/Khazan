@@ -15,7 +15,7 @@
 #include "FSM_Viper.h"
 #include "Projectile_Rock_Viper.h"
 #include "AS_CutScene_2Phase_Viper.h"
-
+#include "MeshTrail.h"
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -101,9 +101,29 @@ CFSM_Viper* CViper::Get_Viper_FSM()
     return pFSM;
 }
 
+const TRAIL_CONFIG& CViper::Get_TrailConfig() const
+{
+    return m_pMeshTrail[ENUM_CLASS(TWINBLADE::LEFT)]->Get_TrailConfig();
+}
+
+void CViper::Set_TrailConfig(const TRAIL_CONFIG& Config)
+{
+    m_pMeshTrail[ENUM_CLASS(TWINBLADE::LEFT)]->Set_TrailConfig(Config);
+    m_pMeshTrail[ENUM_CLASS(TWINBLADE::RIGHT)]->Set_TrailConfig(Config);
+}
+
+_uint CViper::Get_NumTrailTextures()
+{
+    return m_pMeshTrail[ENUM_CLASS(TWINBLADE::LEFT)]->Get_NumTrailTextures();
+}
+
+ID3D11ShaderResourceView* CViper::Get_TrailTexture(_uint iIndex)
+{
+    return m_pMeshTrail[ENUM_CLASS(TWINBLADE::LEFT)]->Get_TrailTexture(iIndex);
+}
+
 HRESULT CViper::Initialize_Prototype()
 {
-    
     return S_OK;
 }
 
@@ -139,7 +159,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     }
 
     //m_ePhase = PHASE::PHASE1;
-    m_ePhase = PHASE::PHASE2;
+    m_ePhase = PHASE::PHASE1;
 
  
     m_fRecoveryPerSec = 5.f;
@@ -151,8 +171,14 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_pCharVirCom->Set_Position(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
     }
 
-   
-
+    CMeshTrail::TRAIL_DESC MeshDesc{};
+    MeshDesc.iTextureIdx = 8;
+    MeshDesc.fLifeTime = 0.3f;
+    MeshDesc.iDivisionCount = 10.f;
+    MeshDesc.vColor = _float4(2.353f, 1.961f, 1.569f, 1.f);
+    MeshDesc.vSubColor = _float4(0.f, 0.f, 0.f, 7.843f);
+    m_pMeshTrail[ENUM_CLASS(TWINBLADE::LEFT)] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
+    m_pMeshTrail[ENUM_CLASS(TWINBLADE::RIGHT)] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
     return S_OK;
 }
@@ -175,6 +201,9 @@ void CViper::Priority_Update(_float fTimeDelta)
     }
 
     CContainerObject::Priority_Update(fTimeDelta);
+
+    for (auto& pTrail : m_pMeshTrail)
+        pTrail->Priority_Update(fTimeDelta);
 }
 
 void CViper::Update(_float fTimeDelta)
@@ -253,6 +282,11 @@ void CViper::Update(_float fTimeDelta)
     else if(m_ePhase == PHASE::PHASE2)
         m_vLockOnPosition = m_pPahse2Body->Get_BonePointEX("Bip001-Spine2");
 
+    for (auto& pTrail : m_pMeshTrail)
+        pTrail->Update(fTimeDelta);
+
+    // Test
+    //  FX_Trail();
 
    /* if (m_pGameInstance->Key_Down(DIK_P))
     {
@@ -271,6 +305,9 @@ void CViper::Late_Update(_float fTimeDelta)
         return;
 
     CContainerObject::Late_Update(fTimeDelta);
+
+    for (auto& pTrail : m_pMeshTrail)
+        pTrail->Late_Update(fTimeDelta);
 }
 
 HRESULT CViper::Render()
@@ -1798,6 +1835,8 @@ HRESULT CViper::Ready_AnimEvent()
 
 HRESULT CViper::Ready_AnimEffectEvent()
 {
+    // ======================================== 1 Phase ========================================
+
     CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
     if (nullptr == pModel)
         return E_FAIL;
@@ -1844,10 +1883,28 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Grap"), m_iRotFX_Idx); 
         });
 
+    // MeshTrail
+    pModel->Register_Event("Quick2Hit_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("Slow2Hit_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("Slow3Hit_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("SlashBackJump_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("ThrowBlade_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("TurnAttack_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("JumpSmash_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("Divour_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("Combo5Hit_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("StingGrabStart_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("StingGrabSuccess_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("StingGrabFail_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("StingSlashLoop01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("StingSlashLoop02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    pModel->Register_Event("StingSlashEnd_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+
+    // ======================================== 2 Phase ========================================
+    
     pModel = static_cast<CModel*>(m_pPahse2Body->Get_Component(TEXT("Com_Model")));
     if (nullptr == pModel)
         return E_FAIL;
-    //2패
     pModel->Register_Event("Hand_Swing_Double_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
@@ -2154,6 +2211,17 @@ _vector CViper::Decompose_Rotation(_matrix W, _vector localRot, _vector offset)
     return Q;
 }
 
+void CViper::FX_Trail()
+{
+    _vector vSwordLeftStart = m_pWeapon->Get_LeftSwordStartPos();
+    _vector vSwordLeftEnd = m_pWeapon->Get_LeftSwordTip();
+    m_pMeshTrail[ENUM_CLASS(TWINBLADE::LEFT)]->Add_ControlPoint(vSwordLeftEnd, vSwordLeftStart);
+
+    _vector vSwordRightStart = m_pWeapon->Get_RightSwordStartPos();
+    _vector vSwordRightEnd = m_pWeapon->Get_RightSwordTip();
+    m_pMeshTrail[ENUM_CLASS(TWINBLADE::RIGHT)]->Add_ControlPoint(vSwordRightEnd, vSwordRightStart);
+}
+
 CViper* CViper::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CViper* pInstance = new CViper(pDevice, pContext);
@@ -2178,6 +2246,9 @@ CGameObject* CViper::Clone(void* pArg)
 
 void CViper::Free()
 {
+    for (auto& pTrail : m_pMeshTrail)
+        Safe_Release(pTrail);
+    
     Safe_Release(m_pBody);
     Safe_Release(m_pCinematicBody);
     Safe_Release(m_pWeapon);

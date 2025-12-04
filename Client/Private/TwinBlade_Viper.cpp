@@ -123,20 +123,19 @@ void CTwinBlade_Viper::Update(_float fTimeDelta)
 
         _float4x4 vSwordMat = m_CombinedWorldMatrix;
 
-        _vector m_vRot = { vSwordMat._21, vSwordMat._22, vSwordMat._23 };
+        _vector vUp = { vSwordMat._21, vSwordMat._22, vSwordMat._23 };
+        _vector vRight = { vSwordMat._11, vSwordMat._12, vSwordMat._13 };
+
         _vector vSwordPos = { vSwordMat._41, vSwordMat._42, vSwordMat._43 };
-        _vector vSwordStart = vSwordPos + XMVector3Normalize(m_vRot) * 1.5f;
-        _vector vSwordEnd = vSwordPos + XMVector3Normalize(m_vRot) * 3.f;
+        _vector vSwordStart = vSwordPos + XMVector3Normalize(vUp) * 1.5f;
+        _vector vSwordEnd = vSwordPos + XMVector3Normalize(vUp) * 3.f + XMVector3Normalize(vRight) * 0.3f;
         XMStoreFloat4(&m_vLeftBladeStartPos, XMVectorSetW(vSwordStart, 1.f));
         XMStoreFloat4(&m_vLeftTipPos, XMVectorSetW(vSwordEnd, 1.f));
-        vSwordStart = vSwordPos - XMVector3Normalize(m_vRot) * 1.5f;
-        vSwordEnd = vSwordPos - XMVector3Normalize(m_vRot) * 3.f;
+        vSwordStart = vSwordPos - XMVector3Normalize(vUp) * 1.5f;
+        vSwordEnd = vSwordPos - XMVector3Normalize(vUp) * 3.f - XMVector3Normalize(vRight) * 0.3f;
         XMStoreFloat4(&m_vRightBladeStartPos, XMVectorSetW(vSwordStart, 1.f));
         XMStoreFloat4(&m_vRightTipPos, XMVectorSetW(vSwordEnd, 1.f));
-
     }
-
-
 }
 
 void CTwinBlade_Viper::Late_Update(_float fTimeDelta)
