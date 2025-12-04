@@ -35,38 +35,19 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
     
     if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
     {
+        // 컷신 스테이트 변경
         if (m_pGameInstance->Key_Down(DIK_O))
         {
             CViper* pViper = static_cast<CViper*>(pOwner);
-            //CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-            ////pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-            //pViper->Consume_Stamina(10.f);
-            //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHDRIFT), pViper);
-
+            
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
 
         }
-
 
         if (m_pGameInstance->Key_Down(DIK_P))
         {
-
             CViper* pViper = static_cast<CViper*>(pOwner);
-            pViper->Set_PhaseWeapon_Cinematic();
-            //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGCOMBO), pViper);
-
-        }
-
-
-
-        if (m_pGameInstance->Key_Down(DIK_Y))
-        {
-
-            CViper* pViper = static_cast<CViper*>(pOwner);
-            //pViper->Set_PhaseWeapon_Cinematic();
-            //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
-            m_pBB->Set_Value<_bool>(m_strMonstertag, "is_Berserker", true);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
 
         }
     }
@@ -75,8 +56,10 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
     {
         CViper* pViper = static_cast<CViper*>(pOwner);
         CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-        //pViper->Consume_Stamina(10.f);
+        //CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+             ////pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+             //pViper->Consume_Stamina(10.f);
+             //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
     }
 
     if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))

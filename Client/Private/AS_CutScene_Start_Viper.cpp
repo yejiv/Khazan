@@ -27,6 +27,17 @@ void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, 
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
 
     
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    {
+        if (m_pGameInstance->Key_Down(DIK_0))
+            ViperScene_Sit(pViper);
+        else if (m_pGameInstance->Key_Down(DIK_1))
+            ViperScene_Jump(pViper);
+        else if (m_pGameInstance->Key_Down(DIK_2))
+            ViperScene_Land(pViper);
+        else if (m_pGameInstance->Key_Down(DIK_3))
+            ViperScene_Roar(pViper);
+    }
 
 
     if (pModel->Play_Animation(fTimeDelta * m_fTimeHelper))
@@ -98,9 +109,6 @@ void CAS_CutScene_Start_Viper::Change_CutSceneState(CUTSCENE_STATE eNextState , 
     {
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::JUMP));        
         pViper->Set_Teleport(XMVectorSet(-30.838f, -5.35f, 199.893f, 1.f));
-        //pViper->Set_ViperPosition(XMVectorSet(-30.838f, -8.453f, 199.893f, 1.f));
-        pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneSit", false);
-        pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneJump", true);
         break;
     }        
     case Client::CUTSCENE_STATE::LAND:
