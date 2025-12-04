@@ -17,9 +17,34 @@ CUI_Talk_Danjinjar::CUI_Talk_Danjinjar(const CUI_Talk_Danjinjar& Prototype)
 {
 }
 
+_bool CUI_Talk_Danjinjar::isEmptyNextEvent()
+{
+    return m_iNextEvent == 0 ? true : false;
+}
+
+_bool CUI_Talk_Danjinjar::isExistNextTalk()
+{
+    _bool isExistNext = { true };
+
+    if (m_iNextEvent == 0)
+    {
+        isExistNext = false;
+        m_eTaking = TALKSTATE::END;
+    }
+    else
+        m_eTaking = TALKSTATE::NEXT;
+
+    return isExistNext;
+}
+
+_bool CUI_Talk_Danjinjar::isTalkingEnd()
+{
+    return m_isTalkingEnd;
+}
+
 _bool CUI_Talk_Danjinjar::isTalking()
 {
-    return m_eTaking == TALKSTATE::END ? false : true;
+    return m_eTaking == TALKSTATE::TALKING ? true : false;
 }
 
 HRESULT CUI_Talk_Danjinjar::On_Panel(_int iTalkIndex)
@@ -40,6 +65,25 @@ HRESULT CUI_Talk_Danjinjar::On_Panel(_int iTalkIndex)
     m_fTalktime = 0.f;
     m_wstrCulText = {};
     m_pText1->Set_Text(TEXT(""));
+
+    _float fCenter_ScaleX = (56.f / 168.f) * 2.625f;
+    m_pTransformCom->Scale({ (56.f / 168.f) * 2.625f, 1.f, 1.f });
+
+    _float fSide_ScaleX = 0.01f;
+
+    m_BG[1]->Set_LocalPos({ -fCenter_ScaleX * 0.5f - fSide_ScaleX * 0.5f , 0.f, 0.f, 1.f });
+    m_BG[1]->Set_LocalSize({ fSide_ScaleX, 1.f,1.f });
+    m_BG[2]->Set_LocalPos({ fCenter_ScaleX * 0.5f + fSide_ScaleX * 0.5f ,0.f, 0.f, 1.f });
+    m_BG[2]->Set_LocalSize({ fSide_ScaleX, 1.f,1.f });
+
+    _float fLastSide_ScaleX = (20.f / 168.f) * 2.625f;
+    m_BG[0]->Set_LocalPos({ -fCenter_ScaleX * 0.5f - fSide_ScaleX - fLastSide_ScaleX * 0.5f, 0.f, 0.f, 1.f });
+    m_BG[0]->Set_LocalSize({ fLastSide_ScaleX, 1.f,1.f });
+    m_BG[3]->Set_LocalPos({ fCenter_ScaleX * 0.5f + fSide_ScaleX + fLastSide_ScaleX * 0.5f, 0.f, 0.f, 1.f });
+    m_BG[3]->Set_LocalSize({ fLastSide_ScaleX, 1.f,1.f });
+
+    m_fTalkEndTime = 0.f;
+    m_isTalkingEnd = false;
 }
 
 void CUI_Talk_Danjinjar::Off_Panel()
@@ -53,7 +97,7 @@ void CUI_Talk_Danjinjar::Update_UITransform(_vector vPos)
     m_fSpeedWeight = 10.f;
     m_vUV[0] = { 56.f / 168.f, 0.f, 112.f / 168.f, 1.f };
 
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetZ(XMVectorSetX(XMVectorSetY(vPos, XMVectorGetY(vPos) + 2.5f), XMVectorGetX(vPos)), XMVectorGetZ(vPos)));
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetZ(XMVectorSetX(XMVectorSetY(vPos, XMVectorGetY(vPos) + 1.75f), XMVectorGetX(vPos)), XMVectorGetZ(vPos)));
 
     _float offsetY = sin(m_fSpeedWeight * 2.f) * 1.f * 0.5f
         + sin(m_fSpeedWeight * 2.f * 0.5f) * 1.f * 0.5f;
@@ -228,7 +272,8 @@ void CUI_Talk_Danjinjar::UI_Animation(_float fTimeDelta)
 
 void CUI_Talk_Danjinjar::Update_Font(_float fTimeDelta)
 {
-    m_fTalktime += fTimeDelta * m_fTextSpeed;
+    if (!m_wstrFullText.empty())
+        m_fTalktime += fTimeDelta * m_fTextSpeed;
 
     if (m_fTalktime >= 1.f && !m_wstrFullText.empty())
     {
@@ -266,6 +311,12 @@ void CUI_Talk_Danjinjar::Update_Font(_float fTimeDelta)
     }
     if (m_wstrFullText.empty())
     {
+        m_fTalkEndTime += fTimeDelta;
+        m_fTalktime += fTimeDelta;
+
+        if ((m_iNextEvent == 0 && m_fTalkEndTime >= m_fDeleyTime) || 0.f >= m_fDeleyTime)
+            m_isTalkingEnd = true;
+
         if (m_fDeleyTime <= 0.f && m_eTaking == TALKSTATE::NEXT)
         {
             if (m_iNextEvent == 0)
@@ -284,6 +335,28 @@ void CUI_Talk_Danjinjar::Update_Font(_float fTimeDelta)
                 m_fTalktime = 0.f;
                 m_wstrCulText = {};
                 m_pText1->Set_Text(TEXT(""));
+
+                _float fCenter_ScaleX = (56.f / 168.f) * 2.625f;
+                m_pTransformCom->Scale({ (56.f / 168.f) * 2.625f, 1.f, 1.f });
+
+                _float fSide_ScaleX = 0.01f;
+
+                m_BG[1]->Set_LocalPos({ -fCenter_ScaleX * 0.5f - fSide_ScaleX * 0.5f , 0.f, 0.f, 1.f });
+                m_BG[1]->Set_LocalSize({ fSide_ScaleX, 1.f,1.f });
+                m_BG[2]->Set_LocalPos({ fCenter_ScaleX * 0.5f + fSide_ScaleX * 0.5f ,0.f, 0.f, 1.f });
+                m_BG[2]->Set_LocalSize({ fSide_ScaleX, 1.f,1.f });
+
+                _float fLastSide_ScaleX = (20.f / 168.f) * 2.625f;
+                m_BG[0]->Set_LocalPos({ -fCenter_ScaleX * 0.5f - fSide_ScaleX - fLastSide_ScaleX * 0.5f, 0.f, 0.f, 1.f });
+                m_BG[0]->Set_LocalSize({ fLastSide_ScaleX, 1.f,1.f });
+                m_BG[3]->Set_LocalPos({ fCenter_ScaleX * 0.5f + fSide_ScaleX + fLastSide_ScaleX * 0.5f, 0.f, 0.f, 1.f });
+                m_BG[3]->Set_LocalSize({ fLastSide_ScaleX, 1.f,1.f });
+
+                if (0.f < m_fDeleyTime)
+                {
+                    m_fTalkEndTime = 0.f;
+                    m_isTalkingEnd = false;
+                }
             }
         }
         else if (m_fDeleyTime > 0.f && m_fTalktime >= m_fDeleyTime)
@@ -304,6 +377,28 @@ void CUI_Talk_Danjinjar::Update_Font(_float fTimeDelta)
                 m_fTalktime = 0.f;
                 m_wstrCulText = {};
                 m_pText1->Set_Text(TEXT(""));
+
+                _float fCenter_ScaleX = (56.f / 168.f) * 2.625f;
+                m_pTransformCom->Scale({ (56.f / 168.f) * 2.625f, 1.f, 1.f });
+
+                _float fSide_ScaleX = 0.01f;
+
+                m_BG[1]->Set_LocalPos({ -fCenter_ScaleX * 0.5f - fSide_ScaleX * 0.5f , 0.f, 0.f, 1.f });
+                m_BG[1]->Set_LocalSize({ fSide_ScaleX, 1.f,1.f });
+                m_BG[2]->Set_LocalPos({ fCenter_ScaleX * 0.5f + fSide_ScaleX * 0.5f ,0.f, 0.f, 1.f });
+                m_BG[2]->Set_LocalSize({ fSide_ScaleX, 1.f,1.f });
+
+                _float fLastSide_ScaleX = (20.f / 168.f) * 2.625f;
+                m_BG[0]->Set_LocalPos({ -fCenter_ScaleX * 0.5f - fSide_ScaleX - fLastSide_ScaleX * 0.5f, 0.f, 0.f, 1.f });
+                m_BG[0]->Set_LocalSize({ fLastSide_ScaleX, 1.f,1.f });
+                m_BG[3]->Set_LocalPos({ fCenter_ScaleX * 0.5f + fSide_ScaleX + fLastSide_ScaleX * 0.5f, 0.f, 0.f, 1.f });
+                m_BG[3]->Set_LocalSize({ fLastSide_ScaleX, 1.f,1.f });
+
+                if (0.f < m_fDeleyTime)
+                {
+                    m_fTalkEndTime = 0.f;
+                    m_isTalkingEnd = false;
+                }
             }
         }
     }
