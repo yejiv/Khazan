@@ -251,12 +251,12 @@ void CElamein::Update(_float fTimeDelta)
     XMStoreFloat4(&m_vSword_Start, XMVectorSetW(vSwordStart, 1.f));
     XMStoreFloat4(&m_vSword_End, XMVectorSetW(vSwordEnd, 1.f));
    
-    m_pController->Update(this, fTimeDelta * 1.2f);
-    __super::Update(fTimeDelta * 1.2f);
+    m_pController->Update(this, fTimeDelta);
+    __super::Update(fTimeDelta);
     Update_UIHp();
-    Update_Body(fTimeDelta * 1.2f);
+    Update_Body(fTimeDelta);
 
-    m_pMeshTrail->Update(fTimeDelta * 1.2f);
+    m_pMeshTrail->Update(fTimeDelta);
 }
 
 void CElamein::Late_Update(_float fTimeDelta)
@@ -444,9 +444,9 @@ HRESULT CElamein::Ready_AnimEvent()
     pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
     pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
     pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
-    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
-    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
-    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f); });
+    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f); });
+    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f);});
     pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 65; });
     pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 66; });
     pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
@@ -454,17 +454,17 @@ HRESULT CElamein::Ready_AnimEvent()
     pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
     pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
     pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
-    pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); });
-    pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); });
-    pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f);});
+    pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f);});
+    pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f);});
     pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 68; });
     pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 69; });
     pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
     pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
     pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
-    pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); });
-    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); });
+    pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f); });
+    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f); });
     pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 71; });
     pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 

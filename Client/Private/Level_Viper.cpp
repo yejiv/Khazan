@@ -71,7 +71,7 @@ HRESULT CLevel_Viper::Initialize()
     CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Laye0r_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
 
-    CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
+    //CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
     //CClientInstance::GetInstance()->Fade_Out();
     CHECK_FAILED(Ready_Item(), E_FAIL);
     if (!Wait_All_Futures())
@@ -869,8 +869,8 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
      //    return E_FAIL;
 
      CMonster::MONSTER_DESC MonsterDesc{};
-     MonsterDesc.fAttack = 200.f;
-     MonsterDesc.fMaxHP = 50.f;
+     MonsterDesc.fAttack = 100.f;
+     MonsterDesc.fMaxHP = 100.f;
      MonsterDesc.fMaxStamina = 250.f;
      MonsterDesc.fMoveSpeed = 10.f;
      MonsterDesc.fSpeedPerSec = 3.f;
