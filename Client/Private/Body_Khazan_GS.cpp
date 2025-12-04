@@ -1301,6 +1301,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("GhostSlashCharge_Turn_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
     m_pModelCom->Register_Event("ChargeCrash_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
 
+    m_pModelCom->Register_Event("DodgeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_BrightTrail(); });
+    m_pModelCom->Register_Event("DodgeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("DodgeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
+
+    m_pModelCom->Register_Event("WeakAtk01_ChargeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_BrightTrail(); });
+    m_pModelCom->Register_Event("WeakAtk01_ChargeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("WeakAtk01_ChargeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
+
 #pragma endregion
 
 
@@ -1776,8 +1784,29 @@ void CBody_Khazan_GS::FX_Trail()
     _vector vTipUp = SwordTipMatrix.r[0];
     _vector vTipPos = SwordTipMatrix.r[3];
     _vector vHandPos = SwordHandMatrix.r[3];
-    //  _vector vHandPos = SwordWorldMatrix.r[3];
     m_pTrail->Add_ControlPoint(vTipPos, vHandPos);
+}
+
+void CBody_Khazan_GS::Set_BaseTrail()
+{
+    TRAIL_CONFIG Config{};
+    Config.iTextureIdx = 22;
+    Config.fLifeTime = 0.3f;
+    Config.iDivisionCount = 10.f;
+    Config.vColor = { 0.5f, 0.f, 0.f, 7.843f };
+    Config.vSubColor = { 0.f, 0.f, 0.f, 2.f };
+    m_pTrail->Set_TrailConfig(Config);
+}
+
+void CBody_Khazan_GS::Set_BrightTrail()
+{
+    TRAIL_CONFIG Config{};
+    Config.iTextureIdx = 22;
+    Config.fLifeTime = 0.3f;
+    Config.iDivisionCount = 10.f;
+    Config.vColor = { 3.529f, 0.f, 0.f, 1.f };
+    Config.vSubColor = { 0.f, 0.f, 0.f, 2.f };
+    m_pTrail->Set_TrailConfig(Config);
 }
 
 CBody_Khazan_GS* CBody_Khazan_GS::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

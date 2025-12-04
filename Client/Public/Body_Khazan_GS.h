@@ -254,6 +254,8 @@ private:
     void Start_DefaultDistortion();
     void Start_FullScreenDistortion();
     void FX_Trail();
+    void Set_BaseTrail();
+    void Set_BrightTrail();
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
