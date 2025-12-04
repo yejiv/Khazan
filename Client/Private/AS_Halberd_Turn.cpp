@@ -12,13 +12,13 @@ void CAS_Halberd_Turn::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     if (m_eDir == TARGET_DIR::BL)
     {
-        m_pMonData->iAnimIndex = 68;
+        m_pMonData->iAnimIndex = 70;
         m_fAngle = 180.f;
         m_pMonData->isAnimFinash = false;
     }
     else if (m_eDir == TARGET_DIR::BR || m_eDir == TARGET_DIR::B)
     {
-        m_pMonData->iAnimIndex = 70;
+        m_pMonData->iAnimIndex = 68;
         m_fAngle = 180.f;
         m_pMonData->isAnimFinash = false;
     }
@@ -46,7 +46,7 @@ void CAS_Halberd_Turn::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
     if (m_pMonData->isAnimFinash)
     {
         m_pMonData->fQuat = m_fAngle;
-        m_pMonData->iAnimIndex = 101;
+        m_pMonData->iAnimIndex = 62;
         m_pMonData->isTurn = false;
         m_pMonData->isBland = false;
     }

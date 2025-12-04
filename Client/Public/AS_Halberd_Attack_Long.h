@@ -21,6 +21,7 @@ private:
     CHalberd::MONDATA*              m_pMonData = { nullptr };
     _bool                           m_isSprint = {};
     FSMSTATE                        m_eState = { END };
+    _bool                           m_isTakeDamage = {};
 public:
     static CAS_Halberd_Attack_Long* Create();
     virtual void				    Free() override;

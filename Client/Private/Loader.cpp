@@ -828,25 +828,30 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Breath"),
         CProjectile_Breath_Yetuga::Create(m_pDevice, m_pContext))))
         return E_FAIL;
+#pragma endregion
 
+#pragma region Halberd
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Halberd"),
+        CHalberd::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
+        return E_FAIL;
 #pragma endregion
 
 #pragma region GOMDOL
 
 	/* Prototype_GameObject_Monster_Yetuga */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"),
-		CGomdol::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
-	// Prototype_PartObject_Yetuga_Body
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Gomdol_Body"),
-		CBody_Gomdol::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"),
+	//	CGomdol::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 	//// Prototype_PartObject_Yetuga_Body
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Head"),
-	//	CHead_Yetuga::Create(m_pDevice, m_pContext))))
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Gomdol_Body"),
+	//	CBody_Gomdol::Create(m_pDevice, m_pContext))))
 	//	return E_FAIL;
+
+	////// Prototype_PartObject_Yetuga_Body
+	////if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Head"),
+	////	CHead_Yetuga::Create(m_pDevice, m_pContext))))
+	////	return E_FAIL;
 
 #pragma endregion
 

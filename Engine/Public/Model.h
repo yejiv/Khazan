@@ -259,7 +259,7 @@ private:
     inline void		Add_State(_uint i) { m_iState |= i; }
     inline void		Remove_State(MODEL_STATE s) { m_iState &= ~s; }
     inline void		Remove_State(_uint i) { m_iState &= ~i; }
-    inline _bool	Has_State(MODEL_STATE s) { return (m_iState & s) != 0; }
+     inline _bool	Has_State(MODEL_STATE s) { return (m_iState & s) != 0; }
     inline _bool	Has_State(_uint i) { return (m_iState & i) != 0; }
     inline _bool	Has_AllStates(_uint i) { return (m_iState & i) == i; }
     inline void		Clear_State() { m_iState = 0; }

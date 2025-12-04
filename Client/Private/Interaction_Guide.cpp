@@ -101,7 +101,8 @@ void CInteraction_Guide::Late_Update(_float fTimeDelta)
 	
 	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
     Update_WorldPos();
-	if (m_eGuideType == GUIDE_TYPE::DEFAULT)
+
+    if (m_eGuideType == GUIDE_TYPE::DEFAULT)
 		m_pTextBox->Late_Update(fTimeDelta);
 	else
 		__super::Late_Update(fTimeDelta);

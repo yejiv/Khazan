@@ -80,6 +80,14 @@ float g_fGreenIntensity = 1.f;
 float g_fDiffusePower = 1.f;
 float g_fBluePower = 1.f;
 
+//눈 관련 값
+float4 g_vEyeWhiteColor;            //눈 흰자
+float4 g_vPupilCircle;              //홍채
+float4 g_vPupilLens;                //홍채 내부
+float4 g_vPupilRing;                //홍채 외곽 강조
+float4 g_vShadingColor;             //조명 조정 및 빛 반사
+float g_PupilScale;                 //동공 크기
+
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -1004,6 +1012,52 @@ PS_OUT PS_DANJINJAR(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_MAIN_DISSOLVE_EYE_ELAMEIN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float4 EyeWhiteColor = float4(0.760417, 0.760417, 0.760417, 1.0);
+    float4 PupilRing = float4(0.291254, 0.223749, 0.427083, 1.0);
+    float4 ShadingColor = float4(1.081201, 0.62283, 1.2, 1.0);
+
+    float pupilScale = 0.18 * 0.75f; // 0.75 들어감
+    float irisScale = 0.34;
+
+    float dist = distance(In.vTexcoord, float2(0.5, 0.5));
+    float4 color = EyeWhiteColor;
+
+    color = lerp(color, PupilRing * 10.f, color);
+    color.rgb *= ShadingColor.rgb;
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, color);
+    
+    
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
+    return Out;
+}
+
+PS_OUT PS_MAIN_DISSOLVE_EYE_DEFAULT(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+        
+    float pupilScale = 0.18 * g_PupilScale; // 0.75 들어감
+    float irisScale = 0.34;
+
+    float dist = distance(In.vTexcoord, float2(0.5, 0.5));
+    float4 color = g_vEyeWhiteColor;
+    color = lerp(color, g_vPupilCircle * 5.f, smoothstep(irisScale, irisScale - 0.05, dist));
+    color = lerp(color, g_vPupilLens, smoothstep(pupilScale, pupilScale - 0.03, dist));
+    float ring = smoothstep(pupilScale + 0.02, pupilScale, dist);
+    color = lerp(color, g_vPupilRing, color);
+    color.rgb *= g_vShadingColor.rgb;
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, color);
+    
+    
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass        // 0 번
@@ -1182,7 +1236,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_ELEVATOR_L();
     }
 
-    // 이미시브 추가         ( 15번 )
+    // 엘라메인 헤어 패스         ( 15번 )
     pass PS_MAIN_HAIR_EMISSIVE_15
     {
         SetRasterizerState(RS_Default);
@@ -1193,7 +1247,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_HAIR_EMISSIVE();
     }
-    // 이미시브 추가         ( 16번 )
+    // 엘라메인 쉴드 패스        ( 16번 )
     pass PS_MAIN_SHIELD_EMISSIVE_16
     {
         SetRasterizerState(RS_Default);
@@ -1204,7 +1258,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SHIELD_EMISSIVE();
     }
-    // 이미시브 추가         ( 17번 )
+    // 디죨브         ( 17번 )
     pass PS_MAIN_DISSOLVE_17
     {
         SetRasterizerState(RS_Default);
@@ -1250,5 +1304,41 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_DANJINJAR();
+    }
+
+    //눈 엘라메인 (21번)
+    pass PS_MAIN_DISSOLVE_EYE_ELAMEIN_21
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE_EYE_ELAMEIN();
+    }
+
+    // 디죨브 컬 논       ( 22번 )
+    pass PS_MAIN_DISSOLVE_22
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE();
+    }
+
+    //공용 눈 (23번)
+    pass PS_MAIN_DISSOLVE_EYE_DEFAULT_23
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE_EYE_DEFAULT();
     }
 }

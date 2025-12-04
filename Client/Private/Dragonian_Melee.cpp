@@ -169,10 +169,15 @@ void CDragonian_Melee::Update(_float fTimeDelta)
     if (m_Data.fAnimDeley >= 0.f)
         m_Data.fAnimDeley -= fTimeDelta;
 
+    _float4x4 LockOnMatrix{};
+    XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
+    m_vLockOnPos = { LockOnMatrix._41, LockOnMatrix._42, LockOnMatrix._43, 1.f };
+
     _float4x4 m_vSwordMat = m_pWeapon->Get_CombindMat();
     _vector vClawLRight = XMVector3Normalize({ m_vSwordMat._11, m_vSwordMat._12, m_vSwordMat._13 });
     _vector vClawLUp = XMVector3Normalize({ m_vSwordMat._21, m_vSwordMat._22, m_vSwordMat._23 });
     _vector vClawLLook = XMVector3Normalize({ m_vSwordMat._31, m_vSwordMat._32, m_vSwordMat._33 });
+
 
     _vector vSwordPos = { m_vSwordMat._41, m_vSwordMat._42, m_vSwordMat._43 };
     _vector vSwordStart = vSwordPos - vClawLUp * 0.45f + vClawLRight * 0.25f;

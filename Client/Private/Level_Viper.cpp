@@ -41,7 +41,7 @@ HRESULT CLevel_Viper::Initialize()
 
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
     CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
-    CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+    //CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
        
     // 우선 맵 오브젝트 서브 레벨 로드
     
@@ -65,7 +65,7 @@ HRESULT CLevel_Viper::Initialize()
     for (_uint i = 0; i < VIPER_SUBLV; ++i)
     {
         CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-        //CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     }
     //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Laye0r_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
@@ -822,7 +822,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, con
         if ("Viper" == MonsterData.MonsterKey[i])
         {
             WorldMatrix._41 = -37.938f;
-            WorldMatrix._42 = -15.453f;
+            WorldMatrix._42 = -15.453f;       
             WorldMatrix._43 = 223.393f;
 
             CMonster::MONSTER_DESC MonsterDesc{};
@@ -869,7 +869,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
      //    return E_FAIL;
 
      CMonster::MONSTER_DESC MonsterDesc{};
-     MonsterDesc.fAttack = 10.f;
+     MonsterDesc.fAttack = 200.f;
      MonsterDesc.fMaxHP = 50.f;
      MonsterDesc.fMaxStamina = 250.f;
      MonsterDesc.fMoveSpeed = 10.f;
@@ -880,6 +880,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
      MonsterDesc.WorldMatrix.m[3][0] = -32.365f;
      MonsterDesc.WorldMatrix.m[3][1] = -26.5f;
      MonsterDesc.WorldMatrix.m[3][2] = 182.409f;
+
      MonsterDesc.strName = "Halberd";
      MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
      if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
