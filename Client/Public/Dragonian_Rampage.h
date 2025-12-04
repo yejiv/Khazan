@@ -60,6 +60,7 @@ public:
         _float              fWarkSpeed = { 10.f };
         CDragonian_Rampage* pOwner = { nullptr };
 
+        _bool               isStamina_Regen = {};
         ATTACKSTATE         eAttack_State = { ATTACKSTATE::END };
     }MONDATA;
 
@@ -78,6 +79,8 @@ public:
     _bool                           Check_Ranage(_float fRange);
     TARGET_DIR                      Get_DIR();
 
+    void                            BurutalUI_On(_float fTime);
+    void                            BurutalUI_Off();
 public:
     virtual void                    Creature_Release() override;
     virtual HRESULT					Initialize_Prototype(_int iLevel);
@@ -133,6 +136,8 @@ private:
     _float4                         m_vClawR_1_End = {};
     _float4                         m_vClawR_2_End = {};
     _float4                         m_vClawR_3_End = {};
+
+    class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
 
 private:
     HRESULT                         Ready_Prototype();

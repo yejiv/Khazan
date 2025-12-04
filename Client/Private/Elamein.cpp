@@ -13,7 +13,7 @@
 #include "Mon_Hp.h"
 #include "MeshTrail.h"
 
-#include "UI_Talk_Danjinjar.h"
+#include "Target_BrutalAttack.h"
 
 CElamein::CElamein(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
@@ -33,6 +33,23 @@ void CElamein::LockOnLerp(_float fTimeDetla, _float fSpeed)
 void CElamein::LockOn()  
 {
     m_pTransformCom->LookAt(m_pTarget->Get_Position());
+}
+
+void CElamein::BurutalUI_On(_float fTime)
+{
+    m_pBrutalAttack = nullptr;
+    m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+    m_pBrutalAttack->Setting_BrutalAttack(m_vLockOnPosition, fTime);
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
+}
+
+void CElamein::BurutalUI_Off()
+{
+    if (m_pBrutalAttack == nullptr)
+        return;
+
+    m_pBrutalAttack->Off_BrutalAttack();
+    m_pBrutalAttack = nullptr;
 }
 
 CElamein::MONDATA& CElamein::Get_Data()
@@ -186,13 +203,7 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
     MeshDesc.vColor = _float4(2.455f, 1.937f, 2.784f, 1.f);
     m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
-    CUIObject::UIOBJECT_DESC Desc;
-    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
-    Desc.vLocalPos = { 0.f, 0.f };
-    Desc.vLocalSize = { 3.625f, 1.f };
-    Desc.szName = "Dangin_TalkUI";
-    m_pTalk = static_cast<CUI_Talk_Danjinjar*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_TalkDanjinjar"), &Desc));
-    CHECK_NULLPTR(m_pTalk, E_FAIL);
+    m_fRecoveryPerSec = 10.f;
 
     return S_OK;
 }
@@ -202,7 +213,13 @@ void CElamein::Priority_Update(_float fTimeDelta)
     CContainerObject::Priority_Update(fTimeDelta);
 
     m_pMeshTrail->Priority_Update(fTimeDelta);
-    m_pTalk->Priority_Update(fTimeDelta);
+    m_isRequestRecoveryStamina = m_Data.isStamina_Regen;
+    if (m_Data.isStamina_Regen)
+    {
+        Recovery_Stamina(fTimeDelta * 12.f);
+        if (m_fCurrentStamina == m_fMaxStamina)
+            m_Data.isStamina_Regen = false;
+    }
 }
 
 void CElamein::Update(_float fTimeDelta)
@@ -240,7 +257,6 @@ void CElamein::Update(_float fTimeDelta)
     Update_Body(fTimeDelta);
 
     m_pMeshTrail->Update(fTimeDelta);
-    m_pTalk->Update(fTimeDelta);
 }
 
 void CElamein::Late_Update(_float fTimeDelta)
@@ -248,7 +264,6 @@ void CElamein::Late_Update(_float fTimeDelta)
     CContainerObject::Late_Update(fTimeDelta);
     
     m_pMeshTrail->Late_Update(fTimeDelta);
-    m_pTalk->Late_Update(fTimeDelta);
 }
 
 void CElamein::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -274,10 +289,10 @@ HRESULT CElamein::Ready_Prototype()
     CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_Component_Model_Elamein"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Elamein/Elamein/Elamein.dat")), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_Elamein_Sword"),
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_Component_Elamein_Sword"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Elamein/Elamein_Sword/Elamein_Sword.dat")), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_Elamein_Shield"),
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iPrototypeIndex, TEXT("Prototype_Component_Elamein_Shield"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Elamein/Elamein_Shield/Elamein_Shield.dat")), E_FAIL);
 
 
@@ -591,11 +606,16 @@ CGameObject* CElamein::Clone(void* pArg)
 
 void CElamein::Free()
 {
+    if (m_pBrutalAttack != nullptr)
+        m_pBrutalAttack->Off_BrutalAttack();
+
     Safe_Release(m_pMeshTrail);
+    if (m_pBrutalAttack != nullptr)
+        m_pBrutalAttack->Off_BrutalAttack();
+
     if (m_pUI_HP != nullptr)
-    {
         m_pUI_HP->Set_IsDead(true);
-    }
+
     __super::Free();
     Safe_Release(m_pBody);
     Safe_Release(m_pBlackBoard);
@@ -603,6 +623,4 @@ void CElamein::Free()
     Safe_Release(m_pShield);
     m_Data.pOwner = nullptr;
 
-
-    Safe_Release(m_pTalk);
 }

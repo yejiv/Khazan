@@ -46,12 +46,12 @@ public:
 		Plane			fSupportingVolume = Plane(Vec3::sAxisY(), -0.02f);
 
 		// 바닥으로 ‘내려 붙잡기’ 벡터 (월드기준 하향)
-		_float3			vStickToFloorStepDown = _float3(0.0f, -0.3f, 0.0f);   // 최대 0.5m까지 아래로 붙잡기
+		_float3			vStickToFloorStepDown = _float3(0.0f, -0.5f, 0.0f);   // 최대 0.5m까지 아래로 붙잡기
 		// 계단 ‘올라가기’ 허용 벡터 (월드기준 상향)
-		_float3			vWalkStairsStepUp = _float3(0.0f, 0.2f, 0.0f);   // 0.3m까지 허용
+		_float3			vWalkStairsStepUp = _float3(0.0f, 0.4f, 0.0f);   // 0.3m까지 허용
 		// 앞으로 얼마나 전진하고 ‘계단/턱’을 시험할지
 		_float			fWalkStairsMinStepForward = 0.02f;                      // 최소 전진량
-		_float			fWalkStairsStepForwardTest = 0.12f;                      // 테스트 전진량
+		_float			fWalkStairsStepForwardTest = 0.15f;                      // 테스트 전진량
 		// 전방 벡터와 지면 법선(수평면 사영)의 허용 각 (코사인 값)
 		_float			fWalkStairsCosAngleForwardContact = Cos(DegreesToRadians(75.0f));
 		// 추가로 더 내려 붙잡고 싶을 때 사용 (없으면 Zero)
@@ -128,7 +128,7 @@ public:
 
 public:
 	_bool Get_isGround();
-
+    _vector Get_GroundPos();
 	void Teleport(_vector vPos, _vector qRot, CTransform* pTransform);
 
 public:

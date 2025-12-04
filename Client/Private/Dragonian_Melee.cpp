@@ -12,6 +12,8 @@
 #include "UI_Talk_Danjinjar.h"
 
 #include "MeshTrail.h"
+#include "Target_BrutalAttack.h"
+
 CDragonian_Melee::CDragonian_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
 {
@@ -86,6 +88,23 @@ TARGET_DIR CDragonian_Melee::Get_DIR()
     return Check_Dir(m_pTransformCom->Get_WorldMatrix(), m_pTarget->Get_Transform()->Get_State(STATE::POSITION));
 }
 
+void CDragonian_Melee::BurutalUI_On(_float fTime)
+{
+    m_pBrutalAttack = nullptr;
+    m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
+    m_pBrutalAttack->Setting_BrutalAttack(m_vLockOnPosition, fTime);
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
+}
+
+void CDragonian_Melee::BurutalUI_Off()
+{
+    if (m_pBrutalAttack == nullptr)
+        return;
+
+    m_pBrutalAttack->Off_BrutalAttack();
+    m_pBrutalAttack = nullptr;
+}
+
 HRESULT CDragonian_Melee::Initialize_Prototype(_int iLevel)
 {
 
@@ -120,6 +139,8 @@ HRESULT CDragonian_Melee::Initialize_Clone(void* pArg)
     MeshDesc.vColor = _float4(1.58f, 1.788f, 1.592f, 1.f);
     m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
+    m_fRecoveryPerSec = 10.f;
+
     return S_OK;
 }
 
@@ -127,16 +148,14 @@ void CDragonian_Melee::Priority_Update(_float fTimeDelta)
 {
     CContainerObject::Priority_Update(fTimeDelta);
 
-   /* if (m_pGameInstance->Key_Down(DIK_M))
+    m_pMeshTrail->Priority_Update(fTimeDelta);
+    m_isRequestRecoveryStamina = m_Data.isStamina_Regen;
+    if (m_Data.isStamina_Regen)
     {
-        m_fCurrentHP = m_fMaxHP;
-        m_Data.isSleep = true;
+        Recovery_Stamina(fTimeDelta * 12.f);
+        if (m_fCurrentStamina == m_fMaxStamina)
+            m_Data.isStamina_Regen = false;
     }
-    else if (m_pGameInstance->Key_Down(DIK_B) && m_pGameInstance->Key_Pressing(DIK_LCONTROL, 0.f))
-        m_fCurrentStamina = 0;
-    else if (m_pGameInstance->Key_Down(DIK_B))
-        Take_Damage(10.f, HITREACTION::BRUTAL_ATTACK, m_pTarget);
-        */
     m_pMeshTrail->Priority_Update(fTimeDelta);
 }
 
@@ -434,10 +453,11 @@ void CDragonian_Melee::Free()
 {
     Safe_Release(m_pMeshTrail);
     m_Data.pOwner = nullptr;
+    if (m_pBrutalAttack != nullptr)
+        m_pBrutalAttack->Off_BrutalAttack();
+
     if (m_pUI_HP != nullptr)
-    {
         m_pUI_HP->Set_IsDead(true);
-    }
     __super::Free();
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);

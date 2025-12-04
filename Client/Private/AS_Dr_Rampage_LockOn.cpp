@@ -31,7 +31,7 @@ void CAS_Dr_Rampage_LockOn::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
         _bool isMinRange = m_pMonData->pOwner->Check_Ranage(m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Get_Value<_float>(m_pMonData->pOwner->Get_Name(), "AttackRange") + 2.f);
         _bool isMaxRange = m_pMonData->pOwner->Check_Ranage(m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Get_Value<_float>(m_pMonData->pOwner->Get_Name(), "AttackRange_Middle") + 2.f);
         
-        if (!isMaxRange)
+        if (!isMaxRange || m_pMonData->fAttackCool <= 0.f)
             m_eLockOn = LOCKONSTATE::LOCKON_F;
         else if (isMinRange)
             m_eLockOn = LOCKONSTATE::LOCKON_B;

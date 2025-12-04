@@ -60,42 +60,27 @@ private:
     _bool m_isFadeOut8 = { false };
     _bool m_isFadeIn8 = { false };
 
-    _bool m_isScene1 = { false };
+    _bool m_isScene1 = { false };    
+    _bool m_isScene2 = { false };    
+    _bool m_isScene3 = { false };    
+    _bool m_isScene4 = { false };    
+    _bool m_isScene5 = { false };      
+
     _bool m_isCameraSet1 = { false };
-    _bool m_isScene2 = { false };
     _bool m_isCameraSet2 = { false };
-    _bool m_isScene3 = { false };
     _bool m_isCameraSet3 = { false };
-    _bool m_isScene4 = { false };
     _bool m_isCameraSet4 = { false };
-    _bool m_isScene5 = { false };
     _bool m_isCameraSet5 = { false };
-    _bool m_isScene6 = { false };
     _bool m_isCameraSet6 = { false };
-    _bool m_isScene7 = { false };
     _bool m_isCameraSet7 = { false };
-    _bool m_isScene8 = { false };
     _bool m_isCameraSet8 = { false };
-    _bool m_isScene9 = { false };
-    _bool m_isCameraSet9 = { false };
-    _bool m_isScene10 = { false };
+    _bool m_isCameraSet9 = { false };    
     _bool m_isCameraSet10 = { false };
-    _bool m_isScene11 = { false };
     _bool m_isCameraSet11 = { false };
-    _bool m_isScene12 = { false };
     _bool m_isCameraSet12 = { false };
-
-
-
-
-
-
-
-
-
-
-
-    queue<class CObelisk*> m_Obelisks;
+    _bool m_isCameraSet13 = { false };
+    _bool m_isCameraSet14 = { false };
+    _bool m_isCameraSet15 = { false };
 
     _bool   m_isSkip = { false };
     _bool   m_isSkipFadeOut = { false };
@@ -104,6 +89,8 @@ private:
     _bool   m_isSkipKey = { false };
 
     _bool   m_isEnd = { false };
+
+    queue<class CObelisk*> m_Obelisks;
 
     class CGameInstance* m_pGameInstance = { nullptr };
     class CClientInstance* m_pClientInstance = { nullptr };

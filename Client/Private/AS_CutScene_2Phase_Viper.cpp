@@ -16,7 +16,7 @@ CAS_CutScene_2Phase_Viper::CAS_CutScene_2Phase_Viper()
 void CAS_CutScene_2Phase_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CViper* pViper = static_cast<CViper*>(pOwner);
-    CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+    CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));    
 }
 
 void CAS_CutScene_2Phase_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -102,8 +102,6 @@ void CAS_CutScene_2Phase_Viper::Change_CutSceneState(P2CUTSCENE_STATE eNextState
     {
     case Client::P2CUTSCENE_STATE::DOWN:
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::DOWN));
-        pViper->Get_Core()->Set_IsActive(false);
-        pViper->Set_WeaponOff();
         pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
         break;
     case Client::P2CUTSCENE_STATE::PICKUP:
@@ -135,17 +133,15 @@ void CAS_CutScene_2Phase_Viper::Change_CutSceneState(P2CUTSCENE_STATE eNextState
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::PULLOUT));
         CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2Cinematic_Walk", true);
-        //pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
+        pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
         break;
-    }
-       
-
+    }      
     case Client::P2CUTSCENE_STATE::WALK:
     {
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::WALK));
         CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2Cinematic_Walk", false);
-        //pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
+        pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
         break;
     }
        

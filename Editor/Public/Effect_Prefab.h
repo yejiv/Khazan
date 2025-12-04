@@ -58,6 +58,7 @@ public:
 	void							Edit_TimeTrack(_uint ChildIdx);
 	void							RevertChanges(_uint ChildIdx);
 	void							RemoveEffect(_uint ChildIdx);
+	void							CopyEffect(_uint ChildIdx);
 	_uint							Get_ChildrenSize() { return (_uint)m_Children.size(); }
 	_float							Get_Time() { return m_fCurTime; }
 	_float							Get_MaxTrack();

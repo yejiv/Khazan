@@ -48,6 +48,7 @@ HRESULT CTwinBlade_R_Viper::Initialize_Clone(void* pArg)
     _matrix tempMat = XMMatrixRotationZ(XMConvertToRadians(90.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f));
     XMStoreFloat4x4(&m_matOffset, tempMat);
 
+    m_isOnAttackCollision = true;
     return S_OK;
 }
 
@@ -66,28 +67,28 @@ void CTwinBlade_R_Viper::Update(_float fTimeDelta)
     }
     else if (m_pOwner->Get_Controller()->Get_BlackBoard()->Get_Value<_bool>(m_pOwner->Get_Name(), "isP2Cinematic_Walk"))
     {
-        _float fMoveSpeed = 2.f;
-        _float3 offset = m_vLocalOffset;
+        //_float fMoveSpeed = 2.f;
+        //_float3 offset = m_vLocalOffset;
 
-        if (m_pGameInstance->Key_Down(DIK_UP))
-            offset.y += fMoveSpeed * fTimeDelta;
-        if (m_pGameInstance->Key_Down(DIK_DOWN))
-            offset.y -= fMoveSpeed * fTimeDelta;
+        //if (m_pGameInstance->Key_Down(DIK_UP))
+        //    offset.y += fMoveSpeed * fTimeDelta;
+        //if (m_pGameInstance->Key_Down(DIK_DOWN))
+        //    offset.y -= fMoveSpeed * fTimeDelta;
 
-        if (m_pGameInstance->Key_Down(DIK_LEFT))
-            offset.x -= fMoveSpeed * fTimeDelta;
+        //if (m_pGameInstance->Key_Down(DIK_LEFT))
+        //    offset.x -= fMoveSpeed * fTimeDelta;
 
-        if (m_pGameInstance->Key_Down(DIK_RIGHT))
-            offset.x += fMoveSpeed * fTimeDelta;
+        //if (m_pGameInstance->Key_Down(DIK_RIGHT))
+        //    offset.x += fMoveSpeed * fTimeDelta;
 
-        if (m_pGameInstance->Key_Down(DIK_L))
-            offset.z += fMoveSpeed * fTimeDelta;
+        //if (m_pGameInstance->Key_Down(DIK_L))
+        //    offset.z += fMoveSpeed * fTimeDelta;
 
-        if (m_pGameInstance->Key_Down(DIK_K))
-            offset.z -= fMoveSpeed * fTimeDelta;
+        //if (m_pGameInstance->Key_Down(DIK_K))
+        //    offset.z -= fMoveSpeed * fTimeDelta;
 
-        //m_vLocalOffset = { x = -0.833458841 y = 2.79396772e-06 z = 0.00000000 }
-        //m_vLocalOffset = offset;
+        ////m_vLocalOffset = { x = -0.833458841 y = 2.79396772e-06 z = 0.00000000 }
+        ////m_vLocalOffset = offset;
         m_vLocalOffset = _float3(-0.83, 0.f, 0.f);
     }
     else
@@ -130,8 +131,6 @@ void CTwinBlade_R_Viper::Update(_float fTimeDelta)
             m_pBodyComp->Sync_Update(WeaponWorld);
             m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
         }
-
-        //XMStoreFloat4(&m_vTipPos,vPos);
     }
 
    
@@ -218,7 +217,7 @@ HRESULT CTwinBlade_R_Viper::Ready_Components()
 HRESULT CTwinBlade_R_Viper::Ready_Collision()
 {
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
-    BodyDesc.fRadius = 0.05f;
+    BodyDesc.fRadius = 1.f;
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::SPHERE;
@@ -236,9 +235,11 @@ HRESULT CTwinBlade_R_Viper::Ready_Collision()
     BodyDesc.vPos = _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
-    BodyDesc.vShapeOffset = _float3(0.f, 0.75f, 0.f);
+    BodyDesc.vShapeOffset = _float3(0.f, 0.35f, 0.f);
 
-    m_tCollisionDesc.pGameObject = this;
+    m_tTwinBladeCollisionDesc.pGameObject = this;
+    m_tTwinBladeCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    m_tTwinBladeCollisionDesc.strName = TEXT("TwinBladeR");
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(

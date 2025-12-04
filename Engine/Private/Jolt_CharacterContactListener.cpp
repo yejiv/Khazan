@@ -17,12 +17,23 @@ CJolt_CharacterContactListener::~CJolt_CharacterContactListener()
 
 bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2)
 {
+    if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static)
+        return true;
 
-    return true;
+    return false;
+
 }
 
 bool CJolt_CharacterContactListener::OnCharacterContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::CharacterVirtual* inOtherCharacter, const JPH::SubShapeID& inSubShapeID2)
 {
+    COLLISION_DESC* pCharDesc1 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
+    COLLISION_DESC* pCharDesc2 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inOtherCharacter->GetUserData()));
+
+    if (pCharDesc1->pGameObject->Get_IsGhost() || pCharDesc2->pGameObject->Get_IsGhost())
+    {
+        return false;
+    }
+
     return true;
 }
 

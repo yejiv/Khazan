@@ -26,20 +26,10 @@ CSequence_Viper_SecondPhase::CSequence_Viper_SecondPhase(CViper* pViper, CKhazan
 HRESULT CSequence_Viper_SecondPhase::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 {
     m_pCamera = dynamic_cast<CCamera_Compre*>(m_pClientInstance->Get_ActiveCamera());
-    //m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase1");
-    //m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase2");
-    //m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase3");
-    //m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase4");
-    //m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase5");
-    //m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase6");
-    //m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase7");
-    //m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase8");
-    //m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase9");
-    //m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase10");
-    //m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase11");
-    //m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase12");
-    //m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase13");
-    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase14");
+    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase18");
+
+    CCharacterVirtual* pCharVir = dynamic_cast<CCharacterVirtual*>(m_pKhazan->Get_Component(TEXT("Com_CharacterVirtual")));
+    pCharVir->Teleport(XMVectorSet(0.f, 0.f, 0.f, 1.f), m_pKhazan->Get_Transform()->Get_Rotation_Quat(), m_pKhazan->Get_Transform());    
 
     return S_OK;
 }
@@ -278,6 +268,8 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             m_isFadeIn6 = true;
         }
 
+        // ½Ã³×¸¶Æ½ ¸ðµ¨³¡
+
         if (m_fTime > 86.6f && !m_isFadeOut7)
         {
             m_pClientInstance->Fade_Out(nullptr, 5.f);
@@ -289,8 +281,11 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             m_isCameraSet12 = true;
             m_pViper->Set_Phase(CViper::PHASE::PHASE2);
             m_pViper->Set_PhaseWeapon_Phase2();
-            CAS_CutScene_2Phase_Viper* pCutSceneState = m_pViper->Get_Phase2_Viper_CutSceneState();
-            pCutSceneState->ViperScene_PullOut(m_pViper);
+            m_pCamera->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-33.167f, -26.703f, 186.208f, 1.f));
+            m_pCamera->Get_Transform()->Look_Dir(XMVectorSet(0.716f, -0.276f, 0.642f, 0.f));
+            m_pClientInstance->Camera_Set_Animation(TEXT("Viper_SecondPhase15"));
+            /*CAS_CutScene_2Phase_Viper* pCutSceneState = m_pViper->Get_Phase2_Viper_CutSceneState();
+            pCutSceneState->ViperScene_PullOut(m_pViper);*/
         }
 
         if (m_fTime > 87.2f && !m_isFadeIn7)
@@ -299,38 +294,58 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             m_isFadeIn7 = true;
         }
 
-        // ½Ã³×¸¶Æ½ ¸ðµ¨ ³¡
 
-       /* if (m_fTime > 140.f && !m_isScene7)
+        if (m_fTime > 90.5f && !m_isCameraSet13)
         {
-            m_pViper->Set_Phase(CViper::PHASE::PHASE2);
-            m_pViper->Set_PhaseWeapon_Phase2();
-
-            m_isScene7 = true;
+            m_pCamera->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-25.185f, -26.717f, 184.970f, 1.f));
+            m_pCamera->Get_Transform()->Look_Dir(XMVectorSet(-0.817f, -0.132f, 0.562f, 0.f));
+            m_pClientInstance->Camera_Set_Animation(TEXT("Viper_SecondPhase16"));
+            m_isCameraSet13 = true;
         }
 
-        if (m_fTime > 160.f && !m_isScene8)
+        if (m_fTime > 93.f && !m_isCameraSet14)
         {
-            CAS_CutScene_2Phase_Viper* pCutSceneState = m_pViper->Get_Phase2_Viper_CutSceneState();
-            pCutSceneState->ViperScene_PullOut(m_pViper);
-
-            m_isScene8 = true;
+            m_pCamera->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-25.738f, -27.176f, 181.102f, 1.f));
+            m_pCamera->Get_Transform()->Look_Dir(XMVectorSet(-0.129f, -0.026f, 0.991f, 0.f));
+            m_pClientInstance->Camera_Set_Animation(TEXT("Viper_SecondPhase17"));
+            m_isCameraSet14 = true;
         }
 
-        if (m_fTime > 180.f && !m_isScene9)
+        if (m_fTime > 103.f && !m_isFadeOut8)
+        {
+            m_pClientInstance->Fade_Out(nullptr, 5.f);
+            m_isFadeOut8 = true;
+        }
+
+        if (m_fTime > 103.5f && !m_isCameraSet15)
         {
             CAS_CutScene_2Phase_Viper* pCutSceneState = m_pViper->Get_Phase2_Viper_CutSceneState();
             pCutSceneState->ViperScene_Walk(m_pViper);
+            m_pCamera->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-34.227f, -27.305f, 180.030f, 1.f));
+            m_pCamera->Get_Transform()->Look_Dir(XMVectorSet(0.811f, -0.126f, 0.571f, 0.f));
+            m_pClientInstance->Camera_Set_Animation(TEXT("Viper_SecondPhase18"));
+            CCharacterVirtual* pCharVir = dynamic_cast<CCharacterVirtual*>(m_pKhazan->Get_Component(TEXT("Com_CharacterVirtual")));
+            pCharVir->Teleport(XMVectorSet(-30.149f, -29.976f, 160.233f, 1.f), m_pKhazan->Get_Transform()->Get_Rotation_Quat(), m_pKhazan->Get_Transform());
+            m_pKhazan->Get_Transform()->Look_Dir(XMVectorSet(0.033f, 0.f, 0.999f, 0.f));
+            m_isCameraSet15 = true;
+        }
 
-            m_isScene9 = true;
-        }*/
-        
+        if (m_fTime > 103.8f && !m_isFadeIn8)
+        {
+            m_pClientInstance->Fade_In(nullptr, 5.f);
+            m_isFadeIn8 = true;
+        }
 
 
-
-
-        if (m_fTime >= 90.f)
+        if (m_fTime >= 122.f)
+        {
+            m_pClientInstance->Camera_Force_AniEnd();
+            dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);
             m_isEnd = true;
+        }
+
+        // 2ÆäÀÌÁî ¸ðµ¨ ³¡
+            
     }
     else {
         m_fSkipTime += fTimeDelta;
@@ -343,20 +358,38 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             m_isSkipFadeOut = true;
         }
 
-        if (m_fSkipTime > 1.f && !m_isSkipCameraSet)
+        if (m_fSkipTime > 0.f && !m_isFadeOut8)
         {
-            m_pClientInstance->Camera_Force_AniEnd();
+            m_pClientInstance->Fade_Out(nullptr, 5.f);
+            m_isFadeOut8 = true;
+        }
+
+        if (m_fSkipTime > 0.5f && !m_isSkipCameraSet)
+        {
+            m_pViper->Set_Phase(CViper::PHASE::PHASE2);
+            m_pViper->Set_PhaseWeapon_Phase2();
+            CAS_CutScene_2Phase_Viper* pCutSceneState = m_pViper->Get_Phase2_Viper_CutSceneState();
+            pCutSceneState->ViperScene_Walk(m_pViper);
+            m_pCamera->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-34.227f, -27.305f, 180.030f, 1.f));
+            m_pCamera->Get_Transform()->Look_Dir(XMVectorSet(0.811f, -0.126f, 0.571f, 0.f));
+            m_pClientInstance->Camera_Set_Animation(TEXT("Viper_SecondPhase18"));
+            CCharacterVirtual* pCharVir = dynamic_cast<CCharacterVirtual*>(m_pKhazan->Get_Component(TEXT("Com_CharacterVirtual")));
+            pCharVir->Teleport(XMVectorSet(-30.149f, -29.976f, 160.233f, 1.f), m_pKhazan->Get_Transform()->Get_Rotation_Quat(), m_pKhazan->Get_Transform());
+            m_pKhazan->Get_Transform()->Look_Dir(XMVectorSet(0.033f, 0.f, 0.999f, 0.f));
             m_isSkipCameraSet = true;
         }
 
-        if (m_fSkipTime > 2.f && !m_isSkipFadeIn)
+        if (m_fSkipTime > 0.8f && !m_isFadeIn8)
         {
-            m_pClientInstance->Fade_In();
-            m_isSkipFadeIn = true;
+            m_pClientInstance->Fade_In(nullptr, 5.f);
+            m_isFadeIn8 = true;
         }
 
-        if (m_fSkipTime > 3.f && !m_isEnd)
+
+        if (m_fSkipTime >= 19.f)
         {
+            m_pClientInstance->Camera_Force_AniEnd();
+            dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);
             m_isEnd = true;
         }
     }
