@@ -60,6 +60,7 @@ public:
 	virtual void			RevertChanges()				PURE;
 	_uint					Get_EffectType()			{return m_iEffect_Type;};
 	void					Set_EffectType(_uint type)	{ m_iEffect_Type = type; };
+    virtual void            Get_Data() {};
 
 protected:
 	virtual HRESULT			Ready_Component();

@@ -170,7 +170,7 @@ HRESULT CImp_Melee::Ready_Components()
     MeshDesc.iTextureIdx = 10;
     MeshDesc.fLifeTime = 0.2f;
     MeshDesc.iDivisionCount = 10.f;
-    MeshDesc.vColor = _float3(1.78f, 1.58f, 2.592f);
+    MeshDesc.vColor = _float4(1.78f, 1.58f, 2.592f, 1.f);
     m_pMeshTrail = static_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
     return S_OK;

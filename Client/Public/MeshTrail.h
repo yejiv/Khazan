@@ -19,7 +19,8 @@ public:
 		_float	fLifeTime;
 		_uint	iTextureIdx;
 		_uint	iDivisionCount;
-        _float3 vColor;
+        _float4 vColor;
+        _float4 vSubColor;
 	}TRAIL_DESC;
 
 private:
@@ -55,7 +56,8 @@ private :
     _float					    m_fLifeTime = {};
     _uint					    m_iTextureIdx = {};
     _int					    m_iDivisionCount = {};
-    _float3                     m_vColor = {};
+    _float4                     m_vColor = {};
+    _float4                     m_vSubColor = {};
 
 private :
 	deque<CVIBuffer_QuadTrail::QUAD_TRAIL_POINT>		m_ControlPoints;

@@ -46,6 +46,8 @@
 #include "AS_P2_SwingRound_Viper.h"
 #include "AS_P2_Roar_Viper.h"
 #include "AS_P2_LockOn_Viper.h"
+#include "AS_P2_BerserkerJump_Viper.h"
+#include "AS_P2_Dead_Viper.h"
 
 #pragma endregion
 
@@ -161,6 +163,11 @@ HRESULT CFSM_Viper::Initialize(CGameObject* pOwner)
         return E_FAIL;
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_LOCKON), CAS_P2_LockOn_Viper::Create())))
         return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_BERSERKERJUMP), CAS_P2_BerserkerJump_Viper::Create())))
+        return E_FAIL;
+    if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::P2_DEAD), CAS_P2_Dead_Viper::Create())))
+        return E_FAIL;
+
 
 #pragma endregion
 
@@ -171,8 +178,6 @@ HRESULT CFSM_Viper::Initialize(CGameObject* pOwner)
     if (FAILED(Add_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), CAS_CutScene_2Phase_Viper::Create())))
         return E_FAIL;
 
-
-    //m_pCurrentState = m_States[ENUM_CLASS(VIPER_STATE_P1::IDLE)];
     m_pCurrentState = m_States[ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START)];
     m_pCurrentState->Enter(this,pOwner);
     if (nullptr == m_pCurrentState)

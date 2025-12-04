@@ -41,8 +41,6 @@ HRESULT CDanjinJar::Initialize_Clone(void* pArg)
 
     m_fDefaultLength = XMVectorGetX(XMVector4Length(XMLoadFloat4(&m_DanjinJarStep.vStep1) - XMLoadFloat4(&m_DanjinJarStep.vStep2)));
 
-    m_fMoveSpeed = 0.35f;
-
     return S_OK;
 }
 
@@ -201,9 +199,11 @@ bool CDanjinJar::Skip_Mesh(_uint iMeshIndex)
     case ANIM_STATE::DRSTRANGE_LOOP:
         break;
     case ANIM_STATE::DEACTIVE:
-    case ANIM_STATE::DEACTIVE_IDLE:
         if (MESH_BODY == iMeshIndex || MESH_CENTER == iMeshIndex || MESH_RIGHT == iMeshIndex || MESH_LEFT == iMeshIndex)
             return true;
+        break;
+    case ANIM_STATE::DEACTIVE_IDLE:
+        return true;
         break;
     }
 
@@ -270,6 +270,33 @@ void CDanjinJar::Set_Duration()
 _float CDanjinJar::Calculate_StepDistance(_float4 vPosition1, _float4 vPosition2)
 {
     return XMVectorGetX(XMVector4Length(XMLoadFloat4(&vPosition1) - XMLoadFloat4(&vPosition2)));
+}
+
+_float CDanjinJar::Calculate_Distance(_vector vPosition1, _vector vPosition2)
+{
+    return XMVectorGetX(XMVector4Length(vPosition1 - vPosition2));
+}
+
+void CDanjinJar::Check_OnPanel_TalkUI(_uint iTalkIndex, _float fLimitDistance)
+{
+    if (0.f != fLimitDistance)
+    {
+        if (fLimitDistance > Calculate_Distance(m_pTransformCom->Get_State(STATE::POSITION), m_pTargetCom->Get_State(STATE::POSITION)))
+        {
+            if (false == m_pTalk->isTalking())
+                m_pTalk->On_Panel(iTalkIndex);
+        }
+        else
+        {
+            if (true == m_pTalk->isTalking())
+                m_pTalk->Off_Panel();
+        }
+    }
+    else
+    {
+        if (false == m_pTalk->isTalking())
+            m_pTalk->On_Panel(iTalkIndex);
+    }
 }
 
 void CDanjinJar::Free()

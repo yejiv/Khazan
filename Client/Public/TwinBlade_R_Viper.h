@@ -70,6 +70,7 @@ private:
     _float4                 m_vOffsetRot = {};
 
     _float3                 m_vLocalOffset = {};
+    COLLISION_DESC          m_tTwinBladeCollisionDesc{};
 
 public:
     static CTwinBlade_R_Viper*      Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

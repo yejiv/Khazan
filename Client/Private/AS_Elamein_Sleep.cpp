@@ -28,12 +28,13 @@ void CAS_Elamein_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         m_pMonData->pOwner->Hp_Visivle(true);
         m_pMonData->isStateFiash = true;
         m_pMonData->fGuardCool = 30.f;
-        //m_pMonData->fSpecial_AttackCool = 30.f;
     }
 }
 
 void CAS_Elamein_Sleep::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+    m_pMonData->isSleep = false;
+    m_pMonData->isStateFiash = true;
 }
 
 CAS_Elamein_Sleep* CAS_Elamein_Sleep::Create()

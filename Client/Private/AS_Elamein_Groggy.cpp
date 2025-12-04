@@ -14,6 +14,8 @@ void CAS_Elamein_Groggy::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     m_pMonData->iAnimIndex = 53;
     m_eState = START;
+    m_pMonData->fGloggyTime = 5.f;
+    m_pMonData->pOwner->BurutalUI_On(m_pMonData->fGloggyTime);
 
 }
 
@@ -35,20 +37,23 @@ void CAS_Elamein_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
         {
             m_eState = END;
             m_pMonData->iAnimIndex = 52;
+            m_pMonData->pOwner->BurutalUI_Off();
+            m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isGroggy", false);
         }
     }
     else
     {
         if (m_pMonData->isAnimFinash)
         {
-            *m_pMonData->pCulStamina = *m_pMonData->pMaxStamina;
+            m_pMonData->isStamina_Regen = true;
+            m_pMonData->eHitType = HITREACTION::END;
         }
     }
 }
 
 void CAS_Elamein_Groggy::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    m_pMonData->fGloggyTime = 5.f;
+    m_pMonData->pOwner->BurutalUI_Off();
     m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isGroggy", false);
 }
 

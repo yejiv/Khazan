@@ -16,7 +16,8 @@ void CAS_StingGrab_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* BB = pViper->Get_Controller()->Get_BlackBoard();
 
-    pModel->Set_Animation(58);
+    //pModel->Set_Animation(58);
+    pModel->Set_Animation(59);
     m_eState = VIPERGRAB_STATE::NONE;
 
 }

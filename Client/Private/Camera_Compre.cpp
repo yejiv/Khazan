@@ -361,20 +361,56 @@ HRESULT CCamera_Compre::Spring(_float fTimeDelta)
 
 HRESULT CCamera_Compre::RayCast(_float fTimeDelta)
 {
-    _vector vPos = m_pTransformCom->Get_State(STATE::POSITION) - XMVectorSetW(XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)), 0.f);
-    _vector vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
+    _vector vCamPos = m_pTransformCom->Get_State(STATE::POSITION);
 
-    _float fFraction;
-    _float4 vPosition;
+    _vector vTargetPos = XMVectorSet(
+        m_pObjMatrix->_41,
+        m_pObjMatrix->_42 + 1.5f,
+        m_pObjMatrix->_43,
+        1.f
+    );
+
+    _float desiredDist = m_fRadius;
+
+    _vector vLookN = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
+    _vector vRayEnd = vCamPos - XMVectorSetW(vLookN, 0.f);
+
+    _float  fFraction = 0.f;
+    _float4 vHitPos{};
 
     if (m_pGameInstance->RayCast(
         _float3(vTargetPos.m128_f32[0], vTargetPos.m128_f32[1], vTargetPos.m128_f32[2]),
-        _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]),
+        _float3(vRayEnd.m128_f32[0], vRayEnd.m128_f32[1], vRayEnd.m128_f32[2]),
         fFraction,
-        vPosition
+        vHitPos
     ))
     {
-        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vPosition));
+        _float rayTotalDist = XMVectorGetX(XMVector3Length(vRayEnd - vTargetPos));
+
+        _float hitDist = fFraction * rayTotalDist;
+
+        const _float epsilon = 0.05f;
+        if (hitDist >= desiredDist - epsilon)
+        {
+            return S_OK;
+        }
+
+        const _float fWallOffset = 0.5f;
+        const _float fMinCamDist = 1.0f;
+        _float safeDist = hitDist - fWallOffset;
+        safeDist = Clamp(safeDist, fMinCamDist, desiredDist);
+
+        _vector vDir = XMVector3Normalize(vRayEnd - vTargetPos);
+        _vector vSafePos =
+            XMVectorMultiplyAdd(XMVectorReplicate(safeDist), vDir, vTargetPos);
+        vSafePos = XMVectorSetW(vSafePos, 1.f);
+
+        if (vSafePos.m128_f32[1] < m_pObjMatrix->_42)
+        {
+            vSafePos.m128_f32[1] = m_pObjMatrix->_42;
+        }
+
+        m_pTransformCom->Set_State(STATE::POSITION, vSafePos);
     }
 
     return S_OK;
@@ -402,27 +438,44 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
     _vector directionNormalized = XMVectorScale(playerToTargetVector, 1.0f / playerToTargetDistance);
 
     _float normalizedX = XMVectorGetX(directionNormalized);
-    _float normalizedY = XMVectorGetY(directionNormalized) - 0.3f;
-    // 근접일수록 내려다보기 바이어스(-0.3f)를 0으로 완화
+    _float normalizedY = XMVectorGetY(directionNormalized);
+    _float normalizedZ = XMVectorGetZ(directionNormalized);
+
     {
         const _float rawY = XMVectorGetY(directionNormalized);
         const _float yBiasFar = -0.3f;
-        // k = 근접일수록 1, 멀수록 0
-        const _float k = 1.f - Saturate((playerToTargetDistance - m_fTopClampNearDist) / (m_fTopClampFarDist - m_fTopClampNearDist));
-        const _float yBias = Lerp(0.0f, yBiasFar, 1.f - k); // 근접(k=1)→0, 멀(k=0)→-0.3
+
+        const _float clampNear = m_fLockClampNearDist;
+        const _float clampFar = m_fLockClampFarDist;
+        const _float kDist = 1.f - Saturate((playerToTargetDistance - clampNear) / (clampFar - clampNear));
+
+        const _float yBias = Lerp(0.0f, yBiasFar, 1.f - kDist);
         normalizedY = rawY + yBias;
     }
 
-    _float normalizedZ = XMVectorGetZ(directionNormalized);
     _float targetYaw = atan2f(normalizedZ, normalizedX);
     _float targetPitch = asinf(Clamp(normalizedY, -1.f, 1.f));
 
-    const _float topClampPitch = XMConvertToRadians(m_fTopViewClampDeg); // 예: -3도
-    // k = 근접일수록 1, 멀수록 0
-    const _float k = 1.f - Saturate((playerToTargetDistance - m_fTopClampNearDist) / (m_fTopClampFarDist - m_fTopClampNearDist));
-    if (k > 0.f && targetPitch < topClampPitch) {
-        // targetPitch가 너무 "내려가면"(음수 더 큼) 근접 비율(k)에 따라 topClampPitch 쪽으로 보간
-        targetPitch = Lerp(targetPitch, topClampPitch, k);
+
+    {
+        const _float clampNear = m_fLockClampNearDist;
+        const _float clampFar = m_fLockClampFarDist;
+        const _float kDist = 1.f - Saturate((playerToTargetDistance - clampNear) / (clampFar - clampNear));
+
+        if (kDist > 0.f)
+        {
+            const _float pitchDownLimit = XMConvertToRadians(m_fLockPitchDownClampDeg);
+            const _float pitchUpLimit = XMConvertToRadians(m_fLockPitchUpClampDeg);
+
+            if (targetPitch < pitchDownLimit)
+            {
+                targetPitch = Lerp(targetPitch, pitchDownLimit, kDist);
+            }
+            else if (targetPitch > pitchUpLimit)
+            {
+                targetPitch = Lerp(targetPitch, pitchUpLimit, kDist);
+            }
+        }
     }
 
     targetPitch = Clamp(targetPitch, m_fPitchMin, m_fPitchMax);
@@ -442,6 +495,7 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
         0.08f,
         fTimeDelta
     );
+
     return S_OK;
 }
 
