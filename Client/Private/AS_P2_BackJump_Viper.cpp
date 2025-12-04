@@ -27,10 +27,13 @@ void CAS_P2_BackJump_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     _float fJumpDist = 30.f;
 
     XMStoreFloat3(&m_vGoalPos, vTargetPos + vDir * fJumpDist);
+    _uint iIndex = pBB->Get_Value<_uint>(pViper->Get_Name(), "DebugIndex");
+    //_uint iRandomIndex = static_cast<_uint>(m_pGameInstance->Rand(0,1));
+    //pModel->Set_Animation(iRandomIndex);
 
-    _uint iRandomIndex = static_cast<_uint>(m_pGameInstance->Rand(0,1));
-   
-    pModel->Set_Animation(iRandomIndex);
+    pModel->Set_Animation(iIndex);
+
+
 
 }
 

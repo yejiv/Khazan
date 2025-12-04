@@ -106,7 +106,6 @@ public:
     void Set_BoneLocalRotation(_int iBone, _vector vLocal);
     void Set_BoneWorldRotation(_int iBone, _vector vWorld);
     void Set_PreTransformMatrix(_float4x4 PreTransformMatrix) { m_PreTransformMatrix = PreTransformMatrix; }
-
     vector<_float3>		Get_VerticesPos(_uint iIndex);		//졸트
     vector<_uint>		Get_Indices(_uint iIndex);			//졸트
 

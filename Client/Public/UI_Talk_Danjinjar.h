@@ -20,8 +20,12 @@ private:
     virtual ~CUI_Talk_Danjinjar() = default;
 
 public:
-    void                            SetTalkState(TALKSTATE eState) { m_eTaking = eState; }
+    _bool                           isEmptyNextEvent();
+    _bool                           isExistNextTalk();
+    _bool                           isTalkingEnd();
+
     _bool                           isTalking();
+
     HRESULT                         On_Panel(_int iTalkIndex);
     void                            Off_Panel();
 public:
@@ -55,6 +59,9 @@ private:
     _int                            m_iNextEvent = {};
     _float                          m_fTextSpeed = {};
     _float                          m_fDeleyTime = {};
+
+    _float                          m_fTalkEndTime = {};
+    _bool                           m_isTalkingEnd = { false };
 
 private:
     HRESULT					        Ready_Component();

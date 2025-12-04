@@ -60,8 +60,6 @@ private:
 	HRESULT Loading_For_Test_Shader();
 	HRESULT Loading_For_Test_GameObject();
 
-    HRESULT Loading_For_Effect_Static(_uint level);
-
 #pragma region 하인마흐 
 	HRESULT Loading_For_HeinMach_Level();
 	HRESULT Loading_For_HeinMach_Texture();
@@ -95,6 +93,11 @@ private:
 	HRESULT Loading_For_Viper_GameObject();
 
 #pragma endregion
+
+#pragma region 이펙트
+    HRESULT Loading_For_Effect_Static(_uint level);
+#pragma endregion
+
 
 private:
 	// 모델 : 맵 오브젝트 Dat 로 프로토타입 불러오는 함수 ( 1. 프로토타입 데이터 파일 명 | 2. 레벨 | 3. 맵 ( 안넣으면 폴더 X ) )

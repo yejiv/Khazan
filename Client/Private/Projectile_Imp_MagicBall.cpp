@@ -44,7 +44,7 @@ HRESULT CProjectile_Imp_MagicBall::Initialize_Clone(void* pArg)
     Desc.fLifeTime = 2.f;
     Desc.iDivisionCount = 5.f;
     Desc.iTextureIdx = 28;
-    Desc.vColor = _float3(1.084f, 1.f, 4.f);
+    Desc.vColor = _float4(1.084f, 1.f, 4.f, 1.f);
     m_pLineTrail = static_cast<CLineTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_LineTrail"), &Desc));
 
     return S_OK;

@@ -112,7 +112,7 @@ HRESULT CCharacterVirtual::Initialize_Clone(void* pArg)
 	m_tEXUpdateSetting.mWalkStairsMinStepForward = pDesc->fWalkStairsMinStepForward;
 	m_tEXUpdateSetting.mWalkStairsStepForwardTest = pDesc->fWalkStairsStepForwardTest;
 	m_tEXUpdateSetting.mWalkStairsCosAngleForwardContact = pDesc->fWalkStairsCosAngleForwardContact;
-	m_tEXUpdateSetting.mWalkStairsStepDownExtra = LoadVec3(pDesc->vWalkStairsStepDownExtra);
+	m_tEXUpdateSetting.mWalkStairsStepDownExtra = LoadVec3(pDesc->vWalkStairsStepDownExtra);    
 
 	return S_OK;
 }
@@ -792,6 +792,11 @@ _bool CCharacterVirtual::Get_isGround()
         return true;
 
 	return false;
+}
+
+_vector CCharacterVirtual::Get_GroundPos()
+{
+    return _vector();
 }
 
 void CCharacterVirtual::Teleport(_vector vPos, _vector qRot, CTransform* pTransform)

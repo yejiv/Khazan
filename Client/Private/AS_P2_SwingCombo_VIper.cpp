@@ -18,6 +18,11 @@ void CAS_SwingCombo_VIper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(48);
 
+    CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+    pBB->Set_Value<_uint>(pViper->Get_Name(), "AttackCount", 0);
+    pBB->Set_Value(pViper->Get_Name(), "isP2_Combo_Abort", false);
+
+
 }
 
 void CAS_SwingCombo_VIper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -31,17 +36,25 @@ void CAS_SwingCombo_VIper::Update(CStateMachine* pFSM, CGameObject* pOwner, _flo
     {
         _float fAttackRange = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
         CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
-        pViper->Get_Controller()->AI_MoveTo(pViper,pTarget,0.5f, fAttackRange,fTimeDelta);
+        pViper->Get_Controller()->AI_MoveTo(pViper,pTarget, fAttackRange + 10.f, 10.f,fTimeDelta);
     }
 
     if (pBB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_Rush"))
     {
-        CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
+        
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
-        _vector vTargetPos = pTarget->Get_Transform()->Get_State(STATE::POSITION);
         pOwnerTransform->Go_Straight(fTimeDelta);
     }
-   
+
+    if (pBB->Get_Value<_uint>(pViper->Get_Name(), "AttackCount") == 4)
+    {
+        if (!pBB->Get_Value<_bool>(pViper->Get_Name(), "isP2_Combo_Abort"))
+        {
+            CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+            pOwnerTransform->Go_Straight(fTimeDelta * 6.f);
+        }
+    }
+
 
     if (pBB->Get_Value<_bool>(pViper->Get_Name(), "isP2_Combo_Abort"))
     {

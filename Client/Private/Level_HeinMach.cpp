@@ -319,7 +319,12 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 
     m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::PLAYER));
 
-    /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+    /*
+    
+        CGameObject::GAMEOBJECT_DESC desc{};
+
+    desc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"), TIME_CHANNEL::PLAYER)))
         return E_FAIL;*/
 

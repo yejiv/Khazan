@@ -143,7 +143,7 @@ HRESULT CDragonian_Rampage::Initialize_Clone(void* pArg)
         MeshDesc.iTextureIdx = 2;
         MeshDesc.fLifeTime = 0.6f;
         MeshDesc.iDivisionCount = 10.f;
-        MeshDesc.vColor = _float3(2.176f, 1.824f, 1.176f);
+        MeshDesc.vColor = _float4(2.176f, 1.824f, 1.176f, 1.f);
         m_pMeshTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
     }
 

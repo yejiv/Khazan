@@ -612,6 +612,26 @@ void CBody_Khazan_Spear::Start_MotionTrail(_float fDuration)
     m_pMotionTrailCom->Start_MotionTrail(fDuration);
 }
 
+const TRAIL_CONFIG& CBody_Khazan_Spear::Get_TrailConfig() const
+{
+    return m_pTrail->Get_TrailConfig();
+}
+
+void CBody_Khazan_Spear::Set_TrailConfig(const TRAIL_CONFIG& Config)
+{
+    m_pTrail->Set_TrailConfig(Config);
+}
+
+_uint CBody_Khazan_Spear::Get_NumTrailTextures()
+{
+    return m_pTrail->Get_NumTrailTextures();
+}
+
+ID3D11ShaderResourceView* CBody_Khazan_Spear::Get_TrailTexture(_uint iIndex)
+{
+    return m_pTrail->Get_TrailTexture(iIndex);
+}
+
 void CBody_Khazan_Spear::AllAttackCollisionActive_Off()
 {
     m_isNotifyAttacking = false;
@@ -826,7 +846,7 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
     MeshDsc.iTextureIdx = 9;
     MeshDsc.fLifeTime = .25f;
     MeshDsc.iDivisionCount = 10.f;
-    MeshDsc.vColor = _float3(1.f, 1.f, 1.f);
+    MeshDsc.vColor = _float4(1.f, 1.f, 1.f, 1.f);
     m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
 
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
@@ -837,13 +857,13 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
         MTDesc.OwnerPartModels.push_back(pModel);
 
     MTDesc.Config.vLifeTime = { 0.f, 0.3f };
-    MTDesc.Config.vStartColor = { 1.f, 1.f, 1.f };
-    MTDesc.Config.vTargetColor = { 1.f, 1.f, 1.f };
+    MTDesc.Config.vStartColor = { 0.25f, 0.25f, 0.5f };
+    MTDesc.Config.vTargetColor = { 0.5f, 0.5f, 0.5f };
     MTDesc.Config.fRimPower = 2.f;
     MTDesc.Config.fRimIntensity = 1.f;
     MTDesc.Config.fEmissiveIntensity = 2.f;
     MTDesc.Config.isIndividualColor = true;
-    MTDesc.Config.fColorUpdateSpeed = 1000.f;
+    MTDesc.Config.fColorUpdateSpeed = 1500.f;
     MTDesc.Config.fInterval = 0.1f;
     MTDesc.Config.iMaxFrames = 10.f;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
@@ -865,8 +885,14 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
     m_pModelCom->Register_Event("StrongAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
     m_pModelCom->Register_Event("StrongAtk02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("StrongAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_BlueTrail(); });
     m_pModelCom->Register_Event("StrongAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("StrongAtk03_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
+
+    m_pModelCom->Register_Event("StrongAtk_Charge_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_RedTrail(); });
     m_pModelCom->Register_Event("StrongAtk_Charge_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("StrongAtk_Charge_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
+
     m_pModelCom->Register_Event("StrongAtk_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust1(m_pParentTransform->Get_WorldMatrix().r[3]); });
     m_pModelCom->Register_Event("StrongAtk_Charge_Stamp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {   
         _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
@@ -876,14 +902,16 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     );
 
     /*보름달 트레일*/
-    m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_BlueTrail(); });
     m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
     /*보름달 Blust*/
     m_pModelCom->Register_Event("Full_Moon_Spike0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust3(m_pParentTransform->Get_WorldMatrix().r[3]); });
     m_pModelCom->Register_Event("Full_Moon_Spike1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Spear_Spike(); }); 
     /*달빛 베기*/
-    m_pModelCom->Register_Event("LightningSpear_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("LightningSpear_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_RedTrail(); });
     m_pModelCom->Register_Event("LightningSpear_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
+    m_pModelCom->Register_Event("LightningSpear_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
     m_pModelCom->Register_Event("LightningSpear_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust6(m_pParentTransform->Get_WorldMatrix().r[3]); }); 
     /*나선 찌르기*/
     m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -916,15 +944,11 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         _vector S, Q, T;
 
         if (!XMMatrixDecompose(&S, &Q, &T, W))
-        {
-
-            XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-
-
+        { 
+            XMFLOAT4X4 m; XMStoreFloat4x4(&m, W); 
             _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
             _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-            _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-
+            _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f)); 
 
             _matrix RotationMatrix(
                 r0,
@@ -935,8 +959,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
             Q = XMQuaternionRotationMatrix(RotationMatrix);
         }
-        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiralSpear_SpearFX"), EffectID_SpiralSpear, Q, W.r[3]);
-
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiralSpear_SpearFX"), EffectID_SpiralSpear, Q, W.r[3]); 
         });
 
     m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp_Stop", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -960,25 +983,36 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_pGameInstance->Start_RadialBlur(RBDesc);
         });
     
+    m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_RedTrail(); });
     m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         UpdateSpearWind(false); 
         FX_Trail(); 
     });
 
+    m_pModelCom->Register_Event("SpiralSpear_Spike1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
 
+    m_pModelCom->Register_Event("SpaceTimeCutter_Trail0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_BlueTrail(); });
     m_pModelCom->Register_Event("SpaceTimeCutter_Trail0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("SpaceTimeCutter_Trail0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
+
+    /* 찰나 베기 */
+    m_pModelCom->Register_Event("SprintAtk_Fast_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_BlueTrail(); });
+    m_pModelCom->Register_Event("SprintAtk_Fast_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("SprintAtk_Fast_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
+
+    /* 급소 타격 */
+    m_pModelCom->Register_Event("SprintAtk_Strong_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_BlueTrail(); });
+    m_pModelCom->Register_Event("SprintAtk_Strong_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("SprintAtk_Strong_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
 
 #pragma endregion
 
-
-
-#pragma once ScreenEffect
+#pragma region ScreenEffect
 
     // 급소 타격
-
     m_pModelCom->Register_Event("SprintAtk_Strong_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
 
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
+        Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
 
         RADIAL_BLUR_DESC RBDesc{};
 
@@ -998,13 +1032,12 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         });
 
     m_pModelCom->Register_Event("SprintAtk_Strong_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+        Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), false);
         CClientInstance::GetInstance()->ActiveCamera_Shaking(0.7f, 0.5f);
         m_isEnableMotionTrail = false;
         });
 
     // 강공격
-
     m_pModelCom->Register_Event("StrongAtk01_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
         // Distortion
@@ -1077,7 +1110,6 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         });
 
     // 강공격 차지
-
     m_pModelCom->Register_Event("StrongAtk_Charge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), true);
 
@@ -1091,7 +1123,6 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         });
 
     // 강습
-
     m_pModelCom->Register_Event("PureMind_SeismicKick_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
         RADIAL_BLUR_DESC RBDesc{};
@@ -1109,10 +1140,9 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         });
 
     // 찰나 베기
-
     m_pModelCom->Register_Event("SprintAtk_Fast_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
+        Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
         RADIAL_BLUR_DESC RBDesc{};
         RBDesc.vCenterUV = _float2(0.5f, 0.5f);
         RBDesc.fSampleRadius = 0.05f;
@@ -1130,12 +1160,11 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         });
 
     m_pModelCom->Register_Event("SprintAtk_Fast_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+        Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), false);
         m_isEnableMotionTrail = false;
         });
 
     // 그림자 참격
-
     m_pModelCom->Register_Event("Tempest_MoonVeil_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
         RADIAL_BLUR_DESC RBDesc{};
@@ -1172,28 +1201,28 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
     // 닷지
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
+        Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
         m_isEnableMotionTrail = true;
         m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+        Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), false);
         m_isEnableMotionTrail = false;
         });
 
     // 닷지 어택
     m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
+        Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
         m_isEnableMotionTrail = true;
         m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
+        Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), false);
         m_isEnableMotionTrail = false;
         });
 
 
-#pragma endregions
+#pragma endregion
 
 
 #pragma region Collider  
@@ -1580,6 +1609,36 @@ void CBody_Khazan_Spear::Spear_Spike()
 
 
     EffectID_SpearWind = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust5"), Q, V_FinalPosition);
+}
+
+void CBody_Khazan_Spear::Set_BaseTrail()
+{
+    TRAIL_CONFIG Config{};
+    Config.fLifeTime = 0.25f;
+    Config.iTextureIdx = 9;
+    Config.iDivisionCount = 10;
+    Config.vColor = _float4(1.f, 1.f, 1.f, 1.f);
+    m_pTrail->Set_TrailConfig(Config);
+}
+
+void CBody_Khazan_Spear::Set_BlueTrail()
+{
+    TRAIL_CONFIG Config{};
+    Config.fLifeTime = 0.25f;
+    Config.iTextureIdx = 8;
+    Config.iDivisionCount = 10;
+    Config.vColor = _float4(2.569f, 2.569f, 3.529f, 1.f);
+    m_pTrail->Set_TrailConfig(Config);
+}
+
+void CBody_Khazan_Spear::Set_RedTrail()
+{
+    TRAIL_CONFIG Config{};
+    Config.fLifeTime = 0.25f;
+    Config.iTextureIdx = 8;
+    Config.iDivisionCount = 10;
+    Config.vColor = _float4(3.529f, 2.569f, 2.569f, 1.f);
+    m_pTrail->Set_TrailConfig(Config);
 }
 
 void CBody_Khazan_Spear::UpdateSpearWind(_bool isEnableRadialBlur)
