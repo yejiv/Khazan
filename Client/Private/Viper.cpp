@@ -205,16 +205,15 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     MeshDesc.vColor = _float4(2.353f, 1.961f, 1.569f, 1.f);
     MeshDesc.vSubColor = _float4(0.f, 0.f, 0.f, 7.843f);
 
-    /*if (m_ePhase == PHASE::PHASE1)
-    {*/
+
+    
     for (_uint i = 0; i < ENUM_CLASS(TWINBLADE::END); ++i)
         m_p1PhaseTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
-    //}
-    /*else if (m_ePhase == PHASE::PHASE2)
-    {*/
+    
+    
     for (_uint i = 0; i < ENUM_CLASS(TWINBLADE_R::END); ++i)
         m_p2PhaseTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
-    //}
+    
 
     CLineTrail::LINE_TRAIL_DESC LineDesc{};
     LineDesc.fOffset = 0.25f;
@@ -231,8 +230,10 @@ HRESULT CViper::Initialize_Clone(void* pArg)
 void CViper::Priority_Update(_float fTimeDelta)
 {
     CBlackBoard* pBB = m_pController->Get_BlackBoard();
-    if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
+
+    if (pBB->Get_Value<_bool>(m_strName, "isDetected") && !m_isUIHp)
     {
+        m_isUIHp = true;
         CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
         HPDesc.isOpen = true;
         HPDesc.pHpMaxValue = &m_fMaxHP;
@@ -356,17 +357,16 @@ void CViper::Update(_float fTimeDelta)
     //  FX_1PhaseTrail();
     //  FX_2PhaseHandTrail();
     //  FX_2PhaseSwordTrail();
-    FX_2PhaseEyeTrail();
-
-   if (m_pGameInstance->Key_Down(DIK_P))
+    //FX_2PhaseEyeTrail();
+   /*if (m_pGameInstance->Key_Down(DIK_P))
     {
-        _vector vPos = m_pP2Weapon->Get_BladeTipPos();
+       _vector vPos = m_pCore->Get_CorePosition();
         tmpIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), vPos);
     }
     if (m_pGameInstance->Key_Down(DIK_O))
     {
         m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), tmpIdx);
-    }
+    }*/
 }
 
 void CViper::Late_Update(_float fTimeDelta)
@@ -632,11 +632,18 @@ void CViper::Grab_Check_Begin()
     CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
     if (nullptr == pTargetTransform)
         return;
-    _matrix BoneWorld = m_pBody->Get_BoneMatrix("Bone_Wp_Hold");
+    _float4x4* BoneLocal = m_pBody->Get_BoneMatrix_Ptr("Bone_Wp_Hold");
 
-    _vector vGrabPosition = BoneWorld.r[3];
-    _vector vOffset = XMVectorSet(0.f, 0.f, 0.f, 0.f);    
-    pTargetTransform->Set_State(STATE::POSITION, vGrabPosition + vOffset);
+    _matrix boneWorld =
+        XMLoadFloat4x4(BoneLocal) *
+        m_pTransformCom->Get_WorldMatrix();
+
+    _matrix offset = XMMatrixTranslation(0.5f, -10.5f, 0.f);
+
+    _matrix grabWorld = offset * boneWorld;
+
+    _vector vGrabPos = grabWorld.r[3];
+    pTargetTransform->Set_State(STATE::POSITION, vGrabPos);
 
 }
 
@@ -833,9 +840,6 @@ HRESULT CViper::Ready_AnimEvent()
             m_isLookAt = false;
             m_pWeapon->Set_OnAttackCollision(false);
 
-            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
-            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
-
 
         });
 
@@ -843,6 +847,9 @@ HRESULT CViper::Ready_AnimEvent()
         {
             m_isLookAt = true;
             m_pWeapon->Set_OnAttackCollision(true);
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
         });
 
     pModel->Register_Event("P1_StingSlash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -890,10 +897,36 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma region TURNATTACk
 
+
+    pModel->Register_Event("P1_TurnAttack0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision_R(true);
+
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
+        });
+
+    pModel->Register_Event("P1_TurnAttack0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+
+
     pModel->Register_Event("TrunAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
-            m_pWeapon->Set_OnAttackCollision(true);
+            m_pWeapon->Set_OnAttackCollision_R(true);
+
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
+
         });
 
     pModel->Register_Event("TrunAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -907,29 +940,27 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma region BACKJUMPSLASH
 
+    pModel->Register_Event("P1_SlahsBackJumpAttack0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+
+        });
+
+
     pModel->Register_Event("BackJumpMovement", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
         {
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "BackJump", true);
+
         });
 
     pModel->Register_Event("BackJumpMovement", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "BackJump", false);
-        });
-
-
-    pModel->Register_Event("BackJumpAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-        {
-            m_pWeapon->Set_OnAttackCollision(true);
-
-        });
-
-    pModel->Register_Event("BackJumpAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-        {
-            // 콜라이더 끄기  
+            m_isLookAt = false;
             m_pWeapon->Set_OnAttackCollision(false);
-
         });
+
 
 #pragma endregion
 

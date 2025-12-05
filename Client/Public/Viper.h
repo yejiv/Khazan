@@ -107,7 +107,7 @@ private:
     _bool							m_isLookAt = { false };
     _float							m_fTurnSpeed = { 8.f };
     _bool							m_isGrab = { false };
-
+    _bool                           m_isUIHp = { false };
 
     PHASE                           m_ePhase = { PHASE::END };
 

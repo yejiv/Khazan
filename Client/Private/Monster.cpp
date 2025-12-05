@@ -54,7 +54,10 @@ _bool CMonster::Get_isSleep()
 
 _bool CMonster::Get_IsGroggy()
 {
-    _bool isGroggy = m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isGroggy");
+     _bool isGroggy = m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isCanBrutalAttack");
+
+     if (isGroggy)
+         int a = 10;
 
     return isGroggy;
 }

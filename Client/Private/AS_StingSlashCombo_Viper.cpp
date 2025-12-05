@@ -71,7 +71,7 @@ void CAS_StingSlashCombo_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollis
         {
             pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-            pTarget->KnockBack(vLook, 30.f, 60.f);
+            pTarget->KnockBack(vLook, 25.f, 50.f);
         }
     }
 }
