@@ -36,9 +36,6 @@ void CAS_Groggy_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_eState = GROGGY::START;
 
     m_vBonePosition = pViper->Get_LockOnPosition();
-
-   
-
 }
 
 void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

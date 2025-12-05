@@ -94,7 +94,7 @@ HRESULT CBody_Dragonian_Melee::Render()
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    _float fEdgeIntensity = 0.8f;
+    _float fEdgeIntensity = 0.7f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
         return E_FAIL;
 

@@ -2721,8 +2721,8 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         {
             m_isInteractEventSetting = true;
 
-            /*  창 들고 있으면 UnArmed 애니메이션 재생 */
-            if (Has_Status(SPEAR))
+            /*  창 들고 있으면 UnArmed 애니메이션 재생 */ /* 귀석 타입일때는 재생 X */
+            if (Has_Status(SPEAR) && INTERACTIVE_TYPE::DESTINYSTONE != m_EventInteract.eInteractType)
                 m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
 
             XMStoreFloat4(&m_vStartPos_Event, m_pTransformCom->Get_State(STATE::POSITION));
@@ -2816,6 +2816,10 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
 
             break;
         }
+        case INTERACTIVE_TYPE::DESTINYSTONE:
+        {
+            break;
+        }
         default:
             break;
         }
@@ -2899,6 +2903,11 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         if (INTERACTIVE_TYPE::LADDER == m_EventInteract.eInteractType)
         {
             Ladder_Event(fTimeDelta);
+        }
+        // 귀석이랑 상호 작용 시
+        if (INTERACTIVE_TYPE::DESTINYSTONE == m_EventInteract.eInteractType)
+        {
+            m_EventInteract.End_Event();
         }
     }
 }

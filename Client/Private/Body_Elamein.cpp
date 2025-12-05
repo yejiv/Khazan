@@ -118,6 +118,8 @@ HRESULT CBody_Elamein::Render()
             m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0);
             m_pShaderCom->Begin(15);
         }
+        else  if (i == 3) 
+            m_pShaderCom->Begin(21);
         else
             m_pShaderCom->Begin(17);
 

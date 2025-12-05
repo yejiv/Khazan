@@ -8,6 +8,7 @@
 #include "Damage_Text.h"
 #include "MeshTrail.h"
 #include "Target_BrutalAttack.h"
+#include "SoftBody.h"
 
 #include "Monster.h"
 
@@ -96,6 +97,7 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     }
 
     Update_CombinedMatrix();
+    //m_pSoftBody->Update_SoftBody_Pelvis(fTimeDelta, XMLoadFloat4x4(m_pParentMatrix));
 
     Update_Colliders(fTimeDelta);
 
@@ -146,7 +148,6 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     //    Trigger_MotionTrail(TEXT("MT_Common_Avoid"), true);
     //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
     //    Trigger_MotionTrail(TEXT("MT_Common_Avoid"), false);
-
 
     bool a =  m_pClientInstance->Is_CurrentSpear();
     bool b = m_pClientInstance->Is_CurrentGSword();
@@ -917,6 +918,23 @@ HRESULT CBody_Khazan_GS::Ready_Components()
         TEXT("Com_MotionTrail"), reinterpret_cast<CComponent**>(&m_pMotionTrailCom), &MTDesc)))
         return E_FAIL;
 
+    //CSoftBody::SOFTBODY_DESC SoftBodyDesc;
+    //SoftBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::CLOTH);    
+    //SoftBodyDesc.FixBoneMatrix = Get_BoneMatrix("Bip001-Pelvis");
+
+    //_matrix BoneWorldMatrix = XMLoadFloat4x4(m_pParentMatrix) * XMLoadFloat4x4(Get_BoneMatrix("Bip001-Pelvis"));
+    //_vector vScale, vTrans, vQuat;
+    //XMMatrixDecompose(&vScale, &vTrans, &vQuat, BoneWorldMatrix);
+    //_float4 vvQuat;
+    //XMStoreFloat4(&vvQuat, vQuat);
+    //SoftBodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
+    //SoftBodyDesc.vQuat = vvQuat;
+    //SoftBodyDesc.pModel = m_AllParts[TEXT("Prisoner_Leg3")];
+    //SoftBodyDesc.iMeshIndex = 0;
+    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_SoftBody"),
+    //    TEXT("Com_SoftBody"), reinterpret_cast<CComponent**>(&m_pSoftBody), &SoftBodyDesc)))
+    //    return E_FAIL;
+
     return S_OK;
 
 }
@@ -1325,6 +1343,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("GhostSlashAtk_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
     m_pModelCom->Register_Event("GhostSlashCharge_Turn_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
     m_pModelCom->Register_Event("ChargeCrash_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+
+    m_pModelCom->Register_Event("DodgeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_BrightTrail(); });
+    m_pModelCom->Register_Event("DodgeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("DodgeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
+
+    m_pModelCom->Register_Event("WeakAtk01_ChargeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_BrightTrail(); });
+    m_pModelCom->Register_Event("WeakAtk01_ChargeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("WeakAtk01_ChargeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
 
 #pragma endregion
 
@@ -1805,8 +1831,29 @@ void CBody_Khazan_GS::FX_Trail()
     _vector vTipUp = SwordTipMatrix.r[0];
     _vector vTipPos = SwordTipMatrix.r[3];
     _vector vHandPos = SwordHandMatrix.r[3];
-    //  _vector vHandPos = SwordWorldMatrix.r[3];
     m_pTrail->Add_ControlPoint(vTipPos, vHandPos);
+}
+
+void CBody_Khazan_GS::Set_BaseTrail()
+{
+    TRAIL_CONFIG Config{};
+    Config.iTextureIdx = 22;
+    Config.fLifeTime = 0.3f;
+    Config.iDivisionCount = 10.f;
+    Config.vColor = { 0.5f, 0.f, 0.f, 7.843f };
+    Config.vSubColor = { 0.f, 0.f, 0.f, 2.f };
+    m_pTrail->Set_TrailConfig(Config);
+}
+
+void CBody_Khazan_GS::Set_BrightTrail()
+{
+    TRAIL_CONFIG Config{};
+    Config.iTextureIdx = 22;
+    Config.fLifeTime = 0.3f;
+    Config.iDivisionCount = 10.f;
+    Config.vColor = { 3.529f, 0.f, 0.f, 1.f };
+    Config.vSubColor = { 0.f, 0.f, 0.f, 2.f };
+    m_pTrail->Set_TrailConfig(Config);
 }
 
 CBody_Khazan_GS* CBody_Khazan_GS::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -1885,4 +1932,5 @@ void CBody_Khazan_GS::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
+    Safe_Release(m_pSoftBody);
 }

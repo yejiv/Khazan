@@ -172,7 +172,8 @@ HRESULT CHalberd::Initialize_Clone(void* pArg)
     MeshDesc.iTextureIdx = 20;
     MeshDesc.fLifeTime = 0.4f;
     MeshDesc.iDivisionCount = 10.f;
-    MeshDesc.vColor = _float4(2.455f, 1.937f, 2.784f, 1.f);
+    MeshDesc.vColor = _float4(0.3804f, 0.3059f, 0.0667f, 0.5098f);
+    MeshDesc.vSubColor = _float4(0.6863f, 0.0f, 0.0f, 3.9216f);
     m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
     m_fRecoveryPerSec = 10.f;
@@ -308,7 +309,6 @@ HRESULT CHalberd::Ready_Components()
     tCharVirDesc.fMass = 0.f;
     tCharVirDesc.fMaxStrength = 10.f;
     m_tCollisionDesc.pGameObject = this;
-    m_isGhost = true;
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
     tCharVirDesc.fRadius = 1.f;
@@ -408,7 +408,7 @@ HRESULT CHalberd::Ready_AnimEvent()
     pModel->Register_Event("Pierce_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
     pModel->Register_Event("Pierce_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
     
-    pModel->Register_Event("Pierce_0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; m_Data.iAnimIndex = 52; });
+    pModel->Register_Event("Pierce_0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; m_Data.iAnimIndex = 52; LockOnLerp(m_fTimeDelta, 1.5f); });
     pModel->Register_Event("Pierce_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; });
     
     //디폴트 공격 4

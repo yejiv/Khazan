@@ -124,7 +124,7 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     m_iStopMoveIndexTable[4] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Run_Stop_F_RF");
     m_iStopMoveIndexTable[5] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Run_Stop_F_RF");
     //m_iStopMoveIndexTable[6] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Run_Stop_F_LF");
-    m_iStopMoveIndexTable[6] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Run_Stop_F_LF");
+    m_iStopMoveIndexTable[6] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Run_Stop_F_6LF");
     m_iStopMoveIndexTable[7] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Run_Stop_F_LF");
     m_iStopMoveIndexTable[8] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_Stop_F");
     m_iStopMoveIndexTable[9] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Sprint_Stop_F");
@@ -134,6 +134,12 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     m_EffectTimeDelta = 0.f;
 
     static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+
+    //if (m_iLevelIndex == ENUM_CLASS(LEVEL::EMBARS))
+    //{
+    //    m_pCharVirCom->Teleport(XMVectorSet(0.191f, 2.10f, 1.362f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+    //    m_pTransformCom->Look_Dir(XMVectorSet(0.999f, 0.f, 0.19f, 0.f));
+    //}
 
     return S_OK;
 
@@ -2605,8 +2611,8 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         if (false == m_isInteractEventSetting)
         {
             m_isInteractEventSetting = true;
-            /*  UnArmed 애니메이션 재생  (조각상떄는 안함)*/
-            if (!Has_Status(BLOCK_ATK_SKILL_GUARD))
+            /*  UnArmed 애니메이션 재생  (조각상 + 귀석때는 안함)*/
+            if (!Has_Status(BLOCK_ATK_SKILL_GUARD) && INTERACTIVE_TYPE::DESTINYSTONE != m_EventInteract.eInteractType)
             {
                 if (Has_Status(SPEAR))
                     m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
@@ -2688,6 +2694,10 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         {
             isDone = false;
             if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+            break;
+        }
+        case INTERACTIVE_TYPE::DESTINYSTONE:
+        {
             break;
         }
         default:
@@ -2773,6 +2783,11 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         if (INTERACTIVE_TYPE::LADDER == m_EventInteract.eInteractType)
         {
             Ladder_Event(fTimeDelta);
+        }
+        // 귀석이랑 상호 작용 시
+        if (INTERACTIVE_TYPE::DESTINYSTONE == m_EventInteract.eInteractType)
+        {
+            m_EventInteract.End_Event();
         }
     }
 }

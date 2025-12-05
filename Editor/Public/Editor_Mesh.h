@@ -32,14 +32,14 @@ public:
 
 
 public:
-    // Softbody Á¤Á¡ ÃßÃâ
+    // Softbody ì •ì  ì¶”ì¶œ
     HRESULT Extract_SoftbodyData( const vector<CEditor_Bone*>& Bones, const CLOTH_BONE_CONFIG& Config, SOFTBODY_EXTRACT_DATA& outData);
 
-    // ±âº» Ãµ ¼³Á¤À¸·Î ÃßÃâ
+    // ê¸°ë³¸ ì²œ ì„¤ì •ìœ¼ë¡œ ì¶”ì¶œ
     HRESULT Extract_ClothSoftbodyData(const vector<CEditor_Bone*>& Bones, SOFTBODY_EXTRACT_DATA& outData);
 
 private:
-    // »À ÀÌ¸§ÀÌ ÆĞÅÏ°ú ÀÏÄ¡ÇÏ´ÂÁö È®ÀÎ
+    // ë¼ˆ ì´ë¦„ì´ íŒ¨í„´ê³¼ ì¼ì¹˜í•˜ëŠ”ì§€ í™•ì¸
     _bool MatchBonePattern(const char* pBoneName, const vector<string>& patterns);
 
 private:

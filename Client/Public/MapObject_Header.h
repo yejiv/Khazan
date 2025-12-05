@@ -61,6 +61,9 @@
 #include "GiantGate_Part_L.h"            // 바이퍼 가는 문 왼쪽
 #include "GiantGate_Part_R.h"            // 바이퍼 가는 문 오른쪽
 
+#include "DestinyStone.h"                // 귀석 ( 받침대 ) ( 컨테이너 )
+#include "DestinyGem.h"                  // 귀석 녀석 ( 광석 ) ( 파츠 )
+
 // Interactive ( NPC )
 #include "NPC_Daphrona.h"                // 다프로나 ( 사실 서나 ) ( 귀석 )
 #include "NPC_Duimuk.h"                  // 두이무크 ( 상인 )
@@ -72,6 +75,11 @@
 #include "Jar_1st.h"                     // 첫째
 #include "Jar_2nd.h"                     // 둘째
 #include "Jar_3rd.h"                     // 셋째
+#include "Jar_4th.h"                     // 4
+#include "Jar_5th.h"                     // 5
+#include "Jar_6th.h"                     // 6
+#include "Jar_7th.h"                     // 7
+#include "Jar_8th.h"                     // 8
 
 // Trigger
 #include "Trigger.h"

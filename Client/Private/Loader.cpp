@@ -714,6 +714,16 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_NPC_Danjin001/C_NPC_Danjin001.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 귀석
+    /* Prototype_Component_Model_DestinyStone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_DestinyStone"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Ore/WP_COM_DestinyStone_Base_001_a/WP_COM_DestinyStone_Base_001_a.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_DestinyStone_Gem */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_DestinyStone_Gem"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Ore/WP_COM_DestinyStone_Base_001_b/WP_COM_DestinyStone_Base_001_b.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region �� ���� : Ʈ����
@@ -722,8 +732,8 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Base/Cube/Cube.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 파괴 가능 오브젝트 : 모델
 
-#pragma region DEST
     /* Prototype_Component_Model_Fence_Chunk */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fence_Chunk_1"),
     CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk1/Fence_Chunk1.dat", false)), E_FAIL);
@@ -828,25 +838,30 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Breath"),
         CProjectile_Breath_Yetuga::Create(m_pDevice, m_pContext))))
         return E_FAIL;
+#pragma endregion
 
+#pragma region Halberd
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Halberd"),
+        CHalberd::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
+        return E_FAIL;
 #pragma endregion
 
 #pragma region GOMDOL
 
 	/* Prototype_GameObject_Monster_Yetuga */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"),
-		CGomdol::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
-	// Prototype_PartObject_Yetuga_Body
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Gomdol_Body"),
-		CBody_Gomdol::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"),
+	//	CGomdol::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 	//// Prototype_PartObject_Yetuga_Body
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Head"),
-	//	CHead_Yetuga::Create(m_pDevice, m_pContext))))
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Gomdol_Body"),
+	//	CBody_Gomdol::Create(m_pDevice, m_pContext))))
 	//	return E_FAIL;
+
+	////// Prototype_PartObject_Yetuga_Body
+	////if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Head"),
+	////	CHead_Yetuga::Create(m_pDevice, m_pContext))))
+	////	return E_FAIL;
 
 #pragma endregion
 
@@ -926,7 +941,18 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
         CNPC_Danjin::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
-#pragma region 파괴
+#pragma region 귀석
+    /* Prototype_GameObject_Prop_DestinyStone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_DestinyStone"),
+        CDestinyStone::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_DestinyStone_Gem */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_DestinyStone_Gem"),
+        CDestinyGem::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 파괴 가능 오브젝트 : 객체
+
     /* Prototype_GameObject_Prop_Chunk */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"),
         CProp_Chunk::Create(m_pDevice, m_pContext)), E_FAIL);
@@ -1616,6 +1642,58 @@ HRESULT CLoader::Loading_For_Embars_Model()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_M_DanjinJar_C/C_M_DanjinJar_C.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 파괴 가능 오브젝트 : 모델
+
+    /* Prototype_Component_Model_Fence_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Fence_Chunk_1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk1/Fence_Chunk1.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Fence_Chunk_2"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk2/Fence_Chunk2.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Fence_Chunk_3"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk3/Fence_Chunk3.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Fence_Chunk_4"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk4/Fence_Chunk4.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Fence_Chunk_5"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk5/Fence_Chunk5.dat", false)), E_FAIL);
+
+    /* Prototype_Component_Model_Pot_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Pot_Chunk_1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk1/Pot_Chunk1.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Pot_Chunk_2"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk2/Pot_Chunk2.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Pot_Chunk_3"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk3/Pot_Chunk3.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Pot_Chunk_4"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk4/Pot_Chunk4.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Pot_Chunk_5"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk5/Pot_Chunk5.dat", false)), E_FAIL);
+
+    /* Prototype_Component_Model_Barrel_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Barrel_Chunk_1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk1/Barrel_Chunk1.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Barrel_Chunk_2"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk2/Barrel_Chunk2.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Barrel_Chunk_3"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk3/Barrel_Chunk3.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Barrel_Chunk_4"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk4/Barrel_Chunk4.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Barrel_Chunk_5"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk5/Barrel_Chunk5.dat", false)), E_FAIL);
+
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거
@@ -1881,6 +1959,46 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     /* Prototype_GameObject_Prop_NPC_Jar_3rd */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_3rd"),
         CJar_3rd::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Jar_4th */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_4th"),
+        CJar_4th::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Jar_5th */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_5th"),
+        CJar_5th::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Jar_6th */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_6th"),
+        CJar_6th::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Jar_7th */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_7th"),
+        CJar_7th::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Jar_8th */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_8th"),
+        CJar_8th::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 파괴 가능 오브젝트 : 객체
+
+    /* Prototype_GameObject_Prop_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Chunk"),
+        CProp_Chunk::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Fence */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Fence"),
+        CFence::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Pot */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Pot"),
+        CPot::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Barrel */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Barrel"),
+        CBarrel::Create(m_pDevice, m_pContext)), E_FAIL);
+
 #pragma endregion
 
 #pragma endregion

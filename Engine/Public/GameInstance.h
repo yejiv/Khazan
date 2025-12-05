@@ -219,6 +219,7 @@ public:
 	void Set_ObjectVsBPFilter(_uint iObjectLayer, _uint iBPLayer);
 	void Set_ObjectLayerFilter(_uint iObjectLayer, _bool isOn = true);
 	Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
+    Body* CreateAndAdd_SoftBody(const SoftBodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
 	CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);	
 
 	void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
@@ -238,6 +239,10 @@ public:
 	void Reset_Gravity();
 
 	_bool RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal = nullptr);
+
+    PhysicsSystem* Get_Jolt();
+    BodyInterface* Get_BodyInterface();
+    const BodyLockInterfaceLocking* Get_BodyLockInterface();
 #ifdef _DEBUG
 	void Jolt_Test();
 
@@ -386,7 +391,7 @@ public:
 #pragma endregion
 
 #pragma region SEQUENCE_MANAGER
-	HRESULT SEQ_AdoptAndPlay(class ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc);
+	HRESULT SEQ_AdoptAndPlay(class ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc, _bool isInit = false);
 	void    SEQ_EnqueueAdopt(class ISeqInstance* pSeq, const SEQ_REQ_PLAY_DESC& tDesc);
 
 	HRESULT SEQ_Play(const SEQ_REQ_PLAY_DESC& tDecs);
