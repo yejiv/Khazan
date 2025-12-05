@@ -137,12 +137,15 @@ HRESULT CLevel_Embars::Ready_Layer_UI()
 
 HRESULT CLevel_Embars::Ready_Layer_Player(const _wstring& strLayerTag)
 {
+    CGameObject::GAMEOBJECT_DESC Desc;
+    Desc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
+
   /*  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), strLayerTag,
-        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
+        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER, &Desc)))
         return E_FAIL;*/
 
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), strLayerTag,
-        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER, &Desc)))
         return E_FAIL;
     return S_OK;
 }
@@ -793,10 +796,78 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
             case CDanjinJar::DANJINJAR_TYPE::C:
                 strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_3rd");
                 break;
+            case CDanjinJar::DANJINJAR_TYPE::D:
+                strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_4th");
+                break;
+            case CDanjinJar::DANJINJAR_TYPE::E:
+                strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_5th");
+                break;
+            case CDanjinJar::DANJINJAR_TYPE::F:
+                strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_6th");
+                break;
+            case CDanjinJar::DANJINJAR_TYPE::G:
+                strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_7th");
+                break;
+            case CDanjinJar::DANJINJAR_TYPE::H:
+                strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_8th");
+                break;
             }
 
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), strPrototypeTag, TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
 
+            break;
+        }
+        case INTERACTIVE_TYPE::DESTRUCTIBLE:
+        {
+            CProp_Destructible::MODEL_TYPE eModelType = {};
+
+            CHECK_FALSE(ReadFile(hFile, &eModelType, sizeof(CProp_Destructible::MODEL_TYPE), &dwByte, nullptr), E_FAIL);
+
+            _matrix WorldMatrix = { XMLoadFloat4x4(&ObjectDesc.WorldMatrix) };
+
+            WorldMatrix.r[0] = XMVector3Normalize(WorldMatrix.r[0]);
+            WorldMatrix.r[1] = XMVector3Normalize(WorldMatrix.r[1]);
+            WorldMatrix.r[2] = XMVector3Normalize(WorldMatrix.r[2]);
+
+            switch (eModelType)
+            {
+            case CProp_Destructible::MODEL_TYPE::FENCE:
+            {
+                CFence::PROP_FENCE_DESC FenceDesc = {};
+
+                FenceDesc.eLevel = eCurrentLevel;
+
+                XMStoreFloat4x4(&FenceDesc.WorldMatrix, WorldMatrix);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                    TEXT("Prototype_GameObject_Prop_Fence"), TIME_CHANNEL::MAP, &FenceDesc), E_FAIL);
+                break;
+            }
+            case CProp_Destructible::MODEL_TYPE::POT:
+            {
+                CPot::PROP_POT_DESC PotDesc = {};
+
+                PotDesc.eLevel = eCurrentLevel;
+
+                XMStoreFloat4x4(&PotDesc.WorldMatrix, WorldMatrix);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                    TEXT("Prototype_GameObject_Prop_Pot"), TIME_CHANNEL::MAP, &PotDesc), E_FAIL);
+                break;
+            }
+            case CProp_Destructible::MODEL_TYPE::BARREL:
+            {
+                CBarrel::PROP_BARREL_DESC BarrelDesc = {};
+
+                BarrelDesc.eLevel = eCurrentLevel;
+
+                XMStoreFloat4x4(&BarrelDesc.WorldMatrix, WorldMatrix);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                    TEXT("Prototype_GameObject_Prop_Barrel"), TIME_CHANNEL::MAP, &BarrelDesc), E_FAIL);
+                break;
+            }
+            }
             break;
         }
         default:

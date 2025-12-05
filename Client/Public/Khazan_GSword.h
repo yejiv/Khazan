@@ -152,7 +152,7 @@ private:
    // _float4x4					m_pGSword_WorldMatrix = {};
    // _matrix						m_Offset_Matrix = {};
     _bool						m_isEnableControl = { true };
-
+    COLLISION_DESC				m_tPlayerCollisionDesc = {};
 
     /* Move*/
     DIR							m_eWorldDir = {}; // 카메라 기준 월드 방향 
@@ -189,9 +189,9 @@ private:
 
     /* Move Speed */
     _float				        m_fInjuredSpeed = { 1.15f };
-    _float				        m_fWalkSpeed = { 2.6f };
-    _float				        m_fRunSpeed = { 9.f };
-    _float				        m_fSprintSpeed = { 15.4f };
+    _float				        m_fWalkSpeed = { 1.7f };
+    _float				        m_fRunSpeed = { 4.8f };
+    _float				        m_fSprintSpeed = { 10.3f };
 
     /*  Attack */
     const _float				m_fChargingStartIntervalTime = { 0.25f }; // 차징 시작 시간
@@ -245,6 +245,7 @@ private:
 
     /* others,, */
     void            Check_IsInAir(_float fTimeDelta);
+    void            Check_Statue();
     void            Clear_Injured();
 
 private:

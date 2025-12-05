@@ -179,9 +179,9 @@ _bool CKhazan_GS_Anim_Attack::Try_ChageFastAttack()
     m_iReserveSkillIndex = 0;
 
     /* 콤보 리셋*/
-    m_iCurrentCombo = 0;
+  /*  m_iCurrentCombo = 0;
     m_isFastCombo = false;
-    m_isCanNextCombo = false;
+    m_isCanNextCombo = false;*/
 
     m_isInFastCombo = m_isFastCombo;
     if (m_isInFastCombo)
@@ -258,6 +258,7 @@ _bool CKhazan_GS_Anim_Attack::Try_ChageStrongAttack()
     if (!m_pModel->Check_MinAnimationTime())
         return false;
 
+    _bool isManifestStrength = m_pClientInstance->Check_Skill(GS_SKILL::MANIFESTSTRENGTH);
     _bool isLimitBreak = m_pClientInstance->Check_Skill(GS_SKILL::LIMIT_BREAK);
 
     /* 스킬 해금 후 투지 없으면  */
@@ -283,14 +284,22 @@ _bool CKhazan_GS_Anim_Attack::Try_ChageStrongAttack()
         m_isFastCombo = false;
         m_isCanNextCombo = false;
 
-        if (!isLimitBreak) {
-            m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_StrongAtk01_Charge");
-            if(m_pClientInstance->Check_Skill(GS_SKILL::MANIFESTSTRENGTH)) m_pClientInstance->Set_UsedSkill(GS_SKILL::MANIFESTSTRENGTH, true);
-        }
-        else {
+        if (isLimitBreak) //한계극복
+        {
             m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_ChargeMaster_Apocalypse_Charge_02");
             m_pClientInstance->Set_UsedSkill(GS_SKILL::LIMIT_BREAK, true);
         }
+        else if (!isLimitBreak && isManifestStrength) //강기발현
+        {
+            m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_StrongAtk01_Charge_2");
+            m_pClientInstance->Set_UsedSkill(GS_SKILL::MANIFESTSTRENGTH, true);
+
+        }
+        else  //기본 
+        {
+            m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_StrongAtk01_Charge");
+        }
+  
 
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 

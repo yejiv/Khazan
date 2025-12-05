@@ -18,6 +18,9 @@ public:
     virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
 
+public:
+    virtual void OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
+
 private:
     DRIFTSTATE                          m_eState = { DRIFTSTATE::END };
     _float                              m_fMoveSpeed = {};

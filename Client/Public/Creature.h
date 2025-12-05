@@ -34,6 +34,8 @@ public:
 	_float						Get_MoveSpeed() const{ return m_fMoveSpeed; }
 	
 	// Set함수는 다르게 작동할수도 있을 것 같아서  일단 Get만 만들었습니다.
+    void                        Set_HP(_float fCurrentfHp, _float fMaxHp) { m_fCurrentHP = fCurrentfHp; m_fMaxHP = fMaxHp; }
+    void                        Set_Stamina(_float fCurrnetStamina, _float fMaxStamina) { m_fCurrentStamina = fCurrnetStamina; m_fMaxStamina = fMaxStamina; }
 
 public:
     virtual void                Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) {};

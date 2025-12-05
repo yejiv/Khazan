@@ -31,6 +31,9 @@ HRESULT CProp_Destructible::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components(pArg)))
         return E_FAIL;
 
+    // 맵 오브젝트의 월드 행렬 갱신 ( 파일 입출력 받은걸로 )
+    m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
+
     return S_OK;
 }
 

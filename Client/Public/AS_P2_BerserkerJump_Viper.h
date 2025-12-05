@@ -18,6 +18,11 @@ public:
     virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
     virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
+public:
+    virtual void OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
+
+
+private:
     BSJUMPSTATE                         m_eState = { BSJUMPSTATE::END };
 
     _uint                               m_iJumpCnt = {};

@@ -6,6 +6,8 @@
 #include "FSM_Viper.h"
 #include "UtilityScore.h"
 #include "GameInstance.h"
+#include "Sequence_Viper_SecondPhase.h"
+#include "ClientInstance.h"
 
 
 CAI_Controller_Viper::CAI_Controller_Viper()
@@ -35,38 +37,19 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
     
     if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
     {
+        // 컷신 스테이트 변경
         if (m_pGameInstance->Key_Down(DIK_O))
         {
             CViper* pViper = static_cast<CViper*>(pOwner);
-            //CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-            ////pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-            //pViper->Consume_Stamina(10.f);
-            //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHDRIFT), pViper);
-
+            
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
 
         }
-
 
         if (m_pGameInstance->Key_Down(DIK_P))
         {
-
             CViper* pViper = static_cast<CViper*>(pOwner);
-            pViper->Set_PhaseWeapon_Cinematic();
-            //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGCOMBO), pViper);
-
-        }
-
-
-
-        if (m_pGameInstance->Key_Down(DIK_Y))
-        {
-
-            CViper* pViper = static_cast<CViper*>(pOwner);
-            //pViper->Set_PhaseWeapon_Cinematic();
-            //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
-            m_pBB->Set_Value<_bool>(m_strMonstertag, "is_Berserker", true);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
 
         }
     }
@@ -75,8 +58,10 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
     {
         CViper* pViper = static_cast<CViper*>(pOwner);
         CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-        //pViper->Consume_Stamina(10.f);
+        //CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+             ////pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+             //pViper->Consume_Stamina(10.f);
+             //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
     }
 
     if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
@@ -86,20 +71,24 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         {
             m_pBB->Set_Value<_uint>(m_strMonstertag,"DebugIndex",0);
             CViper* pViper = static_cast<CViper*>(pOwner);
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_BACKJUMP), pViper);
+            pViper->Set_PhaseWeapon_Phase2();
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_JUMPATTACK), pViper);
         }
 
         if (m_pGameInstance->Key_Down(DIK_N))
         {
             m_pBB->Set_Value<_uint>(m_strMonstertag, "DebugIndex", 1);
             CViper* pViper = static_cast<CViper*>(pOwner);
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_JUMPATTACK), pViper);
+            pViper->Set_PhaseWeapon_Phase2();
+
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHDRIFT), pViper);
         }
 
         if (m_pGameInstance->Key_Down(DIK_M))
         {
-            
             CViper* pViper = static_cast<CViper*>(pOwner);
+            pViper->Set_PhaseWeapon_Phase2();
+
             m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGROUND), pViper);
         }
 
@@ -129,7 +118,6 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
     }
 
-
     if (m_isActiveController)
     {
         m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
@@ -142,8 +130,8 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         else
             m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-        if(!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
-            m_pBT->Update();
+        //if(!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
+            //m_pBT->Update();
 
     }
 
@@ -211,16 +199,31 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
                 if (pViper->Get_CurrentHP() <= 0.f)
                 {
-                   /* static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1001);
-                    static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1002);
-                    static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1003);
-                    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 1000);*/
+                    if(pViper->Get_Phase() == CViper::PHASE::PHASE1)
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "Phase1Finished", true);
                     return true;
                 }
                 else
                     return false;
             };
     }
+
+    if ("P2_CutScene" == name)
+    {
+        return [pViper](CBlackBoard* BB)->_bool
+            {
+                if (BB->Get_Value<_bool>(pViper->Get_Name(),"Phase1Finished"))
+                {
+                    pViper->Get_Transform()->Rotation(0, XMConvertToRadians(180.f), 0.f);
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "Phase1Finished", false);
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
 
     else if ("Groggy" == name)
     {
@@ -1216,15 +1219,40 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
         return [pViper](CBlackBoard* BB)-> BTNODESTATE
             {
-               /* if (BB->Get_Value<_bool>(pViper->Get_Name(), "isDeadFinished"))
-                {
+                if (pViper->Get_Phase() == CViper::PHASE::PHASE1)
                     return BTNODESTATE::SUCCESS;
-                }*/
 
                 pViper->Get_Controller()->Get_State_Machine()->
                     Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DEAD), pViper);
                 return BTNODESTATE::RUNNING;
             };
+    }
+
+    else if ("P2_CutScene" == name)
+    {
+        return [pViper,this](CBlackBoard* BB)-> BTNODESTATE
+            {
+              
+                if (m_is2PhaseCutSceneFinished)
+                {
+                    pViper->Set_HP(2000.f,2000.f);
+                    pViper->Set_Stamina(1200.f, 1200.f);
+                    return BTNODESTATE::SUCCESS;
+                }
+
+
+                CSequence_Viper_SecondPhase* pSeq = dynamic_cast<CSequence_Viper_SecondPhase*>(CClientInstance::GetInstance()->Find_Sequence(TEXT("Viper_SecondPhase")));
+                SEQ_REQ_PLAY_DESC tPlayDesc{};
+                tPlayDesc.tId.iSeq = 110010;
+                tPlayDesc.pAsset = L"Viper_CutScene";
+                tPlayDesc.fStartTime = 0.f;
+                CClientInstance::GetInstance()->Remove_Sequence(TEXT("Viper_SecondPhase"));
+                m_pGameInstance->SEQ_AdoptAndPlay(pSeq, tPlayDesc, true);
+
+               
+                return BTNODESTATE::RUNNING;
+            };
+
     }
 
     else if ("Groggy" == name)
