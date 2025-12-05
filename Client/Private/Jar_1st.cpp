@@ -45,6 +45,8 @@ HRESULT CJar_1st::Initialize_Clone(void* pArg)
 
 void CJar_1st::Priority_Update(_float fTimeDelta)
 {
+    CHECK_EQUAL(ANIM_STATE::DEACTIVE_IDLE, m_eAnimState, );
+
     Find_Target();
 
     __super::Priority_Update(fTimeDelta);
@@ -52,6 +54,8 @@ void CJar_1st::Priority_Update(_float fTimeDelta)
 
 void CJar_1st::Update(_float fTimeDelta)
 {
+    CHECK_EQUAL(ANIM_STATE::DEACTIVE_IDLE, m_eAnimState, );
+
     Update_Step(fTimeDelta);
 
     Animation_Update(fTimeDelta);
@@ -67,6 +71,8 @@ void CJar_1st::Update(_float fTimeDelta)
 
 void CJar_1st::Late_Update(_float fTimeDelta)
 {
+    CHECK_EQUAL(ANIM_STATE::DEACTIVE_IDLE, m_eAnimState, );
+
     m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
 
     __super::Late_Update(fTimeDelta);

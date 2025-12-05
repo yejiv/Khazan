@@ -38,13 +38,17 @@ HRESULT CJar_8th::Initialize_Clone(void* pArg)
 
     AnimChange(m_eAnimState);
 
-    m_fMoveSpeed = 0.35f;
+    m_fMoveSpeed = 0.55f;
+
+    m_iEventID = m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(EVENT_TYPE::HALL_ELEVATOR_UNLOCK), [&](const EventHallElevator& e) { m_Event = e; });
 
     return S_OK;
 }
 
 void CJar_8th::Priority_Update(_float fTimeDelta)
 {
+    CHECK_FALSE(m_Event.IsThirdStep(), );
+
     Find_Target();
 
     __super::Priority_Update(fTimeDelta);
@@ -52,6 +56,8 @@ void CJar_8th::Priority_Update(_float fTimeDelta)
 
 void CJar_8th::Update(_float fTimeDelta)
 {
+    CHECK_FALSE(m_Event.IsThirdStep(), );
+
     Update_Step(fTimeDelta);
 
     Animation_Update(fTimeDelta);
@@ -67,6 +73,8 @@ void CJar_8th::Update(_float fTimeDelta)
 
 void CJar_8th::Late_Update(_float fTimeDelta)
 {
+    CHECK_FALSE(m_Event.IsThirdStep(), );
+
     m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
 
     __super::Late_Update(fTimeDelta);
@@ -124,7 +132,7 @@ HRESULT CJar_8th::Ready_Components(void* pArg)
     LEVEL eLevel = pDesc->eLevel;
     CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("LAYER 함수에서 LEVEL 미입력"), E_FAIL);
 
-     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_NPC_DanjinJar_B"),
+     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_NPC_DanjinJar_C"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
 
     return S_OK;
@@ -192,7 +200,7 @@ void CJar_8th::Animation_Update(_float fTimeDelta)
         AnimChange(ANIM_STATE::FLIPPING_ACTIVE, false, true);
         break;
     case STEP6:
-        AnimChange(ANIM_STATE::LIE_ACTIVE, false, true);
+        AnimChange(ANIM_STATE::DEACTIVE, false, true);
         break;
     case STEP7:
         AnimChange(ANIM_STATE::SHADOWBOXING_ACTIVE, false, true);
@@ -289,22 +297,21 @@ void CJar_8th::Check_Step()
     switch (m_iStepState)
     {
     case STEP1:
-        Check_OnPanel_TalkUI(101, 5.5f);
+        Check_OnPanel_TalkUI(501, 2.5f);
         break;
     case STEP2:
-        Check_OnPanel_TalkUI(102);
+        isSkip = true;
         break;
     case STEP3:
-        isSkip = true;
+        Check_OnPanel_TalkUI(502);
         break;
     case STEP4:
-        Check_OnPanel_TalkUI(103);
+        isSkip = true;
         break;
     case STEP5:
-        isSkip = true;
+        Check_OnPanel_TalkUI(503);
         break;
     case STEP6:
-        isSkip = true;
         break;
     case STEP7:
         isSkip = true;
@@ -366,7 +373,6 @@ _float4 CJar_8th::Get_NextStepPos()
         vTargetPos = m_DanjinJarStep.vStep6;
         break;
     case STEP6:
-        vTargetPos = m_DanjinJarStep.vStep7;
         break;
     case STEP7:
         vTargetPos = m_DanjinJarStep.vStep8;
@@ -407,6 +413,8 @@ void CJar_8th::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
+    CHECK_FALSE(m_Event.IsThirdStep(), );
+
     if (false == m_isMoveFlag && /*m_pTalk->isEmptyNextEvent() && */m_pTalk->isTalkingEnd())
     {
         XMStoreFloat4(&m_vStartPos, m_pTransformCom->Get_State(STATE::POSITION));
@@ -427,6 +435,8 @@ void CJar_8th::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
+
+    CHECK_FALSE(m_Event.IsThirdStep(), );
 
     if (false == m_isMoveFlag && /*m_pTalk->isEmptyNextEvent() && */m_pTalk->isTalkingEnd())
     {
@@ -449,7 +459,7 @@ void CJar_8th::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, CO
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
-
+    CHECK_FALSE(m_Event.IsThirdStep(), );
 }
 
 CJar_8th* CJar_8th::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -480,5 +490,7 @@ CGameObject* CJar_8th::Clone(void* pArg)
 
 void CJar_8th::Free()
 {
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::HALL_ELEVATOR_UNLOCK), m_iEventID);
+
     __super::Free();
 }
