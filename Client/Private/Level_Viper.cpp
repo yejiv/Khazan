@@ -31,17 +31,14 @@ CLevel_Viper::CLevel_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 }
 
 HRESULT CLevel_Viper::Initialize()
-{
-
-   
-
+{   
     // 플레이어, 카메라, 트리거
 
     CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
     CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
-    //CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+    CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
        
     // 우선 맵 오브젝트 서브 레벨 로드
     
@@ -89,7 +86,7 @@ HRESULT CLevel_Viper::Initialize()
     CClientInstance::GetInstance()->Fade_In();
 
     //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_snow1"), XMVectorSet(0.f, 0.f, 0.f, 1.f));
-
+    m_pClientInstance->Set_PlayerInput(true);
     return S_OK;
 }
 

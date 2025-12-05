@@ -205,16 +205,16 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     MeshDesc.vColor = _float4(2.353f, 1.961f, 1.569f, 1.f);
     MeshDesc.vSubColor = _float4(0.f, 0.f, 0.f, 7.843f);
 
-    if (m_ePhase == PHASE::PHASE1)
-    {
-        for (_uint i = 0; i < ENUM_CLASS(TWINBLADE::END); ++i)
-            m_p1PhaseTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
-    }
-    else if (m_ePhase == PHASE::PHASE2)
-    {
-        for (_uint i = 0; i < ENUM_CLASS(TWINBLADE_R::END); ++i)
-            m_p2PhaseTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
-    }
+    /*if (m_ePhase == PHASE::PHASE1)
+    {*/
+    for (_uint i = 0; i < ENUM_CLASS(TWINBLADE::END); ++i)
+        m_p1PhaseTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
+    //}
+    /*else if (m_ePhase == PHASE::PHASE2)
+    {*/
+    for (_uint i = 0; i < ENUM_CLASS(TWINBLADE_R::END); ++i)
+        m_p2PhaseTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
+    //}
 
     CLineTrail::LINE_TRAIL_DESC LineDesc{};
     LineDesc.fOffset = 0.25f;

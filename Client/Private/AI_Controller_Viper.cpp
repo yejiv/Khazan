@@ -130,8 +130,8 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         else
             m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-        //if(!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
-            //m_pBT->Update();
+        if(!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
+            m_pBT->Update();
 
     }
 
@@ -1235,7 +1235,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
               
                 if (m_is2PhaseCutSceneFinished)
                 {
-                    pViper->Set_HP(2000.f,2000.f);
+                    pViper->Set_HP(100.f,100.f);
                     pViper->Set_Stamina(1200.f, 1200.f);
                     return BTNODESTATE::SUCCESS;
                 }

@@ -8,6 +8,8 @@
 
 #include "ClientInstance.h"
 
+#include "Duimuk_Part.h"
+
 CNPC_Duimuk::CNPC_Duimuk(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
     , m_pClientInstance{ CClientInstance::GetInstance() }
@@ -34,6 +36,8 @@ HRESULT CNPC_Duimuk::Initialize_Clone(void* pArg)
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
+
+    CHECK_FAILED(Ready_PartObjects(pArg), E_FAIL);
 
     CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
 
@@ -62,6 +66,8 @@ void CNPC_Duimuk::Priority_Update(_float fTimeDelta)
     }
 
     m_pTraderTalkUI->Priority_Update(fTimeDelta);
+
+    __super::Priority_Update(fTimeDelta);
 }
 
 void CNPC_Duimuk::Update(_float fTimeDelta)
@@ -72,6 +78,8 @@ void CNPC_Duimuk::Update(_float fTimeDelta)
         Animation_Change(fTimeDelta);
 
     m_pTraderTalkUI->Update(fTimeDelta);
+
+    __super::Update(fTimeDelta);
 }
 
 void CNPC_Duimuk::Late_Update(_float fTimeDelta)
@@ -81,6 +89,8 @@ void CNPC_Duimuk::Late_Update(_float fTimeDelta)
     m_pTraderTalkUI->Late_Update(fTimeDelta);
 
     m_pTraderTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
+
+    __super::Late_Update(fTimeDelta);
 }
 
 HRESULT CNPC_Duimuk::Render()
@@ -89,13 +99,36 @@ HRESULT CNPC_Duimuk::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    // 1 : 눈
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        if (1 == i)
+        {
+            _float4 vEyeWhiteColor = { 1.f, 1.f, 1.f, 1.f };   // 눈 흰자 (EyeWhiteColor0)
+            _float4 vPupilCircle = { 0.f, 0.f, 0.f, 1.f };    // 홍채 외곽 (Pupil_Circle0)
+            _float4 vPupilLens = { 0.f, 0.f, 0.f, 1.f };    // 홍채 내부 (Pupil_Lens0)
+            _float4 vPupilRing = { 0.f, 0.f, 0.f, 1.f };   // 홍채 테두리 (Pupil_Ring0)
+            _float4 vShadingColor = { 0.f, 0.f, 0.f, 1.f };    // 조명/명암 색 (ShadingColor0)
+
+            _float  fPupilScale = 1.f;                                       // PupilScale
+
+            m_pShaderCom->Bind_RawValue("g_vEyeWhiteColor", &vEyeWhiteColor, sizeof(_float4));
+            m_pShaderCom->Bind_RawValue("g_vPupilCircle", &vPupilCircle, sizeof(_float4));
+            m_pShaderCom->Bind_RawValue("g_vPupilLens", &vPupilLens, sizeof(_float4));
+            m_pShaderCom->Bind_RawValue("g_vPupilRing", &vPupilRing, sizeof(_float4));
+            m_pShaderCom->Bind_RawValue("g_vShadingColor", &vShadingColor, sizeof(_float4));
+            m_pShaderCom->Bind_RawValue("g_PupilScale", &fPupilScale, sizeof(_float));
+
+            m_pShaderCom->Begin(23);
+        }
+        else
+        {
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        }
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -117,6 +150,26 @@ HRESULT CNPC_Duimuk::Ready_Components(void* pArg)
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), m_szModelName,
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CNPC_Duimuk::Ready_PartObjects(void* pArg)
+{
+    DUIMUK_DESC* pDesc = static_cast<DUIMUK_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
+
+    LEVEL eLevel = pDesc->eLevel;
+    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("level==end"), E_FAIL);
+
+    CDuimuk_Part::DUIMUK_PART_DESC PartDesc = {};
+
+    PartDesc.eLevel = eLevel;
+    PartDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    PartDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Weapon_L");
+
+    CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Instrument"), ENUM_CLASS(eLevel),
+        TEXT("Prototype_GameObject_Prop_NPC_Duimuk_Part"), &PartDesc), E_FAIL);
 
     return S_OK;
 }
