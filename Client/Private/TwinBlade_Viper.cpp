@@ -46,9 +46,8 @@ HRESULT CTwinBlade_Viper::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components())) return E_FAIL;
     if (FAILED(Ready_Collision())) return E_FAIL;
 
-    //m_pTransformCom->Rotation(0.1f, 3.14f, 1.f);
-    m_pTransformCom->Rotation(0.1f, 3.14f, 1.2f);
-    m_vLocalOffset = _float3(0.7f, 0.1f, 0.f);
+    //m_VDebugRot = { x = 2.99350357 y = 0.159982994 z = 1.66338313 }
+    m_pTransformCom->Rotation(3.f,0.16f,1.6f);
 
     return S_OK;
 }
@@ -63,36 +62,42 @@ void CTwinBlade_Viper::Update(_float fTimeDelta)
     {
         _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
         CBlackBoard* pBB = m_pOwner->Get_Controller()->Get_BlackBoard();
+        
+        //_float fMoveSpeed = 10.f;
+        //_float3 offset = m_vLocalOffset;
+
+        //if (m_pGameInstance->Key_Down(DIK_UP))
+        //    offset.y += fMoveSpeed * fTimeDelta;
+        //if (m_pGameInstance->Key_Down(DIK_DOWN))
+        //    offset.y -= fMoveSpeed * fTimeDelta;
+
+        //if (m_pGameInstance->Key_Down(DIK_LEFT))
+        //    offset.x -= fMoveSpeed * fTimeDelta;
+
+        //if (m_pGameInstance->Key_Down(DIK_RIGHT))
+        //    offset.x += fMoveSpeed * fTimeDelta;
+
+        //if (m_pGameInstance->Key_Down(DIK_L))
+        //    offset.z += fMoveSpeed * fTimeDelta;
+
+        //if (m_pGameInstance->Key_Down(DIK_K))
+        //    offset.z -= fMoveSpeed * fTimeDelta;
+
+        //
+        //m_vLocalOffset = offset;
+
+        //m_pTransformCom->Rotation(m_VDebugRot.x,m_VDebugRot.y,m_VDebugRot.z);
 
 
-        //if (pBB->Get_Value<_bool>(m_pOwner->Get_Name(), "isStartCutSceneSit"))
-        //{
-        //    //x = 0.700129509 y = 0.100012794 z = 2.01165676e-07
-        //    m_vLocalOffset = _float3(0.7f, 0.1f, 0.f);
-        //}
-        if (pBB->Get_Value<_bool>(m_pOwner->Get_Name(), "isStartCutSceneJump"))
-        {
-            //m_vLocalOffset = {x=0.00000000 y=0.133346602 z=0.00000000 }
-            m_vLocalOffset = _float3(0.f, 0.1334f, 0.f);
-        }
-        else if(m_pOwner->Get_Controller()->Get_ControllerActivate())
-        {
-            m_vLocalOffset = _float3(0.f, 0.f, 0.f);
-        }
 
         for (uint32_t i = 0; i < 3; i++)
             BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
-        _matrix OffsetMatrix = XMMatrixTranslation(
-            m_vLocalOffset.x,
-            m_vLocalOffset.y,
-            m_vLocalOffset.z
-        );
 
 
         XMStoreFloat4x4(
             &m_CombinedWorldMatrix,
-            m_pTransformCom->Get_WorldMatrix() * OffsetMatrix * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
+            m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix)
         );
 
         _matrix WeaponWorld = XMLoadFloat4x4(&m_CombinedWorldMatrix);
@@ -123,20 +128,19 @@ void CTwinBlade_Viper::Update(_float fTimeDelta)
 
         _float4x4 vSwordMat = m_CombinedWorldMatrix;
 
-        _vector m_vRot = { vSwordMat._21, vSwordMat._22, vSwordMat._23 };
+        _vector vUp = { vSwordMat._21, vSwordMat._22, vSwordMat._23 };
+        _vector vRight = { vSwordMat._11, vSwordMat._12, vSwordMat._13 };
+
         _vector vSwordPos = { vSwordMat._41, vSwordMat._42, vSwordMat._43 };
-        _vector vSwordStart = vSwordPos + XMVector3Normalize(m_vRot) * 1.5f;
-        _vector vSwordEnd = vSwordPos + XMVector3Normalize(m_vRot) * 3.f;
+        _vector vSwordStart = vSwordPos + XMVector3Normalize(vUp) * 1.5f;
+        _vector vSwordEnd = vSwordPos + XMVector3Normalize(vUp) * 3.f + XMVector3Normalize(vRight) * 0.3f;
         XMStoreFloat4(&m_vLeftBladeStartPos, XMVectorSetW(vSwordStart, 1.f));
         XMStoreFloat4(&m_vLeftTipPos, XMVectorSetW(vSwordEnd, 1.f));
-        vSwordStart = vSwordPos - XMVector3Normalize(m_vRot) * 1.5f;
-        vSwordEnd = vSwordPos - XMVector3Normalize(m_vRot) * 3.f;
+        vSwordStart = vSwordPos - XMVector3Normalize(vUp) * 1.5f;
+        vSwordEnd = vSwordPos - XMVector3Normalize(vUp) * 3.f - XMVector3Normalize(vRight) * 0.3f;
         XMStoreFloat4(&m_vRightBladeStartPos, XMVectorSetW(vSwordStart, 1.f));
         XMStoreFloat4(&m_vRightTipPos, XMVectorSetW(vSwordEnd, 1.f));
-
     }
-
-
 }
 
 void CTwinBlade_Viper::Late_Update(_float fTimeDelta)
@@ -219,8 +223,7 @@ HRESULT CTwinBlade_Viper::Ready_Components()
 HRESULT CTwinBlade_Viper::Ready_Collision()
 {
     CBody::BODY_SPHERESHAPE_DESC RigthBodyDesc{};
-    //RigthBodyDesc.fRadius = 2.f;
-    RigthBodyDesc.fRadius = 0.5f;
+    RigthBodyDesc.fRadius = 2.f;
     RigthBodyDesc.eMotion = EMotionType::Kinematic;
     RigthBodyDesc.eQuality = EMotionQuality::Discrete;
     RigthBodyDesc.eShapeType = SHAPE::SPHERE;
@@ -245,7 +248,7 @@ HRESULT CTwinBlade_Viper::Ready_Collision()
     m_tRightBladeDesc.strName = TEXT("Viper_RightBladeDesc");
     m_tRightBladeDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
 
-    RigthBodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    RigthBodyDesc.pCollisionDesc = &m_tRightBladeDesc;
 
     if (FAILED(CGameObject::Add_Component(
         ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -255,8 +258,7 @@ HRESULT CTwinBlade_Viper::Ready_Collision()
 
 
     CBody::BODY_SPHERESHAPE_DESC LeftBodyDesc{};
-    //LeftBodyDesc.fRadius = 2.f;
-    LeftBodyDesc.fRadius = 0.5f;
+    LeftBodyDesc.fRadius = 2.f;
     LeftBodyDesc.eMotion = EMotionType::Kinematic;
     LeftBodyDesc.eQuality = EMotionQuality::Discrete;
     LeftBodyDesc.eShapeType = SHAPE::SPHERE;
@@ -279,7 +281,7 @@ HRESULT CTwinBlade_Viper::Ready_Collision()
     m_tLeftBladeDesc.strName = TEXT("Viper_LeftBladeDesc");
     m_tLeftBladeDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
 
-    LeftBodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    LeftBodyDesc.pCollisionDesc = &m_tLeftBladeDesc;
 
     if (FAILED(CGameObject::Add_Component(
         ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),

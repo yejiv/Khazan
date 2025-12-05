@@ -722,12 +722,12 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_Texture_TestParticle
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Particle_Prototype"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/particle/particle%d.png"), 10))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/particle/particle%d.png"), 12))))
 		return E_FAIL;
 	
 	// Prototype_Component_Texture_TestSpriteImage
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_Sprite_Effect"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Sprite/Sprite%d.png"), 11))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Sprite/Sprite%d.png"), 12))))
 		return E_FAIL;
 
 	// Prototype_Component_Texture_MeshEffect(Diffuse)
@@ -742,7 +742,7 @@ HRESULT CLoader::Loading_For_Effect_Level()
 
 	// Prototype_Component_Texture_MeshEffect(Dissolve)
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_MeshEffect_Dissolve"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Dissolve/Dissolve%d.png"), 5))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Effect/Dissolve/Dissolve%d.png"), 6))))
 		return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EFFECT), TEXT("Prototype_Component_Texture_MeshEffect_Normal"),

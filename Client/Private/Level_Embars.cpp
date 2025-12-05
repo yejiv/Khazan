@@ -55,7 +55,7 @@ HRESULT CLevel_Embars::Initialize()
     for (_uint i = 0; i < EMBARS_SUBLV; ++i)
     {
         CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Embars"), i, LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
-       // CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_MapObject"), TEXT("Embars"), i, LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_MapObject"), TEXT("Embars"), i, LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
     }
 
     CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
@@ -137,12 +137,15 @@ HRESULT CLevel_Embars::Ready_Layer_UI()
 
 HRESULT CLevel_Embars::Ready_Layer_Player(const _wstring& strLayerTag)
 {
+    CGameObject::GAMEOBJECT_DESC Desc;
+    Desc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
+
   /*  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), strLayerTag,
-        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
+        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER, &Desc)))
         return E_FAIL;*/
 
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), strLayerTag,
-        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER, &Desc)))
         return E_FAIL;
     return S_OK;
 }
@@ -500,9 +503,9 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
         if ("Dragonian_Melee" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 10.f;
+            MonsterDesc.fAttack = 20.f;
             MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMaxStamina = 70.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;

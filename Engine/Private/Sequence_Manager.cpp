@@ -19,7 +19,7 @@ void CSequence_Manager::ProcessRequests()
 	// EnqueueAdopt 
 	while (!m_qAdopt.empty()) {
 		auto [ISeq, desc] = m_qAdopt.front(); m_qAdopt.pop_front();
-		AdoptAndPlay(ISeq, desc);
+		AdoptAndPlay(ISeq, desc, false);
 	}
 
 	// Play
@@ -186,7 +186,7 @@ HRESULT CSequence_Manager::Jump(const SEQ_REQ_JUMP_DESC& tDesc)
 	}
 }
 
-HRESULT CSequence_Manager::AdoptAndPlay(ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc)
+HRESULT CSequence_Manager::AdoptAndPlay(ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc, _bool isInit)
 {
 	if (pSeq == nullptr)
 		return E_FAIL;
@@ -201,11 +201,14 @@ HRESULT CSequence_Manager::AdoptAndPlay(ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tD
 		return E_FAIL;
 	}
 
-	if (FAILED(pSeq->Initialize(tDesc))) 
-	{
-		Safe_Release(pSeq);
-		return E_FAIL;
-	}
+    if (!isInit)
+    {
+        if (FAILED(pSeq->Initialize(tDesc)))
+        {
+            Safe_Release(pSeq);
+            return E_FAIL;
+        }
+    }
 
 	m_MapInstances.emplace(key, pSeq);
 

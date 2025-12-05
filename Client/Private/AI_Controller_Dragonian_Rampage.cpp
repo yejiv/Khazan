@@ -292,6 +292,7 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Check(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Back(CGameObject* pOwner)
 {
+    m_pMonData->eHitType = HITREACTION::END;
     if (m_pMonData->eAttack_State == CDragonian_Rampage::ATTACKSTATE::BACK)
     {
         if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_BACK)))
@@ -305,6 +306,7 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Back(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Rush(CGameObject* pOwner)
 {
+    m_pMonData->eHitType = HITREACTION::END;
     if (m_pMonData->eAttack_State == CDragonian_Rampage::ATTACKSTATE::RUSH)
     {
         if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_RUSH)))
@@ -318,6 +320,7 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Rush(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Default(CGameObject* pOwner)
 {
+    m_pMonData->eHitType = HITREACTION::END;
     if (m_pMonData->eAttack_State == CDragonian_Rampage::ATTACKSTATE::DEFAULT)
     {
         if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_DEFAULT)))

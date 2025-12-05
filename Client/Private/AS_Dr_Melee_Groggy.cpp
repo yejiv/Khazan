@@ -42,15 +42,6 @@ void CAS_Dr_Melee_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
         }
     }
-    else if (m_eState == STAMIN)
-    {
-        if (m_pMonData->isAnimFinash)
-        {
-            m_eState = END;
-            m_pMonData->iAnimIndex = 33;
-
-        }
-    }
     else
     {
         if (m_pMonData->isAnimFinash)
