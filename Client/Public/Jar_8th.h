@@ -43,6 +43,8 @@ public:
 private:
     _uint m_iStepState = {};
 
+    EventHallElevator m_Event = {};
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_TalkUI(void* pArg);

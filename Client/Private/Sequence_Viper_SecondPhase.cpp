@@ -391,7 +391,7 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
         if (m_fSkipTime >= 19.f)
         {
             m_pClientInstance->Camera_Force_AniEnd();
-            dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);
+            dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_CutSceneFinished();
             m_isEnd = true;
         }
     }

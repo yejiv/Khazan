@@ -135,11 +135,11 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
 
     static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
 
-    //if (m_iLevelIndex == ENUM_CLASS(LEVEL::EMBARS))
-    //{
-    //    m_pCharVirCom->Teleport(XMVectorSet(0.191f, 2.10f, 1.362f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
-    //    m_pTransformCom->Look_Dir(XMVectorSet(0.999f, 0.f, 0.19f, 0.f));
-    //}
+    if (m_iLevelIndex == ENUM_CLASS(LEVEL::EMBARS))
+    {
+        m_pCharVirCom->Teleport(XMVectorSet(0.191f, 5.10f, 1.362f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+        m_pTransformCom->Look_Dir(XMVectorSet(0.999f, 0.f, 0.19f, 0.f));
+    }
 
     return S_OK;
 
@@ -3740,9 +3740,6 @@ void CKhazan_GSword::Free()
 
     Safe_Release(m_pClientInstance);
     Safe_Release(m_pCamera);
-       Safe_Release(m_pBody);
-       Safe_Release(m_pGSword);
-       Safe_Release(m_pLantern);
     Safe_Release(m_pAnimMove);
     Safe_Release(m_pAnimAttack);
     Safe_Release(m_pAnimGuard);
