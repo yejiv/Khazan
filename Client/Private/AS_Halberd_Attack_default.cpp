@@ -37,7 +37,7 @@ void CAS_Halberd_Attack_default::Update(CStateMachine* pFSM, CGameObject* pOwner
     if (m_pMonData->isAnimFinash)
     {
         m_pMonData->eAttackState = CHalberd::ATTACKSTATE::END;
-        m_pMonData->fAttackCool = 2.f;
+        m_pMonData->fAttackCool = 2.5f;
     }
 }
 
@@ -51,7 +51,7 @@ void CAS_Halberd_Attack_default::OnCollision(COLLISION_DESC* pDesc, _uint iColli
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
 
         if(m_iAttack == ATTACK_1)
             pTarget->KnockBack(pOwner->Get_Look(), 15.5f, 60.f);
