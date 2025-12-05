@@ -291,7 +291,7 @@ void CUI_Talk_Danjinjar::Update_Font(_float fTimeDelta)
         if (m_wstrCulText.size() <= 5)
             fSide_ScaleX = 0.01f;
         else
-            fSide_ScaleX = (m_wstrCulText.size() - 5) * 0.08f;
+             fSide_ScaleX = (m_wstrCulText.size() - 5) * 0.072f;
 
         m_BG[1]->Set_LocalPos({ -fCenter_ScaleX * 0.5f - fSide_ScaleX * 0.5f , 0.f, 0.f, 1.f });
         m_BG[1]->Set_LocalSize({ fSide_ScaleX, 1.f,1.f });
