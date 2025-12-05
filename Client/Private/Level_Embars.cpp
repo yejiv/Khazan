@@ -84,6 +84,7 @@ HRESULT CLevel_Embars::Initialize()
             m_eNextLevel = static_cast<LEVEL>(e.iLevel);
         });
 
+    m_pClientInstance->Set_PlayerInput(true);
 #pragma endregion
 
 	return S_OK;
