@@ -143,16 +143,21 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
 {
     __super::Priority_Update(fTimeDelta);
 
-    //if (m_pGameInstance->Key_Down(DIK_P))
-    //{
-    //    //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(511.f, -11.9f, 260.f, 1.f));
-    //    m_pCharVirCom->Teleport(XMVectorSet(511.f, -11.9f, 260.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
-    //    m_pTransformCom->LookAt(XMVectorSet(520.47f, -11.48f, 227.18f, 0.f));               
-    //}
+  
 
-    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT,fTimeDelta) && m_pGameInstance->Key_Down(DIK_P))
+    
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_P))
     {
-        m_pCharVirCom->Teleport(XMVectorSet(43.f, -81.f, -47.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+        //예튜가
+        if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH))
+        {
+            m_pCharVirCom->Teleport(XMVectorSet(511.f, -11.9f, 260.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+            m_pTransformCom->LookAt(XMVectorSet(520.47f, -11.48f, 227.18f, 0.f));
+        }
+
+        //사다리 전
+        if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::EMBARS))
+            m_pCharVirCom->Teleport(XMVectorSet(43.f, -81.f, -47.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
     }
 
 }
@@ -168,11 +173,6 @@ void CKhazan_GSword::Update(_float fTimeDelta)
     //    m_pTransformCom->Set_State(STATE::POSITION, vpos);
     //    //m_pCharVirCom->Set_Gravity(g_fGravity);
     //    //m_vGravity = XMVectorSet(0.f, 0.F, 0.f, 0.f);
-   /* if (m_pGameInstance->Key_Down(DIK_B))
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));
-    if (m_pGameInstance->Key_Down(DIK_N))
-        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_UnArmed"));*/
-
 
     if (m_isEnableControl)
     {
@@ -197,6 +197,8 @@ void CKhazan_GSword::Update(_float fTimeDelta)
         }
 
         Check_IsInAir(fTimeDelta);
+
+        Check_Statue();
 
         Update_Stats(fTimeDelta);
 
@@ -449,7 +451,7 @@ void CKhazan_GSword::Update_Stats(_float fTimeDelta)
             m_pClientInstance->Set_PlayerInput(false);     //입력 막기 
         }
 
-        if (Has_Status(STAMINA_EXHAUSTION) && (m_pBody->Get_Model()->IsFinished() || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_StaminaExhaustion")))
+        if (Has_Status(STAMINA_EXHAUSTION) && (m_pBody->Get_Model()->IsFinished()/* || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_StaminaExhaustion")*/))
         {
             Remove_Status(STAMINA_EXHAUSTION);
             m_pPlayerData->fCulStamina += 5.f;      //스태미나 약간 회복 
@@ -2087,21 +2089,20 @@ void CKhazan_GSword::Clear_Injured()
 
 void CKhazan_GSword::EnterStatuePuzzle()
 {
-    Add_Status( BLOCK_ATK_SKILL_GUARD | STATUE_MODE | BAREHAND);
-    Remove_Status(GSWORD);
-
     if (Has_Status(SPEAR))
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
     if (Has_Status(GSWORD))
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_UnArmed"));
 
-    cout << " STATUE_MODE On" << endl;
+    Add_Status(BLOCK_ATK_SKILL_GUARD | STATUE_MODE | BAREHAND);
+    Remove_Status(GSWORD);
+    cout << "================= STATUE_MODE On =================" << endl;
 
 }
 
 void CKhazan_GSword::ExitStatuePuzzle()
 {
-    Remove_Status( BLOCK_ATK_SKILL_GUARD | STATUE_MODE | BAREHAND);
+    Remove_Status( BLOCK_ATK_SKILL_GUARD | BAREHAND);
     Add_Status(GSWORD);
 
     if (Has_Status(SPEAR))
@@ -2109,7 +2110,10 @@ void CKhazan_GSword::ExitStatuePuzzle()
     if (Has_Status(GSWORD))
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));  
 
-    cout << " STATUE_MODE Off" << endl;
+
+
+    m_pClientInstance->Set_PlayerInput(false);
+    cout << "================= STATUE_MODE Off =================" << endl;
 
 }
 
@@ -2242,7 +2246,7 @@ void CKhazan_GSword::Check_IsInAir(_float fTimeDelta)
                 {
                     Remove_Status(FALLING);
                     Add_Status(PRE_LAND);
-                    cout << " === LANDING !!! ===" << endl;
+                   // cout << " === LANDING !!! ===" << endl;
                 }
             }
         }
@@ -2250,18 +2254,37 @@ void CKhazan_GSword::Check_IsInAir(_float fTimeDelta)
         else if ((Has_Status(FALLING) || Has_Status(FALLING_ATTACK)) && !Has_Status(PRE_LAND) && fFraction <= 0.4f)
         {
             Add_Status(PRE_LAND);
-            cout << " === PRE_LAND !!! ===" << endl;
+           // cout << " === PRE_LAND !!! ===" << endl;
         }
         /* 공중 - 낙하 시작 */
         else if (!Has_Status(FALLING | FALLING_ATTACK | PRE_LAND) && fFraction > 0.2f)
         {
             Add_Status(FALLING);
             Add_State(CAT::M_FALL);
-            cout << " === FALLING START !!! ===" << endl;
+            //cout << " === FALLING START !!! ===" << endl;
         }
 
 
     }
+}
+
+void CKhazan_GSword::Check_Statue()
+{
+    if (!Has_Status(STATUE_MODE)) return;
+
+    if (m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed")) && m_pBody->Get_Model()->Check_MinAnimationTime())
+       // || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"))
+    {
+        m_pClientInstance->Set_PlayerInput(true);
+    }
+
+    if (m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed")) && m_pBody->Get_Model()->Check_MinAnimationTime())
+       // || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed"))
+    {
+        m_pClientInstance->Set_PlayerInput(true);
+        Remove_Status(STATUE_MODE);
+    }
+
 }
 
 HRESULT CKhazan_GSword::Ready_Components()
@@ -2492,10 +2515,10 @@ HRESULT CKhazan_GSword::Ready_Collision()
     tCharVirDesc.iMaxConstraintIterations = 20;
     tCharVirDesc.fCollisionTolerance = 0.03f;
     tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
-    m_tCollisionDesc.pGameObject = this;
-    m_tCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    m_tCollisionDesc.strName = TEXT("Khazan_Body");
-    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_tPlayerCollisionDesc.pGameObject = this;
+    m_tPlayerCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+    m_tPlayerCollisionDesc.strName = TEXT("Khazan_Body");
+    tCharVirDesc.pCollisionDesc = &m_tPlayerCollisionDesc;
     tCharVirDesc.vStickToFloorStepDown = _float3(0.f, -0.5f, 0);
     tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.8f, 0.f);
     tCharVirDesc.fWalkStairsMinStepForward = 0.05f;
@@ -2619,6 +2642,17 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         }
         case INTERACTIVE_TYPE::STATUE:
         {
+            //isDone = false;
+            //if (Has_Status(GSWORD) && m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed")) && m_pBody->Get_Model()->IsFinished())
+            //{
+            //    isDone = true;
+            //    m_pClientInstance->Set_PlayerInput(true);
+            //}
+            //else if (Has_Status(SPEAR) && m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed")) && m_pBody->Get_Model()->IsFinished())
+            //{
+            //    isDone = true;
+            //    m_pClientInstance->Set_PlayerInput(true);
+            //}
             break;
         }
         case INTERACTIVE_TYPE::IRONGATE:
@@ -3691,14 +3725,17 @@ void CKhazan_GSword::Free()
 
     Safe_Release(m_pClientInstance);
     Safe_Release(m_pCamera);
-    //   Safe_Release(m_pBody);
-       //Safe_Release(m_pSpear);
+       Safe_Release(m_pBody);
+       Safe_Release(m_pGSword);
+       Safe_Release(m_pLantern);
     Safe_Release(m_pAnimMove);
     Safe_Release(m_pAnimAttack);
     Safe_Release(m_pAnimGuard);
     Safe_Release(m_pAnimInteraction);
     Safe_Release(m_pAnimDamaged);
     Safe_Release(m_pAnimFall);
+    Safe_Release(m_pAnimLadder);
+
     // Safe_Release(m_pCharVirCom);
 
      //Safe_Release(m_pASMachine);
@@ -3954,10 +3991,10 @@ void CKhazan_GSword::Free()
 //    tCharVirDesc.iMaxConstraintIterations = 20;
 //    tCharVirDesc.fCollisionTolerance = 0.03f;
 //    tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
-//    m_tCollisionDesc.pGameObject = this;
-//    m_tCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-//    m_tCollisionDesc.strName = TEXT("Khazan_Body");
-//    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+//    m_tPlayerCollisionDesc.pGameObject = this;
+//    m_tPlayerCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
+//    m_tPlayerCollisionDesc.strName = TEXT("Khazan_Body");
+//    tCharVirDesc.pCollisionDesc = &m_tPlayerCollisionDesc;
 //    tCharVirDesc.vStickToFloorStepDown = _float3(0.f, -0.5f, 0);
 //    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.5f, 0.f);
 //    tCharVirDesc.fWalkStairsMinStepForward = 0.06f;

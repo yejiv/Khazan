@@ -30,6 +30,18 @@ public:
 	//_bool	Is_Picked(CTransform* pTransform, _float3* pOut);
 	//_bool	Is_Picked(CTransform* pTransform, _float3* pOut, _float* pMinDistance);
 
+
+public:
+    // Softbody 정점 추출
+    HRESULT Extract_SoftbodyData( const vector<CEditor_Bone*>& Bones, const CLOTH_BONE_CONFIG& Config, SOFTBODY_EXTRACT_DATA& outData);
+
+    // 기본 천 설정으로 추출
+    HRESULT Extract_ClothSoftbodyData(const vector<CEditor_Bone*>& Bones, SOFTBODY_EXTRACT_DATA& outData);
+
+private:
+    // 뼈 이름이 패턴과 일치하는지 확인
+    _bool MatchBonePattern(const char* pBoneName, const vector<string>& patterns);
+
 private:
 	_char					m_szName[MAX_PATH] = {};
 	_uint					m_iMaterialIndex = {};
