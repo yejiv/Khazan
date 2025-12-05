@@ -102,6 +102,7 @@ HRESULT CLevel_HeinMach::Initialize()
             m_eNextLevel = static_cast<LEVEL>(e.iLevel);
         });
 
+    m_pClientInstance->Set_PlayerInput(true);
 #pragma endregion
 
 #pragma region 기존 코드
@@ -463,6 +464,12 @@ HRESULT CLevel_HeinMach::Ready_Layer_Decal()
 
 HRESULT CLevel_HeinMach::Ready_Layer_Item()
 {
+    CGameObject::GAMEOBJECT_DESC desc{};
+
+    desc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
+
+    m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item"), &desc, 10);
+
     return S_OK;
 }
 
@@ -803,8 +810,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
             MonsterDesc.WorldMatrix = WorldMatrix;
             MonsterDesc.strName = MonsterData.MonsterKey[i];
             MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
-            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-                ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Halberd"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+                ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Halberd"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
     }

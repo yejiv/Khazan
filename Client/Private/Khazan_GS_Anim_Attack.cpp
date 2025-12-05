@@ -645,7 +645,7 @@ _bool CKhazan_GS_Anim_Attack::Reserve_SkillAttack(_uint iSkill)
     /* 내재된 분노  */
     else if (checkSkill(GS_SKILL::INNER_FURY))
     {
-        if (m_pPlayerData->fCulDoggedness < 1.f | m_pPlayerData->fCulStamina == 0.f)  return false;
+        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina == 0.f)  return false;
     }
 
     m_isReserveSkill = true;

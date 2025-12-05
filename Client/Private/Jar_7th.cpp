@@ -38,7 +38,7 @@ HRESULT CJar_7th::Initialize_Clone(void* pArg)
 
     AnimChange(m_eAnimState);
 
-    m_fMoveSpeed = 0.85f;
+    m_fMoveSpeed = 2.85f;
 
     return S_OK;
 }
@@ -192,7 +192,7 @@ void CJar_7th::Animation_Update(_float fTimeDelta)
         AnimChange(ANIM_STATE::FLIPPING_ACTIVE, false, true);
         break;
     case STEP6:
-        AnimChange(ANIM_STATE::LIE_ACTIVE, false, true);
+        AnimChange(ANIM_STATE::DEACTIVE, false, true);
         break;
     case STEP7:
         AnimChange(ANIM_STATE::SHADOWBOXING_ACTIVE, false, true);
@@ -289,32 +289,30 @@ void CJar_7th::Check_Step()
     switch (m_iStepState)
     {
     case STEP1:
-        Check_OnPanel_TalkUI(201, 5.5f);
+        Check_OnPanel_TalkUI(401, 5.5f);
         break;
     case STEP2:
-        Check_OnPanel_TalkUI(202);
+        isSkip = true;
         break;
     case STEP3:
+        Check_OnPanel_TalkUI(402);
+        break;
     case STEP4:
+        isSkip = true;
+        break;
     case STEP5:
+        Check_OnPanel_TalkUI(403);
     case STEP6:
+        break;
     case STEP7:
     case STEP8:
     case STEP9:
     case STEP10:
     case STEP11:
     case STEP12:
-        isSkip = true;
-        break;
     case STEP13:
-        Check_OnPanel_TalkUI(203);
-        break;
     case STEP14:
-        isSkip = true;
-        break;
     case STEP15:
-        Check_OnPanel_TalkUI(204);
-        break;
     case STEP16:
         break;
     }
@@ -358,7 +356,6 @@ _float4 CJar_7th::Get_NextStepPos()
         vTargetPos = m_DanjinJarStep.vStep6;
         break;
     case STEP6:
-        vTargetPos = m_DanjinJarStep.vStep7;
         break;
     case STEP7:
         vTargetPos = m_DanjinJarStep.vStep8;
