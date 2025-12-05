@@ -77,7 +77,7 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
     {
         _vector vDamagePos = XMLoadFloat4(m_vLockOnPosition);
 
-        pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , static_cast<_uint>(fDamage), { 0.f, 10.f });
+        //pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , static_cast<_uint>(fDamage), { 0.f, 10.f });
         pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , fDamage, { 0.f, 10.f });
         m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
     }

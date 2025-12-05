@@ -38,6 +38,7 @@ void CAS_Dr_Rampage_Attack_Back::OnCollision(COLLISION_DESC* pDesc, _uint iColli
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->KnockBack(pOwner->Get_Look(), 13.5f, 35.f);
         pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
     }
 }
