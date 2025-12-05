@@ -175,6 +175,7 @@ void CDragonian_Rampage::Priority_Update(_float fTimeDelta)
 
 void CDragonian_Rampage::Update(_float fTimeDelta)
 {
+    //m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
     m_fTimeDelta = fTimeDelta;
 
     if (m_Data.fAttackCool >= 0.f)
@@ -310,7 +311,6 @@ HRESULT CDragonian_Rampage::Ready_Components()
     tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 
     m_tCollisionDesc.pGameObject = this;
-    m_isGhost = true;
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
     
     tCharVirDesc.fRadius = 1.6f;

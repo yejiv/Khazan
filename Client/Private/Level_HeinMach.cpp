@@ -339,12 +339,15 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 HRESULT CLevel_HeinMach::Ready_Layer_Player(const _wstring& strLayerTag)
 {
+    CGameObject::GAMEOBJECT_DESC Desc;
+    Desc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
+
 	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+	    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER, &Desc)))
 	    return E_FAIL;
 
     //  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-    //      ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
+    //      ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER, &Desc)))
     //      return E_FAIL;
 
 	return S_OK;
@@ -787,6 +790,23 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
+        else if ("Halberd" == MonsterData.MonsterKey[i])
+        {
+            CMonster::MONSTER_DESC MonsterDesc{};
+            MonsterDesc.fAttack = 10.f;
+            MonsterDesc.fMaxHP = 100.f;
+            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMoveSpeed = 10.f;
+            MonsterDesc.fSpeedPerSec = 3.f;
+            MonsterDesc.fRotationPerSec = 180.f;
+
+            MonsterDesc.WorldMatrix = WorldMatrix;
+            MonsterDesc.strName = MonsterData.MonsterKey[i];
+            MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
+                ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Halberd"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+                return E_FAIL;
+        }
     }
 
     _tchar szDone[MAX_PATH] = {};
@@ -892,17 +912,67 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
-        case INTERACTIVE_TYPE::ELEVATOR:
-        {
-            CElevatorS::ELEVATOR_POS ElevatorPos = {};
-            CHECK_FALSE(ReadFile(hFile, &ElevatorPos, sizeof(CElevatorS::ELEVATOR_POS), &dwByte, nullptr), E_FAIL);
-            ObjectDesc.pOtherDesc = &ElevatorPos;
-            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_SmallElevator"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
-            break;
-        }
         case INTERACTIVE_TYPE::DANJIN:
         {
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_NPC_Danjin"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
+        case INTERACTIVE_TYPE::DESTINYSTONE:
+        {
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_DestinyStone"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
+        case INTERACTIVE_TYPE::DESTRUCTIBLE:
+        {
+            CProp_Destructible::MODEL_TYPE eModelType = {};
+
+            CHECK_FALSE(ReadFile(hFile, &eModelType, sizeof(CProp_Destructible::MODEL_TYPE), &dwByte, nullptr), E_FAIL);
+
+            _matrix WorldMatrix = { XMLoadFloat4x4(&ObjectDesc.WorldMatrix) };
+
+            WorldMatrix.r[0] = XMVector3Normalize(WorldMatrix.r[0]);
+            WorldMatrix.r[1] = XMVector3Normalize(WorldMatrix.r[1]);
+            WorldMatrix.r[2] = XMVector3Normalize(WorldMatrix.r[2]);
+
+            switch (eModelType)
+            {
+            case CProp_Destructible::MODEL_TYPE::FENCE:
+            {
+                CFence::PROP_FENCE_DESC FenceDesc = {};
+
+                FenceDesc.eLevel = eCurrentLevel;
+
+                XMStoreFloat4x4(&FenceDesc.WorldMatrix, WorldMatrix);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                    TEXT("Prototype_GameObject_Prop_Fence"), TIME_CHANNEL::MAP, &FenceDesc), E_FAIL);
+                break;
+            }
+            case CProp_Destructible::MODEL_TYPE::POT:
+            {
+                CPot::PROP_POT_DESC PotDesc = {};
+
+                PotDesc.eLevel = eCurrentLevel;
+
+                XMStoreFloat4x4(&PotDesc.WorldMatrix, WorldMatrix);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                    TEXT("Prototype_GameObject_Prop_Pot"), TIME_CHANNEL::MAP, &PotDesc), E_FAIL);
+                break;
+            }
+            case CProp_Destructible::MODEL_TYPE::BARREL:
+            {
+                CBarrel::PROP_BARREL_DESC BarrelDesc = {};
+
+                BarrelDesc.eLevel = eCurrentLevel;
+
+                XMStoreFloat4x4(&BarrelDesc.WorldMatrix, WorldMatrix);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                    TEXT("Prototype_GameObject_Prop_Barrel"), TIME_CHANNEL::MAP, &BarrelDesc), E_FAIL);
+                break;
+            }
+            }
             break;
         }
 		default:

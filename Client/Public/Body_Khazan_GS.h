@@ -101,6 +101,7 @@ private:
     class CTransform*           m_pParentTransform = { nullptr };
     class CGSword_Khazan_GS*    m_pGSword = { nullptr };
     class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
+    class CSoftBody*            m_pSoftBody = { nullptr };
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
     CShader*                    m_pShaderCom = { nullptr };
@@ -150,7 +151,7 @@ private:
     _float4x4                   m_matWorldGSwordBody_nJolt;
     _float4x4*                  m_pMatGSwordTip = { nullptr };  // 칼 끝 로컬행렬
     _float4x4			        m_matWorldGSwordTip;                 // 칼 끝 월드행렬
-    _float4x4			        m_matWorldGSwordTip_nJolt;                 // 칼 끝 월드행렬
+    _float4x4			        m_matWorldGSwordTip_nJolt;
 
 
     _matrix				        m_Offset_Matrix = {};   //블랜더와 축이 달라서 사용.
@@ -184,10 +185,14 @@ private:
     // Shader
     _bool                       m_isEnableEdge = { true };
     _bool                       m_isActiveMotionTrail = { false };
-    _bool                       m_isEnableMotionTrail = {};
-    _uint                       m_iCurMotionTrailAnimIndex = {};
+    _bool                       m_isEnableAnimEvent = {};
+    _uint                       m_iCurAnimEventIndex = {};
     OUTLINE_CONFIG              m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
     function<void(const _wstring&, _bool)>  m_OnMotionTrailCallBack;
+
+    /* event */
+    _bool                       m_isEableGiantHuntEvent= { false };
+
 
     /*  mutex */
     mutex                       m_CollMonsterMutex;

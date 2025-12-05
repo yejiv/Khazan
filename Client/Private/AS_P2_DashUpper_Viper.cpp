@@ -37,6 +37,29 @@ void CAS_P2_DashUpper_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
 
 void CAS_P2_DashUpper_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+  
+}
+
+void CAS_P2_DashUpper_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CViper* pViper = static_cast<CViper*>(pOwner);
+        CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        if (nullptr == pOwnerTransform)
+            return;
+
+    
+        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+        _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+        pTarget->KnockBack(vLook, 20.f, 40.f);
+      
+
+    }
 }
 
 CAS_P2_DashUpper_Viper* CAS_P2_DashUpper_Viper::Create()

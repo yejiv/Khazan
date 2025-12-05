@@ -111,8 +111,11 @@ HRESULT CBody_Halberd::Render()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(17);
-
+        if (i == 0)
+            m_pShaderCom->Begin(22);
+        else
+            m_pShaderCom->Begin(17);
+         
         m_pModelCom->Render(i);
     }
 

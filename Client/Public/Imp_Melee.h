@@ -55,6 +55,7 @@ private:
     _float							m_fTurnSpeed = { 10.f };
 
     _float4                         m_vSwordStart{}, m_vSwordEnd{};
+    COLLISION_DESC                  m_tImpMeleeColliderDesc = {};
 
 public:
     static CImp_Melee*              Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

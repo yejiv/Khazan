@@ -30,9 +30,9 @@ void CAS_Dr_Melee_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
         m_pMonData->pOwner->Hp_Visivle(true);
         m_eState = GETUP;
     }
-    else if (m_eState == GETUP)
+    else if (m_eState == GETUP && !m_pMonData->isSleep)
     {
-        if (m_pMonData->isAnimFinash)
+        if (m_pMonData->isAnimFinash || m_pMonData->eHitType != HITREACTION::END)
             m_pMonData->isStateFiash = true;
     }
 }
@@ -41,7 +41,8 @@ void CAS_Dr_Melee_Sleep::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
     m_pMonData->fAttackCool = 5.f;
     m_pMonData->isStateFiash = false;
-    m_eState = END;
+    m_pMonData->pOwner->Hp_Visivle(true);
+    m_eState = GETUP;
 
 }
 

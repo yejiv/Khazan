@@ -948,6 +948,8 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
     m_Prototypes_Inter.push_back("NPC_Duimuk");
     m_Prototypes_Inter.push_back("NPC_Danjin");
     m_Prototypes_Inter.push_back("DanjinJar");
+    m_Prototypes_Inter.push_back("DestinyStone");
+    m_Prototypes_Inter.push_back("DestructibleProp");
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -1306,7 +1308,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Danjin"), TIME_CHANNEL::WORLD, &DanjinDesc), );
-                        }
+                }
                 else if ("DanjinJar" == m_Prototypes_Inter[m_iIndex_PrtInter])
                 {
                     CDanjinJar::DANJINJAR_DESC DanjinJarDesc = {};
@@ -1321,6 +1323,42 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DanjinJar"), TIME_CHANNEL::WORLD, &DanjinJarDesc), );
+                }
+                else if ("DestinyStone" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CDestinyStone::DESTINYSTONE_DESC DestinyStoneDesc = {};
+
+                    DestinyStoneDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    DestinyStoneDesc.eLevel = LEVEL::MAP;
+                    memcpy(DestinyStoneDesc.szModelName, strModelTag.c_str(), sizeof(DestinyStoneDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&DestinyStoneDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    DestinyStoneDesc.eInteractiveType = INTERACTIVE_TYPE::DESTINYSTONE;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DestinyStone"), TIME_CHANNEL::WORLD, &DestinyStoneDesc), );
+                }
+                else if ("DestructibleProp" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CDestructible_Prop::DESTRUCTIBLE_PROP_DESC DestructiblePropDesc = {};
+
+                    DestructiblePropDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    DestructiblePropDesc.eLevel = LEVEL::MAP;
+                    memcpy(DestructiblePropDesc.szModelName, TEXT("DestructibleProp"), sizeof(DestructiblePropDesc.szModelName));		// 프로토타입 태그명
+
+                    WorldMatrix.r[0] *= 0.005f;
+                    WorldMatrix.r[1] *= 0.005f;
+                    WorldMatrix.r[2] *= 0.005f;
+
+                    XMStoreFloat4x4(&DestructiblePropDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    DestructiblePropDesc.eInteractiveType = INTERACTIVE_TYPE::DESTRUCTIBLE;										// 상호 작용 오브젝트 타입
+
+                    DestructiblePropDesc.eModelType = CDestructible_Prop::MODEL_TYPE::FENCE;
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Destructible"), TIME_CHANNEL::WORLD, &DestructiblePropDesc), );
                 }
 #pragma endregion
 
@@ -1854,6 +1892,21 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
                 SAMELINE;
                 if (ImGui::Button("MODEL TYPE C"))
                     pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::C);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE D"))
+                    pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::D);
+                SEPARATOR;
+                if (ImGui::Button("MODEL TYPE E"))
+                    pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::E);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE F"))
+                    pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::F);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE G"))
+                    pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::G);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE H"))
+                    pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::H);
                 SEPARATOR;
 
                 ImGui::Text("SETTING STEP");
@@ -1893,6 +1946,35 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
                 if (ImGui::Button("STEP 14##move")) pDanjinJar->MoveStepPosition(13); SAMELINE;
                 if (ImGui::Button("STEP 15##move")) pDanjinJar->MoveStepPosition(14); SAMELINE;
                 if (ImGui::Button("STEP 16##move")) pDanjinJar->MoveStepPosition(15); SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::DESTINYSTONE == m_pFixPropObj->Get_InteractiveType())
+            {
+                CDestinyStone* pDestinyStone = static_cast<CDestinyStone*>(m_pFixPropObj);
+
+                ImGui::Text("== DESTINY STONE ==");
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::DESTRUCTIBLE == m_pFixPropObj->Get_InteractiveType())
+            {
+                CDestructible_Prop* pDestructibleProp = static_cast<CDestructible_Prop*>(m_pFixPropObj);
+
+                string strCurrentModelType = pDestructibleProp->Get_Destructible_ModelType_ByString();
+
+                ImGui::Text("== DESTRUCTIBLE PROP ==");
+
+                ImGui::Text("CURRENT MODEL TYPE : %s", strCurrentModelType.c_str());
+
+                if (ImGui::Button("MODEL TYPE FENCE"))
+                    pDestructibleProp->Set_Destructible_ModelType(CDestructible_Prop::MODEL_TYPE::FENCE);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE POT"))
+                    pDestructibleProp->Set_Destructible_ModelType(CDestructible_Prop::MODEL_TYPE::POT);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE BARREL"))
+                    pDestructibleProp->Set_Destructible_ModelType(CDestructible_Prop::MODEL_TYPE::BARREL);
+                SEPARATOR;
+
+                SEPARATOR;
             }
 
 #pragma endregion
@@ -2352,6 +2434,16 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
                     ImGui::Text("MONSTER SUB LEVEL : %d", static_cast<CMap_Spawn*>(m_InteractiveList[m_iInteractiveListIndex])->Get_SubLevel());
                     SEPARATOR;
                 }
+                if (INTERACTIVE_TYPE::DANJINJAR == m_InteractiveList[m_iInteractiveListIndex]->Get_InteractiveType())
+                {
+                    ImGui::Text("DANJIN JAR TYPE : %s", static_cast<CDanjinJar*>(m_InteractiveList[m_iInteractiveListIndex])->Get_DanjinJar_ModelType_ByString().c_str());
+                    SEPARATOR;
+                }
+                if (INTERACTIVE_TYPE::DESTRUCTIBLE == m_InteractiveList[m_iInteractiveListIndex]->Get_InteractiveType())
+                {
+                    ImGui::Text("DESTRUCTIBLE MODEL TYPE : %s", static_cast<CDestructible_Prop*>(m_InteractiveList[m_iInteractiveListIndex])->Get_Destructible_ModelType_ByString().c_str());
+                    SEPARATOR;
+                }
 			}
 			if (0 != m_InteractiveList.size())
 			{
@@ -2490,6 +2582,16 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
                         if (INTERACTIVE_TYPE::DANJINJAR == m_pFixPropObj->Get_InteractiveType())
                         {
                             //  항아리 일단 빈칸
+                        }
+
+                        if (INTERACTIVE_TYPE::DESTINYSTONE == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            //  귀석 일단 빈칸
+                        }
+
+                        if (INTERACTIVE_TYPE::DESTRUCTIBLE == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            // 파괴 가능 오브젝트 일단 빈칸
                         }
 
 						m_isFixInteractObjectWindow = true;
@@ -2767,12 +2869,15 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 					ImGui::EndListBox();
 				} SEPARATOR;
-                _bool isEnable = m_pGameInstance->Is_LightEnable(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP));
-                if (true == isEnable)
-                    ImGui::Text("ENABLE");
-                else
-                    ImGui::Text("DISABLE");
-                SEPARATOR;
+                if (0 != m_LightTags.size())
+                {
+                    _bool isEnable = m_pGameInstance->Is_LightEnable(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP));
+                    if (true == isEnable)
+                        ImGui::Text("ENABLE");
+                    else
+                        ImGui::Text("DISABLE");
+                    SEPARATOR;
+                }
 				if (0 != m_LightTags.size() && ImGui::Button("TURN ON"))
 				{
 					m_isFixLight = false;
@@ -4935,6 +5040,18 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 
                 WriteFile(hObjectFile, &StepPosition, sizeof(CDanjinJar::DANJINJAR_STEP), &dwByte, nullptr);
             }
+            if (INTERACTIVE_TYPE::DESTINYSTONE == eType)
+            {
+                // 귀석 일단 공백
+            }
+            if (INTERACTIVE_TYPE::DESTRUCTIBLE == eType)
+            {
+                CDestructible_Prop* pDestructibleProp = static_cast<CDestructible_Prop*>(pProp);
+
+                CDestructible_Prop::MODEL_TYPE eModelType = { pDestructibleProp->Get_Destructible_ModelType() };
+
+                WriteFile(hObjectFile, &eModelType, sizeof(CDestructible_Prop::MODEL_TYPE), &dwByte, nullptr);
+            }
 		}
 	}
 
@@ -5777,6 +5894,40 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DanjinJar"), TIME_CHANNEL::WORLD, &DanjinJarDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::DESTINYSTONE == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CDestinyStone::DESTINYSTONE_DESC DestinyStoneDesc = {};
+
+                DestinyStoneDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                DestinyStoneDesc.eLevel = LEVEL::MAP;
+                memcpy(DestinyStoneDesc.szModelName, TEXT("Prototype_Component_Model_DestinyStone"), sizeof(DestinyStoneDesc.szModelName));		// 프로토타입 태그명
+
+                DestinyStoneDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                DestinyStoneDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DestinyStone"), TIME_CHANNEL::WORLD, &DestinyStoneDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::DESTRUCTIBLE == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CDestructible_Prop::DESTRUCTIBLE_PROP_DESC DestructiblePropDesc = {};
+
+                DestructiblePropDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                DestructiblePropDesc.eLevel = LEVEL::MAP;
+                memcpy(DestructiblePropDesc.szModelName, TEXT("DestructibleProp"), sizeof(DestructiblePropDesc.szModelName));		// 프로토타입 태그명
+
+                DestructiblePropDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                DestructiblePropDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CDestructible_Prop::MODEL_TYPE eModelType = {};
+
+                CHECK_FALSE(ReadFile(hObjectFile, &DestructiblePropDesc.eModelType, sizeof(CDestructible_Prop::MODEL_TYPE), &dwByte, nullptr), false);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Destructible"), TIME_CHANNEL::WORLD, &DestructiblePropDesc), false);
             }
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));

@@ -14,7 +14,7 @@ void CAS_Dr_Rampage_Attack_Default::Enter(CStateMachine* pFSM, CGameObject* pOwn
         m_iAttackIndex = 0;
 
     if(m_iAttackIndex == ATTACK1)
-        m_pMonData->iAnimIndex = 31;
+        m_pMonData->iAnimIndex = 30;
     else if (m_iAttackIndex == ATTACK2)
     {
         m_pMonData->iAnimIndex = 34;
@@ -40,15 +40,7 @@ void CAS_Dr_Rampage_Attack_Default::Update(CStateMachine* pFSM, CGameObject* pOw
     {
         if (m_eComboState == COMBOSTATE::START)
         {
-            if (m_pMonData->isAnimFinash)
-            {
-                m_pMonData->iAnimIndex = 30;
-                m_eComboState = COMBOSTATE::ATTACK_1;
-                m_pMonData->isBland = false;
-            }
-        }
-        else if (m_eComboState == COMBOSTATE::ATTACK_1)
-        {
+            m_pMonData->pOwner->LockOnLerp(fTimeDelta, 3.5f);
             if (m_pMonData->isAnimFinash)
             {
                 m_pMonData->iAnimIndex = 31;
@@ -84,7 +76,37 @@ void CAS_Dr_Rampage_Attack_Default::OnCollision(COLLISION_DESC* pDesc, _uint iCo
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_WEAK, nullptr);
+
+        if (m_iAttackIndex == ATTACK3)
+        {
+            if (m_pMonData->iAnimIndex == 14)
+            {
+                pTarget->KnockBack(pOwner->Get_Look(), 10.f, 50.f);
+                pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+            }
+            else if (m_pMonData->iAnimIndex == 15)
+            {
+                pTarget->KnockBack(pOwner->Get_Look(), 10.5f, 50.f);
+                pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+            }
+            else if (m_pMonData->iAnimIndex == 16)
+            {
+                pTarget->KnockBack(pOwner->Get_Look(), 19.5f, 35.f);
+                pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+            }
+
+        }
+        else   if (m_iAttackIndex == ATTACK1)
+        {
+            pTarget->KnockBack(pOwner->Get_Look(), 12.5f, 40.f);
+            pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+
+        }
+        else
+        {
+            pTarget->KnockBack(pOwner->Get_Look(), 15.5f, 40.f);
+            pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+        }
     }
 }
 

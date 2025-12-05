@@ -91,6 +91,19 @@ void CKhazan_GS_Anim_Move::Continue(_float fTimeDelta)
             return;
         }
     }
+   
+    if (m_isMoving)
+    { 
+        /* Fall 처리 */
+        if(m_pModel->Get_CurAnimIndex() == m_pModel->Get_AnimIndexByName("CA_PC_Kazan_Fall_End"))  m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+        /* Armed 처리 */
+        else if (m_pModel->Get_CurAnimIndex() == m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed") && m_pModel->IsFinished() )  m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+        else if (m_pModel->Get_CurAnimIndex() == m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed") && m_pModel->IsFinished())  m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+        /* UnArmed 처리 */
+        else if (m_pModel->Get_CurAnimIndex() == m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_UnArmed") && m_pModel->IsFinished())  m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+        else if (m_pModel->Get_CurAnimIndex() == m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed") && m_pModel->IsFinished())  m_pModel->Set_Animation(m_iSelectedAnimationIndex);
+    }
+
 
     Check_SprintStart();
 
@@ -233,7 +246,8 @@ _bool CKhazan_GS_Anim_Move::Try_ChangeAnimation(GS_MOVEINFO moveInfo)
         return false;
     else if (isCheckMin || Has_State(MOV::MOVE_DODGE))
     {
-        m_isMoving = true;
+        if (m_isStopAnimationFinished) m_isMoving = false;
+        else m_isMoving = true;
         m_iPrevSelectedAnimationIndex = m_iSelectedAnimationIndex;
         m_iSelectedAnimationIndex = iSelectedAnimationIndex;
         if (m_iSelectedAnimationIndex == 0)

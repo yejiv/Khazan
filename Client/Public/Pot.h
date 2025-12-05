@@ -7,10 +7,10 @@ NS_BEGIN(Client)
 class CPot final : public CProp_Destructible
 {
 public:
-    typedef struct tagPropFenceDesc : public CProp_Destructible::PROP_DEST_DESC
+    typedef struct tagPropPotDesc : public CProp_Destructible::PROP_DEST_DESC
     {
 
-    }PROP_FENCE_DESC;
+    }PROP_POT_DESC;
 private:
     CPot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CPot(const CPot& Prototype);

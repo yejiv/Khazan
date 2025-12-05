@@ -427,6 +427,12 @@
     <Filter Include="01.Utility\03.Component\RigidBody\Shader">
       <UniqueIdentifier>{e739e434-8c33-41c4-a3ef-ee49c6ed7cf2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Component\SoftBody">
+      <UniqueIdentifier>{96a24e00-8664-41a7-b947-97a90bddcc42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\SoftBody\Util">
+      <UniqueIdentifier>{3176078f-f937-4990-afe6-b993f0f4544b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -800,6 +806,12 @@
     </ClCompile>
     <ClCompile Include="..\private\MotionTrail.cpp">
       <Filter>01.Utility\03.Component\MotionTrail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SoftBody.cpp">
+      <Filter>01.Utility\03.Component\SoftBody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SoftBody_Creator.cpp">
+      <Filter>01.Utility\03.Component\SoftBody\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1225,6 +1237,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Debug_Header.h">
       <Filter>97.Debug\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SoftBody_Creator.h">
+      <Filter>01.Utility\03.Component\SoftBody\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SoftBody.h">
+      <Filter>01.Utility\03.Component\SoftBody</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

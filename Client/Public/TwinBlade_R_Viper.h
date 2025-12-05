@@ -67,6 +67,7 @@ private:
     _float4x4*              m_pSocketMatrix = { nullptr };
 
     _float4                 m_vBladeStartPos{}, m_vBladeTipPos{};
+
     _float4x4               m_matOffset = {};
     _float4                 m_vOffsetRot = {};
 

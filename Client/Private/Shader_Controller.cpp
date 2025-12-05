@@ -17,6 +17,7 @@
 #include "Dragonian_Rampage.h"
 #include "Projectile_Imp_MagicBall.h"
 #include "Imp_Melee.h"
+#include "Halberd.h"
 #include "Viper.h"
 
 CShader_Controller::CShader_Controller()
@@ -545,6 +546,7 @@ void CShader_Controller::Ready_Shader()
                 CBody_Khazan_Spear* pBodyKhazanSpear = {};
                 CKhazan_GSword* pKhazanGS = {};
                 CBody_Khazan_GS* pBodyKhazanGS = {};
+                CHalberd* pHalberd = {};
                 CViper* pViper = {};
 
                 switch (m_iTrailOwnerIndex)
@@ -575,7 +577,10 @@ void CShader_Controller::Ready_Shader()
                     pBodyKhazanGS = dynamic_cast<CBody_Khazan_GS*>(pKhazanGS->Find_PartObject(TEXT("Part_Body")));
                     m_TrailConfig = pBodyKhazanGS->Get_TrailConfig();
                     break;
-
+                case 5:
+                    pHalberd = dynamic_cast<CHalberd*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
+                    m_TrailConfig = pHalberd->Get_TrailConfig();
+                    break;
                 case 6:
                     pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Viper"), 0));
                     m_TrailConfig = pViper->Get_TrailConfig();
@@ -676,7 +681,18 @@ void CShader_Controller::Ready_Shader()
                             ImGui::SameLine();
                         }
                         break;
+                    case 5:
+                        for (_uint i = 0; i < pHalberd->Get_NumTrailTextures(); ++i)
+                        {
+                            ID3D11ShaderResourceView* pSRV = pHalberd->Get_TrailTexture(i);
+                            if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                            {
+                                isChanged = true;
+                                m_TrailConfig.iTextureIdx = i;
+                            }
 
+                            ImGui::SameLine();
+                        }
                     case 6:
                         for (_uint i = 0; i < pViper->Get_NumTrailTextures(); ++i)
                         {
@@ -704,6 +720,7 @@ void CShader_Controller::Ready_Shader()
                         case 2: pDragonianRampage->Set_TrailConfig(m_TrailConfig); break;
                         case 3: pBodyKhazanSpear->Set_TrailConfig(m_TrailConfig); break;
                         case 4: pBodyKhazanGS->Set_TrailConfig(m_TrailConfig); break;
+                        case 5: pHalberd->Set_TrailConfig(m_TrailConfig); break;
                         case 6: pViper->Set_TrailConfig(m_TrailConfig); break;
                         }
                     }

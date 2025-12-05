@@ -8,7 +8,7 @@ NS_BEGIN(Editor)
 class CDanjinJar final : public CProp_Interactive
 {
 public:
-    enum class DANJINJAR_TYPE { A, B, C, END };
+    enum class DANJINJAR_TYPE { A, B, C, D, E, F, G, H, END };
 
     typedef struct tagDanjinJarMoveStep {
         _float4 vStep1{};
@@ -90,6 +90,8 @@ public:
 public:
     DANJINJAR_TYPE Get_DanjinJar_ModelType() { return m_eJarType; }
     void Set_DanjinJar_ModelType(DANJINJAR_TYPE eModelType);
+
+    string Get_DanjinJar_ModelType_ByString();
 
     DANJINJAR_STEP Get_StepPosition() { return m_DanjinJarStep; }
     void StepPositionSetting(_uint iStep);
