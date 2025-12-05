@@ -26,9 +26,9 @@ public:
     _matrix					Get_BoneMatrix(const _char* pBoneName);
     _float4x4               Get_CombinedMatrix() const { return m_CombinedWorldMatrix; }
     void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
-    _float4                 Get_BladeTipPos() const { return m_vBladeTipPos; }
-    _float4                 Get_BladeStartTipPos() const { return m_vBladeStatrtPos; }
 
+    _vector                 Get_BladeTipPos() const { return XMLoadFloat4(&m_vBladeTipPos); }
+    _vector                 Get_BladeStartPos() const { return XMLoadFloat4(&m_vBladeStartPos); }
 
 private:
     CTwinBlade_R_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -66,8 +66,7 @@ private:
     CBody*                  m_pBodyComp = { nullptr };
     _float4x4*              m_pSocketMatrix = { nullptr };
 
-    _float4                 m_vBladeTipPos = {};
-    _float4                 m_vBladeStatrtPos = {};
+    _float4                 m_vBladeStartPos{}, m_vBladeTipPos{};
 
     _float4x4               m_matOffset = {};
     _float4                 m_vOffsetRot = {};
