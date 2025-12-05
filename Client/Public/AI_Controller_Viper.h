@@ -51,6 +51,9 @@ private:
     }SKILLCOOLDOWN;
 
 public:
+    virtual void                Set_ControllerActivate(_bool isToggle) { m_isActiveController = isToggle; }
+    void                        Set_CutSceneFinished() { m_is2PhaseCutSceneFinished = true; }
+public:
     virtual HRESULT				Initialize(class CCreature* pOwner);
     virtual void				Update(CGameObject* pOwner, _float fTimeDelta) override;
 
@@ -66,6 +69,8 @@ public:
 
 private:
     HRESULT                     Ready_CoolDown();
+    
+
 
 
 private:
@@ -73,7 +78,7 @@ private:
     unordered_map<string, SKILLCOOLDOWN>    m_SkillCoolDowns;
     _float                                  m_fAnimSpeed = {};
     _float                                  m_fCurrentTime = {};
-
+    _bool                                   m_is2PhaseCutSceneFinished = { false };
 
 public:
     static CAI_Controller_Viper*    Create(class CCreature* pOwner);

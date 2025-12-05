@@ -30,8 +30,8 @@ HRESULT CProp_Chunk::Initialize_Clone(void* pArg)
     PROP_CHUNK_DESC* pDesc = static_cast<PROP_CHUNK_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
-    //m_pTransformCom->Set_WorldMatrix(XMLoadFloat4x4(&pDesc->WorldMatrix));
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(pDesc->WorldMatrix._41, pDesc->WorldMatrix._42, pDesc->WorldMatrix._43, 1.f));
+    m_pTransformCom->Set_WorldMatrix(XMLoadFloat4x4(&pDesc->WorldMatrix));
+    //m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(pDesc->WorldMatrix._41, pDesc->WorldMatrix._42, pDesc->WorldMatrix._43, 1.f));
     m_pTransformCom->Scale(pDesc->vScale);
 
     if (FAILED(Ready_Collision(pArg)))

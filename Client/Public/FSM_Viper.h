@@ -11,19 +11,19 @@ enum class VIPER_STATE_P1
     WALK,
     RUN,
     TURN,
-    QUICK2HIT,
-    SLOW2HIT,
-    STINGSLASHCOMBO,
-    THROWBLADE,
-    LOCKON,
-    SLOW3HIT,
-    SLASHBACKJUMP,
-    TURNATTACK,
-    JUMPSMASH,
-    DIVOUR,
-    SIDEMOVE,
-    COMBO5HIT,
-    STINGGRAB,
+    QUICK2HIT, // 빠르게 두번 휘두루기
+    SLOW2HIT, // 한번 휘두루고 돌아서 휘두루기
+    STINGSLASHCOMBO, // 찌르고 찌르고 배기
+    THROWBLADE, // 창 부매랑
+    LOCKON, 
+    SLOW3HIT, // 한번 휘두루고 돌아서 휘두루고 한번더
+    SLASHBACKJUMP, // 휘두루고 뒤로 닷지
+    TURNATTACK, // 돌면서 배기
+    JUMPSMASH, // 점프 해서 내려찍기
+    DIVOUR, // 빨아들이기
+    SIDEMOVE, 
+    COMBO5HIT, // 5번 배기
+    STINGGRAB, // 잡기 불러
     HIT,
     GROGGY,
     DODGE,

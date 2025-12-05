@@ -33,7 +33,7 @@ CLevel_Viper::CLevel_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 HRESULT CLevel_Viper::Initialize()
 {
 
-    CHECK_FAILED(Ready_Sequence(), E_FAIL);
+   
 
     // 플레이어, 카메라, 트리거
 
@@ -41,7 +41,7 @@ HRESULT CLevel_Viper::Initialize()
 
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
     CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
-    CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+    //CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
        
     // 우선 맵 오브젝트 서브 레벨 로드
     
@@ -63,15 +63,22 @@ HRESULT CLevel_Viper::Initialize()
 
     // 맵 오브젝트 서브 레벨 로드
     for (_uint i = 0; i < VIPER_SUBLV; ++i)
+    {        
+        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+    }
+
+    CHECK_FAILED(Ready_Sequence(), E_FAIL);
+
+    // 맵 오브젝트 서브 레벨 로드
+    for (_uint i = 0; i < VIPER_SUBLV; ++i)
     {
         CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-        //CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     }
     //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Laye0r_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
 
-    CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
+    //CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
     //CClientInstance::GetInstance()->Fade_Out();
     CHECK_FAILED(Ready_Item(), E_FAIL);
     if (!Wait_All_Futures())
@@ -106,10 +113,12 @@ void CLevel_Viper::Update(_float fTimeDelta)
     {
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
     }
-   /* if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
+
+   if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
     {
         CViper* pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Viper")));
         CKhazan_GSword* pKhazan = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+        //CSequence_Viper_CutScene* pSequence = CSequence_Viper_CutScene::Create(pViper, pKhazan);
         CSequence_Viper_SecondPhase* pSequence = CSequence_Viper_SecondPhase::Create(pViper, pKhazan);
 
         SEQ_REQ_PLAY_DESC tPlayDesc{};
@@ -120,11 +129,11 @@ void CLevel_Viper::Update(_float fTimeDelta)
         m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
     }
 
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD0, INPUT_TYPE::FORCE))
-    { 
+    if (m_pGameInstance->Key_Down(DIK_0, INPUT_TYPE::FORCE))
+    {
         m_pClientInstance->Camera_Force_AniEnd();
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
-    }*/
+    }
 	return;
 }
 
@@ -152,11 +161,14 @@ HRESULT CLevel_Viper::Ready_Layer_UI()
 HRESULT CLevel_Viper::Ready_Layer_Player(const _wstring& strLayerTag)
 {
 	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-	//	ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
+	//	ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER, &Desc)))
 	//	return E_FAIL;
 
+    CGameObject::GAMEOBJECT_DESC Desc;
+    Desc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
+
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
-        ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+        ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER, &Desc)))
         return E_FAIL;
 
 	return S_OK;
@@ -188,6 +200,7 @@ HRESULT CLevel_Viper::Ready_Layer_Camera(const _wstring& strLayerTag)
     m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag, pCamera_Player);
 
     m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::PLAYER));
+
 
     return S_OK;
 }
@@ -820,7 +833,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, con
         if ("Viper" == MonsterData.MonsterKey[i])
         {
             WorldMatrix._41 = -37.938f;
-            WorldMatrix._42 = -15.453f;
+            WorldMatrix._42 = -15.453f;       
             WorldMatrix._43 = 223.393f;
 
             CMonster::MONSTER_DESC MonsterDesc{};
@@ -867,8 +880,8 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
      //    return E_FAIL;
 
      CMonster::MONSTER_DESC MonsterDesc{};
-     MonsterDesc.fAttack = 10.f;
-     MonsterDesc.fMaxHP = 50.f;
+     MonsterDesc.fAttack = 100.f;
+     MonsterDesc.fMaxHP = 100.f;
      MonsterDesc.fMaxStamina = 250.f;
      MonsterDesc.fMoveSpeed = 10.f;
      MonsterDesc.fSpeedPerSec = 3.f;
@@ -878,6 +891,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_Viper(const _wstring& strLayerTag)
      MonsterDesc.WorldMatrix.m[3][0] = -32.365f;
      MonsterDesc.WorldMatrix.m[3][1] = -26.5f;
      MonsterDesc.WorldMatrix.m[3][2] = 182.409f;
+
      MonsterDesc.strName = "Halberd";
      MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
      if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), strLayerTag,
@@ -913,7 +927,7 @@ HRESULT CLevel_Viper::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Rot_Start"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Rot_Loop"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Rot_End"), 1);
-    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), 10);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("scream"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_snow1"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_snow2"), 1);
@@ -972,6 +986,8 @@ HRESULT CLevel_Viper::Ready_Sequence()
     CViper* pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Viper")));
     CKhazan_GSword* pKhazan = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
     CSequence_Viper_SecondPhase* pSequence = CSequence_Viper_SecondPhase::Create(pViper, pKhazan);
+    SEQ_REQ_PLAY_DESC desc{};
+    pSequence->Initialize(desc);
     m_pClientInstance->Push_Sequence(TEXT("Viper_SecondPhase"), pSequence);
 
     return S_OK;

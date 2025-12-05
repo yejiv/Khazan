@@ -58,6 +58,10 @@ private:
 
     vector<class CProjectile_Imp_MagicBall*> m_MagicBalls;
     class CProjectile_Boomarang*    m_pBoomarang = { nullptr };
+
+
+    COLLISION_DESC                  m_tImp_RangeColliderDesc = {};
+
 public:
     static CImp_Range*              Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CGameObject*            Clone(void* pArg) override;

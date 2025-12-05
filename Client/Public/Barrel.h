@@ -7,10 +7,11 @@ NS_BEGIN(Client)
 class CBarrel final : public CProp_Destructible
 {
 public:
-    typedef struct tagPropFenceDesc : public CProp_Destructible::PROP_DEST_DESC
+    typedef struct tagPropBarrelDesc : public CProp_Destructible::PROP_DEST_DESC
     {
 
-    }PROP_FENCE_DESC;
+    }PROP_BARREL_DESC;
+
 private:
     CBarrel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CBarrel(const CBarrel& Prototype);

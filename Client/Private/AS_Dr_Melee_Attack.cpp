@@ -21,7 +21,7 @@ void CAS_Dr_Melee_Attack::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 void CAS_Dr_Melee_Attack::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
     m_pMonData->pOwner->LockOnLerp(fTimeDelta, 3.f);
-    if (m_pMonData->isAnimFinash)
+    if (m_pMonData->isAnimFinash || m_pMonData->eHitType != HITREACTION::END)
     {
         m_pMonData->isAttack = false;
     }

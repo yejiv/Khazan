@@ -84,6 +84,41 @@ void CDanjinJar::Set_DanjinJar_ModelType(DANJINJAR_TYPE eModelType)
     m_pModelCom = m_pModelType[ENUM_CLASS(m_eJarType)];
 }
 
+string CDanjinJar::Get_DanjinJar_ModelType_ByString()
+{
+    string strCurrJarType = {};
+
+    switch (m_eJarType)
+    {
+    case DANJINJAR_TYPE::A:
+        strCurrJarType = "A TYPE";
+        break;
+    case DANJINJAR_TYPE::B:
+        strCurrJarType = "B TYPE";
+        break;
+    case DANJINJAR_TYPE::C:
+        strCurrJarType = "C TYPE";
+        break;
+    case DANJINJAR_TYPE::D:
+        strCurrJarType = "D TYPE";
+        break;
+    case DANJINJAR_TYPE::E:
+        strCurrJarType = "E TYPE";
+        break;
+    case DANJINJAR_TYPE::F:
+        strCurrJarType = "F TYPE";
+        break;
+    case DANJINJAR_TYPE::G:
+        strCurrJarType = "G TYPE";
+        break;
+    case DANJINJAR_TYPE::H:
+        strCurrJarType = "H TYPE";
+        break;
+    }
+
+    return strCurrJarType;
+}
+
 void CDanjinJar::StepPositionSetting(_uint iStep)
 {
     _float4 vPosition = {};
@@ -222,6 +257,21 @@ HRESULT CDanjinJar::Ready_Components(void* pArg)
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_NPC_DanjinJar_C"),
         TEXT("Com_Model_C"), reinterpret_cast<CComponent**>(&m_pModelType[ENUM_CLASS(DANJINJAR_TYPE::C)]), nullptr), E_FAIL);
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_NPC_DanjinJar_A"),
+        TEXT("Com_Model_D"), reinterpret_cast<CComponent**>(&m_pModelType[ENUM_CLASS(DANJINJAR_TYPE::D)]), nullptr), E_FAIL);
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_NPC_DanjinJar_B"),
+        TEXT("Com_Model_E"), reinterpret_cast<CComponent**>(&m_pModelType[ENUM_CLASS(DANJINJAR_TYPE::E)]), nullptr), E_FAIL);
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_NPC_DanjinJar_C"),
+        TEXT("Com_Model_F"), reinterpret_cast<CComponent**>(&m_pModelType[ENUM_CLASS(DANJINJAR_TYPE::F)]), nullptr), E_FAIL);
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_NPC_DanjinJar_B"),
+        TEXT("Com_Model_G"), reinterpret_cast<CComponent**>(&m_pModelType[ENUM_CLASS(DANJINJAR_TYPE::G)]), nullptr), E_FAIL);
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_NPC_DanjinJar_C"),
+        TEXT("Com_Model_H"), reinterpret_cast<CComponent**>(&m_pModelType[ENUM_CLASS(DANJINJAR_TYPE::H)]), nullptr), E_FAIL);
 
     return S_OK;
 }

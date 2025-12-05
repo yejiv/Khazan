@@ -59,6 +59,7 @@ void CAS_Halberd_Attack_Long::Update(CStateMachine* pFSM, CGameObject* pOwner, _
         {
             if (m_pMonData->isAnimFinash)
             {
+                m_isTakeDamage = false;
                 m_pMonData->iAnimIndex = 9;
                 m_eState = RUSH;
             }
@@ -68,7 +69,7 @@ void CAS_Halberd_Attack_Long::Update(CStateMachine* pFSM, CGameObject* pOwner, _
             m_pMonData->isAttack_Collinder = true;
             m_pMonData->pOwner->LockOnLerp(fTimeDelta, 4.f);
             pOwner->Get_Transform()->Go_Straight(3.5f * fTimeDelta);
-            if (m_pMonData->pOwner->Check_Ranage("AttackRange"))
+            if (m_pMonData->pOwner->Check_Ranage("AttackRange") || m_isTakeDamage)
             {
                 m_pMonData->isAttack_Collinder = false;
                 m_pMonData->iAnimIndex = 8;
@@ -99,6 +100,8 @@ void CAS_Halberd_Attack_Long::OnCollision(COLLISION_DESC* pDesc, _uint iCollisio
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
         pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+        pTarget->KnockBack(pOwner->Get_Look(), 18.5f, 60.f);
+        m_isTakeDamage = true;
     }
 }
 

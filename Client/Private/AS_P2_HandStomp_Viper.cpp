@@ -39,6 +39,26 @@ void CAS_P2_HandStomp_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
 }
 
+void CAS_P2_HandStomp_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CViper* pViper = static_cast<CViper*>(pOwner);
+        CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        if (nullptr == pOwnerTransform)
+            return;
+
+        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+        _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+        pTarget->KnockBack(vLook, 20.f, 60.f);
+
+    }
+}
+
 CAS_P2_HandStomp_Viper* CAS_P2_HandStomp_Viper::Create()
 {
     return new CAS_P2_HandStomp_Viper();

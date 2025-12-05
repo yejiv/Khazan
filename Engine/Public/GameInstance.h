@@ -391,7 +391,7 @@ public:
 #pragma endregion
 
 #pragma region SEQUENCE_MANAGER
-    HRESULT SEQ_AdoptAndPlay(class ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc, _bool isInit = false);
+	HRESULT SEQ_AdoptAndPlay(class ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc, _bool isInit = false);
 	void    SEQ_EnqueueAdopt(class ISeqInstance* pSeq, const SEQ_REQ_PLAY_DESC& tDesc);
 
 	HRESULT SEQ_Play(const SEQ_REQ_PLAY_DESC& tDecs);

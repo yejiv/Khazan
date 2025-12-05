@@ -355,6 +355,15 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\15.DanjinJar">
       <UniqueIdentifier>{03821a9a-b032-41d6-b429-91ed5adea00c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\17.Destructible">
+      <UniqueIdentifier>{2eb6574f-b88a-4c2d-8c6e-86688165458c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\16.DestinyStone">
+      <UniqueIdentifier>{4111fb8f-f850-4675-b745-76d92abdce5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\16.DestinyStone\Gem">
+      <UniqueIdentifier>{7e7dbbc0-48aa-4f9b-bf98-ade76ec70acb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -675,6 +684,15 @@
     <ClInclude Include="..\Public\DanjinJar.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\15.DanjinJar</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\DestinyStone.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\16.DestinyStone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Destructible_Prop.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\17.Destructible</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DestinyGem.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\16.DestinyStone\Gem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -989,6 +1007,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\DanjinJar.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\15.DanjinJar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DestinyStone.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\16.DestinyStone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Destructible_Prop.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\17.Destructible</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DestinyGem.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\16.DestinyStone\Gem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

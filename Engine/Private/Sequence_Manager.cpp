@@ -209,7 +209,7 @@ HRESULT CSequence_Manager::AdoptAndPlay(ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tD
             return E_FAIL;
         }
     }
-	    
+
 	m_MapInstances.emplace(key, pSeq);
 
 	Emit_Started(tDesc.tId);

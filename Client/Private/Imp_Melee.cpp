@@ -85,7 +85,6 @@ void CImp_Melee::Update(_float fTimeDelta)
     __super::Update(fTimeDelta);
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
-
     m_pMeshTrail->Update(fTimeDelta);
 }
 
@@ -158,9 +157,12 @@ HRESULT CImp_Melee::Ready_Components()
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 
-    m_tCollisionDesc.pGameObject = this;
+    m_tImpMeleeColliderDesc.pGameObject = this;
+    m_tImpMeleeColliderDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
+    m_tImpMeleeColliderDesc.strName = TEXT("Imp_Melee_Collider");
+
     //pCollDesc.pInfo = ?? // 작성하기
-    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+    tCharVirDesc.pCollisionDesc = &m_tImpMeleeColliderDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))

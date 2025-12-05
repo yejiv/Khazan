@@ -113,7 +113,6 @@ void CBody_Phase2_Viper::Priority_Update(_float fTimeDelta)
 void CBody_Phase2_Viper::Update(_float fTimeDelta)
 {
 
-    m_isOnAttackCollision = true;
 
     if (CViper::PHASE::PHASE2 == m_pOwner->Get_Phase())
     {
@@ -193,8 +192,8 @@ HRESULT CBody_Phase2_Viper::Render()
 
 void CBody_Phase2_Viper::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    /* COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
-     m_pOwner->Get_Controller()->AI_React_Collision(pDesc, iOtherObjectLayer, m_pOwner);*/
+     COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+     m_pOwner->Get_Controller()->AI_React_Collision(pDesc, iOtherObjectLayer, m_pOwner);
 }
 
 void CBody_Phase2_Viper::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -265,7 +264,7 @@ HRESULT CBody_Phase2_Viper::Ready_Colliders()
 {
      CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
 
-     BodyDesc.fRadius = 1.5f;
+     BodyDesc.fRadius = 2.2f;
      BodyDesc.eMotion = EMotionType::Kinematic;
      BodyDesc.eQuality = EMotionQuality::Discrete;
      BodyDesc.eShapeType = SHAPE::SPHERE;
@@ -276,7 +275,7 @@ HRESULT CBody_Phase2_Viper::Ready_Colliders()
      XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_LeftHandMatrix));
      BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
      BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
-     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+     BodyDesc.vShapeOffset = _float3(0.f, -0.5f, 0.f);
      m_tPhase2CollisionDesc.pGameObject = this;
      m_tPhase2CollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
      m_tPhase2CollisionDesc.strName = TEXT("Phase2LeftHand");
