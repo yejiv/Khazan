@@ -129,7 +129,6 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
     }
 
-
     if (m_isActiveController)
     {
         m_pPerception->Update(pOwner, m_pBB, fTimeDelta);

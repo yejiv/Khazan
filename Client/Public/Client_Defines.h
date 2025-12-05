@@ -36,6 +36,9 @@ namespace Client
         TEST,
         CONTROLLER,
         INTERACT_OBJECT,
+
+
+        CLOTH,
         END };
 
 	enum class KHAZAN_MAP { HEINMACH, CREVICE, EMBARS, VIPER, END };

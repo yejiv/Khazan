@@ -17,7 +17,7 @@ CJolt_CharacterContactListener::~CJolt_CharacterContactListener()
 
 bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2)
 {
-    if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static)
+    if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static || m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Kinematic)
         return true;
 
     return false;
