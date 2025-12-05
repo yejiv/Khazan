@@ -34,9 +34,9 @@ void CAS_Halberd_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
 
         if (m_pMonData->fDecreaseAlpha >= 1.f)
         {
-            CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Item")));
+            CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Item")));
             pItem->RandNormal_Item(pOwner->Get_Transform()->Get_State(STATE::POSITION));
-            m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Item"), pItem);
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Item"), pItem);
 
             m_pMonData->pOwner->Creature_Release();
         }

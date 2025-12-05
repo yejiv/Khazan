@@ -320,6 +320,8 @@ void CBody::Set_Velocity(const _float3& vVelocity)
 
 void CBody::Collision_Active(_bool isActive)
 {
+    if (!m_pBodyInterface)
+        return;
     if (isActive)
     {
         if (!m_pBodyInterface->IsAdded(m_BodyID))

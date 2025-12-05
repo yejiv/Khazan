@@ -27,18 +27,22 @@ HRESULT CJar_6th::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
-    CHECK_FAILED(Ready_TalkUI(pArg), E_FAIL);
-
     m_iStepState = STEP_STATE::STEP1;
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&m_DanjinJarStep.vStep1));
 
-    m_eMoveState = MOVE_STATE::IDLE;
-
-    m_eAnimState = ANIM_STATE::DANCE1_ACTIVE;
-
-    AnimChange(m_eAnimState);
-
     m_fMoveSpeed = 0.75f;
+
+    m_pTriggerCom->Collision_Active(false);
+
+    XMStoreFloat4(&m_vStartPos, m_pTransformCom->Get_State(STATE::POSITION));
+    m_vEndPos = Get_NextStepPos();
+    if (0.f != m_vEndPos.w)
+    {
+        Set_Duration();
+        AnimChange(ANIM_STATE::WALK_LOOP, true);
+        m_eMoveState = MOVE_STATE::MOVE;
+        m_isMoveFlag = true;
+    }
 
     return S_OK;
 }
@@ -46,8 +50,6 @@ HRESULT CJar_6th::Initialize_Clone(void* pArg)
 void CJar_6th::Priority_Update(_float fTimeDelta)
 {
     Find_Target();
-
-    __super::Priority_Update(fTimeDelta);
 }
 
 void CJar_6th::Update(_float fTimeDelta)
@@ -58,18 +60,11 @@ void CJar_6th::Update(_float fTimeDelta)
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         Animation_Change(fTimeDelta);
-
-    __super::Update(fTimeDelta);
-
-    m_pTriggerCom->Sync_Update(m_pTransformCom);
-    m_pTriggerCom->Update(fTimeDelta, m_pTransformCom);
 }
 
 void CJar_6th::Late_Update(_float fTimeDelta)
 {
     m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
-
-    __super::Late_Update(fTimeDelta);
 }
 
 HRESULT CJar_6th::Render()
@@ -289,36 +284,22 @@ void CJar_6th::Check_Step()
     switch (m_iStepState)
     {
     case STEP1:
-        Check_OnPanel_TalkUI(301, 9.5f);
-        break;
     case STEP2:
-        Check_OnPanel_TalkUI(310);
-        break;
     case STEP3:
     case STEP4:
     case STEP5:
     case STEP6:
-        isSkip = true;
-        break;
     case STEP7:
-        Check_OnPanel_TalkUI(311, 7.5f);
-        break;
     case STEP8:
     case STEP9:
     case STEP10:
     case STEP11:
     case STEP12:
-        isSkip = true;
-        break;
     case STEP13:
-        Check_OnPanel_TalkUI(318, 7.5f);
+        isSkip = true;
         break;
     case STEP14:
-        isSkip = true;
-        break;
     case STEP15:
-        Check_OnPanel_TalkUI(319, 4.5f);
-        break;
     case STEP16:
         break;
     }
@@ -383,7 +364,8 @@ _float4 CJar_6th::Get_NextStepPos()
         vTargetPos = m_DanjinJarStep.vStep13;
         break;
     case STEP13:
-        vTargetPos = m_DanjinJarStep.vStep14;
+        m_iStepState = STEP1;
+        vTargetPos = m_DanjinJarStep.vStep2;
         break;
     case STEP14:
         vTargetPos = m_DanjinJarStep.vStep15;

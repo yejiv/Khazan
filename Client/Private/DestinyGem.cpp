@@ -32,7 +32,7 @@ HRESULT CDestinyGem::Initialize_Clone(void* pArg)
 
     m_pConsumed = pDesc->pConsumed;
 
-    m_iNumGem *= static_cast<_uint>(m_pGameInstance->Rand(98.f, 117.f));
+    m_iNumGem *= static_cast<_uint>(m_pGameInstance->Rand(2.f, 5.f));
 
     return S_OK;
 }
@@ -57,7 +57,7 @@ void CDestinyGem::Update(_float fTimeDelta)
 
     if (1.f <= m_fDecreaseAlpha)
     {
-        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, m_iNumGem);
+        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::STONE, m_iNumGem);
         Set_IsDead(true);
     }
 

@@ -279,6 +279,8 @@ _float CDanjinJar::Calculate_Distance(_vector vPosition1, _vector vPosition2)
 
 void CDanjinJar::Check_OnPanel_TalkUI(_uint iTalkIndex, _float fLimitDistance)
 {
+    CHECK_NULLPTR(m_pTargetCom, );
+
     if (0.f != fLimitDistance)
     {
         if (fLimitDistance > Calculate_Distance(m_pTransformCom->Get_State(STATE::POSITION), m_pTargetCom->Get_State(STATE::POSITION)))
