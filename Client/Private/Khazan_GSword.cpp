@@ -2605,8 +2605,8 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         if (false == m_isInteractEventSetting)
         {
             m_isInteractEventSetting = true;
-            /*  UnArmed 애니메이션 재생  (조각상떄는 안함)*/
-            if (!Has_Status(BLOCK_ATK_SKILL_GUARD))
+            /*  UnArmed 애니메이션 재생  (조각상 + 귀석때는 안함)*/
+            if (!Has_Status(BLOCK_ATK_SKILL_GUARD) && INTERACTIVE_TYPE::DESTINYSTONE != m_EventInteract.eInteractType)
             {
                 if (Has_Status(SPEAR))
                     m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
@@ -2688,6 +2688,10 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         {
             isDone = false;
             if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+            break;
+        }
+        case INTERACTIVE_TYPE::DESTINYSTONE:
+        {
             break;
         }
         default:
@@ -2773,6 +2777,11 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         if (INTERACTIVE_TYPE::LADDER == m_EventInteract.eInteractType)
         {
             Ladder_Event(fTimeDelta);
+        }
+        // 귀석이랑 상호 작용 시
+        if (INTERACTIVE_TYPE::DESTINYSTONE == m_EventInteract.eInteractType)
+        {
+            m_EventInteract.End_Event();
         }
     }
 }

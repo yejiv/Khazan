@@ -383,6 +383,26 @@ HRESULT CLoader::Loading_For_Map_Level()
 
 #pragma endregion
 
+#pragma region 귀석
+
+    /* Prototype_Component_Model_DestinyStone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_DestinyStone"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Ore/WP_COM_DestinyStone_Base_001_a/WP_COM_DestinyStone_Base_001_a.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_DestinyStone_Gem */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_DestinyStone_Gem"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Ore/WP_COM_DestinyStone_Base_001_b/WP_COM_DestinyStone_Base_001_b.dat")), E_FAIL);
+
+#pragma endregion
+
+#pragma region 파괴 가능 오브젝트 : 모델
+
+    /* Prototype_Component_Model_Fence */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Fence"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/WP_BGQ_Fence_Wood_001/WP_BGQ_Fence_Wood_001.dat")), E_FAIL);
+
+#pragma endregion
+
 #pragma endregion
 
 #pragma region 트리거 모델 원형 ( 야매? )
@@ -625,6 +645,22 @@ HRESULT CLoader::Loading_For_Map_Level()
     /* Prototype_GameObject_Prop_DanjinJar */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DanjinJar"),
         CDanjinJar::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 귀석
+    /* Prototype_GameObject_Prop_DestinyStone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DestinyStone"),
+        CDestinyStone::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_DestinyStone_Gem */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DestinyStone_Gem"),
+        CDestinyGem::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 파괴 가능 오브젝트 : 객체
+    /* Prototype_GameObject_Prop_Destructible */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Destructible"),
+        CDestructible_Prop::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma endregion

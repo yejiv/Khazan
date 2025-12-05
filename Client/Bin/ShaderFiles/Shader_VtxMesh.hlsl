@@ -453,6 +453,113 @@ PS_OUT PS_SNOWMAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽
     return Out;
 }
 
+PS_OUT PS_DESTINYSTONE(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+        vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float2 xy = vNormalDesc.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    float3 vToCamera = normalize(g_vCamPosition.xyz - In.vWorldPos.xyz);
+    
+    float fReflectPower = pow(saturate(1.f - dot(vNormal, vToCamera)), 4.f);
+    
+    float3 vReflectColor = float3(0.45f, 0.65f, 0.9f);
+    
+    float3 vIceColor = lerp(vMtrlDiffuse.rgb, vReflectColor, fReflectPower * 0.1f);
+    
+    float3 vFinalColor = saturate(vIceColor * 0.95f);
+    
+    float fAlpha = saturate(0.6f + fReflectPower * 0.3f);
+    
+    // Specular Test
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    // Emissive Test
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    Out.vDiffuse = float4(vFinalColor, fAlpha);
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 0.f;
+
+    return Out;
+}
+
+PS_OUT PS_DESTINYGEM(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+        vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float2 xy = vNormalDesc.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    float3 vToCamera = normalize(g_vCamPosition.xyz - In.vWorldPos.xyz);
+    
+    float fReflectPower = pow(saturate(1.f - dot(vNormal, vToCamera)), 4.f);
+    
+    float3 vReflectColor = float3(0.45f, 0.65f, 0.9f);
+    
+    float3 vIceColor = lerp(vMtrlDiffuse.rgb, vReflectColor, fReflectPower * 0.1f);
+    
+    float3 vFinalColor = saturate(vIceColor * 0.95f);
+    
+    float fAlpha = saturate(0.6f + fReflectPower * 0.3f);
+    
+    // Specular Test
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    // Emissive Test
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    Out.vDiffuse = float4(vFinalColor, fAlpha);
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 0.f;
+    
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+    
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
+
+    return Out;
+}
+
 PS_OUT PS_SWORD_EMISSIVE(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
@@ -732,5 +839,27 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_VIPER_WEAPON();
+    }
+
+    pass DestinyStonePass // 귀석 받침 패스 ( 12번 )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_DESTINYSTONE();
+    }
+
+    pass DestinyGemPass // 귀석 젬 패스 ( 13번 )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_DESTINYGEM();
     }
 }

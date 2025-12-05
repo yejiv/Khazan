@@ -288,7 +288,7 @@ void CDanjinJar::Check_OnPanel_TalkUI(_uint iTalkIndex, _float fLimitDistance)
         }
         else
         {
-            if (true == m_pTalk->isTalking())
+            if (false == m_pTalk->isTalking())
                 m_pTalk->Off_Panel();
         }
     }

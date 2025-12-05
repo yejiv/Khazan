@@ -1453,6 +1453,27 @@
     <Filter Include="92.AI\State\Viper\Phase2\21.BerserkerJump">
       <UniqueIdentifier>{802c0476-eaa3-4985-985e-67355fc54671}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar\Jar_4th">
+      <UniqueIdentifier>{987feae8-b343-4c23-91e1-d9730ba76b4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar\Jar_5th">
+      <UniqueIdentifier>{94a9f9d4-9a64-43bc-87e1-b9e7c6a05a9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar\Jar_6th">
+      <UniqueIdentifier>{b0b19b77-d129-48b3-ba26-d68935fccc77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar\Jar_7th">
+      <UniqueIdentifier>{733eeea8-f6f8-4a29-8079-c1c8d8760145}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar\Jar_8th">
+      <UniqueIdentifier>{d6fe23d1-ccbc-46d6-b4b0-406802d9b95c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone">
+      <UniqueIdentifier>{6cd3e261-1a65-4bc4-8348-b4250b4209b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone\Gem">
+      <UniqueIdentifier>{b6f4ef15-03ef-4fe9-a52d-863c4e10a3aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2811,6 +2832,27 @@
     <ClInclude Include="..\Public\AS_P2_BerserkerJump_Viper.h">
       <Filter>92.AI\State\Viper\Phase2\21.BerserkerJump</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Jar_4th.h">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_4th</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jar_5th.h">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_5th</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jar_6th.h">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_6th</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jar_7th.h">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_7th</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jar_8th.h">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_8th</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DestinyStone.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DestinyGem.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone\Gem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4148,6 +4190,27 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_P2_BerserkerJump_Viper.cpp">
       <Filter>92.AI\State\Viper\Phase2\21.BerserkerJump</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jar_4th.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_4th</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jar_5th.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_5th</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jar_6th.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_6th</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jar_7th.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_7th</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jar_8th.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_8th</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DestinyStone.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DestinyGem.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone\Gem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

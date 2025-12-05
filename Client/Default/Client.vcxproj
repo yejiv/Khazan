@@ -304,6 +304,8 @@
     <ClInclude Include="..\Public\Body_Viper.h" />
     <ClInclude Include="..\Public\Core_Viper.h" />
     <ClInclude Include="..\Public\DanjinJar.h" />
+    <ClInclude Include="..\Public\DestinyGem.h" />
+    <ClInclude Include="..\Public\DestinyStone.h" />
     <ClInclude Include="..\public\Dragonian_Claw_L.h" />
     <ClInclude Include="..\public\Dragonian_Claw_R.h" />
     <ClInclude Include="..\public\Dragonian_Sword.h" />
@@ -343,6 +345,11 @@
     <ClInclude Include="..\Public\Jar_1st.h" />
     <ClInclude Include="..\Public\Jar_2nd.h" />
     <ClInclude Include="..\Public\Jar_3rd.h" />
+    <ClInclude Include="..\Public\Jar_4th.h" />
+    <ClInclude Include="..\Public\Jar_5th.h" />
+    <ClInclude Include="..\Public\Jar_6th.h" />
+    <ClInclude Include="..\Public\Jar_7th.h" />
+    <ClInclude Include="..\Public\Jar_8th.h" />
     <ClInclude Include="..\public\Khazan_GSword.h" />
     <ClInclude Include="..\public\Khazan_GS_Animation.h" />
     <ClInclude Include="..\public\Khazan_GS_AnimationController.h" />
@@ -694,6 +701,8 @@
     <ClCompile Include="..\Private\Body_Viper.cpp" />
     <ClCompile Include="..\Private\Core_Viper.cpp" />
     <ClCompile Include="..\Private\DanjinJar.cpp" />
+    <ClCompile Include="..\Private\DestinyGem.cpp" />
+    <ClCompile Include="..\Private\DestinyStone.cpp" />
     <ClCompile Include="..\private\Dragonian_Claw_L.cpp" />
     <ClCompile Include="..\private\Dragonian_Claw_R.cpp" />
     <ClCompile Include="..\private\Dragonian_Sword.cpp" />
@@ -800,6 +809,11 @@
     <ClCompile Include="..\Private\Jar_1st.cpp" />
     <ClCompile Include="..\Private\Jar_2nd.cpp" />
     <ClCompile Include="..\Private\Jar_3rd.cpp" />
+    <ClCompile Include="..\Private\Jar_4th.cpp" />
+    <ClCompile Include="..\Private\Jar_5th.cpp" />
+    <ClCompile Include="..\Private\Jar_6th.cpp" />
+    <ClCompile Include="..\Private\Jar_7th.cpp" />
+    <ClCompile Include="..\Private\Jar_8th.cpp" />
     <ClCompile Include="..\private\Khazan_GSword.cpp" />
     <ClCompile Include="..\private\Khazan_GS_Animation.cpp" />
     <ClCompile Include="..\private\Khazan_GS_AnimationController.cpp" />
