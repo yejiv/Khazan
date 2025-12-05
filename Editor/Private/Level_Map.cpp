@@ -3378,7 +3378,9 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 
 			ImGui::Text("SKY COLOR");
 			ImGui::Text("COLOR PALHETT");
-			ImGui::ColorPicker3("##r_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorR));
+            ImGui::ColorPicker3("##r_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorR));
+            ImGui::ColorPicker3("##g_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorG));
+            ImGui::ColorPicker3("##b_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorB));
 			SEPARATOR;
 
 			ImGui::Text("MOON SIZE"); SAMELINE;
