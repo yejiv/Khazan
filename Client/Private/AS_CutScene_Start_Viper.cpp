@@ -20,7 +20,7 @@ void CAS_CutScene_Start_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     _float3 vTempLook = {};
     XMStoreFloat3(&vTempLook, vCutSceneLook);
     pViper->Set_CutSceneLook(vTempLook);
-    m_fTimeHelper = 0.01f;
+    m_fTimeHelper = 0.03f;
     pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::SIT));
     
 }
