@@ -114,41 +114,26 @@ PS_OUT PS_MAIN(PS_IN In)
 PS_OUT PS_SKY(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
-
-    // --------------------------------------------
-    // 1. Direction / UV 계산
-    // --------------------------------------------
+    
     float3 vDir = normalize(In.vWorldPos.xyz - g_vCamPosition.xyz);
 
     float2 uv;
     uv.x = atan2(vDir.x, vDir.z) * (1.f / (2.f * g_fPI)) + 0.5f;
     uv.y = saturate(vDir.y * 0.5f + 0.5f);
-
-    // --------------------------------------------
-    // 2. 텍스처 없는 3단 Sky Gradient
-    //    R=Upper, G=Middle, B=Lower
-    // --------------------------------------------
+    
     float t = saturate(vDir.y * 0.5f + 0.5f); // -1~1 → 0~1
 
     float3 colUpper = g_vNebulaColorR; // Zenith
     float3 colMiddle = g_vNebulaColorG; // Middle layer
     float3 colLower = g_vNebulaColorB; // Horizon/Lower
-
-    // Lower → Middle
+    
     float3 lowMid = lerp(colLower, colMiddle, smoothstep(0.0f, 0.50f, t));
-
-    // Middle → Upper
+    
     float3 vSkyColor = lerp(lowMid, colUpper, smoothstep(0.50f, 1.0f, t));
-
-    // --------------------------------------------
-    // 3. 별(SkyStars)
-    // --------------------------------------------
+    
     float3 vStars = g_StarMaskTexture.Sample(DefaultSampler, uv * 4.f).rgb;
     vStars = pow(vStars, 10.0f) * g_fStarStrength;
-
-    // --------------------------------------------
-    // 4. Moon Direction & UV
-    // --------------------------------------------
+    
     float3 vMoonDir = normalize(g_vMoonDirection);
     float fMoonDot = dot(vDir, vMoonDir);
     float moonVisible = step(0.f, fMoonDot); // 정면만
@@ -168,39 +153,24 @@ PS_OUT PS_SKY(PS_IN In)
     float fOuter = 0.48f;
     float fInner = fOuter - (0.15f * saturate(g_fMoonSize));
     float fMoonMask = 1.0f - smoothstep(fInner, fOuter, fDist);
-
-    // --------------------------------------------
-    // 5. Moon Texture → Luma Only
-    // --------------------------------------------
+    
     float3 vMoonTex = g_MoonTexture.Sample(DefaultSampler, moonUV).rgb;
     float fLuma = dot(vMoonTex, float3(0.299f, 0.587f, 0.114f));
 
     float3 vMoonRGB = fLuma.xxx * g_vMoonColor * g_fMoonIntensity;
-
-    // --------------------------------------------
-    // 6. Moon 중심 Black Hole
-    // --------------------------------------------
+    
     float fBlackHoleRadius = 0.11f;
     float fBlackHoleFeather = 0.02f;
 
-    float fHoleMask = 1.0f - smoothstep(fBlackHoleRadius,
-                                        fBlackHoleRadius + fBlackHoleFeather,
-                                        fDist);
+    float fHoleMask = 1.0f - smoothstep(fBlackHoleRadius, fBlackHoleRadius + fBlackHoleFeather, fDist);
 
     vMoonRGB = lerp(vMoonRGB, float3(0, 0, 0), fHoleMask);
-
-    // moon front face only
+    
     vMoonRGB *= moonVisible;
     fMoonMask *= moonVisible;
-
-    // --------------------------------------------
-    // 7. 별에서 Moon 부분은 제거
-    // --------------------------------------------
+    
     vStars *= (1.0f - fMoonMask);
-
-    // --------------------------------------------
-    // 8. Sky + Stars + Moon 합성
-    // --------------------------------------------
+    
     float3 vBaseColor = vSkyColor + vStars;
 
     float3 vFinal = 1.0f - (1.0f - vBaseColor) * (1.0f - vMoonRGB * fMoonMask);
