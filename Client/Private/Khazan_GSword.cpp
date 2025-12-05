@@ -124,7 +124,7 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     m_iStopMoveIndexTable[4] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Run_Stop_F_RF");
     m_iStopMoveIndexTable[5] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Run_Stop_F_RF");
     //m_iStopMoveIndexTable[6] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Run_Stop_F_LF");
-    m_iStopMoveIndexTable[6] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Run_Stop_F_LF");
+    m_iStopMoveIndexTable[6] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Run_Stop_F_6LF");
     m_iStopMoveIndexTable[7] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Run_Stop_F_LF");
     m_iStopMoveIndexTable[8] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_Stop_F");
     m_iStopMoveIndexTable[9] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Sprint_Stop_F");
@@ -134,6 +134,12 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     m_EffectTimeDelta = 0.f;
 
     static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+
+    //if (m_iLevelIndex == ENUM_CLASS(LEVEL::EMBARS))
+    //{
+    //    m_pCharVirCom->Teleport(XMVectorSet(0.191f, 2.10f, 1.362f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+    //    m_pTransformCom->Look_Dir(XMVectorSet(0.999f, 0.f, 0.19f, 0.f));
+    //}
 
     return S_OK;
 

@@ -187,6 +187,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     }
 
     m_ePhase = PHASE::PHASE1;
+    //m_ePhase = PHASE::PHASE2;
 
     m_fRecoveryPerSec = 5.f;
 
@@ -359,8 +360,8 @@ void CViper::Update(_float fTimeDelta)
 
    if (m_pGameInstance->Key_Down(DIK_P))
     {
-        _float4 vPos = m_pP2Weapon->Get_BladeStartTipPos();
-        tmpIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), XMLoadFloat4(&vPos));
+        _vector vPos = m_pP2Weapon->Get_BladeTipPos();
+        tmpIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), vPos);
     }
     if (m_pGameInstance->Key_Down(DIK_O))
     {

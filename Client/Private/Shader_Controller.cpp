@@ -580,6 +580,7 @@ void CShader_Controller::Ready_Shader()
                 case 5:
                     pHalberd = dynamic_cast<CHalberd*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
                     m_TrailConfig = pHalberd->Get_TrailConfig();
+                    break;
                 case 6:
                     pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Viper"), 0));
                     m_TrailConfig = pViper->Get_TrailConfig();
@@ -684,6 +685,14 @@ void CShader_Controller::Ready_Shader()
                         for (_uint i = 0; i < pHalberd->Get_NumTrailTextures(); ++i)
                         {
                             ID3D11ShaderResourceView* pSRV = pHalberd->Get_TrailTexture(i);
+                            if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                            {
+                                isChanged = true;
+                                m_TrailConfig.iTextureIdx = i;
+                            }
+
+                            ImGui::SameLine();
+                        }
                     case 6:
                         for (_uint i = 0; i < pViper->Get_NumTrailTextures(); ++i)
                         {
