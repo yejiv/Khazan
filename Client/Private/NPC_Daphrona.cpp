@@ -87,13 +87,36 @@ HRESULT CNPC_Daphrona::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    // 4 : 눈
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        if (4 == i)
+        {
+            _float4 vEyeWhiteColor = { 1.f, 1.f, 1.f, 1.f };   // 눈 흰자 (EyeWhiteColor0)
+            _float4 vPupilCircle = { 0.572917f, 0.39509f, 0.203438f, 1.f };    // 홍채 외곽 (Pupil_Circle0)
+            _float4 vPupilLens = { 0.338542f, 0.30079f, 0.216127f, 1.f };    // 홍채 내부 (Pupil_Lens0)
+            _float4 vPupilRing = { 0.166667f, 0.120266f, 0.103471f, 1.f };   // 홍채 테두리 (Pupil_Ring0)
+            _float4 vShadingColor = { 0.958333f, 0.658788f, 0.26454f, 1.f };    // 조명/명암 색 (ShadingColor0)
+
+            _float  fPupilScale = 0.9f;                                       // PupilScale
+
+            m_pShaderCom->Bind_RawValue("g_vEyeWhiteColor", &vEyeWhiteColor, sizeof(_float4));
+            m_pShaderCom->Bind_RawValue("g_vPupilCircle", &vPupilCircle, sizeof(_float4));
+            m_pShaderCom->Bind_RawValue("g_vPupilLens", &vPupilLens, sizeof(_float4));
+            m_pShaderCom->Bind_RawValue("g_vPupilRing", &vPupilRing, sizeof(_float4));
+            m_pShaderCom->Bind_RawValue("g_vShadingColor", &vShadingColor, sizeof(_float4));
+            m_pShaderCom->Bind_RawValue("g_PupilScale", &fPupilScale, sizeof(_float));
+
+            m_pShaderCom->Begin(23);
+        }
+        else
+        {
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        }
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
