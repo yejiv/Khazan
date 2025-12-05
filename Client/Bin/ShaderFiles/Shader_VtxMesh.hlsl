@@ -476,11 +476,11 @@ PS_OUT PS_DESTINYSTONE(PS_IN In)                       // 맵 오브젝트용 �
     
     float fReflectPower = pow(saturate(1.f - dot(vNormal, vToCamera)), 4.f);
     
-    float3 vReflectColor = float3(0.45f, 0.65f, 0.9f);
+    float3 vReflectColor = float3(0.9f, 0.3f, 0.1f);
     
-    float3 vIceColor = lerp(vMtrlDiffuse.rgb, vReflectColor, fReflectPower * 0.1f);
+    float3 vGemColor = lerp(vMtrlDiffuse.rgb, vReflectColor, fReflectPower * 0.1f);
     
-    float3 vFinalColor = saturate(vIceColor * 0.95f);
+    float3 vFinalColor = saturate(vGemColor * 0.95f);
     
     float fAlpha = saturate(0.6f + fReflectPower * 0.3f);
     
@@ -495,6 +495,7 @@ PS_OUT PS_DESTINYSTONE(PS_IN In)                       // 맵 오브젝트용 �
         vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
     Out.vDiffuse = float4(vFinalColor, fAlpha);
+    Out.vDiffuse.r *= 1.2f;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
@@ -527,11 +528,11 @@ PS_OUT PS_DESTINYGEM(PS_IN In)                       // 맵 오브젝트용 픽�
     
     float fReflectPower = pow(saturate(1.f - dot(vNormal, vToCamera)), 4.f);
     
-    float3 vReflectColor = float3(0.45f, 0.65f, 0.9f);
+    float3 vReflectColor = float3(0.9f, 0.3f, 0.1f);
     
-    float3 vIceColor = lerp(vMtrlDiffuse.rgb, vReflectColor, fReflectPower * 0.1f);
+    float3 vGemColor = lerp(vMtrlDiffuse.rgb, vReflectColor, fReflectPower * 0.1f);
     
-    float3 vFinalColor = saturate(vIceColor * 0.95f);
+    float3 vFinalColor = saturate(vGemColor * 0.95f);
     
     float fAlpha = saturate(0.6f + fReflectPower * 0.3f);
     
@@ -540,17 +541,14 @@ PS_OUT PS_DESTINYGEM(PS_IN In)                       // 맵 오브젝트용 픽�
     if (IsFlag(M_SPECULAR))
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    // Emissive Test
-    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
-    if (IsFlag(M_EMISSIVE))
-        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
-    
     Out.vDiffuse = float4(vFinalColor, fAlpha);
+    Out.vDiffuse.r *= 1.2f;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
     Out.vSpecular.rgb = vMtrlSpecular.rgb;
     Out.vSpecular.a = 0.f;
+    Out.vEmissive = vector(0.2f, 0.f, 0.f, 0.35f);
     
     Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
     

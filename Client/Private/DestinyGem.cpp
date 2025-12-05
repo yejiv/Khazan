@@ -50,7 +50,7 @@ void CDestinyGem::Update(_float fTimeDelta)
         m_fTimeAcc += fTimeDelta;
     }
 
-    if (3.f <= m_fTimeAcc)
+    if (1.f <= m_fTimeAcc)
     {
         m_fDecreaseAlpha += fTimeDelta * 0.2f;
     }
@@ -114,8 +114,8 @@ HRESULT CDestinyGem::Bind_DissolveValues()
 {
     CHECK_FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", 0), E_FAIL);
 
-    _float fEdgeWidth = { 0.1f };
-    _float4 fEdgeColor = _float4(0.7f, 0.05f, 0.f, 1.f);
+    _float fEdgeWidth = { 0.08f };
+    _float4 fEdgeColor = _float4(0.1f, 0.f, 0.f, 1.f);
 
     m_pShaderCom->Bind_RawValue("g_fDecreaseAlpha", &m_fDecreaseAlpha, sizeof(_float));
     m_pShaderCom->Bind_RawValue("g_fEdgeWidth", &fEdgeWidth, sizeof(_float));

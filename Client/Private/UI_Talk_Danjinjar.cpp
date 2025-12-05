@@ -314,7 +314,7 @@ void CUI_Talk_Danjinjar::Update_Font(_float fTimeDelta)
         m_fTalkEndTime += fTimeDelta;
         m_fTalktime += fTimeDelta;
 
-        if ((m_iNextEvent == 0 && m_fTalkEndTime >= m_fDeleyTime) || 0.f >= m_fDeleyTime)
+        if ((m_iNextEvent == 0 && m_fTalkEndTime >= 1.f))
             m_isTalkingEnd = true;
 
         if (m_fDeleyTime <= 0.f && m_eTaking == TALKSTATE::NEXT)
@@ -354,10 +354,11 @@ void CUI_Talk_Danjinjar::Update_Font(_float fTimeDelta)
 
                 if (0.f < m_fDeleyTime)
                 {
-                    m_fTalkEndTime = 0.f;
                     m_isTalkingEnd = false;
                 }
             }
+
+            m_fTalkEndTime = 0.f;
         }
         else if (m_fDeleyTime > 0.f && m_fTalktime >= m_fDeleyTime)
         {
@@ -396,10 +397,11 @@ void CUI_Talk_Danjinjar::Update_Font(_float fTimeDelta)
 
                 if (0.f < m_fDeleyTime)
                 {
-                    m_fTalkEndTime = 0.f;
                     m_isTalkingEnd = false;
                 }
             }
+
+            m_fTalkEndTime = 0.f;
         }
     }
 }
