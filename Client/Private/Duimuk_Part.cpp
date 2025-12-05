@@ -37,7 +37,7 @@ HRESULT CDuimuk_Part::Initialize_Clone(void* pArg)
     m_eAnimState = ANIM_STATE::IDLE2;
     m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
     m_pModelCom->Set_AnimationLoop(true);
-    m_pModelCom->Set_AnimationBlend(false);
+    m_pModelCom->Set_AnimationBlend(true);
 
     return S_OK;
 }
