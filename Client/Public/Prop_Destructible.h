@@ -12,6 +12,8 @@ NS_BEGIN(Client)
 class CProp_Destructible : public CProp
 {
 public:
+    enum class MODEL_TYPE { FENCE, POT, BARREL, END };
+
     typedef struct tagPropDestructibleDesc : public CProp::PROP_DESC
     {
         _uint iIndex;

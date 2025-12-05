@@ -810,51 +810,6 @@ void CModel::Build_PartToMasterMap()
 
 void CModel::Update_PartLocalBones()
 {
-    //if (!m_isSharedSkeleton || nullptr == m_pMasterSkeleton)
-    //    return;
-
-    //m_PartLocalBoneMatrices.clear();
-    //m_PartLocalBoneMatrices.resize(m_Bones.size());
-
-    //// 중요: 순차적으로 처리 (부모 -> 자식 순서)
-    //for (size_t i = 0; i < m_Bones.size(); ++i)
-    //{
-    //    CBone* pBone = m_Bones[i];
-    //    _wstring boneName = pBone->Get_Name();
-
-    //    // 마스터에 있는 본인지 확인
-    //    _bool foundInMaster = false;
-    //    for (size_t j = 0; j < m_pMasterSkeleton->m_Bones.size(); ++j)
-    //    {
-    //        if (m_pMasterSkeleton->m_Bones[j]->Compare_Name(boneName))
-    //        {
-    //            // 마스터 본: 마스터의 Combined Matrix 사용
-    //            m_PartLocalBoneMatrices[i] =
-    //                *m_pMasterSkeleton->m_Bones[j]->Get_CombinedTransformationMatrixPtr();
-    //            foundInMaster = true;
-    //            break;
-    //        }
-    //    }
-
-    //    // 파츠 전용 본 처리
-    //    if (!foundInMaster)
-    //    {
-    //        _int iParentIndex = pBone->Get_ParentBoneIndex();
-
-    //        if (iParentIndex >= 0 && iParentIndex < m_PartLocalBoneMatrices.size())
-    //        {
-    //            // 핵심: 부모 Combined * 자신의 Local
-    //            _matrix matParent = XMLoadFloat4x4(&m_PartLocalBoneMatrices[iParentIndex]);
-    //            _matrix matLocal = pBone->Get_TransformationMatrix();  // 초기 로컬 변환
-
-    //            XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], matLocal * matParent);
-    //        }
-    //        else
-    //        {
-    //            XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], XMMatrixIdentity());
-    //        }
-    //    }
-    //}
 
     if (!m_isSharedSkeleton || m_pMasterSkeleton == nullptr)
         return;
@@ -909,6 +864,15 @@ void CModel::Update_PartLocalBones()
         }
     }
 
+}
+
+void CModel::Update_PartLocalBones_Once()
+{
+    if (m_isPartLocalBonesUpdated)
+        return;
+
+    Update_PartLocalBones();
+    m_isPartLocalBonesUpdated = true;
 }
 
 void CModel::Capture_CurrentFrameMatrices(vector<_float4x4>& OutBoneMatrices, _float4x4* pOutWorldMatrix)

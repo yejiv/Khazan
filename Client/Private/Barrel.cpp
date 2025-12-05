@@ -26,7 +26,7 @@ HRESULT CBarrel::Initialize_Clone(void* pArg)
 
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
-    PROP_FENCE_DESC* pDesc = static_cast<PROP_FENCE_DESC*>(pArg);
+    PROP_BARREL_DESC* pDesc = static_cast<PROP_BARREL_DESC*>(pArg);
 
     m_pTransformCom->Set_WorldMatrix(XMLoadFloat4x4(&pDesc->WorldMatrix));
     m_iLevelIndex = ENUM_CLASS(pDesc->eLevel);
@@ -99,7 +99,7 @@ void CBarrel::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
             if (m_iLevelIndex == ENUM_CLASS(LEVEL::HEINMACH))
             {
                 CBody_Khazan_Spear* pKhazan = dynamic_cast<CBody_Khazan_Spear*>(pDesc->pGameObject);
-                if(pKhazan) isAttack = pKhazan->Get_IsAttackCollisionActive();
+                if (pKhazan) isAttack = pKhazan->Get_IsAttackCollisionActive();
             }
 
             if (isAttack)
@@ -168,7 +168,7 @@ HRESULT CBarrel::Ready_Collision(void* pArg)
 
 HRESULT CBarrel::Ready_Chunk(void* pArg)
 {
-    PROP_FENCE_DESC* pDesc = static_cast<PROP_FENCE_DESC*>(pArg);
+    PROP_BARREL_DESC* pDesc = static_cast<PROP_BARREL_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     CProp_Chunk::PROP_CHUNK_DESC Desc{};
@@ -178,21 +178,21 @@ HRESULT CBarrel::Ready_Chunk(void* pArg)
     Desc.iMapObjectID = pDesc->iMapObjectID;
     Desc.WorldMatrix = pDesc->WorldMatrix;
     Desc.vPos = m_pTransformCom->Get_State(STATE::POSITION);
-    Desc.vScale = _float3(0.00015f, 0.00015f, 0.00015f);
+    Desc.vScale = _float3(0.0001f, 0.0001f, 0.0001f);
     Desc.strModelTag = TEXT("Prototype_Component_Model_Barrel_Chunk_1");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     Desc.strModelTag = TEXT("Prototype_Component_Model_Barrel_Chunk_2");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     Desc.strModelTag = TEXT("Prototype_Component_Model_Barrel_Chunk_3");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     Desc.strModelTag = TEXT("Prototype_Component_Model_Barrel_Chunk_4");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     Desc.strModelTag = TEXT("Prototype_Component_Model_Barrel_Chunk_5");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     return S_OK;
 }

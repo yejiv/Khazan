@@ -51,7 +51,7 @@ void CAS_Dr_Melee_LockOn::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     if (LOCKONSTATE::LOCKON_F == m_eLockOn)
     {
         m_pMonData->iAnimIndex = 29;
-        pOwner->Get_Transform()->Go_Straight(1.1f * fTimeDelta);
+        pOwner->Get_Transform()->Go_Straight(0.8f * fTimeDelta);
     }
     else if (LOCKONSTATE::LOCKON_L == m_eLockOn)
     {
@@ -68,7 +68,7 @@ void CAS_Dr_Melee_LockOn::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
         m_pMonData->iAnimIndex = 28;
         pOwner->Get_Transform()->Go_Backward(fTimeDelta * 0.7f);
     }
-    m_pMonData->pOwner->LockOnLerp(fTimeDelta, 4.f);
+    m_pMonData->pOwner->LockOnLerp(fTimeDelta, 3.5f);
 }
 
 void CAS_Dr_Melee_LockOn::Exit(CStateMachine* pFSM, CGameObject* pOwner)

@@ -972,6 +972,10 @@ Body* CGameInstance::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, 
 {
 	return m_pJolt_Manager->CreateAndAdd_Body(BodySetting, pBodyInterface);
 }
+Body* CGameInstance::CreateAndAdd_SoftBody(const SoftBodyCreationSettings& BodySetting, BodyInterface** pBodyInterface)
+{
+    return m_pJolt_Manager->CreateAndAdd_SoftBody(BodySetting, pBodyInterface);
+}
 CharacterVirtual* CGameInstance::CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface)
 {
 	return m_pJolt_Manager->CreateCharacterVirtual(inSettings, inPosition, inRotation, inUserData, pBodyInterface);
@@ -1035,6 +1039,19 @@ void CGameInstance::Reset_Gravity()
 _bool CGameInstance::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal)
 {
 	return m_pJolt_Manager->RayCast(vStart, vEnd, outFraction, outPosition, outNormal);
+}
+
+PhysicsSystem* CGameInstance::Get_Jolt()
+{
+    return m_pJolt_Manager->Get_Jolt();
+}
+BodyInterface* CGameInstance::Get_BodyInterface()
+{
+    return m_pJolt_Manager->Get_BodyInterface();
+}
+const BodyLockInterfaceLocking* CGameInstance::Get_BodyLockInterface()
+{
+    return m_pJolt_Manager->Get_BodyLockInterface();
 }
 
 #ifdef _DEBUG

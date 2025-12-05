@@ -32,7 +32,6 @@ public:
 
 private:
     class CBody* m_pBodyCom = { nullptr };
-
     _bool m_isDestruct = { false };
 private:
     HRESULT Ready_Components(void* pArg);

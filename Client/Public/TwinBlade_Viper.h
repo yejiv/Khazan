@@ -35,7 +35,7 @@ public:
     }
     _vector                 Get_RightSwordTip() const { return XMLoadFloat4(&m_vRightTipPos); }
     _vector                 Get_LeftSwordTip() const { return XMLoadFloat4(&m_vLeftTipPos); }
-    _vector                 Get_RightSowrdStartPos() const { return XMLoadFloat4(&m_vRightBladeStartPos); }
+    _vector                 Get_RightSwordStartPos() const { return XMLoadFloat4(&m_vRightBladeStartPos); }
     _vector                 Get_LeftSwordStartPos() const { return XMLoadFloat4(&m_vLeftBladeStartPos); }
 
 

@@ -273,7 +273,8 @@ void CBody_Khazan_Spear::Render_Part(CModel* pModel)
     if (nullptr == pModel)
         return;
 
-    pModel->Update_PartLocalBones();
+    pModel->Update_PartLocalBones_Once();
+    //pModel->Update_PartLocalBones();
 
     _uint iNumMeshes = pModel->Get_NumMeshes();
 
@@ -334,7 +335,8 @@ void CBody_Khazan_Spear::Render_Part_MotionVector(CModel* pModel)
     if (nullptr == pModel)
         return;
 
-    pModel->Update_PartLocalBones();
+    pModel->Update_PartLocalBones_Once();
+    //pModel->Update_PartLocalBones();
 
     _uint iNumMeshes = pModel->Get_NumMeshes();
 

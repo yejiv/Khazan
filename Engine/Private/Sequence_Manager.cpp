@@ -208,7 +208,7 @@ HRESULT CSequence_Manager::AdoptAndPlay(ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tD
             Safe_Release(pSeq);
             return E_FAIL;
         }
-    }	
+    }
 
 	m_MapInstances.emplace(key, pSeq);
 
