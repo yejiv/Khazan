@@ -67,7 +67,29 @@ void CTwinBlade_R_Viper::Update(_float fTimeDelta)
 
     else if (m_pOwner->Get_Controller()->Get_BlackBoard()->Get_Value<_bool>(m_pOwner->Get_Name(), "isP2Cinematic_Walk"))
     {
-        m_vLocalOffset = _float3(-0.83, 0.f, 0.f);
+        //_float fMoveSpeed = 2.f;
+        //_float3 offset = m_vLocalOffset;
+
+        //if (m_pGameInstance->Key_Down(DIK_UP))
+        //    offset.y += fMoveSpeed * fTimeDelta;
+        //if (m_pGameInstance->Key_Down(DIK_DOWN))
+        //    offset.y -= fMoveSpeed * fTimeDelta;
+
+        //if (m_pGameInstance->Key_Down(DIK_LEFT))
+        //    offset.x -= fMoveSpeed * fTimeDelta;
+
+        //if (m_pGameInstance->Key_Down(DIK_RIGHT))
+        //    offset.x += fMoveSpeed * fTimeDelta;
+
+        //if (m_pGameInstance->Key_Down(DIK_L))
+        //    offset.z += fMoveSpeed * fTimeDelta;
+
+        //if (m_pGameInstance->Key_Down(DIK_K))
+        //    offset.z -= fMoveSpeed * fTimeDelta;
+
+        ////m_vLocalOffset = { x = -0.833458841 y = 2.79396772e-06 z = 0.00000000 }
+        ////m_vLocalOffset = offset;
+        m_vLocalOffset = _float3(-0.83f, 0.f, 0.f);
     }
     else
     {
@@ -111,8 +133,29 @@ void CTwinBlade_R_Viper::Update(_float fTimeDelta)
         }
     }
 
-   
+    _float4x4 vSwordMat = m_CombinedWorldMatrix;
+    // 성은아
+    // 집좀 가라 좀..
+    // 언제까지 사우나 갈거니..
+    // 짐좀 가라...
+    // 가라 좀...
+    // 아아라라라라라라라라라라라라라ㅏㄹ라라라라라라라라라라ㅏ랄
+    // 권 : 권성은 
+    // 성 : 성은아
+    // 은 : 은제 집갈거니 도대체..
+    ////////////////////////////////////////////////////////////
+    // 권 : 권투하는
+    // 성 : 성은이는
+    // 은 : 은갈치
 
+    _vector vUp = { vSwordMat._21, vSwordMat._22, vSwordMat._23 };
+    _vector vRight = { vSwordMat._11,vSwordMat._12,vSwordMat._13 };
+
+    _vector vSwordPos = { vSwordMat._41, vSwordMat._42, vSwordMat._43 };
+    _vector vSwordStart = vSwordPos - XMVector3Normalize(vUp) * 0.5f - XMVector3Normalize(vRight) * 0.3f;
+    _vector vSwordEnd = vSwordPos + XMVector3Normalize(vUp) * 2.f + XMVector3Normalize(vRight) * 0.3f;
+    XMStoreFloat4(&m_vBladeStartPos, XMVectorSetW(vSwordStart, 1.f));
+    XMStoreFloat4(&m_vBladeTipPos, XMVectorSetW(vSwordEnd, 1.f));
 }
 
 void CTwinBlade_R_Viper::Late_Update(_float fTimeDelta)

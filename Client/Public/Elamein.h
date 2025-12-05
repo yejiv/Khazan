@@ -155,6 +155,8 @@ private:
     void                            Update_Body(_float fTimeDelta);
     void                            Update_MeshTrail();
 
+    void                            Set_DefaultTrail();
+    void                            Set_EnchantTrail();
 public:
     static CElamein*                Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;

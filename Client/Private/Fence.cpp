@@ -174,25 +174,24 @@ HRESULT CFence::Ready_Chunk(void* pArg)
     CProp_Chunk::PROP_CHUNK_DESC Desc{};
     Desc.eLevel = pDesc->eLevel;
     Desc.fRotationPerSec = pDesc->fRotationPerSec;
-    Desc.fRotationPerSec = pDesc->fRotationPerSec;
     Desc.iMapObjectID = pDesc->iMapObjectID;
     Desc.WorldMatrix = pDesc->WorldMatrix;
     Desc.vPos = m_pTransformCom->Get_State(STATE::POSITION);
-    Desc.vScale = _float3(0.00015f, 0.00015f, 0.00015f);
+    Desc.vScale = _float3(0.0001f, 0.0001f, 0.0001f);
     Desc.strModelTag = TEXT("Prototype_Component_Model_Fence_Chunk_1");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     Desc.strModelTag = TEXT("Prototype_Component_Model_Fence_Chunk_2");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     Desc.strModelTag = TEXT("Prototype_Component_Model_Fence_Chunk_3");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     Desc.strModelTag = TEXT("Prototype_Component_Model_Fence_Chunk_4");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     Desc.strModelTag = TEXT("Prototype_Component_Model_Fence_Chunk_5");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     return S_OK;
 }

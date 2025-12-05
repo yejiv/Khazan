@@ -15,7 +15,8 @@
 #include "FSM_Viper.h"
 #include "Projectile_Rock_Viper.h"
 #include "AS_CutScene_2Phase_Viper.h"
-
+#include "MeshTrail.h"
+#include "LineTrail.h"
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -101,9 +102,56 @@ CFSM_Viper* CViper::Get_Viper_FSM()
     return pFSM;
 }
 
+TRAIL_CONFIG CViper::Get_TrailConfig() const
+{
+    if (PHASE::PHASE1 == m_ePhase)
+        return m_p1PhaseTrail[ENUM_CLASS(TWINBLADE::LEFT)]->Get_TrailConfig();
+    else if (PHASE::PHASE2 == m_ePhase)
+        return m_p2PhaseTrail[ENUM_CLASS(TWINBLADE_R::SWORD)]->Get_TrailConfig();
+
+    return TRAIL_CONFIG();
+}
+
+void CViper::Set_TrailConfig(const TRAIL_CONFIG& Config)
+{
+    if (PHASE::PHASE1 == m_ePhase)
+    {
+        for (auto& pTrail : m_p1PhaseTrail)
+            pTrail->Set_TrailConfig(Config);
+    }
+    else if (PHASE::PHASE2 == m_ePhase)
+    {
+        for (auto& pTrail : m_p2PhaseTrail)
+            pTrail->Set_TrailConfig(Config);
+    }
+}
+
+_uint CViper::Get_NumTrailTextures()
+{
+    _uint iNumTextrues = { 0 };
+
+    if (PHASE::PHASE1 == m_ePhase)
+        iNumTextrues = m_p1PhaseTrail[ENUM_CLASS(TWINBLADE::LEFT)]->Get_NumTrailTextures();
+    else if (PHASE::PHASE2 == m_ePhase)
+        iNumTextrues = m_p2PhaseTrail[ENUM_CLASS(TWINBLADE_R::SWORD)]->Get_NumTrailTextures();
+
+    return iNumTextrues;
+}
+
+ID3D11ShaderResourceView* CViper::Get_TrailTexture(_uint iIndex)
+{
+    ID3D11ShaderResourceView* pSRV = { nullptr };
+
+    if (PHASE::PHASE1 == m_ePhase)
+        pSRV =  m_p1PhaseTrail[ENUM_CLASS(TWINBLADE::LEFT)]->Get_TrailTexture(iIndex);
+    else if (PHASE::PHASE2 == m_ePhase)
+        pSRV = m_p2PhaseTrail[ENUM_CLASS(TWINBLADE_R::SWORD)]->Get_TrailTexture(iIndex);
+
+    return pSRV;
+}
+
 HRESULT CViper::Initialize_Prototype()
 {
-    
     return S_OK;
 }
 
@@ -139,10 +187,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     }
 
     m_ePhase = PHASE::PHASE1;
-
     //m_ePhase = PHASE::PHASE2;
 
- 
     m_fRecoveryPerSec = 5.f;
 
     if (m_ePhase == PHASE::PHASE2)
@@ -152,8 +198,32 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_pCharVirCom->Set_Position(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
     }
 
-   
+    CMeshTrail::TRAIL_DESC MeshDesc{};
+    MeshDesc.iTextureIdx = 8;
+    MeshDesc.fLifeTime = 0.3f;
+    MeshDesc.iDivisionCount = 10.f;
+    MeshDesc.vColor = _float4(2.353f, 1.961f, 1.569f, 1.f);
+    MeshDesc.vSubColor = _float4(0.f, 0.f, 0.f, 7.843f);
 
+    if (m_ePhase == PHASE::PHASE1)
+    {
+        for (_uint i = 0; i < ENUM_CLASS(TWINBLADE::END); ++i)
+            m_p1PhaseTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
+    }
+    else if (m_ePhase == PHASE::PHASE2)
+    {
+        for (_uint i = 0; i < ENUM_CLASS(TWINBLADE_R::END); ++i)
+            m_p2PhaseTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
+    }
+
+    CLineTrail::LINE_TRAIL_DESC LineDesc{};
+    LineDesc.fOffset = 0.25f;
+    LineDesc.fLifeTime = 1.f;
+    LineDesc.iDivisionCount = 5.f;
+    LineDesc.iTextureIdx = 6;
+    LineDesc.vColor = _float4(2.353f, 1.961f, 1.569f, 1.f);
+    for (_uint i = 0; i < ENUM_CLASS(EYE::END); ++i)
+        m_pLineTrail[i] = dynamic_cast<CLineTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_LineTrail"), &LineDesc));
 
     return S_OK;
 }
@@ -176,6 +246,20 @@ void CViper::Priority_Update(_float fTimeDelta)
     }
 
     CContainerObject::Priority_Update(fTimeDelta);
+
+    if (PHASE::PHASE1 == m_ePhase)
+    {
+        for (auto& pTrail : m_p1PhaseTrail)
+            pTrail->Priority_Update(fTimeDelta);
+    }
+    else if (PHASE::PHASE2 == m_ePhase)
+    {
+        for (auto& pTrail : m_p2PhaseTrail)
+            pTrail->Priority_Update(fTimeDelta);
+    }
+
+    for (auto& pTrail : m_pLineTrail)
+        pTrail->Priority_Update(fTimeDelta);
 }
 
 void CViper::Update(_float fTimeDelta)
@@ -254,16 +338,35 @@ void CViper::Update(_float fTimeDelta)
     else if(m_ePhase == PHASE::PHASE2)
         m_vLockOnPosition = m_pPahse2Body->Get_BonePointEX("Bip001-Spine2");
 
-
-   /* if (m_pGameInstance->Key_Down(DIK_P))
+    if (PHASE::PHASE1 == m_ePhase)
     {
-        _float4 vPos = m_pWeapon->Get_RightSwordTip();
-        tmpIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), XMLoadFloat4(&vPos));
+        for (auto& pTrail : m_p1PhaseTrail)
+            pTrail->Update(fTimeDelta);
+    }
+    else if (PHASE::PHASE2 == m_ePhase)
+    {
+        for (auto& pTrail : m_p2PhaseTrail)
+            pTrail->Update(fTimeDelta);
+    }
+
+    for (auto& pTrail : m_pLineTrail)
+        pTrail->Update(fTimeDelta);
+
+    // Test
+    //  FX_1PhaseTrail();
+    //  FX_2PhaseHandTrail();
+    //  FX_2PhaseSwordTrail();
+    FX_2PhaseEyeTrail();
+
+   if (m_pGameInstance->Key_Down(DIK_P))
+    {
+        _vector vPos = m_pP2Weapon->Get_BladeTipPos();
+        tmpIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), vPos);
     }
     if (m_pGameInstance->Key_Down(DIK_O))
     {
         m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), tmpIdx);
-    }*/
+    }
 }
 
 void CViper::Late_Update(_float fTimeDelta)
@@ -272,6 +375,20 @@ void CViper::Late_Update(_float fTimeDelta)
         return;
 
     CContainerObject::Late_Update(fTimeDelta);
+
+    if (PHASE::PHASE1 == m_ePhase)
+    {
+        for (auto& pTrail : m_p1PhaseTrail)
+            pTrail->Late_Update(fTimeDelta);
+    }
+    else if (PHASE::PHASE2 == m_ePhase)
+    {
+        for (auto& pTrail : m_p2PhaseTrail)
+            pTrail->Late_Update(fTimeDelta);
+    }
+
+    for (auto& pTrail : m_pLineTrail)
+        pTrail->Late_Update(fTimeDelta);
 }
 
 HRESULT CViper::Render()
@@ -1923,6 +2040,8 @@ HRESULT CViper::Ready_AnimEvent()
 
 HRESULT CViper::Ready_AnimEffectEvent()
 {
+    // ======================================== 1 Phase ========================================
+
     CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
     if (nullptr == pModel)
         return E_FAIL;
@@ -1969,10 +2088,29 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Grap"), m_iRotFX_Idx); 
         });
 
+    // MeshTrail
+    pModel->Register_Event("Quick2Hit_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("Slow2Hit_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("Slow3Hit_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("SlashBackJump_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("ThrowBlade_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("TurnAttack_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("JumpSmash_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("Divour_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("Combo5Hit_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("StingGrabStart_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("StingGrabSuccess_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("StingGrabFail_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("StingSlashLoop01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("StingSlashLoop02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+    pModel->Register_Event("StingSlashEnd_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+
+    // ======================================== 2 Phase ========================================
+    
     pModel = static_cast<CModel*>(m_pPahse2Body->Get_Component(TEXT("Com_Model")));
     if (nullptr == pModel)
         return E_FAIL;
-    //2패
+
     pModel->Register_Event("Hand_Swing_Double_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
@@ -1981,65 +2119,65 @@ HRESULT CViper::Ready_AnimEffectEvent()
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailRL"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Hand_Stomp_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
-
+    
     pModel->Register_Event("Hand_Stomp_Strong_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land_Big"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
-
+    
     pModel->Register_Event("Sword_Swing_Double_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearTrailRL"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Sword_Swing_Double_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Hand_Upper_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_Up"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Hand_DashUpper_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_Up"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Hand_DashUpper_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land_Big"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
-
+    
     pModel->Register_Event("Hand_DashUpper_STR_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_Up"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Back_Step_Trail_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearTrailLR"), rot,  m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Sword_Swing_Stamp_Trail_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearTrailRL"), rot, m_pTransformCom->Get_State(STATE::POSITION));
-
+    
         });
-
+    
     pModel->Register_Event("Sword_Swing_Stamp_Trail_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Sword_Swing_Stamp_Fin_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), 칼 위치);
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land_Big"), m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     //pModel->Register_Event("FakeRun_Trail0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
     //    _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
     //    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearTrailRL"), rot, m_pTransformCom->Get_State(STATE::POSITION));
@@ -2049,107 +2187,144 @@ HRESULT CViper::Ready_AnimEffectEvent()
     //    _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
     //    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
     //    });
-
+    
     pModel->Register_Event("SwingCombo_Trail0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearTrailRL"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("SwingCombo_Trail1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("SwingRound_Rotate_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Rot_Start"), m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("SwingRound_Rotate_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Rot_Start"), m_iRotFX_Idx);
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Rot_End"), m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     //pModel->Register_Event("SwingRound_Rotate_Point_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
     //    });
-
+    
     pModel->Register_Event("SwingRound_Land_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
           //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), 창 위치);
           m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("JumpAtk_Roar_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("JumpAtk_Roar_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), m_iRotFX_Idx);
         });
-
+    
     pModel->Register_Event("JumpAtk_Jump_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
           m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land_Big"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
-
+    
     pModel->Register_Event("JumpAtk_Stamp_RightHand_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SphereTrail_V"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("JumpAtk_Stamp_RightHand_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
-
+    
     pModel->Register_Event("Roar_2Phase_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream_hight"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Roar_2Phase_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream_hight"), m_iRotFX_Idx);
         });
-
+    
     pModel->Register_Event("DashDrift_Roar_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("DashDrift_Roar_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), m_iRotFX_Idx);
         });
-
+    
     pModel->Register_Event("Swing_Combo_Roar_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Swing_Combo_Roar_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), m_iRotFX_Idx);
         });
-
+    
     pModel->Register_Event("Swing_Combo_SpearTrail_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearTrailRL"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Swing_Combo_HandTrail_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Swing_Combo_HandTrail_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailRL"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Swing_Combo_HandTrail2_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Swing_Combo_HandTrail2_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
+
+    // MeshTrail
+    pModel->Register_Event("MeshTrail_Hand0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand4", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand5", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand6", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand7", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand8", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand9", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand10", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    //  pModel->Register_Event("MeshTrail_Hand11", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    //  pModel->Register_Event("MeshTrail_Hand12", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    //  pModel->Register_Event("MeshTrail_Hand13", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    //  pModel->Register_Event("MeshTrail_Hand14", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand15", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand16", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand17", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand18", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand19", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand20", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand21", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+
+    pModel->Register_Event("MeshTrail_SW0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW4", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW5", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW6", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW7", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW8", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW9", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW10", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW11", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
 
     return S_OK;
 }
@@ -2279,6 +2454,54 @@ _vector CViper::Decompose_Rotation(_matrix W, _vector localRot, _vector offset)
     return Q;
 }
 
+void CViper::FX_1PhaseTrail()
+{
+    _vector vSwordLeftStart = m_pWeapon->Get_LeftSwordStartPos();
+    _vector vSwordLeftEnd = m_pWeapon->Get_LeftSwordTip();
+    m_p1PhaseTrail[ENUM_CLASS(TWINBLADE::LEFT)]->Add_ControlPoint(vSwordLeftEnd, vSwordLeftStart);
+
+    _vector vSwordRightStart = m_pWeapon->Get_RightSwordStartPos();
+    _vector vSwordRightEnd = m_pWeapon->Get_RightSwordTip();
+    m_p1PhaseTrail[ENUM_CLASS(TWINBLADE::RIGHT)]->Add_ControlPoint(vSwordRightEnd, vSwordRightStart);
+}
+
+void CViper::FX_2PhaseHandTrail()
+{
+    _vector vFingerPos = m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger12").r[3];
+    _vector vFingerRight = m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger12").r[0];
+    _vector vHandStart = vFingerPos - vFingerRight * 20.f;
+    _vector vHandEnd = vFingerPos + vFingerRight * 40.f;
+    m_p2PhaseTrail[ENUM_CLASS(TWINBLADE_R::FINGER0)]->Add_ControlPoint(vHandEnd, vHandStart);
+
+    vFingerPos = m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger22").r[3];
+    vFingerRight = m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger22").r[0];
+    vHandStart = vFingerPos - vFingerRight * 20.f;
+    vHandEnd = vFingerPos + vFingerRight * 55.f;
+    m_p2PhaseTrail[ENUM_CLASS(TWINBLADE_R::FINGER1)]->Add_ControlPoint(vHandEnd, vHandStart);
+
+    vFingerPos = m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger32").r[3];
+    vFingerRight = m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger32").r[0];
+    vHandStart = vFingerPos - vFingerRight * 20.f;
+    vHandEnd = vFingerPos + vFingerRight * 40.f;
+    m_p2PhaseTrail[ENUM_CLASS(TWINBLADE_R::FINGER2)]->Add_ControlPoint(vHandEnd, vHandStart);
+}
+
+void CViper::FX_2PhaseSwordTrail()
+{
+    _vector vSwordStart = m_pP2Weapon->Get_BladeStartPos();
+    _vector vSwordEnd = m_pP2Weapon->Get_BladeTipPos();
+    m_p2PhaseTrail[ENUM_CLASS(TWINBLADE_R::SWORD)]->Add_ControlPoint(vSwordEnd, vSwordStart);
+}
+
+void CViper::FX_2PhaseEyeTrail()
+{
+    _vector vLeftEyePos = m_pPahse2Body->Get_BoneMatrix("Bone_eye_L").r[3];
+    _vector vRightEyePos = m_pPahse2Body->Get_BoneMatrix("Bone_eye_R").r[3];
+
+    m_pLineTrail[ENUM_CLASS(EYE::LEFT)]->Add_ControlPoint(vLeftEyePos);
+    m_pLineTrail[ENUM_CLASS(EYE::RIGHT)]->Add_ControlPoint(vRightEyePos);
+}
+
 CViper* CViper::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CViper* pInstance = new CViper(pDevice, pContext);
@@ -2303,6 +2526,15 @@ CGameObject* CViper::Clone(void* pArg)
 
 void CViper::Free()
 {
+    for (auto& pTrail : m_pLineTrail)
+        Safe_Release(pTrail);
+
+    for (auto& pTrail : m_p2PhaseTrail)
+        Safe_Release(pTrail);
+
+    for (auto& pTrail : m_p1PhaseTrail)
+        Safe_Release(pTrail);
+    
     Safe_Release(m_pBody);
     Safe_Release(m_pCinematicBody);
     Safe_Release(m_pWeapon);

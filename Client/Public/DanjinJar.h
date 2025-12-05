@@ -12,7 +12,7 @@ NS_BEGIN(Client)
 class CDanjinJar abstract : public CProp_Interactive
 {
 public:
-    enum class DANJINJAR_TYPE { A, B, C, END };
+    enum class DANJINJAR_TYPE { A, B, C, D, E, F, G, H, END };
 
     typedef struct tagDanjinJarMoveStep {
         _float4 vStep1{};       // 시작 지점
