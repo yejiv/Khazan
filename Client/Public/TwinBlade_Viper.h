@@ -96,6 +96,7 @@ private:
 
     _float4                 m_vGrabPos = {};
     _float3                 m_vLocalOffset = {};
+    _float3                 m_VDebugRot = {};
 
     COLLISION_DESC          m_tRightBladeDesc = {};
     COLLISION_DESC          m_tLeftBladeDesc = {};

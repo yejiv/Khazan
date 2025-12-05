@@ -45,6 +45,7 @@ void CAI_Controller_Imp_Melee::Update(CGameObject* pOwner, _float fTimeDelta)
 
     // BT는 항상 실행 되도록 수정
     m_pBT->Update();
+
     m_pFSM->Update(pOwner, fTimeDelta);
 
 
@@ -498,7 +499,7 @@ TERMINATE CAI_Controller_Imp_Melee::GetCallbackTeminate(CGameObject* pOwner, con
 
                 if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
                 {
-
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isDead", false);
                     BB->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", false);
                     BB->Set_Value<_bool>(pImp->Get_Name(), "DamageInterrupt", false);
                 }
@@ -521,7 +522,7 @@ TERMINATE CAI_Controller_Imp_Melee::GetCallbackTeminate(CGameObject* pOwner, con
                     BB->Set_Value<_bool>(pImp->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pImp->Get_Name(), "isHitFinished", false);
                     BB->Set_Value<_bool>(pImp->Get_Name(), "DamageInterrupt", false);
-                    BB->Set_Value<_uint>(pImp->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pImp->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
