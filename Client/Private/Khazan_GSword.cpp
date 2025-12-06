@@ -162,6 +162,7 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
             m_pCharVirCom->Teleport(XMVectorSet(43.f, -81.f, -47.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
     }
 
+
 }
 
 void CKhazan_GSword::Update(_float fTimeDelta)
