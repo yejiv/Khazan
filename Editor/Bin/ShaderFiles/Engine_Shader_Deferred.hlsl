@@ -42,7 +42,7 @@ struct PS_OUT_BACKBUFFER
 struct PS_OUT_WEIGHTBLEND   //MRT_PostScene의 Diffsue에 원래 Blend에서 그려줘야했던 내용들 합성해서 그려줌.
 {
     float4 vBackBufferColor : SV_TARGET0;
-    float4 vEmissiveColor : SV_TARGET1;
+    //  float4 vEmissiveColor : SV_TARGET1;
 };
 
 PS_OUT_BACKBUFFER PS_DEBUG(PS_IN In)
@@ -235,24 +235,93 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
 
     Out.vColor = vDiffuse * vShade + vSpecular;
     
+    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
+    float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
+    float4 vWorldPos = Transform_ViewToWorld(vViewPos);
+    float fViewZ = vViewPos.z;
+    
+    // 포그
+    if (true == g_isEnableFog)
+    {
+        // Linear
+        float fLinear = saturate((fViewZ - g_fFogNear) / (g_fFogFar - g_fFogNear));
+    
+        // Exponential -> (1 - e^{-rho * d})
+        float fDistance = abs(fViewZ);
+        float fExp = saturate(1.f - exp(-g_fFogDensity * fDistance));
+    
+        // Exponential^2 -> (1 - e^{-(rho * d)^2})
+        float fOpticalDepth = g_fFogDensity * fDistance;
+        float fExpSquare = saturate(1.f - exp(-(fOpticalDepth * fOpticalDepth)));
+    
+        float4 vResultColor;
+        float fFogFactor = 0.f;
+        
+        if (0 == g_iFogMode)
+            fFogFactor = fLinear;
+        else if (1 == g_iFogMode)
+            fFogFactor = fExp;
+        else if (2 == g_iFogMode)
+            fFogFactor = fExpSquare;
+
+        if (true == g_isEnableFogNoise)
+        {
+            float2 vNoiseTexcoord;
+        
+            vNoiseTexcoord = In.vTexcoord * g_vNoiseScale;
+            vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
+            vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
+        
+            float fNoise = g_NoiseTexture.Sample(DefaultSampler, vNoiseTexcoord).r;
+            fNoise = pow(fNoise, g_fNoiseContrast);
+        
+            fFogFactor = lerp(fFogFactor, fFogFactor * fNoise, g_fNoiseStrength);
+        }
+    
+        fFogFactor = clamp(fFogFactor, 0.f, g_fFogBias);
+    
+        if (true == g_isUseHeightFog)
+        {
+            // Height 계산
+            float fFogDiff = vWorldPos.y - g_fFogBaseHeight;
+            fFogDiff = max(fFogDiff, 0.f);
+            float fFogHeightFactor = saturate(exp(-fFogDiff * g_fFogHeightDensity));
+        
+            if (true == g_isUseSubColor)
+            {
+                float fRange = g_fSubColorStartHeight - g_fFogBaseHeight;
+                
+                if (fRange <= 1e-6)
+                {
+                    Out.vColor = lerp(Out.vColor, g_vFogColor, fFogFactor * fFogHeightFactor);
+                    return Out;
+                }
+                    
+                float fRatio = saturate((vWorldPos.y - g_fFogBaseHeight) / fRange);
+                
+                float4 vMixedColor = lerp(g_vFogColor, g_vFogSubColor, fRatio);
+                vResultColor = lerp(Out.vColor, vMixedColor, fFogFactor * fFogHeightFactor);
+            }
+            else
+                vResultColor = lerp(Out.vColor, g_vFogColor, fFogFactor * fFogHeightFactor);
+        }
+        else
+        {
+            vResultColor = lerp(Out.vColor, g_vFogColor, fFogFactor);
+        }
+    
+        Out.vColor = vResultColor;
+    }
+    
     if (!g_isEnableShadow)
         return Out;
-    
-    // Pixel Depth
-    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
-    
-    float fCameraViewDepth = vViewPos.z;
 
-    if (fCameraViewDepth > g_fSplitFar)
+    if (fViewZ > g_fSplitFar)
     {
         Out.vColor = lerp(Out.vColor * g_fShadowIntensity, Out.vColor, 1.f);
         return Out;
     }
-    
-    float4 vWorldPos = Transform_ViewToWorld(vViewPos);
-    
+
     float4 vLightProjPos = Transform_WorldToProj(vWorldPos, g_LightViewMatrix, g_LightProjMatrix);
     vLightProjPos /= vLightProjPos.w;
     
@@ -294,16 +363,16 @@ PS_OUT_BLUR_X PS_BRIGHTNESS(PS_IN In)
 {
     PS_OUT_BLUR_X Out;
 
-    float4 vEmissive = g_EmissiveTexture.SampleLevel(ClampSampler, In.vTexcoord, 0.f);
-    float3 vEmissiveColor = vEmissive.rgb * vEmissive.a;
+    //  float4 vEmissive = g_EmissiveTexture.SampleLevel(ClampSampler, In.vTexcoord, 0.f);
+    //  float3 vEmissiveColor = vEmissive.rgb * vEmissive.a;
 
     float3 vPostSceneColor = g_PostSceneTexture.SampleLevel(ClampSampler, In.vTexcoord, 0.f).rgb;
 
     float3 vBrightColor = max(vPostSceneColor - 1.f, 0.f);
         
-    float3 vCombinedColor = vEmissiveColor + vBrightColor;
+    //  float3 vCombinedColor = vEmissiveColor + vBrightColor;
 
-    Out.vBlurX = float4(vCombinedColor, 1.f);
+    Out.vBlurX = float4(vBrightColor, 1.f);
     
     return Out;
 }
@@ -431,12 +500,12 @@ PS_OUT_BACKBUFFER PS_COMBINED(PS_IN In)
     if (1.f == vPostSceneDesc.r && 1.f == vPostSceneDesc.g && 1.f == vPostSceneDesc.b && 0.f == vPostSceneDesc.a)
         discard;
 
-    float4 vFinalColor;
+    float4 vFinalColor = vPostSceneDesc + vBloomDesc;
     
-    if (true == g_isEnableFog)
-        vFinalColor = vFogDesc + vBloomDesc;
-    else
-        vFinalColor = vPostSceneDesc + vBloomDesc;
+    //  if (true == g_isEnableFog)
+    //      vFinalColor = vFogDesc + vBloomDesc;
+    //  else
+    //      vFinalColor = vPostSceneDesc + vBloomDesc;
 
     // Outline
     if (g_isEnableOutline)

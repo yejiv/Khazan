@@ -30,6 +30,7 @@ public:
 	HRESULT						UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg);
 	HRESULT						Add_RootUI(const _wstring& szRootUIName, CUIObject* pUIObject);
     HRESULT						Release_RootUI(const _wstring& szRootUIName);
+    void                        Set_UIAllRenderSet(_bool isRender) { m_isUIRanderAll = isRender; }
 
 	//Event 관련
 	HRESULT						Add_Event(const _wstring& strLayerTag, const _wstring& strEventTag, std::function<void()> Event);
@@ -63,6 +64,8 @@ private:
 		CUIObject*>				m_pRootUI;
 
 	class CUI_Fade*				m_pFadeUI = { nullptr };
+
+    _bool                       m_isUIRanderAll = { true };
 private:
 	CUI_Layer*					Find_Layer(const _wstring& strLayerTag);
 	CUIObject*					Find_RootUI(const _wstring& strUITag);

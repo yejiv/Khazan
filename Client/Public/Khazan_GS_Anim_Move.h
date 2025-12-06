@@ -11,7 +11,7 @@ class CKhazan_GS_Anim_Move final : public CKhazan_GS_Animation
 public:
     typedef struct	tagKhazanGSwordAnimMove
     {
-        _uint				iWeapon = {};// 0 :barehand, 2: spear, 4: gsword
+        _uint				iWeapon = {};// 1 :barehand, 2: spear, 4: gsword
         _uint				iState = {};
         _uint				iCycle = {};
         _bool               isLockOn = {};

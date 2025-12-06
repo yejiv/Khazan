@@ -442,6 +442,9 @@
     <Filter Include="01.Utility\03.Component\ClothBody\Root">
       <UniqueIdentifier>{1a850bb0-79d0-4f95-9cfc-4813ea937a7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\18.Decal\Map">
+      <UniqueIdentifier>{dac4b490-ec59-4818-a32a-011590004b52}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -830,6 +833,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\RootBody.cpp">
       <Filter>01.Utility\03.Component\ClothBody\Root</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Decal_Static.cpp">
+      <Filter>01.Utility\18.Decal\Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1270,6 +1276,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\RootBody.h">
       <Filter>01.Utility\03.Component\ClothBody\Root</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Decal_Static.h">
+      <Filter>01.Utility\18.Decal\Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

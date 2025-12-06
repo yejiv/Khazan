@@ -34,6 +34,22 @@ void CAS_JumpSmash_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
 }
 
+void CAS_JumpSmash_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->Take_Damage(40.f, HITREACTION::KNOCKBACK_STRONG);
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        if (nullptr == pOwnerTransform)
+            return;
+        _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+        pTarget->KnockBack(vLook, 20.f, 60.f);
+    }
+}
+
 CAS_JumpSmash_Viper* CAS_JumpSmash_Viper::Create()
 {
     return new CAS_JumpSmash_Viper();

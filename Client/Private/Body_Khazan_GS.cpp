@@ -50,7 +50,7 @@ HRESULT CBody_Khazan_GS::Initialize_Clone(void* pArg)
     /* 부모 트랜스폼 연결 */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
 
-    if (FAILED(Initialize_Equipment()))
+    if (FAILED(Ready_Equipment()))
         return E_FAIL;
 
     if (FAILED(Ready_AnimationEvents()))
@@ -64,9 +64,13 @@ HRESULT CBody_Khazan_GS::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Colliders()))
         return E_FAIL;
 
+    /* 플레이어 데이터(스탯) 초기화 */
     m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();
-    m_isCollision = false;
 
+    /* 파츠 자동 업데이트  */
+    m_pClientInstance->Set_ChangePlayerArmorEquipmentCallBack([this](EQUIPMENTTYPE type, const _wstring& strPartName) {Equip_Part(type, strPartName); });
+
+    m_isCollision = false;
 
     m_pModelCom->WarmupAnimations();
     //m_AllParts[TEXT("Prisoner_Leg3")]->WarmupAnimations();
@@ -86,9 +90,12 @@ void CBody_Khazan_GS::Priority_Update(_float fTimeDelta)
 void CBody_Khazan_GS::Update(_float fTimeDelta)
 {
     _float fTimeDeltaAdjsut = fTimeDelta;
-    if (m_isNotifyAttacking) fTimeDeltaAdjsut *= 1.2f;
+
+    if (m_isNotifyAttacking)  fTimeDeltaAdjsut *= 1.2f;
+    
     if (Has_Status(CKhazan_GSword::LADDER_SPRINT))
         fTimeDeltaAdjsut *= 2.f;
+
     m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDeltaAdjsut);
 
     for (auto pPart : m_RenderParts)
@@ -125,6 +132,7 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
         Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), false);
     }
     
+    /* 이펙트 안꺼지는거 끄기  */
     if (m_isEableGiantHuntEvent && m_iCurAnimEventIndex != m_pModelCom->Get_CurAnimIndex())
     {
         m_isEableGiantHuntEvent = false;
@@ -150,8 +158,9 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
     //    Trigger_MotionTrail(TEXT("MT_Common_Avoid"), false);
 
-    bool a =  m_pClientInstance->Is_CurrentSpear();
-    bool b = m_pClientInstance->Is_CurrentGSword();
+
+    //bool a =  m_pClientInstance->Is_CurrentSpear();
+    //bool b = m_pClientInstance->Is_CurrentGSword();
 
     //if (m_pGameInstance->Key_Pressing(DIK_LSHIFT,fTimeDelta) && m_pGameInstance->Key_Down(DIK_M)){
     //    m_pClientInstance->Lock_Skill((1 << 4) );
@@ -402,6 +411,12 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             if (!m_isJustGuardOnce && m_fJustGuardTime.x <= m_fJustGuardTime.y) {
                 *m_pParentStatus |= CKhazan_GSword::JUST_GUARD;
                 m_isJustGuardOnce = true;
+
+                /* 몬스터한테 저스트 가드 타이밍 건내주기  */
+                CCreature* pMonster = static_cast<CCreature*>(pDesc->pGameObject);
+                if (pMonster == nullptr || pMonster->Get_CurrentHP() < 0.f)
+                    return;
+                pMonster->On_JustGuardCallback(true);
             }
 
             /* 가드후 충돌되면 충돌된 지점 봐라보게*/
@@ -519,10 +534,10 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
     if (Has_Status(CKhazan_GSword::BRUTAL_BEGIN))
         return;
 
-    m_fOptimizationSearchTime.x += fTimeDelta;
+    //m_fOptimizationSearchTime.x += fTimeDelta;
 
-    if (m_fOptimizationSearchTime.x < m_fOptimizationSearchTime.y)
-        return;
+    //if (m_fOptimizationSearchTime.x < m_fOptimizationSearchTime.y)
+    //    return;
 
     if (m_isBrutalSuccess)
     {
@@ -862,6 +877,15 @@ HRESULT CBody_Khazan_GS::Ready_Components()
     };
 
     vector<PartInfo> partInfos = {
+        /* Nude Set */
+        { TEXT("Nude_Face"), TEXT("Prototype_Component_Model_Khazan_Nude_Face") },
+        { TEXT("Nude_Hair1"), TEXT("Prototype_Component_Model_Khazan_Nude_Hair1") },
+        { TEXT("Nude_Hair2"), TEXT("Prototype_Component_Model_Khazan_Nude_Hair2") },
+        { TEXT("Nude_Torso"), TEXT("Prototype_Component_Model_Khazan_Nude_Torso") },
+        { TEXT("Nude_Arm"), TEXT("Prototype_Component_Model_Khazan_Nude_Arm") },
+        { TEXT("Nude_Leg"), TEXT("Prototype_Component_Model_Khazan_Nude_Leg") },
+        { TEXT("Nude_Shoes"), TEXT("Prototype_Component_Model_Khazan_Nude_Shoes") },
+
         /* Injured Set */
         { TEXT("Prisoner_Face1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Face1") },
         { TEXT("Prisoner_Hair1"), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair") },
@@ -871,11 +895,11 @@ HRESULT CBody_Khazan_GS::Ready_Components()
         { TEXT("Prisoner_Shoes1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1") },
 
         /* Thief Set */
-        //{ TEXT("Thief_Head"), TEXT("Prototype_Component_Model_Khazan_Thief_Head") },
-        //{ TEXT("Thief_Torso"), TEXT("Prototype_Component_Model_Khazan_Thief_Torso") },
-        //{ TEXT("Thief_Arm"), TEXT("Prototype_Component_Model_Khazan_Thief_Arm") },
-        //{ TEXT("Thief_Leg"), TEXT("Prototype_Component_Model_Khazan_Thief_Leg") },
-        //{ TEXT("Thief_Shoes"), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes") },
+        { TEXT("Thief_Hair"), TEXT("Prototype_Component_Model_Khazan_Thief_Hair") },
+        { TEXT("Thief_Torso"), TEXT("Prototype_Component_Model_Khazan_Thief_Torso") },
+        { TEXT("Thief_Arm"), TEXT("Prototype_Component_Model_Khazan_Thief_Arm") },
+        { TEXT("Thief_Leg"), TEXT("Prototype_Component_Model_Khazan_Thief_Leg") },
+        { TEXT("Thief_Shoes"), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes") },
     };
 
     // 모든 파츠 로드
@@ -1439,7 +1463,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
 #pragma endregion
 
 #pragma region Collider  
-    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_Attack->Collision_Active(true); m_isNotifyAttacking = true; });
+    m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  m_pBodyCom_Attack->Collision_Active(true); m_isNotifyAttacking = true; });
  //   m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { m_pBodyCom_Attack->Collision_Active(false); });
 
     m_pModelCom->Register_Event("RangeAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_RangeAttack->Collision_Active(true); m_isNotifyAttacking = true; });
@@ -1448,9 +1472,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pBodyCom_BodyAttack->Collision_Active(true); m_isNotifyAttacking = true; });
   //  m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()  { m_pBodyCom_BodyAttack->Collision_Active(false); });
 
-    m_pModelCom->Register_Event("AttackCollisionOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
-        m_pBodyCom_Attack->Collision_Active(false); 
-        });
+    m_pModelCom->Register_Event("AttackCollisionOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {   m_pBodyCom_Attack->Collision_Active(false); });
 
     m_pModelCom->Register_Event("HEAL1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
         m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;
@@ -1462,8 +1484,11 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
             m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp; }); //힐템
 
     m_pModelCom->Register_Event("WeaponOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGSword->Set_Equipped(false);
+        });
+    m_pModelCom->Register_Event("WeaponOn", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGSword->Set_Equipped(true);
-            m_pClientInstance->Set_PlayerInput(true);
+        m_pClientInstance->Set_PlayerInput(true);
         cout << "WeaponOn!!!" << endl;
         });
     m_pModelCom->Register_Event("WeaponOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -1472,12 +1497,13 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
             m_pClientInstance->Set_PlayerInput(false);
         cout << "WeaponOff!!!" << endl;
         });
+
 #pragma endregion
 
     return S_OK;
 } 
 
-HRESULT CBody_Khazan_GS::Initialize_Equipment()
+HRESULT CBody_Khazan_GS::Ready_Equipment()
 {
     const auto& equipData = m_pClientInstance->Get_PlayerEquipment();
 
@@ -1488,7 +1514,7 @@ HRESULT CBody_Khazan_GS::Initialize_Equipment()
     };
 
     vector<SlotMapping> slots = {
-        { EQUIPMENTTYPE::HEAD, equipData.iHead },
+        { EQUIPMENTTYPE::HEAD, equipData.iHair },
         { EQUIPMENTTYPE::TORSO, equipData.iTorso },
         { EQUIPMENTTYPE::ARM, equipData.iArm },
         { EQUIPMENTTYPE::LEG, equipData.iLeg },
@@ -1573,12 +1599,12 @@ void CBody_Khazan_GS::Update_QuickRenderCache()
     }
 
     /* todo !! 여기에 모션트레일컴포넌트에  랜더용 파츠모델 바꼈다고 넘겨주기. */
-    
-    // Part Model이 있는 경우!!
     m_pMotionTrailCom->Update_PartModels(m_RenderParts);
 
+    // Part Model이 있는 경우!!
+
     // Part Model이 없고 Master Model만 있는 경우!! (무기)
-    //  m_pMotionTrailCom->Update_MasterModel(m_pModelCom);
+    // m_pMotionTrailCom->Update_MasterModel(m_pModelCom);
 }
 
 _vector CBody_Khazan_GS::Decompose_Rotation(_matrix W, _vector localRot, _vector offset)
@@ -1916,5 +1942,4 @@ void CBody_Khazan_GS::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
-    Safe_Release(m_pLegClothBody);
 }

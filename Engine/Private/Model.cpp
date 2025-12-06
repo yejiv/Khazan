@@ -184,7 +184,7 @@ _float4x4* CModel::Get_BoneMatrix(const _char* pBoneName)
 
 _float4x4* CModel::Get_BoneMatrix(const _int iBoneIndex)
 {
-    if (m_Bones.size() > iBoneIndex || 0 < iBoneIndex)
+    if (m_Bones.size() <= iBoneIndex || 0 > iBoneIndex)
         return nullptr;
 
     return m_Bones[iBoneIndex]->Get_CombinedTransformationMatrixPtr();
