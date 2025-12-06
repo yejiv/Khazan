@@ -115,7 +115,8 @@ public:
     void                                            UsedGSword();                   // Choose GSword 
     _bool                                           Is_CurrentSpear();              // is picked Spear 
     _bool                                           Is_CurrentGSword();             // is picked GSword 
-    void                                            Set_ChangePlayerEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback);
+    void                                            Set_ChangePlayerWeaponEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback);
+    void                                            Set_ChangePlayerArmorEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback);
     void                                            Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex);  // ui 장착버튼같은거 누를 시 사용해주세요 
     const CPlayerData_Manager::PLAYER_EQUIPMENT&    Get_PlayerEquipment() const;
     void                                            Set_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex);  // 테스트용 Setter 

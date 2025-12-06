@@ -60,14 +60,14 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     /* 부모 트랜스폼 연결 */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
 
-    if (FAILED(Initialize_Equipment()))
+    if (FAILED(Ready_Equipment()))
         return E_FAIL;
 
     if (FAILED(Ready_AnimationEvent()))
         return E_FAIL;
 
     /* 파츠 자동 업데이트  */
-    m_pClientInstance->Set_ChangePlayerEquipmentCallBack([this](EQUIPMENTTYPE type, const _wstring& strPartName) {Equip_Part(type, strPartName); });
+    m_pClientInstance->Set_ChangePlayerArmorEquipmentCallBack([this](EQUIPMENTTYPE type, const _wstring& strPartName) {Equip_Part(type, strPartName); });
 
     /* 뼈 행렬 가지고오기 */
     m_pSpearTip1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip");
@@ -815,20 +815,30 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
     };
 
     vector<PartInfo> partInfos = {
-        /* Injured Set */
-        { TEXT("Prisoner_Face1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Face1") },
-        { TEXT("Prisoner_Hair1"), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair") },
-        { TEXT("Prisoner_Torso1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso3") },
-        { TEXT("Prisoner_Arm1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm1") },
-        { TEXT("Prisoner_Leg3"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg3") },
-        { TEXT("Prisoner_Shoes1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1") },
+        /* Nude Set */
+     { TEXT("Nude_Face"), TEXT("Prototype_Component_Model_Khazan_Nude_Face") },
+     { TEXT("Nude_Hair1"), TEXT("Prototype_Component_Model_Khazan_Nude_Hair1") },
+     { TEXT("Nude_Hair2"), TEXT("Prototype_Component_Model_Khazan_Nude_Hair2") },
+     { TEXT("Nude_Torso"), TEXT("Prototype_Component_Model_Khazan_Nude_Torso") },
+     { TEXT("Nude_Arm"), TEXT("Prototype_Component_Model_Khazan_Nude_Arm") },
+     { TEXT("Nude_Leg"), TEXT("Prototype_Component_Model_Khazan_Nude_Leg") },
+     { TEXT("Nude_Shoes"), TEXT("Prototype_Component_Model_Khazan_Nude_Shoes") },
 
-        /* Thief Set */
-        //{ TEXT("Thief_Head"), TEXT("Prototype_Component_Model_Khazan_Thief_Head") },
-        //{ TEXT("Thief_Torso"), TEXT("Prototype_Component_Model_Khazan_Thief_Torso") },
-        //{ TEXT("Thief_Arm"), TEXT("Prototype_Component_Model_Khazan_Thief_Arm") },
-        //{ TEXT("Thief_Leg"), TEXT("Prototype_Component_Model_Khazan_Thief_Leg") },
-        //{ TEXT("Thief_Shoes"), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes") },
+     /* Injured Set */
+     { TEXT("Prisoner_Face1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Face1") },
+     { TEXT("Prisoner_Hair1"), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair") },
+     { TEXT("Prisoner_Torso1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Torso3") },
+     { TEXT("Prisoner_Arm1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm1") },
+     { TEXT("Prisoner_Leg3"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Leg3") },
+     { TEXT("Prisoner_Shoes1"), TEXT("Prototype_Component_Model_Khazan_Prisoner_Shoes1") },
+
+     /* Thief Set */
+     { TEXT("Thief_Face"), TEXT("Prototype_Component_Model_Khazan_Nude_Face") },
+     { TEXT("Thief_Hair"), TEXT("Prototype_Component_Model_Khazan_Thief_Hair") },
+     { TEXT("Thief_Torso"), TEXT("Prototype_Component_Model_Khazan_Thief_Torso") },
+     { TEXT("Thief_Arm"), TEXT("Prototype_Component_Model_Khazan_Thief_Arm") },
+     { TEXT("Thief_Leg"), TEXT("Prototype_Component_Model_Khazan_Thief_Leg") },
+     { TEXT("Thief_Shoes"), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes") },
     };
 
     // 모든 파츠 로드
@@ -1344,7 +1354,7 @@ HRESULT CBody_Khazan_Spear::Bind_ShaderResources()
     return S_OK;
 }
 
-HRESULT CBody_Khazan_Spear::Initialize_Equipment()
+HRESULT CBody_Khazan_Spear::Ready_Equipment()
 {
 
     const auto& equipData = m_pClientInstance->Get_PlayerEquipment();
@@ -1356,7 +1366,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Equipment()
     };
 
     vector<SlotMapping> slots = {
-        { EQUIPMENTTYPE::HEAD, equipData.iHead },
+        { EQUIPMENTTYPE::HEAD, equipData.iHair },
         { EQUIPMENTTYPE::TORSO, equipData.iTorso },
         { EQUIPMENTTYPE::ARM, equipData.iArm },
         { EQUIPMENTTYPE::LEG, equipData.iLeg },

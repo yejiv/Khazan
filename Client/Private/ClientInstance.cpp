@@ -389,9 +389,14 @@ _bool CClientInstance::Is_CurrentGSword()
     return m_pPlayerData_Manager->Is_CurrentGSword();
 }
 
-void CClientInstance::Set_ChangePlayerEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback)
+void CClientInstance::Set_ChangePlayerWeaponEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback)
 {
-    m_pPlayerData_Manager->Set_ChangePlayerEquipmentCallBack(callback);
+    m_pPlayerData_Manager->Set_ChangePlayerWeaponEquipmentCallBack(callback);
+}
+
+void CClientInstance::Set_ChangePlayerArmorEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback)
+{
+    m_pPlayerData_Manager->Set_ChangePlayerArmorEquipmentCallBack(callback);
 }
 
 void CClientInstance::Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex)
