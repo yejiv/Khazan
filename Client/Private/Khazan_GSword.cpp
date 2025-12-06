@@ -435,7 +435,7 @@ void CKhazan_GSword::Set_Camera(CCamera_Compre* pCamera)
     m_pCamera = pCamera;
     Safe_AddRef(m_pCamera);
 }
-
+    
 void CKhazan_GSword::Set_Position(_float4 vPos)
 {
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat4(&vPos), 1.f));

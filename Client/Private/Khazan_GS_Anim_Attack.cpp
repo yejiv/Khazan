@@ -114,7 +114,7 @@ _bool CKhazan_GS_Anim_Attack::Try_FastAttack()
 
 
     if (m_iCurrentCombo == 0) {
-        if (m_pPlayerData->fCulStamina == 0.f)
+        if (m_pPlayerData->fCulStamina <= 0.f)
             return false;
 
         m_iSelectedAnimationIndex = m_iCachedFastAttackAnimIndices[m_iCurrentCombo];
@@ -125,7 +125,7 @@ _bool CKhazan_GS_Anim_Attack::Try_FastAttack()
         m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage;
     }
     else if (m_iCurrentCombo == 1) {
-        if (m_pPlayerData->fCulStamina == 0.f)
+        if (m_pPlayerData->fCulStamina <= 0.f)
             return false;
 
         m_iSelectedAnimationIndex = m_iCachedFastAttackAnimIndices[m_iCurrentCombo];
@@ -136,7 +136,7 @@ _bool CKhazan_GS_Anim_Attack::Try_FastAttack()
         m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 1.4f;
     }
     else if (m_iCurrentCombo == 2) {
-        if (m_pPlayerData->fCulStamina == 0.f)
+        if (m_pPlayerData->fCulStamina <= 0.f)
             return false;
 
         m_iSelectedAnimationIndex = m_iCachedFastAttackAnimIndices[m_iCurrentCombo];
@@ -169,7 +169,7 @@ _bool CKhazan_GS_Anim_Attack::Try_ChageFastAttack()
     if (!m_pClientInstance->Check_Skill(GS_SKILL::MOMENTUM))
         return false ;
     /* 스태미나 검사 */
-    if (m_pPlayerData->fCulStamina == 0.f)
+    if (m_pPlayerData->fCulStamina <= 0.f)
         return false;
 
     /* 차징 스타트  */

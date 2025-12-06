@@ -76,7 +76,7 @@ protected:
     _vector                     m_fKnockBackDir = {};
 
     /* Call back */
-    function<void(_bool)>       m_JustGuardCallback;
+    function<void(_bool)>       m_JustGuardCallback = nullptr;
 
 
 protected:
