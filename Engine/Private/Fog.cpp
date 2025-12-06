@@ -28,6 +28,10 @@ HRESULT CFog::Initialize()
     m_Config.fBaseHeight = 1120.f;
     m_Config.fHeightDensity = 0.001f;
 
+    m_Config.isUseSubColor = false;
+    m_Config.fSubColorStartHeight = 1500.f;
+    m_Config.vSubColor = _float4(1.f, 0.f, 1.f, 1.f);
+
     if (FAILED(Ready_NoiseTexture()))
         return E_FAIL;
 
@@ -105,6 +109,15 @@ HRESULT CFog::Bind_Fog_ShaderResources(CShader* pShader)
         return E_FAIL;
 
     if (FAILED(pShader->Bind_RawValue("g_fFogHeightDensity", &m_Config.fHeightDensity, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(pShader->Bind_Bool("g_isUseSubColor", &m_Config.isUseSubColor)))
+        return E_FAIL;
+
+    if (FAILED(pShader->Bind_RawValue("g_fSubColorStartHeight", &m_Config.fSubColorStartHeight, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(pShader->Bind_RawValue("g_vFogSubColor", &m_Config.vSubColor, sizeof(_float4))))
         return E_FAIL;
 
 	return S_OK;

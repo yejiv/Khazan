@@ -160,18 +160,6 @@ HRESULT CRenderer::Draw()
         MSG_BOX(TEXT("Failed To Render Dynamic"));
         return E_FAIL;
     }
-
-    if (FAILED(Render_DynamicVelocity()))
-    {
-        MSG_BOX(TEXT("Failed To Render Dynamic Velocity"));
-        return E_FAIL;
-    }
-
-    //  if (FAILED(Render_Outline()))
-    //  {
-    //      MSG_BOX(TEXT("Failed To Render Outline"));
-    //      return E_FAIL;
-    //  }
     
     if (isEnableSSAO())
         if (FAILED(Render_SSAO()))
@@ -216,12 +204,6 @@ HRESULT CRenderer::Draw()
         return E_FAIL;
     }
 
-    if (FAILED(Render_Fog()))
-    {
-        MSG_BOX(TEXT("Failed To Render Fog"));
-        return E_FAIL;
-    }
-    
     if (FAILED(Render_Brightness()))
     {
         MSG_BOX(TEXT("Failed To Render Brightness"));
@@ -572,8 +554,14 @@ HRESULT CRenderer::Render_PostScene()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
+    if (true == isEnableFog())
+        if (FAILED(m_pGameInstance->Bind_Fog_ShaderResources(m_pShader)))
+            return E_FAIL;
+
 #ifdef _DEBUG
     if (FAILED(m_pShader->Bind_Bool("g_isEnableShadow", &m_isEnableShadow)))
+        return E_FAIL;
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableFog", &m_isEnableFog)))
         return E_FAIL;
 #endif
 
@@ -608,7 +596,10 @@ HRESULT CRenderer::Render_PostScene()
 
 HRESULT CRenderer::Render_NonLight()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+    //  if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+    //      return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
 
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONLIGHT)])
@@ -629,7 +620,10 @@ HRESULT CRenderer::Render_NonLight()
 
 HRESULT CRenderer::Render_MotionTrail()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+    //  if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+    //      return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
 
     for (auto& pComponent : m_RenderComponents)
@@ -669,7 +663,10 @@ HRESULT CRenderer::Render_WeightBlend()
 
     // [2] AccColor, AccAlpha Resolve
 
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+    //  if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+    //      return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_AccumColor"), m_pShader, "g_AccumColorTexture")))
@@ -690,7 +687,10 @@ HRESULT CRenderer::Render_WeightBlend()
 
 HRESULT CRenderer::Render_Blend()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+    //  if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+    //      return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
 
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::BLEND)])
@@ -742,8 +742,8 @@ HRESULT CRenderer::Render_Brightness()
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Brightness"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Emissive"), m_pShader, "g_EmissiveTexture")))
-        return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Emissive"), m_pShader, "g_EmissiveTexture")))
+    //      return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_PostScene"), m_pShader, "g_PostSceneTexture")))
         return E_FAIL;
@@ -1102,11 +1102,11 @@ HRESULT CRenderer::Ready_MRTs()
         return E_FAIL;
 
     /* MRT_EmissiveAcc : Emissive 결과 누적, Blur 적용할 객체들을 설정하는 타겟 */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_EmissiveAcc"), TEXT("RT_PostScene"))))
-        return E_FAIL;
-
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_EmissiveAcc"), TEXT("RT_Emissive"))))
-        return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_EmissiveAcc"), TEXT("RT_PostScene"))))
+    //      return E_FAIL;
+    //  
+    //  if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_EmissiveAcc"), TEXT("RT_Emissive"))))
+    //      return E_FAIL;
 
     /* MRT_Bloom */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Brightness"), TEXT("RT_Brightness"))))

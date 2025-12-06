@@ -183,7 +183,10 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Base.cpp" />
     <ClCompile Include="..\Private\BehaviorTree.cpp" />
     <ClCompile Include="..\Private\BlackBoard.cpp" />
+    <ClCompile Include="..\Private\ChildBody.cpp" />
+    <ClCompile Include="..\Private\ClothBody.cpp" />
     <ClCompile Include="..\private\CSM.cpp" />
+    <ClCompile Include="..\Private\Decal_Static.cpp" />
     <ClCompile Include="..\private\MotionBlur.cpp" />
     <ClCompile Include="..\private\MotionTrail.cpp" />
     <ClCompile Include="..\private\RadialBlur.cpp" />
@@ -240,6 +243,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Octree.cpp" />
     <ClCompile Include="..\Private\Perception.cpp" />
     <ClCompile Include="..\Private\Repeater_Node.cpp" />
+    <ClCompile Include="..\Private\RootBody.cpp" />
     <ClCompile Include="..\Private\Selector_Node.cpp" />
     <ClCompile Include="..\Private\SequenceAdapter.cpp" />
     <ClCompile Include="..\Private\Sequence_Manager.cpp" />
@@ -381,8 +385,11 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Base.h" />
     <ClInclude Include="..\Public\BehaviorTree.h" />
     <ClInclude Include="..\Public\BlackBoard.h" />
+    <ClInclude Include="..\Public\ChildBody.h" />
+    <ClInclude Include="..\Public\ClothBody.h" />
     <ClInclude Include="..\public\CSM.h" />
     <ClInclude Include="..\Public\Debug_Header.h" />
+    <ClInclude Include="..\Public\Decal_Static.h" />
     <ClInclude Include="..\public\GaussianBlur.h" />
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\Public\BodyDrawFilter.h" />
@@ -461,6 +468,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Perception_Defines.h" />
     <ClInclude Include="..\public\RadialBlur.h" />
     <ClInclude Include="..\Public\Repeater_Node.h" />
+    <ClInclude Include="..\Public\RootBody.h" />
     <ClInclude Include="..\Public\Selector_Node.h" />
     <ClInclude Include="..\Public\SequenceAdapter.h" />
     <ClInclude Include="..\public\Sequence_Interface.h" />

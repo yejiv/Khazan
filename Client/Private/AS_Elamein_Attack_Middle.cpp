@@ -53,6 +53,7 @@ void CAS_Elamein_Attack_Middle::Update(CStateMachine* pFSM, CGameObject* pOwner,
                 m_pMonData->fAttackCool = 3.f;
                 m_pMonData->fQuat = 180.f;
                 m_pMonData->iAnimIndex = 101;
+                m_pMonData->eHitType = HITREACTION::END;
                 m_pMonData->eAttackState = CElamein::ATTACKSTATE::END;
             }
         }
@@ -83,8 +84,7 @@ void CAS_Elamein_Attack_Middle::Update(CStateMachine* pFSM, CGameObject* pOwner,
             if (m_pMonData->isAnimFinash)
             {
                 m_pMonData->fAttackCool = 3.f;
-                //m_pMonData->fQuat = 180.f;
-                //m_pMonData->iAnimIndex = 101;
+                m_pMonData->eHitType = HITREACTION::END;
                 m_pMonData->eAttackState = CElamein::ATTACKSTATE::END;
             }
         }
@@ -101,6 +101,7 @@ void CAS_Elamein_Attack_Middle::OnCollision(COLLISION_DESC* pDesc, _uint iCollis
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->KnockBack(pOwner->Get_Look(), 13.5f, 35.f);
         pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_WEAK, nullptr);
     }
 }

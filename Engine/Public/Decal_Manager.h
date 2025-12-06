@@ -20,14 +20,19 @@ public:
     // 맵 에디터에서 이미지 볼때 사용
     class CTexture*             Get_DecalTexture(DECALTYPE eType) { return m_pTexture[ENUM_CLASS(eType)]; }
     // 클론 후 Decal에 푸시만
-    void                        Batch_Decal(class CDecal* pDecal) { m_Decals.push_back(pDecal); }
+    void                        Batch_Decal(class CDecal_Static* pDecal) { m_StaticDecals.push_back(pDecal); }
+    // 맵 데칼 삭제
+    void                        MapDecal_Clear();
+    // 맵 에디터에서 데칼 삭제할 때
+    void                        MapDecal_CleanUp();
 #pragma endregion
+
     // 셰이더 툴
     ID3D11ShaderResourceView*   Get_DecalTexture(DECALTYPE eType, _uint iIndex);
     _uint                       Get_NumDecalTextures(DECALTYPE eType);
 
 public:
-    void Decal_Clear();
+    void                        Decal_Clear();
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -35,6 +40,12 @@ private:
 	class CGameInstance*		m_pGameInstance = { nullptr };
 
 	list<class CDecal*>			m_Decals;
+
+#pragma region 맵 데칼
+
+    vector<class CDecal_Static*>       m_StaticDecals;
+
+#pragma endregion
 
 	class CShader*				m_pShader = {};
 	class CVIBuffer_Cube*		m_pVIBuffer = {};

@@ -156,6 +156,11 @@ HRESULT CClientInstance::Release_RootUI(const _wstring& szRootUIName)
     return m_pUI_Manager->Release_RootUI(szRootUIName);
 }
 
+void CClientInstance::Set_UIAllRenderSet(_bool isRender)
+{
+    m_pUI_Manager->Set_UIAllRenderSet(isRender);
+}
+
 HRESULT CClientInstance::UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg)
 {
 	return m_pUI_Manager->UI_UpdateSwitch(szRootUIName, pArg);

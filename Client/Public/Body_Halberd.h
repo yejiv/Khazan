@@ -53,6 +53,8 @@ private:
     _int                            m_iPreAnim = { -1 };
     CHalberd::MONDATA*               m_pData = { nullptr };
 
+    class CClothBody* m_pCapeBody = { nullptr };
+
 private:
     HRESULT					        Ready_Components();
     HRESULT					        Bind_ShaderResources();

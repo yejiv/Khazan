@@ -14,6 +14,7 @@
 #include "MeshTrail.h"
 
 #include "Target_BrutalAttack.h"
+#include "StateMachine.h"
 
 CElamein::CElamein(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
@@ -129,16 +130,44 @@ _float CElamein::Get_TrackPotion()
 
 void CElamein::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
 {
-    if (m_Data.fDodgeCool <= 0.f && m_Data.eHitType != HITREACTION::BRUTAL_ATTACK && m_Data.eAttackState == ATTACKSTATE::END)
+    if ((m_Data.fDodgeCool > 0.f || !m_pController->Get_State_Machine()->Check_Flag(ENUM_CLASS(MONSTATE::GRORRY))
+        || !m_pController->Get_State_Machine()->Check_Flag(ENUM_CLASS(MONSTATE::BRUTAL))))
     {
-        m_pController->AI_ApplyDamage(pGameObject, fDamage, ENUM_CLASS(eHitreaction), 3.f);
+        if (!m_Data.isGuard)
+        {
+            if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
+                ++m_Data.iBrutalHit;
+
+            __super::Take_Damage(fDamage, eHitreaction, pGameObject);
+        }
+        else
+        {
+            m_pController->AI_ApplyDamage(pGameObject, fDamage, ENUM_CLASS(eHitreaction), 3.f);
+        }
     }
     else
     {
-        if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
-            ++m_Data.iBrutalHit;
+        TARGET_DIR eDir = Get_DIR();
 
-        __super::Take_Damage(fDamage, eHitreaction, pGameObject);
+        if (eDir == TARGET_DIR::F || eDir == TARGET_DIR::FL || eDir == TARGET_DIR::FR)
+        {
+            if (m_Data.fDodgeCool > 0.f)
+            {
+                if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
+                    ++m_Data.iBrutalHit;
+
+                __super::Take_Damage(fDamage, eHitreaction, pGameObject);
+            }
+            else
+                m_pController->AI_ApplyDamage(pGameObject, fDamage, ENUM_CLASS(eHitreaction), 3.f);
+        }
+        else
+        {
+            if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
+                ++m_Data.iBrutalHit;
+
+            __super::Take_Damage(fDamage, eHitreaction, pGameObject);
+        }
     }
 }
 
@@ -224,6 +253,7 @@ void CElamein::Priority_Update(_float fTimeDelta)
 
 void CElamein::Update(_float fTimeDelta)
 {
+    //m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
     m_fTimeDelta = fTimeDelta;
 
     if (m_Data.fAttackCool > 0.f)
@@ -237,6 +267,9 @@ void CElamein::Update(_float fTimeDelta)
 
     if (m_Data.fLong_AttackCool > 0.f)
         m_Data.fLong_AttackCool -= fTimeDelta;
+
+    if (m_Data.fDodgeCool > 0.f)
+        m_Data.fDodgeCool -= fTimeDelta;
 
     _float4x4 LockOnMatrix{};
     XMStoreFloat4x4(&LockOnMatrix, XMLoadFloat4x4(m_pLockOnSocketMatrix) * m_pTransformCom->Get_WorldMatrix());
@@ -272,6 +305,11 @@ void CElamein::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _
 
     if (COLLISION_LAYER::MAP_STATIC == eLayer)
         m_Data.isWallCrushed = true;
+
+    if (COLLISION_LAYER::PLAYER == eLayer && ENUM_CLASS(COLLISION_LAYER::MONSTER) == pMyDesc->iObjectLayer)
+    {
+        m_pController->AI_React_Collision(pDesc, iOtherObjectLayer, this);
+    }
 }
 
 void CElamein::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -355,7 +393,7 @@ HRESULT CElamein::Ready_Components()
     _vector vMatScale{}, vMatQuat{}, vMatPos{};
 
     CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-    BodyDesc.vExtent = { 0.6f, 0.5f, 0.5f };
+    BodyDesc.vExtent = { 1.5f, 0.5f, 0.5f };
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::BOX;
@@ -371,7 +409,7 @@ HRESULT CElamein::Ready_Components()
     XMStoreFloat3(&BodyDesc.vPos, vMatPos);
     XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
 
-    BodyDesc.vShapeOffset = _float3(0.2f, -0.f, 0.f);
+    BodyDesc.vShapeOffset = _float3(0.4f, -0.f, 0.f);
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_LegBody"), (CComponent**)&m_pLeftLegCom, &BodyDesc);
@@ -444,9 +482,9 @@ HRESULT CElamein::Ready_AnimEvent()
     pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
     pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
     pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
-    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f); });
-    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f); });
-    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f);});
+    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta); });
+    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta); });
+    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta);});
     pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 65; });
     pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 66; });
     pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
@@ -454,17 +492,17 @@ HRESULT CElamein::Ready_AnimEvent()
     pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
     pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
     pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
-    pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f);});
-    pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f);});
-    pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f);});
+    pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta);});
+    pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta);});
+    pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta);});
     pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 68; });
     pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 69; });
     pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 
     pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
     pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
-    pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f); });
-    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta * 15.f); });
+    pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta); });
+    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta); });
     pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 71; });
     pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
 

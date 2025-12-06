@@ -15,9 +15,17 @@ public:
     virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
     virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
+public:
+    virtual void OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
+
+
+private:
     _float3     m_vStartPos = {};
     _float3     m_vPeakPos = {};
     _float3     m_vGoalPos = {};
+
+  
+
 
 public:
     static CAS_JumpSmash_Viper*     Create();
