@@ -21,12 +21,18 @@ public:
     void ADD_Gloval_Volume(_float fVolume) { m_fGloval_Volume += fVolume;
     m_fGloval_Volume >= 1.f ? m_fGloval_Volume = 1.f : m_fGloval_Volume <= 0.f ? m_fGloval_Volume = 0.f : m_fGloval_Volume; }
 
+    //플레이어 중점 사운드
+    void ListenerPosSet(_vector vPos, _vector vLook, _vector vUp, _float3 vVal = { 0.f, 0.f, 0.f});
+
 	// 한번만 재생될 경우 사용 될 함수 (pSoundKey : 해당 사운드 파일명, fVolume : 사운드 크기, ppOutChannel : 따로 채널을 받아서 관리할경우 해당 채널 받아올 포인터)
 	void PlaySoundOnce(const TCHAR* pSoundKey, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
-    
+    void PlaySoundOnce(const TCHAR* pSoundKey, _float3 vPos, _float3 vVel = { 0.f, 0.f, 0.f }, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
+
     // 반복 재생될 경우 사용 될 함수 (pSoundKey : 해당 사운드 파일명, fVolume : 사운드 크기, ppOutChannel : 따로 채널을 받아서 관리할경우 해당 채널 받아올 포인터)
 	void PlaySoundLoop(const TCHAR* pSoundKey, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
-	// 모든 사운드 정지
+    void PlaySoundLoop(const TCHAR* pSoundKey, _float3 vPos, _float3 vVel = { 0.f, 0.f, 0.f }, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
+
+    // 모든 사운드 정지
 	void StopAll();
 
 	// 해당 파일명으로 재생중인 사운드 정지

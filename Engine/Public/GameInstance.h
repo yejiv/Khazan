@@ -222,6 +222,9 @@ public:
     Body* CreateAndAdd_SoftBody(const SoftBodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
 	CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);	
 
+    void Add_Constraint(Constraint* pConstraint);
+    void Remove_Constraint(Constraint* pConstraint);
+
 	void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
 	void CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting);
     void CharVir_RefreshContact(CharacterVirtual* pCharVir, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
@@ -407,8 +410,10 @@ public:
     CTexture*                   Get_DecalTexture(DECALTYPE eType);
     ID3D11ShaderResourceView*   Get_DecalTexture(DECALTYPE eType, _uint iIndex);
     _uint                       Get_NumDecalTextures(DECALTYPE eType);
-    void                        Batch_Decal(class CDecal* pDecal);
+    void                        Batch_Decal(class CDecal_Static* pDecal);
     void                        Decal_Clear();
+    void                        MapDecal_Clear();
+    void                        MapDecal_CleanUp();
 #pragma endregion
 
 #pragma region EFFECT_MANAGER
@@ -454,6 +459,11 @@ public:
 #pragma region SOUND_MANAGER
     void                        Set_Gloval_Volume(_float fVolume);
     void                        ADD_Gloval_Volume(_float fVolume);
+
+    void                        ListenerPosSet(_vector vPos, _vector vLook, _vector vUp, _float3 vVal = { 0.f, 0.f, 0.f });
+    void                        PlaySoundOnce(const TCHAR* pSoundKey, _float3 vPos, _float3 vVel = { 0.f, 0.f, 0.f }, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
+    void                        PlaySoundLoop(const TCHAR* pSoundKey, _float3 vPos, _float3 vVel = { 0.f, 0.f, 0.f }, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
+
 
     void                        PlaySoundOnce(const TCHAR* pSoundKey, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
     void                        PlaySoundLoop(const TCHAR* pSoundKey, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);

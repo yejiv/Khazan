@@ -134,10 +134,6 @@ CONDITION CAI_Controller_Imp_Range::GetCallbackCondition(CGameObject* pOwner, co
 
                 if (pImp->Get_CurrentHP() <= 0.f)
                 {
-
-                    /*static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1001);
-                    static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1002);
-                    static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1003);*/
                     return true;
 
                 }
@@ -325,10 +321,10 @@ ACTION CAI_Controller_Imp_Range::GetCallbackAction(CGameObject* pOwner, const st
     {
         return [pImp](CBlackBoard* BB)->BTNODESTATE
             {
-                // 애니 종료 플래그가 true면 SUCCESS
                 if (true == BB->Get_Value<_bool>(pImp->Get_Name(), "isHitFinished"))
                 {
                     BB->Set_Value<_bool>(pImp->Get_Name(), "DamageInterrupt", false);
+                    BB->Set_Value<_uint>(pImp->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                     return BTNODESTATE::SUCCESS;
                 }
               
@@ -531,7 +527,7 @@ TERMINATE CAI_Controller_Imp_Range::GetCallbackTeminate(CGameObject* pOwner, con
                 if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
                 {
 
-                    BB->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", false);
+                    BB->Set_Value<_bool>(pImp->Get_Name(), "isDead", false);
                     BB->Set_Value<_bool>(pImp->Get_Name(), "DamageInterrupt", false);
                 }
             };
@@ -553,7 +549,6 @@ TERMINATE CAI_Controller_Imp_Range::GetCallbackTeminate(CGameObject* pOwner, con
                     BB->Set_Value<_bool>(pImp->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pImp->Get_Name(), "isHitFinished", false);
                     BB->Set_Value<_bool>(pImp->Get_Name(), "DamageInterrupt", false);
-                    BB->Set_Value<_uint>(pImp->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }

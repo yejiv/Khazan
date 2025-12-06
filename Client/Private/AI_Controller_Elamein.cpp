@@ -221,7 +221,8 @@ BTNODESTATE CAI_Controller_Elamein::Damage_Check(CGameObject* pOwner)
 {
     if (!m_pMonData->isSleep && m_pMonData->eHitType != HITREACTION::END)
     {
-        if (m_pMonData->fDodgeCool > 0.f)
+        TARGET_DIR eDir = m_pMonData->pOwner->Get_DIR();
+        if (m_pMonData->fDodgeCool > 0.f && (eDir == TARGET_DIR::F || eDir == TARGET_DIR::FR || eDir == TARGET_DIR::FL))
             m_pMonData->isDamage = true;
         else
             m_pMonData->isDodge = true;
@@ -254,7 +255,7 @@ BTNODESTATE CAI_Controller_Elamein::Damage(CGameObject* pOwner)
 
         return BTNODESTATE::RUNNING;
     }
-    return BTNODESTATE::SUCCESS;
+    return BTNODESTATE::FAILURE;
 }
 
 BTNODESTATE CAI_Controller_Elamein::Turn_Check(CGameObject* pOwner)

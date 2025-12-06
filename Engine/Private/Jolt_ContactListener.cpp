@@ -20,7 +20,10 @@ ValidateResult CJolt_ContactListener::OnContactValidate(const Body& inBody1, con
     COLLISION_DESC* pBody1Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inBody1.GetUserData()));
     COLLISION_DESC* pBody2Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inBody2.GetUserData()));
 
-    if (pBody1Desc->pGameObject == nullptr || pBody2Desc->pGameObject == nullptr)
+    if (pBody1Desc == nullptr ||
+        pBody2Desc == nullptr ||
+        pBody1Desc->pGameObject == nullptr || 
+        pBody2Desc->pGameObject == nullptr)
     {
         return ValidateResult::RejectContact;
     }

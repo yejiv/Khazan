@@ -71,6 +71,9 @@ _uint CAS_Hit_Viper::Make_AnimIndex(HITREACTION eHitreaction, HIT_DIR eHitDir)
     // static 으로 두는 이유는  매번 Enter로 들어오면 변수를 만들어야해서 딱 처음 1번만 초기화 하도록하기 위해서
     static _uint table[ENUM_CLASS(HITREACTION::END)][ENUM_CLASS(HIT_DIR::END)] =
     {
+
+        {0,0,0,0},
+        {0,0,0,0,},
         // WEAK
         {19,22,20,21},
         // NORMAL

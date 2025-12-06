@@ -74,8 +74,8 @@ public:
 	//UI 랜더 그룹에 추가
 	HRESULT						Add_UIRender(UI_RENDER_TYPE eRender, class CUIObject* pUIObject);
     HRESULT						Release_RootUI(const _wstring& szRootUIName);
-
 	//UI 관련 함수
+    void                        Set_UIAllRenderSet(_bool isRender);
 	HRESULT						UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg = nullptr);
 	class CUIObject*			Get_RootUI(const _wstring& szRootUIName);
 	HRESULT						Add_RootUI(const _wstring& szRootUIName, CUIObject* pUIObject);
@@ -115,7 +115,8 @@ public:
     void                                            UsedGSword();                   // Choose GSword 
     _bool                                           Is_CurrentSpear();              // is picked Spear 
     _bool                                           Is_CurrentGSword();             // is picked GSword 
-    void                                            Set_ChangePlayerEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback);
+    void                                            Set_ChangePlayerWeaponEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback);
+    void                                            Set_ChangePlayerArmorEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback);
     void                                            Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex);  // ui 장착버튼같은거 누를 시 사용해주세요 
     const CPlayerData_Manager::PLAYER_EQUIPMENT&    Get_PlayerEquipment() const;
     void                                            Set_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex);  // 테스트용 Setter 

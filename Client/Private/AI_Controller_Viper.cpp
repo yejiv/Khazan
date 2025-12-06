@@ -8,7 +8,8 @@
 #include "GameInstance.h"
 #include "Sequence_Viper_SecondPhase.h"
 #include "ClientInstance.h"
-
+#include "BossHp.h"
+#include "UI_HUD.h"
 
 CAI_Controller_Viper::CAI_Controller_Viper()
 {
@@ -69,7 +70,7 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
         if (m_pGameInstance->Key_Down(DIK_B))
         {
-            m_pBB->Set_Value<_uint>(m_strMonstertag,"DebugIndex",0);
+            //m_pBB->Set_Value<_uint>(m_strMonstertag,"DebugIndex",0);
             CViper* pViper = static_cast<CViper*>(pOwner);
             pViper->Set_PhaseWeapon_Phase2();
             m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SIDEMOVE), pViper);
@@ -77,18 +78,18 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
         if (m_pGameInstance->Key_Down(DIK_N))
         {
-            m_pBB->Set_Value<_uint>(m_strMonstertag, "DebugIndex", 1);
+            //m_pBB->Set_Value<_uint>(m_strMonstertag, "DebugIndex", 1);
             CViper* pViper = static_cast<CViper*>(pOwner);
-            pViper->Set_PhaseWeapon_Phase2();
-
+            //pViper->Set_PhaseWeapon_Phase2();
+            pViper->Set_Weapon_Phase1();
             m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGROUND), pViper);
         }
 
         if (m_pGameInstance->Key_Down(DIK_M))
         {
             CViper* pViper = static_cast<CViper*>(pOwner);
-            pViper->Set_PhaseWeapon_Phase2();
-
+            //pViper->Set_PhaseWeapon_Phase2();
+            pViper->Set_Weapon_Phase1();
             m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHDRIFT), pViper);
         }
 
@@ -130,9 +131,8 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         else
             m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-        if(!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
-            m_pBT->Update();
-
+       /* if(!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
+            m_pBT->Update();*/
     }
 
     m_pFSM->Update(pOwner, fTimeDelta * m_fAnimSpeed);
@@ -1237,6 +1237,28 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                 {
                     pViper->Set_HP(100.f,100.f);
                     pViper->Set_Stamina(1200.f, 1200.f);
+
+                        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+
+                        _float fMaxHp, fCurrentHp, fMaxStamina, fCurrentStamina;
+
+                        fMaxHp = pViper->Get_MaxHP();
+                        fCurrentHp = pViper->Get_CurrentHP();
+                        fMaxStamina = pViper->Get_CurrentStamina();
+                        fCurrentStamina = pViper->Get_CurrentStamina();
+
+                        CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
+                        HPDesc.isOpen = true;
+                        HPDesc.pHpMaxValue = &fMaxHp;
+                        HPDesc.pHpValue = &fCurrentHp;
+                        HPDesc.pStaminaMaxValue = &fMaxStamina;
+                        HPDesc.pStaminaCulValue = &fCurrentStamina;
+                        HPDesc.wstrName = TEXT("진 : 전격의 바이퍼 4세");
+
+                        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
+
+
+                    
                     return BTNODESTATE::SUCCESS;
                 }
 
@@ -1283,6 +1305,8 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                 if (true == BB->Get_Value<_bool>(pViper->Get_Name(), "isHitFinished"))
                 {
                     BB->Set_Value(pViper->Get_Name(), "DamageInterrupt", false);
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+
                     return BTNODESTATE::SUCCESS;
                 }
 
@@ -2316,7 +2340,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "DamageInterrupt", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2360,7 +2384,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2379,7 +2403,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2399,7 +2423,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2418,7 +2442,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2436,7 +2460,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2456,7 +2480,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2478,7 +2502,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2497,7 +2521,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2517,7 +2541,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2537,7 +2561,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2555,7 +2579,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2574,7 +2598,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2592,7 +2616,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2611,7 +2635,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2631,7 +2655,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2650,7 +2674,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2669,7 +2693,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2688,7 +2712,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2707,7 +2731,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2735,7 +2759,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2754,7 +2778,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2773,7 +2797,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2792,7 +2816,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2811,7 +2835,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2831,7 +2855,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2850,7 +2874,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2868,7 +2892,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2886,7 +2910,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2906,7 +2930,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
             }
@@ -2924,7 +2948,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2944,7 +2968,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }
@@ -2962,7 +2986,7 @@ TERMINATE CAI_Controller_Viper::GetCallbackTeminate(CGameObject* pOwner, const s
                     BB->Set_Value(pViper->Get_Name(), "isSuperArmor", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHit", false);
                     BB->Set_Value<_bool>(pViper->Get_Name(), "isHitFinished", false);
-                    BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    //BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                 }
             };
     }

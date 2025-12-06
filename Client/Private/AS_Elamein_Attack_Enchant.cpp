@@ -47,6 +47,7 @@ void CAS_Elamein_Attack_Enchant::Update(CStateMachine* pFSM, CGameObject* pOwner
             m_pMonData->fSpecial_AttackCool = 30.f;
             m_pMonData->eAttackState = CElamein::ATTACKSTATE::END;
             m_pMonData->pOwner->Reset_Charge();
+            m_pMonData->eHitType = HITREACTION::END;
         }
     }
 
@@ -54,6 +55,7 @@ void CAS_Elamein_Attack_Enchant::Update(CStateMachine* pFSM, CGameObject* pOwner
 
 void CAS_Elamein_Attack_Enchant::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+    m_pMonData->fSpecial_AttackCool = 30.f;
     m_pMonData->pOwner->Reset_Charge();
 }
 
@@ -63,7 +65,9 @@ void CAS_Elamein_Attack_Enchant::OnCollision(COLLISION_DESC* pDesc, _uint iColli
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+        pTarget->KnockBack(pOwner->Get_Look(), 10.5f, 40.f);
+        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+
     }
 }
 
