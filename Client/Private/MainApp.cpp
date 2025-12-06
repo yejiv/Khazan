@@ -255,6 +255,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
         CSoftBody::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
+    /* Prototype_Component_ClothBody*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_ClothBody"),
+        CClothBody::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/* Prototype_Component_DeferredShader_VtxMesh */

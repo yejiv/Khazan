@@ -43,6 +43,12 @@ void CBone::Update_CombinedTransformationMatrix(const _float4x4& PreTransformMat
 
 }
 
+void CBone::Update_CombinedTransformationMatrix(CBone* ParentBone)
+{
+    XMStoreFloat4x4(&m_CombinedTransformationMatrix,
+        XMLoadFloat4x4(&m_TransformationMatrix) * XMLoadFloat4x4(&ParentBone->m_CombinedTransformationMatrix));
+}
+
 CBone* CBone::Create(BONE_DATA& data)
 {
 	CBone* pInstance = new CBone();
