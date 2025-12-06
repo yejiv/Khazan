@@ -146,6 +146,12 @@ void CViper_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
                 break;
             }
         }
+        else if (m_strTriggerKey == "Feel_Viper")
+        {
+            m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_TALK>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_TALK), EVENT_ANNOUNCE_TALK{ 23 });
+
+            m_isDead = true;
+        }
     }
 
 }
