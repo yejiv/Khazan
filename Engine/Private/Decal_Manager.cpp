@@ -136,6 +136,21 @@ void CDecal_Manager::MapDecal_Clear()
     m_StaticDecals.clear();
 }
 
+void CDecal_Manager::MapDecal_CleanUp()
+{
+    for (_uint i = 0; i < m_StaticDecals.size(); )
+    {
+        if (nullptr == m_StaticDecals[i] || true == m_StaticDecals[i]->Get_IsDead())
+        {
+            Safe_Release(m_StaticDecals[i]);
+            swap(m_StaticDecals[i], m_StaticDecals.back());
+            m_StaticDecals.pop_back();
+        }
+        else
+            ++i;
+    }
+}
+
 ID3D11ShaderResourceView* CDecal_Manager::Get_DecalTexture(DECALTYPE eType, _uint iIndex)
 {
     if (iIndex >= m_pTexture[ENUM_CLASS(eType)]->Get_NumTextures())

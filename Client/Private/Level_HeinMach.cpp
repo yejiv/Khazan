@@ -64,7 +64,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
         CHECK_FAILED(Ready_FireLights(TEXT("HeinMach_Point"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-        // CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+        CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
         return S_OK;
 

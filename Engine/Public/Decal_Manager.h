@@ -23,6 +23,8 @@ public:
     void                        Batch_Decal(class CDecal_Static* pDecal) { m_StaticDecals.push_back(pDecal); }
     // 맵 데칼 삭제
     void                        MapDecal_Clear();
+    // 맵 에디터에서 데칼 삭제할 때
+    void                        MapDecal_CleanUp();
 #pragma endregion
 
     // 셰이더 툴

@@ -410,6 +410,7 @@ public:
     void                        Batch_Decal(class CDecal_Static* pDecal);
     void                        Decal_Clear();
     void                        MapDecal_Clear();
+    void                        MapDecal_CleanUp();
 #pragma endregion
 
 #pragma region EFFECT_MANAGER

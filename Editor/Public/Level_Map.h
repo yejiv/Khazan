@@ -68,6 +68,7 @@ private:
 	void Select_Add_LightPoint(_float fTimeDelta);
 	void Measure_Distance(_float fTimeDelta);
 	void Update_MultiFix(_float fTimeDelta);
+    void MapDecal_CleanUp();
 
 #pragma region 변수
 private:
@@ -334,6 +335,8 @@ private:
 
     vector<CDecal_Static*> m_DecalList;
     _int m_iDecalListIndex = {};
+
+    _bool m_isDecalDeleted = { false };
 
     _int m_iTextureIndex = {};
     CDecal_Static* m_pDecal = { nullptr };

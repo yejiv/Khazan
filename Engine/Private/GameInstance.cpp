@@ -1508,6 +1508,11 @@ void CGameInstance::MapDecal_Clear()
     m_pDecal_Manager->MapDecal_Clear();
 }
 
+void CGameInstance::MapDecal_CleanUp()
+{
+    m_pDecal_Manager->MapDecal_CleanUp();
+}
+
 #pragma endregion
 
 #pragma region EFFECT_MANAGER

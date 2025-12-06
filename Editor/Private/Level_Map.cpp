@@ -46,6 +46,7 @@ void CLevel_Map::Update(_float fTimeDelta)
 	Select_Add_LightPoint(fTimeDelta);
 	Measure_Distance(fTimeDelta);
 	Update_MultiFix(fTimeDelta);
+    MapDecal_CleanUp();
 
 	return;
 }
@@ -385,6 +386,16 @@ void CLevel_Map::Update_MultiFix(_float fTimeDelta)
 
 		m_matParentBefore = matParent;
 	}
+}
+
+void CLevel_Map::MapDecal_CleanUp()
+{
+    if (true == m_isDecalDeleted)
+    {
+        m_pGameInstance->MapDecal_CleanUp();
+
+        m_isDecalDeleted = false;
+    }
 }
 
 HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
@@ -3931,6 +3942,7 @@ HRESULT CLevel_Map::Ready_Map_Decal_Window()
                             {
                                 swap(m_DecalList[m_iDecalListIndex], m_DecalList.back());
                                 m_DecalList.pop_back();
+                                m_isDecalDeleted = true;
                                 break;
                             }
                             else
