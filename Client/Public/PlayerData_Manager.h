@@ -170,7 +170,7 @@ private:
     /* Equipment */
     PLAYER_EQUIPMENT                            m_ePlayerEquipment{};
     unordered_map<_uint, _wstring>              m_CachedEquipments;
-    function<void(EQUIPMENTTYPE, const _wstring&)>      m_OnChangePlayerEquipment[2];   
+    function<void(EQUIPMENTTYPE, const _wstring&)>      m_OnChangePlayerEquipment[2] = { nullptr, nullptr };
 public:
 	static CPlayerData_Manager* Create();
 	virtual void Free() override;
