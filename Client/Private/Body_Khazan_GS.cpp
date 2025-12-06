@@ -519,10 +519,10 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
     if (Has_Status(CKhazan_GSword::BRUTAL_BEGIN))
         return;
 
-    m_fOptimizationSearchTime.x += fTimeDelta;
+    //m_fOptimizationSearchTime.x += fTimeDelta;
 
-    if (m_fOptimizationSearchTime.x < m_fOptimizationSearchTime.y)
-        return;
+    //if (m_fOptimizationSearchTime.x < m_fOptimizationSearchTime.y)
+    //    return;
 
     if (m_isBrutalSuccess)
     {
