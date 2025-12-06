@@ -25,6 +25,8 @@ public:
     _float4*                Get_BonePointEX(const _char* pBoneName);
     _matrix					Get_BoneMatrix(const _char* pBoneName);
     _float4x4               Get_CombinedMatrix() const { return m_CombinedWorldMatrix; }
+    _vector                 Get_CoreCenter() const {return XMLoadFloat4(&m_vCoreCenterPos);}
+
 
 private:
     CCore_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -62,6 +64,7 @@ private:
     _float4x4*              m_pSocketMatrix = { nullptr };
     _float3                 m_vLocalOffset = {};
     
+    _float4                 m_vCoreCenterPos = {};
 
 public:
     static CCore_Viper*         Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

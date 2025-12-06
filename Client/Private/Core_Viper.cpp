@@ -81,6 +81,15 @@ void CCore_Viper::Update(_float fTimeDelta)
         m_pBodyComp->Sync_Update(WeaponWorld);
         m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
     }
+
+
+    _float4x4 vSwordMat = m_CombinedWorldMatrix;
+    _vector vSwordPos = { vSwordMat._41, vSwordMat._42, vSwordMat._43 };
+    vSwordPos += XMVector4Normalize(XMVectorSet(m_CombinedWorldMatrix._21, m_CombinedWorldMatrix._22, m_CombinedWorldMatrix._23, 0.f)) * 0.3f;
+    XMStoreFloat4(&m_vCoreCenterPos, XMVectorSetW(vSwordPos, 1.f));
+
+
+
 }
 
 void CCore_Viper::Late_Update(_float fTimeDelta)

@@ -705,11 +705,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
 
 	// Prototype_Component_Texture_TestParticle
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Particle_Prototype"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/particle/particle%d.png"), 10)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/particle/particle%d.png"), 12)), E_FAIL);
 
 	// Prototype_Component_Texture_TestSpriteImage
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sprite_Effect"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Sprite/Sprite%d.png"), 11)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Sprite/Sprite%d.png"), 12)), E_FAIL);
 
 	// Prototype_Component_Texture_MeshEffect(Masking)
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Masking"),
@@ -717,7 +717,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
 
 	// Prototype_Component_Texture_MeshEffect(Dissolve)
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Dissolve"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Dissolve/Dissolve%d.png"), 5))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Dissolve/Dissolve%d.png"), 6))))
 		return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Normal"),
