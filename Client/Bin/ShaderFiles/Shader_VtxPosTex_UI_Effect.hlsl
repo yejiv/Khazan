@@ -54,7 +54,6 @@ struct PS_OUT
 struct PS_OUT_EMISSIVE
 {
     float4 vPostScene : SV_TARGET0;
-    float4 vEmissive : SV_TARGET1; 
 };
 
 PS_OUT_EMISSIVE PS_ROCKON(PS_IN In)
@@ -66,16 +65,8 @@ PS_OUT_EMISSIVE PS_ROCKON(PS_IN In)
 
     Out.vPostScene.a = vMaskColor.r;
     
-    Out.vPostScene.rgb = Out.vPostScene.rgb;
+    Out.vPostScene.rgb = Out.vPostScene.rgb * 1.5f;
     
-    if (Out.vPostScene.a >= 0.9f)
-    {
-        Out.vEmissive.rgb = Out.vPostScene.rgb * 1.5f;
-        Out.vEmissive.a = 1.f;
-    }
-    else
-        Out.vEmissive.a = 0.f;
-
     return Out;
 }
 
@@ -132,15 +123,7 @@ PS_OUT_EMISSIVE PS_BRUTALPoint(PS_IN In)
 
     Out.vPostScene = g_Texture.Sample(DefaultSampler, In.vTexcoord);
     Out.vPostScene.a = Out.vPostScene.r;
-    Out.vPostScene.a = Out.vPostScene.a;
-    
-    if (Out.vEmissive.r > 0.9f)
-    {
-        Out.vEmissive.rgb = Out.vPostScene.rgb;
-        Out.vEmissive = 1.f;
-    }
-    else
-        Out.vEmissive = 0.f;
+    Out.vPostScene.rgb = 1.1f;
  
     return Out;
  

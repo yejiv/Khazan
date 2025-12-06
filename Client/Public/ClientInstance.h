@@ -74,8 +74,8 @@ public:
 	//UI 랜더 그룹에 추가
 	HRESULT						Add_UIRender(UI_RENDER_TYPE eRender, class CUIObject* pUIObject);
     HRESULT						Release_RootUI(const _wstring& szRootUIName);
-
 	//UI 관련 함수
+    void                        Set_UIAllRenderSet(_bool isRender);
 	HRESULT						UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg = nullptr);
 	class CUIObject*			Get_RootUI(const _wstring& szRootUIName);
 	HRESULT						Add_RootUI(const _wstring& szRootUIName, CUIObject* pUIObject);
