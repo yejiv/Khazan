@@ -956,13 +956,34 @@ HRESULT CLevel_Viper::Ready_Shader_Settings()
     m_pGameInstance->Set_ShadowDesc(ShadowDesc);
 
     // 초기 Fog
-    FOG_TRANSITION_DESC FogDesc{};
-    FogDesc.fDensity = 0.05f;
-    FogDesc.fBias = 0.9f;
-    FogDesc.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
-    FogDesc.isUseHeight = false;
-    FogDesc.isUseNoise = false;
-    m_pGameInstance->Start_FogTransition(0.f, FogDesc);
+    FOG_CONFIG FogConfig{};
+    FogConfig.eType = FOG_CONFIG::EXP;
+    FogConfig.fDensity = 0.05f;
+    FogConfig.fBias = 0.95f;
+    FogConfig.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
+    FogConfig.Noise.isEnable = false;
+    FogConfig.isUseHeight = true;
+    FogConfig.fBaseHeight = -145.f;
+    FogConfig.isUseSubColor = true;
+    FogConfig.fSubColorStartHeight = 245.f;
+    FogConfig.vSubColor = _float4(0.235f, 0.318f, 0.341f, 1.f);
+    m_pGameInstance->Set_FogConfig(FogConfig);
+
+    // 초기 Fog
+    //  FOG_CONFIG FogConfig{};
+    //  FogConfig.eType = FOG_CONFIG::EXP;
+    //  FogConfig.fDensity = 0.03f;
+    //  FogConfig.fBias = 0.95f;
+    //  FogConfig.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
+    //  FogConfig.Noise.isEnable = false;
+    //  FogConfig.isUseHeight = true;
+    //  FogConfig.fBaseHeight = -145.f;
+    //  FogConfig.isUseSubColor = true;
+    //  FogConfig.fSubColorStartHeight = 245.f;
+    //  FogConfig.vSubColor = _float4(0.235f, 0.318f, 0.341f, 1.f);
+    //  m_pGameInstance->Set_FogConfig(FogConfig);
+
+
 
     return S_OK;
 }

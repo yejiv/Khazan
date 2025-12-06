@@ -1916,5 +1916,4 @@ void CBody_Khazan_GS::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
-    Safe_Release(m_pLegClothBody);
 }
