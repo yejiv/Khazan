@@ -225,6 +225,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     for (_uint i = 0; i < ENUM_CLASS(EYE::END); ++i)
         m_pLineTrail[i] = dynamic_cast<CLineTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_LineTrail"), &LineDesc));
 
+    m_bLoopFX_Flag = false;
+
     return S_OK;
 }
 
@@ -358,14 +360,24 @@ void CViper::Update(_float fTimeDelta)
     //  FX_2PhaseSwordTrail();
     FX_2PhaseEyeTrail();
 
-   if (m_pGameInstance->Key_Down(DIK_P))
+   //if (m_pGameInstance->Key_Down(DIK_P))
+   // {
+   //     _vector vPos = m_pP2Weapon->Get_BladeTipPos();
+   //     tmpIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), vPos);
+   // }
+   // if (m_pGameInstance->Key_Down(DIK_O))
+   // {
+   //     m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), tmpIdx);
+   // }
+
+    if (m_bLoopFX_Flag)
     {
-        _vector vPos = m_pP2Weapon->Get_BladeTipPos();
-        tmpIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), vPos);
-    }
-    if (m_pGameInstance->Key_Down(DIK_O))
-    {
-        m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), tmpIdx);
+        if (m_ePhase == PHASE::PHASE1)
+            m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle"), m_iBodyParticleFX_Idx, m_pBody->Get_BoneMatrix("Bip001-Spine").r[3]);
+        else if (m_ePhase == PHASE::PHASE2)
+            m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle"), m_iBodyParticleFX_Idx, m_pPahse2Body->Get_BoneMatrix("Bip001-Spine").r[3]);
+        else
+            m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle"), m_iBodyParticleFX_Idx, m_pCinematicBody->Get_BoneMatrix("Bip001-Spine").r[3]);
     }
 }
 
@@ -2187,22 +2199,13 @@ HRESULT CViper::Ready_AnimEffectEvent()
         //m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[0]);
         });
 
-    pModel->Register_Event("GSFire0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
-        //_float4x4 mat = m_pCore->Get_CombinedMatrix();
-        //_vector rot = Decompose_Rotation(XMLoadFloat4x4(&mat));
-        //m_iFireFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_fire2"), rot, XMLoadFloat4x4(&mat).r[3]);
+    pModel->Register_Event("GSFire0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  
         m_iFireFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_fire2"), m_pCore->Get_CoreCenter());
         });
-    pModel->Register_Event("GSFire0_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-        _float4x4 mat = m_pCore->Get_CombinedMatrix();
-        //_vector rot = Decompose_Rotation(XMLoadFloat4x4(&mat));
-        //m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_fire2"), m_iFireFX_Idx, rot, XMLoadFloat4x4(&mat).r[3]);
+    pModel->Register_Event("GSFire0_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { 
         m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_fire2"), m_iFireFX_Idx, m_pCore->Get_CoreCenter());
         });
-    pModel->Register_Event("GSFire1_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-        _float4x4 mat = m_pCore->Get_CombinedMatrix();
-        //_vector rot = Decompose_Rotation(XMLoadFloat4x4(&mat));
-        //m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_fire2"), m_iFireFX_Idx, rot, XMLoadFloat4x4(&mat).r[3]);
+    pModel->Register_Event("GSFire1_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { 
         m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_fire2"), m_iFireFX_Idx, m_pCore->Get_CoreCenter());
         });
     pModel->Register_Event("GSFire1_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
@@ -2218,26 +2221,30 @@ HRESULT CViper::Ready_AnimEffectEvent()
         //여기서 파티클들 휘몰아쳐야됨
 
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle_Blust"), m_pTransformCom->Get_State(STATE::POSITION));
+       
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Point_Particle_Blust"), m_pCore->Get_CoreTip());
         });
 
     pModel->Register_Event("Sting_BloodLoop_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_iBloodFX_Idx[0] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_pBody->Get_BoneMatrix("Bip001-L-Forearm").r[3]);
         m_iBodyParticleFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_bLoopFX_Flag = true;
         });
 
     pModel->Register_Event("Sting_BloodLoop_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[0], m_pBody->Get_BoneMatrix("Bip001-L-Forearm").r[3]);
-        m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle"), m_iBodyParticleFX_Idx, m_pTransformCom->Get_State(STATE::POSITION));
+        //m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle"), m_iBodyParticleFX_Idx, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("Sting_BloodLoop2_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[0], m_pBody->Get_BoneMatrix("Bip001-L-Forearm").r[3]);
-        m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle"), m_iBodyParticleFX_Idx, m_pTransformCom->Get_State(STATE::POSITION));
+        //m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle"), m_iBodyParticleFX_Idx, m_pTransformCom->Get_State(STATE::POSITION));
         });
 
     pModel->Register_Event("Sting_BloodLoop2_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[0]);
-        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle"), m_iBodyParticleFX_Idx);
+        //m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle"), m_iBodyParticleFX_Idx);
+        //m_bLoopFX_Flag = false;
         });
 
 
@@ -2275,7 +2282,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("HurtRoar_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle_Blust"), m_pTransformCom->Get_State(STATE::POSITION));
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("mist4"), m_pBody->Get_BoneMatrix("Bip001-L-Hand").r[3]);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_CutSceen_Land"), m_pBody->Get_BoneMatrix("Bip001-L-Hand").r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_CutSceen_Land"), m_pBody->Get_BoneMatrix("Bip001-R-Hand").r[3]);
         });
 
     /////=========================================================== [ 2P ] ================================================================================ ////
@@ -2604,7 +2611,15 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     pModel->Register_Event("Cutscene_LastRoar_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), m_iRotFX_Idx);
+        m_bLoopFX_Flag = false;
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle"), m_iBodyParticleFX_Idx);
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("mist1"));
         });
+
+    pModel->Register_Event("GrabGround_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("mist4"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Hand").r[3]);
+        });
+
 
 
     pModel = static_cast<CModel*>(m_pCinematicBody->Get_Component(TEXT("Com_Model")));
@@ -2612,8 +2627,6 @@ HRESULT CViper::Ready_AnimEffectEvent()
         return E_FAIL;
 
     pModel->Register_Event("StartEnvi_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        //휘몰아치는 눈 루프 아닌거 -> 왜 없어짐?
-        //아래 위치 모두 맵 중심으로 바꿔야함!
         //휘몰아치는 눈 계속 켜는 거
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_snow2"), m_pTransformCom->Get_State(STATE::POSITION)); 
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_ChangeSnow"), m_pTransformCom->Get_State(STATE::POSITION)); 
@@ -2672,6 +2685,37 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("Hurt_Arm6_E_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_once"), m_pCinematicBody->Get_BoneMatrix("Muscle_L_ForeTwist").r[3]);
         });
+
+
+    pModel->Register_Event("BloodLoop_HandsUp_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_iBloodFX_Idx[0] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_pCinematicBody->Get_BoneMatrix("Bip001-L-Forearm").r[3]);
+        m_iBloodFX_Idx[1] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_pCinematicBody->Get_BoneMatrix("Muscle_L_ForeTwist001").r[3]);
+        m_iBloodFX_Idx[2] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_pCinematicBody->Get_BoneMatrix("Muscle_L_ForeTwist").r[3]);
+        });
+
+    pModel->Register_Event("BloodLoop_HandsUp_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[0], m_pCinematicBody->Get_BoneMatrix("Bip001-L-Forearm").r[3]);
+        m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[1], m_pCinematicBody->Get_BoneMatrix("Muscle_L_ForeTwist001").r[3]);
+        m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[2], m_pCinematicBody->Get_BoneMatrix("Muscle_L_ForeTwist").r[3]);
+
+        });
+
+    pModel->Register_Event("BloodLoop_HandsUp_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[0]);
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[1]);
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[2]);
+        //위의 팔 피 루프 끝내기
+        });
+
+    pModel->Register_Event("BloodMouth6_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_iBloodFX_Idx[0] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), m_pCinematicBody->Get_BoneMatrix("Bone_tongue_04_end").r[3]);
+        });
+
+    pModel->Register_Event("BloodMouth6_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), m_iBloodFX_Idx[0], m_pCinematicBody->Get_BoneMatrix("Bone_tongue_04_end").r[3]);
+        });
+
+
     // MeshTrail
     pModel->Register_Event("MeshTrail_Hand0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
     pModel->Register_Event("MeshTrail_Hand1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });

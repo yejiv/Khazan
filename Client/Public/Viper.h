@@ -121,6 +121,7 @@ private:
     _uint                           m_iFireFX_Idx;
     _uint                           m_iBodyParticleFX_Idx;
     _uint                           m_iBloodFX_Idx[3];
+    _bool                           m_bLoopFX_Flag = { false };
 
 public:
     static CViper*                  Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

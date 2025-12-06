@@ -26,6 +26,7 @@ public:
     _matrix					Get_BoneMatrix(const _char* pBoneName);
     _float4x4               Get_CombinedMatrix() const { return m_CombinedWorldMatrix; }
     _vector                 Get_CoreCenter() const {return XMLoadFloat4(&m_vCoreCenterPos);}
+    _vector                 Get_CoreTip();
 
 
 private:

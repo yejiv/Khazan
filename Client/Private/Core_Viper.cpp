@@ -233,6 +233,18 @@ HRESULT CCore_Viper::Bind_ShaderResources()
     return S_OK;
 }
 
+
+_vector CCore_Viper::Get_CoreTip()
+{
+
+    _float4x4 vSwordMat = m_CombinedWorldMatrix;
+    _vector vSwordPos = { vSwordMat._41, vSwordMat._42, vSwordMat._43 };
+    vSwordPos += XMVector4Normalize(XMVectorSet(m_CombinedWorldMatrix._21, m_CombinedWorldMatrix._22, m_CombinedWorldMatrix._23, 0.f)) * 0.6f;
+    vSwordPos = XMVectorSetW(vSwordPos, 1.f);
+    return vSwordPos;
+}
+
+
 CCore_Viper* CCore_Viper::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CCore_Viper* pInstance = new CCore_Viper(pDevice, pContext);
