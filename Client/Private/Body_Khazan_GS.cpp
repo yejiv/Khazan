@@ -437,8 +437,10 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             CGameObject* pObj = pDesc->pGameObject;
             if (!pObj || pObj->Get_IsDead()) return;
             lock_guard<mutex> lock(m_CollMonsterMutex);
-            if (pObj && (find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end()))
+            if (pObj && (find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end())) {
                 m_CollMonsters.push_back(pObj);
+                cout << " ============  Add Coll Monster !!!!! " << endl;
+            }
             return;
         }
 
@@ -447,10 +449,10 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
         if (pMyDesc->strName == TEXT("Player_Attack1"))
         {
             isAttack = true;
-            //pMonster->KnockBack(
-            //    XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION)
-            //        - m_pParentTransform->Get_State(STATE::POSITION))
-            //    , 15.f, 50.f);
+            pMonster->KnockBack(
+                XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION)
+                    - m_pParentTransform->Get_State(STATE::POSITION))
+                , 15.f, 50.f);
             pMonster->Consume_Stamina(20.f);
         }
 
@@ -470,7 +472,7 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             pMonster->KnockBack(
                 XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION)
                     - m_pParentTransform->Get_State(STATE::POSITION))
-                , 25.f, 50.f);
+                , 18.f, 50.f);
             pMonster->Consume_Stamina(10.f);
         }
 
@@ -493,28 +495,17 @@ void CBody_Khazan_GS::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLa
 
 void CBody_Khazan_GS::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER)) {
-        CGameObject* pObj = pDesc->pGameObject;
+    
+   if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER) && pMyDesc->strName == TEXT("Player_Search")) {
+       CGameObject* pObj = pDesc->pGameObject;
 
-        if (!pObj) return;
+       if (!pObj) return;
 
-        lock_guard<mutex> lock(m_CollMonsterMutex);
+       lock_guard<mutex> lock(m_CollMonsterMutex);
 
-        auto it = remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
-        if (it != m_CollMonsters.end()) m_CollMonsters.erase(it, m_CollMonsters.end());
-
-        //if (m_CollMonsters.empty())
-        //{
-        //    if (Has_Status(CKhazan_GSword::BRUTAL_BEGIN))
-        //    {
-        //        if (m_pBrutalAttack && !m_pBrutalAttack->Get_IsDead()) {
-        //            m_pBrutalAttack->Off_BrutalAttack();
-        //        }
-
-        //        Remove_Status(CKhazan_GSword::BRUTAL_BEGIN | CKhazan_GSword::BRUTAL_READY | CKhazan_GSword::BRUTAL_SUCCESS);
-        //    }
-        //}
-    }
+       auto it = remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
+       if (it != m_CollMonsters.end()) m_CollMonsters.erase(it, m_CollMonsters.end());
+   }
 }
 
 _float4x4* CBody_Khazan_GS::Get_BoneMatrix(const _char* pBoneName)
@@ -534,10 +525,10 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
     if (Has_Status(CKhazan_GSword::BRUTAL_BEGIN))
         return;
 
-    //m_fOptimizationSearchTime.x += fTimeDelta;
+   // m_fOptimizationSearchTime.x += fTimeDelta;
 
     //if (m_fOptimizationSearchTime.x < m_fOptimizationSearchTime.y)
-    //    return;
+       // return;
 
     if (m_isBrutalSuccess)
     {
@@ -554,15 +545,22 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
     {
         if (!monster || monster->Get_IsDead())
             return;
+        
+       // cout << " =================    for (CGameObject* monster : m_CollMonsters) " << endl;
+
 
         _vector vMonsterPos = monster->Get_Position();
 
         _vector  vDiff = vPlayerPos - vMonsterPos;
         _float  fDistSq = XMVectorGetX(XMVector3LengthSq(vDiff));
+
+        CMonster* pCreatureMoster = static_cast<CMonster*>(monster);
+
         /* 일정 범위에 다가가면  */
         if (fDistSq < 15.f * 15.f)
         {
-            CMonster* pCreatureMoster = static_cast<CMonster*>(monster);
+            //cout << "================== (fDistSq < 15.f * 15.f) " << endl;
+
             /* 후방 */
             if (!pCreatureMoster->Get_isSleep()) {
                 _float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(monster->Get_Look()), XMVector3Normalize(vDiff)));
@@ -586,6 +584,7 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
             /*  몬스터 그로기 상태 */
             if (pCreatureMoster->Get_IsGroggy())
             {
+                cout << "============= (pCreatureMoster->Get_IsGroggy()) " << endl;
                 m_pBrutalmonster = monster;
                 m_isBackBrutal = false;
                 m_isGroggyBrutal = true;
@@ -594,8 +593,8 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
 
                 return;
             }
-
         }
+
     }
 }
 
@@ -1066,7 +1065,7 @@ HRESULT CBody_Khazan_GS::Ready_Colliders()
 
     CBody::BODY_SPHERESHAPE_DESC SearchDesc{};
     {
-        SearchDesc.fRadius = 8.f;
+        SearchDesc.fRadius = 14.f;
         SearchDesc.bIsTrigger = true;
         SearchDesc.bStartActive = true;
         SearchDesc.eMotion = EMotionType::Kinematic;
