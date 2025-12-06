@@ -273,6 +273,8 @@ void CViper::Priority_Update(_float fTimeDelta)
 
 void CViper::Update(_float fTimeDelta)
 {
+
+
     if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
     {
         m_isGhost = true;
@@ -2638,6 +2640,50 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_CutSceen_Land"), m_pBody->Get_BoneMatrix("Bip001-R-Hand").r[3]);
         });
 
+    //1패 컷씬
+
+    pModel->Register_Event("Cubcscene1_Breath0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
+        });
+
+    pModel->Register_Event("Cubcscene1_Breath1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
+        });
+
+    pModel->Register_Event("Cubcscene1_Breath2_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
+        });
+
+    pModel->Register_Event("Cubcscene1_Breath3_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
+        });
+
+    pModel->Register_Event("Cubcscene1_Breath4_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
+        });
+
+    pModel->Register_Event("Cubcscene1_Roar_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
+        m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), rot, XMVectorSet(-31.938f, -29.986f, 201.162f, 1.f));
+        });
+
+    pModel->Register_Event("Cubcscene1_Roar_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), m_iRotFX_Idx);
+        });
+
+    pModel->Register_Event("Viper_StartCutScene_Jump_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("mist2"), XMVectorSet(-31.938f, -29.986f, 198.162f, 1.f));
+        });
+
+    pModel->Register_Event("WeaponDown_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Soward_Particle_red"), m_pBody->Get_BoneMatrix("Bip001-R-Hand").r[3]);
+        });
+
     /////=========================================================== [ 2P ] ================================================================================ ////
 
 
@@ -2844,72 +2890,72 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     pModel->Register_Event("CutSceenFoot_R0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-R-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_R1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-R-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_R2_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-R-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_R3_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-R-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_R4_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-R-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_R5_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-R-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_R6_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-R-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_R7_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-R-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_R8_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-R-Foot").r[3]);
         });
 
     pModel->Register_Event("CutSceenFoot_L0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_L1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_L2_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_L3_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_L4_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_L5_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_L6_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Foot").r[3]);
         });
     pModel->Register_Event("CutSceenFoot_L7_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Foot").r[3]);
         });
 
     pModel->Register_Event("GrabSwrod_Walk_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
