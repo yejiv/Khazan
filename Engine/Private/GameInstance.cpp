@@ -981,6 +981,15 @@ CharacterVirtual* CGameInstance::CreateCharacterVirtual(const CharacterVirtualSe
 	return m_pJolt_Manager->CreateCharacterVirtual(inSettings, inPosition, inRotation, inUserData, pBodyInterface);
 }
 
+void CGameInstance::Add_Constraint(Constraint* pConstraint)
+{
+    return m_pJolt_Manager->Add_Constraint(pConstraint);
+}
+void CGameInstance::Remove_Constraint(Constraint* pConstraint)
+{
+    return m_pJolt_Manager->Remove_Constraint(pConstraint);
+}
+
 void CGameInstance::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter)
 {
 	m_pJolt_Manager->CharVir_Update(fTimeDelta, pCharVir, vGravity, iObjectLayer, pBodyFilter, pShapeFilter);

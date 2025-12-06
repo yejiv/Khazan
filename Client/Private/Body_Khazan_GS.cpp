@@ -69,6 +69,7 @@ HRESULT CBody_Khazan_GS::Initialize_Clone(void* pArg)
 
 
     m_pModelCom->WarmupAnimations();
+    //m_AllParts[TEXT("Prisoner_Leg3")]->WarmupAnimations();
 
     m_pParentTransform->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 0.f));
 
@@ -169,11 +170,10 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     //    m_pClientInstance->Lock_Skill((1 << 8));
     //    m_pClientInstance->Unlock_Skill(1 << 8);
     //}
-
 }
 
 void CBody_Khazan_GS::Late_Update(_float fTimeDelta)
-{
+{    
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this)))
@@ -309,7 +309,7 @@ void CBody_Khazan_GS::Render_Part(CModel* pModel)
         return;
 
     pModel->Update_PartLocalBones_Once();
-    //pModel->Update_PartLocalBones();
+    //pModel->Update_PartLocalBones();       
 
     _uint iNumMeshes = pModel->Get_NumMeshes();
 
@@ -918,22 +918,6 @@ HRESULT CBody_Khazan_GS::Ready_Components()
         TEXT("Com_MotionTrail"), reinterpret_cast<CComponent**>(&m_pMotionTrailCom), &MTDesc)))
         return E_FAIL;
 
-    //CSoftBody::SOFTBODY_DESC SoftBodyDesc;
-    //SoftBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::CLOTH);    
-    //SoftBodyDesc.FixBoneMatrix = Get_BoneMatrix("Bip001-Pelvis");
-
-    //_matrix BoneWorldMatrix = XMLoadFloat4x4(m_pParentMatrix) * XMLoadFloat4x4(Get_BoneMatrix("Bip001-Pelvis"));
-    //_vector vScale, vTrans, vQuat;
-    //XMMatrixDecompose(&vScale, &vTrans, &vQuat, BoneWorldMatrix);
-    //_float4 vvQuat;
-    //XMStoreFloat4(&vvQuat, vQuat);
-    //SoftBodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
-    //SoftBodyDesc.vQuat = vvQuat;
-    //SoftBodyDesc.pModel = m_AllParts[TEXT("Prisoner_Leg3")];
-    //SoftBodyDesc.iMeshIndex = 0;
-    //if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_SoftBody"),
-    //    TEXT("Com_SoftBody"), reinterpret_cast<CComponent**>(&m_pSoftBody), &SoftBodyDesc)))
-    //    return E_FAIL;
 
     return S_OK;
 
@@ -1932,5 +1916,5 @@ void CBody_Khazan_GS::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
-    Safe_Release(m_pSoftBody);
+    Safe_Release(m_pLegClothBody);
 }

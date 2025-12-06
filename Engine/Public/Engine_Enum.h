@@ -25,6 +25,7 @@ namespace Engine
 	enum class TIME_CHANNEL : unsigned int { WORLD, PLAYER, ENEMY, EFFECT, MAP, END };
 	enum class DEFERRED_CONTEXT { MAP, END }; 
 	enum class DECALTYPE { LINEAR, CIRCLE, CURVE, EMISSIVE, END };
+    enum class CLOTHTYPE { SKIRT, CAPE, END };
 
 	//enum class ANIM_DIRECTION { 
 	//	NONE = 0,
