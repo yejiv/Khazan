@@ -395,7 +395,7 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
 
 		ObjectDesc.Properties = PropProperties;
 
-        CSequence_Viper_SecondPhase* pSeq = dynamic_cast<CSequence_Viper_SecondPhase*>(m_pClientInstance->Find_Sequence(TEXT("Viper_SecondPhase")));
+        //CSequence_Viper_SecondPhase* pSeq = dynamic_cast<CSequence_Viper_SecondPhase*>(m_pClientInstance->Find_Sequence(TEXT("Viper_SecondPhase")));
 
         if (wcscmp(ObjectDesc.szModelName, L"Prototype_Component_Model_WP_TDL_Bridge_Collision_004") == 0)
         {
@@ -410,7 +410,7 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
             ObeliskDesc.WorldMatrix._42 -= 400.f;
             ObeliskDesc.iIndex = iDestIndex;
             CObelisk* pObelisk = dynamic_cast<CObelisk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Obelisk"), &ObeliskDesc));
-            pSeq->Push_Obelisk(pObelisk);
+            //pSeq->Push_Obelisk(pObelisk);
             m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag, pObelisk);            
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
                 ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Obelisk"), TIME_CHANNEL::WORLD, &ObeliskDesc)))
@@ -941,6 +941,27 @@ HRESULT CLevel_Viper::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("SphereTrail_V"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Small"), 50);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Big"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_blood_loop"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_blood2_loop"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_blood_once"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_blood2_once"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_mouth_particle"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_fire2"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_fire3"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_scream_cutscene"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_scream_cutscene"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Body_Particle"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Body_Particle_Blust"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("mist1"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("mist2"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("mist3"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("mist4"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Footprint"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Soward_Particle_red"), 1);//이거 객체가 들고있는 게 나을텐데
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Tornado"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_ChangeSnow"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_CutSceen_Land"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Point_Particle_Blust"), 1);
    
     return S_OK;
 }
@@ -956,13 +977,34 @@ HRESULT CLevel_Viper::Ready_Shader_Settings()
     m_pGameInstance->Set_ShadowDesc(ShadowDesc);
 
     // 초기 Fog
-    FOG_TRANSITION_DESC FogDesc{};
-    FogDesc.fDensity = 0.05f;
-    FogDesc.fBias = 0.9f;
-    FogDesc.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
-    FogDesc.isUseHeight = false;
-    FogDesc.isUseNoise = false;
-    m_pGameInstance->Start_FogTransition(0.f, FogDesc);
+    FOG_CONFIG FogConfig{};
+    FogConfig.eType = FOG_CONFIG::EXP;
+    FogConfig.fDensity = 0.05f;
+    FogConfig.fBias = 0.95f;
+    FogConfig.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
+    FogConfig.Noise.isEnable = false;
+    FogConfig.isUseHeight = true;
+    FogConfig.fBaseHeight = -145.f;
+    FogConfig.isUseSubColor = true;
+    FogConfig.fSubColorStartHeight = 245.f;
+    FogConfig.vSubColor = _float4(0.235f, 0.318f, 0.341f, 1.f);
+    m_pGameInstance->Set_FogConfig(FogConfig);
+
+    // 초기 Fog
+    //  FOG_CONFIG FogConfig{};
+    //  FogConfig.eType = FOG_CONFIG::EXP;
+    //  FogConfig.fDensity = 0.03f;
+    //  FogConfig.fBias = 0.95f;
+    //  FogConfig.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
+    //  FogConfig.Noise.isEnable = false;
+    //  FogConfig.isUseHeight = true;
+    //  FogConfig.fBaseHeight = -145.f;
+    //  FogConfig.isUseSubColor = true;
+    //  FogConfig.fSubColorStartHeight = 245.f;
+    //  FogConfig.vSubColor = _float4(0.235f, 0.318f, 0.341f, 1.f);
+    //  m_pGameInstance->Set_FogConfig(FogConfig);
+
+
 
     return S_OK;
 }

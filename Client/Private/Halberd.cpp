@@ -378,10 +378,10 @@ HRESULT CHalberd::Ready_AnimEvent()
     pModel->Register_Event("Whirlwind_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
     pModel->Register_Event("Whirlwind_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
 
-    pModel->Register_Event("Whirlwind_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
-    pModel->Register_Event("Whirlwind_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
-    pModel->Register_Event("Whirlwind_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
-    pModel->Register_Event("Whirlwind_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
+    pModel->Register_Event("Whirlwind_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
+    pModel->Register_Event("Whirlwind_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
+    pModel->Register_Event("Whirlwind_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
+    pModel->Register_Event("Whirlwind_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
 
     pModel->Register_Event("Whirlwind_0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; });
     pModel->Register_Event("Whirlwind_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; });
@@ -393,8 +393,8 @@ HRESULT CHalberd::Ready_AnimEvent()
     pModel->Register_Event("Swing_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
     pModel->Register_Event("Swing_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
     
-    pModel->Register_Event("Swing_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
-    pModel->Register_Event("Swing_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
+    pModel->Register_Event("Swing_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
+    pModel->Register_Event("Swing_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
     pModel->Register_Event("Swing_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
 
     pModel->Register_Event("Swing_0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; m_Data.iAnimIndex = 65; });
@@ -403,9 +403,9 @@ HRESULT CHalberd::Ready_AnimEvent()
     
     //디폴트 공격 3
     pModel->Register_Event("Pierce_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
-    pModel->Register_Event("Pierce_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
+    pModel->Register_Event("Pierce_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true;  LockOnLerp(m_fTimeDelta, 2.5f); });
 
-    pModel->Register_Event("Pierce_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
+    pModel->Register_Event("Pierce_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail();; });
     pModel->Register_Event("Pierce_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
     
     pModel->Register_Event("Pierce_0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; m_Data.iAnimIndex = 52; LockOnLerp(m_fTimeDelta, 1.5f); });
@@ -416,8 +416,8 @@ HRESULT CHalberd::Ready_AnimEvent()
     pModel->Register_Event("EmpireSwing_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
     pModel->Register_Event("EmpireSwing_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
 
-    pModel->Register_Event("EmpireSwing_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
-    pModel->Register_Event("EmpireSwing_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
+    pModel->Register_Event("EmpireSwing_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail();  LockOnLerp(m_fTimeDelta, 2.5f);});
+    pModel->Register_Event("EmpireSwing_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail();  LockOnLerp(m_fTimeDelta, 2.5f);});
     pModel->Register_Event("EmpireSwing_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
 
     pModel->Register_Event("EmpireSwing_0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; m_Data.iAnimIndex = 5; });

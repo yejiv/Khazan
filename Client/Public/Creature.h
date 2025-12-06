@@ -55,6 +55,10 @@ public:
 public:
     virtual void                Creature_Release();
 
+public:
+    /* Call back */
+    void                        On_JustGuardCallback(_bool _is) { m_JustGuardCallback(_is); }
+
 
 protected:
 	_float						m_fCurrentHP = {};
@@ -71,6 +75,9 @@ protected:
     _float                      m_fKnockBackLoss = { };
     _vector                     m_fKnockBackDir = {};
 
+    /* Call back */
+    function<void(_bool)>       m_JustGuardCallback;
+
 
 protected:
 	CCharacterVirtual*			m_pCharVirCom = { nullptr };
@@ -78,6 +85,8 @@ protected:
 protected:
     virtual void				Compute_KnockBack(_float fTimeDelta);
 
+    /* Call back */
+    void                        Set_JustGuardCallBack(function<void(_bool)> callback) { m_JustGuardCallback = callback; }
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;

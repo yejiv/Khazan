@@ -262,6 +262,19 @@ void CShader_Controller::Ready_Shader()
                             m_pGameInstance->Set_FogConfig(m_FogConfig);
                     }
 
+                    // Use Color Lerp
+                    if (ImGui::Checkbox("Use Fog Sub Color", &m_FogConfig.isUseSubColor))
+                        m_pGameInstance->Set_FogConfig(m_FogConfig);
+
+                    if (true == m_FogConfig.isUseSubColor)
+                    {
+                        if (ImGui::SliderFloat("Fog Sub Color Start Height", &m_FogConfig.fSubColorStartHeight, -1000.f, 3000.f))
+                            m_pGameInstance->Set_FogConfig(m_FogConfig);
+
+                        if (ImGui::ColorEdit4("Fog Sub Color", reinterpret_cast<_float*>(&m_FogConfig.vSubColor)))
+                            m_pGameInstance->Set_FogConfig(m_FogConfig);
+                    }
+
 					ImGui::Separator();
 					ImGui::Text("Fog Transition Lerp");
 
@@ -284,6 +297,11 @@ void CShader_Controller::Ready_Shader()
                         m_pGameInstance->Set_FogConfig(m_InitFogConfig);
                     }
 
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Get Current Fog"))
+                        m_FogConfig = m_pGameInstance->Get_FogConfig();
+
 					ImGui::Separator();
 
 					if (ImGui::Checkbox("Fog Noise", &m_FogConfig.Noise.isEnable))
@@ -299,7 +317,7 @@ void CShader_Controller::Ready_Shader()
 							m_FogConfig.Noise.vScale = { 1.f, 1.f };
 						}
 
-						m_pGameInstance->Set_FogConfig(m_FogConfig);
+						//  m_pGameInstance->Set_FogConfig(m_FogConfig);
 					}
 
 					if (m_FogConfig.Noise.isEnable)

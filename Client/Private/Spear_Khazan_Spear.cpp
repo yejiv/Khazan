@@ -41,7 +41,7 @@ HRESULT CSpear_Khazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pClientInstance->Set_ChangePlayerEquipmentCallBack([this](EQUIPMENTTYPE type, const _wstring& strPartName) {Change_Weapon(type, strPartName); });
+    m_pClientInstance->Set_ChangePlayerWeaponEquipmentCallBack([this](EQUIPMENTTYPE type, const _wstring& strPartName) {Change_Weapon(type, strPartName); });
 
     m_matOffset = XMMatrixRotationX(XMConvertToRadians(-90.0f));
     int a = m_pModelCom->Get_BoneIndex("Weapon_R");

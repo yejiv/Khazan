@@ -308,6 +308,14 @@ vector<_uint> CModel::Get_Indices(_uint iIndex)
     return m_Meshes[iIndex]->Get_Indices();
 }
 
+CBone* CModel::Find_Bone(_int iIndex)
+{
+    if (m_Bones.size() < iIndex || iIndex < 0)
+        return nullptr;
+    
+    return m_Bones[iIndex];
+}
+
 HRESULT CModel::Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex)
 {
     if (iMeshIndex >= m_iNumMeshes)

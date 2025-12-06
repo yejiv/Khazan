@@ -1,5 +1,6 @@
 #include "Body_Halberd.h"
 #include "GameInstance.h"
+#include "ClothBody.h"
 
 CBody_Halberd::CBody_Halberd(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CPartObject{ pDevice,pContext }
@@ -78,10 +79,15 @@ void CBody_Halberd::Update(_float fTimeDelta)
 
     Update_CombinedMatrix();
     m_pData->isAnimFinash = m_pModelCom->Play_Animation(fTimeDelta * m_pData->fDeltaSpeed);
+
+    m_pCapeBody->Priority_Update(fTimeDelta);
+
+    m_pCapeBody->Update(fTimeDelta);
 }
 
 void CBody_Halberd::Late_Update(_float fTimeDelta)
 {
+    m_pCapeBody->Late_Update(fTimeDelta);
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 }
@@ -149,6 +155,28 @@ HRESULT CBody_Halberd::Ready_Components()
 
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
 
+    CClothBody::CLOTH_BODY_DESC ClothDesc;
+    ClothDesc.pModel = m_pModelCom;
+    vector<_int> RootBoneIndices;
+    RootBoneIndices.push_back(m_pModelCom->Get_BoneIndex("B_Cape_01_01_Spine2"));
+    RootBoneIndices.push_back(m_pModelCom->Get_BoneIndex("B_Cape_02_01_Spine2"));
+    RootBoneIndices.push_back(m_pModelCom->Get_BoneIndex("B_Cape_03_01_Spine2"));
+    ClothDesc.RootBoneIndices = RootBoneIndices;
+    ClothDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::CLOTH);
+    ClothDesc.pOwnerTransform = m_pOwnerTransform;
+    ClothDesc.fGravity = 1.f;
+    ClothDesc.fLinearDamping = 0.1f;
+    ClothDesc.fAngularDamping = 0.1f;
+    ClothDesc.fMass = 1.f;
+    ClothDesc.fMinDistance = 0.7f;
+    ClothDesc.fMaxDistance = 1.3f;
+    ClothDesc.fSpringFrequency = 1.f;
+    ClothDesc.fSpringDamping = 0.2f;
+    ClothDesc.eType = CLOTHTYPE::CAPE;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_ClothBody"),
+        TEXT("Com_ClothBody"), reinterpret_cast<CComponent**>(&m_pCapeBody), &ClothDesc)))
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -208,4 +236,5 @@ void CBody_Halberd::Free()
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
     Safe_Release(m_pTextureCom);
+    Safe_Release(m_pCapeBody);
 }

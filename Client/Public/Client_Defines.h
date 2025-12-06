@@ -39,6 +39,7 @@ namespace Client
 
 
         CLOTH,
+        CLOTHBODY,
         END };
 
 	enum class KHAZAN_MAP { HEINMACH, CREVICE, EMBARS, VIPER, END };

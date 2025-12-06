@@ -115,29 +115,29 @@ PS_OUT PS_SKY(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    // 방향 계산 및 기본 UV
     float3 vDir = normalize(In.vWorldPos.xyz - g_vCamPosition.xyz);
 
     float2 uv;
     uv.x = atan2(vDir.x, vDir.z) * (1.f / (2.f * g_fPI)) + 0.5f;
     uv.y = saturate(vDir.y * 0.5f + 0.5f);
     
-    // 기본 하늘색 + 별
+    float t = saturate(vDir.y * 0.5f + 0.5f); // -1~1 → 0~1
+
+    float3 colUpper = g_vNebulaColorR; // Zenith
+    float3 colMiddle = g_vNebulaColorG; // Middle layer
+    float3 colLower = g_vNebulaColorB; // Horizon/Lower
     
-    //float3 vNebulaTexture = g_NebulaTexture.Sample(SkySampler, uv).rgb;
+    float3 lowMid = lerp(colLower, colMiddle, smoothstep(0.0f, 0.50f, t));
     
-    //float3 vSkyColor = vNebulaTexture.r * g_vNebulaColorR + vNebulaTexture.g * g_vNebulaColorG + vNebulaTexture.b * g_vNebulaColorB;
-    
-    float3 vSkyColor = g_vNebulaColorR;
+    float3 vSkyColor = lerp(lowMid, colUpper, smoothstep(0.50f, 1.0f, t));
     
     float3 vStars = g_StarMaskTexture.Sample(DefaultSampler, uv * 4.f).rgb;
     vStars = pow(vStars, 10.0f) * g_fStarStrength;
     
-    // 달 방향 기반 UV 계산
     float3 vMoonDir = normalize(g_vMoonDirection);
-    float fMoonDot = dot(vDir, vMoonDir); // 달과 픽셀의 방향 관계
-    float moonVisible = step(0.f, fMoonDot); // 달이 보이는 면만 1 (뒤쪽은 0)
-    
+    float fMoonDot = dot(vDir, vMoonDir);
+    float moonVisible = step(0.f, fMoonDot); // 정면만
+
     float3 vRight = normalize(cross(float3(0.f, 1.f, 0.f), vMoonDir));
     float3 vUp = cross(vMoonDir, vRight);
 
@@ -146,8 +146,7 @@ PS_OUT PS_SKY(PS_IN In)
     moonUV.y = dot(vDir, vUp);
     moonUV = moonUV / g_fMoonSize + 0.5f;
     moonUV.y = 1.0f - moonUV.y;
-    
-    // 달 마스크 (달 외곽 보정 )
+
     float2 moonCenter = float2(0.5f, 0.5f);
     float fDist = distance(moonUV, moonCenter);
 
@@ -155,32 +154,28 @@ PS_OUT PS_SKY(PS_IN In)
     float fInner = fOuter - (0.15f * saturate(g_fMoonSize));
     float fMoonMask = 1.0f - smoothstep(fInner, fOuter, fDist);
     
-    // 달 텍스처 (밝기 기반, RGB 얼룩 제거)
     float3 vMoonTex = g_MoonTexture.Sample(DefaultSampler, moonUV).rgb;
     float fLuma = dot(vMoonTex, float3(0.299f, 0.587f, 0.114f));
+
     float3 vMoonRGB = fLuma.xxx * g_vMoonColor * g_fMoonIntensity;
     
-    // 블랙홀 (달 중심부 완전 어둠)
     float fBlackHoleRadius = 0.11f;
     float fBlackHoleFeather = 0.02f;
+
     float fHoleMask = 1.0f - smoothstep(fBlackHoleRadius, fBlackHoleRadius + fBlackHoleFeather, fDist);
 
-    float3 vBlackHoleColor = float3(0.0f, 0.0f, 0.0f);
-    vMoonRGB = lerp(vMoonRGB, vBlackHoleColor, fHoleMask);
+    vMoonRGB = lerp(vMoonRGB, float3(0, 0, 0), fHoleMask);
     
-    // 달 내부엔 별 제거
-    vStars *= (1.0f - fMoonMask);
-
-    // 달은 한쪽 면(dot>0)만 보이게
     vMoonRGB *= moonVisible;
     fMoonMask *= moonVisible;
     
-    // 스크린 합성 (자연스럽게 달+별+하늘)
+    vStars *= (1.0f - fMoonMask);
+    
     float3 vBaseColor = vSkyColor + vStars;
-    float3 vWithMoon = 1.0f - (1.0f - vBaseColor) * (1.0f - vMoonRGB * fMoonMask);
-    
-    Out.vColor = float4(saturate(vWithMoon), 1.0f);
-    
+
+    float3 vFinal = 1.0f - (1.0f - vBaseColor) * (1.0f - vMoonRGB * fMoonMask);
+
+    Out.vColor = float4(saturate(vFinal), 1.0f);
     return Out;
 }
 
@@ -229,7 +224,9 @@ PS_OUT PS_CLOUD(PS_IN In)
     uv.x = WrapU(float2(uv.x + g_fTime * g_fCloudSpeed * 0.02f * g_isDynamic, 0)).x;
 
     float polar = 1.0f - abs(uv.y * 2.0f - 1.0f);
-    float2 dUV = (g_DistortionTexture.Sample(SkySampler, uv * 0.5f).rg - 0.5f) * (0.035f * polar * polar);
+    float2 dUV = (g_DistortionTexture.Sample(SkySampler, uv * 0.5f).rg - 0.5f)
+               * (0.035f * polar * polar);
+
     uv.x = WrapU(float2(uv.x + dUV.x * g_isDynamic, 0)).x;
 
     float seamW = 0.0025f;
@@ -251,16 +248,22 @@ PS_OUT PS_CLOUD(PS_IN In)
     float mask = (vCloud.r + vCloud.g + vCloud.b) * (1.0f / 3.0f);
     float fAlpha = saturate((mask + 0.12f) * fGrad * g_fCloudDensity);
 
-    // 반구 전용 수직 페이드: 위 희미, 아래 진함
-    float skyY = saturate((uv.y - 0.5f) / 0.5f); // 0=지평선, 1=천정
+    // 기존 위 → 아래 페이드 유지
+    float skyY = saturate((uv.y - 0.5f) / 0.5f);
     float fVerticalFade = 1.0f - smoothstep(0.0f, 0.8f, skyY);
     fAlpha *= fVerticalFade;
+
+    // ------------------------------
+    // 새로운 seam 부드러움 추가 (핵심)
+    // ------------------------------
+    float seamFade = smoothstep(0.0f, 0.15f, uv.y);
+    fAlpha *= seamFade;
+    // ------------------------------
 
     float3 vColor = g_vCloudColor * vCloud.rgb * fGrad * fLight * g_fCloudLightIntensity;
     Out.vColor = float4(vColor, fAlpha);
 
     return Out;
-
 }
 
 /*

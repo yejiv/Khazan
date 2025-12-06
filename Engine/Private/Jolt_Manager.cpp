@@ -57,8 +57,7 @@ HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
     m_DrawFilter = new DrawOnlyLayers();
     m_pDebugRenderer = new CJolt_DebugRenderer(m_pDevice, m_pContext);
 
-#endif
-
+#endif    
     return S_OK;
 }
 
@@ -115,6 +114,16 @@ CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSe
     pCharVir->AddRef();
 
     return pCharVir;
+}
+
+void CJolt_Manager::Add_Constraint(Constraint* pConstraint)
+{
+    m_pPhysics->AddConstraint(pConstraint);
+}
+
+void CJolt_Manager::Remove_Constraint(Constraint* pConstraint)
+{
+    m_pPhysics->RemoveConstraint(pConstraint);
 }
 
 HRESULT CJolt_Manager::Set_PhysicsSystem()
