@@ -52,6 +52,20 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
 
     if (BLADENEXUS_ID::HEINMACH_YETUGA == static_cast<BLADENEXUS_ID>(m_iBladeNexus_ID))
     {
+        LIGHT_DESC LightDesc = {};
+
+        LightDesc.eType = LIGHT_DESC::TYPE::POINT;
+
+        LightDesc.vDiffuse = _float4(0.9f, 0.05f, 0.05f, 1.f);
+        LightDesc.vAmbient = _float4(0.28f, 0.18f, 0.18f, 1.f);
+        LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
+        XMStoreFloat4(&LightDesc.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        LightDesc.vPosition.y += 2.f;
+
+        LightDesc.fRange = 7.5f;
+
+        m_pGameInstance->Add_Light(TEXT("BladeNexus_4"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc, false);
+
         m_iPopEventID = m_pGameInstance->Subscribe_Event<EventPopBN>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), [&](const EventPopBN& e)
             {
                 m_BNPop = e;
@@ -74,6 +88,8 @@ void CBladeNexus::Priority_Update(_float fTimeDelta)
         else if (false == m_isPop)
         {
             m_isPop = true;
+
+            m_pGameInstance->Set_LightEnable(TEXT("BladeNexus_4"), ENUM_CLASS(LEVEL::HEINMACH), true);
 
             m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_NextLevelID(), TEXT("GhostKnight_static"), m_pTransformCom->Get_State(STATE::POSITION));
 

@@ -1502,7 +1502,7 @@ _uint CGameInstance::Get_NumDecalTextures(DECALTYPE eType)
     return m_pDecal_Manager->Get_NumDecalTextures(eType);
 }
 
-void CGameInstance::Batch_Decal(CDecal* pDecal)
+void CGameInstance::Batch_Decal(CDecal_Static* pDecal)
 {
     m_pDecal_Manager->Batch_Decal(pDecal);
 }
@@ -1510,6 +1510,16 @@ void CGameInstance::Batch_Decal(CDecal* pDecal)
 void CGameInstance::Decal_Clear()
 {
     m_pDecal_Manager->Decal_Clear();
+}
+
+void CGameInstance::MapDecal_Clear()
+{
+    m_pDecal_Manager->MapDecal_Clear();
+}
+
+void CGameInstance::MapDecal_CleanUp()
+{
+    m_pDecal_Manager->MapDecal_CleanUp();
 }
 
 #pragma endregion

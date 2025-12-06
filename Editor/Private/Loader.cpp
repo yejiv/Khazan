@@ -677,7 +677,7 @@ HRESULT CLoader::Loading_For_Map_Level()
 #pragma region 게임오브젝트 원형 로딩 ( 데칼 )
     /* Prototype_GameObject_Decal */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal"),
-        CDecal::Create(m_pDevice, m_pContext)), E_FAIL);
+        CDecal_Static::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma region 게임오브젝트 원형 로딩 ( 점 조명 )

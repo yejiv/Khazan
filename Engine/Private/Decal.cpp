@@ -30,35 +30,32 @@ void CDecal::Priority_Update(_float fTimeDelta)
 
 void CDecal::Update(_float fTimeDelta)
 {
-    if (false == m_isDecoration)
+    m_fTimeAcc += fTimeDelta;
+
+    // 수명이 끝나면 사망 처리 -> 풀
+    if (m_fTimeAcc >= m_Desc.fLifeTime)
     {
-        m_fTimeAcc += fTimeDelta;
+        m_isDead = true;
+        m_fTimeAcc = 0.f;
+        m_fOpacity = 0.f;
+        return;
+    }
 
-        // 수명이 끝나면 사망 처리 -> 풀
-        if (m_fTimeAcc >= m_Desc.fLifeTime)
-        {
-            m_isDead = true;
-            m_fTimeAcc = 0.f;
-            m_fOpacity = 0.f;
-            return;
-        }
+    // 페이드 아웃 계산
+    if (m_fTimeAcc > m_Desc.vFadeTime.y)
+    {
+        _float fFadeDuration = m_Desc.fLifeTime - m_Desc.vFadeTime.y;	// 페이드 아웃 총 시간
+        _float fFadeTimeAcc = m_fTimeAcc - m_Desc.vFadeTime.y;			// 페이드 아웃 시작 후 누적 시간
+        _float fRatio = (fFadeTimeAcc / fFadeDuration);					// 페이드 아웃 비율
+        m_fOpacity = 1.f - fRatio;
+        m_fOpacity = max(0.f, m_fOpacity);								// 비율 0 -> 불투명, 비율 1 -> 투명
+    }
 
-        // 페이드 아웃 계산
-        if (m_fTimeAcc > m_Desc.vFadeTime.y)
-        {
-            _float fFadeDuration = m_Desc.fLifeTime - m_Desc.vFadeTime.y;	// 페이드 아웃 총 시간
-            _float fFadeTimeAcc = m_fTimeAcc - m_Desc.vFadeTime.y;			// 페이드 아웃 시작 후 누적 시간
-            _float fRatio = (fFadeTimeAcc / fFadeDuration);					// 페이드 아웃 비율
-            m_fOpacity = 1.f - fRatio;
-            m_fOpacity = max(0.f, m_fOpacity);								// 비율 0 -> 불투명, 비율 1 -> 투명
-        }
-
-        // Fade In
-        if (m_fTimeAcc < m_Desc.vFadeTime.x)
-        {
-            m_fOpacity = m_fTimeAcc / m_Desc.vFadeTime.x;		// 페이드 인 총 시간
-            m_fOpacity = min(1.f, m_fOpacity);
-        }
+    // Fade In
+    if (m_fTimeAcc < m_Desc.vFadeTime.x)
+    {
+        m_fOpacity = m_fTimeAcc / m_Desc.vFadeTime.x;		// 페이드 인 총 시간
+        m_fOpacity = min(1.f, m_fOpacity);
     }
 }
 
@@ -104,19 +101,11 @@ HRESULT CDecal::Bind_ShaderResources(CShader* pShader, class CTexture** pTexture
     }
     else
     {
-	    if (FAILED(pShader->Bind_RawValue("g_vDecalColor", &m_Desc.vColor, sizeof(_float3))))
-		    return E_FAIL;
+        if (FAILED(pShader->Bind_RawValue("g_vDecalColor", &m_Desc.vColor, sizeof(_float3))))
+            return E_FAIL;
 
-        if (true == m_isDecoration)             // 데코용일 경우 고정 쓰레스 홀드
-        {
-            if (FAILED(pShader->Bind_RawValue("g_fThreshold", &m_fThreshold, sizeof(_float))))
-                return E_FAIL;
-        }
-        else
-        {
-            if (FAILED(pShader->Bind_RawValue("g_iRandSeed", &m_iRandSeed, sizeof(_uint))))
-                return E_FAIL;
-        }
+        if (FAILED(pShader->Bind_RawValue("g_iRandSeed", &m_iRandSeed, sizeof(_uint))))
+            return E_FAIL;
     }
 
 	if (FAILED(pShader->Bind_RawValue("g_fOpacity", &m_fOpacity, sizeof(_float))))
@@ -142,28 +131,13 @@ HRESULT CDecal::Bind_ShaderResources(CShader* pShader, class CTexture** pTexture
 		break;
 	}
 
-	// 버퍼 렌더 및 텍스처 바인딩, 셰이더 비긴
-    if (true == m_isDecoration)             // 데코용일 경우 패스 1번 ( 감사합니다 )
-    {
-        pShader->Begin(1);
-    }
+    if (DECALTYPE::EMISSIVE == m_Desc.eType)
+        pShader->Begin(3);
     else
-    {
-        if (DECALTYPE::EMISSIVE == m_Desc.eType)
-            pShader->Begin(3);
-        else
-            pShader->Begin(0);
-    }
+        pShader->Begin(0);
 
 	pVIBuffer->Bind_Resources();
 	pVIBuffer->Render();
-
-    // 맵 에디터에서 큐브 사이즈 확인 위한 . . .
-    if (true == m_isWireFrame)
-    {
-        pShader->Begin(2);
-        pVIBuffer->Render();
-    }
 
 	return S_OK;
 }

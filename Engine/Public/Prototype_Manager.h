@@ -22,6 +22,7 @@
 #include "Texture_Atlas.h"
 #include "VIBuffer_Instance_UI.h"
 #include "Decal.h"
+#include "Decal_Static.h"
 #include "Model.h"
 #include "MotionTrail.h"
 #include "SoftBody.h"

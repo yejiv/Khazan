@@ -410,8 +410,10 @@ public:
     CTexture*                   Get_DecalTexture(DECALTYPE eType);
     ID3D11ShaderResourceView*   Get_DecalTexture(DECALTYPE eType, _uint iIndex);
     _uint                       Get_NumDecalTextures(DECALTYPE eType);
-    void                        Batch_Decal(class CDecal* pDecal);
+    void                        Batch_Decal(class CDecal_Static* pDecal);
     void                        Decal_Clear();
+    void                        MapDecal_Clear();
+    void                        MapDecal_CleanUp();
 #pragma endregion
 
 #pragma region EFFECT_MANAGER
