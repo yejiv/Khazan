@@ -8,7 +8,7 @@
 NS_BEGIN(Engine)
 class CTransform;
 class CTexture;
-class CDecal;
+class CDecal_Static;
 NS_END
 
 NS_BEGIN(Editor)
@@ -332,15 +332,15 @@ private:
 
     _float m_fDecalThreshold = {};
 
-    vector<CDecal*> m_DecalList;
+    vector<CDecal_Static*> m_DecalList;
     _int m_iDecalListIndex = {};
 
     _int m_iTextureIndex = {};
-    CDecal* m_pDecal = { nullptr };
-    CDecal* m_pFixDecal = { nullptr };
+    CDecal_Static* m_pDecal = { nullptr };
+    CDecal_Static* m_pFixDecal = { nullptr };
 
-    DECAL_DESC m_DecalDesc = {};
-    DECAL_DESC m_FixDecalDesc = {};
+    STATIC_DECAL_DESC m_DecalDesc = {};
+    STATIC_DECAL_DESC m_FixDecalDesc = {};
     _float4x4 m_DecalWorldMatrix = {};
 
     _bool m_isDecalWireFrame = { false };

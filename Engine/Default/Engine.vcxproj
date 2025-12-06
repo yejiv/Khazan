@@ -184,6 +184,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\BehaviorTree.cpp" />
     <ClCompile Include="..\Private\BlackBoard.cpp" />
     <ClCompile Include="..\private\CSM.cpp" />
+    <ClCompile Include="..\Private\Decal_Static.cpp" />
     <ClCompile Include="..\private\MotionBlur.cpp" />
     <ClCompile Include="..\private\MotionTrail.cpp" />
     <ClCompile Include="..\private\RadialBlur.cpp" />
@@ -383,6 +384,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\BlackBoard.h" />
     <ClInclude Include="..\public\CSM.h" />
     <ClInclude Include="..\Public\Debug_Header.h" />
+    <ClInclude Include="..\Public\Decal_Static.h" />
     <ClInclude Include="..\public\GaussianBlur.h" />
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\Public\BodyDrawFilter.h" />

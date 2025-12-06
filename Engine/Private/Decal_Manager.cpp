@@ -2,6 +2,8 @@
 #include "Decal.h"
 #include "GameInstance.h"
 
+#include "Decal_Static.h"
+
 CDecal_Manager::CDecal_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : m_pDevice{ pDevice }
     , m_pContext{ pContext }
@@ -79,6 +81,16 @@ HRESULT CDecal_Manager::Render()
             return E_FAIL;
     }
 
+    // 맵 데칼 개수만큼 순회, 해당 데칼의 월드, 뷰, 투영 바인딩
+    for (auto& pStaticDecal : m_StaticDecals)
+    {
+        if (pStaticDecal->isCameraInDecalBox())
+            continue;
+
+        if (FAILED(pStaticDecal->Bind_ShaderResources(m_pShader, m_pTexture, m_pVIBuffer)))
+            return E_FAIL;
+    }
+
     return S_OK;
 }
 
@@ -115,6 +127,13 @@ HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLeve
     m_pGameInstance->Push_PoolObject_ToLayer(iLayerLevelIndex, strLayerTag, pDecal);
 
     return S_OK;
+}
+
+void CDecal_Manager::MapDecal_Clear()
+{
+    for (auto& pMapDecal : m_StaticDecals)
+        Safe_Release(pMapDecal);
+    m_StaticDecals.clear();
 }
 
 ID3D11ShaderResourceView* CDecal_Manager::Get_DecalTexture(DECALTYPE eType, _uint iIndex)
@@ -244,6 +263,10 @@ void CDecal_Manager::Free()
     for (auto& pDecal : m_Decals)
         Safe_Release(pDecal);
     m_Decals.clear();
+
+    for (auto& pStaticDecal : m_StaticDecals)
+        Safe_Release(pStaticDecal);
+    m_StaticDecals.clear();
 
     for (_uint i = 0; i < ENUM_CLASS(DECALTYPE::END); ++i)
         Safe_Release(m_pTexture[i]);

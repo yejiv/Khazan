@@ -1288,12 +1288,12 @@ HRESULT CLevel_Embars::Ready_Map_Decal(const _wstring& strLayerTag, const _tchar
     // 데칼 총 개수만큼 순회
     for (_uint i = 0; i < iDecalCnt; ++i)
     {
-        CDecal* pDecal = static_cast<CDecal*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal")));
+        CDecal_Static* pDecal = static_cast<CDecal_Static*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal_Static")));
         CHECK_NULLPTR(pDecal, E_FAIL);
 
-        DECAL_DESC DecalDesc = {};
+        STATIC_DECAL_DESC DecalDesc = {};
         // 2. 데칼의 구조체 불러오기
-        CHECK_FALSE(ReadFile(hFile, &DecalDesc, sizeof(DECAL_DESC), &dwByte, nullptr), false);
+        CHECK_FALSE(ReadFile(hFile, &DecalDesc, sizeof(STATIC_DECAL_DESC), &dwByte, nullptr), false);
         pDecal->Set_Desc(DecalDesc);
 
         _float fThreshold = {};
@@ -1309,10 +1309,7 @@ HRESULT CLevel_Embars::Ready_Map_Decal(const _wstring& strLayerTag, const _tchar
         _float4x4 WorldMatrix = {};
         // 5. 데칼의 월드 행렬 불러오기
         CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), false);
-        pDecal->Set_WorldMatrix(WorldMatrix);
-
-        // 데코용 데칼 true
-        pDecal->Set_EnableDecoration(true);
+        pDecal-> Set_WorldMatrix(WorldMatrix);
 
         m_pGameInstance->Batch_Decal(pDecal);
     }

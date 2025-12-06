@@ -284,6 +284,17 @@ namespace Engine
         unsigned int            iTextureIndex;
     }DECAL_DESC;
 
+    typedef struct tagStaticDecalDesc
+    {
+        DECALTYPE	            eType;
+        XMFLOAT3	            vPosition;
+        XMFLOAT3                vAngle;
+        XMFLOAT3	            vScale;
+        XMFLOAT3	            vColor;
+        unsigned int            iTextureIndex;
+
+    }STATIC_DECAL_DESC;
+
     typedef struct tagDistortionDesc
     {
         XMFLOAT3		vCenter;
