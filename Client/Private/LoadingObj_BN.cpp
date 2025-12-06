@@ -30,6 +30,20 @@ HRESULT CLoadingObj_BN::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
+    LIGHT_DESC LightDesc = {};
+
+    LightDesc.eType = LIGHT_DESC::TYPE::POINT;
+
+    LightDesc.vDiffuse = _float4(0.9f, 0.05f, 0.05f, 1.f);
+    LightDesc.vAmbient = _float4(0.28f, 0.18f, 0.18f, 1.f);
+    LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
+    XMStoreFloat4(&LightDesc.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+    LightDesc.vPosition.y += 2.f;
+
+    LightDesc.fRange = 7.5f;
+
+    m_pGameInstance->Add_Light(TEXT("BladeNexus_Loading"), ENUM_CLASS(LEVEL::LOADING), LightDesc, true);
+
     m_eAnimState = ANIM_STATE::AFTER_IDLE;
     m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
     m_pModelCom->Set_AnimationLoop(true);
