@@ -124,7 +124,7 @@ HRESULT CUI_Announce_Talk::Render()
 
 void CUI_Announce_Talk::NameColor()
 {
-	if (m_wstrTalkName == TEXT("???"))
+	if (m_wstrTalkName == TEXT("???") || m_wstrTalkName == TEXT("블레이드 팬텀"))
 		m_vNameColor = { 0.686f, 0.280f, 0.373f, 1.f };
 
 	if (m_wstrTalkName == TEXT("카잔"))

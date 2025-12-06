@@ -1,5 +1,6 @@
 #include "AS_Elamein_Dead.h"
-
+#include "GameInstance.h"
+#include "Interaction_Item.h"
 CAS_Elamein_Dead::CAS_Elamein_Dead()
 {
 }
@@ -31,7 +32,12 @@ void CAS_Elamein_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
         m_pMonData->fDecreaseAlpha += fTimeDelta * 0.35f;
 
         if (m_pMonData->fDecreaseAlpha >= 1.f)
+        {
+            CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Item")));
+            pItem->RandNormal_Item(pOwner->Get_Transform()->Get_State(STATE::POSITION));
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Item"), pItem);
             m_pMonData->pOwner->Creature_Release();
+        }
     }
 }
 

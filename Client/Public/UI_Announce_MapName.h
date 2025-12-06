@@ -9,7 +9,7 @@ NS_BEGIN(Client)
 class CUI_Announce_MapName final : public CUI_Text
 {
 public:
-	enum class MAP_TYPE { HEINMACH, DEFAULT, END };
+	enum class MAP_TYPE { HEINMACH, DEFAULT, EMBARS, END };
 private:
 	CUI_Announce_MapName(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CUI_Announce_MapName(const CUI_Announce_MapName& Prototype);

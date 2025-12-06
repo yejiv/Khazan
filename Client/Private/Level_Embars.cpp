@@ -16,6 +16,8 @@
 #include "MapObject_Header.h"
 #pragma endregion
 
+#include "UI_Announce_MapName.h"
+
 CLevel_Embars::CLevel_Embars(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
     , m_pClientInstance(CClientInstance::GetInstance())
@@ -32,6 +34,7 @@ HRESULT CLevel_Embars::Initialize()
 
         //return S_OK;
         //}));
+    CHECK_FAILED(Ready_Layer_Item(), E_FAIL);
 
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
 
@@ -70,7 +73,7 @@ HRESULT CLevel_Embars::Initialize()
 
     CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
 
-    CClientInstance::GetInstance()->Fade_In();
+    CClientInstance::GetInstance()->Fade_In([this]() {Start_Event(); });
 
     if (!Wait_All_Futures())
         return E_FAIL;
@@ -224,6 +227,17 @@ HRESULT CLevel_Embars::Ready_Shader_Settings()
     FogDesc.isUseHeight = false;
     FogDesc.isUseNoise = false;
     m_pGameInstance->Start_FogTransition(0.f, FogDesc);
+
+    return S_OK;
+}
+
+HRESULT CLevel_Embars::Ready_Layer_Item()
+{
+    CGameObject::GAMEOBJECT_DESC desc{};
+
+    desc.iLevelIndex = ENUM_CLASS(LEVEL::EMBARS);
+
+    m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Item"), ENUM_CLASS(LEVEL::EMBARS), TEXT("Item"), &desc, 10);
 
     return S_OK;
 }
@@ -1342,6 +1356,20 @@ _bool CLevel_Embars::Wait_All_Futures()
 
     m_futures.clear();
     return all_ok;
+}
+
+void CLevel_Embars::Start_Event()
+{
+    //NPC 대사
+    m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_TALK>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_TALK), EVENT_ANNOUNCE_TALK{ 20 });
+
+    //맵 이름 표시
+    EVENT_ANNOUNCE_MAPNAME Desc = {};
+    Desc.fTime = 2.f;
+    Desc.iMapType = ENUM_CLASS(CUI_Announce_MapName::MAP_TYPE::EMBARS);
+    Desc.fFadeOutTime = 2.5f;
+    Desc.isDissovle = true;
+    m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
 }
 
 CLevel_Embars* CLevel_Embars::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

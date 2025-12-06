@@ -11,7 +11,7 @@ void CAS_Halberd_Sleep::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_pMonData = &static_cast<CHalberd*>(pOwner)->Get_Data();
 
     m_pMonData->pOwner->Hp_Visivle(false);
-    m_pMonData->iAnimIndex = 48;
+    m_pMonData->iAnimIndex = 50;
     m_eState = SLEEP;
 }
 
@@ -19,7 +19,7 @@ void CAS_Halberd_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 { 
     if (m_eState == SLEEP && !m_pMonData->isSleep)
     {
-        m_pMonData->iAnimIndex = 47;
+        m_pMonData->iAnimIndex = 49;
         m_pMonData->pOwner->Hp_Visivle(true);
         m_eState = GETUP;
     }

@@ -2204,8 +2204,6 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
 
 #pragma endregion
 
-#pragma endregion
-
 #pragma region 게임오브젝트 원형 로딩 ( 트리거 및 몬스터 )
     /* Prototype_GameObject_Prop_Trigger */
     // CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Trigger"),
@@ -2226,8 +2224,17 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
 
 #pragma region EFFECT
     Loading_For_Effect_Static(ENUM_CLASS(LEVEL::EMBARS));
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("ITEM_FX"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item"))))
+        return E_FAIL;
 #pragma endregion
      
+#pragma region Item
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Item"),
+        CInteraction_Item::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+#pragma endregion
     return S_OK;
 }
 

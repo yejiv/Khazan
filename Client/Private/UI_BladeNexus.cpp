@@ -35,7 +35,12 @@ void CUI_BladeNexus::On_Panel(ONTYPE eType, _wstring strMapName)
 
 		m_iListeType = ENUM_CLASS(eType);
         CClientInstance::GetInstance()->ActiveCamera_InteractMove();
-	}
+        if (!m_isTalk && ONTYPE::EMBARS == eType)
+        {
+            m_isTalk = true;
+            m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_TALK>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_TALK), EVENT_ANNOUNCE_TALK{ 15 });
+        }
+    }
 	
 	m_iSeleteIndex = 0;
 	for (_int i = 0; i < ENUM_CLASS(MENULIST::END); ++i)
@@ -509,8 +514,8 @@ void CUI_BladeNexus::Next_Event()
 		//m_eAnimState = UIANIMSTATE::OFF;
 		//m_fAccTime = 1.f;
 
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
         m_pGameInstance->Emit_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), { ENUM_CLASS(LEVEL::EMBARS) });
-        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
 		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 	}
 

@@ -95,6 +95,7 @@ public:
     virtual void					Priority_Update(_float fTimeDelta) override;
     virtual void					Update(_float fTimeDelta) override;
     virtual void					Late_Update(_float fTimeDelta) override;
+    virtual void				    Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) override;
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
@@ -142,6 +143,8 @@ private:
     void                            Update_Body(_float fTimeDelta);
     void                            Update_MeshTrail();
 
+    void                            Move_Sound();
+    void                            Run_Sound();
 public:
     static CHalberd*                Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;

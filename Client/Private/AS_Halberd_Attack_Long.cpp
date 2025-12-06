@@ -1,4 +1,5 @@
 #include "AS_Halberd_Attack_Long.h"
+#include "GameInstance.h"
 
 CAS_Halberd_Attack_Long::CAS_Halberd_Attack_Long()
 {
@@ -11,11 +12,24 @@ void CAS_Halberd_Attack_Long::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     m_isSprint ? m_isSprint = false : m_isSprint = true;
 
-    if(m_isSprint)
+    if (m_isSprint)
         m_pMonData->iAnimIndex = 61;
     else
         m_pMonData->iAnimIndex = 10;
+       
 
+    switch (m_pGameInstance->Rand(1, 3))
+    {
+    case 1:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_charge_l_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0));
+        break;
+    case 2:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_charge_l_02 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0));
+        break;
+    default:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_charge_l_03 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0));
+        break;
+    }
     m_eState = START;
 
 }
