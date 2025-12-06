@@ -107,10 +107,8 @@ void CKhazan_GS_Anim_Move::Continue(_float fTimeDelta)
 
     Check_SprintStart();
 
-
     if (Check_Dodge())
         return;
-
 
     Update_FootPosition();
 
@@ -119,18 +117,18 @@ void CKhazan_GS_Anim_Move::Continue(_float fTimeDelta)
 
 void CKhazan_GS_Anim_Move::Exit()
 {
-        m_isMoving = false;
+    m_isMoving = false;
     m_isReserve = false;
     m_isTurning180 = false;
+    m_isDodging = false;
     //Clear();
 }
 
 _bool CKhazan_GS_Anim_Move::Try_ChangeAnimation(GS_MOVEINFO moveInfo)
 {
     // 180도 회전 중에는 애니메이션 변경 차단
-    if (m_isTurning180)
+     if (m_isTurning180)
     {
-        cout << "Cannot change animation - 180 Turn in progress" << endl;
         return false;
     }
 
@@ -146,6 +144,7 @@ _bool CKhazan_GS_Anim_Move::Try_ChangeAnimation(GS_MOVEINFO moveInfo)
     Clear_State();
     Add_State(moveInfo.iState);
     m_isStopAnimationFinished = false;
+    m_iCurWeapon = moveInfo.iWeapon;
     _bool   isLockOn = moveInfo.isLockOn;
 
     if (Has_State(MOV::MOVE_WALK))
@@ -153,7 +152,6 @@ _bool CKhazan_GS_Anim_Move::Try_ChangeAnimation(GS_MOVEINFO moveInfo)
         if (isLockOn)
         {
             iSelectedAnimationIndex = GetLockOnWalkAnimation(moveInfo.eDir);
-            cout << "Lock on   Walkkkk" << endl;
         }
         else if (moveInfo.iCycle & CYC::CYCLE_END)
         {
@@ -169,26 +167,23 @@ _bool CKhazan_GS_Anim_Move::Try_ChangeAnimation(GS_MOVEINFO moveInfo)
 
     }
 
-
     if (Has_State(MOV::MOVE_RUN))
     {
 
         if (isLockOn)
         {
             iSelectedAnimationIndex = GetLockOnRunAnimation(moveInfo.eDir);
-            cout << "Lock on   Run" << endl;
         }
         else if (moveInfo.iCycle & CYC::CYCLE_END)
         {
-            if (m_curFoot == FOOT_R) iSelectedAnimationIndex = Get_AnimIndexByName("CA_P_Kazan_GSword_Run_Stop_F_RF", "CA_P_Kazan_Spear_Run_Stop_F_RF", "CA_P_Kazan_GSword_Run_Stop_F_RF");
-            else  iSelectedAnimationIndex = Get_AnimIndexByName("CA_P_Kazan_GSword_Run_Stop_F_LF", "CA_P_Kazan_Spear_Run_Stop_F_LF", "CA_P_Kazan_GSword_Run_Stop_F_LF");
+            if (m_curFoot == FOOT_R) iSelectedAnimationIndex = Get_AnimIndexByName("CA_P_Kazan_Spear_Run_Stop_F_RF", "CA_P_Kazan_Spear_Run_Stop_F_RF", "CA_P_Kazan_GSword_Run_Stop_F_RF");
+            else  iSelectedAnimationIndex = Get_AnimIndexByName("CA_P_Kazan_Spear_Run_Stop_F_LF", "CA_P_Kazan_Spear_Run_Stop_F_LF", "CA_P_Kazan_GSword_Run_Stop_F_LF");
 
             m_isStopAnimationFinished = true;
             m_isMoving = false;
         }
         else {
-             iSelectedAnimationIndex = Get_AnimIndexByName("CA_P_Kazan_GSword_Run_F", "CA_P_Kazan_Spear_Run_F", "CA_P_Kazan_GSword_Run_F");
-
+             iSelectedAnimationIndex = Get_AnimIndexByName("CA_P_Kazan_Spear_Run_F", "CA_P_Kazan_Spear_Run_F", "CA_P_Kazan_GSword_Run_F");
         }
 
     }
@@ -254,11 +249,10 @@ _bool CKhazan_GS_Anim_Move::Try_ChangeAnimation(GS_MOVEINFO moveInfo)
             return false;
 
         m_pModel->Set_Animation(m_iSelectedAnimationIndex);
-
+        
         return true;
     }
     else {
-        cout << "Reserve_Animation" << endl;
         Reserve_Animation(moveInfo);
         return false;
     }
@@ -289,7 +283,6 @@ _bool CKhazan_GS_Anim_Move::Force_DodgeAnimation(GS_MOVEINFO moveInfo)
 
 
     m_isDodging = true;
-
     m_isStopAnimationFinished = true;
     m_isMoving = true;
     m_iPrevSelectedAnimationIndex = m_iSelectedAnimationIndex;
@@ -427,10 +420,6 @@ _bool CKhazan_GS_Anim_Move::Check_Dodge()
     // Dodge 애니메이션이고 최소 시간이 지났으면 종료
     if (isDodgeAnim && m_pModel->Check_MinAnimationTime())
     {
-        //// 예약은 그대로 유지
-        //_bool isTempReserve = m_isReserve;
-        //Clear();
-        //m_isReserve = isTempReserve;
         m_isStopAnimationFinished = true;
         m_isMoving = false;
         m_isDodging = false;
@@ -461,7 +450,7 @@ void CKhazan_GS_Anim_Move::Clear()
     //_bool		    m_isWalk = { false };
     //_bool		    m_isRun = { false };
     //_bool		    m_isSprint = { false };
-    //_bool		    m_isDodge = { false };
+    _bool		    m_isDodge = { false };
     _bool		    m_isReserve = { false };
     _bool           m_isTurning180 = { false };
 }
@@ -496,7 +485,7 @@ _uint CKhazan_GS_Anim_Move::GetLockOnRunAnimation(DIRECTION_INFO eDir)
 
 inline _uint CKhazan_GS_Anim_Move::Get_AnimIndexByName(const string& bare, const string& spear, const string& gs)
 {
-    if (m_iCurWeapon == 0)
+    if (m_iCurWeapon == 1)
         return  m_pModel->Get_AnimIndexByName(bare);
     if (m_iCurWeapon == 2)
         return  m_pModel->Get_AnimIndexByName(spear);

@@ -15,6 +15,8 @@ public:
 	HRESULT Initialize(BONE_DATA& data);
 	void Update_CombinedTransformationMatrix(const _float4x4& PreTransformMatrix, const vector<CBone*>& Bones);
 
+    void Update_CombinedTransformationMatrix(CBone* ParentBone);
+
 	/* Info */
 public:
 	_matrix		Get_CombinedTransformationMatrix() const { return XMLoadFloat4x4(&m_CombinedTransformationMatrix); }

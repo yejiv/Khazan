@@ -1,5 +1,5 @@
 #include "AS_Elamein_Dodge.h"
-
+#include "GameInstance.h"
 CAS_Elamein_Dodge::CAS_Elamein_Dodge()
 {
 }
@@ -15,11 +15,21 @@ void CAS_Elamein_Dodge::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     {
         m_pMonData->iAnimIndex = 31;
         m_eState = DODGE;
+
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 1.f, 0.003f, 2.1f);
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 1.f, 0.003f, 2.1f);
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 1.f, 0.003f, 2.1f);
     }
     else
     {
         m_pMonData->iAnimIndex = 35;
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.8f, 0.003f, 2.5f);
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.8f, 0.003f, 2.5f);
+        m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.8f, 0.003f, 2.5f);
     }
+
+    m_pMonData->fDodgeCool = 10.5f;
+    m_pMonData->isAnimFinash = false;
 }
 
 void CAS_Elamein_Dodge::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -36,6 +46,7 @@ void CAS_Elamein_Dodge::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         }
         else if (m_eState == ATTACK)
         {
+            m_pMonData->pOwner->LockOnLerp(fTimeDelta, 3.5f);
             if (m_pMonData->isAnimFinash)
             {
                 m_pMonData->iAnimIndex = 95;
@@ -63,6 +74,7 @@ void CAS_Elamein_Dodge::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
 void CAS_Elamein_Dodge::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+    m_pMonData->eAttackState = CElamein::ATTACKSTATE::END;
 }
 
 void CAS_Elamein_Dodge::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
@@ -71,6 +83,8 @@ void CAS_Elamein_Dodge::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->KnockBack(pOwner->Get_Look(), 12.5f, 45.f);
+
         pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
     }
 }

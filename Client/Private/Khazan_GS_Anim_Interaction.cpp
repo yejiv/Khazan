@@ -77,8 +77,8 @@ _bool CKhazan_GS_Anim_Interaction::Try_DamagedTS_Before(_bool isWeapon)
 
 _bool CKhazan_GS_Anim_Interaction::Try_DamagedTS_After(_bool isWeapon)
 {
-    if (!m_pModel->Check_MinAnimationTime())
-        return false;
+    //if (!m_pModel->Check_MinAnimationTime())
+    //    return false;
 
     if (isWeapon)
     {
@@ -95,10 +95,10 @@ _bool CKhazan_GS_Anim_Interaction::Try_DamagedTS_After(_bool isWeapon)
 
 _bool CKhazan_GS_Anim_Interaction::Try_BoxOpen(_bool isUsedSet)
 {
-    if (!m_pModel->Check_MinAnimationTime())
-        return false;
 
-    
+    //if (!m_pModel->Check_MinAnimationTime())
+    //    return false;
+
 
     if (isUsedSet) {
         m_pModel->Set_AnimationSet("Set_OpenBox");  //무기 집어넣고 상자열고 다시 무기 들기

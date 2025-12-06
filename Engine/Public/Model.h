@@ -108,6 +108,7 @@ public:
     void Set_PreTransformMatrix(_float4x4 PreTransformMatrix) { m_PreTransformMatrix = PreTransformMatrix; }
     vector<_float3>		Get_VerticesPos(_uint iIndex);		//졸트
     vector<_uint>		Get_Indices(_uint iIndex);			//졸트
+    class CBone*        Find_Bone(_int iIndex);             //졸트
 
     /* 애니메이션 기능  */
     _bool			Play_Animation(_float fTimeDelta);

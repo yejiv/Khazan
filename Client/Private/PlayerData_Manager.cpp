@@ -18,28 +18,37 @@ HRESULT CPlayerData_Manager::Initialize()
     m_CachedEquipments[4011] = TEXT("Flash_Spear");
     m_CachedEquipments[4012] = TEXT("Punish_Spear");
 
+    /* Nude Set*/
+    m_CachedEquipments[10] = TEXT("Nude_Face");
+    m_CachedEquipments[20] = TEXT("Nude_Hair1");   //긴 머리
+    m_CachedEquipments[21] = TEXT("Nude_Hair2");  //짧은 머리
+    m_CachedEquipments[30] = TEXT("Nude_Torso");
+    m_CachedEquipments[40] = TEXT("Nude_Arm");
+    m_CachedEquipments[50] = TEXT("Nude_Leg");
+    m_CachedEquipments[60] = TEXT("Nude_Shoes");
+
     /* Injured Set*/
-    m_CachedEquipments[0] = TEXT("Prisoner_Face1");
-    m_CachedEquipments[1] = TEXT("Prisoner_Hair1");
-    m_CachedEquipments[2] = TEXT("Prisoner_Torso1");
-    m_CachedEquipments[3] = TEXT("Prisoner_Arm1");
-    m_CachedEquipments[4] = TEXT("Prisoner_Leg3");
-    m_CachedEquipments[5] = TEXT("Prisoner_Shoes1");
+    m_CachedEquipments[9000] = TEXT("Prisoner_Face1");
+    m_CachedEquipments[9001] = TEXT("Prisoner_Hair1");      //긴머리 
+    m_CachedEquipments[9002] = TEXT("Prisoner_Torso1");
+    m_CachedEquipments[9003] = TEXT("Prisoner_Arm1");
+    m_CachedEquipments[9004] = TEXT("Prisoner_Leg3");
+    m_CachedEquipments[9005] = TEXT("Prisoner_Shoes1");
 
     /* Thief Set */
-    m_CachedEquipments[5001] = TEXT("Thief_Head");
+    m_CachedEquipments[5001] = TEXT("Thief_Hair");      //긴머리 
     m_CachedEquipments[5002] = TEXT("Thief_Torso");
     m_CachedEquipments[5003] = TEXT("Thief_Arm");
     m_CachedEquipments[5004] = TEXT("Thief_Leg");
     m_CachedEquipments[5005] = TEXT("Thief_Shoes");
 
     /* 현재 장비 초기화  */
-    m_ePlayerEquipment.iFace = 0;
-    m_ePlayerEquipment.iHead =1;
-    m_ePlayerEquipment.iTorso = 2;
-    m_ePlayerEquipment.iArm = 3;
-    m_ePlayerEquipment.iLeg = 4;
-    m_ePlayerEquipment.iShoes = 5;
+    m_ePlayerEquipment.iFace = 9000;
+    m_ePlayerEquipment.iHair = 9001;
+    m_ePlayerEquipment.iTorso = 9002;
+    m_ePlayerEquipment.iArm = 9003;
+    m_ePlayerEquipment.iLeg = 9004;
+    m_ePlayerEquipment.iShoes = 9005;
     m_ePlayerEquipment.iSpear = 4011;
     m_ePlayerEquipment.iGSword = 4001;
     m_ePlayerEquipment.isSpear = true;
@@ -58,15 +67,17 @@ void CPlayerData_Manager::Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEqu
         m_ePlayerEquipment.isGSword = false;
         m_ePlayerEquipment.isSpear = true;
         UsedSpear();
-        break;
+        m_OnChangePlayerEquipment[0](eType, m_CachedEquipments[iEquipmentIndex]);
+        return;;
     case Client::EQUIPMENTTYPE::GSWORD:
         m_ePlayerEquipment.iSpear = iEquipmentIndex;
         m_ePlayerEquipment.isGSword = true;
         m_ePlayerEquipment.isSpear = false;
         UsedGSword();
-        break;
+        m_OnChangePlayerEquipment[0](eType, m_CachedEquipments[iEquipmentIndex]);
+        return;
     case Client::EQUIPMENTTYPE::HEAD:
-        m_ePlayerEquipment.iHead = iEquipmentIndex;
+        m_ePlayerEquipment.iHair = iEquipmentIndex;
         break;
     case Client::EQUIPMENTTYPE::TORSO:
         m_ePlayerEquipment.iTorso = iEquipmentIndex;
@@ -84,7 +95,7 @@ void CPlayerData_Manager::Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEqu
         break;
     }
 
-    m_OnChangePlayerEquipment(eType, m_CachedEquipments[iEquipmentIndex]);
+    m_OnChangePlayerEquipment[1](eType, m_CachedEquipments[iEquipmentIndex]);
 }
 
 void CPlayerData_Manager::Set_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex)
@@ -104,7 +115,7 @@ void CPlayerData_Manager::Set_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipm
         UsedGSword();
         break;
     case Client::EQUIPMENTTYPE::HEAD:
-        m_ePlayerEquipment.iHead = iEquipmentIndex;
+        m_ePlayerEquipment.iHair = iEquipmentIndex;
         break;
     case Client::EQUIPMENTTYPE::TORSO:
         m_ePlayerEquipment.iTorso = iEquipmentIndex;
@@ -132,19 +143,19 @@ const _wstring& CPlayerData_Manager::Get_EquipmentName(_uint iEquipmentIndex) co
     /* 없으면  */
     _uint iTemp = iEquipmentIndex % 10;
     if (iTemp == 0)
-        return  TEXT("Prisoner_Face1");
+        return  TEXT("Nude_Face");
     if (iTemp == 1)
-        return  TEXT("Prisoner_Hair1");
+        return  TEXT("Nude_Hair2");
     if (iTemp == 2)
-        return  TEXT("Prisoner_Torso1");
+        return  TEXT("Nude_Torso");
     if (iTemp == 3)
-        return  TEXT("Prisoner_Arm1");
+        return  TEXT("Nude_Arm");
     if (iTemp == 4)
-        return  TEXT("Prisoner_Leg3");
+        return  TEXT("Nude_Leg");
     if (iTemp == 5)
-        return  TEXT("Prisoner_Shoes1");
+        return  TEXT("Nude_Shoes");
     else
-        return  TEXT("Prisoner_Face1");  //다 틀렸으면 그냥 얼굴 박기,,
+        return  TEXT("Nude_Face");  //다 틀렸으면 그냥 얼굴 박기,,
 }
 
 

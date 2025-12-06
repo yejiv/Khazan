@@ -9,6 +9,9 @@
 #include "Viper.h"
 #include "Khazan_GSword.h"
 #include "Sequence_Viper_CutScene.h"
+#include "ClientInstance.h"
+#include "UI_HUD.h"
+
 
 CViper_Trigger::CViper_Trigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CTrigger { pDevice, pContext }
@@ -112,6 +115,9 @@ void CViper_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
     {
+
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+
         if (m_strTriggerKey == "CutScene")
         {
             SEQ_REQ_PLAY_DESC tPlayDesc{};

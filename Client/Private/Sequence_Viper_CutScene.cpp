@@ -155,8 +155,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
             RadialDesc.iNumSamples = 16;
             RadialDesc.fAttenuation = 0.1f;
             RadialDesc.fStrength = 1.f;
-            RadialDesc.fDuration = 2.f;
-            RadialDesc.vFadeTime = _float2(0.05f, 0.25f);
+            RadialDesc.fDuration = 2.5f;
+            RadialDesc.vFadeTime = _float2(0.7f, 0.5f);
             m_pGameInstance->Start_RadialBlur(RadialDesc);
 
             m_isRoarEffect = true;
@@ -165,6 +165,7 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
 
         if (m_fTime >= 45.f)
         {
+            Start_FogTransition();
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);        
             m_isEnd = true;
         }
@@ -194,6 +195,7 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
 
         if (m_fSkipTime > 3.f && !m_isEnd)
         {
+            Start_FogTransition();
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);
             m_isEnd = true;
         }
@@ -245,6 +247,18 @@ void CSequence_Viper_CutScene::Skip_KeyInput(_float fTimeDelta)
     }
 
 
+}
+
+void CSequence_Viper_CutScene::Start_FogTransition()
+{
+    FOG_TRANSITION_DESC Desc{};
+    Desc.fDensity = 0.03f;
+    Desc.fBias = 0.95f;
+    Desc.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
+    Desc.isUseHeight = true;
+    Desc.fBaseHeight = -145.f;
+    Desc.isUseNoise = false;
+    m_pGameInstance->Start_FogTransition(3.f, Desc);
 }
 
 CSequence_Viper_CutScene* CSequence_Viper_CutScene::Create(CViper* pViper, CKhazan_GSword* pKhazan)

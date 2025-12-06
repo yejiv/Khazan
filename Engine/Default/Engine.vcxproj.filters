@@ -433,6 +433,15 @@
     <Filter Include="01.Utility\03.Component\SoftBody\Util">
       <UniqueIdentifier>{3176078f-f937-4990-afe6-b993f0f4544b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Component\ClothBody">
+      <UniqueIdentifier>{94599ad2-c22c-40c1-80bd-37fd0f19be65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\ClothBody\Child">
+      <UniqueIdentifier>{8f5ae98b-9f15-436a-9139-9aac9e28edd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\ClothBody\Root">
+      <UniqueIdentifier>{1a850bb0-79d0-4f95-9cfc-4813ea937a7b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="01.Utility\18.Decal\Map">
       <UniqueIdentifier>{dac4b490-ec59-4818-a32a-011590004b52}</UniqueIdentifier>
     </Filter>
@@ -815,6 +824,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\SoftBody_Creator.cpp">
       <Filter>01.Utility\03.Component\SoftBody\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ClothBody.cpp">
+      <Filter>01.Utility\03.Component\ClothBody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ChildBody.cpp">
+      <Filter>01.Utility\03.Component\ClothBody\Child</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RootBody.cpp">
+      <Filter>01.Utility\03.Component\ClothBody\Root</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Decal_Static.cpp">
       <Filter>01.Utility\18.Decal\Map</Filter>
@@ -1249,6 +1267,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\SoftBody.h">
       <Filter>01.Utility\03.Component\SoftBody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ClothBody.h">
+      <Filter>01.Utility\03.Component\ClothBody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ChildBody.h">
+      <Filter>01.Utility\03.Component\ClothBody\Child</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RootBody.h">
+      <Filter>01.Utility\03.Component\ClothBody\Root</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Decal_Static.h">
       <Filter>01.Utility\18.Decal\Map</Filter>

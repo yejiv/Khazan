@@ -981,6 +981,15 @@ CharacterVirtual* CGameInstance::CreateCharacterVirtual(const CharacterVirtualSe
 	return m_pJolt_Manager->CreateCharacterVirtual(inSettings, inPosition, inRotation, inUserData, pBodyInterface);
 }
 
+void CGameInstance::Add_Constraint(Constraint* pConstraint)
+{
+    return m_pJolt_Manager->Add_Constraint(pConstraint);
+}
+void CGameInstance::Remove_Constraint(Constraint* pConstraint)
+{
+    return m_pJolt_Manager->Remove_Constraint(pConstraint);
+}
+
 void CGameInstance::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter)
 {
 	m_pJolt_Manager->CharVir_Update(fTimeDelta, pCharVir, vGravity, iObjectLayer, pBodyFilter, pShapeFilter);
@@ -1666,6 +1675,21 @@ void CGameInstance::Set_Gloval_Volume(_float fVolume)
 void CGameInstance::ADD_Gloval_Volume(_float fVolume)
 {
     m_pSound_Manager->ADD_Gloval_Volume(fVolume);
+}
+
+void CGameInstance::ListenerPosSet(_vector vPos, _vector vLook, _vector vUp, _float3 vVal)
+{
+    m_pSound_Manager->ListenerPosSet(vPos, vLook, vUp, vVal);
+}
+
+void CGameInstance::PlaySoundOnce(const TCHAR* pSoundKey, _float3 vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel)
+{
+    m_pSound_Manager->PlaySoundOnce(pSoundKey, vPos, vVel, fVolume, ppOutChannel);
+}
+
+void CGameInstance::PlaySoundLoop(const TCHAR* pSoundKey, _float3 vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel)
+{
+    m_pSound_Manager->PlaySoundLoop(pSoundKey, vPos, vVel, fVolume, ppOutChannel);
 }
 
 void CGameInstance::PlaySoundOnce(const TCHAR* pSoundKey, float fVolume, FMOD_CHANNEL** ppOutChannel)

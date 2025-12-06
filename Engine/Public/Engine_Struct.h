@@ -240,6 +240,9 @@ namespace Engine
         bool            isUseHeight;
         float			fBaseHeight;
         float			fHeightDensity;
+        bool            isUseSubColor;
+        float           fSubColorStartHeight;
+        XMFLOAT4        vSubColor;
     }FOG_CONFIG;
 
     typedef struct tagOutlineConfig
