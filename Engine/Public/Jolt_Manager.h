@@ -33,6 +33,9 @@ public:
     Body* CreateAndAdd_SoftBody(const SoftBodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
     CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);
 
+    void Add_Constraint(Constraint* pConstraint);
+    void Remove_Constraint(Constraint* pConstraint);
+
     HRESULT				Set_PhysicsSystem();
     void				Set_ObjectToBP(_uint iObjectLayer, _uint iBPLayer) {
         m_pBPLayerIF->SetUp_ObjectToBP(iObjectLayer, iBPLayer);

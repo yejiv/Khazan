@@ -62,6 +62,8 @@ float4 g_vFogColor;
 float2 g_vNoiseSpeed, g_vNoiseScale;
 float g_fNoiseStrength, g_fNoiseContrast;
 float g_fFogBaseHeight, g_fFogHeightDensity;
+float g_fSubColorStartHeight;
+float4 g_vFogSubColor;
 
 // ===== Outline =====
 float g_fOutlineAlpha, g_fOutlineBias;
@@ -95,6 +97,7 @@ bool g_isEnableShadow = { true };
 bool g_isEnableSSAO = { true };
 bool g_isEnableFog = { true };
 bool g_isEnableFogNoise;
+bool g_isUseSubColor;
 bool g_isUseHeightFog;
 bool g_isEnableOutline;
 bool g_isEnableVignette;

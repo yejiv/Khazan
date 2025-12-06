@@ -181,7 +181,7 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             Desc.vColor = _float4(0.f, 0.058f, 0.117f, 1.f);
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
-            m_pGameInstance->Start_FogTransition(1.5f, Desc);            
+            m_pGameInstance->Start_FogTransition(1.5f, Desc);
         }
         else if (m_strTriggerKey == "B1_Exit")
         {
@@ -192,7 +192,13 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
             FogDesc.isUseHeight = false;
             FogDesc.isUseNoise = false;
-            m_pGameInstance->Start_FogTransition(1.5f, FogDesc);            
+            m_pGameInstance->Start_FogTransition(1.5f, FogDesc);
+        }
+        else if (m_strTriggerKey == "Feel_UnderWorld")
+        {
+            m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_TALK>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_TALK), EVENT_ANNOUNCE_TALK{ 21 });
+
+            m_isDead = true;
         }
         /*
         else if (m_strTriggerKey == "Talk_03")

@@ -4,6 +4,9 @@
 #include "Viper.h"
 #include "Body_Viper.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
+#include "UI_HUD.h"
+
 
 CAS_CutScene_Start_Viper::CAS_CutScene_Start_Viper()
 {
@@ -22,7 +25,6 @@ void CAS_CutScene_Start_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     pViper->Set_CutSceneLook(vTempLook);
     m_fTimeHelper = 0.03f;
     pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::SIT));
-    
 }
 
 void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -55,6 +57,8 @@ void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, 
         else if (m_eState == CUTSCENE_STATE::STAND)
         {
             pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneJump", false);
+            static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+
         }
     }
    
@@ -62,6 +66,7 @@ void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, 
 
 void CAS_CutScene_Start_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
 
 }
 

@@ -395,6 +395,75 @@ namespace Engine
 		return XMQuaternionNormalize(XMQuaternionRotationMatrix(R));
 	}
 
+    static _matrix MakeMatrixFromBody(JPH::Body* body)
+    {
+        JPH::RVec3 p = body->GetPosition();
+        JPH::Quat  q = body->GetRotation();
+
+        XMVECTOR pos = XMVectorSet((float)p.GetX(), (float)p.GetY(), (float)p.GetZ(), 1.f);
+        XMVECTOR rotQ = XMVectorSet(q.GetX(), q.GetY(), q.GetZ(), q.GetW());
+        XMVECTOR scl = XMVectorSet(1.f, 1.f, 1.f, 0.f);
+
+        return XMMatrixAffineTransformation(scl, XMVectorZero(), rotQ, pos);
+    }
+
+    static _float4x4 BlendLocal(
+        const XMMATRIX& animLocal,
+        const XMFLOAT4X4& physLocal,
+        float alpha)
+    {
+        XMMATRIX A = animLocal;
+        XMMATRIX P = XMLoadFloat4x4(&physLocal);
+
+        XMVECTOR sA, rA, tA;
+        XMVECTOR sP, rP, tP;
+        XMMatrixDecompose(&sA, &rA, &tA, A);
+        XMMatrixDecompose(&sP, &rP, &tP, P);
+
+        // 위치는 애니메이션 값 그대로 유지
+        XMVECTOR t = tA;
+        // 스케일도 애니 그대로 (필요하면 이건 Lerp 해도 됨)
+        XMVECTOR s = sA;
+        // 회전만 물리 쪽으로 블렌딩
+        XMVECTOR r = XMQuaternionSlerp(rA, rP, alpha);
+
+        XMMATRIX out = XMMatrixAffineTransformation(s, XMVectorZero(), r, t);
+        _float4x4 res;
+        XMStoreFloat4x4(&res, out);
+        return res;
+    }
+
+    static XMVECTOR QuaternionFromTo(XMVECTOR vFrom, XMVECTOR vTo)
+    {
+        using namespace DirectX;
+
+        vFrom = XMVector3Normalize(vFrom);
+        vTo = XMVector3Normalize(vTo);
+
+        float cosTheta = XMVectorGetX(XMVector3Dot(vFrom, vTo));
+
+        // 180도 근처: 임의의 직교 축 선택
+        if (cosTheta < -0.9999f)
+        {
+            XMVECTOR axis = XMVector3Cross(vFrom, XMVectorSet(1.f, 0.f, 0.f, 0.f));
+            if (XMVector3LengthSq(axis).m128_f32[0] < 1e-6f)
+                axis = XMVector3Cross(vFrom, XMVectorSet(0.f, 1.f, 0.f, 0.f));
+            axis = XMVector3Normalize(axis);
+            return XMQuaternionRotationAxis(axis, XM_PI);
+        }
+
+        XMVECTOR axis = XMVector3Cross(vFrom, vTo);
+        float s = sqrtf((1.0f + cosTheta) * 2.0f);
+        float invs = 1.0f / s;
+
+        return XMVectorSet(
+            axis.m128_f32[0] * invs,
+            axis.m128_f32[1] * invs,
+            axis.m128_f32[2] * invs,
+            s * 0.5f
+        );
+    }
+
 	// 카메라용(정환)
 	inline _float EaseOutQuad(_float t) { return 1.f - (1.f - t) * (1.f - t); }
 	inline _float SmoothStep(_float t) { return t * t * (3.f - 2.f * t); }

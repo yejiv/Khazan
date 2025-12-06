@@ -7,6 +7,9 @@
 #include "Body_Phase2_Viper.h"
 #include "GameInstance.h"
 #include "Core_Viper.h"
+#include "ClientInstance.h"
+#include "UI_HUD.h"
+#include "BossHp.h"
 
 CAS_CutScene_2Phase_Viper::CAS_CutScene_2Phase_Viper()
 {
@@ -16,7 +19,12 @@ CAS_CutScene_2Phase_Viper::CAS_CutScene_2Phase_Viper()
 void CAS_CutScene_2Phase_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CViper* pViper = static_cast<CViper*>(pOwner);
-    CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));    
+    CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+    CBossHp::BOSSMON_UPDATE_DESC Desc;
+    Desc.isOpen = false;
+    CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &Desc);
+
 }
 
 void CAS_CutScene_2Phase_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -77,7 +85,10 @@ void CAS_CutScene_2Phase_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner,
                 else if (m_pGameInstance->Key_Down(DIK_2))
                     ViperScene_Walk(pViper);
             }
-            pModel->Play_Animation(fTimeDelta);
+            if (pModel->Play_Animation(fTimeDelta))
+            {
+               
+            }
         }
         break;
 
@@ -142,6 +153,7 @@ void CAS_CutScene_2Phase_Viper::Change_CutSceneState(P2CUTSCENE_STATE eNextState
         CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2Cinematic_Walk", false);
         pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
         break;
     }
        

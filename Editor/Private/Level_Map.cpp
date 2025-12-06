@@ -46,6 +46,7 @@ void CLevel_Map::Update(_float fTimeDelta)
 	Select_Add_LightPoint(fTimeDelta);
 	Measure_Distance(fTimeDelta);
 	Update_MultiFix(fTimeDelta);
+    MapDecal_CleanUp();
 
 	return;
 }
@@ -385,6 +386,16 @@ void CLevel_Map::Update_MultiFix(_float fTimeDelta)
 
 		m_matParentBefore = matParent;
 	}
+}
+
+void CLevel_Map::MapDecal_CleanUp()
+{
+    if (true == m_isDecalDeleted)
+    {
+        m_pGameInstance->MapDecal_CleanUp();
+
+        m_isDecalDeleted = false;
+    }
 }
 
 HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
@@ -3378,7 +3389,9 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 
 			ImGui::Text("SKY COLOR");
 			ImGui::Text("COLOR PALHETT");
-			ImGui::ColorPicker3("##r_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorR));
+            ImGui::ColorPicker3("##r_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorR));
+            ImGui::ColorPicker3("##g_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorG));
+            ImGui::ColorPicker3("##b_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorB));
 			SEPARATOR;
 
 			ImGui::Text("MOON SIZE"); SAMELINE;
@@ -3841,10 +3854,8 @@ HRESULT CLevel_Map::Ready_Map_Decal_Window()
             {
                 if (0 == m_DecalList.size()) m_isDecalListWindow = true;
 
-                CDecal* pDecal = static_cast<CDecal*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal")));
+                CDecal_Static* pDecal = static_cast<CDecal_Static*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal")));
                 CHECK_NULLPTR(pDecal, false);
-
-                pDecal->Set_EnableDecoration(true);
 
                 pDecal->Set_Desc(m_DecalDesc);
 
@@ -3931,6 +3942,7 @@ HRESULT CLevel_Map::Ready_Map_Decal_Window()
                             {
                                 swap(m_DecalList[m_iDecalListIndex], m_DecalList.back());
                                 m_DecalList.pop_back();
+                                m_isDecalDeleted = true;
                                 break;
                             }
                             else
@@ -3974,7 +3986,7 @@ HRESULT CLevel_Map::Ready_Map_Decal_Window()
                 {
                     m_pGameInstance->Clear_GizmoObject();
 
-                    ZeroMemory(&m_DecalDesc, sizeof(DECAL_DESC));
+                    ZeroMemory(&m_DecalDesc, sizeof(STATIC_DECAL_DESC));
 
                     m_isDecalFixWindow = false;
                 } SAMELINE;
@@ -5339,10 +5351,10 @@ _bool CLevel_Map::Decals_Save_Binary()
 
         for (auto& pDecal : m_DecalList)
         {
-            DECAL_DESC DecalDesc = pDecal->Get_Desc();
+            STATIC_DECAL_DESC DecalDesc = pDecal->Get_Desc();
 
             // 2. 데칼의 구조체 저장
-            WriteFile(hFile, &DecalDesc, sizeof(DECAL_DESC), &dwByte, nullptr);
+            WriteFile(hFile, &DecalDesc, sizeof(STATIC_DECAL_DESC), &dwByte, nullptr);
 
             _float fThreshold = pDecal->Get_Threshold();
 
@@ -6138,12 +6150,12 @@ _bool CLevel_Map::Decals_Load_Binary()
 
         for (_uint i = 0; i < iDecalCnt; ++i)
         {
-            CDecal* pDecal = static_cast<CDecal*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal")));
+            CDecal_Static* pDecal = static_cast<CDecal_Static*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal")));
             CHECK_NULLPTR(pDecal, false);
 
-            DECAL_DESC DecalDesc = {};
+            STATIC_DECAL_DESC DecalDesc = {};
             // 2. 데칼의 구조체 불러오기
-            CHECK_FALSE(ReadFile(hFile, &DecalDesc, sizeof(DECAL_DESC), &dwByte, nullptr), false);
+            CHECK_FALSE(ReadFile(hFile, &DecalDesc, sizeof(STATIC_DECAL_DESC), &dwByte, nullptr), false);
             pDecal->Set_Desc(DecalDesc);
 
             _float fThreshold = {};
@@ -6160,9 +6172,7 @@ _bool CLevel_Map::Decals_Load_Binary()
             // 5. 데칼의 월드 행렬 불러오기
             CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), false);
             pDecal->Set_WorldMatrix(WorldMatrix);
-
-            pDecal->Set_EnableDecoration(true);
-
+            \
             m_DecalList.push_back(pDecal);
             m_pGameInstance->Batch_Decal(pDecal);
         }

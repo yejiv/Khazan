@@ -69,6 +69,9 @@ private:
     class CSkipButton* m_pSkipButton = { nullptr };
     class CKhazan_GSword* m_pKhazan = { nullptr };
 
+private:
+    void Start_FogTransition();
+
 public:
     static CSequence_Viper_CutScene* Create(class CViper* pViper, class CKhazan_GSword* pKhazan);
     virtual void Free() override;

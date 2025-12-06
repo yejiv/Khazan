@@ -27,17 +27,31 @@ void CAS_StingGrab_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+    CTransform* pTransform = pViper->Get_Transform();
 
     _bool isGrabbed = pBB->Get_Value<_bool>(pViper->Get_Name(), "isGrabbed");
 
 
     if (isGrabbed && !m_isGrabbed)
     {
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isP1_StingGrab_Rush", false);
         pModel->Set_Animation(59);
         m_eState = VIPERGRAB_STATE::SUCCESS;
         m_isGrabbed = true;
     }
     
+
+    if (pBB->Get_Value<_bool>(pViper->Get_Name(), "isP1_StingGrab_StepBack"))
+    {
+        pTransform->Go_Backward(fTimeDelta * 2.5f);
+    }
+
+
+    if (pBB->Get_Value<_bool>(pViper->Get_Name(), "isP1_StingGrab_Rush"))
+    {
+        pTransform->Go_Straight(fTimeDelta * 8.f);
+    }
+
 
     if (pModel->Play_Animation(fTimeDelta))
     {

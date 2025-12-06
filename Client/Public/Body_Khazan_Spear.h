@@ -196,7 +196,7 @@ private:
     HRESULT				Ready_AnimationEvent();
     HRESULT				Ready_Collider();
     HRESULT				Bind_ShaderResources();
-    HRESULT             Initialize_Equipment();
+    HRESULT             Ready_Equipment();
     void                Equip_Part(EQUIPMENTTYPE eType, const _wstring& strPartName); //파츠 갈아 입기
     void                Update_QuickRenderCache();  //빠른 랜더용 파츠모음 (모션트레일도 여기서 랜더용 파츠 갈아끼우기)
 
