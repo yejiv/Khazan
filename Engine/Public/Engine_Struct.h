@@ -240,6 +240,9 @@ namespace Engine
         bool            isUseHeight;
         float			fBaseHeight;
         float			fHeightDensity;
+        bool            isUseSubColor;
+        float           fSubColorStartHeight;
+        XMFLOAT4        vSubColor;
     }FOG_CONFIG;
 
     typedef struct tagOutlineConfig
@@ -283,6 +286,17 @@ namespace Engine
         bool                    isRandomTexture;
         unsigned int            iTextureIndex;
     }DECAL_DESC;
+
+    typedef struct tagStaticDecalDesc
+    {
+        DECALTYPE	            eType;
+        XMFLOAT3	            vPosition;
+        XMFLOAT3                vAngle;
+        XMFLOAT3	            vScale;
+        XMFLOAT3	            vColor;
+        unsigned int            iTextureIndex;
+
+    }STATIC_DECAL_DESC;
 
     typedef struct tagDistortionDesc
     {

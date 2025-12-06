@@ -10,6 +10,7 @@
 
 #include "UI_Inven.h"
 #include "UI_State.h"
+#include "UI_HUD.h"
 
 #include "UI_BladeNexus_Map.h"
 
@@ -509,7 +510,7 @@ void CUI_BladeNexus::Next_Event()
 		//m_fAccTime = 1.f;
 
         m_pGameInstance->Emit_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), { ENUM_CLASS(LEVEL::EMBARS) });
-
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
 		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 	}
 

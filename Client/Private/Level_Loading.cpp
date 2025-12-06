@@ -39,6 +39,7 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 	m_pGameInstance->Destroy_Jolt();
 	m_pGameInstance->Initialize_Jolt(ENUM_CLASS(COLLISION_LAYER::END));
     m_pGameInstance->Decal_Clear();
+    m_pGameInstance->MapDecal_Clear();
 	Ready_ObjectLayer();
 	
 	/* 현재 레벨을 구성해주기 위한 객체들을 생성한다. */
@@ -485,6 +486,7 @@ HRESULT CLevel_Loading::Ready_ObjectLayer()
     m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::CONTROLLER), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
     m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::INTERACT_OBJECT), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
     m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::CLOTH), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+    m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::CLOTHBODY), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 
 #ifdef  _DEBUG
     m_pGameInstance->Set_ObjectToBP(ENUM_CLASS(COLLISION_LAYER::TEST), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
@@ -549,6 +551,8 @@ HRESULT CLevel_Loading::Ready_ObjectLayer()
 
     m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::CLOTH), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
 
+    m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::CLOTHBODY), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
+
 #ifdef  _DEBUG
     m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::TEST), ENUM_CLASS(JOLT_BP_LAYER::NON_MOVING));
     m_pGameInstance->Set_ObjectVsBPFilter(ENUM_CLASS(COLLISION_LAYER::TEST), ENUM_CLASS(JOLT_BP_LAYER::MOVING));
@@ -587,7 +591,7 @@ HRESULT CLevel_Loading::Ready_ObjectLayer()
     m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::CONTROLLER), ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT));
     m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::CONTROLLER), ENUM_CLASS(COLLISION_LAYER::MONSTER));
 
-    m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::CLOTH), ENUM_CLASS(COLLISION_LAYER::PLAYER));
+    m_pGameInstance->Set_ObjectFilter(ENUM_CLASS(COLLISION_LAYER::CLOTH), ENUM_CLASS(COLLISION_LAYER::CLOTHBODY));
 
     // 레이캐스트 용
     m_pGameInstance->Set_ObjectLayerFilter(ENUM_CLASS(COLLISION_LAYER::MAP_STATIC), true);

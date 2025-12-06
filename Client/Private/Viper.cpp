@@ -187,7 +187,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     }
 
     m_ePhase = PHASE::PHASE1;
-    //m_ePhase = PHASE::PHASE2;
+    //  m_ePhase = PHASE::PHASE2;
 
     m_fRecoveryPerSec = 5.f;
 
@@ -205,16 +205,15 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     MeshDesc.vColor = _float4(2.353f, 1.961f, 1.569f, 1.f);
     MeshDesc.vSubColor = _float4(0.f, 0.f, 0.f, 7.843f);
 
-    /*if (m_ePhase == PHASE::PHASE1)
-    {*/
+
+    
     for (_uint i = 0; i < ENUM_CLASS(TWINBLADE::END); ++i)
         m_p1PhaseTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
-    //}
-    /*else if (m_ePhase == PHASE::PHASE2)
-    {*/
+    
+    
     for (_uint i = 0; i < ENUM_CLASS(TWINBLADE_R::END); ++i)
         m_p2PhaseTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
-    //}
+    
 
     CLineTrail::LINE_TRAIL_DESC LineDesc{};
     LineDesc.fOffset = 0.25f;
@@ -233,8 +232,10 @@ HRESULT CViper::Initialize_Clone(void* pArg)
 void CViper::Priority_Update(_float fTimeDelta)
 {
     CBlackBoard* pBB = m_pController->Get_BlackBoard();
-    if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
+
+    if (pBB->Get_Value<_bool>(m_strName, "isDetected") && !m_isUIHp)
     {
+        m_isUIHp = true;
         CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
         HPDesc.isOpen = true;
         HPDesc.pHpMaxValue = &m_fMaxHP;
@@ -328,10 +329,10 @@ void CViper::Update(_float fTimeDelta)
     }
 
     if (m_pGameInstance->Key_Down(DIK_Z))
-   {
-       m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
-       m_pCharVirCom->Set_Position(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
-   }
+    {
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
+        m_pCharVirCom->Set_Position(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
+    }
 
     __super::Update(fTimeDelta);
 
@@ -351,6 +352,8 @@ void CViper::Update(_float fTimeDelta)
             pTrail->Update(fTimeDelta);
     }
 
+    FX_2PhaseEyeTrail();
+
     for (auto& pTrail : m_pLineTrail)
         pTrail->Update(fTimeDelta);
 
@@ -358,7 +361,16 @@ void CViper::Update(_float fTimeDelta)
     //  FX_1PhaseTrail();
     //  FX_2PhaseHandTrail();
     //  FX_2PhaseSwordTrail();
-    FX_2PhaseEyeTrail();
+    // 이후 2페이즈 광전사 모드일 때부터 호출
+
+    TRAIL_CONFIG Config{};
+    Config.fLifeTime = 1.f;
+    Config.iTextureIdx = 6;
+    Config.iDivisionCount = 5;
+    Config.vColor = _float4(3.353f, 2.961f, 1.569f, 1.f);
+    Config.vSubColor = _float4(0.f, 0.f, 0.f, 0.f);
+    m_pLineTrail[ENUM_CLASS(EYE::LEFT)]->Set_TrailConfig(Config);
+    m_pLineTrail[ENUM_CLASS(EYE::RIGHT)]->Set_TrailConfig(Config);
 
    //if (m_pGameInstance->Key_Down(DIK_P))
    // {
@@ -369,6 +381,7 @@ void CViper::Update(_float fTimeDelta)
    // {
    //     m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"), tmpIdx);
    // }
+
 
     if (m_bLoopFX_Flag)
     {
@@ -641,14 +654,59 @@ HRESULT CViper::Ready_Projectiles()
 
 void CViper::Grab_Check_Begin()
 {
-    CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+    CTransform* pTargetTransform = static_cast<CTransform*>(
+        m_pTarget->Get_Component(TEXT("Com_Transform")));
     if (nullptr == pTargetTransform)
         return;
-    _matrix BoneWorld = m_pBody->Get_BoneMatrix("Bone_Wp_Hold");
 
-    _vector vGrabPosition = BoneWorld.r[3];
-    _vector vOffset = XMVectorSet(0.f, 0.f, 0.f, 0.f);    
-    pTargetTransform->Set_State(STATE::POSITION, vGrabPosition + vOffset);
+    CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
+
+    CPartObject* pTargetBody = static_cast<CPartObject*>(pTarget->Find_PartObject(TEXT("Part_Body")));
+    if (nullptr == pTargetBody)
+        return;
+
+    CModel* pTargetModel = static_cast<CModel*>(pTargetBody->Get_Component(TEXT("Com_Model")));
+    if (nullptr == pTargetModel)
+        return;
+    
+
+    // 그랩 애니메이션 실행시 위치 뼈
+    _float4x4* BoneLocal = m_pBody->Get_BoneMatrix_Ptr("Bone_Wp_Hold");
+
+    // 플레이어 명치 위치 정도 뼈
+    //Part_Body
+    _float4x4* TargetBoneLocal = pTargetModel->Get_BoneMatrix("FX_Body_ExpGained");
+
+    _matrix OwnerBoneWorld = XMLoadFloat4x4(BoneLocal) * m_pTransformCom->Get_WorldMatrix();
+    _matrix TargetBoneWorld = XMLoadFloat4x4(TargetBoneLocal) * pTargetTransform->Get_WorldMatrix();
+
+    _vector vGrabPos = OwnerBoneWorld.r[3];
+    _vector vTargetBoenPos = TargetBoneWorld.r[3];
+
+    _vector vDelta = vGrabPos - vTargetBoenPos;
+
+    _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+
+    vTargetPos += vDelta;
+  
+    pTargetTransform->Set_State(STATE::POSITION, vTargetPos);
+
+    _vector vStabLook = XMVector3Normalize(OwnerBoneWorld.r[2]);
+
+    _matrix TargetRot = XMMatrixRotationX(XMConvertToRadians(-30.f)) * XMMatrixRotationY(-30.f);
+    
+
+    _vector vTargetLook =
+        XMVector3Normalize(XMVector3TransformNormal(vStabLook, TargetRot));
+
+    _vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    _vector vRight = XMVector3Normalize(XMVector3Cross(vUp, vTargetLook));
+    vUp = XMVector3Cross(vTargetLook, vRight);
+
+    pTargetTransform->Set_State(STATE::LOOK, vTargetLook);
+    pTargetTransform->Set_State(STATE::RIGHT, vRight);
+    pTargetTransform->Set_State(STATE::UP, vUp);
+
 
 }
 
@@ -845,9 +903,6 @@ HRESULT CViper::Ready_AnimEvent()
             m_isLookAt = false;
             m_pWeapon->Set_OnAttackCollision(false);
 
-            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
-            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
-
 
         });
 
@@ -855,6 +910,9 @@ HRESULT CViper::Ready_AnimEvent()
         {
             m_isLookAt = true;
             m_pWeapon->Set_OnAttackCollision(true);
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
         });
 
     pModel->Register_Event("P1_StingSlash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -902,10 +960,36 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma region TURNATTACk
 
+
+    pModel->Register_Event("P1_TurnAttack0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision_R(true);
+
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
+        });
+
+    pModel->Register_Event("P1_TurnAttack0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+
+
     pModel->Register_Event("TrunAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
-            m_pWeapon->Set_OnAttackCollision(true);
+            m_pWeapon->Set_OnAttackCollision_R(true);
+
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
+
         });
 
     pModel->Register_Event("TrunAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -919,29 +1003,27 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma region BACKJUMPSLASH
 
+    pModel->Register_Event("P1_SlahsBackJumpAttack0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+
+        });
+
+
     pModel->Register_Event("BackJumpMovement", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
         {
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "BackJump", true);
+
         });
 
     pModel->Register_Event("BackJumpMovement", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "BackJump", false);
-        });
-
-
-    pModel->Register_Event("BackJumpAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-        {
-            m_pWeapon->Set_OnAttackCollision(true);
-
-        });
-
-    pModel->Register_Event("BackJumpAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-        {
-            // 콜라이더 끄기  
+            m_isLookAt = false;
             m_pWeapon->Set_OnAttackCollision(false);
-
         });
+
 
 #pragma endregion
 
@@ -949,6 +1031,8 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("P1_JumpStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+
             CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
             m_pCharVirCom->Jump(50.f,7.f);
@@ -967,31 +1051,124 @@ HRESULT CViper::Ready_AnimEvent()
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
             m_pCharVirCom->Start_Dive(vTargetPos,80.f);
 
-            m_pWeapon->Set_OnAttackCollision(true);
-
-
         });
 
 
     pModel->Register_Event("P1_Landing", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            _vector vOwnerPos = m_pTransformCom->Get_State(STATE::POSITION);
+            _vector vDir = vTargetPos - vOwnerPos;
+            vDir = XMVector3Normalize(vDir);
+            _float fOffset = 40.f;
+            _vector vLandPos = vTargetPos + vDir * fOffset;
+            m_pCharVirCom->Start_Dive(vTargetPos, 1.f);
+            m_pWeapon->Set_OnAttackCollision(true);
+
+        });
+
+    pModel->Register_Event("P1_LandShake", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(3.f, 1.f);
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+#pragma endregion
+
+#pragma region DEVOUR
+
+    pModel->Register_Event("Devour_Attack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pWeapon->Set_OnAttackCollision(true);
+
+        });
+
+    pModel->Register_Event("Devour_Attack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+    pModel->Register_Event("Devour_Attack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pWeapon->Set_OnAttackCollision(true);
+
+        });
+
+    pModel->Register_Event("Devour_Attack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_pWeapon->Set_OnAttackCollision(false);
 
         });
 
 
-#pragma endregion
 
-#pragma region DEVOUR
+    pModel->Register_Event("Devour_Attack3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pWeapon->Set_OnAttackCollision(true);
+
+        });
+
+    pModel->Register_Event("Devour_Attack3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+    pModel->Register_Event("Devour_Attack4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pWeapon->Set_OnAttackCollision(true);
+
+        });
+
+    pModel->Register_Event("Devour_Attack4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+    pModel->Register_Event("Devour_Impurse", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 0.5f);
+
+            CTransform* pTargetTransform = m_pTarget->Get_Transform();
+            CCreature* pDamagedTarget = static_cast<CCreature*>(m_pTarget);
+            CClientInstance::GetInstance()->Set_PlayerInput(true);
+
+            _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+            _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+
+            _vector vDir = XMVector3Normalize(vTargetPos - vPosition);
+            
+            pDamagedTarget->KnockBack(vDir, 40.f, 60.f);
+            pDamagedTarget->Take_Damage(50.f, HITREACTION::KNOCKBACK_STRONG);
+        });
+
+
+
+
+
+
 
     pModel->Register_Event("P1_SpinStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
+            m_isLookAt = true;
+
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_SpinStart", true);
         });
 
     pModel->Register_Event("P1_SpinStart", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_SpinStart", false);
+
+
+           
         });
 
 
@@ -1014,15 +1191,110 @@ HRESULT CViper::Ready_AnimEvent()
             m_fTurnSpeed = 8.f;
         });
 
+
+    pModel->Register_Event("P1_StingGrab_StepBack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 20.f;
+
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isP1_StingGrab_StepBack",true);
+
+
+        });
+
+
+    pModel->Register_Event("P1_StingGrab_StepBack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isP1_StingGrab_StepBack", false);
+
+        });
+
+    pModel->Register_Event("P1_StingGrab_Look", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
+        {
+            m_isLookAt = true;
+            m_fTurnSpeed = 20.f;
+
+
+        });
+
+
+    pModel->Register_Event("P1_StingGrab_Rush", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = false;
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isP1_StingGrab_Rush", true);
+
+        });
+
+
+    pModel->Register_Event("P1_StingGrab_Rush", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isP1_StingGrab_Rush", false);
+
+        });
+
+
+
+
+
+
     pModel->Register_Event("StingGrab_Hold", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
         {
             m_isLookAt = false;
             Grab_Check_Begin();
         });
 
+
+
+
+
+
 #pragma endregion
 
 #pragma region 5HITCombo
+
+
+
+    pModel->Register_Event("P1_ComboReady", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 0.5f);
+
+        });
+
+
+    pModel->Register_Event("P1_ComboReady_Attack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
+        });
+
+    pModel->Register_Event("P1_ComboReady_Attack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+
+        });
+
+
+    pModel->Register_Event("P1_ComboReady_Attack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+
+            m_isLookAt = true;
+            m_pWeapon->Set_OnAttackCollision(true);
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+        });
+
+    pModel->Register_Event("P1_ComboReady_Attack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision(false);
+        });
+
 
 
     pModel->Register_Event("5Hit_Slash_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
@@ -1105,7 +1377,6 @@ HRESULT CViper::Ready_AnimEvent()
             Set_WeaponOff();
         });
 #pragma endregion
-
 
 #pragma region LOOKING_CORE
 
@@ -2082,6 +2353,8 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("Devour_End_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Rot_Loop"), m_iRotFX_Idx);
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Rot_End"), m_pTransformCom->Get_State(STATE::POSITION));
+
+
         });
 
     pModel->Register_Event("Grab_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -2923,9 +3196,13 @@ void CViper::FX_2PhaseSwordTrail()
 void CViper::FX_2PhaseEyeTrail()
 {
     _vector vLeftEyePos = m_pPahse2Body->Get_BoneMatrix("Bone_eye_L").r[3];
-    _vector vRightEyePos = m_pPahse2Body->Get_BoneMatrix("Bone_eye_R").r[3];
-
+    _vector vLeftEyeRight = m_pPahse2Body->Get_BoneMatrix("Bone_eye_L").r[0];
+    vLeftEyePos += vLeftEyeRight * 5.f;
     m_pLineTrail[ENUM_CLASS(EYE::LEFT)]->Add_ControlPoint(vLeftEyePos);
+
+    _vector vRightEyePos = m_pPahse2Body->Get_BoneMatrix("Bone_eye_R").r[3];
+    _vector vRightEyeRight = m_pPahse2Body->Get_BoneMatrix("Bone_eye_R").r[0];
+    vRightEyePos += vRightEyeRight * 5.f;
     m_pLineTrail[ENUM_CLASS(EYE::RIGHT)]->Add_ControlPoint(vRightEyePos);
 }
 

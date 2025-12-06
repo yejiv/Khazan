@@ -648,6 +648,74 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
         return E_FAIL;
+
+    /* ===== Nude Set ====== */
+    /* Prototype_Component_Model_Khazan_Nude_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Nude_Arm/Nude_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Face*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Face"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Nude_Face/Nude_Face.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Hair1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair1/Nude_Hair1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Hair2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair2/Nude_Hair2.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Nude_Leg/Nude_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Nude_Shoes/Nude_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Nude_Torso/Nude_Torso.dat"))))
+        return E_FAIL;
+
+    /* ========= Thief Set ========= */
+        /* Prototype_Component_Model_Khazan_Thief_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Thief_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Thief_Arm/Thief_Arm.dat"))))
+        return E_FAIL;
+
+    ///* Prototype_Component_Model_Khazan_Thief_Face*/
+    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Thief_Face"),
+    //    CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Thief_Face/Thief_Face.dat"))))
+    //    return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Thief_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Thief_Hair/Thief_Hair.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Thief_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Thief_Leg/Thief_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Thief_Shoes/Thief_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Thief_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Thief_Torso/Thief_Torso.dat"))))
+        return E_FAIL;
+
 #pragma endregion
 
 #pragma region YETUGA
@@ -1234,6 +1302,73 @@ HRESULT CLoader::Loading_For_Crevice_Model()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
         return E_FAIL;
+
+    /* ===== Nude Set ====== */
+/* Prototype_Component_Model_Khazan_Nude_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Nude_Arm/Nude_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Face*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Face"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Nude_Face/Nude_Face.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Hair1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair1/Nude_Hair1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Hair2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair2/Nude_Hair2.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Nude_Leg/Nude_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Nude_Shoes/Nude_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Nude_Torso/Nude_Torso.dat"))))
+        return E_FAIL;
+
+    /* ========= Thief Set ========= */
+        /* Prototype_Component_Model_Khazan_Thief_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Thief_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Thief_Arm/Thief_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Face*/
+    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Thief_Face"),
+    //    CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Thief_Face/Thief_Face.dat"))))
+    //    return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Thief_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Thief_Hair/Thief_Hair.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Thief_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Thief_Leg/Thief_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Thief_Shoes/Thief_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Thief_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Thief_Torso/Thief_Torso.dat"))))
+        return E_FAIL;
 #pragma endregion
 
 	/* Prototype_Component_Model_Khazan_Sample*/
@@ -1486,6 +1621,73 @@ HRESULT CLoader::Loading_For_Embars_Model()
     /* Prototype_Component_Model_Khazan_DanJin_Hair*/
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
+        return E_FAIL;
+
+    /* ===== Nude Set ====== */
+/* Prototype_Component_Model_Khazan_Nude_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Nude_Arm/Nude_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Face*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Face"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Nude_Face/Nude_Face.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Hair1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair1/Nude_Hair1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Hair2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair2/Nude_Hair2.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Nude_Leg/Nude_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Nude_Shoes/Nude_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Nude_Torso/Nude_Torso.dat"))))
+        return E_FAIL;
+
+    /* ========= Thief Set ========= */
+        /* Prototype_Component_Model_Khazan_Thief_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Thief_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Thief_Arm/Thief_Arm.dat"))))
+        return E_FAIL;
+
+    ///* Prototype_Component_Model_Khazan_Thief_Face*/
+    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Thief_Face"),
+    //    CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Thief_Face/Thief_Face.dat"))))
+    //    return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Thief_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Thief_Hair/Thief_Hair.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Thief_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Thief_Leg/Thief_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Thief_Shoes/Thief_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Thief_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Thief_Torso/Thief_Torso.dat"))))
         return E_FAIL;
 #pragma endregion
 
@@ -2159,6 +2361,73 @@ HRESULT CLoader::Loading_For_Viper_Model()
     /* Prototype_Component_Model_Khazan_DanJin_Hair*/
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
+        return E_FAIL;
+
+    /* ===== Nude Set ====== */
+/* Prototype_Component_Model_Khazan_Nude_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Nude_Arm/Nude_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Face*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Face"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Nude_Face/Nude_Face.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Hair1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair1/Nude_Hair1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Hair2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair2/Nude_Hair2.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Nude_Leg/Nude_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Nude_Shoes/Nude_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Nude_Torso/Nude_Torso.dat"))))
+        return E_FAIL;
+
+    /* ========= Thief Set ========= */
+        /* Prototype_Component_Model_Khazan_Thief_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Thief_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Thief_Arm/Thief_Arm.dat"))))
+        return E_FAIL;
+
+    ///* Prototype_Component_Model_Khazan_Thief_Face*/
+    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Thief_Face"),
+    //    CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Thief_Face/Thief_Face.dat"))))
+    //    return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Thief_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Thief_Hair/Thief_Hair.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Thief_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Thief_Leg/Thief_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Thief_Shoes/Thief_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Thief_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Thief_Torso/Thief_Torso.dat"))))
         return E_FAIL;
 #pragma endregion
 

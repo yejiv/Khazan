@@ -31,7 +31,8 @@ CLevel_Viper::CLevel_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 }
 
 HRESULT CLevel_Viper::Initialize()
-{   
+{
+
     // 플레이어, 카메라, 트리거
 
     CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
@@ -394,7 +395,7 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
 
 		ObjectDesc.Properties = PropProperties;
 
-        CSequence_Viper_SecondPhase* pSeq = dynamic_cast<CSequence_Viper_SecondPhase*>(m_pClientInstance->Find_Sequence(TEXT("Viper_SecondPhase")));
+        //CSequence_Viper_SecondPhase* pSeq = dynamic_cast<CSequence_Viper_SecondPhase*>(m_pClientInstance->Find_Sequence(TEXT("Viper_SecondPhase")));
 
         if (wcscmp(ObjectDesc.szModelName, L"Prototype_Component_Model_WP_TDL_Bridge_Collision_004") == 0)
         {
@@ -409,7 +410,7 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
             ObeliskDesc.WorldMatrix._42 -= 400.f;
             ObeliskDesc.iIndex = iDestIndex;
             CObelisk* pObelisk = dynamic_cast<CObelisk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Obelisk"), &ObeliskDesc));
-            pSeq->Push_Obelisk(pObelisk);
+            //pSeq->Push_Obelisk(pObelisk);
             m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag, pObelisk);            
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
                 ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Obelisk"), TIME_CHANNEL::WORLD, &ObeliskDesc)))
@@ -835,7 +836,7 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, con
 
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
+            MonsterDesc.fMaxHP = 500.f;
             MonsterDesc.fMaxStamina = 100.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
@@ -976,13 +977,34 @@ HRESULT CLevel_Viper::Ready_Shader_Settings()
     m_pGameInstance->Set_ShadowDesc(ShadowDesc);
 
     // 초기 Fog
-    FOG_TRANSITION_DESC FogDesc{};
-    FogDesc.fDensity = 0.05f;
-    FogDesc.fBias = 0.9f;
-    FogDesc.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
-    FogDesc.isUseHeight = false;
-    FogDesc.isUseNoise = false;
-    m_pGameInstance->Start_FogTransition(0.f, FogDesc);
+    FOG_CONFIG FogConfig{};
+    FogConfig.eType = FOG_CONFIG::EXP;
+    FogConfig.fDensity = 0.05f;
+    FogConfig.fBias = 0.95f;
+    FogConfig.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
+    FogConfig.Noise.isEnable = false;
+    FogConfig.isUseHeight = true;
+    FogConfig.fBaseHeight = -145.f;
+    FogConfig.isUseSubColor = true;
+    FogConfig.fSubColorStartHeight = 245.f;
+    FogConfig.vSubColor = _float4(0.235f, 0.318f, 0.341f, 1.f);
+    m_pGameInstance->Set_FogConfig(FogConfig);
+
+    // 초기 Fog
+    //  FOG_CONFIG FogConfig{};
+    //  FogConfig.eType = FOG_CONFIG::EXP;
+    //  FogConfig.fDensity = 0.03f;
+    //  FogConfig.fBias = 0.95f;
+    //  FogConfig.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
+    //  FogConfig.Noise.isEnable = false;
+    //  FogConfig.isUseHeight = true;
+    //  FogConfig.fBaseHeight = -145.f;
+    //  FogConfig.isUseSubColor = true;
+    //  FogConfig.fSubColorStartHeight = 245.f;
+    //  FogConfig.vSubColor = _float4(0.235f, 0.318f, 0.341f, 1.f);
+    //  m_pGameInstance->Set_FogConfig(FogConfig);
+
+
 
     return S_OK;
 }

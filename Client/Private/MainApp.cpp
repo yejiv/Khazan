@@ -255,6 +255,11 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
         CSoftBody::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
+    /* Prototype_Component_ClothBody*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_ClothBody"),
+        CClothBody::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/* Prototype_Component_DeferredShader_VtxMesh */
@@ -355,9 +360,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 #pragma endregion
 
 #pragma region 맵 데칼
-    /* Prototype_GameObject_Prop_Trigger */
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal"),
-        CDecal::Create(m_pDevice, m_pContext)), E_FAIL);
+    /* Prototype_GameObject_Decal_Static */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal_Static"),
+        CDecal_Static::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
     /* Prototype_Component_MotionTrail */

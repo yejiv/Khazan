@@ -184,7 +184,7 @@ _float4x4* CModel::Get_BoneMatrix(const _char* pBoneName)
 
 _float4x4* CModel::Get_BoneMatrix(const _int iBoneIndex)
 {
-    if (m_Bones.size() > iBoneIndex || 0 < iBoneIndex)
+    if (m_Bones.size() <= iBoneIndex || 0 > iBoneIndex)
         return nullptr;
 
     return m_Bones[iBoneIndex]->Get_CombinedTransformationMatrixPtr();
@@ -306,6 +306,14 @@ vector<_float3> CModel::Get_VerticesPos(_uint iIndex)
 vector<_uint> CModel::Get_Indices(_uint iIndex)
 {
     return m_Meshes[iIndex]->Get_Indices();
+}
+
+CBone* CModel::Find_Bone(_int iIndex)
+{
+    if (m_Bones.size() < iIndex || iIndex < 0)
+        return nullptr;
+    
+    return m_Bones[iIndex];
 }
 
 HRESULT CModel::Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex)

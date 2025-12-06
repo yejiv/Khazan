@@ -58,6 +58,7 @@ using namespace DirectX;
 #include <Jolt/Physics/SoftBody/SoftBodyCreationSettings.h>
 #include <Jolt/Physics/SoftBody/SoftBodySharedSettings.h>
 #include <Jolt/Physics/SoftBody/SoftBodyMotionProperties.h>
+#include <Jolt/Physics/Constraints/DistanceConstraint.h>
 using namespace JPH;
 
 #include <ft2build.h>

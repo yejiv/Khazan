@@ -28,7 +28,6 @@ public:
     _vector                 Get_CoreCenter() const {return XMLoadFloat4(&m_vCoreCenterPos);}
     _vector                 Get_CoreTip();
 
-
 private:
     CCore_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CCore_Viper(const CCore_Viper& Prototype);
@@ -64,7 +63,6 @@ private:
 
     _float4x4*              m_pSocketMatrix = { nullptr };
     _float3                 m_vLocalOffset = {};
-    
     _float4                 m_vCoreCenterPos = {};
 
 public:

@@ -1,4 +1,5 @@
 #include "AS_Elamein_Guard.h"
+#include "GameInstance.h"
 
 CAS_Elamein_Guard::CAS_Elamein_Guard()
 {
@@ -33,6 +34,10 @@ void CAS_Elamein_Guard::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         {
             m_pMonData->iAnimIndex = 51;
             m_eState = COUNT;
+
+            m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.2f, 0.003f, 2.5f);
+            m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.2f, 0.003f, 2.5f);
+            m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.2f, 0.003f, 2.5f);
         }
         else if (m_fAcctime >= 3.f)
         {
@@ -69,6 +74,7 @@ void CAS_Elamein_Guard::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->KnockBack(pOwner->Get_Look(), 13.5f, 45.f);
         pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
     }
 }

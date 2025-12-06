@@ -232,7 +232,7 @@ _bool CKhazan_GS_Anim_Attack::Try_StrongAttack()
     if (!m_pModel->Check_MinAnimationTime())
         return false;
 
-    if (m_pPlayerData->fCulStamina == 0.f)
+    if (m_pPlayerData->fCulStamina <= 0.f)
         return false;
 
     m_isStrongAttack = true;
@@ -268,7 +268,7 @@ _bool CKhazan_GS_Anim_Attack::Try_ChageStrongAttack()
     }
 
     /* 스태미나 검사  */
-    if (m_pPlayerData->fCulStamina == 0.f)
+    if (m_pPlayerData->fCulStamina <= 0.f)
         return false;
 
     /* 차징 스타트  */
@@ -336,7 +336,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SprintAttack()
         return false;
 
     /* 스태미나 검사  */
-    if (m_pPlayerData->fCulStamina == 0.f)
+    if (m_pPlayerData->fCulStamina <= 0.f)
         return false;
 
     /* 차징 스타트  */
@@ -372,7 +372,7 @@ _bool CKhazan_GS_Anim_Attack::Try_DodgeAttack(_uint iDir)
         return false;
 
     /* 스태미나 검사  */
-    if (m_pPlayerData->fCulStamina == 0.f)
+    if (m_pPlayerData->fCulStamina <= 0.f)
         return false;
 
     /* 차징 스타트  */
@@ -447,6 +447,9 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
     if (!m_pModel->Check_MinAnimationTime())
         return false;
 
+    if (m_isSkilling)
+        return false;
+
     /* 임시 */
     m_pPlayerData->fCulDoggedness = 100.f;
    // m_pPlayerData->fCulStamina = 10000.f;
@@ -456,7 +459,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
     /* 숨통끊기 */
     if (checkSkill(GS_SKILL::BREATHTAKING))
     {
-        if (m_pPlayerData->fCulStamina == 0.f)
+        if (m_pPlayerData->fCulStamina <= 0.f)
             return false;
 
         Clear_All();
@@ -471,7 +474,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
     /* 숨통 끊기 :  태동 */
     else if (checkSkill(GS_SKILL::BREATHTAKING_EMBRYONIC))
     {
-        if (m_pPlayerData->fCulStamina == 0.f)
+        if (m_pPlayerData->fCulStamina <= 0.f)
             return false;
 
         Clear_All();
@@ -486,7 +489,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
     /* 숨통끊기 : 선혈 */
     else if (checkSkill(GS_SKILL::BREATHTAKING_BLOODSHED))
     {
-        if (m_pPlayerData->fCulStamina == 0.f)
+        if (m_pPlayerData->fCulStamina <= 0.f)
             return false;
 
         Clear_All();
@@ -502,7 +505,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
     /* 거인 사냥 */
     else if (checkSkill(GS_SKILL::GIANTHUNT))
     {
-        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina == 0.f)
+        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina <= 0.f)
             return false;
 
         Clear_All();
@@ -518,7 +521,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
     /* 귀신 : 어둠의 그림자 */
     else if (checkSkill(GS_SKILL::PHANTOM_SHADOWOFDARKNESS))
     {
-        if (m_pPlayerData->fCulDoggedness < 2.f || m_pPlayerData->fCulStamina == 0.f)
+        if (m_pPlayerData->fCulDoggedness < 2.f || m_pPlayerData->fCulStamina <= 0.f)
             return false;
 
         Clear_All();
@@ -533,7 +536,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
     /* 정면 돌파  */
     else if (checkSkill(GS_SKILL::BREAK_THROUGH))
     {
-        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina == 0.f)
+        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina <= 0.f)
             return false;
 
         Clear_All();
@@ -549,7 +552,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
     /* 거대한 포효 */
     else if (checkSkill(GS_SKILL::WARCRY))
     {
-        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina == 0.f)
+        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina <= 0.f)
             return false;
 
         Clear_All();
@@ -566,7 +569,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
     /* 내재된 분노  */
     else if (checkSkill(GS_SKILL::INNER_FURY))
     {
-        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina == 0.f)
+        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina <= 0.f)
             return false;
 
         Clear_All();
@@ -581,7 +584,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
 
     m_isAttacking = true;
     m_isSkilling = true;
-
+    cout << " ========= [Try_SkillAttack]      m_isSkilling = true =============  " << endl;
     /* 콤보 리셋*/
     m_iCurrentCombo = 0;
     m_isFastCombo = false;
@@ -597,55 +600,58 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
 
 _bool CKhazan_GS_Anim_Attack::Reserve_SkillAttack(_uint iSkill)
 {
+    if (m_isSkilling)
+        return false;
+
     /* 스태미나 또는 투지 부족하면 예약 x  */
     auto checkSkill = [&](const _uint whatSkill) {return  m_pClientInstance->Check_Skill(whatSkill) && (iSkill & whatSkill); };
 
     /* 거센 기세 */
     if (checkSkill(GS_SKILL::BREATHTAKING))
     {
-        if (m_pPlayerData->fCulStamina == 0.f)return false;
+        if (m_pPlayerData->fCulStamina <= 0.f)return false;
     }
 
     /* 숨통 끊기 :  태동 */
     else if (checkSkill(GS_SKILL::BREATHTAKING_EMBRYONIC))
     {
-        if (m_pPlayerData->fCulStamina == 0.f)   return  false;
+        if (m_pPlayerData->fCulStamina <= 0.f)   return  false;
     }
 
     /* 숨통끊기 : 선혈 */
     else if (checkSkill(GS_SKILL::BREATHTAKING_BLOODSHED))
     {
-        if (m_pPlayerData->fCulStamina == 0.f) return false;
+        if (m_pPlayerData->fCulStamina <= 0.f) return false;
     }
 
     /* 거인 사냥 */
     else if (checkSkill(GS_SKILL::GIANTHUNT))
     {
-        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina == 0.f)   return false;
+        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina <= 0.f)   return false;
     }
 
     /* 귀신 : 어둠의 그림자 */
     else if (checkSkill(GS_SKILL::PHANTOM_SHADOWOFDARKNESS))
     {
-        if (m_pPlayerData->fCulDoggedness < 2.f || m_pPlayerData->fCulStamina == 0.f)  return false;
+        if (m_pPlayerData->fCulDoggedness < 2.f || m_pPlayerData->fCulStamina <= 0.f)  return false;
     }
 
     /* 정면 돌파  */
     else if (checkSkill(GS_SKILL::BREAK_THROUGH))
     {
-        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina == 0.f) return false;
+        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina <= 0.f) return false;
     }
 
     /* 거대한 포효 */
     else if (checkSkill(GS_SKILL::WARCRY))
     {
-        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina == 0.f)  return false;
+        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina <= 0.f)  return false;
     }
 
     /* 내재된 분노  */
     else if (checkSkill(GS_SKILL::INNER_FURY))
     {
-        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina == 0.f)  return false;
+        if (m_pPlayerData->fCulDoggedness < 1.f || m_pPlayerData->fCulStamina <= 0.f)  return false;
     }
 
     m_isReserveSkill = true;
@@ -694,7 +700,6 @@ void CKhazan_GS_Anim_Attack::Clear_Skill()
 
 void CKhazan_GS_Anim_Attack::Clear_All()
 {
-    //cout << "CKhazan_GS_Anim_Attack::Clear_All() " << endl;
 
     m_isSkilling = { false };
     m_isAttacking = { false };
@@ -752,6 +757,8 @@ void CKhazan_GS_Anim_Attack::Clear_All()
         
         , false
     );
+    cout << " Skill  Clear_All " << endl;
+
 }
 
 _bool CKhazan_GS_Anim_Attack::Is_PossibleBreathtaking()
