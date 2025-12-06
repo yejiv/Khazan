@@ -48,7 +48,7 @@ void CDestructible_Prop::Late_Update(_float fTimeDelta)
 
 HRESULT CDestructible_Prop::Render()
 {
-    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources ÇÔ¼ö E_FAIL"), E_FAIL);
+    CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources í•¨ìˆ˜ E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -95,9 +95,9 @@ HRESULT CDestructible_Prop::Ready_Components(void* pArg)
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
-    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("LEVEL ¾È³ÖÀ½"), E_FAIL);
+    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("LEVEL ì•ˆë„£ìŒ"), E_FAIL);
 
-    // °³º° ½¦ÀÌ´õ »ı¼ºÇÒÁö °í¹Î
+    // ê°œë³„ ì‰ì´ë” ìƒì„±í• ì§€ ê³ ë¯¼
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr), E_FAIL);
 
