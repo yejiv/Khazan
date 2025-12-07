@@ -186,8 +186,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
     }
 
-    m_ePhase = PHASE::PHASE1;
-    //  m_ePhase = PHASE::PHASE2;
+    //m_ePhase = PHASE::PHASE1;
+    m_ePhase = PHASE::PHASE2;
 
     m_fRecoveryPerSec = 5.f;
 
@@ -263,6 +263,12 @@ void CViper::Priority_Update(_float fTimeDelta)
 
     for (auto& pTrail : m_pLineTrail)
         pTrail->Priority_Update(fTimeDelta);
+
+
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
+    {
+        m_isGhost = !m_isGhost;
+    }
 }
 
 void CViper::Update(_float fTimeDelta)
@@ -1460,6 +1466,7 @@ HRESULT CViper::Ready_AnimEvent()
         {
             // 바디 오른손 공격 콜라이더 ON
             m_pPahse2Body->Set_OnAttackCollision(true);
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
         });
 
     pP2Model->Register_Event("HandStomp_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -1477,11 +1484,13 @@ HRESULT CViper::Ready_AnimEvent()
         {
             m_isLookAt = true;
             m_fTurnSpeed = 10.f;
+
+
         });
 
-    pP2Model->Register_Event("HandStompStr_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+    pP2Model->Register_Event("P2_StompStr_Slow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-           
+            m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.01f, 0.05f, 1.f);
         });
 
 
@@ -1489,6 +1498,8 @@ HRESULT CViper::Ready_AnimEvent()
         {
             // 바디 오른손 공격 콜라이더 ON
             m_pPahse2Body->Set_OnAttackCollision(true);
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+
 
         });
 
@@ -1704,7 +1715,7 @@ HRESULT CViper::Ready_AnimEvent()
     pP2Model->Register_Event("FakeRunAttackLook", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             
-            m_isGhost = false;
+            //m_isGhost = false;
         });
 
 
@@ -1744,6 +1755,75 @@ HRESULT CViper::Ready_AnimEvent()
             m_pP2Weapon->Set_OnAttackCollision(false);
 
         });
+
+    //////
+
+    pP2Model->Register_Event("FakeAttac_Movement1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 무기 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 30.f;
+            m_isGhost = true;
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName,"isFakeAttac_Movement1",true);
+
+        });
+
+    pP2Model->Register_Event("FakeAttac_Movement1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 무기 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+            //m_isGhost = false;
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isFakeAttac_Movement1", false);
+
+        });
+
+
+    pP2Model->Register_Event("FakeAttac_Movement2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 무기 공격 콜라이더 OFF
+            m_isLookAt = true;
+            m_fTurnSpeed = 30.f;
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "FakeAttac_Movement2", true);
+
+
+
+        });
+
+    pP2Model->Register_Event("FakeAttac_Movement2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 무기 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "FakeAttac_Movement2", false);
+            m_fTurnSpeed = 8.f;
+
+
+        });
+
+
+    pP2Model->Register_Event("FakeAttac_Movement3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            // 무기 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "FakeAttac_Movement3", true);
+
+
+        });
+
+    pP2Model->Register_Event("FakeAttac_Movement3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            // 무기 공격 콜라이더 OFF
+            m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
+
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "FakeAttac_Movement3", false);
+
+        });
+
+
+
+
 
 
 
@@ -1877,6 +1957,7 @@ HRESULT CViper::Ready_AnimEvent()
         {
             m_isLookAt = true;
             m_fTurnSpeed = 10.f;
+
         });
 
     pP2Model->Register_Event("SlashStompLook3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -1890,6 +1971,8 @@ HRESULT CViper::Ready_AnimEvent()
             m_pP2Weapon->Set_OnAttackCollision(true);
             _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
             m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+
 
         });
 
@@ -1905,7 +1988,6 @@ HRESULT CViper::Ready_AnimEvent()
 
 
 #pragma endregion
-
 
 #pragma region BACKJUMP_1
 
@@ -2132,7 +2214,6 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma endregion
 
-
 #pragma region P2_VIPER_DASH_DRIFT
 
     pP2Model->Register_Event("DashDrift_Pause", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
@@ -2156,8 +2237,6 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma endregion
 
-
-
 #pragma region P2_SWINGCOMBO
     pP2Model->Register_Event("P2_SideJumpR_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
         {
@@ -2177,6 +2256,7 @@ HRESULT CViper::Ready_AnimEvent()
 
 
         });
+
     pP2Model->Register_Event("SwingCombo_Attack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
         {
             m_isLookAt = false;
