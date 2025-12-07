@@ -43,7 +43,7 @@ void CUI_Announce_MapName::Update(_float fTimeDelta)
 
 void CUI_Announce_MapName::Late_Update(_float fTimeDelta)
 {
-    if (MAP_TYPE::HEINMACH == m_eAnnounce_Type)
+    if (MAP_TYPE::HEINMACH == m_eAnnounce_Type || MAP_TYPE::EMBARS == m_eAnnounce_Type)
     {
         if (m_fAccTime >= 0.f)
         {
@@ -152,6 +152,24 @@ void CUI_Announce_MapName::Setting_Text(const EVENT_ANNOUNCE_MAPNAME& e)
         m_iDissolveTexPass = 3;
 		m_isDissovle = e.isDissovle;
 	}
+    else if (MAP_TYPE::EMBARS == eType)
+    {
+        m_iPivotY = 180.f;
+        m_fFadeTime = e.fFadeOutTime;
+        m_fFadeDuration = e.fFadeOutTime;
+        m_fAccTime = e.fTime;
+
+        m_iTexPass = 1;
+        m_iShaderPass = 1;
+        m_fDissolveTime = 1.f;
+        m_fAlpha = 1.f;
+        m_wstrText = TEXT("EMBARS");
+        m_wstrTexttag = TEXT("Blade_Bold_250");
+        m_fTexAspect = { 720.f / 100.f };
+        m_fDissovleAspect = { 256.f / 68.f };
+        m_iDissolveTexPass = 0;
+        m_isDissovle = e.isDissovle;
+    }
     else if (MAP_TYPE::DEFAULT == eType)
     {
         m_iPivotY = -300.f;

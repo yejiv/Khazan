@@ -13,6 +13,14 @@ CCreature::CCreature(const CCreature& Prototype)
 }
 
 
+FMOD_CHANNEL** CCreature::Get_SoundChannel(_int iIndex)
+{
+    if (m_pChannel.size() <= iIndex)
+        m_pChannel.resize(iIndex + 1, nullptr);
+
+    return &m_pChannel[iIndex];
+}
+
 void CCreature::KnockBack(_vector vDir, _float fPower, _float fLoss)
 {
    // m_pCharVirCom->Set_VelocityPower(vDir,fPower,fLoss);

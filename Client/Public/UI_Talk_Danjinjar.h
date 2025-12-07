@@ -54,6 +54,7 @@ private:
     
     _wstring                        m_wstrFullText = {};
     _wstring                        m_wstrCulText = {};
+    _wstring                        m_wstrSound = {};
     _float                          m_fTalktime = {};
 
     _int                            m_iNextEvent = {};

@@ -47,7 +47,9 @@ public:
     void    Clear_All();
 
 	_bool	Is_Attacking() const { return m_isAttacking; }
-    _bool   Is_FastAttacking() const { return m_isFastCombo; }
+    _bool   Is_FastCombo() const { return m_isFastCombo; }
+    _bool   Is_StrongCombo() const { return m_isStrongCombo; }
+    _bool   Is_StrongCharge() const { return m_isStrongCharge; }
     _bool   Is_Skilling() const { return m_isSkilling; }
 	_bool	Can_NextCombo() const { return m_isCanNextCombo; }
     _bool   Is_Reserve() const { return m_isReserve; }
@@ -72,8 +74,8 @@ private:
 	_bool			m_isFastCombo = { false };
 	_bool			m_isStrongCombo = { false };
 	_bool			m_isStrongCharge = { false };
-	const _float	m_fFastAttackComboPossibleMaxFrame = { 30.f };
-	const _float	m_fStrongAttackComboPossibleMaxFrame = { 30.f };
+	const _float	m_fFastAttackComboPossibleMaxFrame = { 35.f };
+	const _float	m_fStrongAttackComboPossibleMaxFrame = { 35.f };
 
     _bool           m_isAutoComboBrutal = { false };
 

@@ -16,6 +16,8 @@ void CAS_Halberd_Dead::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_pMonData->iAnimIndex = 30;
     m_eState = DIE;
 
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_die_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0));
+
 }
 
 void CAS_Halberd_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

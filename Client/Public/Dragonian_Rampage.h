@@ -13,7 +13,7 @@ NS_BEGIN(Client)
 class CDragonian_Rampage final : public CMonster
 {
 public:
-    enum class MONSTATE { ATTACK_DEFAULT, ATTACK_BACK, ATTACK_RUSH, DEAD, GRORRY, BRUTAL, DAMAGE, TURN, LOCKON, SLEEP, WALK, PAGE2, END };
+    enum class MONSTATE { ATTACK_DEFAULT, ATTACK_BACK, ATTACK_RUSH, DEAD, GRORRY, BRUTAL, DAMAGE, TURN, LOCKON, SLEEP, WALK, END };
     enum class ATTACKSTATE { DEFAULT, RUSH, BACK, END};
     enum class ATTACK_BODY : _uint { HAND_L = 1 << 0, HAND_R = 1 << 1, TAIL = 1 << 2, END = 1 << 3 };
     enum class CLAW { LEFT_1, LEFT_2, LEFT_3, RIGHT_1, RIGHT_2, RIGHT_3, END };
@@ -35,7 +35,6 @@ public:
         _float4             fEdgeColor = {};
         //BT 판단용 변수
         _bool               isDamage = { false };
-        _bool               is2Page = { false };
         _bool               isPageChange = { false };
         _bool               isLockOn = { false };
         _bool               isWallCrushed = { false };
@@ -159,6 +158,8 @@ private:
     void                            Update_MeshTrail_R();
     void                            Update_MeshTrail_L();
 
+    void                            Move_Sound();
+    void                            Run_Sound();
 public:
     static CDragonian_Rampage*      Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;
