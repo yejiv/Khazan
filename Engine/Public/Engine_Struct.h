@@ -773,6 +773,7 @@ namespace Engine
         class CGameObject* pGameObject = nullptr;
         unsigned int iObjectLayer;
         wstring strName;
+        bool isForceVaildation = false;
         void* pInfo = nullptr;
     }COLLISION_DESC;
 
