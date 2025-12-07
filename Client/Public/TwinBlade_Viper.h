@@ -66,6 +66,7 @@ private:
     HRESULT					Ready_Components();
     HRESULT                 Ready_Collision();
     HRESULT					Bind_ShaderResources();
+    HRESULT                 Ready_Effect();
 
 private:
     class CViper*           m_pOwner = { nullptr };
@@ -100,6 +101,9 @@ private:
 
     COLLISION_DESC          m_tRightBladeDesc = {};
     COLLISION_DESC          m_tLeftBladeDesc = {};
+
+private:
+    class                   CEffect_Prefab* m_pEffect[2];
 
 public:
     static CTwinBlade_Viper*    Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

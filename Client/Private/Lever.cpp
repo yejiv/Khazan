@@ -305,13 +305,15 @@ void CLever::Animation_Update(_float fTimeDelta)
 
             // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("labber"), m_pTransformCom->Get_WorldMatrix(),m_pTransformCom->Get_State(STATE::POSITION));
+
         }
         if (ANIM_STATE::IDLE2 == m_eAnimState)
         {
             // 한번만 시행
             if (EVENT_TYPE::GATE_GEAR0 == m_eEventType || EVENT_TYPE::GATE_GEAR1 == m_eEventType)
             {
-
+                int a = 0;
             }
             else
             {

@@ -100,6 +100,9 @@ private:
     _uint m_iSkipEventID = { 0 };
 
 private:
+    class CEffect_Prefab* m_pEffect = { nullptr };
+
+private:
     void Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4 vTargetPos, _float fDuration);
 
 private:
@@ -107,6 +110,7 @@ private:
     virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
     HRESULT Ready_PartObjects(void* pArg);
     HRESULT Ready_Collision(void* pArg);
+    HRESULT Ready_Effect();
 
     void Animation_Update(_float fTimeDelta);
     void Animation_Change(_float fTimeDelta);
