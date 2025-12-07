@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 #include "Monster.h"
 
 NS_BEGIN(Client)
@@ -23,6 +23,8 @@ public:
     class CBody_Cinematic_Viper*    Get_Cinematic_Body() const { return m_pCinematicBody; }
     class CBody_Phase2_Viper*       Get_P2Body() const { return m_pPahse2Body; }
     class CCore_Viper*              Get_Core() { return m_pCore; }
+
+    void                            Set_HPUI(_bool isToggle) { m_isUIHp = isToggle; };
 
     virtual _float4*                Get_LockOnPosition();
     PHASE                           Get_Phase() const { return m_ePhase; }
