@@ -19,6 +19,8 @@ void CAS_Elamein_Dodge::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 1.f, 0.003f, 2.1f);
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 1.f, 0.003f, 2.1f);
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 1.f, 0.003f, 2.1f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_dodgel_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(1), 3.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_dodge_a_01 (Korean(KR)).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0), 3.f);
     }
     else
     {
@@ -26,8 +28,9 @@ void CAS_Elamein_Dodge::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.8f, 0.003f, 2.5f);
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.8f, 0.003f, 2.5f);
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.8f, 0.003f, 2.5f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_greatguard_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(1), 3.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_dodge_a_01 (Korean(KR)).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0), 3.f);
     }
-
     m_pMonData->fDodgeCool = 10.5f;
     m_pMonData->isAnimFinash = false;
 }
