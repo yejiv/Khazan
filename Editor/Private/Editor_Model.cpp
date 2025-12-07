@@ -920,7 +920,7 @@ void CEditor_Model::Update_DAT_From_JSON(string& strPath)
 
     // 파일 경로 생성
     string strDatPath = strDirectory + strFileName + ".dat";
-    string strAnimJsonPath = strDirectory + strFileName + "_Anim.json";
+    string strAnimJsonPath = strDirectory + strFileName + "Summary_Anim.json";
     string strMaterialJsonPath = strDirectory + strFileName + "_Material.json";
 
     // .dat 파일 존재 확인
