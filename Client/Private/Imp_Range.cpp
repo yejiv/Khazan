@@ -86,7 +86,7 @@ void CImp_Range::Update(_float fTimeDelta)
             if (nullptr == pModel)
                 return;
             _float fRatio = pModel->MakeRatio();
-            Look_Target_Lerp(fTimeDelta, fRatio, 3.f);
+            Look_Target_Lerp(fTimeDelta, fRatio, 10.f);
         }
     }
   
@@ -277,6 +277,7 @@ HRESULT CImp_Range::Ready_AnimEvent()
 
 
     pModel->Register_Event("CastSpell3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = true;
         Cast_MagicBall(2);
         });
     pModel->Register_Event("CastSpell3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -287,6 +288,7 @@ HRESULT CImp_Range::Ready_AnimEvent()
         });
 
     pModel->Register_Event("ShotSpell3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = false;
         Shoot_MagicBall(2);
         });
 
@@ -297,6 +299,7 @@ HRESULT CImp_Range::Ready_AnimEvent()
 
 #pragma region Boomarang
     pModel->Register_Event("CastBoomarang", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        
         Cast_Boomarang();
         });
     pModel->Register_Event("HoldBoomarang", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {

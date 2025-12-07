@@ -64,7 +64,7 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pCharVirCom->Set_Position(XMVectorSet(537.354f, 18.684f, 221.961f, 1.f));
+    //m_pCharVirCom->Set_Position(XMVectorSet(537.354f, 18.684f, 221.961f, 1.f));
 
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
