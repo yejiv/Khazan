@@ -44,10 +44,10 @@ HRESULT CChildBody::Initialize(CHILD_BODY_DESC* pDesc)
 
     m_eClothType = pDesc->eType;
 
-    if (FAILED(Ready_Body()))
+    if (FAILED(Ready_Body(pDesc)))
         return E_FAIL;
 
-    if (FAILED(Ready_Child()))
+    if (FAILED(Ready_Child(pDesc)))
         return E_FAIL;
 
     _matrix restLocal = m_pBone->Get_TransformationMatrix();
@@ -79,7 +79,9 @@ void CChildBody::Priority_Update(_float fTimeDelta)
 
 void CChildBody::Update(_float fTimeDelta)
 {
+    Apply_RootInertia(fTimeDelta);
     Type_Update(fTimeDelta);
+    ClampToCharacter();
 }
 
 void CChildBody::Late_Update(_float fAlpha)
@@ -101,7 +103,7 @@ void CChildBody::Late_Update(_float fAlpha)
 
 void CChildBody::ApplyToBones(_float fAlpha)
 {
-    if (!m_pBody)
+    if (!m_pBody || !m_pOwnerTransform)
         return;
 
     const _int parentIndex = m_pBone->Get_ParentBoneIndex();
@@ -112,11 +114,13 @@ void CChildBody::ApplyToBones(_float fAlpha)
     if (!pParentBone)
         return;
 
+    // 부모 뼈 월드
     _matrix parentCombined = pParentBone->Get_CombinedTransformationMatrix();
     _matrix parentWorld = parentCombined * m_pOwnerTransform->Get_WorldMatrix();
     _matrix invParentWorld = XMMatrixInverse(nullptr, parentWorld);
 
-    RVec3 bodyPosR = m_pBodyInterface->GetCenterOfMassPosition(m_BodyID);
+    // 물리 바디 월드 위치
+    RVec3  bodyPosR = m_pBodyInterface->GetCenterOfMassPosition(m_BodyID);
     _vector bodyWorldPos = XMVectorSet(
         (float)bodyPosR.GetX(),
         (float)bodyPosR.GetY(),
@@ -124,19 +128,19 @@ void CChildBody::ApplyToBones(_float fAlpha)
         1.f
     );
 
+    // 부모 기준 로컬 위치로 변환
     _vector physLocalPos = XMVector3TransformCoord(bodyWorldPos, invParentWorld);
 
-    // 기준 로컬 포즈
+    // 기준 로컬 포즈 (rest pose)
     _vector tRest = XMLoadFloat3(&m_vRestLocalPos);
     _vector rRest = XMLoadFloat4(&m_vRestLocalRot);
 
     _vector delta = physLocalPos - tRest;
 
-    
-    // ========= 3-1. 위/아래 분리 =========
+    // ========= 위/아래, 수평 분리 =========
     XMVECTOR up = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-    XMVECTOR vertical = XMVector3Dot(delta, up) * up;   // Y 방향
-    XMVECTOR horizontal = delta - vertical;               // XZ 방향
+    XMVECTOR vertical = XMVector3Dot(delta, up) * up; // Y
+    XMVECTOR horizontal = delta - vertical;            // XZ
 
     float vLen = XMVectorGetX(XMVector3Dot(vertical, up)); // +면 위, -면 아래
 
@@ -146,39 +150,44 @@ void CChildBody::ApplyToBones(_float fAlpha)
 
     if (m_eClothType == CLOTHTYPE::SKIRT)
     {
-        maxHoriz = 0.35f;  // 치마는 많이 퍼지지 않게
+        maxHoriz = 0.35f;  // 치마는 많이 안 퍼지게
         verticalUpScale = 0.3f;   // 위로는 30%만
-        baseSagPerDepth = 0.03f;  // 3cm씩 아래로
+        baseSagPerDepth = 0.03f;  // depth당 3cm 처짐
     }
     else // CAPE
     {
-        maxHoriz = 0.6f;   // 망토는 더 퍼져도 됨
+        maxHoriz = 0.6f;   // 망토는 조금 더 많이 퍼져도 됨
         verticalUpScale = 0.7f;   // 위로도 꽤 움직이게
         baseSagPerDepth = 0.02f;  // 너무 축 늘어지지 않게
     }
 
+    // 위로 튀는 건 scale 줄여서 눌러줌
     XMVECTOR verticalClamped;
     if (vLen > 0.f)
         verticalClamped = vertical * verticalUpScale;
     else
         verticalClamped = vertical;
 
+    // 수평 퍼짐 길이 제한
     float horizLen = XMVectorGetX(XMVector3Length(horizontal));
     if (horizLen > maxHoriz && horizLen > 1e-6f)
         horizontal = horizontal * (maxHoriz / horizLen);
 
     delta = horizontal + verticalClamped;
 
+    // depth에 따라 영향도 조절 (점점 더 많이 흔들리게)
     float depthFactor = 0.4f + 0.3f * (float)m_iDepth;
     if (depthFactor > 1.f) depthFactor = 1.f;
 
     float finalAlpha = fAlpha * depthFactor;
 
+    // depth에 따른 기본 처짐
     float sag = baseSagPerDepth * (float)m_iDepth;
     XMVECTOR sagOffset = XMVectorSet(0.f, -sag, 0.f, 0.f);
 
     XMVECTOR finalPos = tRest + delta * finalAlpha + sagOffset;
 
+    // scale은 1 유지, 회전은 rest 기준
     XMVECTOR sRest = XMVectorSet(1.f, 1.f, 1.f, 0.f);
     XMMATRIX finalLocalM = XMMatrixAffineTransformation(
         sRest,
@@ -201,46 +210,203 @@ void CChildBody::Type_Update(_float fTimeDelta)
 
 void CChildBody::Cape_Update(_float fTimeDelta)
 {
-    if (!m_pBody || !m_pParentBody || !m_pRootBody)
+    if (!m_pBody || !m_pParentBody || !m_pRootBody || !m_pOwnerTransform)
         return;
 
+    // === 캐릭터 선속도 ===
     Vec3 charVel = m_pRootBody->GetLinearVelocity();
     Vec3 horizVel(charVel.GetX(), 0.f, charVel.GetZ());
     float speed = horizVel.Length();
 
+    // 캐릭터 기준 방향 벡터
     Vec3 charForward = LoadVec3(m_pOwnerTransform->Get_State(STATE::LOOK));
     charForward.SetY(0.f);
     charForward = charForward.Normalized();
 
-    // --- 1) 전진 → 뒤로 바람 ---
+    Vec3 charRight = LoadVec3(m_pOwnerTransform->Get_State(STATE::RIGHT));
+    charRight.SetY(0.f);
+    charRight = charRight.Normalized();
+
+    // depth에 따라 영향도 조금 조절 (꼬리일수록 더 많이 펄럭)
+    float depthFactor = 0.5f + 0.1f * (float)m_iDepth;
+    if (depthFactor > 1.f) depthFactor = 1.f;
+
+    // 누적 force
+    Vec3 totalForce = Vec3::sZero();
+
+    // === 1) 전진 속도 → 뒤로 젖혀지는 "바람" 효과 ===
     if (speed > 0.1f)
     {
         horizVel /= speed;
-        float dirDot = horizVel.Dot(charForward);
-        if (dirDot > 0.1f)
+        float dirDot = horizVel.Dot(charForward);   // 1 = 정면 전진, 0 = 옆, 음수 = 후진
+        dirDot = clamp(dirDot, 0.f, 1.f);           // 전진일 때만 사용
+
+        float maxConsiderSpeed = 8.0f;
+        float sp01 = min(speed / maxConsiderSpeed, 1.f);
+
+        float windStrength = 8.0f; // 기본 강도
+        float finalScale = windStrength * dirDot * sp01 * depthFactor;
+
+        if (finalScale > 0.0f)
         {
-            Vec3 windDir = -charForward;
-            float windStrength = 20.0f;
-            Vec3 force = windDir * (windStrength * dirDot);
-            m_pBodyInterface->AddForce(m_BodyID, force);
+            Vec3 windDir = -charForward; // 전진할수록 뒤로 젖혀짐
+            totalForce += windDir * finalScale;
         }
     }
 
-    // --- 2) 회전 속도 → 옆으로 스윙 (원하면) ---
-    float yawVel = m_pRootBody->GetAngularVelocity().GetY(); // 이런 함수 하나 더 만들어도 좋고
+    // === 2) RootBody yaw 회전 속도 → 옆으로 휘날리는 효과 ===
+    float yawVel = m_pRootBody->GetAngularVelocity().GetY();
     if (fabsf(yawVel) > 0.1f)
     {
-        Vec3 right = LoadVec3(m_pOwnerTransform->Get_State(STATE::RIGHT));
-        right.SetY(0.f);
-        right = right.Normalized();
+        float maxYaw = 5.0f;
+        float yaw01 = min(fabsf(yawVel) / maxYaw, 1.f);
 
-        float swingStrength = 10.0f;
-        Vec3 sideForce = right * (swingStrength * yawVel);
-        m_pBodyInterface->AddForce(m_BodyID, sideForce);
+        float k_yaw = 5.0f * depthFactor; // 회전 강도 (꼬리쪽이 더 크게 반응)
+
+        // 회전 방향에 따라 반대쪽으로 "쓸린다"는 느낌
+        Vec3 sideDir = (yawVel > 0.f) ? -charRight : charRight;
+        Vec3 yawForce = sideDir * (k_yaw * yaw01);
+
+        totalForce += yawForce;
+    }
+
+    // === 3) Force 적용 ===
+    if (!totalForce.IsNearZero())
+    {
+        // 너무 과한 force 방지용 클램프
+        float maxForce = 80.0f;
+        float fLen = totalForce.Length();
+        if (fLen > maxForce)
+            totalForce *= (maxForce / fLen);
+
+        m_pBodyInterface->AddForce(m_BodyID, totalForce);
+    }
+
+    // === 4) 망토 속도 상한 ===
+    Vec3 vel = m_pBodyInterface->GetLinearVelocity(m_BodyID);
+    float maxSpeed = 4.0f + 1.0f * (float)m_iDepth; // 깊을수록 조금 더 허용
+    float len = vel.Length();
+
+    if (len > maxSpeed && len > 1e-4f)
+    {
+        vel *= (maxSpeed / len);
+        m_pBodyInterface->SetLinearVelocity(m_BodyID, vel);
     }
 }
 
-HRESULT CChildBody::Ready_Child()
+void CChildBody::Apply_RootInertia(_float fTimeDelta)
+{
+    if (!m_pBody || !m_pRootBody || fTimeDelta <= 0.f)
+        return;
+
+    Vec3 vRootVel = m_pRootBody->GetLinearVelocity();
+
+    if (!m_isPrevRootVel)
+    {
+        m_vPrevRootVel = vRootVel;
+        m_isPrevRootVel = true;
+        return;
+    }
+
+    // a = (v - v_prev) / dt
+    Vec3 rootAcc = (vRootVel - m_vPrevRootVel) / fTimeDelta;
+    m_vPrevRootVel = vRootVel;
+
+    // 캐릭터 기준 좌표로 분해 (전/후, 좌/우, 상/하)
+    Vec3 forward = LoadVec3(m_pOwnerTransform->Get_State(STATE::LOOK));
+    forward.SetY(0.f); forward = forward.Normalized();
+
+    Vec3 right = LoadVec3(m_pOwnerTransform->Get_State(STATE::RIGHT));
+    right.SetY(0.f); right = right.Normalized();
+
+    Vec3 up(0.f, 1.f, 0.f);
+
+    float accForward = rootAcc.Dot(forward); // +면 앞으로 가속, -면 뒤로 가속
+    float accRight = rootAcc.Dot(right);
+    float accUp = rootAcc.Dot(up);
+
+    // 뎁스에 따라 조금 강도 다르게 (꼬리쪽이 더 크게 출렁)
+    float depthFactor = 0.5f + 0.1f * (float)m_iDepth;
+    if (depthFactor > 1.f) depthFactor = 1.f;
+
+    // 계수 값은 나중에 데이터로 빼고, 우선은 감으로 튜닝
+    float k_forward = 0.8f * depthFactor;
+    float k_side = 0.4f * depthFactor;
+    float k_up = 0.3f * depthFactor;
+
+    // 관성은 항상 "가속 방향의 반대"로 느껴지니까 부호를 반대로
+    Vec3 inertialForce =
+        (-accForward * k_forward) * forward +
+        (-accRight * k_side) * right +
+        (-accUp * k_up) * up;
+
+    // 너무 미친 값 나오지 않게 한 번 클램프
+    float maxForce = 50.0f;
+    float fLen = inertialForce.Length();
+    if (fLen > maxForce)
+        inertialForce *= (maxForce / fLen);
+
+    m_pBodyInterface->AddForce(m_BodyID, inertialForce);
+}
+
+void CChildBody::ClampToCharacter()
+{
+    if (!m_pBody || !m_pOwnerTransform)
+        return;
+
+    const _int parentIndex = m_pBone->Get_ParentBoneIndex();
+    if (parentIndex < 0)
+        return;
+
+    CBone* pParentBone = m_pModel->Find_Bone(parentIndex);
+    if (!pParentBone)
+        return;
+
+    _matrix parentCombined = pParentBone->Get_CombinedTransformationMatrix();
+    _matrix parentWorld = parentCombined * m_pOwnerTransform->Get_WorldMatrix();
+
+    XMVECTOR restLocalPos = XMLoadFloat3(&m_vRestLocalPos);
+    XMVECTOR restWorldPosV = XMVector3TransformCoord(restLocalPos, parentWorld);
+
+    RVec3 restWorldPos(
+        XMVectorGetX(restWorldPosV),
+        XMVectorGetY(restWorldPosV),
+        XMVectorGetZ(restWorldPosV)
+    );
+
+
+    RVec3 cur = m_pBodyInterface->GetCenterOfMassPosition(m_BodyID);
+    Vec3  diff = Vec3(cur - restWorldPos);
+    float len = diff.Length();
+
+    // 4) 최대 허용 반경 (깊이에 따라 조금씩 늘려도 됨)
+    float baseRadius = 0.3f;                 // 기본 30cm
+    float extraPerDepth = 0.05f;             // depth 하나당 5cm 추가
+    float maxRadius = baseRadius + extraPerDepth * (float)m_iDepth;
+
+    if (len > maxRadius && len > 1e-4f)
+    {
+        // 반경 안으로 끌어 넣기
+        diff *= (maxRadius / len);
+        RVec3 clampedPos = restWorldPos + diff;
+
+        // 위치/회전 재설정 (회전은 유지)
+        Quat rot = m_pBody->GetRotation();
+        m_pBodyInterface->SetPositionAndRotation(
+            m_BodyID,
+            clampedPos,
+            rot,
+            EActivation::Activate
+        );
+
+        // 속도도 좀 줄이자 (아예 0으로 해도 되고 비율 줄여도 됨)
+        Vec3 vel = m_pBodyInterface->GetLinearVelocity(m_BodyID);
+        vel *= 0.2f; // 20%만 남기기
+        m_pBodyInterface->SetLinearVelocity(m_BodyID, vel);
+    }
+}
+
+HRESULT CChildBody::Ready_Child(CHILD_BODY_DESC* pDesc)
 {
     vector<_int> ChildBoneIdx = m_pBone->Get_ChildBones();
     for (_int i = 0; i < ChildBoneIdx.size(); i++)
@@ -266,12 +432,13 @@ HRESULT CChildBody::Ready_Child()
         desc.eType = m_eClothType;
 
         desc.pRootBody = m_pRootBody;
+        desc.pCollisionDesc = pDesc->pCollisionDesc;
         m_ChildBodys.push_back(CChildBody::Create(m_pDevice, m_pContext, &desc));
     }
     return S_OK;
 }
 
-HRESULT CChildBody::Ready_Body()
+HRESULT CChildBody::Ready_Body(CHILD_BODY_DESC* pDesc)
 {
     RefConst<Shape> pShape;
     pShape = new SphereShape(0.05f);
@@ -303,7 +470,7 @@ HRESULT CChildBody::Ready_Body()
     BCS.mLinearDamping = m_fLinearDamping;     // 직선 감쇠도
     BCS.mOverrideMassProperties = EOverrideMassProperties::CalculateInertia;
     BCS.mMassPropertiesOverride.mMass = m_fMass; // 너무 무겁지 않게
-
+    BCS.mUserData = static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc));
     m_pBody = m_pGameInstance->CreateAndAdd_Body(BCS, &m_pBodyInterface);
     m_BodyID = m_pBody->GetID();
 
