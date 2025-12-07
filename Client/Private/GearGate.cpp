@@ -56,6 +56,9 @@ void CGearGate::Update(_float fTimeDelta)
             m_eAnimState = ANIM_STATE::ACTIVATION;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
+            
+            // 예지 레버로 작동해서 열리는 문
+            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("DoorOpen"), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom->Get_State(STATE::POSITION));
         }
     }
     if (true == m_pModelCom->Play_Animation(fTimeDelta))

@@ -71,8 +71,13 @@ private:
 
     _bool m_isSocket = { false };
 
+
+private:
+    class CEffect_Prefab* m_pEffect = { nullptr };
+
 private:
     HRESULT Ready_Components(void* pArg);
+    HRESULT Ready_Effect();
 
     HRESULT Bind_ShaderResources();
     HRESULT Bind_Materials(_uint iMeshIndex);

@@ -1541,6 +1541,11 @@ _uint CGameInstance::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPro
  	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, Quaternion, Position);
 }
 
+_uint CGameInstance::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _matrix worldmatrix, _gvector Position)
+{
+    return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, worldmatrix, Position);
+}
+
 void CGameInstance::Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpawnPos)
 {
 	m_pEffect_Manager->Update_Effect_Position(iLayerLevelIndex, strPrototypeTag, ID, SpawnPos);
@@ -1549,6 +1554,11 @@ void CGameInstance::Update_Effect_Position(_uint iLayerLevelIndex, const _wstrin
 void CGameInstance::Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector Quaternion, _gvector Position)
 {
 	m_pEffect_Manager->Update_Effect_World(iLayerLevelIndex, strPrototypeTag, ID, Quaternion, Position);
+}
+
+void CGameInstance::Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _matrix worldmatrix, _gvector Position)
+{
+    m_pEffect_Manager->Update_Effect_World(iLayerLevelIndex, strPrototypeTag, ID, worldmatrix, Position);
 }
 
 void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)
