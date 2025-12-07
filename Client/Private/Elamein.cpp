@@ -130,45 +130,32 @@ _float CElamein::Get_TrackPotion()
 
 void CElamein::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
 {
-    if ((m_Data.fDodgeCool > 0.f || !m_pController->Get_State_Machine()->Check_Flag(ENUM_CLASS(MONSTATE::GRORRY))
-        || !m_pController->Get_State_Machine()->Check_Flag(ENUM_CLASS(MONSTATE::BRUTAL))))
-    {
-        if (!m_Data.isGuard)
-        {
-            if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
-                ++m_Data.iBrutalHit;
+    TARGET_DIR eDir = Get_DIR();
 
-            __super::Take_Damage(fDamage, eHitreaction, pGameObject);
-        }
-        else
+    if (m_Data.eHitType != HITREACTION::BRUTAL_ATTACK)
+    {
+        if (eDir == TARGET_DIR::F || eDir == TARGET_DIR::FL || eDir == TARGET_DIR::FR)
         {
-            m_pController->AI_ApplyDamage(pGameObject, fDamage, ENUM_CLASS(eHitreaction), 3.f);
+            if (m_Data.fDodgeCool <= 0.f && !m_pController->Get_State_Machine()->Check_Flag(ENUM_CLASS(MONSTATE::LOCKON) && m_Data.eHitType != HITREACTION::BRUTAL_ATTACK))
+            {
+                m_pController->AI_ApplyDamage(pGameObject, fDamage, ENUM_CLASS(eHitreaction), 3.f);
+                return;
+            }
         }
+    }
+    if (!m_Data.isGuard)
+    {
+        if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
+            ++m_Data.iBrutalHit;
+
+        __super::Take_Damage(fDamage, eHitreaction, pGameObject);
+        Damage_Sound();
     }
     else
     {
-        TARGET_DIR eDir = Get_DIR();
-
-        if (eDir == TARGET_DIR::F || eDir == TARGET_DIR::FL || eDir == TARGET_DIR::FR)
-        {
-            if (m_Data.fDodgeCool > 0.f)
-            {
-                if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
-                    ++m_Data.iBrutalHit;
-
-                __super::Take_Damage(fDamage, eHitreaction, pGameObject);
-            }
-            else
-                m_pController->AI_ApplyDamage(pGameObject, fDamage, ENUM_CLASS(eHitreaction), 3.f);
-        }
-        else
-        {
-            if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
-                ++m_Data.iBrutalHit;
-
-            __super::Take_Damage(fDamage, eHitreaction, pGameObject);
-        }
+        m_pController->AI_ApplyDamage(pGameObject, fDamage, ENUM_CLASS(eHitreaction), 3.f);
     }
+
 }
 
 const TRAIL_CONFIG& CElamein::Get_TrailConfig() const
@@ -479,73 +466,121 @@ HRESULT CElamein::Ready_PartObjects()
 HRESULT CElamein::Ready_AnimEvent()
 {
     CModel* pModel = m_pBody->Get_Model();
-    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
-    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
-    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; 
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_normalattack01_a_01 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_normalatk01_rustle_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(2), 3.f); 
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Sword_Stab_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD;
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_normalattack01_b_01 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_normalatk01_rustle_b_01 (SFX).wav"), Get_Position(), Get_SoundChannel(2), 3.f); 
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Sword_Stab_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD;
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_normalattack01_c_01 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_normalatk01_rustle_c_01 (SFX).wav"), Get_Position(), Get_SoundChannel(2), 3.f); 
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Sword_Stab_03 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
     pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta); });
     pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta); });
     pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta);});
-    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 65; });
-    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 66; });
-    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("NormalAtk_1_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; m_Data.iAnimIndex = 65; });
+    pModel->Register_Event("NormalAtk_1_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; m_Data.iAnimIndex = 66; });
+    pModel->Register_Event("NormalAtk_1_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
 
-    pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
-    pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
-    pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
+    pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED;
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_normalatk02_a_01 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_normalatk02_rustle_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(2), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Shield_Swish_S_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED;
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_normalatk02_b_01 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_normalatk02_rustle_b_01 (SFX).wav"), Get_Position(), Get_SoundChannel(2), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Shield_Swish_S_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED;
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_normalatk02_b_02 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_normalatk02_rustle_c_01 (SFX).wav"), Get_Position(), Get_SoundChannel(2), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Shield_Swish_S_03 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
     pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta);});
     pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta);});
     pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta);});
-    pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 68; });
-    pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 69; });
-    pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("NormalAtk_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; m_Data.iAnimIndex = 68; });
+    pModel->Register_Event("NormalAtk_2_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; m_Data.iAnimIndex = 69; });
+    pModel->Register_Event("NormalAtk_2_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
 
-    pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
-    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED;
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_normalatk03_a_01 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_normalatk03_rustle_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(2), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Shield_Swish_S_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD;
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_normalatk03_a_02 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_normalatk03_rustle_b_01 (SFX).wav"), Get_Position(), Get_SoundChannel(2), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Sword_Stab_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
     pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta); });
     pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 4.f); m_pTransformCom->Go_Straight(m_fTimeDelta); });
-    pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 71; });
-    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("NormalAtk_3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; m_Data.iAnimIndex = 71; });
+    pModel->Register_Event("NormalAtk_3_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
 
-    pModel->Register_Event("ShieldStomp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
-    pModel->Register_Event("ShieldStomp", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("ShieldStomp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; 
+                                                                                   m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_shieldstomptier02_a_01 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                   m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_shieldstomp_impact_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("ShieldStomp", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
 
-    pModel->Register_Event("HeadCrusher", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("HeadCrusher", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD;
+                                                                                   m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_normalattack01_a_01 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                   m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Sword_Stab_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
     pModel->Register_Event("HeadCrusher", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
-    pModel->Register_Event("HeadCrusher", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("HeadCrusher", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
 
-    pModel->Register_Event("RapidSlash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("RapidSlash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD;
+                                                                                  m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_rapidslash_a_01 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                  m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Sword_Stab_03 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
     pModel->Register_Event("RapidSlash", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
-    pModel->Register_Event("RapidSlash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("RapidSlash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
 
-    pModel->Register_Event("JumpSmash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
-    pModel->Register_Event("JumpSmash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("JumpSmash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED;
+                                                                                 m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_shieldstomptier02_a_01 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                 m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_shieldstomp_impact_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("JumpSmash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
 
-    pModel->Register_Event("GuardCounter", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State = (_uint)ATTACK_BODY::SHILED | (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("GuardCounter", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State = (_uint)ATTACK_BODY::SHILED | (_uint)ATTACK_BODY::SWORD; });
     pModel->Register_Event("GuardCounter", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
-    pModel->Register_Event("GuardCounter", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("GuardCounter", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
 
-    pModel->Register_Event("Arranged_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; Set_EnchantTrail(); });
-    pModel->Register_Event("Arranged_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
-    pModel->Register_Event("Arranged_3_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
-    pModel->Register_Event("Arranged_3_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::RIGHT_LEG; });
-    pModel->Register_Event("Arranged_3_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAnimIndex = 86; });
-    pModel->Register_Event("Arranged_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED; });
-    pModel->Register_Event("Arranged_5_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
-    pModel->Register_Event("Arranged_5_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; });
+    pModel->Register_Event("Arranged_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD; Set_EnchantTrail();
+                                                                                  m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Sword_Stab_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("Arranged_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD;
+                                                                                  m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Sword_Stab_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("Arranged_3_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD;
+                                                                                  m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Sword_Stab_03 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("Arranged_3_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::RIGHT_LEG;
+                                                                                  m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Shield_Swish_S_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("Arranged_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SHILED;
+                                                                                  m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Shield_Swish_S_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("Arranged_5_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD;
+                                                                                  m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Sword_Stab_03 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("Arranged_5_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::SWORD;
+                                                                                  m_pGameInstance->PlaySoundOnce(TEXT("Mon_Elamein_Sword_Stab_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
 
+    pModel->Register_Event("Arranged_3_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAnimIndex = 86;});
     pModel->Register_Event("Arranged_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
     pModel->Register_Event("Arranged_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
     pModel->Register_Event("Arranged_3_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
     pModel->Register_Event("Arranged_5_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
     pModel->Register_Event("Arranged_5_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
 
-    pModel->Register_Event("Arranged_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 84; });
-    pModel->Register_Event("Arranged_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 85; });
-    pModel->Register_Event("Arranged_3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
-    pModel->Register_Event("Arranged_3_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
-    pModel->Register_Event("Arranged_4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; this->m_Data.iAnimIndex = 87; });
-    pModel->Register_Event("Arranged_5_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
-    pModel->Register_Event("Arranged_5_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; Set_DefaultTrail(); });
+    pModel->Register_Event("Arranged_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; m_Data.iAnimIndex = 84; });
+    pModel->Register_Event("Arranged_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; m_Data.iAnimIndex = 85; });
+    pModel->Register_Event("Arranged_3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("Arranged_3_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("Arranged_4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; m_Data.iAnimIndex = 87; });
+    pModel->Register_Event("Arranged_5_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("Arranged_5_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; Set_DefaultTrail(); });
+
+
+    //MoveSound
+    pModel->Register_Event("Move_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Move_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Move_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+
+    pModel->Register_Event("Run_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
+    pModel->Register_Event("Run_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
 
     return S_OK;
 }
@@ -627,6 +662,78 @@ void CElamein::Set_EnchantTrail()
     Config.iDivisionCount = 10;
     Config.vColor = _float4(2.455f, 1.937f, 2.784f, 1.f);
     m_pMeshTrail->Set_TrailConfig(Config);
+}
+
+void CElamein::Move_Sound()
+{
+    switch (m_pGameInstance->Rand(1, 6))
+    {
+    case 1:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_walk_footstep_01 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    case 2:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_walk_footstep_02 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    case 3:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_walk_footstep_03 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    case 4:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_walk_footstep_04 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    case 5:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_walk_footstep_05 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_walk_footstep_06 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    }
+
+    switch (m_pGameInstance->Rand(1, 6))
+    {
+    case 1:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_walk_rustle_01 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 2:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_walk_rustle_02 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 3:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_walk_rustle_03 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 4:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_walk_rustle_04 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 5:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_walk_rustle_05 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_walk_rustle_06 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    }
+}
+
+void CElamein::Run_Sound()
+{
+    switch (m_pGameInstance->Rand(1, 8))
+    {
+    case 1:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_footstep_01 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 2.5f);             break;
+    case 2:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_footstep_02 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 2.5f);             break;
+    case 3:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_footstep_03 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 2.5f);             break;
+    case 4:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_footstep_04 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 2.5f);             break;
+    case 5:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_footstep_05 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 2.5f);             break;
+    case 6:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_footstep_06 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 2.5f);             break;
+    case 7:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_footstep_07 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 2.5f);             break;
+    default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_footstep_08 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 2.5f);             break;
+    }
+
+    switch (m_pGameInstance->Rand(1, 8))
+    {
+    case 1:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_rustle_01 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 2:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_rustle_02 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 3:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_rustle_03 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 4:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_rustle_04 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 5:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_rustle_05 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 6:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_rustle_06 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 7:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_rustle_07 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_run_rustle_08 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    }
+}
+
+void CElamein::Damage_Sound()
+{
+    switch (m_pGameInstance->Rand(1, 5))
+    {
+    case 1:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_dmgstrong_01 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0));
+        break;
+    case 2:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_dmgstrong_02 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0));
+        break;
+    case 3:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_dmgstrong_03 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0));
+        break;
+    case 4:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_dmgstrong_04 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0));
+        break;
+    default:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_dmgstrong_05 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0));
+        break;
+    }
 }
 
 void CElamein::Rush()

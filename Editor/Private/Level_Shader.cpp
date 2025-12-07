@@ -40,7 +40,7 @@ HRESULT CLevel_Shader::Initialize()
 	
 	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
 
-    CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_Interact"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
+    //  CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_Interact"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
 #pragma endregion
 
 	m_CascadeConfig.Splits.resize(m_iNumCascades);

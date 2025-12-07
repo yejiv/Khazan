@@ -17,6 +17,8 @@
 #include "AS_CutScene_2Phase_Viper.h"
 #include "MeshTrail.h"
 #include "LineTrail.h"
+#include "SkySphere.h"
+#include "CloudSphere.h"
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -176,6 +178,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimEffectEvent()))
         return E_FAIL;
 
+    // 2Phase 시네마틱 셰이더 세팅
+    //  Viper_Cinematic_ShaderSettings();
 
     m_pController = CAI_Controller_Viper::Create(this);
     if (nullptr == m_pController)
@@ -226,6 +230,9 @@ HRESULT CViper::Initialize_Clone(void* pArg)
 
     m_bLoopFX_Flag = false;
 
+    //Set_JustGuardCallBack();
+
+
     return S_OK;
 }
 
@@ -235,17 +242,35 @@ void CViper::Priority_Update(_float fTimeDelta)
 
     if (pBB->Get_Value<_bool>(m_strName, "isDetected") && !m_isUIHp)
     {
-        m_isUIHp = true;
-        CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
-        HPDesc.isOpen = true;
-        HPDesc.pHpMaxValue = &m_fMaxHP;
-        HPDesc.pHpValue = &m_fCurrentHP;
-        HPDesc.pStaminaMaxValue = &m_fMaxStamina;
-        HPDesc.pStaminaCulValue = &m_fCurrentStamina;
-        HPDesc.wstrName = TEXT("바이퍼");
+        if (m_ePhase == PHASE::PHASE1)
+        {
+            m_isUIHp = true;
+            CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
+            HPDesc.isOpen = true;
+            HPDesc.pHpMaxValue = &m_fMaxHP;
+            HPDesc.pHpValue = &m_fCurrentHP;
+            HPDesc.pStaminaMaxValue = &m_fMaxStamina;
+            HPDesc.pStaminaCulValue = &m_fCurrentStamina;
+            HPDesc.wstrName = TEXT("바이퍼");
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
+
+        }
+        
+        else if (m_ePhase == PHASE::PHASE2)
+        {
+            m_isUIHp = true;
+            CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
+            HPDesc.isOpen = true;
+            HPDesc.pHpMaxValue = &m_fMaxHP;
+            HPDesc.pHpValue = &m_fCurrentHP;
+            HPDesc.pStaminaMaxValue = &m_fMaxStamina;
+            HPDesc.pStaminaCulValue = &m_fCurrentStamina;
+            HPDesc.wstrName = TEXT("진 : 전격의 바이퍼 4세");
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
 
 
-        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
+        }
+
     }
 
     CContainerObject::Priority_Update(fTimeDelta);
@@ -268,6 +293,23 @@ void CViper::Priority_Update(_float fTimeDelta)
 
 void CViper::Update(_float fTimeDelta)
 {
+    // Test
+    if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+    {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+        //  Viper_2PhaseBerserker_ShaderSettings();
+        Spawn_BloodDecal();
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    {
+        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+        {
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+            Viper_Cinematic_ShaderSettings();
+        }
+    }
+
     if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
     {
         m_isGhost = true;
@@ -1651,17 +1693,18 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("DashUpperAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            // 바디 오른손 공격 콜라이더 ON
-            m_pPahse2Body->Set_OnAttackCollision(true);
+
+            m_pP2Weapon->Set_OnAttackCollision(true);
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+
 
         });
 
     pP2Model->Register_Event("DashUpperAttack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            // 바디 오른손 공격 콜라이더 OFF
             m_isLookAt = false;
             m_fTurnSpeed = 8.f;
-            m_pPahse2Body->Set_OnAttackCollision(false);
+            m_pP2Weapon->Set_OnAttackCollision(false);
 
         });
 
@@ -1710,17 +1753,21 @@ HRESULT CViper::Ready_AnimEvent()
     pP2Model->Register_Event("FakeRunAttackLook", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             
-            //m_isGhost = false;
+            
         });
 
 
     pP2Model->Register_Event("FakeRunAttackAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
+            m_isGhost = false;
+
             // 무기 공격 콜라이더 ON
             m_pP2Weapon->Set_OnAttackCollision(true);
 
             _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
             m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
+
 
         });
 
@@ -1729,7 +1776,6 @@ HRESULT CViper::Ready_AnimEvent()
             // 무기 공격 콜라이더 OFF
             m_pP2Weapon->Set_OnAttackCollision(false);
 
-           
         });
 
     pP2Model->Register_Event("FakeRunAttackAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
@@ -1740,6 +1786,7 @@ HRESULT CViper::Ready_AnimEvent()
             _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
             m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
 
+
         });
 
     pP2Model->Register_Event("FakeRunAttackAttack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -1749,9 +1796,8 @@ HRESULT CViper::Ready_AnimEvent()
             m_fTurnSpeed = 8.f;
             m_pP2Weapon->Set_OnAttackCollision(false);
 
-        });
 
-    //////
+        });
 
     pP2Model->Register_Event("FakeAttac_Movement1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
@@ -2051,56 +2097,50 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("P2_JumpAttack_Start", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
+
+            m_isGhost = true;
+
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+
             CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
             m_pCharVirCom->Jump(50.f, 7.f);
-            m_isLookAt = true;
-            m_fTurnSpeed = 30.f;
-        });
-
-    pP2Model->Register_Event("P2_JumpAttack_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-        {
-            CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
-            // 타겟 위치 + 타겟 룩 * offset
-            _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            _vector vTargetLook = pTargetTransform->Get_State(STATE::LOOK);
-            vTargetLook = XMVector3Normalize(vTargetLook);
-            _float fOffset = 30.f;
-            _vector vLandPos = vTargetPos + vTargetLook * fOffset;
-            m_pCharVirCom->Start_Dive(vLandPos, 80.f);
 
         });
+
 
 
     pP2Model->Register_Event("P2_JumpAttack_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            m_isLookAt = false;
-            m_fTurnSpeed = 8.f;
-
+            _vector vOwnerPos = m_pTransformCom->Get_State(STATE::POSITION);
+            _vector vDir = vTargetPos - vOwnerPos;
+            vDir = XMVector3Normalize(vDir);
+            _float fOffset = 40.f;
+            _vector vLandPos = vTargetPos + vDir * fOffset;
             m_pCharVirCom->Start_Dive(vTargetPos, 80.f);
 
         });
 
 
-
     pP2Model->Register_Event("P2_JumpAttack_Attack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
+
+
             _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
             m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
 
             // 왼손 공격 콜라이더 ON
             m_pPahse2Body->Set_OnAttackCollision(true);
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(3.f, 1.f);
+
 
             
         });
 
     pP2Model->Register_Event("P2_JumpAttack_Attack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-
-            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
-            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
 
 
             // 왼손 공격 콜라이더 ON
@@ -2122,19 +2162,17 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("P2_JumpAttack_Attack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
+
+            // 오른손 무기 콜라이더ON
+            m_pP2Weapon->Set_OnAttackCollision(true);
+
             _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
             m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
-
-           // 오른손 무기 콜라이더ON
-            m_pP2Weapon->Set_OnAttackCollision(true);
 
         });
 
     pP2Model->Register_Event("P2_JumpAttack_Attack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-
-            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
-            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
 
             // 오른손 무기 콜라이더 OFF
             m_isLookAt = false;
@@ -2188,9 +2226,20 @@ HRESULT CViper::Ready_AnimEvent()
         });
 
 
+    pP2Model->Register_Event("P2_SideStepCencel_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            if (m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "is_Berserker"))
+            {
+                m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "SkipMontion", true);
+            }
+
+        });
+
+
 #pragma endregion
 
 #pragma region P2_SIDEJUMP_R
+
     pP2Model->Register_Event("P2_SideJumpR_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
         {
             m_isLookAt = true;
@@ -2206,6 +2255,15 @@ HRESULT CViper::Ready_AnimEvent()
         });
 
 
+    pP2Model->Register_Event("P2_SideStepCencel_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+            if (m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "is_Berserker"))
+            {
+                m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "SkipMontion", true);
+            }
+
+        });
+
 
 #pragma endregion
 
@@ -2216,15 +2274,30 @@ HRESULT CViper::Ready_AnimEvent()
             m_isGhost = true;
             m_isLookAt = true;
             m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 1.f, 0.1f, 0.25f);
-            m_pPahse2Body->Set_OnAttackCollision(true);
+
         });
 
 
     pP2Model->Register_Event("DashDrift_Pause", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
         {
-            m_isLookAt = false;
+
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName,"isP2_Dash_Abort", true);
+
+
+        });
+
+
+    pP2Model->Register_Event("P2_DashDriftAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
             m_pPahse2Body->Set_OnAttackCollision(true);
+        });
+
+
+    pP2Model->Register_Event("P2_DashDriftAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
+        {
+            m_isLookAt = false;
+            m_isGhost = false;
+            //m_pPahse2Body->Set_OnAttackCollision(false);
 
         });
 
@@ -2233,13 +2306,8 @@ HRESULT CViper::Ready_AnimEvent()
 #pragma endregion
 
 #pragma region P2_SWINGCOMBO
-    pP2Model->Register_Event("P2_SideJumpR_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
-        {
-            m_isLookAt = true;
-            m_fTurnSpeed = 12.f;
 
-            
-        });
+
     pP2Model->Register_Event("SwingCombo_Attack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
         {
             CBlackBoard* pBB = m_pController->Get_BlackBoard();
@@ -2391,6 +2459,68 @@ HRESULT CViper::Ready_AnimEvent()
 #pragma endregion
 
 
+#pragma region P2_AROUND
+    pP2Model->Register_Event("P2_SwingRound_Attack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+
+            m_pPahse2Body->Set_OnAttackCollision(true);
+
+        });
+
+    pP2Model->Register_Event("P2_SwingRound_Attack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
+        {
+
+            m_pPahse2Body->Set_OnAttackCollision(false);
+
+        });
+
+    pP2Model->Register_Event("P2_SwingRound_Attack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+
+            m_pPahse2Body->Set_OnAttackCollision(true);
+
+        });
+
+    pP2Model->Register_Event("P2_SwingRound_Attack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
+        {
+
+            m_pPahse2Body->Set_OnAttackCollision(false);
+
+        });
+
+    pP2Model->Register_Event("P2_SwingRound_Attack3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+
+            m_pPahse2Body->Set_OnAttackCollision(true);
+
+        });
+
+    pP2Model->Register_Event("P2_SwingRound_Attack3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
+        {
+
+            m_pPahse2Body->Set_OnAttackCollision(false);
+
+        });
+
+    pP2Model->Register_Event("P2_SwingRound_Attack4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
+        {
+
+            m_pPahse2Body->Set_OnAttackCollision(true);
+
+        });
+
+    pP2Model->Register_Event("P2_SwingRound_Attack4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
+        {
+
+            m_pPahse2Body->Set_OnAttackCollision(false);
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+
+        });
+
+
+#pragma endregion
+
+
 
     return S_OK;
 
@@ -2398,7 +2528,7 @@ HRESULT CViper::Ready_AnimEvent()
 
 HRESULT CViper::Ready_AnimEffectEvent()
 {
-    // ======================================== 1 Phase ========================================
+    // ======================================== [ 1 Phase ] ========================================
 
     CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
     if (nullptr == pModel)
@@ -2437,7 +2567,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         _vector rot = Decompose_Rotation(XMLoadFloat4x4(&combinedMatrix));
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Grap"), rot, m_pWeapon->Get_LeftSwordTip());
         });
-     
+
     pModel->Register_Event("Grab_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         _float4x4 combinedMatrix = m_pWeapon->Get_CombinedMatrix();
         _vector rot = Decompose_Rotation(XMLoadFloat4x4(&combinedMatrix));
@@ -2445,11 +2575,11 @@ HRESULT CViper::Ready_AnimEffectEvent()
         });
 
     pModel->Register_Event("Grab_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Grap"), m_iRotFX_Idx); 
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Grap"), m_iRotFX_Idx);
         });
 
     //cutscene - 1p
-        // m_pPahse2Body->Get_BoneMatrix_Ptr("Bip001-L-Hand");
+    // m_pPahse2Body->Get_BoneMatrix_Ptr("Bip001-L-Hand");
 
     pModel->Register_Event("Start_Hurt_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //위치 왼쪽 팔로 변경 - 임시로 왼손에 해놓음
@@ -2599,6 +2729,18 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("BloodMouth0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood_once"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.8f, 0.8f);
+        
+        // Test
+        LIGHT_TRANSITION_DESC LightDesc{};
+        LightDesc.fDuration = 3.f;
+        LightDesc.vFadeTime = _float2(3.f, 0.f);
+        LightDesc.vDiffuse = _float4(15.f, 15.f, 10.f, 1.f);
+        LightDesc.vAmbient = _float4(0.1f, 0.1f, 0.1f, 0.1f);
+        LightDesc.vSpecular = _float4(1.5f, 1.5f, 1.f, 1.f);
+        LightDesc.isReturnToStart = false;
+        m_pGameInstance->Start_LightTransition(TEXT("Viper_CutScene_PointLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+        
         });
 
     pModel->Register_Event("BloodMouth1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -2609,6 +2751,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("BloodMouth2_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood_once"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.8f, 0.8f);
         });
 
     pModel->Register_Event("BloodMouth3_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -2619,6 +2762,18 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("BloodMouth4_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood_once"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(0.8f, 0.8f);
+        
+        // Test
+        LIGHT_TRANSITION_DESC LightDesc{};
+        LightDesc.fDuration = 1.f;
+        LightDesc.vFadeTime = _float2(1.f, 0.f);
+        LightDesc.vDiffuse = _float4(1.f, 1.f, 0.8f, 1.f);
+        LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.4f, 1.f);
+        LightDesc.vSpecular = LightDesc.vDiffuse;
+        LightDesc.isReturnToStart = false;
+        m_pGameInstance->Start_LightTransition(TEXT("Viper_CutScene_PointLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
         });
 
     pModel->Register_Event("BloodMouth5_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -2633,8 +2788,70 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_CutSceen_Land"), m_pBody->Get_BoneMatrix("Bip001-R-Hand").r[3]);
         });
 
-    /////=========================================================== [ 2P ] ================================================================================ ////
+    // CutScene
+    pModel->Register_Event("CameraShaking0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        // 메인 조명 낮추기
+        LIGHT_TRANSITION_DESC LightDesc{};
+        LightDesc.fDuration = 2.f;
+        LightDesc.vFadeTime = _float2(2.f, 0.f);
+        LightDesc.vDiffuse = _float4(0.7f, 0.7f, 0.7f, 0.7f);
+        LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+        LightDesc.vSpecular = LightDesc.vDiffuse;
+        LightDesc.isReturnToStart = false;
+        m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 3.f);
+        });
 
+    pModel->Register_Event("CameraShaking1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+        });
+
+    pModel->Register_Event("CoreLightOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        // 조명 키기, 블링크 조명
+        m_pGameInstance->Set_LightEnable(TEXT("Viper_Core"), ENUM_CLASS(LEVEL::VIPER), true);
+        
+        LIGHT_TRANSITION_DESC LightDesc{};
+        LightDesc.fDuration = 30.f;
+        LightDesc.vFadeTime = _float2(0.f, 0.f);
+        LightDesc.vDiffuse = _float4(1.9f, 1.9f, 1.7f, 1.f);
+        LightDesc.vAmbient = _float4(0.7f, 0.7f, 0.5f, 1.f);
+        LightDesc.vSpecular = LightDesc.vDiffuse;
+        LightDesc.isReturnToStart = true;
+        LightDesc.iBlinkCount = 150;
+        m_pGameInstance->Start_LightTransition(TEXT("Viper_Core"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+        });
+
+    pModel->Register_Event("CoreLightOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        // 코어 조명 끄기
+        m_pGameInstance->Set_LightEnable(TEXT("Viper_Core"), ENUM_CLASS(LEVEL::VIPER), false);
+        // 피 데칼 스폰
+        Spawn_BloodDecal();
+        // 쉐이킹
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
+        // 위에서 아래로 붉은 빛 흰색 HDR 조명
+        LIGHT_TRANSITION_DESC LightDesc{};
+        LightDesc.fDuration = 3.f;
+        LightDesc.vFadeTime = _float2(3.f, 0.f);
+        LightDesc.vDiffuse = _float4(10.f, 7.f, 5.f, 1.f);
+        LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+        LightDesc.vSpecular = _float4(1.f, 1.f, 0.5f, 1.f);
+        LightDesc.isReturnToStart = false;
+        m_pGameInstance->Start_LightTransition(TEXT("Viper_CutScene_PointLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+        });
+
+    pModel->Register_Event("CameraShaking2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
+        // 림라이트 Intensity 높이기
+        m_pBody->Set_EnableRimLight(true);
+        });
+
+    pModel->Register_Event("CameraShaking3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        // 건물 부시기
+        Viper_Cinematic_ShaderSettings();
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(2.5f, 1.f);
+        // 블링크 림라이트 시작
+        m_pBody->Set_EnableBlinkRimLight(true);
+        });
 
     // MeshTrail
     pModel->Register_Event("Quick2Hit_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
@@ -2653,7 +2870,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("StingSlashLoop02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
     pModel->Register_Event("StingSlashEnd_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
 
-    // ======================================== 2 Phase ========================================
+    // ======================================== [ 2 Phase ] ========================================
     
     pModel = static_cast<CModel*>(m_pPahse2Body->Get_Component(TEXT("Com_Model")));
     if (nullptr == pModel)
@@ -2968,7 +3185,44 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("mist4"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Hand").r[3]);
         });
 
+    // MeshTrail
+    pModel->Register_Event("MeshTrail_Hand0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand4", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand5", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand6", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand7", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand8", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand9", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand10", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    //  pModel->Register_Event("MeshTrail_Hand11", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    //  pModel->Register_Event("MeshTrail_Hand12", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    //  pModel->Register_Event("MeshTrail_Hand13", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    //  pModel->Register_Event("MeshTrail_Hand14", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand15", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand16", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand17", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand18", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand19", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand20", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("MeshTrail_Hand21", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
 
+    pModel->Register_Event("MeshTrail_SW0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW4", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW5", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW6", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW7", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW8", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW9", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW10", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("MeshTrail_SW11", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+
+    // ======================================== [ Cinematic ] ========================================
 
     pModel = static_cast<CModel*>(m_pCinematicBody->Get_Component(TEXT("Com_Model")));
     if (nullptr == pModel)
@@ -3063,43 +3317,30 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), m_iBloodFX_Idx[0], m_pCinematicBody->Get_BoneMatrix("Bone_tongue_04_end").r[3]);
         });
 
+    pModel->Register_Event("CameraShaking4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.f);
+        m_pCinematicBody->Set_AccRimEmissvie(true);
+        });
 
-    // MeshTrail
-    pModel->Register_Event("MeshTrail_Hand0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand4", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand5", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand6", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand7", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand8", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand9", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand10", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    //  pModel->Register_Event("MeshTrail_Hand11", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    //  pModel->Register_Event("MeshTrail_Hand12", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    //  pModel->Register_Event("MeshTrail_Hand13", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    //  pModel->Register_Event("MeshTrail_Hand14", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand15", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand16", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand17", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand18", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand19", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand20", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
-    pModel->Register_Event("MeshTrail_Hand21", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseHandTrail(); });
+    pModel->Register_Event("CameraShaking5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.f);
+        });
 
-    pModel->Register_Event("MeshTrail_SW0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
-    pModel->Register_Event("MeshTrail_SW1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
-    pModel->Register_Event("MeshTrail_SW2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
-    pModel->Register_Event("MeshTrail_SW3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
-    pModel->Register_Event("MeshTrail_SW4", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
-    pModel->Register_Event("MeshTrail_SW5", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
-    pModel->Register_Event("MeshTrail_SW6", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
-    pModel->Register_Event("MeshTrail_SW7", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
-    pModel->Register_Event("MeshTrail_SW8", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
-    pModel->Register_Event("MeshTrail_SW9", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
-    pModel->Register_Event("MeshTrail_SW10", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
-    pModel->Register_Event("MeshTrail_SW11", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+    pModel->Register_Event("CameraShaking6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.f);
+        });
+
+    pModel->Register_Event("CameraShaking7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.f);
+        });
+
+    pModel->Register_Event("CameraShaking8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.f);
+        });
+
+    pModel->Register_Event("CameraShaking9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.f);
+        });
 
     return S_OK;
 }
@@ -3279,6 +3520,204 @@ void CViper::FX_2PhaseEyeTrail()
     _vector vRightEyeRight = m_pPahse2Body->Get_BoneMatrix("Bone_eye_R").r[0];
     vRightEyePos += vRightEyeRight * 5.f;
     m_pLineTrail[ENUM_CLASS(EYE::RIGHT)]->Add_ControlPoint(vRightEyePos);
+}
+
+void CViper::Viper_Cinematic_ShaderSettings()
+{
+    _float fDuration = 3.f;
+
+    // 메인 조명
+    LIGHT_TRANSITION_DESC LightDesc{};
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.7f, 0.7f, 0.7f, 0.7f);
+    LightDesc.vAmbient = _float4(0.4f, 0.4f, 0.4f, 0.4f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    // ON
+    // 플레이어 주변광 점조명 주황색
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(1.f, 0.371f, 0.f, 1.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.0f);
+    LightDesc.vSpecular = _float4(0.5f, 0.185f, 0.0f, 1.f);
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_Orange"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    // 플레이어 주변광 점조명 흰색
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_White"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    // 바이퍼 무기 조명
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(2.f, 1.5f, 1.2f, 1.f);
+    LightDesc.vAmbient = _float4(0.5f, 0.35f, 0.3f, 1.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Viper_TwinBlade_R"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    FOG_CONFIG FogConfig = m_pGameInstance->Get_FogConfig();
+    FogConfig.isUseSubColor = false;
+    FogConfig.isUseHeight = false;
+    m_pGameInstance->Set_FogConfig(FogConfig);
+
+    // 포그 세팅 (어두운 보라색)
+    FOG_TRANSITION_DESC FogDesc{};
+    FogDesc.fDensity = 0.05f;
+    FogDesc.fBias = 0.95f;
+    FogDesc.vColor = _float4(0.1f, 0.053f, 0.086f, 1.f);
+    FogDesc.isUseHeight = false;
+    FogDesc.isUseNoise = false;
+    m_pGameInstance->Start_FogTransition(fDuration, FogDesc);
+
+    // 스카이 박스 세팅
+    SKY_DESC SkyDesc{};
+    SkyDesc.vNebulaColorR = _float3(0.147f, 0.076f, 0.125f);
+    SkyDesc.vNebulaColorG = _float3(0.147f, 0.076f, 0.125f);
+    SkyDesc.vNebulaColorB = _float3(0.f, 0.f, 0.f);
+    SkyDesc.fStarStrength = 0.2f;
+    SkyDesc.fMoonSize = 0.8f;
+    SkyDesc.vMoonDirection = _float3(-0.21f, 0.19f, 1.f);
+    SkyDesc.vMoonColor = _float3(1.f, 0.5f, 0.5f);
+    SkyDesc.fMoonIntensity = 0.4f;
+    static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 0))->Start_LerpSky(SkyDesc, fDuration);
+
+    // 클라우드 세팅
+    CLOUD_DESC CloudDesc{};
+    CloudDesc.vCloudColor = _float3(1.f, 1.f, 1.f);
+    CloudDesc.fCloudSpeed = 0.25f;
+    CloudDesc.fCloudScale = 1.f;
+    CloudDesc.fCloudDensity = 1.f;
+    CloudDesc.fCloudLightIntensity = 0.2f;
+    CloudDesc.vLightDir = _float3(0.f, 1.f, 0.f);
+    CloudDesc.fDynamic = 1.f;
+    static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 1))->Start_LerpCloud(CloudDesc, fDuration);
+    
+    // Test
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_Gray"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+}
+
+void CViper::Viper_2PhaseBerserker_ShaderSettings()
+{
+    _float fDuration = 3.f;
+    // 광전사 모드 셰이더 세팅
+
+    // 메인 조명 끄기
+    LIGHT_TRANSITION_DESC LightDesc{};
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    // 점 조명 : 그레이 조명 켜지기, 오렌지, 화이트, 무기 조명은 꺼지기
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(1.f, 0.95f, 0.8f, 1.f);
+    LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 0.5f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_Gray"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_White"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_Orange"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Viper_TwinBlade_R"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    // 포그 검정
+    FOG_TRANSITION_DESC FogDesc{};
+    FogDesc.fDensity = 0.05f;
+    FogDesc.fBias = 0.95f;
+    FogDesc.vColor = _float4(0.f, 0.f, 0.f, 0.f);
+    FogDesc.isUseHeight = false;
+    FogDesc.isUseNoise = false;
+    m_pGameInstance->Start_FogTransition(fDuration, FogDesc);
+
+    // 스카이 검정
+    SKY_DESC SkyDesc{};
+    SkyDesc.vNebulaColorR = _float3(0.f, 0.f, 0.f);
+    SkyDesc.vNebulaColorG = _float3(0.f, 0.f, 0.f);
+    SkyDesc.vNebulaColorB = _float3(0.f, 0.f, 0.f);
+    SkyDesc.fStarStrength = 0.f;
+    SkyDesc.fMoonSize = 0.8f;
+    SkyDesc.vMoonDirection = _float3(-0.21f, 0.19f, 1.f);
+    SkyDesc.vMoonColor = _float3(0.f, 0.f, 0.f);
+    SkyDesc.fMoonIntensity = 0.f;
+    static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 0))->Start_LerpSky(SkyDesc, fDuration);
+
+    // 클라우드 세팅
+    CLOUD_DESC CloudDesc{};
+    CloudDesc.vCloudColor = _float3(0.f, 0.f, 0.f);
+    CloudDesc.fCloudSpeed = 0.f;
+    CloudDesc.fCloudScale = 0.f;
+    CloudDesc.fCloudDensity = 0.f;
+    CloudDesc.fCloudLightIntensity = 0.f;
+    CloudDesc.vLightDir = _float3(0.f, 0.f, 0.f);
+    CloudDesc.fDynamic = 0.f;
+    static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 1))->Start_LerpCloud(CloudDesc, fDuration);
+
+    // 림라이트 끄기
+    m_pGameInstance->Set_EnableRimLight(false);
+}
+
+void CViper::Spawn_BloodDecal()
+{
+    DECAL_DESC Desc{};
+    Desc.fLifeTime = 55.f;
+    Desc.vFadeTime = _float2(0.2f, 0.2f);
+    Desc.vColor = _float3(0.2245f, 0.08f, 0.08f);
+    Desc.eType = DECALTYPE::CIRCLE;
+    _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
+    _float fOffset = 2.f;
+    _float fPosX = XMVectorGetX(vDecalPos);
+    _float fPosZ = XMVectorGetZ(vDecalPos);
+    Desc.vScale = _float3(5.5f, 0.7f, 5.5f);
+    Desc.isRandomTexture = false;
+
+    for (_uint i = 0; i < 10; ++i)
+    {
+        vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
+        vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
+        XMStoreFloat3(&Desc.vPosition, vDecalPos);
+
+        Desc.iTextureIndex = static_cast<_uint>(m_pGameInstance->Rand(1.f, 4.f));
+        m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Decal"), Desc);
+    }
 }
 
 CViper* CViper::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

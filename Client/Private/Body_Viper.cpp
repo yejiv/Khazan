@@ -98,6 +98,9 @@ HRESULT CBody_Viper::Initialize_Clone(void* pArg)
    /* if (FAILED(Ready_Colliders()))
         return E_FAIL;*/
 
+    m_fRimDuration = 3.f;
+    m_vRimColor = _float3(1.f, 0.8f, 0.6f);
+
     return S_OK;
 }
 
@@ -133,6 +136,20 @@ void CBody_Viper::Update(_float fTimeDelta)
 
     }
 
+    if (true == m_isEnableRimLight)
+    {
+        m_fTimeAcc += fTimeDelta;
+
+        _float fRatio = m_fTimeAcc / m_fRimDuration;
+
+        if (fRatio >= 1.f)
+            fRatio = 1.f;
+
+        m_fRimIntensity = Lerp(m_fRimIntensity, m_fMaxRimIntensity, fRatio);
+    }
+
+    if (true == m_isBlinkRimLight)
+        m_vRimColor = _float3(1.f, 0.6f, 0.4f);
 }
 
 void CBody_Viper::Late_Update(_float fTimeDelta)
@@ -163,6 +180,40 @@ HRESULT CBody_Viper::Render()
 
     _float fEmissiveIntensity = 10.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableRimLight", &m_isEnableRimLight)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isBlinkRimLight", &m_isBlinkRimLight)))
+        return E_FAIL;
+
+    _float fRimPower = 2.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &m_fRimIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &m_vRimColor, sizeof(_float3))))
+        return E_FAIL;
+
+    _float fRimEmissive = 3.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fTimeDelta", &m_fTimeAcc, sizeof(_float))))
+        return E_FAIL;
+
+    _float fCycleSpeed = 30.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fCycleSpeed", &fCycleSpeed, sizeof(_float))))
+        return E_FAIL;
+
+    m_fMinRimIntensity = 0.7f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fMinRimIntensity", &m_fMinRimIntensity, sizeof(_float))))
         return E_FAIL;
 
     for (size_t i = 0; i < iNumMeshes; i++)

@@ -18,6 +18,7 @@ void CAS_P2_JumpAttack_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
     pModel->Set_Animation(30);
+    pBB->Set_Value<_uint>(pViper->Get_Name(), "AttackCount", 0);
 
 }
 
@@ -56,13 +57,13 @@ void CAS_P2_JumpAttack_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisio
 
         if (iAttackCnt == 1)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG);
+            pTarget->Take_Damage(50.f, HITREACTION::KNOCKBACK_STRONG);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-            pTarget->KnockBack(vLook, 20.f, 40.f);
+            //pTarget->KnockBack(vLook, 20.f, 40.f);
         }
         else if (iAttackCnt == 2)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+            pTarget->Take_Damage(20.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 20.f, 40.f);
         }

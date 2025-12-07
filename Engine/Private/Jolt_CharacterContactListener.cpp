@@ -23,7 +23,7 @@ bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtu
     COLLISION_DESC* pCharDesc1 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     COLLISION_DESC* pBody1Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inBodyID2)));
 
-    if (pCharDesc1 == nullptr || pCharDesc1->pGameObject == nullptr)
+    if (pCharDesc1 == nullptr || pCharDesc1->pGameObject == nullptr || pBody1Desc == nullptr || pBody1Desc->pGameObject == nullptr)
         return false;
 
     if (!pCharDesc1->pGameObject->Get_IsGhost() && !pBody1Desc->pGameObject->Get_IsGhost() && m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Kinematic)

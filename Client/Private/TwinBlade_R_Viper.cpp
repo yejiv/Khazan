@@ -156,6 +156,10 @@ void CTwinBlade_R_Viper::Update(_float fTimeDelta)
     _vector vSwordEnd = vSwordPos + XMVector3Normalize(vUp) * 2.f + XMVector3Normalize(vRight) * 0.3f;
     XMStoreFloat4(&m_vBladeStartPos, XMVectorSetW(vSwordStart, 1.f));
     XMStoreFloat4(&m_vBladeTipPos, XMVectorSetW(vSwordEnd, 1.f));
+
+    // 2Phase Light Setting Test
+    _float4 vPos = _float4(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, m_CombinedWorldMatrix._44);
+    m_pGameInstance->Set_LightPosition(TEXT("Viper_TwinBlade_R"), ENUM_CLASS(LEVEL::VIPER), vPos);
 }
 
 void CTwinBlade_R_Viper::Late_Update(_float fTimeDelta)
