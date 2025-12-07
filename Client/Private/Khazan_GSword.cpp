@@ -209,6 +209,14 @@ void CKhazan_GSword::Update(_float fTimeDelta)
         Update_State(fTimeDelta);
 
         Update_Stats(fTimeDelta);
+
+
+        if (Has_Status(DODGE_ENDING)) {
+            if (!m_pAnimMove->IsCurrentAnimationDodge()) {
+                Remove_Status(DODGE_ENDING);
+                m_isGhost = false;
+            }
+        }
     }
 
 #pragma region 상호 작용 맵 오브젝트 이벤트
@@ -269,6 +277,9 @@ void CKhazan_GSword::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
 void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
 {
+    if (Has_State(CAT::M_DIE))
+        return;
+
     /* Just Guard 우선 처리*/
     if (Has_Status(JUST_GUARD))
     {
@@ -293,7 +304,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
     m_pPlayerData->fCulHp -= fDamage;
 
     /* 플레이어 죽었을 때 세팅하는 법  */
-    if (m_pPlayerData->fCulHp <= 0.f)
+    if ( m_pPlayerData->fCulHp <= 0.f)
     {
         /* 입력 막기 */
         m_pClientInstance->Set_PlayerInput(false);
@@ -320,6 +331,15 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         /* UI */
         m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_RESULT>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_OVER), {});
         return;
+    }
+
+    if (Has_Status(DODGE_ENDING)) {
+        if (m_pAnimMove->IsCurrentAnimationDodge())
+            return;
+        else {
+            Remove_Status(DODGE_ENDING);
+            m_isGhost = false;
+        }
     }
 
     /* Damage UI font */
@@ -451,7 +471,7 @@ void CKhazan_GSword::Update_Stats(_float fTimeDelta)
         m_pPlayerData->fCulStamina = 0.f;
         if (!Has_Status(STAMINA_EXHAUSTION)) {
             Add_Status(STAMINA_EXHAUSTION);
-            Clear_Step2();
+            Clear_Step1();
             m_pBody->Get_Model()->Set_AnimationSet("Set_StaminaExhaustion");
             m_pClientInstance->Set_PlayerInput(false);     //입력 막기 
         }
@@ -468,8 +488,9 @@ void CKhazan_GSword::Update_Stats(_float fTimeDelta)
 
     /* idle, run, walk, guard 현재 스태미나가 닳아 있는 상태일 때 회복하기 */
     if (!Has_States() 
-        ||( (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_RUN | MOV::MOVE_WALK)) )
-        || ((Has_State(CAT::M_GUARD) && !Has_SubState(MOV::MOVE_SPRINT)))
+        || (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_RUN | MOV::MOVE_WALK)) 
+        || (Has_State(CAT::M_GUARD) && !Has_SubState(MOV::MOVE_SPRINT))
+        || !Has_Status(DODGE_ENDING)
         && m_pPlayerData->fCulStamina < m_pPlayerData->fMaxStamina)
     {
         if (!Has_Status(STAMINA_RECOVERY))
@@ -840,9 +861,8 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
         //}
 
         // Dodge 애니메이션이 끝났는지 확인
-        if (m_pAnimMove->IsStopMoveAnimantionFinished()&& !m_pAnimMove->IsDodge())
+        if (m_pAnimMove->IsStopMoveAnimantionFinished()&& !m_pAnimMove->IsDodge()&& !Has_Status(DODGE_ENDING))
         {
-
             //Remove_SubState(MOV::MOVE_DODGE);
            // Remove_Status(CHARGING_SPRINT);
             // 방향키만 눌려있으면 즉시 Run으로 전환
@@ -909,18 +929,18 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
         /*  Sprint , Dodge */
         if (m_pGameInstance->Key_Down(DIK_SPACE))
         {
-            /* 닷지 중복 방지*/
+            ///* 닷지 중복 방지*/
             if (m_pAnimMove->IsDodge())
                 return;
 
             m_fSprintTime = 0.f;
-            Add_Status(CHARGING_SPRINT | DODGING);
+            Add_Status(CHARGING_SPRINT | DODGING );
             Add_SubState(MOV::MOVE_DODGE);               
             /* 백 닷지라면 */
             if (m_eDir.Check_Flag(DIR::B))
             {
                 Add_CycleState(CYC::CYCLE_END);
-                Add_Status(BACK_DODGE);
+                Add_Status(BACK_DODGE );
             }
             isSpaceHandled = true;
 
@@ -1005,7 +1025,7 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
             m_eDir.Clear_Flag();
             m_eDir.Add_Flag(DIR::B);  // 뒤로 회피
             m_fSprintTime = 0.f;
-            Add_Status(BACK_DODGE);
+            Add_Status(BACK_DODGE );
             Remove_Status(SPRINT_AGAIN_REQUEST | CHARGING_SPRINT);
         }
         else
@@ -1577,11 +1597,13 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
         return;
 
     /* 닷지하기 */
-    if (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_DODGE)&& !m_pAnimMove->IsDodge() ) 
+    if (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_DODGE)&& !m_pAnimMove->IsDodge() )
     {
         /* 닷지 : 스태미나 소모*/
-        if (m_pPlayerData->fCulStamina != 0.f)
+        if (m_pPlayerData->fCulStamina != 0.f && !Has_Status(DODGE_ENDING))
         {
+            m_isGhost = true;
+            Add_Status(DODGE_ENDING);
             CKhazan_GS_Anim_Move::GS_MOVEINFO info;
 
             if (Has_Status(BAREHAND))info.iWeapon = BAREHAND;
@@ -1613,8 +1635,9 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
         return;
 
     /*  락온 체크 + 백 닷지 + 닷지가 아니면 */
-    if (Has_Status(LOCKON) && !Has_Status(BACK_DODGE) && !Has_SubState(MOV::MOVE_DODGE))
+    if (Has_Status(LOCKON) && !Has_Status(BACK_DODGE) && !Has_SubState(MOV::MOVE_DODGE)) {
         m_eDir = Calculate_LockOnDirection(fTimeDelt);
+    }
 
     /* 이동중 스페이스바 누르는것 때문에 다시 요청하기  */
     if (Has_Status(SPRINT_AGAIN_REQUEST))
@@ -1649,10 +1672,25 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
         return;
     }
 
+    _bool isNothingState = m_iCurMainState == m_iPrevMainState && m_iCurSubState == m_iPrevSubState&& m_iCycle == m_iPrevCycle;
+    _bool isIdleState = !Has_State(CAT::M_END - 2) ;
 
-    if (m_iCurMainState == m_iPrevMainState
-        && m_iCurSubState == m_iPrevSubState
-        && m_iCycle == m_iPrevCycle)
+    /* Idle */
+    if ((isIdleState && Has_Status(LOCKON) && isNothingState) || (isIdleState && m_pBody->Get_Model()->IsFinished()))
+    {
+        if ((Has_Status(STAMINA_EXHAUSTION)))
+            return;
+
+        _uint iGSwordStand = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand");
+        _uint iSpearStand = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand");
+        _uint iBareHandStand = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
+        _uint iCurAnimIndex = m_pBody->Get_Model()->Get_CurAnimIndex();
+        if (iCurAnimIndex != iGSwordStand && iCurAnimIndex != iSpearStand && iCurAnimIndex != iBareHandStand)
+            m_pBody->Get_Model()->Set_Animation( Has_Status(GSWORD) ? iGSwordStand : (Has_Status(SPEAR) ? iSpearStand : iBareHandStand) );
+
+    }
+
+    if (isNothingState)
     {
         return;
     }
@@ -1672,15 +1710,6 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
 
         //Remove_State(CAT::M_IDLE);
     }
-
-    /* Idle */
-    else if (!Has_State(CAT::M_END - 2))
-    {
-        _uint iCurAnimIndex = m_pBody->Get_Model()->Get_CurAnimIndex();
-        if (m_pBody->Get_Model()->Check_MinAnimationTime() && iCurAnimIndex != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand") && iCurAnimIndex != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand"))
-            m_pBody->Get_Model()->Set_Animation(Has_Status(GSWORD) ? m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand") : m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand"));
-    }
-
 
 }
 
@@ -1712,7 +1741,7 @@ _bool CKhazan_GSword::ChangeGrabAnimation()
     {
         //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Down_Loop_F");
         //m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
-        Remove_Status(VIPER_GRAB);
+       // Remove_Status(VIPER_GRAB);
         return true;
     }
 
@@ -2408,7 +2437,7 @@ void CKhazan_GSword::Clear_Step2()
         Clear_SubState();
         Remove_State(CAT::M_MOVE);
     }
-    Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | ROTATION | SPRINT_AGAIN_REQUEST | DODGING);
+    Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | ROTATION | SPRINT_AGAIN_REQUEST | DODGING | DODGE_ENDING);
 
     m_eDir.iDirFlag = 0;
     m_eWorldDir.iDirFlag = 0;
@@ -3302,7 +3331,11 @@ void CKhazan_GSword::Debug_Widget_States()
     CycleFlag("Loop", CYC::CYCLE_LOOP);
     CycleFlag("End", CYC::CYCLE_END);
     CycleFlag("Break", CYC::CYCLE_BREAK);
-
+    CycleFlag("Break", CYC::CYCLE_BREAK);
+    if (m_isGhost)
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[ok] %s", "Ghost");
+    else
+        ImGui::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "[ ] %s", "Ghost");
     ImGui::Unindent();
     ImGui::Separator();
 
@@ -3345,7 +3378,7 @@ void CKhazan_GSword::Debug_Widget_States()
     StatusFlag("Statue Mode", STATUE_MODE);
     StatusFlag("Block Atk Skill Guard", BLOCK_ATK_SKILL_GUARD);
     StatusFlag("Stamina Exhaustion", STAMINA_EXHAUSTION);
-    StatusFlag("Viper Grab", VIPER_GRAB);
+    StatusFlag("DODGE ENDING", DODGE_ENDING);
     StatusFlag("Ladder Climbing", LADDER_CLIMBING);
     StatusFlag("Ladder Climbing Rotation", LADDER_CLIMBING_ROTATION);
     StatusFlag("Ladder Climbing End", LADDER_CLIMBING_END);
@@ -3396,38 +3429,26 @@ void CKhazan_GSword::Debug_Widget_Combat()
 
     // HP
     ImGui::Text("Health");
-    ImGui::ProgressBar(m_fCurrentHP / max(m_fMaxHP, 0.001f), ImVec2(-1, 0),
-        (std::to_string((_int)m_fCurrentHP) + " / " + std::to_string((_int)m_fMaxHP)).c_str());
+    ImGui::ProgressBar(m_pPlayerData->fCulHp / max(m_pPlayerData->fMaxHp, 0.001f), ImVec2(-1, 0),
+        (std::to_string((_int)m_pPlayerData->fCulHp) + " / " + std::to_string((_int)m_pPlayerData->fMaxHp)).c_str());
 
-    ImGui::SliderFloat("Current HP", &m_fCurrentHP, 0.0f, m_fMaxHP, "%.1f");
-    ImGui::InputFloat("Max HP", &m_fMaxHP, 0, 0, "%.0f");
+    ImGui::SliderFloat("Current HP", &m_pPlayerData->fCulHp, 0.0f, m_pPlayerData->fMaxHp, "%.1f");
+    ImGui::InputFloat("Max HP", &m_pPlayerData->fMaxHp, 0, 0, "%.0f");
 
     ImGui::Separator();
 
     // Stamina
     ImGui::Text("Stamina");
-    ImGui::ProgressBar(m_fCurrentStamina / max(m_fMaxStamina, 0.001f), ImVec2(-1, 0),
-        (std::to_string((_int)m_fCurrentStamina) + " / " + std::to_string((_int)m_fMaxStamina)).c_str());
+    ImGui::ProgressBar(m_pPlayerData->fCulStamina / max(m_pPlayerData->fMaxStamina, 0.001f), ImVec2(-1, 0),
+        (std::to_string((_int)m_pPlayerData->fCulStamina) + " / " + std::to_string((_int)m_pPlayerData->fMaxStamina)).c_str());
 
-    ImGui::SliderFloat("Current Stamina", &m_fCurrentStamina, 0.0f, m_fMaxStamina, "%.1f");
-    ImGui::InputFloat("Max Stamina", &m_fMaxStamina, 0, 0, "%.0f");
+    ImGui::SliderFloat("Current Stamina", &m_pPlayerData->fCulStamina, 0.0f, m_pPlayerData->fMaxStamina, "%.1f");
+    ImGui::InputFloat("Max Stamina", &m_pPlayerData->fMaxStamina, 0, 0, "%.0f");
 
     ImGui::Separator();
 
     // Attack
-    ImGui::InputFloat("Attack Power", &m_fAttack, 0, 0, "%.1f");
-
-    ImGui::Separator();
-
-    // Sprint Charge
-    ImGui::Text("Sprint Charge");
-    ImGui::ProgressBar(m_fSprintTime / m_fMinSprintTime, ImVec2(-1, 0),
-        (std::to_string((_int)(m_fSprintTime * 100)) + "%").c_str());
-
-    // Strong Attack Charge
-    ImGui::Text("Fast Attack Charge");
-    ImGui::ProgressBar(m_fChargingFastAttackTime / m_fChargingStartIntervalTime, ImVec2(-1, 0),
-        (std::to_string((_int)(m_fChargingFastAttackTime * 100)) + "%").c_str());
+    ImGui::InputFloat("Attack Power", &m_pPlayerData->fBonusDamage, 0, 0, "%.1f");
 
     ImGui::Separator();
 
@@ -3441,10 +3462,10 @@ void CKhazan_GSword::Debug_Widget_Combat()
 
     // Quick Actions
     if (ImGui::Button("Restore HP", ImVec2(-1, 0)))
-        m_fCurrentHP = m_fMaxHP;
+        m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
 
     if (ImGui::Button("Restore Stamina", ImVec2(-1, 0)))
-        m_fCurrentStamina = m_fMaxStamina;
+        m_pPlayerData->fCulStamina = m_pPlayerData->fMaxStamina;
 }
 
 void CKhazan_GSword::Debug_Widget_Animation()

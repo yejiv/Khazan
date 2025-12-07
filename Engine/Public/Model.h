@@ -121,6 +121,7 @@ public:
     void            Set_AnimationBlend(_bool isBlend) { m_isBlendEnable = isBlend; }      // 애니메이션 보간할건지 여부
     void            AnimationLoop(_bool isLoop);
     void            Set_AnimBlendTime(_uint iAnimIndex, _float fBlendTime);
+    void            QuitAnimationSet() { Remove_State(ANIMSET_PLAYING | ANIMSET_NEXT); } // 애니메이션세트 끝내기 
 
     /* rootBone Combined  */
     void			Update_BoneCombinedMatrices();

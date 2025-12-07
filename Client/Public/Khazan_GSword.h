@@ -31,34 +31,37 @@ public:
         LOCKON = 1 << 9,  // 락 온
         CHARGING_STRONG_ATTACK = 1 << 10, // 차징 공격
         DODGING = 1 << 11,  //닷지할 때 
+        DODGE_ENDING = 1 << 12, //닷지할 때 추가 되고, 닷지가 끝날 때 제거됨
 
         /* 가드 */
-        GUARD = 1 << 12,
-        GUARD_SUCCESS = 1 << 13,
-        JUST_GUARD = 1 << 14,
-        GUARD_ROTATION = 1 << 15,
-        GUARD_ROTATION_REQUEST = 1 << 16,
+        GUARD = 1 << 13,
+        GUARD_SUCCESS = 1 << 14,
+        JUST_GUARD = 1 << 15,
+        GUARD_ROTATION = 1 << 16,
+        GUARD_ROTATION_REQUEST = 1 << 17,
 
         /*  낙하 */
-        FALLING = 1 << 17,
-        PRE_LAND = 1 << 18, //착지 직전 
-        FALLING_ATTACK = 1 << 19,
+        FALLING = 1 << 18,
+        PRE_LAND = 1 << 19, //착지 직전 
+        FALLING_ATTACK = 1 << 20,
 
         /* 스태미나 */
-        STAMINA_RECOVERY = 1 << 20,
+        STAMINA_RECOVERY = 1 << 21,
+        STAMINA_EXHAUSTION = 1 << 22,
 
         /* 브루탈 */
-        BRUTAL_BEGIN = 1 << 21, //브루탈 탐지 범위 내에 옴
-        BRUTAL_READY = 1 << 22, //브루탈공격 가능 범위 내에 옴
-        BRUTAL_SUCCESS = 1 << 23,  //브루탈공격 함. 
+        BRUTAL_BEGIN = 1 << 23, //브루탈 탐지 범위 내에 옴
+        BRUTAL_READY = 1 << 24, //브루탈공격 가능 범위 내에 옴
+        BRUTAL_SUCCESS = 1 << 25,  //브루탈공격 함. 
 
-        STATUE_MODE = 1 << 24, 
+        /* 상호작용 */
+        STATUE_MODE = 1 << 26, 
 
-        BLOCK_ATK_SKILL_GUARD = 1 << 25, //상호작용 조각상, 스태미나 떨어짐, 사다리 (공격,가드,스킬키 입력 안받음)
-        STAMINA_EXHAUSTION  = 1 << 26, 
+        /* 입력 막기  */
+        BLOCK_ATK_SKILL_GUARD = 1 << 27, //상호작용 조각상, 스태미나 떨어짐, 사다리 (공격,가드,스킬키 입력 안받음)
 
-        VIPER_GRAB = 1 << 27, //안쓸듯
 
+        /* 사다리 */
         LADDER_CLIMBING = 1 << 28,
         LADDER_CLIMBING_ROTATION = 1 << 29,
         LADDER_CLIMBING_END= 1 << 30,
@@ -69,7 +72,7 @@ public:
         | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST
         | FALLING | FALLING_ATTACK | PRE_LAND  | DODGING | STATUE_MODE
         | BRUTAL_BEGIN | BRUTAL_READY | BRUTAL_SUCCESS
-        | BLOCK_ATK_SKILL_GUARD  | VIPER_GRAB | LADDER_CLIMBING | LADDER_CLIMBING_ROTATION  ,
+        | BLOCK_ATK_SKILL_GUARD  | DODGE_ENDING | LADDER_CLIMBING | LADDER_CLIMBING_ROTATION  ,
 
     };
     enum PLAYER_CAMERA_DIR {
