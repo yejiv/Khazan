@@ -57,6 +57,10 @@ private:
     ANIM_STATE m_eAnimState = { ANIM_STATE::IDLE1 };
 
     class CClientInstance* m_pClientInstance = { nullptr };
+    
+
+private:
+    COLLISION_DESC m_TriggerCollisionDesc;
 
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
