@@ -2508,9 +2508,9 @@ HRESULT CKhazan_GSword::Ready_Collision()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 1.2f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.9f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
-    tCharVirDesc.fRadius = 1.f;
+    tCharVirDesc.fRadius = 0.6f;
     tCharVirDesc.fHeight = 0.8f;
     tCharVirDesc.fMaxSlopeAngle = 60.f;
     tCharVirDesc.fMass = 60.f;
