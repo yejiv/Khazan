@@ -46,6 +46,16 @@ void CAS_P2_BerserkerJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
 
 
+    if (m_eState == BSJUMPSTATE::SIDEJUMP)
+    {
+        if (pBB->Get_Value<_bool>(pViper->Get_Name(), "SkipMontion"))
+        {
+            pModel->Set_Animation(21);
+            m_eState = BSJUMPSTATE::FRONTJUMP;
+        }
+    }
+
+ 
 
     if (m_eState == BSJUMPSTATE::FRONTJUMP)
     {
@@ -69,13 +79,13 @@ void CAS_P2_BerserkerJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
     if (pModel->Play_Animation(fTimeDelta))
     {
 
-        if (BSJUMPSTATE::SIDEJUMP== m_eState)
-        {
-            pModel->Set_Animation(21);
-            m_eState = BSJUMPSTATE::FRONTJUMP;
-        }
+        //if (BSJUMPSTATE::SIDEJUMP== m_eState)
+        //{
+        //    pModel->Set_Animation(21);
+        //    m_eState = BSJUMPSTATE::FRONTJUMP;
+        //}
 
-        else if (BSJUMPSTATE::ATTACK == m_eState && m_iJumpCnt != 0)
+        if (BSJUMPSTATE::ATTACK == m_eState && m_iJumpCnt != 0)
         {
             m_eState = BSJUMPSTATE::FRONTJUMP;
             pModel->Set_Animation(21);
@@ -84,6 +94,7 @@ void CAS_P2_BerserkerJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
 
         else if (BSJUMPSTATE::ATTACK == m_eState && m_iJumpCnt == 0)
         {
+            pBB->Set_Value<_bool>(pViper->Get_Name(), "SkipMontion", false);
             pBB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_BerserkerJumpFinished", true);
             pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pViper);
         }
@@ -92,7 +103,10 @@ void CAS_P2_BerserkerJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
 
 void CAS_P2_BerserkerJump_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    
+    CViper* pViper = static_cast<CViper*>(pOwner);
+    CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+    pBB->Set_Value<_bool>(pViper->Get_Name(), "SkipMontion", false);
+
 }
 
 void CAS_P2_BerserkerJump_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
@@ -110,7 +124,7 @@ void CAS_P2_BerserkerJump_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iColli
 
         pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-        pTarget->KnockBack(vLook, 20.f, 40.f);
+        pTarget->KnockBack(vLook, 20.f, 60.f);
 
     }
 }

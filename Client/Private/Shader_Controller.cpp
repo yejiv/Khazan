@@ -19,6 +19,8 @@
 #include "Imp_Melee.h"
 #include "Halberd.h"
 #include "Viper.h"
+#include "SkySphere.h"
+#include "CloudSphere.h"
 
 CShader_Controller::CShader_Controller()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
@@ -42,10 +44,14 @@ HRESULT CShader_Controller::Initialize()
     m_MotionBlurDesc = m_pGameInstance->Get_MotionBlurDesc();
     m_RimLightDesc = m_pGameInstance->Get_RimLightDesc();
     m_ShadowDesc = m_pGameInstance->Get_ShadowDesc();
+    m_VignetteConfig = m_pGameInstance->Get_VignetteConfig();
+
+    m_TargetLightDesc.vDiffuse = _float4(10.f, 9.f, 8.f, 1.f);
+    m_TargetLightDesc.vAmbient = _float4(1.f, 0.9f, 0.8f, 1.f);
+    m_TargetLightDesc.vSpecular = m_TargetLightDesc.vDiffuse;
 
 	Ready_Level();
 	Ready_Shader();
-
 
 	return S_OK;
 }
@@ -124,58 +130,6 @@ void CShader_Controller::Ready_Shader()
                 if (ImGui::SliderFloat("Shadow Intensity", &m_ShadowDesc.fIntensity, 0.f, 1.f))
                     m_pGameInstance->Set_ShadowDesc(m_ShadowDesc);
             }
-
-			//  if (m_isRenderShadow)
-			//  {
-            //      if (ImGui::SliderFloat2("Specular", reinterpret_cast<_float*>(&m_vSpecularPower), 0.f, 256.f, "%.0f"))
-            //          m_pGameInstance->Set_SpecularPower(m_vSpecularPower);
-            //  
-			//  	if (ImGui::CollapsingHeader("Shadow Light"), ImGuiTreeNodeFlags_DefaultOpen)
-			//  	{
-			//  		if (ImGui::SliderFloat3("Direction", reinterpret_cast<_float*>(&m_CascadeConfig.vLightDir), -1.f, 1.f))
-			//  			m_pGameInstance->Set_CascadeConfig(m_CascadeConfig);
-			//  	}
-            //  
-			//  	if (ImGui::CollapsingHeader("Cascade"), ImGuiTreeNodeFlags_DefaultOpen)
-			//  	{
-			//  		ImGui::Text("Manual Split Adjustment");
-			//  		ImGui::Separator();
-            //  
-			//  		for (_uint i = 0; i < m_iNumCascades; ++i)
-			//  		{
-			//  			_float fMin = (i == 0) ? m_fCameraNear : m_CascadeConfig.Splits[i - 1];
-			//  			_float fMax = (i == (m_iNumCascades - 1)) ? m_fCameraFar : m_CascadeConfig.Splits[i + 1];
-            //  
-			//  			_char szLabel[64] = {};
-			//  			sprintf_s(szLabel, "Cascade %d Split Far", i);
-            //  
-			//  			if (ImGui::SliderFloat(szLabel, &m_CascadeConfig.Splits[i], fMin, fMax))
-			//  				m_pGameInstance->Set_CascadeConfig(m_CascadeConfig);
-			//  		}
-            //  
-			//  		ImGui::Separator();
-			//  		ImGui::Text("Auto Split Calculation");
-            //  
-			//  		if (ImGui::SliderFloat("Cascade Mix Lamda", &m_CascadeConfig.fLamda, 0.f, 1.f))
-			//  			m_pGameInstance->Set_CascadeConfig(m_CascadeConfig);
-            //  
-			//  		ImGui::Separator();
-            //  
-			//  		if (ImGui::SliderFloat("Shadow Bias", &m_CascadeConfig.fBias, 0.0001f, 0.005f, "%.4f"))
-			//  			m_pGameInstance->Set_CascadeConfig(m_CascadeConfig);
-            //  
-			//  		ImGui::Separator();
-			//  		ImGui::Text("Shadow Intensity Lerp");
-            //  
-			//  		ImGui::SliderFloat("Shadow Transition Duration", &m_fShadowTransDuration, 0.1f, 10.f, "%.1f");
-			//  		ImGui::SliderFloat("Shadow Target Intensity", &m_fTargetShadowIntensity, 0.f, 1.f, "%.1f");
-            //  
-			//  		if (ImGui::Button("Start Shadow Intensity Transition"))
-			//  			m_pGameInstance->Start_ShadowTransition(m_fShadowTransDuration, m_fTargetShadowIntensity);
-            //  
-			//  		ImGui::Separator();
-			//  	}
-			//  }
 
 			if (ImGui::Checkbox("SSAO", &m_isRenderSSAO))
 				m_pGameInstance->Set_EnableSSAO(m_isRenderSSAO);
@@ -370,27 +324,95 @@ void CShader_Controller::Ready_Shader()
 						ImGui::NewLine();
 					}
 
-					//  _bool isChangedSpace{};
-                    //  
-					//  isChangedSpace |= ImGui::Checkbox("Fog World Space", &m_isWorldSpaceFog);
-                    //  
-					//  if (isChangedSpace)
-					//  {
-					//  	m_pGameInstance->Set_FogNoiseWorldSpace(m_isWorldSpaceFog);
-                    //  
-					//  	if (m_isWorldSpaceFog)
-					//  	{
-					//  		m_FogConfig.Noise.vSpeed = { 0.05f, 0.f };
-					//  		m_FogConfig.Noise.vScale = { 0.05f, 0.05f };
-					//  	}
-					//  	else
-					//  	{
-					//  		m_FogConfig.Noise.vSpeed = { 0.01f, 0.f };
-					//  		m_FogConfig.Noise.vScale = { 1.f, 1.f };
-					//  	}
-					//  }
+                    // Sky
+                    if (ImGui::CollapsingHeader("Sky / Cloud"), ImGuiTreeNodeFlags_DefaultOpen)
+                    {
+                        if (ImGui::Button("Get Current Sky / Cloud Desc"))
+                        {
+                            m_SkyDesc = static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Get_SkyDesc();
+                            m_CloudDesc = static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Get_CloudDesc();
+                        }
 
-					//	m_pGameInstance->Set_FogConfig(m_FogConfig);
+                        ImGui::SliderFloat("Sky Cloud Transition Duration", &m_fSkyCloudDuration, 0.f, 10.f, "%.2f");
+
+                        if (ImGui::ColorEdit3("Sky Top Color", reinterpret_cast<_float*>(&m_SkyDesc.vNebulaColorR)))
+                            static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
+                        if (ImGui::ColorEdit3("Sky Middle Color", reinterpret_cast<_float*>(&m_SkyDesc.vNebulaColorG)))
+                            static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
+                        if (ImGui::ColorEdit3("Sky Bottom Color", reinterpret_cast<_float*>(&m_SkyDesc.vNebulaColorB)))
+                            static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
+
+                        if (ImGui::SliderFloat("Star Strength", &m_SkyDesc.fStarStrength, 0.f, 5.f, "%.2f"))
+                            static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
+                        if (ImGui::SliderFloat("Moon Size", &m_SkyDesc.fMoonSize, 0.f, 5.f, "%.2f"))
+                            static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
+
+                        if (ImGui::SliderFloat3("Moon Direction", reinterpret_cast<_float*>(&m_SkyDesc.vMoonDirection), -1.f, 1.f))
+                            static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
+                        
+                        if (ImGui::ColorEdit3("Moon Color", reinterpret_cast<_float*>(&m_SkyDesc.vMoonColor)))
+                            static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
+
+                        if (ImGui::SliderFloat("Moon Intensity", &m_SkyDesc.fMoonIntensity, 0.f, 5.f, "%.2f"))
+                            static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
+
+                        ImGui::Separator();
+
+                        if (ImGui::ColorEdit3("Cloud Color", reinterpret_cast<_float*>(&m_CloudDesc.vCloudColor)))
+                            static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
+
+                        if (ImGui::SliderFloat("Cloud Speed", &m_CloudDesc.fCloudSpeed, 0.f, 5.f, "%.3f"))
+                            static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
+                        if (ImGui::SliderFloat("Cloud Scale", &m_CloudDesc.fCloudScale, 0.f, 5.f, "%.3f"))
+                            static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
+                        if (ImGui::SliderFloat("Cloud Density", &m_CloudDesc.fCloudDensity, 0.f, 5.f, "%.3f"))
+                            static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
+                        if (ImGui::SliderFloat("Cloud Light Intensity", &m_CloudDesc.fCloudLightIntensity, 0.f, 5.f, "%.3f"))
+                            static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
+
+                        if (ImGui::SliderFloat3("Cloud Light Direction", reinterpret_cast<_float*>(&m_CloudDesc.vLightDir), -1.f, 1.f))
+                            static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
+
+                        if (ImGui::SliderFloat("Cloud Dynamic", &m_CloudDesc.fDynamic, 0.f, 1.f, "%.0f"))
+                            static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
+                    }
+
+                    if (ImGui::Checkbox("Vignette", &m_isEnableVignette))
+                        m_pGameInstance->Set_EnableVignette(m_isEnableVignette);
+
+                    if (m_isEnableVignette)
+                    {
+                        // 라디오 버튼으로 애니메이션 모드 고르기
+                        _bool isChanged = {};
+                        _int iVignetteMode = static_cast<_int>(m_VignetteConfig.eMode);
+
+                        isChanged |= ImGui::RadioButton("Smooth_Smooth", &iVignetteMode, static_cast<_int>(VIGNETTE_CONFIG::SMOOTH_SMOOTH));
+                        ImGui::SameLine();
+                        isChanged |= ImGui::RadioButton("Smooth_Intant", &iVignetteMode, static_cast<_int>(VIGNETTE_CONFIG::SMOOTH_INTANT));
+                        ImGui::SameLine();
+                        isChanged |= ImGui::RadioButton("Intant_Smooth", &iVignetteMode, static_cast<_int>(VIGNETTE_CONFIG::INTANT_SMOOTH));
+                        ImGui::SameLine();
+                        isChanged |= ImGui::RadioButton("None", &iVignetteMode, static_cast<_int>(VIGNETTE_CONFIG::NONE));
+
+                        if (true == isChanged)
+                            m_VignetteConfig.eMode = static_cast<VIGNETTE_CONFIG::ANIMMODE>(iVignetteMode);
+
+                        ImGui::ColorEdit3("Vignette Color", reinterpret_cast<_float*>(&m_VignetteConfig.vColor));
+
+                        ImGui::SliderFloat("Vignette Power", &m_VignetteConfig.fPower, 0.f, 10.f, "%.2f");
+
+                        ImGui::SliderFloat("Vignette Intensity", &m_VignetteConfig.fIntensity, 0.f, 10.f, "%.2f");
+
+                        // 최대 강도
+                        ImGui::SliderFloat("Vignette Max Intensity", &m_VignetteConfig.fMaxIntensity, 0.f, 10.f, "%.2f");
+
+                        // 듀레이션
+                        ImGui::SliderFloat("Vignette Duration", &m_fVignetteAnimDuration, 0.f, 5.f, "%.2f");
+
+                        // 스타트 버튼
+                        if (ImGui::Button("Start Vignette"))
+                            m_pGameInstance->Start_VignetteAnimation(m_fVignetteAnimDuration, m_VignetteConfig);
+                    }
 
                     if (ImGui::Checkbox("Edge", &m_isEnableEdge))
                     {

@@ -57,7 +57,7 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             m_pCamera->Get_Transform()->Look_Dir(XMVectorSet(0.227f, 0.126f, 0.966f, 0.f));
             m_isCameraSet1 = true;
             
-            // Ä«¸Ş¶ó ÀÌµ¿ ¹× ¾Ö´Ï¸ŞÀÌ¼Ç ½ÃÀÛ
+            // ì¹´ë©”ë¼ ì´ë™ ë° ì• ë‹ˆë©”ì´ì…˜ ì‹œì‘
         }
 
         if (m_fTime > 1.1f && !m_isScene1)
@@ -206,7 +206,7 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             m_isCameraSet8 = true;
         }
 
-        // 1ÆäÀÌÁî ¸ğµ¨ ³¡
+        // 1í˜ì´ì¦ˆ ëª¨ë¸ ë
 
         if (m_fTime > 56.f && !m_isFadeOut5)
         {
@@ -268,7 +268,7 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             m_isFadeIn6 = true;
         }
 
-        // ½Ã³×¸¶Æ½ ¸ğµ¨³¡
+        // ì‹œë„¤ë§ˆí‹± ëª¨ë¸ë
 
         if (m_fTime > 86.6f && !m_isFadeOut7)
         {
@@ -346,7 +346,7 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             m_isEnd = true;
         }
 
-        // 2ÆäÀÌÁî ¸ğµ¨ ³¡
+        // 2í˜ì´ì¦ˆ ëª¨ë¸ ë
             
     }
     else {

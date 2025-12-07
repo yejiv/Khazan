@@ -93,32 +93,32 @@ void CAS_SwingCombo_VIper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLa
         {
             pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-            pTarget->KnockBack(vLook, 20.f, 20.f);
+            pTarget->KnockBack(vLook, 15.f, 60.f);
         }
         else if (iAttackCnt == 2)
         {
             pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-            pTarget->KnockBack(vLook, 20.f, 20.f);
+            pTarget->KnockBack(vLook, 15.f, 60.f);
         }
 
         if (iAttackCnt == 3)
         {
             pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-            pTarget->KnockBack(vLook, 20.f, 40.f);
+            pTarget->KnockBack(vLook, 20.f, 60.f);
         }
         else if (iAttackCnt == 4)
         {
             pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-            pTarget->KnockBack(vLook, 20.f, 40.f);
+            pTarget->KnockBack(vLook, 20.f, 60.f);
         }
         else if (iAttackCnt == 5)
         {
             pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-            pTarget->KnockBack(vLook, 20.f, 60.f);
+            pTarget->KnockBack(vLook, 30.f, 60.f);
         }
 
     }

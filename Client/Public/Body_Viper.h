@@ -5,6 +5,7 @@
 NS_BEGIN(Engine)
 class CShader;
 class CModel;
+class CClothBody;
 class CBody;
 NS_END
 
@@ -28,6 +29,10 @@ public:
     _float4x4*              Get_BoneMatrix_Ptr(const _char* pBoneName);
     void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
   
+public:
+    void                    Set_EnableRimLight(_bool isEnable) { m_isEnableRimLight = isEnable; }
+    void                    Set_EnableBlinkRimLight(_bool isEnable) { m_isBlinkRimLight = isEnable; }
+
 private:
     CBody_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CBody_Viper(const CBody_Viper& Prototype);
@@ -68,9 +73,28 @@ private:
     _float3					m_vThrowPoint = {};
     _float4					m_vLockOnPoint = {};
     _float4x4               m_RightHandMatrix = {};
+
 private:
     _bool					m_isOnAttackCollision = { false };
 
+private:
+    _bool                   m_isEnableRimLight = {};
+    _bool                   m_isBlinkRimLight = {};
+
+    _float                  m_fTimeAcc = {};
+    _float                  m_fRimIntensity = {};
+    _float                  m_fMaxRimIntensity = { 1.f };
+    _float                  m_fMinRimIntensity = { 0.5f };
+    _float3                 m_vRimColor = {};
+    _float                  m_fRimDuration = {};
+
+private:
+    class CClothBody* m_pFeelerBody = { nullptr };
+    COLLISION_DESC m_tFeelerCollDesc = {};
+    class CBody* m_pClothBody = { nullptr };
+    COLLISION_DESC m_tClothBodyCollDesc = {};
+    _float4x4* m_pClothBodyMatrix = { nullptr };
+    _float4x4 m_pClothCombinedMatrix;
 
 public:
     static CBody_Viper*     Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

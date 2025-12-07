@@ -72,16 +72,18 @@ void CImp_Melee::Update(_float fTimeDelta)
 
     m_pController->Update(this, fTimeDelta);
 
-    if (m_isLookAt)
+    if (m_fCurrentHP > 0.f)
     {
-        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
-        if (nullptr == pModel)
-            return;
-        _float fRatio = pModel->MakeRatio();
-        Look_Target_Lerp(fTimeDelta, fRatio, m_fTurnSpeed);
+        if (m_isLookAt)
+        {
+            CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+            if (nullptr == pModel)
+                return;
+            _float fRatio = pModel->MakeRatio();
+            Look_Target_Lerp(fTimeDelta, fRatio, m_fTurnSpeed);
+        }
     }
-
-
+   
     __super::Update(fTimeDelta);
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");

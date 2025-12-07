@@ -119,8 +119,7 @@ void CKhazan_Spear_Anim_Move::Continue(_float fTimeDelta)
             return;
         }
     }
-
-
+    
     /* 발 위치 계산 */
 
     if (Has_State(MOV::MOVE_WALK | MOV::MOVE_RUN | MOV::MOVE_INJURED))
@@ -290,7 +289,6 @@ _bool CKhazan_Spear_Anim_Move::Try_ChangeAnimation(SPEAR_MOVE moveInfo)
         else if (moveInfo.eDir.AllCheck_Flag(DIR::L)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_L");
         else if (moveInfo.eDir.AllCheck_Flag(DIR::R)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_R");
 		m_isDodging = true;
-
         m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina);
         m_isEndAnimationFinished = true;
     }
@@ -392,7 +390,6 @@ _bool CKhazan_Spear_Anim_Move::Try_Turn180Animation(SPEAR_MOVE moveInfo)
             return m_pModel->Get_AnimIndexByName(m_curFoot == FOOT_R ? left.c_str() : right.c_str());
         };
 
-;
     m_isDodging = false;
     m_isEndAnimationFinished = false;
     m_isMoving = true;
@@ -416,6 +413,18 @@ _bool CKhazan_Spear_Anim_Move::Try_Turn180Animation(SPEAR_MOVE moveInfo)
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
     return true;
+}
+
+_bool CKhazan_Spear_Anim_Move::IsCurrentAnimationDodge()
+{
+    string strCurAnimName = m_pModel->Get_CurAnimName();
+
+    for (size_t i = 0; i < 8; i++)
+        if (strCurAnimName == s_strDodgeAnims[i])
+            return true;
+
+
+    return false;
 }
 
 

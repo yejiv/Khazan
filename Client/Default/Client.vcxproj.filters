@@ -1471,6 +1471,12 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone\Gem">
       <UniqueIdentifier>{b6f4ef15-03ef-4fe9-a52d-863c4e10a3aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Part Object">
+      <UniqueIdentifier>{4897fbff-6693-4e00-a677-11b568e6c9ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Part Object\Weapon">
+      <UniqueIdentifier>{e3683a3e-77d2-44ac-be33-f4754c5ee95c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2847,6 +2853,9 @@
     <ClInclude Include="..\Public\DestinyGem.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone\Gem</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\WeaponObject.h">
+      <Filter>02.GameObject\Part Object\Weapon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4202,6 +4211,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\DestinyGem.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone\Gem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\WeaponObject.cpp">
+      <Filter>02.GameObject\Part Object\Weapon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

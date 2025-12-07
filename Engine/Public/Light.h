@@ -19,11 +19,23 @@ public:
 
 public:
 	HRESULT Initialize(const LIGHT_DESC& LightDesc);
+    void Update(_float fTimeDelta);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
+    void Start_LightTransition(const LIGHT_TRANSITION_DESC& Desc, _bool isRestore);
 
 private:
 	LIGHT_DESC				m_LightDesc = {};
 	_bool					m_isEnable = {};
+
+    // Transition
+    LIGHT_TRANSITION_DESC                   m_TargetLightDesc = {};
+    _float                                  m_fTransTimeAcc = {};
+    _bool                                   m_isTransition = {};
+    LIGHT_DESC                              m_StartLightDesc = {};
+    _float                                  m_fBlinkPeriod = {};
+
+    // Backup
+    LIGHT_DESC                              m_OriginalLightDesc = {};
 
 public:
 	static CLight* Create(const LIGHT_DESC& LightDesc);
