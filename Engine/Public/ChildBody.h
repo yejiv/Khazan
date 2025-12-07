@@ -111,6 +111,8 @@ private:
     HRESULT Ready_Child(CHILD_BODY_DESC* pDesc);
     HRESULT Ready_Body(CHILD_BODY_DESC* pDesc);
 
+    void Limit_Velocity();
+
 public:
     static CChildBody* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CHILD_BODY_DESC* pDesc);
     virtual void Free() override;

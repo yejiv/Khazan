@@ -79,8 +79,12 @@ void CChildBody::Priority_Update(_float fTimeDelta)
 
 void CChildBody::Update(_float fTimeDelta)
 {
+     
+
     Apply_RootInertia(fTimeDelta);
     Type_Update(fTimeDelta);
+
+    Limit_Velocity();
     ClampToCharacter();
 }
 
@@ -228,8 +232,13 @@ void CChildBody::Cape_Update(_float fTimeDelta)
     charRight = charRight.Normalized();
 
     // depth에 따라 영향도 조금 조절 (꼬리일수록 더 많이 펄럭)
-    float depthFactor = 0.5f + 0.1f * (float)m_iDepth;
-    if (depthFactor > 1.f) depthFactor = 1.f;
+    float depth = (float)m_iDepth;
+
+    // 너무 단순히 depth에 비례시키지 말고, 
+    // 최대값을 0.8 정도로 제한
+    float depthFactor = 0.4f + 0.15f * depth; // 0.4, 0.55, 0.7, 0.85...
+    if (depthFactor > 0.8f)
+        depthFactor = 0.8f;
 
     // 누적 force
     Vec3 totalForce = Vec3::sZero();
@@ -379,10 +388,19 @@ void CChildBody::ClampToCharacter()
     Vec3  diff = Vec3(cur - restWorldPos);
     float len = diff.Length();
 
-    // 4) 최대 허용 반경 (깊이에 따라 조금씩 늘려도 됨)
-    float baseRadius = 0.3f;                 // 기본 30cm
-    float extraPerDepth = 0.05f;             // depth 하나당 5cm 추가
-    float maxRadius = baseRadius + extraPerDepth * (float)m_iDepth;
+    float depth = (float)m_iDepth;
+
+    // CAPE인 경우, 끝으로 갈수록 반대로 조금씩 타이트하게
+    float baseRadius = 0.28f;  // 전체 기본
+    float extraPerDepth = 0.02f;  // 중간 정도까지는 조금씩 증가
+
+    float maxRadius = baseRadius + extraPerDepth * min(depth, 3.0f); // depth 3까지만 증가
+
+    // 깊이가 4 이상이면 오히려 더 키우지 않고 유지 or 살짝 줄이기
+    if (depth >= 4.0f)
+        maxRadius -= 0.02f * (depth - 3.0f); // 너무 과하게 줄이진 말고 살살
+    if (maxRadius < 0.2f)
+        maxRadius = 0.2f;
 
     if (len > maxRadius && len > 1e-4f)
     {
@@ -489,10 +507,23 @@ HRESULT CChildBody::Ready_Body(CHILD_BODY_DESC* pDesc)
 
         // rest 거리
         _float restLen = (_float)(childPos - parentPos).Length();
+        // depth에 따라 슬랙 조절
+        float depth = (float)m_iDepth;
 
-        // 살짝 늘어났다 줄었다 할 수 있게 여유 줌
-        settings.mMinDistance = restLen * m_fMinDistance;
-        settings.mMaxDistance = restLen * m_fMaxDistance;
+        // 루트 근처(0~2뎁스)는 조금 여유, 끝으로 갈수록 1.0에 가까워지도록 lerp
+        float t = min(depth / 5.0f, 1.0f); // depth 5 이상이면 t=1
+
+        // 예: root: 0.95~1.03, tip: 0.99~1.01
+        float minBase = 0.95f;
+        float maxBase = 1.03f;
+        float minTip = 0.99f;
+        float maxTip = 1.01f;
+
+        float localMin = minBase + (minTip - minBase) * t;
+        float localMax = maxBase + (maxTip - maxBase) * t;
+
+        settings.mMinDistance = restLen * localMin;
+        settings.mMaxDistance = restLen * localMax;
 
         // 부드러운 스프링
         settings.mLimitsSpringSettings.mFrequency = m_fSpringFrequency; // 2Hz 정도 (너무 크면 탱탱볼처럼 튐)
@@ -505,6 +536,27 @@ HRESULT CChildBody::Ready_Body(CHILD_BODY_DESC* pDesc)
     }
 
     return S_OK;
+}
+
+void CChildBody::Limit_Velocity()
+{
+    if (!m_pBodyInterface || m_BodyID.IsInvalid())
+        return;
+
+    Vec3 vel = m_pBodyInterface->GetLinearVelocity(m_BodyID);
+
+    // depth에 따라 조금씩 허용 (꼬리일수록 살짝 더 빠르게)
+    float depth = (float)m_iDepth;
+    float baseMax = 2.0f;    // 루트 쪽
+    float extra = 1.0f;    // 뎁스 증가당 더 허용할 양
+    float maxSpeed = baseMax + extra * min(depth, 4.0f); // 대략 5~9m/s
+
+    float len = vel.Length();
+    if (len > maxSpeed && len > 1e-4f)
+    {
+        vel *= (maxSpeed / len);
+        m_pBodyInterface->SetLinearVelocity(m_BodyID, vel);
+    }
 }
 
 CChildBody* CChildBody::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CHILD_BODY_DESC* pDesc)
