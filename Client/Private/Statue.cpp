@@ -212,7 +212,10 @@ HRESULT CStatue::Ready_Collision(void* pArg)
         TriggerDesc.fMass = 1.0f;
         TriggerDesc.fRestitution = 0.0f;
         TriggerDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT);
-
+        TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        m_TriggerCollisionDesc.pGameObject = this;
+        m_TriggerCollisionDesc.isForceVaildation = true;
+        TriggerDesc.pCollisionDesc = &m_TriggerCollisionDesc;
         switch (i)
         {
         case ENUM_CLASS(STATUE_TRIGGER::FRONT):
@@ -220,12 +223,6 @@ HRESULT CStatue::Ready_Collision(void* pArg)
             TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
             
             XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
-
-            TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-            m_tCollisionDesc.pGameObject = this;
-            //pCollDesc.pInfo = ?? // 작성하기
-            TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
-
             if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
                 TEXT("Com_Trigger_Front"), reinterpret_cast<CComponent**>(&m_pTriggerCom[i]), &TriggerDesc)))
                 return E_FAIL;
@@ -235,11 +232,6 @@ HRESULT CStatue::Ready_Collision(void* pArg)
             TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
 
             XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
-
-            TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-            m_tCollisionDesc.pGameObject = this;
-            //pCollDesc.pInfo = ?? // 작성하기
-            TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
 
             if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
                 TEXT("Com_Trigger_Right"), reinterpret_cast<CComponent**>(&m_pTriggerCom[i]), &TriggerDesc)))
@@ -251,11 +243,6 @@ HRESULT CStatue::Ready_Collision(void* pArg)
 
             XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
-            TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-            m_tCollisionDesc.pGameObject = this;
-            //pCollDesc.pInfo = ?? // 작성하기
-            TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
-
             if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
                 TEXT("Com_Trigger_Back"), reinterpret_cast<CComponent**>(&m_pTriggerCom[i]), &TriggerDesc)))
                 return E_FAIL;
@@ -265,12 +252,6 @@ HRESULT CStatue::Ready_Collision(void* pArg)
             TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
 
             XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
-
-            TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-            m_tCollisionDesc.pGameObject = this;
-            //pCollDesc.pInfo = ?? // 작성하기
-            TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
-
             if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
                 TEXT("Com_Trigger_Left"), reinterpret_cast<CComponent**>(&m_pTriggerCom[i]), &TriggerDesc)))
                 return E_FAIL;
