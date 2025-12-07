@@ -62,6 +62,9 @@ private:
     _float m_fTimeAcc = { 0.f };
 
 private:
+    COLLISION_DESC m_TriggerCollisionDesc;
+
+private:
     void Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4 vTargetPos, _float fDuration);
 
 private:

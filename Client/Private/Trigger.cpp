@@ -108,7 +108,7 @@ HRESULT CTrigger::Ready_Collision(void* pArg)
     TriggerDesc.vQuat = vQuat;
     TriggerDesc.vShapeOffset = _float3(0.f, 0.0f, 0.f);
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
+    m_tCollisionDesc.isForceVaildation = true;
     TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),

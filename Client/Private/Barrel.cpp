@@ -157,6 +157,7 @@ HRESULT CBarrel::Ready_Collision(void* pArg)
     BodyDesc.vQuat = vQuat;
     BodyDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
     m_tCollisionDesc.pGameObject = this;
+    m_tCollisionDesc.isForceVaildation = true;
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
