@@ -47,8 +47,12 @@ private:
     _float m_fOffsetRotation = {};
     _bool* m_pActiveElevator = { nullptr };
 
+private :
+    class CEffect_Prefab* m_pEffect = { nullptr };
+
 private:
     HRESULT Ready_Components(void* pArg);
+    HRESULT Ready_Effect();
 
     HRESULT Bind_ShaderResources();
     HRESULT Bind_Materials(_uint iMeshIndex);
