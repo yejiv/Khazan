@@ -15,6 +15,9 @@ void CAS_Elamein_Dead::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_pMonData->iAnimIndex = 29;
     m_eState = DIE;
 
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_die_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(1));
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_die_a_01 (Korean(KR)).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0));
+
 }
 
 void CAS_Elamein_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

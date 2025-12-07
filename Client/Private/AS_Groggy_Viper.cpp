@@ -104,12 +104,26 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
                     pModel->Set_Animation(24);
                     pViper->Set_RequestRecoveryStamina(true);
                     pBB->Set_Value<_bool>(pViper->Get_Name(), "isCanBrutalAttack", false);
+                    m_eState = GROGGY::BRUTALATTACK;
                 }
             }
 
         }
-            
             break;
+
+
+        case GROGGY::BRUTALATTACK:
+        {
+            if (pModel->Play_Animation(fTimeDelta))
+            {
+                CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+                pBB->Set_Value<_bool>(pViper->Get_Name(), "isCanBrutalAttack", false);
+                pModel->Set_Animation(31);
+                m_eState = GROGGY::RECOVERY;
+            }
+        }
+            break;
+
 
         case GROGGY::RECOVERY:
             if (pModel->Play_Animation(fTimeDelta))
@@ -223,7 +237,7 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
 
 void CAS_Groggy_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-
+    
     m_pBrutalAttack->Off_BrutalAttack();
     m_pBrutalAttack->Set_IsDead(true);
     m_isBrutalAttackSuccess = false;

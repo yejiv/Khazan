@@ -94,6 +94,7 @@ _bool CDamage_Text::Render_Damage(DAMAGE_TYPE eDamageType, _vector vPos, _uint i
 
 	string strDamage = to_string(iDamage);
 	m_iLength = strDamage.length();
+    m_vDamage_UV.clear();    
     m_vDamage_UV.resize(m_iLength);
 	for (_int i = 0; i < m_iLength; ++i)
 	{

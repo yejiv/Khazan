@@ -99,7 +99,14 @@ HRESULT CDoor_Gear::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        if (GEAR == i)
+        {
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        }
+        else if (RUNE == i)
+        {
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(24), E_FAIL);
+        }
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -144,8 +151,11 @@ HRESULT CDoor_Gear::Bind_Materials(_uint iMeshIndex)
 {
     m_iMtrlFlags = 0;
 
-    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
-        m_iMtrlFlags |= M_DIFFUSE;
+    if (GEAR == iMeshIndex)
+    {
+        if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+            m_iMtrlFlags |= M_DIFFUSE;
+    }
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
         m_iMtrlFlags |= M_NORMAL;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))

@@ -157,6 +157,10 @@ private:
 
     void                            Set_DefaultTrail();
     void                            Set_EnchantTrail();
+
+    void                            Move_Sound();
+    void                            Run_Sound();
+    void                            Damage_Sound();
 public:
     static CElamein*                Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;

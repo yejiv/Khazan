@@ -11,6 +11,8 @@ private:
     virtual ~CKhazan_GS_Anim_Fall() = default;
 
 public:
+    HRESULT Initialize();
+
     void Enter() override;
     void Continue(_float fTimeDelta) override;
     void Exit() override;
@@ -28,6 +30,9 @@ public:
     void  Clear();
 
 private:
+    class CClientInstance* m_pClientInstance = { nullptr };
+    PLAYER_DATA* m_pPlayerData = { nullptr };
+
     _bool m_isFallingStart = { false };
     _bool m_isFalling = { false };
     _bool m_isFallAttacking = { false };

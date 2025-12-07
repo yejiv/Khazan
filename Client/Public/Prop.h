@@ -54,7 +54,7 @@ protected:
 
 	MAPOBJECT_PROPERTIES m_Properties = {};
 
-	_float m_fSnowAmount = { 0.5f };
+	_float m_fSnowAmount = { 1.f };
 	_float3 m_vSnowColor = { 0.92f, 0.94f, 1.f };
 
 protected:

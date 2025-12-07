@@ -603,6 +603,7 @@
     <ClInclude Include="..\Public\Viper.h" />
     <ClInclude Include="..\Public\VerticalGate.h" />
     <ClInclude Include="..\Public\Viper_Trigger.h" />
+    <ClInclude Include="..\public\WeaponObject.h" />
     <ClInclude Include="..\Public\Yetuga.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientPch.h" />
@@ -1059,6 +1060,7 @@
     <ClCompile Include="..\Private\Viper.cpp" />
     <ClCompile Include="..\Private\VerticalGate.cpp" />
     <ClCompile Include="..\Private\Viper_Trigger.cpp" />
+    <ClCompile Include="..\private\WeaponObject.cpp" />
     <ClCompile Include="..\Private\Yetuga.cpp" />
     <ClCompile Include="..\Public\AS_P2_HandStompStr_Viper.cpp" />
     <ClCompile Include="..\private\AS_Dr_Rampage_Turn.cpp" />

@@ -51,7 +51,6 @@ private:
 
 private:
 	class CLight*           Find_Light(const _wstring& strLightTag, _uint iLevelIndex);
-    void                    Lerp_LightProperties(_fvector vStart, _fvector vTarget);
 
 public:
 	static CLight_Manager*  Create(_uint iNumLevels);

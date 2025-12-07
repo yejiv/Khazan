@@ -513,7 +513,10 @@ void CStatue::Collision_Stay(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _f
         return;
 
     if (m_EventGimmick.isUnLockGearAvailable(m_iEventID))
+    {
+        m_pGuide->Update_Visible(false);
         return;
+    }
 
     m_isCollision = true;
 }

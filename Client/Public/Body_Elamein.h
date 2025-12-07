@@ -7,6 +7,7 @@ NS_BEGIN(Engine)
 class CShader;
 class CModel;
 class CBody;
+class CClothBody;
 class CTexture;
 NS_END
 
@@ -52,6 +53,13 @@ private:
     
     _int                            m_iPreAnim = { -1 };
     CElamein::MONDATA*               m_pData = { nullptr };
+
+    class CClothBody* m_pCapeBody = { nullptr };
+    COLLISION_DESC m_tCapeCollDesc = {};
+    class CBody* m_pClothBody = { nullptr };
+    COLLISION_DESC m_tClothBodyCollDesc = {};
+    _float4x4* m_pClothBodyMatrix = { nullptr };
+    _float4x4 m_pClothCombinedMatrix;
 
 private:
     HRESULT					        Ready_Components();

@@ -71,38 +71,6 @@ void CElevatorL::Priority_Update(_float fTimeDelta)
 
 void CElevatorL::Update(_float fTimeDelta)
 {
-    /*
-    if (true == m_Event.isEvent()) // m_pGameInstance->Key_Down(DIK_H) && ANIM_STATE::IDLE != m_eAnimState) // 어떤 조건이 들어오면 애니메이션 Loop 중단 후 슥슥 샥샥
-    {
-        m_Event.EventOff();
-
-        m_isAnimChange = true;
-        m_pModelCom->AnimationLoop(false);
-        *m_pModelCom->Get_CurTrackPosition() = 50.f;
-    }
-    else if (ANIM_STATE::IDLE == m_eAnimState)
-    {
-        if (m_Event.IsThirdStep()) // m_pGameInstance->Key_Down(DIK_L)) // 아이들 상태 되면 이제 슥슥 이동을 시작
-        {
-            if (MOVE_STATE::DOWNTOUP == m_eMoveState)
-            {
-
-            }
-            else
-            {
-                switch (m_eMoveState)
-                {
-                case MOVE_STATE::MID:
-                    m_eMoveState = MOVE_STATE::MIDTODOWN;
-                    break;
-                default:
-                    break;
-                }
-            }
-        }
-    }
-    */
-
     Animation_Update(fTimeDelta);
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
