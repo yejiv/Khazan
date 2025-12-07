@@ -132,15 +132,17 @@ void CElamein::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject
 {
     TARGET_DIR eDir = Get_DIR();
 
-    if (eDir == TARGET_DIR::F || eDir == TARGET_DIR::FL || eDir == TARGET_DIR::FR)
+    if (m_Data.eHitType != HITREACTION::BRUTAL_ATTACK)
     {
-        if (m_Data.fDodgeCool <= 0.f && !m_pController->Get_State_Machine()->Check_Flag(ENUM_CLASS(MONSTATE::LOCKON)))
+        if (eDir == TARGET_DIR::F || eDir == TARGET_DIR::FL || eDir == TARGET_DIR::FR)
         {
-            m_pController->AI_ApplyDamage(pGameObject, fDamage, ENUM_CLASS(eHitreaction), 3.f);
-            return;
+            if (m_Data.fDodgeCool <= 0.f && !m_pController->Get_State_Machine()->Check_Flag(ENUM_CLASS(MONSTATE::LOCKON) && m_Data.eHitType != HITREACTION::BRUTAL_ATTACK))
+            {
+                m_pController->AI_ApplyDamage(pGameObject, fDamage, ENUM_CLASS(eHitreaction), 3.f);
+                return;
+            }
         }
     }
-
     if (!m_Data.isGuard)
     {
         if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)

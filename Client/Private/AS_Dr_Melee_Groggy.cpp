@@ -11,7 +11,7 @@ void CAS_Dr_Melee_Groggy::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     if (m_pMonData == nullptr)
         m_pMonData = &static_cast<CDragonian_Melee*>(pOwner)->Get_Data();
 
-    m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isCanBrutalAttack", true);
+    m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(m_pMonData->pOwner->Get_Name(), "isCanBrutalAttack", true);
 
     m_pMonData->iAnimIndex = 26;
     m_eState = START;
