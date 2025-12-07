@@ -56,7 +56,7 @@ public:
     _bool	IsReserve() const { return m_isReserve; }
     _bool   IsTurning180() const { return m_isTurning180; }
     _bool	IsEndMoveAnimantionFinished() const { return m_isEndAnimationFinished; }
-
+    _bool   IsCurrentAnimationDodge();
 
     /* Clear */
     void    Clear_Reserve() { m_isReserve = false; m_eReserveInfo = {}; }
@@ -74,7 +74,7 @@ private:
 
 	_bool		m_isEndAnimationFinished = { false };
 	_bool		m_isMoving = { false };
-	_bool		m_isDodging = { false };
+    _bool		m_isDodging = { false };
 	_bool		m_isReserve = { false };
     _bool       m_isTurning180 = { false };
 

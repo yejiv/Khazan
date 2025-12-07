@@ -1,8 +1,17 @@
 #include "Khazan_Spear_Anim_Fall.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 CKhazan_Spear_Anim_Fall::CKhazan_Spear_Anim_Fall()
+    : m_pClientInstance{ CClientInstance::GetInstance() }
 {
+    Safe_AddRef(m_pClientInstance);
+}
+
+HRESULT CKhazan_Spear_Anim_Fall::Initialize()
+{
+    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();
+    return S_OK;
 }
 
 void CKhazan_Spear_Anim_Fall::Enter()
@@ -91,6 +100,8 @@ _bool CKhazan_Spear_Anim_Fall::Force_AttackLanding()
     m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_FallAtk_End");
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
+    m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 20.f;
+
     return true;
 }
 
@@ -105,11 +116,20 @@ void CKhazan_Spear_Anim_Fall::Clear()
 
 CKhazan_Spear_Anim_Fall* CKhazan_Spear_Anim_Fall::Create()
 {
-    return new CKhazan_Spear_Anim_Fall;
+    CKhazan_Spear_Anim_Fall* pInstance = new CKhazan_Spear_Anim_Fall();
+
+    if (FAILED(pInstance->Initialize()))
+    {
+        MSG_BOX(TEXT("Failed to Created : CKhazan_Spear_Anim_Fall"));
+        Safe_Release(pInstance);
+    }
+
+    return pInstance;
 }
 
 void CKhazan_Spear_Anim_Fall::Free()
 {
     __super::Free();
+    Safe_Release(m_pClientInstance);
 
 }

@@ -7,6 +7,7 @@
 #include "Damage_Text.h"
 #include "Target_BrutalAttack.h"
 #include "Yetuga.h"
+#include "WeaponObject.h"
 
 
 CBody_Khazan_Spear::CBody_Khazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -173,6 +174,20 @@ HRESULT CBody_Khazan_Spear::Render()
     for (auto pModel : m_RenderParts)
         Render_Part(pModel);
 
+    _float4 eyeWhite = _float4(1.0f, 0.95f, 0.95f, 1.0f);
+    _float4 pupilCircle = _float4(0.65f, 0.05f, 0.05f, 1.0f);
+    _float4 pupilLens = _float4(0.85f, 0.15f, 0.15f, 1.0f);
+    _float4 pupilRing = _float4(0.35f, 0.0f, 0.0f, 1.0f);
+    _float4 shadingColor = _float4(1.0f, 0.4f, 0.4f, 1.0f);
+    _float  pupilScale = 0.4f;
+
+    m_pShaderCom->Bind_RawValue("g_vEyeWhiteColor", &eyeWhite, sizeof(_float4));
+    m_pShaderCom->Bind_RawValue("g_vPupilCircle", &pupilCircle, sizeof(_float4));
+    m_pShaderCom->Bind_RawValue("g_vPupilLens", &pupilLens, sizeof(_float4));
+    m_pShaderCom->Bind_RawValue("g_vPupilRing", &pupilRing, sizeof(_float4));
+    m_pShaderCom->Bind_RawValue("g_vShadingColor", &shadingColor, sizeof(_float4));
+    m_pShaderCom->Bind_RawValue("g_PupilScale", &pupilScale, sizeof(_float));
+    m_pShaderCom->Begin(23);
 
     return S_OK;
 }
@@ -371,10 +386,16 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 
             pMonster->Take_Damage(m_pPlayerData->fBonusDamage, static_cast<HITREACTION>(*m_pHitReaction), this);
             //pMonster->Take_Damage(m_pPlayerData->fDamage , static_cast<HITREACTION>(*m_pHitReaction), nullptr);
-            pMonster->KnockBack(
-                XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION) 
-                - m_pParentTransform->Get_State(STATE::POSITION))
-                , 15.f, 50.f);
+
+            /* 브루탈 어택은 넉백 막기 */
+            _uint iBrutalAtkAnimIndex[2] = { m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_GrappleAtk01"),m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_GrappleAtk02") };
+            _uint iCurAnimIndex = m_pModelCom->Get_CurAnimIndex();
+            if (iCurAnimIndex != iBrutalAtkAnimIndex[0] && iCurAnimIndex != iBrutalAtkAnimIndex[1])
+                pMonster->KnockBack(
+                    XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION)
+                        - m_pParentTransform->Get_State(STATE::POSITION))
+                    , 15.f, 50.f);
+
             pMonster->Consume_Stamina(20.f);
             m_isCollision = true;
             CTransform* MonsterTransform = dynamic_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")));  
@@ -403,10 +424,15 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
                 m_isJustGuardOnce = true;
 
                 /* 몬스터한테 저스트 가드 타이밍 건내주기  */
-                CCreature* pMonster = static_cast<CCreature*>(pDesc->pGameObject);
-                if (pMonster == nullptr || pMonster->Get_CurrentHP() < 0.f)
+                if (pDesc->pGameObject == nullptr) return;
+
+                CWeaponObject* pMonster = dynamic_cast<CWeaponObject*>(pDesc->pGameObject);
+
+                if (pMonster == nullptr)
                     return;
+
                 pMonster->On_JustGuardCallback(true);
+
             }
 
             /* 가드후 충돌되면 충돌된 지점 봐라보게*/
@@ -478,7 +504,7 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
                 if (-0.7f > fDot)
                 {
                     m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
-                    m_pBrutalAttack->Setting_BrutalAttack(reinterpret_cast<const _float4*>(&monster->Get_Transform()->Get_WorldMatrixPtr()->_41), 0.f, { 0.f, 50.f });
+                    m_pBrutalAttack->Setting_BrutalAttack(pCreatureMoster->Get_LockOnPosition(), 0.f, { 0.f, 0.f });
                     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
 
                     m_pBrutalmonster = monster;

@@ -443,6 +443,22 @@ void CKhazan_GS_Anim_Move::Check_Reserve()
 
 }
 
+_bool CKhazan_GS_Anim_Move::IsCurrentAnimationDodge()
+{
+   string strCurAnimName = m_pModel->Get_CurAnimName();
+
+   /* 대검을 주로 많이 이용해서 먼저 계산 */
+    for (size_t i = 0; i < 8; i++)
+        if (strCurAnimName == s_strGSDodgeAnims[i])
+            return true;
+
+    for (size_t i = 0; i < 8; i++)
+        if (strCurAnimName == s_strSpearDodgeAnims[i])
+            return true;
+
+    return false;
+}
+
 void CKhazan_GS_Anim_Move::Clear()
 {
     //_bool		    m_isStopAnimationFinished = { false };

@@ -33,6 +33,7 @@ public:
         _float fSpringDamping = 0.9f;
 
         CLOTHTYPE eType;
+        COLLISION_DESC* pCollisionDesc = nullptr;
     }ROOT_BODY_DESC;
 
 
@@ -75,7 +76,7 @@ private:
 
 private:
     HRESULT Ready_Child(ROOT_BODY_DESC* pDesc);
-    HRESULT Ready_Body();
+    HRESULT Ready_Body(ROOT_BODY_DESC* pDesc);
 
 public:
     static CRootBody* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, ROOT_BODY_DESC* pDesc);
