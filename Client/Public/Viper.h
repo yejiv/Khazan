@@ -24,6 +24,8 @@ public:
     class CBody_Phase2_Viper*       Get_P2Body() const { return m_pPahse2Body; }
     class CCore_Viper*              Get_Core() { return m_pCore; }
 
+    void                            Set_HPUI(_bool isToggle) { m_isUIHp = isToggle; };
+
     virtual _float4*                Get_LockOnPosition();
     PHASE                           Get_Phase() const { return m_ePhase; }
     _vector                         Get_CutSceneLook() const { return XMLoadFloat3(&m_vCutSceneLook); }

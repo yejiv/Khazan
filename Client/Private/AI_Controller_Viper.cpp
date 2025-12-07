@@ -1246,7 +1246,8 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
                         static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
 
-                        _float fMaxHp, fCurrentHp, fMaxStamina, fCurrentStamina;
+                        pViper->Set_HPUI(false);
+                        /*_float fMaxHp, fCurrentHp, fMaxStamina, fCurrentStamina;
 
                         fMaxHp = pViper->Get_MaxHP();
                         fCurrentHp = pViper->Get_CurrentHP();
@@ -1259,12 +1260,9 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                         HPDesc.pHpValue = &fCurrentHp;
                         HPDesc.pStaminaMaxValue = &fMaxStamina;
                         HPDesc.pStaminaCulValue = &fCurrentStamina;
-                        HPDesc.wstrName = TEXT("진 : 전격의 바이퍼 4세");
 
-                        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
+                        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);*/
 
-
-                    
                     return BTNODESTATE::SUCCESS;
                 }
 

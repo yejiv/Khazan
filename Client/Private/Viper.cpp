@@ -186,8 +186,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
     }
 
-    //m_ePhase = PHASE::PHASE1;
-    m_ePhase = PHASE::PHASE2;
+    m_ePhase = PHASE::PHASE1;
+    //m_ePhase = PHASE::PHASE2;
 
     m_fRecoveryPerSec = 5.f;
 
@@ -238,17 +238,35 @@ void CViper::Priority_Update(_float fTimeDelta)
 
     if (pBB->Get_Value<_bool>(m_strName, "isDetected") && !m_isUIHp)
     {
-        m_isUIHp = true;
-        CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
-        HPDesc.isOpen = true;
-        HPDesc.pHpMaxValue = &m_fMaxHP;
-        HPDesc.pHpValue = &m_fCurrentHP;
-        HPDesc.pStaminaMaxValue = &m_fMaxStamina;
-        HPDesc.pStaminaCulValue = &m_fCurrentStamina;
-        HPDesc.wstrName = TEXT("바이퍼");
+        if (m_ePhase == PHASE::PHASE1)
+        {
+            m_isUIHp = true;
+            CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
+            HPDesc.isOpen = true;
+            HPDesc.pHpMaxValue = &m_fMaxHP;
+            HPDesc.pHpValue = &m_fCurrentHP;
+            HPDesc.pStaminaMaxValue = &m_fMaxStamina;
+            HPDesc.pStaminaCulValue = &m_fCurrentStamina;
+            HPDesc.wstrName = TEXT("바이퍼");
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
+
+        }
+        
+        else if (m_ePhase == PHASE::PHASE2)
+        {
+            m_isUIHp = true;
+            CBossHp::BOSSMON_UPDATE_DESC HPDesc{};
+            HPDesc.isOpen = true;
+            HPDesc.pHpMaxValue = &m_fMaxHP;
+            HPDesc.pHpValue = &m_fCurrentHP;
+            HPDesc.pStaminaMaxValue = &m_fMaxStamina;
+            HPDesc.pStaminaCulValue = &m_fCurrentStamina;
+            HPDesc.wstrName = TEXT("진 : 전격의 바이퍼 4세");
+            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
 
 
-        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
+        }
+
     }
 
     CContainerObject::Priority_Update(fTimeDelta);

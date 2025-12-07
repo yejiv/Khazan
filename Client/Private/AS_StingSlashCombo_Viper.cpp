@@ -38,7 +38,9 @@ void CAS_StingSlashCombo_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner,
 
 void CAS_StingSlashCombo_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-
+    CViper* pViper = static_cast<CViper*>(pOwner);
+    CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+    pModel->QuitAnimationSet();
 }
 
 void CAS_StingSlashCombo_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)

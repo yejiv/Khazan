@@ -78,7 +78,7 @@ void CImp_Range::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
 
-    if (m_fCurrentHP <= 0.f)
+    if (m_fCurrentHP > 0.f)
     {
         if (m_isLookAt)
         {
