@@ -461,8 +461,12 @@ public:
     void                        ADD_Gloval_Volume(_float fVolume);
 
     void                        ListenerPosSet(_vector vPos, _vector vLook, _vector vUp, _float3 vVal = { 0.f, 0.f, 0.f });
-    void                        PlaySoundOnce(const TCHAR* pSoundKey, _float3 vPos, _float3 vVel = { 0.f, 0.f, 0.f }, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
-    void                        PlaySoundLoop(const TCHAR* pSoundKey, _float3 vPos, _float3 vVel = { 0.f, 0.f, 0.f }, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
+
+    void                        PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume = 1.0f);
+    void                        PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume = 1.0f);
+
+    void                        PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, _float3 vVel = { 0.f, 0.f, 0.f }, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
+    void                        PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, _float3 vVel = { 0.f, 0.f, 0.f }, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
 
 
     void                        PlaySoundOnce(const TCHAR* pSoundKey, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);

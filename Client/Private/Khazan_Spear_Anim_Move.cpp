@@ -1,5 +1,6 @@
 #include "Khazan_Spear_Anim_Move.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 using DIR = DIRECTION_INFO::DIR;
 
@@ -27,7 +28,9 @@ const string CKhazan_Spear_Anim_Move::s_strDodgeAnims[] =
 };
 
 CKhazan_Spear_Anim_Move::CKhazan_Spear_Anim_Move()
+    : m_pClientInstance{ CClientInstance::GetInstance() }
 {
+    Safe_AddRef(m_pClientInstance);
 }
 
 HRESULT CKhazan_Spear_Anim_Move::Initialize_Prototype()
@@ -51,6 +54,9 @@ HRESULT CKhazan_Spear_Anim_Move::Initialize_Prototype()
         { 0.f, 23.f, 53.f, 85.f, 114.f, 146.f, 179.f, 211.f,246.f,278.f},
         {10.f, 42.f, 68.f, 100.f, 130.f,164.f,196.f, 230.f, 264.f},
         284.f };
+
+    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();
+
     return S_OK;
 }
 
@@ -158,6 +164,7 @@ void CKhazan_Spear_Anim_Move::Exit()
     m_isMoving = false;
     m_isReserve = false;
     m_isTurning180 = false;
+    m_isDodging = false;
     //cout << "EXIT " << endl;
 }
 
@@ -283,14 +290,15 @@ _bool CKhazan_Spear_Anim_Move::Try_ChangeAnimation(SPEAR_MOVE moveInfo)
         else if (moveInfo.eDir.AllCheck_Flag(DIR::L)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_L");
         else if (moveInfo.eDir.AllCheck_Flag(DIR::R)) iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Dodge_R");
 		m_isDodging = true;
-    
+
+        m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina);
         m_isEndAnimationFinished = true;
     }
 
 
 
     _bool isCheckMin = m_pModel->Check_MinAnimationTime();
-    if (m_iPrevSelectedAnimationIndex == iSelectedAnimationIndex && !isCheckMin)
+    if (iSelectedAnimationIndex == 0 || (m_iPrevSelectedAnimationIndex == iSelectedAnimationIndex && !isCheckMin))
        return false;
     else if (isCheckMin || Has_State(MOV::MOVE_DODGE))
     {

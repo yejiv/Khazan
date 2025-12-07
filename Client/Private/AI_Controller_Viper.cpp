@@ -136,8 +136,8 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         else
             m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-       /* if(!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
-            m_pBT->Update();*/
+        if(!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
+            m_pBT->Update();
     }
 
     m_pFSM->Update(pOwner, fTimeDelta * m_fAnimSpeed);

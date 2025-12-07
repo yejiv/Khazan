@@ -206,12 +206,12 @@ void CKhazan_Spear::Update(_float fTimeDelta)
 
         Check_IsInAir(fTimeDelta);
 
-        Update_Stats(fTimeDelta);
-
         m_pBody->Search_BrutalTarget(fTimeDelta);
         m_pBody->Check_BrutalAttack(fTimeDelta);
 
         Update_State(fTimeDelta);
+
+        Update_Stats(fTimeDelta);
 
     }
 
@@ -252,7 +252,7 @@ void CKhazan_Spear::Update(_float fTimeDelta)
             m_EffectTimeDelta = 0.f;
         }
     }
-    
+    m_pGameInstance->ListenerPosSet(m_pTransformCom->Get_State(STATE::POSITION), m_pTransformCom->Get_State(STATE::LOOK), m_pTransformCom->Get_State(STATE::UP));
 }
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
@@ -462,19 +462,22 @@ void CKhazan_Spear::Set_Position(_float4 vPos)
 void CKhazan_Spear::Update_Stats(_float fTimeDelta)
 {
     /*  스태미나 다 떨어짐 */
-    if (m_pPlayerData->fCulStamina < 0.1f)
+    if (m_pPlayerData->fCulStamina < 0.1f && !m_pAnimAttack->Is_Attacking() && !m_pAnimAttack->Is_Skilling())
     {
         m_pPlayerData->fCulStamina = 0.f;
         if (!Has_Status(STAMINA_EXHAUSTION)) {
+            Clear_Step1();
             Add_Status(STAMINA_EXHAUSTION);
             m_pBody->Get_Model()->Set_AnimationSet("Set_StaminaExhaustion");
             m_pClientInstance->Set_PlayerInput(false);     //입력 막기 
         }
 
-        if (Has_Status(STAMINA_EXHAUSTION) && (m_pBody->Get_Model()->IsFinished() || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_StaminaExhaustion")))
-        {
-            Remove_Status(STAMINA_EXHAUSTION);
-            m_pPlayerData->fCulStamina += 5.f;      //스태미나 약간 회복 
+        if (Has_Status(STAMINA_EXHAUSTION) && (m_pBody->Get_Model()->IsFinished()/* || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_StaminaExhaustion")*/))
+        { 
+            Remove_Status(STAMINA_EXHAUSTION);  
+            Clear_Step1();
+            Add_Status(STAMINA_RECOVERY);
+            m_pPlayerData->fCulStamina += m_pPlayerData->fStaminaRegen;      //스태미나 약간 회복 
             m_pClientInstance->Set_PlayerInput(true);       //입력 풀기
         }
 
@@ -1256,7 +1259,7 @@ _bool CKhazan_Spear::Attack_Input(_float fTimeDelta)
         && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB)
         && 0 < m_pAnimAttack->Get_CurrentCombo()
         && m_pAnimAttack->Get_CurrentCombo() < 2
-        && m_pAnimAttack->Is_FastAttacking())
+        && m_pAnimAttack->Is_FastCombo())
     {
         Clear_Step0();
         Add_State(CAT::M_ATTACK);
@@ -1457,10 +1460,10 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
         return;
 
     /* 닷지하기 */
-    if (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_DODGE) && m_pBody->Is_SpearFullExtension())
+    if (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_DODGE) && m_pBody->Is_SpearFullExtension() && !m_pAnimMove->IsDodgeing())
     {
         /* 닷지 : 스태미나 소모*/
-        if (!Has_Status(STAMINA_EXHAUSTION))
+        if (m_pPlayerData->fCulStamina != 0.f)
         {
             CKhazan_Spear_Anim_Move::SPEAR_MOVE info;
             info.isEquipWeapon = Has_Status(WEA::SPEAR);
@@ -1468,9 +1471,9 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
             info.iSubState = m_iCurSubState;
             info.iCycle = m_iCycle;
             info.eDir = m_eDir;
-            m_pAnimMove->Try_ChangeAnimation(info);
+            //m_pAnimMove->Try_ChangeAnimation(info);
 
-            m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina);
+           // m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina);
         }
         else
         {
@@ -2620,10 +2623,10 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.75f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.85f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
     tCharVirDesc.fRadius = 0.6f;
-    tCharVirDesc.fHeight = 1.f;
+    tCharVirDesc.fHeight = 0.8f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.fMass = 60.f;
     tCharVirDesc.fMaxStrength = 0.f;
@@ -3399,6 +3402,7 @@ void CKhazan_Spear::Debug_Widget_States()
     StatusFlag("Charging Strong", CHARGING_STRONG_ATTACK);
     StatusFlag("Again Request", SPRINT_AGAIN_REQUEST);
     StatusFlag("Ready Assault", READY_ASSAULT);
+    StatusFlag("INJURED", INJURED);
     StatusFlag("GUARD", GUARD);
     StatusFlag("GUARD_SUCCESS", GUARD_SUCCESS);
     StatusFlag("RJUST_GUARD", JUST_GUARD);
@@ -3411,6 +3415,9 @@ void CKhazan_Spear::Debug_Widget_States()
     StatusFlag("BRUTAL_BEGIN", BRUTAL_BEGIN);
     StatusFlag("BRUTAL_READY", BRUTAL_READY);
     StatusFlag("BRUTAL_SUCCESS", BRUTAL_SUCCESS);
+    StatusFlag("STAMINA_EXHAUSTION", STAMINA_EXHAUSTION);
+    StatusFlag("YETUGA_GRAB", YETUGA_GRAB);
+    StatusFlag("BLOCK_ATK_SKILL_GUARD", BLOCK_ATK_SKILL_GUARD);
 
     //StatusFlag("TURN180", TURN180);
     //StatusFlag("TURN180_REQUESTED", TURN180_REQUESTED);
@@ -3466,11 +3473,11 @@ void CKhazan_Spear::Debug_Widget_Combat()
 
     // Stamina
     ImGui::Text("Stamina");
-    ImGui::ProgressBar(m_fCurrentStamina / max(m_fMaxStamina, 0.001f), ImVec2(-1, 0),
-        (std::to_string((_int)m_fCurrentStamina) + " / " + std::to_string((_int)m_fMaxStamina)).c_str());
+    ImGui::ProgressBar(m_pPlayerData->fCulStamina / max(m_pPlayerData->fMaxStamina, 0.001f), ImVec2(-1, 0),
+        (std::to_string((_int)m_pPlayerData->fCulStamina) + " / " + std::to_string((_int)m_pPlayerData->fMaxStamina)).c_str());
 
-    ImGui::SliderFloat("Current Stamina", &m_fCurrentStamina, 0.0f, m_fMaxStamina, "%.1f");
-    ImGui::InputFloat("Max Stamina", &m_fMaxStamina, 0, 0, "%.0f");
+    ImGui::SliderFloat("Current Stamina", &m_pPlayerData->fCulStamina, 0.0f, m_pPlayerData->fMaxStamina, "%.1f");
+    ImGui::InputFloat("Max Stamina", &m_pPlayerData->fMaxStamina, 0, 0, "%.0f");
 
     ImGui::Separator();
 
@@ -3504,7 +3511,7 @@ void CKhazan_Spear::Debug_Widget_Combat()
         m_fCurrentHP = m_fMaxHP;
 
     if (ImGui::Button("Restore Stamina", ImVec2(-1, 0)))
-        m_fCurrentStamina = m_fMaxStamina;
+        m_pPlayerData->fCulStamina = m_pPlayerData->fMaxStamina;
 }
 
 void CKhazan_Spear::Debug_Widget_Animation()
@@ -3547,8 +3554,11 @@ void CKhazan_Spear::Debug_Widget_Animation()
         ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Move Animation");
         ImGui::Indent();
         ImGui::Text("Selected Index: %d", m_pAnimMove->Get_AnimationIndex());
-        ImGui::Text("Is Finished: %s", m_pAnimMove->Is_Finished() ? "YES" : "NO");
+        ImGui::Text("Is Moving: %s", m_pAnimMove->IsMoving() ? "YES" : "NO");
         ImGui::Text("Is Dodging: %s", m_pAnimMove->IsDodgeing() ? "YES" : "NO");
+        ImGui::Text("Is Reserve: %s", m_pAnimMove->IsReserve() ? "YES" : "NO");
+        ImGui::Text("Is Finished: %s", m_pAnimMove->Is_Finished() ? "YES" : "NO");
+        ImGui::Text("Is End Move Animantion Finished: %s", m_pAnimMove->IsEndMoveAnimantionFinished() ? "YES" : "NO");
         ImGui::Unindent();
     }
 
@@ -3557,8 +3567,12 @@ void CKhazan_Spear::Debug_Widget_Animation()
         ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Attack Animation");
         ImGui::Indent();
         ImGui::Text("Is Attacking: %s", m_pAnimAttack->Is_Attacking() ? "YES" : "NO");
+        ImGui::Text("Is FastAttacking: %s", m_pAnimAttack->Is_FastCombo() ? "YES" : "NO");
+        ImGui::Text("Is StrongCombo: %s", m_pAnimAttack->Is_StrongCombo() ? "YES" : "NO");
+        ImGui::Text("Is StrongCharge: %s", m_pAnimAttack->Is_StrongCharge() ? "YES" : "NO");
+        ImGui::Text("Is Skilling: %s", m_pAnimAttack->Is_Skilling() ? "YES" : "NO");
         ImGui::Text("Can Next Combo: %s", m_pAnimAttack->Can_NextCombo() ? "YES" : "NO");
-        ImGui::Text("Current Combo: %d", m_pAnimAttack->Get_CurrentCombo());
+        ImGui::Text("Current Combo: %d", m_pAnimAttack->Get_CurrentCombo() );
         ImGui::Text("Is Reserved: %s", m_pAnimAttack->Is_Reserve() ? "YES" : "NO");
         ImGui::Unindent();
     }

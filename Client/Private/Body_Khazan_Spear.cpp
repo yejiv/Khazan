@@ -401,6 +401,12 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
             if (!m_isJustGuardOnce && m_fJustGuardTime.x <= m_fJustGuardTime.y) {
                 *m_pParentStatus |= CKhazan_Spear::JUST_GUARD;
                 m_isJustGuardOnce = true;
+
+                /* 몬스터한테 저스트 가드 타이밍 건내주기  */
+                CCreature* pMonster = static_cast<CCreature*>(pDesc->pGameObject);
+                if (pMonster == nullptr || pMonster->Get_CurrentHP() < 0.f)
+                    return;
+                pMonster->On_JustGuardCallback(true);
             }
 
             /* 가드후 충돌되면 충돌된 지점 봐라보게*/
@@ -418,7 +424,7 @@ void CBody_Khazan_Spear::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjec
 
 void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER)) {
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER) && pMyDesc->strName == TEXT("Player_Search")) {
         CGameObject* pObj = pDesc->pGameObject;
 
         if (!pObj) return;
@@ -427,21 +433,6 @@ void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjec
 
         auto it = remove(m_CollMonsters.begin(), m_CollMonsters.end(), pObj);
         if (it != m_CollMonsters.end()) m_CollMonsters.erase(it, m_CollMonsters.end());
-
-       // if (m_CollMonsters.empty())
-       // {
-            //if (Has_Status(CKhazan_Spear::BRUTAL_BEGIN))
-            //{
-            //    //if (m_pBrutalAttack && !m_pBrutalAttack->Get_IsDead()) {
-            //    //    m_pBrutalAttack->Off_BrutalAttack();
-            //    //   // Safe_Release(m_pBrutalAttack);
-            //    //}
-
-            //   // if (m_pBrutalmonster)
-            //        //Safe_Release(m_pBrutalmonster);
-            //    Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
-            //}
-        //}
     }
 }
 
@@ -451,10 +442,10 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
     if (Has_Status(CKhazan_Spear::BRUTAL_BEGIN))
         return;
 
-    m_fOptimizationSearchTime.x += fTimeDelta;
+    //m_fOptimizationSearchTime.x += fTimeDelta;
 
-    if (m_fOptimizationSearchTime.x < m_fOptimizationSearchTime.y)
-        return;
+    //if (m_fOptimizationSearchTime.x < m_fOptimizationSearchTime.y)
+    //    return;
 
     if (m_isBrutalSuccess)
     {

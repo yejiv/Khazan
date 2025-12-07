@@ -211,6 +211,19 @@ void CDragonian_Rampage::Take_Damage(_float fDamage, HITREACTION eHitreaction, C
     if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
         ++m_Data.iBrutalHit;
 
+    switch (m_pGameInstance->Rand(1, 3))
+    {
+    case 1:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_E_Dmg_L_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+        break;
+    case 2:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_E_Dmg_L_02 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+        break;
+    default:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_E_Dmg_L_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+        break;
+    }
+
     __super::Take_Damage(fDamage, eHitreaction, pGameObject);
 }
 
@@ -410,63 +423,141 @@ HRESULT CDragonian_Rampage::Ready_AnimEvent()
 {
     CModel* pModel = m_pBody->Get_Model();
 
-    pModel->Register_Event("Tail_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State = (_uint)ATTACK_BODY::TAIL; });
-    pModel->Register_Event("Tail_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("Tail_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State = (_uint)ATTACK_BODY::TAIL; m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_tailatk_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("Tail_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
 
-    pModel->Register_Event("JumpClaw_1_Move", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Jump_Move_1(); });
-    pModel->Register_Event("JumpClaw_2_Move", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Jump_Move_2(); });
+    //JumpClaw ENTER
+    pModel->Register_Event("JumpCraw_Loar_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_dragoniantwinaxe_jump_atk_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
+    pModel->Register_Event("JumpCraw_Loar_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_dragoniantwinaxe_jump_atk_02 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
 
-    pModel->Register_Event("JumpClaw_1_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State = (_uint)ATTACK_BODY::HAND_R | (_uint)ATTACK_BODY::HAND_L; });
+    pModel->Register_Event("JumpClaw_1_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State = (_uint)ATTACK_BODY::HAND_R | (_uint)ATTACK_BODY::HAND_L;});
+    pModel->Register_Event("JumpClaw_1_Attack_Sound", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_dragoniantwinaxe_jump_atk_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonianclaw_jumpclaw_swish_a_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    //JumpClaw CONTINUE
     pModel->Register_Event("JumpClaw_1_Attack", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); Update_MeshTrail_L(); });
-    pModel->Register_Event("JumpClaw_1_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    pModel->Register_Event("JumpClaw_1_Move", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Jump_Move_1(); });
+    pModel->Register_Event("JumpClaw_2_Move", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Jump_Move_2(); });
+    //JumpClaw EXIT
+    pModel->Register_Event("JumpClaw_1_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
 
-    pModel->Register_Event("DoubleClaw_F_E_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L; });
-    pModel->Register_Event("DoubleClaw_F_E_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R; });
+
+    //DoubleCraw ENTER
+    pModel->Register_Event("DoubleCraw_Loar_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_dragonianclaw_doubleclaw_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
+
+    pModel->Register_Event("DoubleClaw_F_E_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L;
+                                                                                        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_dragonianclaw_doubleclaw_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonianclaw_doubleclaw_swish_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("DoubleClaw_F_3_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R;
+                                                                                        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_dragonianclaw_doubleclaw_a_02 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonianclaw_doubleclaw_swish_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("DoubleClaw_F_3_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L;
+                                                                                        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonianclaw_doubleclaw_swish_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("DoubleClaw_F_E_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R;
+                                                                                        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonianclaw_doubleclaw_swish_a_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("DoubleClaw_F_2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R;
+                                                                                        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_dragonianclaw_doubleclaw_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonianclaw_doubleclaw_swish_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("DoubleClaw_F_2_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L;
+                                                                                        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonianclaw_doubleclaw_swish_a_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    //DoubleCraw CONTINUE
     pModel->Register_Event("DoubleClaw_F_E_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_L(); });
-    pModel->Register_Event("DoubleClaw_F_E_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); });
-    pModel->Register_Event("DoubleClaw_F_E_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L; });
-    pModel->Register_Event("DoubleClaw_F_E_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R;  });
-
-    pModel->Register_Event("DoubleClaw_F_3_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R; });
-    pModel->Register_Event("DoubleClaw_F_3_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L; });
     pModel->Register_Event("DoubleClaw_F_3_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); });
     pModel->Register_Event("DoubleClaw_F_3_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_L(); });
-    pModel->Register_Event("DoubleClaw_F_3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; });
-    pModel->Register_Event("DoubleClaw_F_3_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L;  });
-
-    pModel->Register_Event("DoubleClaw_F_2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R; });
-    pModel->Register_Event("DoubleClaw_F_2_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L; });
+    pModel->Register_Event("DoubleClaw_F_E_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); });
     pModel->Register_Event("DoubleClaw_F_2_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); });
     pModel->Register_Event("DoubleClaw_F_2_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_L(); });
-    pModel->Register_Event("DoubleClaw_F_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; });
-    pModel->Register_Event("DoubleClaw_F_2_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L;  });
+    
+    //DoubleCraw EXIT
+    pModel->Register_Event("DoubleClaw_F_E_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L; });
+    pModel->Register_Event("DoubleClaw_F_E_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R;  });
+    pModel->Register_Event("DoubleClaw_F_3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; });
+    pModel->Register_Event("DoubleClaw_F_3_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L;  });
+    pModel->Register_Event("DoubleClaw_F_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; });
+    pModel->Register_Event("DoubleClaw_F_2_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L;  });
 
-    // ??
-    //  pModel->Register_Event("DoubleClaw_F_2_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State = (_uint)ATTACK_BODY::HAND_R | (_uint)ATTACK_BODY::HAND_L; });
-    //  pModel->Register_Event("DoubleClaw_F_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
-
-    pModel->Register_Event("ChainCraw_F_Attack_1_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L; });
-    pModel->Register_Event("ChainCraw_F_Attack_1_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R; });
+    //ChainCraw ENTER
+    pModel->Register_Event("ChainCraw_Loar_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_dragonianclaw_doubleclaw_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
+    pModel->Register_Event("ChainCraw_F_Attack_1_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L;
+                                                                                                m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonianclaw_chainclaw_swish_c_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("ChainCraw_F_Attack_1_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R;
+                                                                                                m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonianclaw_chainclaw_swish_c_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f); });
+    pModel->Register_Event("ChainCraw_F_Attack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R;
+                                                                                                m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonianclaw_chainclaw_swish_c_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Atk_S_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0)); });
+    pModel->Register_Event("ChainCraw_F_Attack_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L; 
+                                                                                                m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonianclaw_chainclaw_swish_c_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Atk_S_02 (SFX).wav"), Get_Position(), Get_SoundChannel(0)); });
+    pModel->Register_Event("ChainCraw_F_Attack_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R;
+                                                                                                m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonianclaw_chainclaw_swish_d_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Atk_S_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0)); });
+    pModel->Register_Event("ChainCraw_F_Attack_2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAttackBody_State = (_uint)ATTACK_BODY::HAND_R | (_uint)ATTACK_BODY::HAND_L;
+                                                                                                m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonianclaw_chainclaw_swish_d_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Atk_S_04 (SFX).wav"), Get_Position(), Get_SoundChannel(0)); });
+    pModel->Register_Event("NextEvent_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.iAnimIndex = 15; });
+    //ChainCraw CONTINUE
     pModel->Register_Event("ChainCraw_F_Attack_1_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_L(); });
     pModel->Register_Event("ChainCraw_F_Attack_1_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); });
-    pModel->Register_Event("ChainCraw_F_Attack_1_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L; });
-    pModel->Register_Event("ChainCraw_F_Attack_1_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; this->m_Data.iAnimIndex = 16;  });
-
-    pModel->Register_Event("ChainCraw_F_Attack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R; });
-    pModel->Register_Event("ChainCraw_F_Attack_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_L; });
-    pModel->Register_Event("ChainCraw_F_Attack_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State |= (_uint)ATTACK_BODY::HAND_R; });
     pModel->Register_Event("ChainCraw_F_Attack_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); });
     pModel->Register_Event("ChainCraw_F_Attack_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_L(); });
     pModel->Register_Event("ChainCraw_F_Attack_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); });
-    pModel->Register_Event("ChainCraw_F_Attack_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; });
-    pModel->Register_Event("ChainCraw_F_Attack_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L; });
-    pModel->Register_Event("ChainCraw_F_Attack_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; });
-
-    pModel->Register_Event("NextEvent_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAnimIndex = 15; });
-
-    pModel->Register_Event("ChainCraw_F_Attack_2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.iAttackBody_State = (_uint)ATTACK_BODY::HAND_R | (_uint)ATTACK_BODY::HAND_L; });
     pModel->Register_Event("ChainCraw_F_Attack_2_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail_R(); Update_MeshTrail_L(); });
-    pModel->Register_Event("ChainCraw_F_Attack_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.iAttackBody_State = 0; });
+    
+    //ChainCraw EXIT
+    pModel->Register_Event("ChainCraw_F_Attack_1_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L; });
+    pModel->Register_Event("ChainCraw_F_Attack_1_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; m_Data.iAnimIndex = 16;  });
+    pModel->Register_Event("ChainCraw_F_Attack_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; });
+    pModel->Register_Event("ChainCraw_F_Attack_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_L; });
+    pModel->Register_Event("ChainCraw_F_Attack_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State &= ~(_uint)ATTACK_BODY::HAND_R; });
+    pModel->Register_Event("ChainCraw_F_Attack_2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.iAttackBody_State = 0; });
+
+
+
+    //MoveSound
+    pModel->Register_Event("Lock_B_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_B_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_F_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_F_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_L_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_L_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_R_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_R_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+
+
+    pModel->Register_Event("Turn_L_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_L_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_R_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_R_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_L_180_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_L_180_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_R_180_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_R_180_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+
+
+    pModel->Register_Event("JumpCraw_Move_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("JumpCraw_Move_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("JumpCraw_Move_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+
+
+    pModel->Register_Event("ChainCraw_Move_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("ChainCraw_Move_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("ChainCraw_Move_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("ChainCraw_Move_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("ChainCraw_Move_5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("ChainCraw_Move_6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("ChainCraw_Move_7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+
+    pModel->Register_Event("DoubleCraw_Run_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
+    pModel->Register_Event("DoubleCraw_Run_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
+    pModel->Register_Event("DoubleCraw_Run_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
+    pModel->Register_Event("DoubleCraw_Run_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
+    pModel->Register_Event("DoubleCraw_Run_5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
+    pModel->Register_Event("DoubleCraw_Run_6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
+    pModel->Register_Event("DoubleCraw_Run_7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
+    pModel->Register_Event("DoubleCraw_Run_8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
+    pModel->Register_Event("DoubleCraw_Run_9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
+    pModel->Register_Event("DoubleCraw_Run_10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
+    pModel->Register_Event("DoubleCraw_Run_11", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
+    pModel->Register_Event("DoubleCraw_Run_12", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
 
     return S_OK;
 }
@@ -612,6 +703,32 @@ void CDragonian_Rampage::Update_MeshTrail_L()
     _vector vClawStart_3 = XMLoadFloat4(&m_vClawL_3_Start);
     _vector vClawEnd_3 = XMLoadFloat4(&m_vClawL_3_End);
     m_pMeshTrail[ENUM_CLASS(CLAW::LEFT_3)]->Add_ControlPoint(vClawStart_3, vClawEnd_3);
+}
+
+void CDragonian_Rampage::Move_Sound()
+{
+    switch (m_pGameInstance->Rand(1, 6))
+    {
+    case 1:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_01 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    case 2:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_02 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    case 3:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_03 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    case 4:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_04 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    case 5:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_05 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_06 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    }
+}
+
+void CDragonian_Rampage::Run_Sound()
+{
+    switch (m_pGameInstance->Rand(1, 6))
+    {
+    case 1:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_run_dirt_01 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    case 2:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_run_dirt_02 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    case 3:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_run_dirt_03 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    case 4:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_run_dirt_04 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    case 5:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_run_dirt_05 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_run_dirt_06 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    }
 }
 
 CDragonian_Rampage* CDragonian_Rampage::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)

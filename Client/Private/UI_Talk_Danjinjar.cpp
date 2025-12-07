@@ -58,6 +58,7 @@ HRESULT CUI_Talk_Danjinjar::On_Panel(_int iTalkIndex)
     m_wstrFullText = pData->wstrTalk;
     m_fTextSpeed = pData->fTextSpeed;
     m_fDeleyTime = pData->fDeleyTime;
+    m_wstrSound = pData->wstrSound;
 
     m_IsUpdate = true;
     m_eAnimState = UIANIMSTATE::ON;
@@ -278,12 +279,15 @@ void CUI_Talk_Danjinjar::Update_Font(_float fTimeDelta)
     if (m_fTalktime >= 1.f && !m_wstrFullText.empty())
     {
         m_fTalktime = 0.f;
-
-        m_wstrCulText += m_wstrFullText.front();
+        _tchar szFront = m_wstrFullText.front();
         m_wstrFullText.erase(0, 1);
 
+        m_wstrCulText += szFront;
+        if (szFront != TEXT(' '))
+            m_pGameInstance->PlaySoundOnce(m_wstrSound.c_str(), 1.f, &m_pChannel);
+        
         m_pText1->Set_Text(m_wstrCulText);
-
+        
         _float fCenter_ScaleX = (56.f / 168.f) * 2.625f;
         m_pTransformCom->Scale({ (56.f / 168.f) * 2.625f, 1.f, 1.f });
 
@@ -332,6 +336,7 @@ void CUI_Talk_Danjinjar::Update_Font(_float fTimeDelta)
                 m_wstrFullText = pData->wstrTalk;
                 m_fTextSpeed = pData->fTextSpeed;
                 m_fDeleyTime = pData->fDeleyTime;
+                m_wstrSound = pData->wstrSound;
                 m_fTalktime = 0.f;
                 m_wstrCulText = {};
                 m_pText1->Set_Text(TEXT(""));
@@ -375,6 +380,7 @@ void CUI_Talk_Danjinjar::Update_Font(_float fTimeDelta)
                 m_wstrFullText = pData->wstrTalk;
                 m_fTextSpeed = pData->fTextSpeed;
                 m_fDeleyTime = pData->fDeleyTime;
+                m_wstrSound = pData->wstrSound;
                 m_fTalktime = 0.f;
                 m_wstrCulText = {};
                 m_pText1->Set_Text(TEXT(""));

@@ -18,14 +18,13 @@ void CAS_Dr_Melee_Sleep::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAS_Dr_Melee_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+    if (m_eState == SLEEP && m_pMonData->isSleep)
     {
-        m_isChange ? m_isChange = false : m_isChange = true;
-        m_isChange ? m_pMonData->iAnimIndex = 34 : m_pMonData->iAnimIndex = 20;
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_dragonian_foley_rattle_a_02 (SFX).wav"), pOwner->Get_Position());
     }
-
-    if (m_eState == SLEEP && !m_pMonData->isSleep)
+    else if (m_eState == SLEEP && !m_pMonData->isSleep)
     {
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_dragonian_wakeup_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0));
         m_pMonData->iAnimIndex = 32;
         m_pMonData->pOwner->Hp_Visivle(true);
         m_eState = GETUP;
@@ -39,7 +38,7 @@ void CAS_Dr_Melee_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
 
 void CAS_Dr_Melee_Sleep::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    m_pMonData->fAttackCool = 5.f;
+    m_pMonData->fAttackCool = 1.5f;
     m_pMonData->isStateFiash = false;
     m_pMonData->pOwner->Hp_Visivle(true);
     m_eState = GETUP;
