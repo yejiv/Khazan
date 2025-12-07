@@ -93,6 +93,10 @@ private:
     void                            FX_2PhaseEyeTrail();
 
 private:
+    void                            Viper_Cinematic_ShaderSettings();
+    void                            Viper_2PhaseBerserker_ShaderSettings();
+
+private:
     class CBody_Viper*              m_pBody = { nullptr };
     class CBody_Cinematic_Viper*    m_pCinematicBody = { nullptr };
     class CBody_Phase2_Viper*       m_pPahse2Body = { nullptr };

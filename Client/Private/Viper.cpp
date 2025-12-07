@@ -17,6 +17,8 @@
 #include "AS_CutScene_2Phase_Viper.h"
 #include "MeshTrail.h"
 #include "LineTrail.h"
+#include "SkySphere.h"
+#include "CloudSphere.h"
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -176,6 +178,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimEffectEvent()))
         return E_FAIL;
 
+    // 2Phase 시네마틱 셰이더 세팅
+    //  Viper_Cinematic_ShaderSettings();
 
     m_pController = CAI_Controller_Viper::Create(this);
     if (nullptr == m_pController)
@@ -186,8 +190,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
     }
 
-    //m_ePhase = PHASE::PHASE1;
-    m_ePhase = PHASE::PHASE2;
+    m_ePhase = PHASE::PHASE1;
+    //  m_ePhase = PHASE::PHASE2;
 
     m_fRecoveryPerSec = 5.f;
 
@@ -273,6 +277,22 @@ void CViper::Priority_Update(_float fTimeDelta)
 
 void CViper::Update(_float fTimeDelta)
 {
+    // Test
+    if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+    {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+        Viper_2PhaseBerserker_ShaderSettings();
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    {
+        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+        {
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+            Viper_Cinematic_ShaderSettings();
+        }
+    }
+
     if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
     {
         m_isGhost = true;
@@ -2442,7 +2462,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         _vector rot = Decompose_Rotation(XMLoadFloat4x4(&combinedMatrix));
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Grap"), rot, m_pWeapon->Get_LeftSwordTip());
         });
-     
+
     pModel->Register_Event("Grab_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         _float4x4 combinedMatrix = m_pWeapon->Get_CombinedMatrix();
         _vector rot = Decompose_Rotation(XMLoadFloat4x4(&combinedMatrix));
@@ -2450,7 +2470,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         });
 
     pModel->Register_Event("Grab_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Grap"), m_iRotFX_Idx); 
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Grap"), m_iRotFX_Idx);
         });
 
     //cutscene - 1p
@@ -2657,6 +2677,38 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("StingSlashLoop01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
     pModel->Register_Event("StingSlashLoop02_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
     pModel->Register_Event("StingSlashEnd_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
+
+    // CutScene
+    pModel->Register_Event("CameraShaking0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        // 메인 조명 낮추기
+        //  LIGHT_TRANSITION_DESC LightDesc{};
+        //  LightDesc.fDuration = 4.f;
+        //  LightDesc.vFadeTime = _float2(4.f, 0.f);
+        //  LightDesc.vDiffuse = _float4(0.7f, 0.7f, 0.7f, 0.7f);
+        //  LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+        //  LightDesc.vSpecular = LightDesc.vDiffuse;
+        //  LightDesc.isReturnToStart = false;
+        //  m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
+        });
+    pModel->Register_Event("CameraShaking1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+        });
+    pModel->Register_Event("CoreBlinkLight", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        // 조명 키기, 블링크 조명
+        m_pGameInstance->Set_LightEnable(TEXT("Viper_Core"), ENUM_CLASS(LEVEL::VIPER), true);
+        LIGHT_TRANSITION_DESC LightDesc{};
+        LightDesc.fDuration = 25.f;
+        LightDesc.vFadeTime = _float2(0.f, 0.f);
+        LightDesc.vDiffuse = _float4(0.7f, 0.7f, 0.5f, 0.7f);
+        LightDesc.vAmbient = _float4(0.7f, 0.7f, 0.5f, 0.7f);
+        LightDesc.vSpecular = LightDesc.vDiffuse;
+        LightDesc.isReturnToStart = true;
+        LightDesc.iBlinkCount = 125;
+        m_pGameInstance->Start_LightTransition(TEXT("Viper_Core"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+        });
+
+    // 시네마틱으로 변신하기 전, 노려보기 전 건물 부숴지고 포그 스카이 클라우드 변경
 
     // ======================================== 2 Phase ========================================
     
@@ -3106,6 +3158,11 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("MeshTrail_SW10", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
     pModel->Register_Event("MeshTrail_SW11", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
 
+
+    // ======================================== Cinematic ========================================
+
+
+
     return S_OK;
 }
 
@@ -3284,6 +3341,179 @@ void CViper::FX_2PhaseEyeTrail()
     _vector vRightEyeRight = m_pPahse2Body->Get_BoneMatrix("Bone_eye_R").r[0];
     vRightEyePos += vRightEyeRight * 5.f;
     m_pLineTrail[ENUM_CLASS(EYE::RIGHT)]->Add_ControlPoint(vRightEyePos);
+}
+
+void CViper::Viper_Cinematic_ShaderSettings()
+{
+    _float fDuration = 2.f;
+
+    // 메인 조명
+    LIGHT_TRANSITION_DESC LightDesc{};
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.7f, 0.7f, 0.7f, 0.7f);
+    LightDesc.vAmbient = _float4(0.4f, 0.4f, 0.4f, 0.4f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    // ON
+    // 플레이어 주변광 점조명 주황색
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(1.f, 0.371f, 0.f, 1.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.0f);
+    LightDesc.vSpecular = _float4(0.5f, 0.185f, 0.0f, 1.f);
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_Orange"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    // 플레이어 주변광 점조명 흰색
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_White"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    // 바이퍼 무기 조명
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(2.f, 1.5f, 1.2f, 1.f);
+    LightDesc.vAmbient = _float4(0.5f, 0.35f, 0.3f, 1.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Viper_TwinBlade_R"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    FOG_CONFIG FogConfig = m_pGameInstance->Get_FogConfig();
+    FogConfig.isUseSubColor = false;
+    FogConfig.isUseHeight = false;
+    m_pGameInstance->Set_FogConfig(FogConfig);
+
+    // 포그 세팅 (어두운 보라색)
+    FOG_TRANSITION_DESC FogDesc{};
+    FogDesc.fDensity = 0.05f;
+    FogDesc.fBias = 0.95f;
+    FogDesc.vColor = _float4(0.1f, 0.053f, 0.086f, 1.f);
+    FogDesc.isUseHeight = false;
+    FogDesc.isUseNoise = false;
+    m_pGameInstance->Start_FogTransition(fDuration, FogDesc);
+
+    // 스카이 박스 세팅
+    SKY_DESC SkyDesc{};
+    SkyDesc.vNebulaColorR = _float3(0.147f, 0.076f, 0.125f);
+    SkyDesc.vNebulaColorG = _float3(0.147f, 0.076f, 0.125f);
+    SkyDesc.vNebulaColorB = _float3(0.f, 0.f, 0.f);
+    SkyDesc.fStarStrength = 0.2f;
+    SkyDesc.fMoonSize = 0.8f;
+    SkyDesc.vMoonDirection = _float3(-0.21f, 0.19f, 1.f);
+    SkyDesc.vMoonColor = _float3(1.f, 0.5f, 0.5f);
+    SkyDesc.fMoonIntensity = 0.4f;
+    static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 0))->Start_LerpSky(SkyDesc, fDuration);
+
+    // 클라우드 세팅
+    CLOUD_DESC CloudDesc{};
+    CloudDesc.vCloudColor = _float3(1.f, 1.f, 1.f);
+    CloudDesc.fCloudSpeed = 0.25f;
+    CloudDesc.fCloudScale = 1.f;
+    CloudDesc.fCloudDensity = 1.f;
+    CloudDesc.fCloudLightIntensity = 0.2f;
+    CloudDesc.vLightDir = _float3(0.f, 1.f, 0.f);
+    CloudDesc.fDynamic = 1.f;
+    static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 1))->Start_LerpCloud(CloudDesc, fDuration);
+    
+    // Test
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_Gray"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+}
+
+void CViper::Viper_2PhaseBerserker_ShaderSettings()
+{
+    _float fDuration = 3.f;
+    // 광전사 모드 셰이더 세팅
+
+    // 메인 조명 끄기
+    LIGHT_TRANSITION_DESC LightDesc{};
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    // 점 조명 : 그레이 조명 켜지기, 오렌지, 화이트, 무기 조명은 꺼지기
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(1.f, 0.95f, 0.8f, 1.f);
+    LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 0.5f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_Gray"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_White"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_Orange"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Viper_TwinBlade_R"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    // 포그 검정
+    FOG_TRANSITION_DESC FogDesc{};
+    FogDesc.fDensity = 0.05f;
+    FogDesc.fBias = 0.95f;
+    FogDesc.vColor = _float4(0.f, 0.f, 0.f, 0.f);
+    FogDesc.isUseHeight = false;
+    FogDesc.isUseNoise = false;
+    m_pGameInstance->Start_FogTransition(fDuration, FogDesc);
+
+    // 스카이 검정
+    SKY_DESC SkyDesc{};
+    SkyDesc.vNebulaColorR = _float3(0.f, 0.f, 0.f);
+    SkyDesc.vNebulaColorG = _float3(0.f, 0.f, 0.f);
+    SkyDesc.vNebulaColorB = _float3(0.f, 0.f, 0.f);
+    SkyDesc.fStarStrength = 0.f;
+    SkyDesc.fMoonSize = 0.8f;
+    SkyDesc.vMoonDirection = _float3(-0.21f, 0.19f, 1.f);
+    SkyDesc.vMoonColor = _float3(0.f, 0.f, 0.f);
+    SkyDesc.fMoonIntensity = 0.f;
+    static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 0))->Start_LerpSky(SkyDesc, fDuration);
+
+    // 클라우드 세팅
+    CLOUD_DESC CloudDesc{};
+    CloudDesc.vCloudColor = _float3(0.f, 0.f, 0.f);
+    CloudDesc.fCloudSpeed = 0.f;
+    CloudDesc.fCloudScale = 0.f;
+    CloudDesc.fCloudDensity = 0.f;
+    CloudDesc.fCloudLightIntensity = 0.f;
+    CloudDesc.vLightDir = _float3(0.f, 0.f, 0.f);
+    CloudDesc.fDynamic = 0.f;
+    static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 1))->Start_LerpCloud(CloudDesc, fDuration);
+
+    // 림라이트 끄기
+    m_pGameInstance->Set_EnableRimLight(false);
 }
 
 CViper* CViper::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

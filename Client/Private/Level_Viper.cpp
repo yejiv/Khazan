@@ -31,8 +31,7 @@ CLevel_Viper::CLevel_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 }
 
 HRESULT CLevel_Viper::Initialize()
-{
-
+{   
     // 플레이어, 카메라, 트리거
 
     CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
@@ -44,16 +43,7 @@ HRESULT CLevel_Viper::Initialize()
     // 우선 맵 오브젝트 서브 레벨 로드
     
     //CHECK_FAILED(Ready_Lights(TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-
-    // Test MainLight
-    LIGHT_DESC LightDesc = {};
-    LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
-    LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-    LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-    LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
-    LightDesc.vSpecular = LightDesc.vDiffuse;
-    if (FAILED(m_pGameInstance->Add_Light(TEXT("MainLight"), ENUM_CLASS(LEVEL::VIPER), LightDesc)))
-        return E_FAIL;
+    CHECK_FAILED(Ready_Lights(), E_FAIL);
 
     CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
@@ -74,13 +64,15 @@ HRESULT CLevel_Viper::Initialize()
     }
     //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Laye0r_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
-    CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
 
     //CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
     //CClientInstance::GetInstance()->Fade_Out();
     CHECK_FAILED(Ready_Item(), E_FAIL);
     if (!Wait_All_Futures())
         return E_FAIL;
+    
+    // 바이퍼 레벨 초기 포그, 스카이박스, 클라우드 세팅
+    CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
 
     m_futures.clear();
 
@@ -725,6 +717,84 @@ HRESULT CLevel_Viper::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentLe
 	return S_OK;
 }
 
+HRESULT CLevel_Viper::Ready_Lights()
+{
+    // Test MainLight
+    LIGHT_DESC LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::DIRECTIONAL;
+    LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+    LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("MainLight"), ENUM_CLASS(LEVEL::VIPER), LightDesc)))
+        return E_FAIL;
+
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.0f);
+    LightDesc.vSpecular = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.fRange = 25.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Player_PointLight_Orange"), ENUM_CLASS(LEVEL::VIPER), LightDesc)))
+        return E_FAIL;
+
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 10.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Player_PointLight_White"), ENUM_CLASS(LEVEL::VIPER), LightDesc)))
+        return E_FAIL;
+
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 20.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Player_PointLight_Gray"), ENUM_CLASS(LEVEL::VIPER), LightDesc)))
+        return E_FAIL;
+
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 5.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Viper_Core"), ENUM_CLASS(LEVEL::VIPER), LightDesc, false)))
+        return E_FAIL;
+
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 3.5f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Viper_TwinBlade_R"), ENUM_CLASS(LEVEL::VIPER), LightDesc)))
+        return E_FAIL;
+
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.9f, 0.8f, 0.7f, 1.f);
+    LightDesc.vAmbient = _float4(0.8f, 0.6f, 0.4f, 1.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 40.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Viper_Thunder"), ENUM_CLASS(LEVEL::VIPER), LightDesc, false)))
+        return E_FAIL;
+
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.9f, 0.8f, 0.7f, 1.f);
+    LightDesc.vAmbient = _float4(0.8f, 0.6f, 0.4f, 1.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 100.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Viper_Thunder_Ambient"), ENUM_CLASS(LEVEL::VIPER), LightDesc, false)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 HRESULT CLevel_Viper::Ready_Trigger(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap)
 {
 	// Json 기본 경로
@@ -980,31 +1050,38 @@ HRESULT CLevel_Viper::Ready_Shader_Settings()
     FOG_CONFIG FogConfig{};
     FogConfig.eType = FOG_CONFIG::EXP;
     FogConfig.fDensity = 0.05f;
-    FogConfig.fBias = 0.95f;
+    FogConfig.fBias = 0.925f;
     FogConfig.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
     FogConfig.Noise.isEnable = false;
     FogConfig.isUseHeight = true;
     FogConfig.fBaseHeight = -145.f;
     FogConfig.isUseSubColor = true;
-    FogConfig.fSubColorStartHeight = 245.f;
+    FogConfig.fSubColorStartHeight = 1154.f;
     FogConfig.vSubColor = _float4(0.235f, 0.318f, 0.341f, 1.f);
     m_pGameInstance->Set_FogConfig(FogConfig);
 
-    // 초기 Fog
-    //  FOG_CONFIG FogConfig{};
-    //  FogConfig.eType = FOG_CONFIG::EXP;
-    //  FogConfig.fDensity = 0.03f;
-    //  FogConfig.fBias = 0.95f;
-    //  FogConfig.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
-    //  FogConfig.Noise.isEnable = false;
-    //  FogConfig.isUseHeight = true;
-    //  FogConfig.fBaseHeight = -145.f;
-    //  FogConfig.isUseSubColor = true;
-    //  FogConfig.fSubColorStartHeight = 245.f;
-    //  FogConfig.vSubColor = _float4(0.235f, 0.318f, 0.341f, 1.f);
-    //  m_pGameInstance->Set_FogConfig(FogConfig);
+    // 초기 스카이 박스 세팅
+    SKY_DESC SkyDesc{};
+    SkyDesc.vNebulaColorR = _float3(0.235f, 0.318f, 0.341f);
+    SkyDesc.vNebulaColorG = _float3(0.055f, 0.110f, 0.157f);
+    SkyDesc.vNebulaColorB = _float3(0.055f, 0.110f, 0.157f);
+    SkyDesc.fStarStrength = 0.f;
+    SkyDesc.fMoonSize = 0.8f;
+    SkyDesc.vMoonDirection = _float3(-0.21f, 0.19f, 1.f);
+    SkyDesc.vMoonColor = _float3(0.631f, 0.631f, 0.631f);
+    SkyDesc.fMoonIntensity = 2.5f;
+    static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 0))->Start_LerpSky(SkyDesc, 0.f);
 
-
+    // 초기 클라우드 세팅
+    CLOUD_DESC CloudDesc{};
+    CloudDesc.vCloudColor = _float3(1.f, 1.f, 1.f);
+    CloudDesc.fCloudSpeed = 0.25f;
+    CloudDesc.fCloudScale = 3.f;
+    CloudDesc.fCloudDensity = 0.2f;
+    CloudDesc.fCloudLightIntensity = 1.f;
+    CloudDesc.vLightDir = _float3(0.f, 1.f, 0.f);
+    CloudDesc.fDynamic = 1.f;
+    static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 1))->Start_LerpCloud(CloudDesc, 0.f);
 
     return S_OK;
 }

@@ -179,6 +179,23 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     //    m_pClientInstance->Lock_Skill((1 << 8));
     //    m_pClientInstance->Unlock_Skill(1 << 8);
     //}
+
+    // 2Phase Light Setting Test
+    _float4 vPos = _float4(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42 + 5.f, m_CombinedWorldMatrix._43, m_CombinedWorldMatrix._44);
+
+    m_pGameInstance->Set_LightPosition(TEXT("Player_PointLight_Orange"), ENUM_CLASS(LEVEL::VIPER), vPos);
+    m_pGameInstance->Set_LightPosition(TEXT("Player_PointLight_White"), ENUM_CLASS(LEVEL::VIPER), vPos);
+
+    _vector vPosition = XMLoadFloat4(&vPos);
+    _vector vLook = XMVectorSet(m_CombinedWorldMatrix._31, m_CombinedWorldMatrix._32, m_CombinedWorldMatrix._33, 0.f);
+
+    vPosition += vLook * 10.f;
+    _float4 vResultPos{};
+    XMStoreFloat4(&vResultPos, vPosition);
+    m_pGameInstance->Set_LightPosition(TEXT("Player_PointLight_Gray"), ENUM_CLASS(LEVEL::VIPER), vResultPos);
+
+    m_pGameInstance->Set_LightPosition(TEXT("Viper_Thunder"), ENUM_CLASS(LEVEL::VIPER), vResultPos);
+    m_pGameInstance->Set_LightPosition(TEXT("Viper_Thunder_Ambient"), ENUM_CLASS(LEVEL::VIPER), vPos);
 }
 
 void CBody_Khazan_GS::Late_Update(_float fTimeDelta)

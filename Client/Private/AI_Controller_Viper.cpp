@@ -1362,6 +1362,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
             {
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_RoarFinished"))
                 {
+                    // 로어끝
                     return BTNODESTATE::SUCCESS;
                 }
 
