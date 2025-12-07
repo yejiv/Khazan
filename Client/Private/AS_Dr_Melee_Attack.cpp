@@ -16,6 +16,7 @@ void CAS_Dr_Melee_Attack::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_pMonData->iAnimIndex = 20;
 
     m_isAttackChange ? m_isAttackChange = false : m_isAttackChange = true;
+
 }
 
 void CAS_Dr_Melee_Attack::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

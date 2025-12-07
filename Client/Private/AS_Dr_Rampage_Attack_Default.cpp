@@ -67,7 +67,7 @@ void CAS_Dr_Rampage_Attack_Default::Update(CStateMachine* pFSM, CGameObject* pOw
 
 void CAS_Dr_Rampage_Attack_Default::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    m_pMonData->fAttackCool = 3.5f;
+    m_pMonData->fAttackCool = 2.5f;
 }
 
 void CAS_Dr_Rampage_Attack_Default::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)

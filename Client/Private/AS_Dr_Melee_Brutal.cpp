@@ -1,5 +1,5 @@
 #include "AS_Dr_Melee_Brutal.h"
-
+#include "GameInstance.h"
 CAS_Dr_Melee_Brutal::CAS_Dr_Melee_Brutal()
 {
 }

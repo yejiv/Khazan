@@ -235,7 +235,7 @@ void CKhazan_GSword::Update(_float fTimeDelta)
             m_EffectTimeDelta = 0.f;
         }
     }
-
+    m_pGameInstance->ListenerPosSet(m_pTransformCom->Get_State(STATE::POSITION), m_pTransformCom->Get_State(STATE::LOOK), m_pTransformCom->Get_State(STATE::UP));
 }
 
 void CKhazan_GSword::Late_Update(_float fTimeDelta)
