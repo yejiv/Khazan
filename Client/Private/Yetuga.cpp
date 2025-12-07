@@ -64,7 +64,7 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pCharVirCom->Set_Position(XMVectorSet(537.354f, 18.684f, 221.961f, 1.f));
+    //m_pCharVirCom->Set_Position(XMVectorSet(537.354f, 18.684f, 221.961f, 1.f));
 
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
@@ -130,15 +130,18 @@ void CYetuga::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
     
-    if (m_isLookAt)
+    if (m_fCurrentHP > 0.f)
     {
-        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
-        if (nullptr == pModel)
-            return;
-        _float fRatio = pModel->MakeRatio();
-        Look_Target_Lerp(fTimeDelta,fRatio,m_fTurnSpeed);
+        if (m_isLookAt)
+        {
+            CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+            if (nullptr == pModel)
+                return;
+            _float fRatio = pModel->MakeRatio();
+            Look_Target_Lerp(fTimeDelta, fRatio, m_fTurnSpeed);
+        }
+
     }
-        
 
     if (m_isLanding)
     {

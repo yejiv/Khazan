@@ -44,7 +44,7 @@ HRESULT CPlayerData_Manager::Initialize()
 
     /* 현재 장비 초기화  */
     m_ePlayerEquipment.iFace = 9000;
-    m_ePlayerEquipment.iHair = 9001;
+    m_ePlayerEquipment.iHair = 21;
     m_ePlayerEquipment.iTorso = 9002;
     m_ePlayerEquipment.iArm = 9003;
     m_ePlayerEquipment.iLeg = 9004;

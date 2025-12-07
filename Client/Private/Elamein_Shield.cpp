@@ -56,7 +56,7 @@ void CElamein_Shield::Update(_float fTimeDelta)
         if (m_fChageValue <= 0.f)
             m_isReset = false;
     }
-    m_pTransformCom->Rotation(XMConvertToRadians(75.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
+    m_pTransformCom->Rotation(XMConvertToRadians(90.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
 
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 

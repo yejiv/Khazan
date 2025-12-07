@@ -9,7 +9,7 @@
 #include "MeshTrail.h"
 #include "Target_BrutalAttack.h"
 #include "SoftBody.h"
-
+#include "WeaponObject.h"
 #include "Monster.h"
 
 
@@ -89,31 +89,41 @@ void CBody_Khazan_GS::Priority_Update(_float fTimeDelta)
 
 void CBody_Khazan_GS::Update(_float fTimeDelta)
 {
-    _float fTimeDeltaAdjsut = fTimeDelta;
-
-    if (m_isNotifyAttacking)  fTimeDeltaAdjsut *= 1.2f;
-    
-    if (Has_Status(CKhazan_GSword::LADDER_SPRINT))
-        fTimeDeltaAdjsut *= 2.f;
-
-    m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDeltaAdjsut);
-
-    for (auto pPart : m_RenderParts)
+    /* 모션트레일중 다른 애니메이션이 나올 시 끄기  */
+    if (m_isEnableAnimEvent && m_iCurAnimEventIndex != m_pModelCom->Get_CurAnimIndex())
     {
-        if (pPart)
-            pPart->Reset_PartLocalBonesFlag();
+        m_isEnableAnimEvent = false;
+        Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), false);
+        Remove_Status(CKhazan_GSword::DODGE_ENDING);
     }
 
+    /* 이펙트 안꺼지는거 끄기  */
+    if (m_isEableGiantHuntEvent && m_iCurAnimEventIndex != m_pModelCom->Get_CurAnimIndex())
+    {
+        m_isEableGiantHuntEvent = false;
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), m_iFXIdx_Spining);
+    }
+
+    /* 애니메이션 */
+    _float fTimeDeltaAdjsut = fTimeDelta;
+    if (m_isNotifyAttacking)  fTimeDeltaAdjsut *= 1.2f;    //  공격 애니메이션 속도 높이기
+    if (Has_Status(CKhazan_GSword::LADDER_SPRINT))  fTimeDeltaAdjsut *= 2.f;   //  사다리 스프린트 애니메이션 속도 높이기 
+    m_isFinishedAnimation = m_pModelCom->Play_Animation(fTimeDeltaAdjsut);
+
+    /* 장착중인 파츠들 플래그 초기화 (최적화용) */
+    for (auto pPart : m_RenderParts)
+        if (pPart)  pPart->Reset_PartLocalBonesFlag();
+
     Update_CombinedMatrix();
-    //m_pSoftBody->Update_SoftBody_Pelvis(fTimeDelta, XMLoadFloat4x4(m_pParentMatrix));
 
     Update_Colliders(fTimeDelta);
+
+    /* 죽음 처리 */
+    if (Update_Dead(fTimeDelta)) return;
 
     m_pTrail->Update(fTimeDelta);
 
     Check_Guarding(fTimeDelta);
-
-   // Test_Attack(fTimeDelta);
 
     if (m_isCollision)
     {
@@ -124,39 +134,6 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     m_pMotionTrailCom->Update(fTimeDelta);
     if(m_isActiveMotionTrail)
        m_pMotionTrailCom->Start_MotionTrail(fTimeDelta);
-
-    /* 모션트레일중 다른 애니메이션이 나올 시 끄기  */
-    if (m_isEnableAnimEvent && m_iCurAnimEventIndex != m_pModelCom->Get_CurAnimIndex())
-    {
-        m_isEnableAnimEvent = false;
-        Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), false);
-    }
-    
-    /* 이펙트 안꺼지는거 끄기  */
-    if (m_isEableGiantHuntEvent && m_iCurAnimEventIndex != m_pModelCom->Get_CurAnimIndex())
-    {
-        m_isEableGiantHuntEvent = false;
-        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), m_iFXIdx_Spining);
-    }
-
-    //  FX_Trail();
-
-    //if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
-    //    Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
-    //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_1))
-    //    Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), false);
-    //if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
-    //    Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), true);
-    //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_2))
-    //    Trigger_MotionTrail(TEXT("MT_Common_YellowDefualt"), false);
-    //if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
-    //    Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), true);
-    //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_3))
-    //    Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), false);
-    //if (m_pGameInstance->Key_Pressing(DIK_Z, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
-    //    Trigger_MotionTrail(TEXT("MT_Common_Avoid"), true);
-    //if (m_pGameInstance->Key_Pressing(DIK_X, fTimeDelta) && m_pGameInstance->Key_Down(DIK_4))
-    //    Trigger_MotionTrail(TEXT("MT_Common_Avoid"), false);
 
 
     //bool a =  m_pClientInstance->Is_CurrentSpear();
@@ -228,6 +205,9 @@ HRESULT CBody_Khazan_GS::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
+    if (Has_State(1u) && FAILED(Bind_Dissolve()))
+        return E_FAIL;
+
     if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableEdge", &m_isEnableEdge)))
         return E_FAIL;
 
@@ -249,6 +229,21 @@ HRESULT CBody_Khazan_GS::Render()
 
     for (auto pModel : m_RenderParts)
         Render_Part(pModel);
+
+    _float4 eyeWhite = _float4(1.0f, 0.95f, 0.95f, 1.0f);
+    _float4 pupilCircle = _float4(0.65f, 0.05f, 0.05f, 1.0f);
+    _float4 pupilLens = _float4(0.85f, 0.15f, 0.15f, 1.0f);
+    _float4 pupilRing = _float4(0.35f, 0.0f, 0.0f, 1.0f);
+    _float4 shadingColor = _float4(1.0f, 0.4f, 0.4f, 1.0f);
+    _float  pupilScale = 0.4f;
+
+    m_pShaderCom->Bind_RawValue("g_vEyeWhiteColor", &eyeWhite, sizeof(_float4));
+    m_pShaderCom->Bind_RawValue("g_vPupilCircle", &pupilCircle, sizeof(_float4));
+    m_pShaderCom->Bind_RawValue("g_vPupilLens", &pupilLens, sizeof(_float4));
+    m_pShaderCom->Bind_RawValue("g_vPupilRing", &pupilRing, sizeof(_float4));
+    m_pShaderCom->Bind_RawValue("g_vShadingColor", &shadingColor, sizeof(_float4));
+    m_pShaderCom->Bind_RawValue("g_PupilScale", &pupilScale, sizeof(_float));
+    m_pShaderCom->Begin(23);
 
     return S_OK;
 }
@@ -360,14 +355,19 @@ void CBody_Khazan_GS::Render_Part(CModel* pModel)
 
         if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             continue;
-
-        m_pShaderCom->Begin(1);
+        if(Has_State(1u))
+            m_pShaderCom->Begin(17);
+        else
+            m_pShaderCom->Begin(1);
         pModel->Render(i);
     }
 }
 
 void CBody_Khazan_GS::Render_Part_Shadow(CModel* pModel)
 {
+    if (Has_State(1u))
+        return; 
+
     if (nullptr == pModel)
         return;
 
@@ -385,6 +385,9 @@ void CBody_Khazan_GS::Render_Part_Shadow(CModel* pModel)
 
 void CBody_Khazan_GS::Render_Part_Outline(CModel* pModel)
 {
+    if (Has_State(1u))
+        return;
+
     if (nullptr == pModel)
         return;
 
@@ -402,6 +405,9 @@ void CBody_Khazan_GS::Render_Part_Outline(CModel* pModel)
 
 void CBody_Khazan_GS::Render_Part_MotionVector(CModel* pModel)
 {
+    if (Has_State(1u))
+        return;
+
     if (nullptr == pModel)
         return;
 
@@ -441,10 +447,15 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
                 m_isJustGuardOnce = true;
 
                 /* 몬스터한테 저스트 가드 타이밍 건내주기  */
-                CCreature* pMonster = static_cast<CCreature*>(pDesc->pGameObject);
-                if (pMonster == nullptr || pMonster->Get_CurrentHP() < 0.f)
+                if (pDesc->pGameObject == nullptr) return;
+
+                CWeaponObject* pMonster = dynamic_cast<CWeaponObject*>(pDesc->pGameObject);
+
+                if (pMonster == nullptr)
                     return;
+
                 pMonster->On_JustGuardCallback(true);
+
             }
 
             /* 가드후 충돌되면 충돌된 지점 봐라보게*/
@@ -476,10 +487,17 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
         if (pMyDesc->strName == TEXT("Player_Attack1"))
         {
             isAttack = true;
-            pMonster->KnockBack(
-                XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION)
-                    - m_pParentTransform->Get_State(STATE::POSITION))
-                , 15.f, 50.f);
+
+            _uint iBrutalAtkAnimIndex[2] = { m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_Grapple_Atk_01"),m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_Grapple_Atk_02") };
+            _uint iCurAnimIndex = m_pModelCom->Get_CurAnimIndex();
+
+            /* 브루탈 어택은 넉백 막기 */
+            if (iCurAnimIndex != iBrutalAtkAnimIndex[0] && iCurAnimIndex != iBrutalAtkAnimIndex[1])
+                pMonster->KnockBack(
+                    XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION)
+                        - m_pParentTransform->Get_State(STATE::POSITION))
+                    , 15.f, 50.f);
+
             pMonster->Consume_Stamina(20.f);
         }
 
@@ -591,7 +609,7 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
                 if (-0.7f > fDot)
                 {
                     m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
-                    m_pBrutalAttack->Setting_BrutalAttack(reinterpret_cast<const _float4*>(&monster->Get_Transform()->Get_WorldMatrixPtr()->_41), 0.f, { 0.f, 50.f });
+                    m_pBrutalAttack->Setting_BrutalAttack(pCreatureMoster->Get_LockOnPosition(), 0.f, { 0.f, 0.f });
                     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
 
                     m_pBrutalmonster = monster;
@@ -776,6 +794,21 @@ ID3D11ShaderResourceView* CBody_Khazan_GS::Get_TrailTexture(_uint iIndex)
     return m_pTrail->Get_TrailTexture(iIndex);
 }
 
+_bool CBody_Khazan_GS::Update_Dead(_float fTimeDelta)
+{
+    if (!Has_State(1u))
+        return false;
+
+    /* 디졸브 끝나야 true */
+    if (m_fDissolveDecreaseAlphaTime.x >= m_fDissolveDecreaseAlphaTime.y)
+        return true;
+
+    m_fDissolveDecreaseAlphaTime.x += fTimeDelta;
+    m_fDissolveDecreaseAlphaValue = m_fDissolveDecreaseAlphaTime.x / m_fDissolveDecreaseAlphaTime.y;
+       
+    return false;
+}
+
 void CBody_Khazan_GS::Update_Colliders(_float fTimeDelta)
 {
     _matrix matParent = XMLoadFloat4x4(m_pParentMatrix);
@@ -879,9 +912,23 @@ HRESULT CBody_Khazan_GS::Bind_ShaderResources()
     return S_OK;
 }
 
+HRESULT CBody_Khazan_GS::Bind_Dissolve()
+{
+    CHECK_FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", 0), E_FAIL);
+
+    m_pShaderCom->Bind_RawValue("g_fDecreaseAlpha", &m_fDissolveDecreaseAlphaValue, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeWidth", &m_fDissolveEdgeWidth, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeColor", &m_fDissolveColor, sizeof(_float4));
+
+    return S_OK;
+}
+
 HRESULT CBody_Khazan_GS::Ready_Components()
 {
     LEVEL eCurrentLevel = CClientInstance::GetInstance()->Get_CurrLevel();
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Monster_Dissolve"),
+        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr), E_FAIL);
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
@@ -1469,6 +1516,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
         m_isEnableAnimEvent = false;
+        Remove_Status(CKhazan_GSword::DODGE_ENDING);
         });
 
     // 닷지 어택
@@ -1915,6 +1963,7 @@ CGameObject* CBody_Khazan_GS::Clone(void* pArg)
 void CBody_Khazan_GS::Free()
 {
     __super::Free();
+    Safe_Release(m_pTextureCom);
     Safe_Release(m_pMotionTrailCom);
 
     Safe_Release(m_pBodyCom_BodyAttack);

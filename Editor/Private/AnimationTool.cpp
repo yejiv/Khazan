@@ -1651,32 +1651,13 @@ void CAnimationTool::Update_DataModel(const string& strPath)
     //    tempModelData.iNumAnimations = static_cast<_uint>(tempModelData.vecAnimation.size());
     //}
 
-    //// 3. Summary Animation JSON 로드 (파일이 있으면)
-    //if (filesystem::exists(strAnimSummaryJsonPath))
-    //{
-    //    ifstream ifs(strAnimSummaryJsonPath);
-    //    if (!ifs.is_open())
-    //    {
-    //        MSG_BOX(TEXT("Summary Animation JSON 파일 열기 실패"));
-    //        return;
-    //    }
-
-    //    JSON j;
-    //    ifs >> j;
-    //    ifs.close();
-
-    //    // 애니메이션 세트 교체
-    //    tempModelData.vecAnimationSets = j.get<ANIMATION_SUMMARIES_DATA>().vecAnimationSets;
-    //}
-
-
-    // 4. Material JSON 로드 (파일이 있으면)
-    if (filesystem::exists(strMaterialJsonPath))
+    // 3. Summary Animation JSON 로드 (파일이 있으면)
+    if (filesystem::exists(strAnimSummaryJsonPath))
     {
-        ifstream ifs(strMaterialJsonPath);
+        ifstream ifs(strAnimSummaryJsonPath);
         if (!ifs.is_open())
         {
-            MSG_BOX(TEXT("Material JSON 파일 열기 실패"));
+            MSG_BOX(TEXT("Summary Animation JSON 파일 열기 실패"));
             return;
         }
 
@@ -1684,10 +1665,58 @@ void CAnimationTool::Update_DataModel(const string& strPath)
         ifs >> j;
         ifs.close();
 
-        // 머티리얼 교체
-        tempModelData.vecMaterials = j.get<vector<MATERIAL_DATA>>();
-        tempModelData.iNumMaterials = static_cast<_uint>(tempModelData.vecMaterials.size());
+        // 애니메이션 세트 교체
+        tempModelData.vecAnimationSets = j.get<ANIMATION_SUMMARIES_DATA>().vecAnimationSets;
     }
+
+
+    // 4. Material JSON 로드 (파일이 있으면)
+    if (filesystem::exists(strMaterialJsonPath))
+    {
+        ifstream ifs(strAnimSummaryJsonPath);
+        if (!ifs.is_open())
+        {
+            MSG_BOX(TEXT("Summary Animation JSON 파일 열기 실패"));
+            return;
+        }
+
+        JSON j;
+        ifs >> j;
+        ifs.close();
+
+        ANIMATION_SUMMARIES_DATA summaryData = j.get<ANIMATION_SUMMARIES_DATA>();
+
+        // 애니메이션 세트 교체
+        tempModelData.vecAnimationSets = summaryData.vecAnimationSets;
+
+        // 애니메이션 Setup만 갱신
+        size_t minCount = min(tempModelData.vecAnimation.size(), summaryData.vecSummaries.size());
+
+        for (size_t i = 0; i < minCount; ++i)
+        {
+            tempModelData.vecAnimation[i].animSetup =  summaryData.vecSummaries[i].animSetup;
+        }
+    }
+
+
+    //// 4. Material JSON 로드 (파일이 있으면)
+    //if (filesystem::exists(strMaterialJsonPath))
+    //{
+    //    ifstream ifs(strMaterialJsonPath);
+    //    if (!ifs.is_open())
+    //    {
+    //        MSG_BOX(TEXT("Material JSON 파일 열기 실패"));
+    //        return;
+    //    }
+
+    //    JSON j;
+    //    ifs >> j;
+    //    ifs.close();
+
+    //    // 머티리얼 교체
+    //    tempModelData.vecMaterials = j.get<vector<MATERIAL_DATA>>();
+    //    tempModelData.iNumMaterials = static_cast<_uint>(tempModelData.vecMaterials.size());
+    //}
 
     // 4. 업데이트된 데이터를 .dat에 다시 저장
 

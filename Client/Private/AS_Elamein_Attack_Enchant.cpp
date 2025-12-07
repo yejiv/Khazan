@@ -1,4 +1,5 @@
 #include "AS_Elamein_Attack_Enchant.h"
+#include "GameInstance.h"
 
 CAS_Elamein_Attack_Enchant::CAS_Elamein_Attack_Enchant()
 {
@@ -12,6 +13,8 @@ void CAS_Elamein_Attack_Enchant::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_pMonData->iAnimIndex = 89;
     m_eState = CHARGE;
     m_pMonData->isAnimFinash = false;
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_enchant_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(1), 3.f);
+
 }
 
 void CAS_Elamein_Attack_Enchant::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

@@ -20,9 +20,8 @@ void CAS_Dr_Rampage_Brutal::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_isF = true;
     }
 
-
     m_fAccTime = 0.3f;
-    m_eState = START;
+    m_eState = START; 
 }
 
 void CAS_Dr_Rampage_Brutal::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

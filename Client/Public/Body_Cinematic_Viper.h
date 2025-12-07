@@ -5,6 +5,7 @@
 NS_BEGIN(Engine)
 class CShader;
 class CModel;
+class CClothBody;
 class CBody;
 NS_END
 
@@ -71,6 +72,14 @@ private:
 private:
     _bool					m_isOnAttackCollision = { false };
 
+private:
+    class CClothBody* m_pFeelerBody = { nullptr };
+    COLLISION_DESC m_tFeelerCollDesc = {};
+    class CBody* m_pClothBody = { nullptr };
+    COLLISION_DESC m_tClothBodyCollDesc = {};
+    _float4x4* m_pClothBodyMatrix = { nullptr };
+    _float4x4 m_pClothCombinedMatrix;
+    
 private:
     _bool                   m_isEnableRimLight = { true };
     _bool                   m_isBlinkRimLight = {};

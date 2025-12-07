@@ -11,7 +11,7 @@ void CAS_Dr_Melee_Groggy::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     if (m_pMonData == nullptr)
         m_pMonData = &static_cast<CDragonian_Melee*>(pOwner)->Get_Data();
 
-    m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isGroggy", true);
+    m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(m_pMonData->pOwner->Get_Name(), "isCanBrutalAttack", true);
 
     m_pMonData->iAnimIndex = 26;
     m_eState = START;
@@ -38,7 +38,7 @@ void CAS_Dr_Melee_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
             m_eState = STAMIN;
             m_pMonData->iAnimIndex = 48;
             m_pMonData->pOwner->BurutalUI_Off();
-            m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isGroggy", false);
+            m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isCanBrutalAttack", false);
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_dragonianwarrior_hardsmash_a_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0), 5.f);
         }
     }

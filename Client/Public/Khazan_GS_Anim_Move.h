@@ -63,6 +63,7 @@ public:
     _bool	IsDodge() const { return m_isDodging; }
     _bool   IsTurning180() const { return m_isTurning180; }
     _bool	IsStopMoveAnimantionFinished() const { return m_isStopAnimationFinished; }
+    _bool   IsCurrentAnimationDodge();
 
     /* Clear */
     void    Clear();
