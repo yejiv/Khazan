@@ -7,6 +7,7 @@ class CShader;
 class CModel;
 class CBody;
 class CMotionTrail;
+class CTexture;
 NS_END
 
 NS_BEGIN(Client)
@@ -104,6 +105,7 @@ private:
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
     CShader*                    m_pShaderCom = { nullptr };
+    CTexture*                   m_pTextureCom = { nullptr };
 
     CModel*                                 m_pModelCom = { nullptr }; // 매쉬없는 전체 모델
     unordered_map<_wstring, CModel*>        m_AllParts; // 모든 모델 파츠 모음 <파츠이름, 모델클래스>
@@ -193,6 +195,12 @@ private:
     _bool                       m_isEableGiantHuntEvent= { false };
     //_bool                       m_isEableWeakAtk1Event = { false };
 
+    /* Dissolve */
+    _float                      m_fDissolveEdgeWidth = { 0.2f };
+    _float2                      m_fDissolveDecreaseAlphaTime = { 0.01f, 8.f };
+    _float                      m_fDissolveDecreaseAlphaValue = { 0.f };
+    const _float4               m_fDissolveColor = { 0.8f, 0.65f, 0.4f, 1.0f };
+
 
     /*  mutex */
     mutex                       m_CollMonsterMutex;
@@ -204,6 +212,7 @@ private :
     //_float                      m_SmokeSpawnTIme;
 
 private:
+    _bool            Update_Dead(_float fTimeDelta);
     void			Update_Colliders(_float fTimeDelta);
     void            Check_Guarding(_float fTimeDelta);              //부모클래스가 가드를 했다고 알려줌
     void            Update_GuardRotation(_float fTimeDelta);        //가드시 충돌방향으로 회전
@@ -217,6 +226,7 @@ private:
 
 private:
     HRESULT             Bind_ShaderResources();
+    HRESULT             Bind_Dissolve();
     HRESULT             Ready_Components();
     HRESULT             Ready_Colliders();
     HRESULT             Ready_AnimationEvents();

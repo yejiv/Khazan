@@ -33,7 +33,7 @@ public:
         _float fSpringDamping = 0.9f;
 
         CLOTHTYPE eType;
-
+        COLLISION_DESC* pCollisionDesc = nullptr;
     }CLOTH_BODY_DESC;
 
 

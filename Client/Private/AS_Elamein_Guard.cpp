@@ -12,6 +12,7 @@ void CAS_Elamein_Guard::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     m_pMonData->iAnimIndex = 48;
     m_eState = START;
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_greatguard_a_01 (Korean(KR)).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0), 3.f);
 
 }
 
@@ -38,6 +39,7 @@ void CAS_Elamein_Guard::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
             m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.2f, 0.003f, 2.5f);
             m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.2f, 0.003f, 2.5f);
             m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.2f, 0.003f, 2.5f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_guardcounter_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(1), 3.f);
         }
         else if (m_fAcctime >= 3.f)
         {

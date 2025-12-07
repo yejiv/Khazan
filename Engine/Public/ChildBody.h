@@ -37,6 +37,7 @@ public:
 
         Body* pParentBody;
         Body* pRootBody;
+        COLLISION_DESC* pCollisionDesc = nullptr;
     }CHILD_BODY_DESC;
 
 
@@ -45,7 +46,7 @@ private:
     virtual ~CChildBody() = default;
 
 public:
-     HRESULT Initialize(CHILD_BODY_DESC* tDesc);
+     HRESULT Initialize(CHILD_BODY_DESC* pDesc);
 
     void Priority_Update(_float fTimeDelta);
     void Update(_float fTimeDelta);
@@ -59,6 +60,11 @@ public:
 
 public:
     void Cape_Update(_float fTimeDelta);
+    void Feeler_Update(_float fTimeDelta);
+
+public:
+    void Apply_RootInertia(_float fTimeDelta);
+    void ClampToCharacter();
 
 private:
     ID3D11Device* m_pDevice = { nullptr };
@@ -98,12 +104,19 @@ private:
     _float m_fSpringDamping = 0.9f;
     CLOTHTYPE m_eClothType;
 
+    Vec3 m_vPrevRootVel = Vec3::sZero();
+    _bool m_isPrevRootVel = false;
+
+    _float m_fFeelerTime = {};
+
 private:
-    HRESULT Ready_Child();
-    HRESULT Ready_Body();
+    HRESULT Ready_Child(CHILD_BODY_DESC* pDesc);
+    HRESULT Ready_Body(CHILD_BODY_DESC* pDesc);
+
+    void Limit_Velocity();
 
 public:
-    static CChildBody* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CHILD_BODY_DESC* tDesc);
+    static CChildBody* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CHILD_BODY_DESC* pDesc);
     virtual void Free() override;
 
 };

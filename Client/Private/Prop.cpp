@@ -68,6 +68,8 @@ HRESULT CProp::Deferred_Bind_ShaderResources_ForSnowMap(_uint iMeshIndex, CDefer
 
     CHECK_FAILED(pDeferredShader->Bind_RawValue("g_vSnowColor", &m_vSnowColor, sizeof(_float3)), E_FAIL);
 
+    CHECK_FAILED(pDeferredShader->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4)), E_FAIL);
+
     return S_OK;
 }
 

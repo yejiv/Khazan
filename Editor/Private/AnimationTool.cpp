@@ -1665,6 +1665,25 @@ void CAnimationTool::Update_DataModel(const string& strPath)
         ifs >> j;
         ifs.close();
 
+        // 애니메이션 세트 교체
+        tempModelData.vecAnimationSets = j.get<ANIMATION_SUMMARIES_DATA>().vecAnimationSets;
+    }
+
+
+    // 4. Material JSON 로드 (파일이 있으면)
+    if (filesystem::exists(strMaterialJsonPath))
+    {
+        ifstream ifs(strAnimSummaryJsonPath);
+        if (!ifs.is_open())
+        {
+            MSG_BOX(TEXT("Summary Animation JSON 파일 열기 실패"));
+            return;
+        }
+
+        JSON j;
+        ifs >> j;
+        ifs.close();
+
         ANIMATION_SUMMARIES_DATA summaryData = j.get<ANIMATION_SUMMARIES_DATA>();
 
         // 애니메이션 세트 교체

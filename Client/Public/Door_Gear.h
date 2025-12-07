@@ -13,6 +13,8 @@ NS_BEGIN(Client)
 class CDoor_Gear final : public CPartObject
 {
 private:
+    enum MESH_TYPE { GEAR, RUNE };
+
     enum ANIM_STATE
     {
         ACTIVATION,

@@ -45,6 +45,21 @@ HRESULT CClothBody::Initialize_Clone(void* pArg)
 
 void CClothBody::Priority_Update(_float fTimeDelta)
 {
+    const float MIN_DT = 1.f / 240.f;
+    const float MAX_DT = 1.f / 60.f;
+
+    float clothDt = fTimeDelta;
+
+    if (clothDt > MAX_DT)
+        clothDt = MAX_DT;
+
+    if (clothDt < MIN_DT)
+        clothDt = 0.f;
+
+    if (clothDt <= 0.f)
+        return;
+
+
     for (auto Root : m_RootBodys)
     {
         Root->Priority_Update(fTimeDelta);
@@ -53,6 +68,20 @@ void CClothBody::Priority_Update(_float fTimeDelta)
 
 void CClothBody::Update(_float fTimeDelta)
 {
+    const float MIN_DT = 1.f / 240.f;
+    const float MAX_DT = 1.f / 60.f;
+
+    float clothDt = fTimeDelta;
+
+    if (clothDt > MAX_DT)
+        clothDt = MAX_DT;
+
+    if (clothDt < MIN_DT)
+        clothDt = 0.f;
+
+    if (clothDt <= 0.f)
+        return;
+
     for (auto Root : m_RootBodys)
     {
         Root->Update(fTimeDelta);
@@ -61,6 +90,20 @@ void CClothBody::Update(_float fTimeDelta)
 
 void CClothBody::Late_Update(_float fTimeDelta)
 {
+    const float MIN_DT = 1.f / 240.f;
+    const float MAX_DT = 1.f / 60.f;
+
+    float clothDt = fTimeDelta;
+
+    if (clothDt > MAX_DT)
+        clothDt = MAX_DT;
+
+    if (clothDt < MIN_DT)
+        clothDt = 0.f;
+
+    if (clothDt <= 0.f)
+        return;
+
     for (auto Root : m_RootBodys)
     {
         Root->Late_Update(fTimeDelta);
@@ -90,7 +133,7 @@ HRESULT CClothBody::Ready_Root(void* pArg)
         desc.fSpringDamping = pDesc->fSpringDamping;
 
         desc.eType = pDesc->eType;
-
+        desc.pCollisionDesc = pDesc->pCollisionDesc;
         m_RootBodys.push_back(CRootBody::Create(m_pDevice, m_pContext, &desc));
     }
 

@@ -36,13 +36,13 @@ void CAS_Elamein_Brutal::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
             {
                 m_pMonData->iAnimIndex = 7;
                 m_eState = END;
+                m_pMonData->eHitType = HITREACTION::END;
             }
         }
         else
         {
             if (m_pMonData->isAnimFinash)
             {
-                m_pMonData->eHitType = HITREACTION::END;
                 m_pMonData->isStamina_Regen = true;
                 m_pMonData->iBrutalHit = 0;
             }
@@ -57,13 +57,13 @@ void CAS_Elamein_Brutal::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
             {
                 m_pMonData->iAnimIndex = 9;
                 m_eState = END;
+                m_pMonData->eHitType = HITREACTION::END;
             }
         }
         else
         {
             if (m_pMonData->isAnimFinash)
             {
-                m_pMonData->eHitType = HITREACTION::END;
                 m_pMonData->isStamina_Regen = true;
                 m_pMonData->iBrutalHit = 0;
             }

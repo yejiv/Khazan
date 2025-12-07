@@ -122,6 +122,7 @@ public:
     void            AnimationLoop(_bool isLoop);
     void            Set_AnimBlendTime(_uint iAnimIndex, _float fBlendTime);
     void            QuitAnimationSet() { Remove_State(ANIMSET_PLAYING | ANIMSET_NEXT); } // 애니메이션세트 끝내기
+
     /* rootBone Combined  */
     void			Update_BoneCombinedMatrices();
 
