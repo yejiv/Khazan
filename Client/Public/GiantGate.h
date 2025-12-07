@@ -49,6 +49,9 @@ private:
     _float m_fColTimeAcc = { 0.f };
 
 private:
+    COLLISION_DESC m_TriggerCollisionDesc;
+
+private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_PartObjects(void* pArg);
     HRESULT Ready_Collision(void* pArg);

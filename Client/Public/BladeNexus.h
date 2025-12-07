@@ -81,6 +81,9 @@ private:
     _bool m_isPop = { false };
 
 private:
+    COLLISION_DESC m_TriggerCollisionDesc;
+
+private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
 	HRESULT Ready_Interaction_Guide(void* pArg);
