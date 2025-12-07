@@ -162,6 +162,16 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
             m_pCharVirCom->Teleport(XMVectorSet(43.f, -81.f, -47.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
     }
 
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
+    {
+        m_isGhost = true;
+    }
+
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    {
+        m_isGhost = false;
+    }
+
 
 }
 

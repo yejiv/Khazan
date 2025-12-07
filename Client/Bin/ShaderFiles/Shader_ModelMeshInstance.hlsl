@@ -17,15 +17,15 @@ static const unsigned int M_ROUGHNESS = (1 << 5);
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 /*재질*/
-texture2D g_DiffuseTexture;
-texture2D g_NormalTexture;
-texture2D g_SpecularTexture;
-texture2D g_EmissiveTexture;
+Texture2D g_DiffuseTexture;
+Texture2D g_NormalTexture;
+Texture2D g_SpecularTexture;
+Texture2D g_EmissiveTexture;
 
-texture2D g_NoiseTexture;
+Texture2D g_NoiseTexture;
 
 /*눈 내리는 맵에 사용*/
-texture2D g_SnowTexture;
+Texture2D g_SnowTexture;
 float g_fSnowAmount = float(0.5f);
 float3 g_vSnowColor = float3(0.92f, 0.94f, 1.f);
 
@@ -354,55 +354,48 @@ PS_OUT PS_MAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽셀 
 PS_OUT PS_SNOWMAP(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
 {
     PS_OUT Out = (PS_OUT) 0;
-    
-    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
-    if (IsFlag(M_DIFFUSE))
-        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-        
+
+    float4 vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     if (vMtrlDiffuse.a <= 0.3f)
         discard;
-        
-    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
-    vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
-    if (IsFlag(M_NORMAL))
-        vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    float2 xy = vNormalDesc.xy * 2.f - 1.f;
-    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
-    
-    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
-    vNormal = mul(vNormal, WorldMatrix);
-    
-    //float3 vWorldNormal = normalize(In.vNormal.rgb);
-    float3 vWorldNormal = normalize(vNormal.xyz);
-    float upFactor = saturate(dot(vWorldNormal, float3(0.f, 1.f, 0.f)));
-    
-    float fSnowMask = 0.8f;
-    
-    float fSnowBlend = saturate(upFactor * fSnowMask * g_fSnowAmount);
-    
-    float3 vSnowColor = g_vSnowColor;
-    
-    float3 vFinalColor = lerp(vMtrlDiffuse.rgb, vSnowColor, fSnowBlend);
-    
-    // Specular Test
-    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
-    if (IsFlag(M_SPECULAR))
-        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    // Emissive Test
-    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
-    if (IsFlag(M_EMISSIVE))
-        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    Out.vDiffuse = float4(vFinalColor, vMtrlDiffuse.a);
-    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
-    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    float2 xy = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord).xy * 2.f - 1.f;
+    float3 normalTS = float3(
+        xy.x,
+        -xy.y,
+        sqrt(saturate(1.f - dot(xy, xy)))
+    );
+
+    float3x3 worldMat = float3x3(
+        In.vTangent.xyz,
+        In.vBinormal.xyz * -1.f,
+        In.vNormal.xyz
+    );
+
+    float3 normalWS = normalize(mul(normalTS, worldMat));
+
+    float up = saturate(dot(normalWS, float3(0.f, 1.f, 0.f)));
+
+    float snow = saturate((up * g_fSnowAmount - 0.2f) * 1.5f);
+    snow *= snow;
+
+    float dist = distance(g_vCamPosition.xyz, In.vWorldPos.xyz);
+    float distFade = lerp(0.35f, 1.0f, saturate(1.f - dist / 30.f));
+    snow *= distFade;
+
+    float3 color = lerp(vMtrlDiffuse.rgb, g_vSnowColor, snow);
+
+    float3 flatUp = float3(0.f, 1.f, 0.f);
+    float3 finalNormal = normalize(lerp(normalWS, flatUp, snow * 0.85f));
+
+    Out.vDiffuse = float4(color, vMtrlDiffuse.a);
+    Out.vNormal = float4(finalNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
-    Out.vSpecular.rgb = vMtrlSpecular.rgb;
-    Out.vSpecular.a = 0.f;
-    // Out.vEmissive = vMtrlEmissive;
-    
+
+    Out.vSpecular = float4(0.02f, 0.02f, 0.02f, 0.f);
+    Out.vEmissive = 0.f;
+
     return Out;
 }
 
@@ -410,58 +403,59 @@ PS_OUT PS_SNOWMAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽
 {
     PS_OUT Out = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    float4 vMtrlDiffuse = float4(0.f, 0.f, 0.f, 0.f);
     if (IsFlag(M_DIFFUSE))
         vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-        
-    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+
+    // BC5 노멀 복원
     vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
     if (IsFlag(M_NORMAL))
         vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
     float2 xy = vNormalDesc.xy * 2.f - 1.f;
-    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
-    
-    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
-    vNormal = mul(vNormal, WorldMatrix);
-    
-    float3 vToCamera = normalize(g_vCamPosition.xyz - In.vWorldPos.xyz);
-    
-    float fReflectPower = pow(saturate(1.f - dot(vNormal, vToCamera)), 4.f);
-    
-    float3 vReflectColor = float3(0.45f, 0.65f, 0.9f);
-    
-    float3 vIceColor = lerp(vMtrlDiffuse.rgb, vReflectColor, fReflectPower * 0.1f);
-    
-    float3 vWorldNormal = normalize(vNormal);
-    float upFactor = saturate(dot(vWorldNormal, float3(0.f, 1.f, 0.f)));
-    
-    float fSnowMask = 0.8f;
+    float3 normalTS = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
 
-    float fSnowBlend = saturate(upFactor * fSnowMask * g_fSnowAmount);
-    float3 vSnowColor = g_vSnowColor;
-    
-    float3 vFinalColor = lerp(vIceColor, vSnowColor, fSnowBlend);
-    
+    float3x3 worldMat = float3x3(
+        In.vTangent.xyz,
+        In.vBinormal.xyz * -1.f,
+        In.vNormal.xyz
+    );
+
+    float3 normalWS = normalize(mul(normalTS, worldMat));
+
+    // 카메라 반사 계산 (기존 ICE 로직 유지)
+    float3 vToCamera = normalize(g_vCamPosition.xyz - In.vWorldPos.xyz);
+    float fReflectPower = pow(saturate(1.f - dot(normalWS, vToCamera)), 4.f);
+    float3 vReflectColor = float3(0.45f, 0.65f, 0.9f);
+    float3 vIceColor = lerp(vMtrlDiffuse.rgb, vReflectColor, fReflectPower * 0.1f);
+
+    // 위쪽 방향 눈 마스크
+    float up = saturate(dot(normalWS, float3(0.f, 1.f, 0.f)));
+
+    float rawSnow = up * g_fSnowAmount;
+    float snow = saturate((rawSnow - 0.2f) * 1.5f);
+    snow = snow * snow;
+
+    // 눈 색 블렌딩 (기존 ICE 유지)
+    float3 finalColor = lerp(vIceColor, g_vSnowColor, snow);
+
+    // 핵심: 눈이 쌓인 부분에서 노멀 평탄화
+    float3 flatUp = float3(0.f, 1.f, 0.f);
+    float3 finalNormal = normalize(lerp(normalWS, flatUp, snow * 0.85f));
+
+    // 알파 기존 방식 유지
     float fAlpha = saturate(0.6f + fReflectPower * 0.3f);
-    
-    // Specular Test
-    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+
+    float4 spec = float4(0.f, 0.f, 0.f, 0.f);
     if (IsFlag(M_SPECULAR))
-        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    // Emissive Test
-    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
-    if (IsFlag(M_EMISSIVE))
-        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    Out.vDiffuse = float4(vFinalColor, fAlpha);
-    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
-    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+        spec = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    Out.vDiffuse = float4(finalColor, fAlpha);
+    Out.vNormal = float4(finalNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
-    Out.vSpecular.rgb = vMtrlSpecular.rgb;
-    Out.vSpecular.a = 0.f;
-    // Out.vEmissive = Out.vDiffuse * 0.1f;
+    Out.vSpecular = float4(spec.rgb, 0.f);
+    Out.vEmissive = 0.f;
 
     return Out;
 }

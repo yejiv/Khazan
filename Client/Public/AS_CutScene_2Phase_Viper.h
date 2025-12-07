@@ -31,7 +31,8 @@ public:
     void                                ViperScene_PullOut(class CViper* pViper);
     void                                ViperScene_Walk(class CViper* pViper);
 
-
+public:
+    P2CUTSCENE_STATE Get_State() { return m_eState; }
 
 private:
     P2CUTSCENE_STATE                    m_eState = { P2CUTSCENE_STATE::END };

@@ -58,9 +58,6 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
     }
 
 
-
-
-
     if (pModel->Play_Animation(fTimeDelta))
     {
 
@@ -109,7 +106,7 @@ void CAS_P2_DashDrift_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollision
 
         pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-        pTarget->KnockBack(vLook, 20.f, 40.f);
+        pTarget->KnockBack(vLook, 20.f, 60.f);
 
     }
 }

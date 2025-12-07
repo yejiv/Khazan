@@ -130,6 +130,7 @@ void CDebug_Manager::Ready_JoltDebug()
         Labels.push_back("CONTROLLER");
         Labels.push_back("INTERACT_OBJECT");
         Labels.push_back("CLOTH");
+        Labels.push_back("CLOTHBODY");
 
 		for (size_t i = 0; i < Labels.size(); i++)
 		{

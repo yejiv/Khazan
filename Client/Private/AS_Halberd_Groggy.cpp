@@ -13,7 +13,7 @@ void CAS_Halberd_Groggy::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_pMonData = &static_cast<CHalberd*>(pOwner)->Get_Data();
         m_pLockOnPos = m_pMonData->pOwner->Get_LockOnPosition();
     }
-    m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isGroggy", true);
+    m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(m_pMonData->pOwner->Get_Name(), "isCanBrutalAttack", true);
 
     m_pMonData->iAnimIndex = 35;
     m_eState = START;
@@ -40,7 +40,7 @@ void CAS_Halberd_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
             m_eState = END;
             m_pMonData->iAnimIndex = 33;
             m_pMonData->pOwner->BurutalUI_Off();
-            m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isGroggy", false);
+            m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isCanBrutalAttack", false);
         }
     }
     else
@@ -56,7 +56,8 @@ void CAS_Halberd_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
 void CAS_Halberd_Groggy::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
     m_pMonData->pOwner->BurutalUI_Off();
-    m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isGroggy", false);
+    m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isCanBrutalAttack", false);
+
 }
 
 CAS_Halberd_Groggy* CAS_Halberd_Groggy::Create()

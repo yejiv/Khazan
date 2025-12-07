@@ -29,7 +29,7 @@ HRESULT CRootBody::Initialize(ROOT_BODY_DESC* pDesc)
     m_pOwnerTransform = pDesc->pOwnerTransform;
     m_iObjectLayer = pDesc->iObjectLayer;
 
-    if (FAILED(Ready_Body()))
+    if (FAILED(Ready_Body(pDesc)))
         return E_FAIL;
 
     if (FAILED(Ready_Child(pDesc)))
@@ -147,7 +147,7 @@ HRESULT CRootBody::Ready_Child(ROOT_BODY_DESC* pDesc)
     return S_OK;
 }
 
-HRESULT CRootBody::Ready_Body()
+HRESULT CRootBody::Ready_Body(ROOT_BODY_DESC* pDesc)
 {        
     RefConst<Shape> pShape;
     pShape = new SphereShape(0.05f);
@@ -176,6 +176,7 @@ HRESULT CRootBody::Ready_Body()
     BCS.mIsSensor = false;
     BCS.mGravityFactor = 0.f;
     BCS.mAllowSleeping = false;
+    BCS.mUserData = static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc));
 
     m_pBody = m_pGameInstance->CreateAndAdd_Body(BCS, &m_pBodyInterface);
     m_BodyID = m_pBody->GetID();

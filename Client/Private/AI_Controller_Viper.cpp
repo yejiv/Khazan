@@ -55,14 +55,16 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         }
     }
 
-    if (m_pGameInstance->Key_Down(DIK_Z))
+    if (m_pGameInstance->Key_Down(DIK_Y))
     {
         CViper* pViper = static_cast<CViper*>(pOwner);
         CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        //CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-             ////pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-             //pViper->Consume_Stamina(10.f);
-             //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
+        //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+        //pViper->Consume_Stamina(10.f);
+        //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
+
+        m_pBB->Set_Value<_bool>(m_strMonstertag, "is_Berserker", true);
+
     }
 
     if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
@@ -75,7 +77,7 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
             pViper->Set_PhaseWeapon_Phase2();
 
             //pViper->Set_Weapon_Phase1();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHUPPER), pViper);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_BERSERKERJUMP), pViper);
         }
 
         if (m_pGameInstance->Key_Down(DIK_N))
@@ -83,7 +85,7 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
             //m_pBB->Set_Value<_uint>(m_strMonstertag, "DebugIndex", 1);
             CViper* pViper = static_cast<CViper*>(pOwner);
             pViper->Set_PhaseWeapon_Phase2();
-            pViper->Set_Weapon_Phase1();
+            //pViper->Set_Weapon_Phase1();
             m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_FAKERUNATTACK), pViper);
 
         }
@@ -94,8 +96,7 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
             pViper->Set_PhaseWeapon_Phase2();
             //pViper->Set_Weapon_Phase1();
-
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SLASHSTOMP), pViper);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SWINGCOMBO), pViper);
         }
 
     }
@@ -1245,7 +1246,8 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
                         static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
 
-                        _float fMaxHp, fCurrentHp, fMaxStamina, fCurrentStamina;
+                        pViper->Set_HPUI(false);
+                        /*_float fMaxHp, fCurrentHp, fMaxStamina, fCurrentStamina;
 
                         fMaxHp = pViper->Get_MaxHP();
                         fCurrentHp = pViper->Get_CurrentHP();
@@ -1258,12 +1260,9 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                         HPDesc.pHpValue = &fCurrentHp;
                         HPDesc.pStaminaMaxValue = &fMaxStamina;
                         HPDesc.pStaminaCulValue = &fCurrentStamina;
-                        HPDesc.wstrName = TEXT("진 : 전격의 바이퍼 4세");
 
-                        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
+                        CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);*/
 
-
-                    
                     return BTNODESTATE::SUCCESS;
                 }
 
@@ -1362,6 +1361,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
             {
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_RoarFinished"))
                 {
+                    // 로어끝
                     return BTNODESTATE::SUCCESS;
                 }
 

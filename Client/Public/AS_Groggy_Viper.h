@@ -2,7 +2,7 @@
 #include "AI_State.h"
 #include "Client_Defines.h"
 
-enum class GROGGY { START, LOOP, RECOVERY, END };
+enum class GROGGY { START, LOOP, RECOVERY, BRUTALATTACK,  END };
 
 NS_BEGIN(Client)
 

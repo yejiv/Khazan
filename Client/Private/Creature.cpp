@@ -28,6 +28,9 @@ void CCreature::KnockBack(_vector vDir, _float fPower, _float fLoss)
     if (m_strName == "Yetuga")
         return;
 
+    if (m_strName == "Viper")
+        return;
+
 
     m_isKnockBack = true;
     m_fKnockBackDir = vDir;
@@ -90,7 +93,7 @@ HRESULT CCreature::Render()
 
 void CCreature::Creature_Release()
 {
-    m_pCharVirCom->Fake_Release();
+    //m_pCharVirCom->Fake_Release();
     m_isGhost = true;
     m_isDead = true;
     m_isActive = false;
