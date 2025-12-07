@@ -26,6 +26,9 @@ bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtu
     if (pCharDesc1 == nullptr || pCharDesc1->pGameObject == nullptr || pBody1Desc == nullptr || pBody1Desc->pGameObject == nullptr)
         return false;
 
+    if (pCharDesc1->isForceVaildation || pBody1Desc->isForceVaildation)
+        return true;
+
     if (!pCharDesc1->pGameObject->Get_IsGhost() && !pBody1Desc->pGameObject->Get_IsGhost() && m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Kinematic)
         return true;
 
