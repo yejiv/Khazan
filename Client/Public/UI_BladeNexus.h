@@ -60,6 +60,7 @@ private:
 	_int								m_iSeleteIndex = {};
 
 	_int								m_iListeType = {};
+    _bool                               m_isTalk = {};
 private:
 	virtual	HRESULT						Ready_Prototype();
 	HRESULT								Ready_Object();

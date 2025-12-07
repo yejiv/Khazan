@@ -15,6 +15,7 @@
 #include "UI_Talk_Danjinjar.h"
 #include "Target_BrutalAttack.h"
 
+#include "StateMachine.h"
 CHalberd::CHalberd(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
 {
@@ -239,6 +240,42 @@ void CHalberd::Late_Update(_float fTimeDelta)
     }
 }
 
+void CHalberd::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
+{
+    if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
+    {
+        ++m_Data.iBrutalHit;
+        switch (m_pGameInstance->Rand(1, 3))
+        {
+        case 1:
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_damage_l_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+            break;
+        case 2:
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_damage_l_02 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+            break;
+        default:
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_damage_l_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+            break;
+        }
+    }
+    else if(!m_pController->Get_State_Machine()->Check_Flag(ENUM_CLASS(MONSTATE::ATTACK_DEFAULT) && !m_pController->Get_State_Machine()->Check_Flag(ENUM_CLASS(MONSTATE::ATTACK_DEFAULT))))
+    {
+        switch (m_pGameInstance->Rand(1, 3))
+        {
+        case 1:
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_damage_s_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+            break;
+        case 2:
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_damage_s_02 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+            break;
+        default:
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_damage_s_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+            break;
+        }
+    }
+    __super::Take_Damage(fDamage, eHitreaction, pGameObject);
+}
+
 void CHalberd::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
@@ -373,10 +410,18 @@ HRESULT CHalberd::Ready_AnimEvent()
 {
     CModel* pModel = m_pBody->Get_Model();
     //디폴트 공격 1
-    pModel->Register_Event("Whirlwind_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
-    pModel->Register_Event("Whirlwind_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
-    pModel->Register_Event("Whirlwind_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
-    pModel->Register_Event("Whirlwind_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
+    pModel->Register_Event("Whirlwind_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; 
+                                                                                   m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_swing_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                   m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
+    pModel->Register_Event("Whirlwind_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; 
+                                                                                   m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_swing_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                   m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
+    pModel->Register_Event("Whirlwind_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; 
+                                                                                   m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_swing_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                   m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
+    pModel->Register_Event("Whirlwind_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; 
+                                                                                   m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_swing_a_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                   m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_02 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
 
     pModel->Register_Event("Whirlwind_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
     pModel->Register_Event("Whirlwind_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
@@ -389,9 +434,15 @@ HRESULT CHalberd::Ready_AnimEvent()
     pModel->Register_Event("Whirlwind_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; });
 
     //디폴트 공격 2
-    pModel->Register_Event("Swing_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
-    pModel->Register_Event("Swing_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
-    pModel->Register_Event("Swing_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
+    pModel->Register_Event("Swing_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; 
+                                                                               m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_swing_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                               m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
+    pModel->Register_Event("Swing_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; 
+                                                                               m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_swing_a_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                               m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_02 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
+    pModel->Register_Event("Swing_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; 
+                                                                               m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_swing_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                               m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
     
     pModel->Register_Event("Swing_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
     pModel->Register_Event("Swing_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
@@ -402,9 +453,13 @@ HRESULT CHalberd::Ready_AnimEvent()
     pModel->Register_Event("Swing_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; });
     
     //디폴트 공격 3
-    pModel->Register_Event("Pierce_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
-    pModel->Register_Event("Pierce_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true;  LockOnLerp(m_fTimeDelta, 2.5f); });
-
+    pModel->Register_Event("Pierce_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; 
+                                                                                m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_pierce_cast_start_03 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
+    pModel->Register_Event("Pierce_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true;  LockOnLerp(m_fTimeDelta, 2.5f);
+                                                                                m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_pierce_cast_end_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
+    
     pModel->Register_Event("Pierce_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail();; });
     pModel->Register_Event("Pierce_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
     
@@ -412,9 +467,15 @@ HRESULT CHalberd::Ready_AnimEvent()
     pModel->Register_Event("Pierce_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; });
     
     //디폴트 공격 4
-    pModel->Register_Event("EmpireSwing_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
-    pModel->Register_Event("EmpireSwing_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
-    pModel->Register_Event("EmpireSwing_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
+    pModel->Register_Event("EmpireSwing_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; 
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_swing_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f);});
+    pModel->Register_Event("EmpireSwing_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; 
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_swing_a_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_02 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
+    pModel->Register_Event("EmpireSwing_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; 
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_swing_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
 
     pModel->Register_Event("EmpireSwing_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail();  LockOnLerp(m_fTimeDelta, 2.5f);});
     pModel->Register_Event("EmpireSwing_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail();  LockOnLerp(m_fTimeDelta, 2.5f);});
@@ -425,13 +486,48 @@ HRESULT CHalberd::Ready_AnimEvent()
     pModel->Register_Event("EmpireSwing_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; });
 
     //러쉬 공격 1
-    pModel->Register_Event("ChargeAttack_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
+    pModel->Register_Event("ChargeAttack_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; 
+                                                                                      m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_chargeattack_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f);
+                                                                                      m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_swing_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
     pModel->Register_Event("ChargeAttack_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
     pModel->Register_Event("ChargeAttack_0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; });
     //러쉬 공격 2    
-    pModel->Register_Event("SprintSwing_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; });
+    pModel->Register_Event("SprintSwing_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true;
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_swing_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
+                                                                                     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
     pModel->Register_Event("ChargeAttack_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); });
     pModel->Register_Event("SprintSwing_0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; });
+
+    //NoBattle
+    pModel->Register_Event("Search_Sound", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_demonmutated_a_foley_basic_search_c_01 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f); });
+    pModel->Register_Event("Search_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_picaroonssword_n_basic_search_end_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
+    pModel->Register_Event("Search_End_Rustle", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_basicb_rustle_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 3.f); });
+
+    //MoveSound
+    pModel->Register_Event("Lock_B_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_B_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_F_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_F_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_L_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_L_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_R_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_R_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+
+    pModel->Register_Event("Turn_L_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_L_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_R_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_R_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_L_180_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_L_180_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_R_180_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_R_180_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+
+    pModel->Register_Event("Swing_Move_01", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Swing_Move_02", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Swing_Move_03", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+
+    pModel->Register_Event("Rush_Move_01", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
+    pModel->Register_Event("Rush_Move_02", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
 
     return S_OK;
 }
@@ -480,6 +576,50 @@ void CHalberd::Update_MeshTrail()
     _vector vSwordStart = XMLoadFloat4(&m_vSword_Start);
     _vector vSwordEnd = XMLoadFloat4(&m_vSword_End);
     m_pMeshTrail->Add_ControlPoint(vSwordEnd, vSwordStart);
+}
+
+void CHalberd::Move_Sound()
+{
+    switch (m_pGameInstance->Rand(1, 5))
+    {
+    case 1:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_f_01 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    case 2:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_f_02 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    case 3:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_f_03 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    case 4:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_f_04 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_f_05 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    }
+
+    switch (m_pGameInstance->Rand(1, 6))
+    {
+    case 1:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_01 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 2:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_02 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 3:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_03 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 4:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_04 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 5:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_05 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_06 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    }
+}
+
+void CHalberd::Run_Sound()
+{
+    switch (m_pGameInstance->Rand(1, 5))
+    {
+    case 1:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_f_01 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    case 2:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_f_02 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    case 3:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_f_03 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    case 4:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_f_04 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_f_05 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 1.5f);             break;
+    }
+
+    switch (m_pGameInstance->Rand(1, 6))
+    {
+    case 1:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_01 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 2:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_02 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 3:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_03 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 4:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_04 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    case 5:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_05 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_06 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
+    }
 }
 
 void CHalberd::Rush()

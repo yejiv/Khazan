@@ -97,7 +97,6 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
                 HITREACTION eHitreaction =
                     static_cast<HITREACTION>(pBB->Get_Value<_uint>(pViper->Get_Name(), "DamageType"));
 
-
                 if (HITREACTION::BRUTAL_ATTACK == eHitreaction)
                 {
                     m_pBrutalAttack->Off_BrutalAttack();
