@@ -100,6 +100,9 @@ private:
     _uint m_iSkipEventID = { 0 };
 
 private:
+    COLLISION_DESC m_TriggerCollisionDesc;
+
+private:
     class CEffect_Prefab* m_pEffect = { nullptr };
 
 private:

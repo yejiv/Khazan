@@ -33,6 +33,9 @@ private:
     class CInteraction_Guide* m_pGuide = { nullptr };
 
 private:
+    COLLISION_DESC m_TriggerCollisionDesc;
+
+private:
     EventObject m_Event = {};
 
     _bool m_isInteracted = { false };
