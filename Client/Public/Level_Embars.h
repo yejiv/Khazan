@@ -25,7 +25,7 @@ private:
 
     HRESULT Ready_Layer_Effect(const _wstring& strLayerTag);
     HRESULT Ready_Shader_Settings();
-
+    HRESULT Ready_Layer_Item();
 #pragma region 맵 관련
 
     HRESULT Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
@@ -83,6 +83,8 @@ private:
     LEVEL	m_eNextLevel = { LEVEL::END };
     _bool	m_isOpenLevel = { false };
 
+private:
+    void        Start_Event();
 public:
 	static CLevel_Embars* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

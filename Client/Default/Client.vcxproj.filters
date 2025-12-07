@@ -1282,9 +1282,6 @@
     <Filter Include="92.AI\State\Dragonian_Rampage\Turn">
       <UniqueIdentifier>{a535e22e-dbd8-43ed-ab7a-e9554d399a27}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Dragonian_Rampage\Page_2">
-      <UniqueIdentifier>{96765157-c7f0-4431-a78c-7b22b7670c33}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04.Sequence\HeinMach\Yetuga\CutScene">
       <UniqueIdentifier>{1bffd182-9a09-49c3-bb28-36325e0076c1}</UniqueIdentifier>
     </Filter>
@@ -2667,9 +2664,6 @@
     <ClInclude Include="..\Public\AS_Dr_Rampage_Turn.h">
       <Filter>92.AI\State\Dragonian_Rampage\Turn</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\AS_Dr_Rampage_Page2.h">
-      <Filter>92.AI\State\Dragonian_Rampage\Page_2</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Sequence_Yetuga_CutScene.h">
       <Filter>04.Sequence\HeinMach\Yetuga\CutScene</Filter>
     </ClInclude>
@@ -4025,9 +4019,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Dr_Rampage_Turn.cpp">
       <Filter>92.AI\State\Dragonian_Rampage\Turn</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\AS_Dr_Rampage_Page2.cpp">
-      <Filter>92.AI\State\Dragonian_Rampage\Page_2</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Sequence_Yetuga_CutScene.cpp">
       <Filter>04.Sequence\HeinMach\Yetuga\CutScene</Filter>

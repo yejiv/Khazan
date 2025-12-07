@@ -29,7 +29,6 @@ bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtu
         return true;
 
     return false;
-
 }
 
 bool CJolt_CharacterContactListener::OnCharacterContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::CharacterVirtual* inOtherCharacter, const JPH::SubShapeID& inSubShapeID2)

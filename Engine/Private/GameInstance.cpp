@@ -1682,12 +1682,22 @@ void CGameInstance::ListenerPosSet(_vector vPos, _vector vLook, _vector vUp, _fl
     m_pSound_Manager->ListenerPosSet(vPos, vLook, vUp, vVal);
 }
 
-void CGameInstance::PlaySoundOnce(const TCHAR* pSoundKey, _float3 vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel)
+void CGameInstance::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume)
+{
+    m_pSound_Manager->PlaySoundOnce(pSoundKey, vPos, ppOutChannel, fVolume);
+}
+
+void CGameInstance::PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume)
+{
+    m_pSound_Manager->PlaySoundLoop(pSoundKey, vPos, ppOutChannel, fVolume);
+}
+
+void CGameInstance::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel)
 {
     m_pSound_Manager->PlaySoundOnce(pSoundKey, vPos, vVel, fVolume, ppOutChannel);
 }
 
-void CGameInstance::PlaySoundLoop(const TCHAR* pSoundKey, _float3 vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel)
+void CGameInstance::PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel)
 {
     m_pSound_Manager->PlaySoundLoop(pSoundKey, vPos, vVel, fVolume, ppOutChannel);
 }

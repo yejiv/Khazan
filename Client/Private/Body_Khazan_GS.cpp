@@ -439,7 +439,6 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             lock_guard<mutex> lock(m_CollMonsterMutex);
             if (pObj && (find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end())) {
                 m_CollMonsters.push_back(pObj);
-                cout << " ============  Add Coll Monster !!!!! " << endl;
             }
             return;
         }
@@ -546,20 +545,16 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
         if (!monster || monster->Get_IsDead())
             return;
         
-       // cout << " =================    for (CGameObject* monster : m_CollMonsters) " << endl;
-
-
         _vector vMonsterPos = monster->Get_Position();
 
         _vector  vDiff = vPlayerPos - vMonsterPos;
         _float  fDistSq = XMVectorGetX(XMVector3LengthSq(vDiff));
 
-        CMonster* pCreatureMoster = static_cast<CMonster*>(monster);
 
         /* 일정 범위에 다가가면  */
         if (fDistSq < 15.f * 15.f)
         {
-            //cout << "================== (fDistSq < 15.f * 15.f) " << endl;
+            CMonster* pCreatureMoster = static_cast<CMonster*>(monster);
 
             /* 후방 */
             if (!pCreatureMoster->Get_isSleep()) {
@@ -584,7 +579,6 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
             /*  몬스터 그로기 상태 */
             if (pCreatureMoster->Get_IsGroggy())
             {
-                cout << "============= (pCreatureMoster->Get_IsGroggy()) " << endl;
                 m_pBrutalmonster = monster;
                 m_isBackBrutal = false;
                 m_isGroggyBrutal = true;
