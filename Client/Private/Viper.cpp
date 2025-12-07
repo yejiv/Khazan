@@ -186,8 +186,8 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
     }
 
-    //m_ePhase = PHASE::PHASE1;
-    m_ePhase = PHASE::PHASE2;
+    m_ePhase = PHASE::PHASE1;
+    //m_ePhase = PHASE::PHASE2;
 
     m_fRecoveryPerSec = 5.f;
 
@@ -264,11 +264,6 @@ void CViper::Priority_Update(_float fTimeDelta)
     for (auto& pTrail : m_pLineTrail)
         pTrail->Priority_Update(fTimeDelta);
 
-
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
-    {
-        m_isGhost = !m_isGhost;
-    }
 }
 
 void CViper::Update(_float fTimeDelta)

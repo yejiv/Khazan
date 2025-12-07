@@ -1,5 +1,7 @@
 #include "Body_Elamein.h"
 #include "GameInstance.h"
+#include "ClothBody.h"
+#include "Body.h"
 
 CBody_Elamein::CBody_Elamein(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CPartObject{ pDevice,pContext }
@@ -78,10 +80,30 @@ void CBody_Elamein::Update(_float fTimeDelta)
 
     Update_CombinedMatrix();
     m_pData->isAnimFinash = m_pModelCom->Play_Animation(fTimeDelta * m_pData->fDeltaSpeed);
+
+    _matrix BoneMatrix = XMLoadFloat4x4(m_pClothBodyMatrix);
+
+    for (uint32_t i = 0; i < 3; i++)
+        BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
+
+    XMStoreFloat4x4(&m_pClothCombinedMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+
+    _matrix ClothWorld = XMLoadFloat4x4(&m_pClothCombinedMatrix);
+
+    _vector vScale, vQuat, vPos;
+    XMMatrixDecompose(&vScale, &vQuat, &vPos, ClothWorld);
+
+    m_pClothBody->Sync_Update(ClothWorld);
+    m_pClothBody->Update(fTimeDelta, ClothWorld, vQuat, vPos);
+
+    m_pCapeBody->Priority_Update(fTimeDelta);
+
+    m_pCapeBody->Update(fTimeDelta);
 }
 
 void CBody_Elamein::Late_Update(_float fTimeDelta)
 {
+    m_pCapeBody->Late_Update(fTimeDelta);
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 }
@@ -156,6 +178,53 @@ HRESULT CBody_Elamein::Ready_Components()
 
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
 
+    m_tCapeCollDesc.pGameObject = this;
+    CClothBody::CLOTH_BODY_DESC ClothDesc;
+    ClothDesc.pModel = m_pModelCom;
+    vector<_int> RootBoneIndices;
+    RootBoneIndices.push_back(m_pModelCom->Get_BoneIndex("B_Cloth_04_01_R"));
+    RootBoneIndices.push_back(m_pModelCom->Get_BoneIndex("B_Cloth_03_01_R"));
+    RootBoneIndices.push_back(m_pModelCom->Get_BoneIndex("B_Cloth_03_01_L"));
+    RootBoneIndices.push_back(m_pModelCom->Get_BoneIndex("B_Cloth_04_01_L"));
+    ClothDesc.RootBoneIndices = RootBoneIndices;
+    ClothDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::CLOTH);
+    ClothDesc.pOwnerTransform = m_pOwnerTransform;
+    ClothDesc.fGravity = 0.4f;
+    ClothDesc.fLinearDamping = 0.3f;
+    ClothDesc.fAngularDamping = 0.6f;
+    ClothDesc.fMass = 0.05f;
+    ClothDesc.fMinDistance = 1.f;
+    ClothDesc.fMaxDistance = 1.0f;
+    ClothDesc.fSpringFrequency = 2.f;
+    ClothDesc.fSpringDamping = 3.f;
+    ClothDesc.eType = CLOTHTYPE::CAPE;
+    ClothDesc.pCollisionDesc = &m_tCapeCollDesc;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_ClothBody"),
+        TEXT("Com_Cloth"), reinterpret_cast<CComponent**>(&m_pCapeBody), &ClothDesc)))
+        return E_FAIL;
+
+    // Bip001-Pelvis
+    m_tClothBodyCollDesc.pGameObject = this;
+
+    CBody::BODY_BOXSHAPE_DESC BodyDesc{};
+    BodyDesc.vExtent = { 10.f, 0.3f, 10.f };
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete;
+    BodyDesc.eShapeType = SHAPE::BOX;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::CLOTHBODY);
+    BodyDesc.bIsTrigger = false;
+
+    m_pClothBodyMatrix = m_pModelCom->Get_BoneMatrix("Bip001-Pelvis");
+    XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(m_pClothBodyMatrix) * XMLoadFloat4x4(m_pParentMatrix));
+    BodyDesc.vPos = { m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43 };
+    XMStoreFloat4(&BodyDesc.vQuat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&m_CombinedWorldMatrix)));
+
+    BodyDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
+    BodyDesc.pCollisionDesc = &m_tClothBodyCollDesc;
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_ClothBody"), (CComponent**)&m_pClothBody, &BodyDesc), E_FAIL);
+
+
     return S_OK;
 }
 
@@ -215,4 +284,6 @@ void CBody_Elamein::Free()
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
     Safe_Release(m_pTextureCom);
+    Safe_Release(m_pCapeBody);
+    Safe_Release(m_pClothBody);
 }
