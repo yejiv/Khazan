@@ -1,4 +1,5 @@
 #include "Elevator_Gear.h"
+#include "Effect_Prefab.h"
 
 #include "GameInstance.h"
 
@@ -37,11 +38,15 @@ HRESULT CElevator_Gear::Initialize_Clone(void* pArg)
     m_pModelCom->Play_Animation(0.f);
     m_pModelCom->Set_AnimationBlend(true);
 
+    CHECK_FAILED(Ready_Effect(), E_FAIL);
+
+
     return S_OK;
 }
 
 void CElevator_Gear::Priority_Update(_float fTimeDelta)
 {
+    m_pEffect->Priority_Update(fTimeDelta);
 }
 
 void CElevator_Gear::Update(_float fTimeDelta)
@@ -53,6 +58,9 @@ void CElevator_Gear::Update(_float fTimeDelta)
             m_eAnimState = ANIM_STATE::LOOP;
             m_pModelCom->Set_Animation(ENUM_CLASS(ANIM_STATE::LOOP));
             m_pModelCom->Set_AnimationLoop(true);
+
+            // 예지 엘리베이터 기어 스파크 가동
+            m_pEffect->ResetChildren();
         }
     }
     else
@@ -62,20 +70,44 @@ void CElevator_Gear::Update(_float fTimeDelta)
             m_eAnimState = ANIM_STATE::DONE;
             m_pModelCom->Set_Animation(ENUM_CLASS(ANIM_STATE::DONE));
             m_pModelCom->Set_AnimationLoop(false);
+
+            // 예지 엘리베이터 기어 스파크 정지
+            m_pEffect->SetClose();
         }
     }
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
     {
-
+        
     }
 
     Update_CombinedMatrix();
+
+
+
+    _matrix world = XMLoadFloat4x4(&m_CombinedWorldMatrix);
+    _vector pos = world.r[3] -= XMVector4Normalize(world.r[2]) * 7.f;
+
+    _vector S, Q, T;
+    if (!XMMatrixDecompose(&S, &Q, &T, m_pTransformCom->Get_WorldMatrix()))
+    {
+        XMFLOAT4X4 m; XMStoreFloat4x4(&m, m_pTransformCom->Get_WorldMatrix());
+        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+        _matrix RotationMatrix(r0, r1, r2, XMVectorSet(0.f, 0.f, 0.f, 1.f));
+        Q = XMQuaternionRotationMatrix(RotationMatrix);
+    } 
+    m_pEffect->UpdateWorldMatrix(Q, pos);
+
+    m_pEffect->Update(fTimeDelta);
+
 }
 
 void CElevator_Gear::Late_Update(_float fTimeDelta)
 {
     m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
+    m_pEffect->Late_Update(fTimeDelta);
 }
 
 HRESULT CElevator_Gear::Render()
@@ -113,6 +145,16 @@ HRESULT CElevator_Gear::Ready_Components(void* pArg)
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), TEXT("Prototype_Component_Model_Elevator_Gear"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CElevator_Gear::Ready_Effect()
+{
+    m_pEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevelIndex, TEXT("Elevator_Spark"))); 
+
+    if (nullptr == m_pEffect)
+        return E_FAIL;
 
     return S_OK;
 }
@@ -184,4 +226,5 @@ void CElevator_Gear::Free()
 
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pModelCom);
+    Safe_Release(m_pEffect);
 }

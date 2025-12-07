@@ -283,6 +283,8 @@ void CGiantGate::Animation_Update(_float fTimeDelta)
             // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
+            // 예지 바이퍼 맵 넘어가는 문 열리는 이펙트 ( 한번 호출 )
+
             m_Event.None();
         }
     }
