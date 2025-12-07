@@ -3,6 +3,7 @@
 #include "AI_Controller.h"
 #include "Viper.h"
 #include "Body_Viper.h"
+#include "Effect_Prefab.h"
 
 
 
@@ -45,6 +46,7 @@ HRESULT CTwinBlade_Viper::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg))) return E_FAIL;
     if (FAILED(Ready_Components())) return E_FAIL;
     if (FAILED(Ready_Collision())) return E_FAIL;
+    if (FAILED(Ready_Effect())) return E_FAIL;
 
     //m_VDebugRot = { x = 2.99350357 y = 0.159982994 z = 1.66338313 }
     m_pTransformCom->Rotation(3.f,0.16f,1.6f);
@@ -54,6 +56,8 @@ HRESULT CTwinBlade_Viper::Initialize_Clone(void* pArg)
 
 void CTwinBlade_Viper::Priority_Update(_float fTimeDelta)
 {
+    m_pEffect[0]->Priority_Update(fTimeDelta);
+    m_pEffect[1]->Priority_Update(fTimeDelta);
 }
 
 void CTwinBlade_Viper::Update(_float fTimeDelta)
@@ -134,12 +138,21 @@ void CTwinBlade_Viper::Update(_float fTimeDelta)
         _vector vSwordPos = { vSwordMat._41, vSwordMat._42, vSwordMat._43 };
         _vector vSwordStart = vSwordPos + XMVector3Normalize(vUp) * 1.5f;
         _vector vSwordEnd = vSwordPos + XMVector3Normalize(vUp) * 3.f + XMVector3Normalize(vRight) * 0.3f;
+        _vector vSwordMid = vSwordPos + XMVector3Normalize(vUp) * 2.2f;
+
         XMStoreFloat4(&m_vLeftBladeStartPos, XMVectorSetW(vSwordStart, 1.f));
         XMStoreFloat4(&m_vLeftTipPos, XMVectorSetW(vSwordEnd, 1.f));
+        m_pEffect[0]->UpdatePosition(vSwordMid);
+
         vSwordStart = vSwordPos - XMVector3Normalize(vUp) * 1.5f;
         vSwordEnd = vSwordPos - XMVector3Normalize(vUp) * 3.f - XMVector3Normalize(vRight) * 0.3f;
+        vSwordMid = vSwordPos-+ XMVector3Normalize(vUp) * 2.2f;
         XMStoreFloat4(&m_vRightBladeStartPos, XMVectorSetW(vSwordStart, 1.f));
         XMStoreFloat4(&m_vRightTipPos, XMVectorSetW(vSwordEnd, 1.f));
+        m_pEffect[1]->UpdatePosition(vSwordMid);
+
+        m_pEffect[0]->Update(fTimeDelta);
+        m_pEffect[1]->Update(fTimeDelta);
     }
 }
 
@@ -150,6 +163,8 @@ void CTwinBlade_Viper::Late_Update(_float fTimeDelta)
         if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
             return;
     }
+    m_pEffect[0]->Late_Update(fTimeDelta);
+    m_pEffect[1]->Late_Update(fTimeDelta);
 }
 
 HRESULT CTwinBlade_Viper::Render()
@@ -307,6 +322,20 @@ HRESULT CTwinBlade_Viper::Bind_ShaderResources()
     return S_OK;
 }
 
+HRESULT CTwinBlade_Viper::Ready_Effect()
+{
+    m_pEffect[0] = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Small")));
+    m_pEffect[1] = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Small")));
+
+    if (nullptr == m_pEffect[0] || nullptr == m_pEffect[1])
+        return E_FAIL;
+    
+    m_pEffect[0]->ResetChildren();
+    m_pEffect[1]->ResetChildren();
+
+    return S_OK;
+}
+
 CTwinBlade_Viper* CTwinBlade_Viper::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CTwinBlade_Viper* pInstance = new CTwinBlade_Viper(pDevice, pContext);
@@ -339,6 +368,8 @@ void CTwinBlade_Viper::Free()
     Safe_Release(m_pRightBodyComp);
     Safe_Release(m_pLeftBodyComp);
 
+    Safe_Release(m_pEffect[0]);
+    Safe_Release(m_pEffect[1]);
 
     __super::Free();
 }
