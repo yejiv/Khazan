@@ -38,7 +38,6 @@ HRESULT CEffect_Prefab::Initialize_Clone(void* pArg)
     //m_bPlaying = true;
 
     for(auto& element : m_Children)
-        //element->SetParentsMatrix(m_pTransformCom->Get_WorldMatrixPtr());
         element->SetParentsMatrix(&m_CombinedWorldMatrix);
 
     return S_OK;

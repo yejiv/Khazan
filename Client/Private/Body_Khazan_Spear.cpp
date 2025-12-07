@@ -917,26 +917,8 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     m_pModelCom->Register_Event("LightningSpear_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
     m_pModelCom->Register_Event("LightningSpear_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust6(m_pParentTransform->Get_WorldMatrix().r[3]); }); 
     /*나선 찌르기*/
-    m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-        _vector S, Q, T;
-        if (!XMMatrixDecompose(&S, &Q, &T, W))
-        {
-            XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-            _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
-            _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
-            _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
-
-            _matrix RotationMatrix(
-                r0,
-                r1,
-                r2,
-                XMVectorSet(0.f, 0.f, 0.f, 1.f)
-            );
-            Q = XMQuaternionRotationMatrix(RotationMatrix);
-        }
-
-        EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiralSpear_SpearFX"), W.r[3]);
+    m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiralSpear_SpearFX"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
 
         FX_StrongAtk_Charge_Blust1(m_pParentTransform->Get_WorldMatrix().r[3]);
         });
@@ -1696,9 +1678,8 @@ void CBody_Khazan_Spear::SpawnSpearWind()
 
     if (!XMMatrixDecompose(&S, &Q, &T, W))
     {
-
-        XMFLOAT4X4 m; XMStoreFloat4x4(&m, W);
-
+        XMFLOAT4X4 m; 
+        XMStoreFloat4x4(&m, W);
 
         _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
         _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));

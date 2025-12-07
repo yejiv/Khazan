@@ -176,7 +176,7 @@ void CKhazan_GSword::Update(_float fTimeDelta)
     //    m_pTransformCom->Set_State(STATE::POSITION, vpos);
     //    //m_pCharVirCom->Set_Gravity(g_fGravity);
     //    //m_vGravity = XMVectorSet(0.f, 0.F, 0.f, 0.f);
-
+    m_pClientInstance->Set_PlayerInput(true);
     if (m_isEnableControl)
     {
         m_fTimeAcc += fTimeDelta;

@@ -6,6 +6,7 @@
 
 #include "Statue_Plate.h"
 #include "Statue_Deco.h"
+#include "Effect_Prefab.h"
 
 CStatue::CStatue(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
@@ -75,6 +76,10 @@ HRESULT CStatue::Initialize_Clone(void* pArg)
         break;
     }
 
+
+    CHECK_FAILED(Ready_Effect(), E_FAIL);
+
+
     if (EVENT_TYPE::END != m_eEventType)
         m_iSubscribeEventID = m_pGameInstance->Subscribe_Event<EventGimmick>(ENUM_CLASS(m_eEventType), [&](const EventGimmick& e) { m_EventGimmick = e; });
 
@@ -89,6 +94,7 @@ void CStatue::Priority_Update(_float fTimeDelta)
     }
 
     Check_Solved();
+    m_pEffect->Priority_Update(fTimeDelta);
 
     __super::Priority_Update(fTimeDelta);
 }
@@ -101,12 +107,15 @@ void CStatue::Update(_float fTimeDelta)
     {
         Animation_Change(fTimeDelta);        
     }
+    m_pEffect->Update(fTimeDelta);
 
     __super::Update(fTimeDelta);
 }
 
 void CStatue::Late_Update(_float fTimeDelta)
 {
+    m_pEffect->Late_Update(fTimeDelta);
+
     __super::Late_Update(fTimeDelta);
 }
 
@@ -287,6 +296,25 @@ HRESULT CStatue::Ready_Interaction_Guide(void* pArg)
     return S_OK;
 }
 
+HRESULT CStatue::Ready_Effect()
+{
+    m_pEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EMBARS), TEXT("Statue_Twinkle")));
+
+    if (nullptr == m_pEffect)
+        return E_FAIL;
+
+    m_pEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION)); 
+
+    if (m_iUnLockRotation == m_iRotation)
+        m_bPrevState = true;
+    else
+    {
+        m_pEffect->ResetChildren();
+        m_bPrevState = false; 
+    }
+    return S_OK;
+}
+
 void CStatue::Check_Solved()
 {
     CHECK_TRUE(m_isLateInit, );
@@ -385,6 +413,8 @@ void CStatue::Animation_Update(_float fTimeDelta)
             break;
         }
 
+        // 예지 조각상 돌리는 먼지 ( 오프셋은 맞춰야 할 거 같습니다 )
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Statue_Dust"), m_pTransformCom->Get_State(STATE::POSITION));
         if (true == isEventSetting)
         {
             // 조각상 상호작용 시
@@ -443,15 +473,20 @@ void CStatue::Animation_Change(_float fTimeDelta)
 
     m_fColTimeAcc += fTimeDelta;
 
-    if (m_iUnLockRotation == m_iRotation)
+    if (m_iUnLockRotation == m_iRotation)   //정답 맞췄을때
     {
         m_EventGimmick.Set_SolveStatue(m_iStatueIndex);
         m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(m_eEventType), m_EventGimmick);
+        m_pEffect->SetClose();
+        m_bPrevState = true;
     }
-    else
+    else //돌렸는데 틀렸을때
     {
         m_EventGimmick.Reset_SolveStatue(m_iStatueIndex);
         m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(m_eEventType), m_EventGimmick);
+        if (true == m_bPrevState)
+            m_pEffect->ResetChildren();
+        m_bPrevState = false;
     }
 
     if (true == m_isCollision)
@@ -572,4 +607,5 @@ void CStatue::Free()
         m_pGuide->Set_IsDead(true);
         m_pGuide = nullptr;
     }
+    Safe_Release(m_pEffect);
 }

@@ -106,6 +106,31 @@ _uint CEffect_Manager::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strP
 	return effect->GetID();
 }
 
+_uint CEffect_Manager::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _matrix worldmatrix, _gvector Position)
+{
+    CPrefab* effect{ nullptr };
+
+    auto Pool = Find_Effect_Pool(iLayerLevelIndex, strPrototypeTag);
+    auto RunningLayer = Find_RunningEffect_Layer(strPrototypeTag);
+
+    if (nullptr == Pool || Pool->size() == 0 || nullptr == RunningLayer)
+    {
+        //MSG_BOX(TEXT("Effect Pool이 없거나 Pool에 객체가 없어서 Spwan 실패!!! 아마도 객체가 모자를 확률이 큼"));
+        return 0;
+    }
+
+    effect = Pool->back();
+
+    Pool->pop_back();
+    RunningLayer->push_back(effect);
+    effect->ResetChildren();
+
+    _vector Q = Decompose_Rotation(worldmatrix); 
+    effect->UpdateWorldMatrix(Q, Position);
+
+    return effect->GetID();
+}
+
 void CEffect_Manager::Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpwanPos)
 {
 	auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
@@ -124,6 +149,18 @@ void CEffect_Manager::Update_Effect_World(_uint iLayerLevelIndex, const _wstring
         return;
 
 	(*Layer)[ID]->UpdateWorldMatrix(Quaternion, Position); 
+}
+
+void CEffect_Manager::Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _matrix worldmatrix, _gvector Position)
+{
+    auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
+
+    if (nullptr == Layer || Layer->size() <= ID || nullptr == (*Layer)[ID])
+        return;
+
+    _vector Q = Decompose_Rotation(worldmatrix);
+
+    (*Layer)[ID]->UpdateWorldMatrix(Q, Position);
 }
 
 void CEffect_Manager::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)
@@ -274,6 +311,25 @@ list<class CPrefab*>* CEffect_Manager::Find_RunningEffect_Layer(const _wstring& 
 	}
 
 	return &iter->second;
+}
+
+_vector CEffect_Manager::Decompose_Rotation(_matrix W)
+{
+    _vector S, Q, T;
+
+    if (!XMMatrixDecompose(&S, &Q, &T, W))
+    {
+        XMFLOAT4X4 m;
+        XMStoreFloat4x4(&m, W);
+        _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+        _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+        _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f));
+
+        _matrix RotationMatrix(r0, r1, r2, XMVectorSet(0.f, 0.f, 0.f, 1.f));
+        Q = XMQuaternionRotationMatrix(RotationMatrix);
+    }
+
+    return Q;
 }
 
 

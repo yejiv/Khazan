@@ -6,6 +6,7 @@
 #include "Elevator_Mid.h"
 #include "Elevator_Outer.h"
 #include "Slate_Switch.h"
+#include "Effect_Prefab.h"
 
 CElevatorL::CElevatorL(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
@@ -55,12 +56,17 @@ HRESULT CElevatorL::Initialize_Clone(void* pArg)
 
     m_iEventID = m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(EVENT_TYPE::HALL_ELEVATOR_UNLOCK), [&](const EventHallElevator& e) { m_Event = e; });
     m_iSkipEventID = m_pGameInstance->Subscribe_Event<EventElevatorSkip>(ENUM_CLASS(EVENT_TYPE::ELEVATOR_SKIP), [&](const EventElevatorSkip& e) { m_SkipEvent = e; });
+    
+    CHECK_FAILED(Ready_Effect(), E_FAIL);
+
     return S_OK;
 }
  
 void CElevatorL::Priority_Update(_float fTimeDelta)
 {
     __super::Priority_Update(fTimeDelta);
+    m_pEffect->Priority_Update(fTimeDelta);
+
 }
 
 void CElevatorL::Update(_float fTimeDelta)
@@ -112,11 +118,14 @@ void CElevatorL::Update(_float fTimeDelta)
 
     m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
     m_pTriggerCom->Update(fTimeDelta, m_pTransformCom);
+
+    m_pEffect->Update(fTimeDelta);
 }
 
 void CElevatorL::Late_Update(_float fTimeDelta)
 {
     m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
+    m_pEffect->Late_Update(fTimeDelta);
 
     __super::Late_Update(fTimeDelta);
 }
@@ -343,6 +352,19 @@ HRESULT CElevatorL::Ready_Collision(void* pArg)
     return S_OK;
 }
 
+HRESULT CElevatorL::Ready_Effect()
+{
+    m_pEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EMBARS), TEXT("MapSpine")));
+
+    if (nullptr == m_pEffect)
+        return E_FAIL;
+
+    m_pEffect->ResetChildren(); 
+    m_pEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
+
+    return S_OK;
+}
+
 void CElevatorL::Animation_Update(_float fTimeDelta)
 {
     if (ANIM_STATE::IDLE != m_eAnimState && true == m_SkipEvent.isSkip)
@@ -391,6 +413,7 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
             break;
         }
     }
+
 }
 
 void CElevatorL::Animation_Change(_float fTimeDelta)
@@ -602,4 +625,5 @@ void CElevatorL::Free()
 
     Safe_Release(m_pBodyCom);
     Safe_Release(m_pTriggerCom);
+    Safe_Release(m_pEffect);
 }
