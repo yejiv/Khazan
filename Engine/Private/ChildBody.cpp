@@ -79,7 +79,7 @@ void CChildBody::Priority_Update(_float fTimeDelta)
 
 void CChildBody::Update(_float fTimeDelta)
 {
-     
+    m_fFeelerTime += fTimeDelta;
 
     Apply_RootInertia(fTimeDelta);
     Type_Update(fTimeDelta);
@@ -158,6 +158,12 @@ void CChildBody::ApplyToBones(_float fAlpha)
         verticalUpScale = 0.3f;   // 위로는 30%만
         baseSagPerDepth = 0.03f;  // depth당 3cm 처짐
     }
+    if (m_eClothType == CLOTHTYPE::FEELER)
+    {
+        baseSagPerDepth = 0.6f;  // 거의 안 처짐
+        verticalUpScale = 0.7f;
+        maxHoriz = 0.3f;    // 옆으로도 많이 안 퍼지게
+    }
     else // CAPE
     {
         maxHoriz = 0.6f;   // 망토는 조금 더 많이 퍼져도 됨
@@ -209,6 +215,10 @@ void CChildBody::Type_Update(_float fTimeDelta)
     if (m_eClothType == CLOTHTYPE::CAPE)
     {
         Cape_Update(fTimeDelta);
+    }
+    else if (m_eClothType == CLOTHTYPE::FEELER)
+    {
+        Feeler_Update(fTimeDelta);
     }
 }
 
@@ -296,6 +306,94 @@ void CChildBody::Cape_Update(_float fTimeDelta)
     float maxSpeed = 4.0f + 1.0f * (float)m_iDepth; // 깊을수록 조금 더 허용
     float len = vel.Length();
 
+    if (len > maxSpeed && len > 1e-4f)
+    {
+        vel *= (maxSpeed / len);
+        m_pBodyInterface->SetLinearVelocity(m_BodyID, vel);
+    }
+}
+
+void CChildBody::Feeler_Update(_float fTimeDelta)
+{
+    if (!m_pBody || !m_pRootBody || !m_pOwnerTransform || fTimeDelta <= 0.f)
+        return;
+
+    // ===== 1) Root 속도 기반 관성 =====
+    Vec3 rootVel = m_pRootBody->GetLinearVelocity();
+    float rootSpeed = rootVel.Length();
+
+    // 촉수가 느낄 수 있는 최대 속도 제한
+    const float maxClothSpeed = 10.0f;
+    if (rootSpeed > maxClothSpeed && rootSpeed > 1e-4f)
+    {
+        rootVel *= (maxClothSpeed / rootSpeed);
+        rootSpeed = maxClothSpeed;
+    }
+
+    // 캐릭터 기준 방향 벡터
+    Vec3 forward = LoadVec3(m_pOwnerTransform->Get_State(STATE::LOOK));
+    forward.SetY(0.f); forward = forward.Normalized();
+
+    Vec3 right = LoadVec3(m_pOwnerTransform->Get_State(STATE::RIGHT));
+    right.SetY(0.f); right = right.Normalized();
+
+    Vec3 up(0.f, 1.f, 0.f);
+
+    // 속도 성분 분해
+    float vF = rootVel.Dot(forward);
+    float vR = rootVel.Dot(right);
+    float vU = rootVel.Dot(up);
+
+    float depth = (float)m_iDepth;
+    float depthFactor = 0.4f + 0.1f * depth;   // 끝으로 갈수록 살짝 더 많이 움직이게
+    if (depthFactor > 0.9f) depthFactor = 0.9f;
+
+    // 관성 force (가속 대신 속도 기반 간단 버전)
+    float kInertia = 3.0f * depthFactor;
+
+    Vec3 inertiaForce =
+        (-vF * kInertia) * forward +   // 앞으로 달리면 뒤로 끌림
+        (-vR * kInertia * 0.5f) * right +
+        (-vU * kInertia * 0.3f) * up;
+
+    // ===== 2) 살짝 wiggle 노이즈 =====
+    float time = m_fFeelerTime; // 엔진 쪽에서 쓰는 전역 시간 함수 아무거나
+
+    float freq = 5.0f + depth * 0.8f;             // 끝일수록 더 잘 흔들
+    float amp = 0.4f + depth * 0.05f;           // 진폭
+
+    // rest 방향 기준으로 수직인 방향 하나 잡아서 wiggle
+    Vec3 restLocal = Vec3(m_vRestLocalPos.x, m_vRestLocalPos.y, m_vRestLocalPos.z);
+    restLocal = restLocal.Normalized();
+
+    Vec3 axis = restLocal.Cross(Vec3::sAxisY());
+    if (axis.LengthSq() < 1e-4f)
+        axis = restLocal.Cross(Vec3::sAxisX());
+    axis = axis.Normalized();
+
+    float phase = depth * 0.7f;
+    float s = sinf(time * freq + phase);
+
+    Vec3 wiggleForce = axis * (amp * s);
+
+    // ===== 3) force 합산 및 속도 상한 =====
+    Vec3 totalForce = inertiaForce + wiggleForce;
+
+    // 너무 과한 힘 방지
+    float maxForce = 80.f;
+    float fLen = totalForce.Length();
+    if (fLen > maxForce)
+        totalForce *= (maxForce / fLen);
+
+    m_pBodyInterface->AddForce(m_BodyID, totalForce);
+
+    // 속도 상한 (끝자락 늘어나는 것 방지)
+    Vec3 vel = m_pBodyInterface->GetLinearVelocity(m_BodyID);
+    float baseMax = 6.0f;
+    float extra = 1.0f;
+    float maxSpeed = baseMax + extra * min(depth, 4.0f); // 깊어질수록 6~10m/s 정도
+
+    float len = vel.Length();
     if (len > maxSpeed && len > 1e-4f)
     {
         vel *= (maxSpeed / len);

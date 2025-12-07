@@ -60,7 +60,7 @@ public:
 
 public:
     void Cape_Update(_float fTimeDelta);
-
+    void Feeler_Update(_float fTimeDelta);
 
 public:
     void Apply_RootInertia(_float fTimeDelta);
@@ -106,6 +106,8 @@ private:
 
     Vec3 m_vPrevRootVel = Vec3::sZero();
     _bool m_isPrevRootVel = false;
+
+    _float m_fFeelerTime = {};
 
 private:
     HRESULT Ready_Child(CHILD_BODY_DESC* pDesc);
