@@ -78,7 +78,7 @@ protected:
     vector<FMOD_CHANNEL*>       m_pChannel;
 
     /* Call back */
-    function<void(_bool)>       m_JustGuardCallback;
+    function<void(_bool)>       m_JustGuardCallback = nullptr;
 
 protected:
 	CCharacterVirtual*			m_pCharVirCom = { nullptr };

@@ -3,7 +3,7 @@
 #include "Imp_Melee.h"
 #include "BlackBoard.h"
 #include "AI_Controller.h"
-
+#include "GameInstance.h"
 
 CAS_DashAttack_Imp_Melee::CAS_DashAttack_Imp_Melee()
 {
