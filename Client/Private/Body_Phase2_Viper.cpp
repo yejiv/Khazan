@@ -161,6 +161,10 @@ HRESULT CBody_Phase2_Viper::Render()
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
         return E_FAIL;
 
+    _bool isEnableRimLight = false;
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableRimLight", &isEnableRimLight)))
+        return E_FAIL;
+
     //  _float fGreenIntensity = 0.9f;
     //  if (FAILED(m_pShaderCom->Bind_RawValue("g_fGreenIntensity", &fGreenIntensity, sizeof(_float))))
     //      return E_FAIL;

@@ -75,6 +75,8 @@ float4  g_fEdgeColor;
 // Viper
 bool g_HasEmissive;
 float g_fGreenIntensity = 1.f;
+bool g_isEnableRimLight, g_isBlinkRimLight;
+float g_fMinRimIntensity;
 
 // Imp
 float g_fDiffusePower = 1.f;
@@ -918,6 +920,25 @@ PS_OUT PS_VIPER(PS_IN In)
 
     Out.vDiffuse = vMtrlDiffuse;
     
+    // Rim Light
+    if (g_isEnableRimLight)
+    {
+        vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+        float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+        fRim = pow(fRim, g_fRimPower);
+        float fFinalIntensity = g_vRimColor * fRim * g_fRimLightIntensity;
+        
+        if (g_isBlinkRimLight)
+        {
+            fFinalIntensity = g_fRimLightIntensity / 2.f * (1.f + cos(g_fTimeDelta * g_fCycleSpeed));
+            fFinalIntensity = clamp(fFinalIntensity, g_fMinRimIntensity, 1.f);
+        }
+        
+        float3 vRimColor = g_vRimColor * fRim * fFinalIntensity;
+
+        Out.vDiffuse.rgb = vMtrlDiffuse.rgb + vRimColor * g_fRimEmissive; // Rim Emissive
+    }
+
     return Out;
 }
 

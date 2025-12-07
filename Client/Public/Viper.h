@@ -95,6 +95,7 @@ private:
 private:
     void                            Viper_Cinematic_ShaderSettings();
     void                            Viper_2PhaseBerserker_ShaderSettings();
+    void                            Spawn_BloodDecal();
 
 private:
     class CBody_Viper*              m_pBody = { nullptr };

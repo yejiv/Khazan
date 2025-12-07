@@ -71,6 +71,8 @@ HRESULT CLevel_Viper::Initialize()
     if (!Wait_All_Futures())
         return E_FAIL;
     
+    CHECK_FAILED(Ready_Layer_Decal(), E_FAIL);
+
     // 바이퍼 레벨 초기 포그, 스카이박스, 클라우드 세팅
     CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
 
@@ -730,6 +732,15 @@ HRESULT CLevel_Viper::Ready_Lights()
         return E_FAIL;
 
     LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(-30.103f, -29.9f, 185.861f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 3.5f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Viper_CutScene_PointLight"), ENUM_CLASS(LEVEL::VIPER), LightDesc)))
+        return E_FAIL;
+
+    LightDesc.eType = LIGHT_DESC::POINT;
     LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
     LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
     LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.0f);
@@ -757,11 +768,11 @@ HRESULT CLevel_Viper::Ready_Lights()
         return E_FAIL;
 
     LightDesc.eType = LIGHT_DESC::POINT;
-    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
-    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
-    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vPosition = _float4(-30.103f, -28.f, 185.861f, 1.f);
+    LightDesc.vDiffuse = _float4(2.2f, 2.2f, 2.f, 1.f);
+    LightDesc.vAmbient = _float4(1.f, 1.f, 0.8f, 1.f);
     LightDesc.vSpecular = LightDesc.vDiffuse;
-    LightDesc.fRange = 5.f;
+    LightDesc.fRange = 2.5f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Viper_Core"), ENUM_CLASS(LEVEL::VIPER), LightDesc, false)))
         return E_FAIL;
 
@@ -1093,6 +1104,16 @@ HRESULT CLevel_Viper::Ready_Item()
     desc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
 
     m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Item"), ENUM_CLASS(LEVEL::VIPER), TEXT("Item"), &desc, 10);
+
+    return S_OK;
+}
+
+HRESULT CLevel_Viper::Ready_Layer_Decal()
+{
+    // Decal
+    if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal"),
+        ENUM_CLASS(LEVEL::VIPER), TEXT("Pool_Decal"), nullptr, 100)))
+        return E_FAIL;
 
     return S_OK;
 }

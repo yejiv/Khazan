@@ -59,6 +59,12 @@ HRESULT CBody_Cinematic_Viper::Initialize_Clone(void* pArg)
     /* if (FAILED(Ready_Colliders()))
          return E_FAIL;*/
 
+    m_vRimColor = _float3(1.f, 0.8f, 0.6f);
+    m_fRimEmissive = 3.f;
+    m_fMaxRimEmissive = 7.f;
+    m_fRimIntensity = 1.f;
+    m_fRimDuration = 20.f;
+
     return S_OK;
 }
 
@@ -69,9 +75,20 @@ void CBody_Cinematic_Viper::Priority_Update(_float fTimeDelta)
 
 void CBody_Cinematic_Viper::Update(_float fTimeDelta)
 {
+    if (true == m_isAccRimEmissive)
+    {
+        m_fTimeAcc += fTimeDelta;
+
+        _float fRatio = m_fTimeAcc / m_fRimDuration;
+
+        if (fRatio >= 1.f)
+            fRatio = 1.f;
+
+        m_fRimEmissive = Lerp(m_fRimEmissive, m_fMaxRimEmissive, fRatio);
+    }
+
     if (CViper::PHASE::CINEMATIC == m_pOwner->Get_Phase())
         Update_CombinedMatrix();
-
 }
 
 void CBody_Cinematic_Viper::Late_Update(_float fTimeDelta)
@@ -101,6 +118,28 @@ HRESULT CBody_Cinematic_Viper::Render()
 
     _float fEmissiveIntensity = 10.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableRimLight", &m_isEnableRimLight)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isBlinkRimLight", &m_isBlinkRimLight)))
+        return E_FAIL;
+
+    _float fRimPower = 2.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &m_fRimIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &m_vRimColor, sizeof(_float3))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &m_fRimEmissive, sizeof(_float))))
         return E_FAIL;
 
     for (size_t i = 0; i < iNumMeshes; i++)

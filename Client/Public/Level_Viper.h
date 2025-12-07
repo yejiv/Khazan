@@ -52,6 +52,7 @@ private:
     HRESULT Ready_Shader_Settings();
 
     HRESULT Ready_Item();
+    HRESULT Ready_Layer_Decal();
 
     _bool Wait_All_Futures();
 
