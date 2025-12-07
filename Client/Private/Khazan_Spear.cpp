@@ -252,7 +252,7 @@ void CKhazan_Spear::Update(_float fTimeDelta)
             m_EffectTimeDelta = 0.f;
         }
     }
-    
+    m_pGameInstance->ListenerPosSet(m_pTransformCom->Get_State(STATE::POSITION), m_pTransformCom->Get_State(STATE::LOOK), m_pTransformCom->Get_State(STATE::UP));
 }
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
@@ -2623,10 +2623,10 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 0.75f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.85f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER);
     tCharVirDesc.fRadius = 0.6f;
-    tCharVirDesc.fHeight = 1.f;
+    tCharVirDesc.fHeight = 0.8f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.fMass = 60.f;
     tCharVirDesc.fMaxStrength = 0.f;

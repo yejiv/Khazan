@@ -205,6 +205,25 @@ void CDragonian_Melee::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGa
     if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
         ++m_Data.iBrutalHit;
 
+    switch (m_pGameInstance->Rand(1, 5))
+    {
+    case 1:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Dmg_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+        break;
+    case 2:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Dmg_02 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+        break;
+    case 3:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Dmg_03 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+        break;
+    case 4:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Dmg_04 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+        break;
+    default:
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Dmg_05 (SFX).wav"), Get_Position(), Get_SoundChannel(0));
+        break;
+    }
+
     __super::Take_Damage(fDamage, eHitreaction, pGameObject);
 }
 
@@ -361,10 +380,10 @@ HRESULT CDragonian_Melee::Ready_AnimEvent()
     pModel->Register_Event("Walk3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
     pModel->Register_Event("Walk4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isSlowWalk = true; });
 
-    pModel->Register_Event("DoubleSwing_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
-    pModel->Register_Event("DoubleSwing_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
-    pModel->Register_Event("DoubleSwing_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
-    pModel->Register_Event("DoubleSwing_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+    pModel->Register_Event("DoubleSwing_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; Attack_Sound(true); });
+    pModel->Register_Event("DoubleSwing_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; Attack_Sound(false); });
+    pModel->Register_Event("DoubleSwing_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; Attack_Sound(true); });
+    pModel->Register_Event("DoubleSwing_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; Attack_Sound(false); });
 
     pModel->Register_Event("DoubleSwing_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); Update_MeshTrail(); });
     pModel->Register_Event("DoubleSwing_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); Update_MeshTrail(); });
@@ -376,8 +395,8 @@ HRESULT CDragonian_Melee::Ready_AnimEvent()
     pModel->Register_Event("DoubleSwing_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
     pModel->Register_Event("DoubleSwing_4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
 
-    pModel->Register_Event("HardSmash_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
-    pModel->Register_Event("HardSmash_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; });
+    pModel->Register_Event("HardSmash_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; Attack_Sound(true);});
+    pModel->Register_Event("HardSmash_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {this->m_Data.isAttack_Collision = true; Attack_Sound(false);});
 
     pModel->Register_Event("HardSmash_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); Update_MeshTrail(); });
     pModel->Register_Event("HardSmash_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {this->Attack_Move(); Update_MeshTrail(); });
@@ -385,6 +404,43 @@ HRESULT CDragonian_Melee::Ready_AnimEvent()
     pModel->Register_Event("HardSmash_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
     pModel->Register_Event("HardSmash_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {this->m_Data.isAttack_Collision = false; });
 
+    pModel->Register_Event("Doubble_Sound_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_dragonianwarrior_hardsmash_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 5.f); });
+    pModel->Register_Event("Doubble_Sound_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_dragonianwarrior_hardsmash_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 5.f); });
+
+    //MoveSound
+    pModel->Register_Event("Lock_B_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_B_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_F_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_F_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_L_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_L_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_R_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Lock_R_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+
+
+    pModel->Register_Event("Turn_L_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_L_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_R_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_R_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_L_180_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_L_180_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_R_180_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("Turn_R_180_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+
+    pModel->Register_Event("DoubleATK_Move_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("DoubleATK_Move_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("DoubleATK_Move_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("DoubleATK_Move_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("DoubleATK_Move_5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("DoubleATK_Move_6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("DoubleATK_Move_7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+
+    pModel->Register_Event("HardSmash_Move_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("HardSmash_Move_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("HardSmash_Move_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("HardSmash_Move_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("HardSmash_Move_5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+    pModel->Register_Event("HardSmash_Move_6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
     return S_OK;
 }
 
@@ -430,6 +486,50 @@ void CDragonian_Melee::Attack_Move()
 {
     LockOnLerp(m_fTimeDelta, 3.f);
     Get_Transform()->Go_Straight(m_fTimeDelta);
+}
+
+void CDragonian_Melee::Attack_Sound(_bool isASound)
+{
+    if (isASound)
+    {
+        switch (m_pGameInstance->Rand(1, 3))
+        {
+        case 1:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_sword_swish_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1));             break;
+        case 2:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_sword_swish_a_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1));             break;
+        default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_sword_swish_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(1));             break;
+        }
+    }
+    else
+    {
+        switch (m_pGameInstance->Rand(1, 3))
+        {
+        case 1:         m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_sword_swish_b_01 (SFX).wav"), Get_Position(), Get_SoundChannel(1));         break;
+        case 2:         m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_sword_swish_b_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1));         break;
+        default:        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_sword_swish_b_03 (SFX).wav"), Get_Position(), Get_SoundChannel(1));         break;
+        }
+    }
+
+    switch (m_pGameInstance->Rand(1, 5))
+    {
+    case 1:             m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Atk_S_01 (SFX).wav"), Get_Position(), Get_SoundChannel(2));              break;
+    case 2:             m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Atk_S_02 (SFX).wav"), Get_Position(), Get_SoundChannel(2));              break;
+    case 3:             m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Atk_S_03 (SFX).wav"), Get_Position(), Get_SoundChannel(2));              break;
+    case 4:             m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Atk_S_04 (SFX).wav"), Get_Position(), Get_SoundChannel(2));              break;
+    default:            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_Dragonian_A_Atk_S_05 (SFX).wav"), Get_Position(), Get_SoundChannel(2));              break;
+    }
+}
+
+void CDragonian_Melee::Move_Sound()
+{
+    switch (m_pGameInstance->Rand(1, 6))
+    {
+    case 1:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_01 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    case 2:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_02 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    case 3:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_03 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    case 4:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_04 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    case 5:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_05 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_06 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
+    }
 }
 
 CDragonian_Melee* CDragonian_Melee::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)

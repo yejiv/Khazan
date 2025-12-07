@@ -15,7 +15,6 @@
 #include "AS_Dr_Rampage_Groggy.h"
 #include "AS_Dr_Rampage_Sleep.h"
 #include "AS_Dr_Rampage_Turn.h"
-#include "AS_Dr_Rampage_Page2.h"
 
 CAI_Controller_Dragonian_Rampage::CAI_Controller_Dragonian_Rampage()
 {
@@ -51,10 +50,6 @@ void CAI_Controller_Dragonian_Rampage::Update(CGameObject* pOwner, _float fTimeD
     else if (*m_pMonData->pCulStamina <= 0.f)
     {
         m_pFSM->Change_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::GRORRY), pOwner);
-    }
-    else if (!m_pMonData->is2Page && m_pMonData->isPageChange)
-    {
-        m_pFSM->Change_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::PAGE2), pOwner);
     }
     else
     {
@@ -190,7 +185,6 @@ HRESULT CAI_Controller_Dragonian_Rampage::Ready_FSM(class CCreature* pOwner)
 
     CHECK_NULLPTR(pFsm, E_FAIL);
 
-    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::PAGE2), CAS_Dr_Rampage_Page2::Create()), E_FAIL);
     CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_BACK), CAS_Dr_Rampage_Attack_Back::Create()), E_FAIL);
     CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_RUSH), CAS_Dr_Rampage_Attack_Rush::Create()), E_FAIL);
     CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_DEFAULT), CAS_Dr_Rampage_Attack_Default::Create()), E_FAIL);
