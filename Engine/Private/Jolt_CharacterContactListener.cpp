@@ -26,6 +26,9 @@ bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtu
     if (pCharDesc1 == nullptr || pCharDesc1->pGameObject == nullptr || pBody1Desc == nullptr || pBody1Desc->pGameObject == nullptr)
         return false;
 
+    if (m_pBodyInterface->IsSensor(inBodyID2))
+        return false;
+
     if (pCharDesc1->isForceVaildation || pBody1Desc->isForceVaildation)
         return true;
 
@@ -95,7 +98,7 @@ void CJolt_CharacterContactListener::OnContactPersisted(const JPH::CharacterVirt
     if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static
         || pBody1Desc->isForceVaildation == true)
         ioSettings.mCanPushCharacter = true;
-    
+
     ioSettings.mCanReceiveImpulses = false;
    /* COLLISION_DESC* pCharDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     COLLISION_DESC* pBodyDesc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inBodyID2)));
