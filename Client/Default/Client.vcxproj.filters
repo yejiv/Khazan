@@ -1477,6 +1477,18 @@
     <Filter Include="02.GameObject\Part Object\Weapon">
       <UniqueIdentifier>{e3683a3e-77d2-44ac-be33-f4754c5ee95c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.MiniGame">
+      <UniqueIdentifier>{18ff468f-e40f-4dcb-be03-2f02d5c7d199}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.MiniGame\Gacha">
+      <UniqueIdentifier>{7b00fcf9-677a-408f-8162-c88c9159fd07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.MiniGame\Gacha\RamdomBox">
+      <UniqueIdentifier>{cd1f998d-cd3d-48c3-bb9d-39a265fc2789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.MiniGame\Gacha\SeleteUI">
+      <UniqueIdentifier>{007d416f-1406-482b-b6f5-846f0360d88e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2856,6 +2868,15 @@
     <ClInclude Include="..\public\WeaponObject.h">
       <Filter>02.GameObject\Part Object\Weapon</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\MiniGame_Gacha.h">
+      <Filter>03.MiniGame\Gacha</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\RandomBox.h">
+      <Filter>03.MiniGame\Gacha\RamdomBox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Gacha_Selete.h">
+      <Filter>03.MiniGame\Gacha\SeleteUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4214,6 +4235,15 @@
     </ClCompile>
     <ClCompile Include="..\private\WeaponObject.cpp">
       <Filter>02.GameObject\Part Object\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MiniGame_Gacha.cpp">
+      <Filter>03.MiniGame\Gacha</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\RandomBox.cpp">
+      <Filter>03.MiniGame\Gacha\RamdomBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Gacha_Selete.cpp">
+      <Filter>03.MiniGame\Gacha\SeleteUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

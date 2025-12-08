@@ -205,7 +205,6 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_PartObjects(), E_FAIL);
     m_pHeadMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Head");
     m_pBodySocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Spine2");
-    m_pLeftLegSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-R-Foot");
     m_pLockOnSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Spine2");
     m_vLockOnPosition = &m_vLockOnPos;
 
@@ -378,29 +377,7 @@ HRESULT CElamein::Ready_Components()
 
 
     _vector vMatScale{}, vMatQuat{}, vMatPos{};
-
     CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-    BodyDesc.vExtent = { 1.5f, 0.5f, 0.5f };
-    BodyDesc.eMotion = EMotionType::Kinematic;
-    BodyDesc.eQuality = EMotionQuality::Discrete;
-    BodyDesc.eShapeType = SHAPE::BOX;
-    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-    BodyDesc.bIsTrigger = true;
-
-    _matrix LegMat = XMLoadFloat4x4(m_pLeftLegSocketMatrix) * m_pTransformCom->Get_WorldMatrix();
-    for (uint32_t i = 0; i < 3; i++)
-        LegMat.r[i] = XMVector3Normalize(LegMat.r[i]);
-
-    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, LegMat);
-
-    XMStoreFloat3(&BodyDesc.vPos, vMatPos);
-    XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
-
-    BodyDesc.vShapeOffset = _float3(0.4f, -0.f, 0.f);
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
-
-    CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_LegBody"), (CComponent**)&m_pLeftLegCom, &BodyDesc);
-
     BodyDesc.vExtent = { 0.9f, 2.2f, 0.9f };
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
@@ -622,19 +599,6 @@ void CElamein::Update_Body(_float fTimeDelta)
     }
 
     _bool isAttack = m_Data.iAttackBody_State & (_uint)CElamein::ATTACK_BODY::RIGHT_LEG;
-    m_pLeftLegCom->Collision_Active(isAttack);
-
-    if (isAttack)
-    {
-        _matrix TailMat = XMLoadFloat4x4(m_pLeftLegSocketMatrix);
-        for (uint32_t i = 0; i < 3; i++)
-            TailMat.r[i] = XMVector3Normalize(TailMat.r[i]);
-        TailMat *= m_pTransformCom->Get_WorldMatrix();
-
-        XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, TailMat);
-        m_pLeftLegCom->Sync_Update(TailMat);
-        m_pLeftLegCom->Update(fTimeDelta, TailMat, vMatQuat, vMatPos);
-    }
 }
 
 void CElamein::Update_MeshTrail()
@@ -650,7 +614,7 @@ void CElamein::Set_DefaultTrail()
     Config.fLifeTime = 0.25f;
     Config.iTextureIdx = 8;
     Config.iDivisionCount = 10;
-    Config.vColor = _float4(1.7058, 1.7058, 1.7058, 1.f);
+    Config.vColor = _float4(1.7058f, 1.7058f, 1.7058f, 1.f);
     m_pMeshTrail->Set_TrailConfig(Config);
 }
 

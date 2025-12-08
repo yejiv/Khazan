@@ -272,7 +272,7 @@ void CInteraction_Item::Free()
     __super::Free();
     if (m_pGuide)
     {
-        m_pGuide->Set_IsDead(true);
+        //m_pGuide->Set_IsDead(true);
         m_pGuide = nullptr;
     }
 

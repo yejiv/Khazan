@@ -83,6 +83,8 @@
 #pragma endregion
 
 #include "Effect_Prefab.h"
+
+#include "MiniGame_Gacha.h"
 //static mutex g_GpuGate;
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -2248,6 +2250,12 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
 #pragma region Item
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Item"),
         CInteraction_Item::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+#pragma endregion
+
+#pragma region MiniGame
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_MiniGame_Gacha"),
+        CMiniGame_Gacha::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
         return E_FAIL;
 #pragma endregion
     return S_OK;
