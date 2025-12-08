@@ -174,6 +174,8 @@ void CClothBody::Free()
         Safe_Release(pRoot);
     }
     m_RootBodys.clear();
+    m_pModel = nullptr;
+    m_pOwnerTransform = nullptr;
     __super::Free();
 
 }

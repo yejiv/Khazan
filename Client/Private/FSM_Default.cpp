@@ -24,7 +24,6 @@ HRESULT CFSM_Default::Set_CulState(_uint iStateIndex, CGameObject* pOwner)
     if (nullptr == m_pCurrentState)
         return E_FAIL;
 
-    Safe_AddRef(m_pCurrentState);
     m_pCurrentState->Enter(this, pOwner);
 
     return S_OK;
