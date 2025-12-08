@@ -22,6 +22,7 @@ public:
     void Update(_float fTimeDelta);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
     void Start_LightTransition(const LIGHT_TRANSITION_DESC& Desc, _bool isRestore);
+    void Backup_LightDesc() { m_OriginalLightDesc = m_LightDesc; }
 
 private:
 	LIGHT_DESC				m_LightDesc = {};
