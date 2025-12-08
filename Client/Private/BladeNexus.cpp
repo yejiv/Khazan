@@ -400,6 +400,8 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
         // 해금 전 IDLE 상태
         if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_TS_Before_Start"), m_fInteract_Volume);
+
             m_pGuide->Update_Visible(false);
 
             // 처음 상호 작용 시
@@ -454,6 +456,8 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
         // 해금 후 IDLE 상태
         else if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_TS_On"), m_fInteract_Volume);
+
             m_pGuide->Update_Visible(false);
 
             // 2번 이상의 상호 작용 시
@@ -482,12 +486,18 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::BEFORE_LOOP == m_eAnimState)
         {
+            SoundStop_FadeOut(TEXT("IP_TS_Loop"), 3.f);
+            SoundOnce(TEXT("IP_TS_Off"), m_fInteract_Volume);
+
             m_eAnimState = ANIM_STATE::BEFORE_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
         }
         if (ANIM_STATE::AFTER_LOOP == m_eAnimState)
         {
+            SoundStop_FadeOut(TEXT("IP_TS_Loop_Vocal"), 3.f);
+            SoundOnce(TEXT("IP_TS_Off"), m_fInteract_Volume);
+
             m_eAnimState = ANIM_STATE::AFTER_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
@@ -500,6 +510,8 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
     // 귀검 가동 끝나면 ( 첫 해금 O )
     if (ANIM_STATE::BEFORE_START == m_eAnimState)       // BEFORE_START 가 끝나면 BEFORE_LOOP ( 플레이어가 UI랑 상호 작용 )
     {
+        m_pGameInstance->PlaySound_FadeIn(TEXT("IP_TS_Loop.wav"), m_fInteract_Volume, 3.f);
+
         CUI_BladeNexus::ONTYPE eUIType = {};
 
         switch (m_iBladeNexus_ID)
@@ -565,6 +577,8 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
     // 귀검 가동 끝나면 ( 첫 해금 X )
     if (ANIM_STATE::AFTER_START == m_eAnimState)
     {
+        m_pGameInstance->PlaySound_FadeIn(TEXT("IP_TS_Loop_Vocal.wav"), m_fInteract_Volume, 3.f);
+
         CUI_BladeNexus::ONTYPE eUIType = {};
 
         switch (m_iBladeNexus_ID)

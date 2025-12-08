@@ -41,6 +41,13 @@ public:
 	void StopByKey(const TCHAR* pSoundKey);
     void StopByChannel(FMOD_CHANNEL** ppOutChannel);
 
+    // 해당 파일명, 파라미터로 서서히 Sound Fade In
+    void PlaySoundOnce_FadeIn(const TCHAR* pSoundKey, float fVolume = 1.f, float fFadeTime = 1.f, FMOD_CHANNEL** ppOutChannel = nullptr);
+    void PlaySoundLoop_FadeIn(const TCHAR* pSoundKey, float fVolume = 1.f, float fFadeTime = 1.f, FMOD_CHANNEL** ppOutChannel = nullptr);
+
+    // 해당 파일명 + FadeTime으로 서서히 감소되고 0.f 가 되면 사운드 정지
+    void StopByKey_FadeOut(const TCHAR* pSoundKey, float fFadeTime);
+
     // 해당 파일명으로 재생중인 사운드가 재생중인지 확인
 	bool IsPlayingByKey(const TCHAR* pSoundKey);
 	// 해당 파일명으로 재생중인 사운드의 볼륨 조절

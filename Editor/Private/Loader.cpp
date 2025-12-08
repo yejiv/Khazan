@@ -639,6 +639,10 @@ HRESULT CLoader::Loading_For_Map_Level()
     /* Prototype_GameObject_Prop_NPC_Danjin */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Danjin"),
         CNPC_Danjin::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Gacha */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Gacha"),
+        CNPC_Gacha::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma region 항아리 요정

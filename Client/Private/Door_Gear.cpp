@@ -177,6 +177,8 @@ void CDoor_Gear::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::IDLE1 == m_eAnimState)
         {
+            m_pGameInstance->PlaySoundOnce(TEXT("IP_Door_Gear_Active.wav"), XMLoadFloat4x4(&m_CombinedWorldMatrix).r[3], nullptr, 0.5f);
+
             m_eAnimState = ANIM_STATE::ACTIVATION;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);

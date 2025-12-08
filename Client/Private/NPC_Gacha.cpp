@@ -1,27 +1,35 @@
-#include "BigChest.h"
+#include "NPC_Gacha.h"
 
 #include "GameInstance.h"
 
 #include "Interaction_Guide.h"
 
-CBigChest::CBigChest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+#include "UI_Talk_Dangin.h"
+
+#include "ClientInstance.h"
+
+CNPC_Gacha::CNPC_Gacha(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive { pDevice, pContext }
+    , m_pClientInstance { CClientInstance::GetInstance() }
 {
+    Safe_AddRef(m_pClientInstance);
 }
 
-CBigChest::CBigChest(const CBigChest& Prototype)
+CNPC_Gacha::CNPC_Gacha(const CNPC_Gacha& Prototype)
     : CProp_Interactive { Prototype }
+    , m_pClientInstance { Prototype.m_pClientInstance }
 {
+    Safe_AddRef(m_pClientInstance);
 }
 
-HRESULT CBigChest::Initialize_Prototype()
+HRESULT CNPC_Gacha::Initialize_Prototype()
 {
     CHECK_FAILED(__super::Initialize_Prototype(), E_FAIL);
 
     return S_OK;
 }
 
-HRESULT CBigChest::Initialize_Clone(void* pArg)
+HRESULT CNPC_Gacha::Initialize_Clone(void* pArg)
 {
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
@@ -29,25 +37,13 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
 
-#pragma region 범수 상호작용 슥슥
-
     CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
-#pragma endregion
+    CHECK_FAILED(Ready_3D_Talk_UI(pArg), E_FAIL);
 
-    PROP_INTERACTIVE_DESC* pDesc = static_cast<PROP_INTERACTIVE_DESC*>(pArg);
-    CHECK_NULLPTR(pDesc, E_FAIL);
-
-    BOX_ITEMS* pItemBox = static_cast<BOX_ITEMS*>(pDesc->pOtherDesc);
-    CHECK_NULLPTR(pItemBox, E_FAIL);
-
-    m_Items = *pItemBox;
-
-    m_eAnimState = ANIM_STATE::CLOSE;
-    m_pModelCom->Set_Animation(ANIM_STATE::CLOSE);
+    m_eAnimState = ANIM_STATE::IDLE;
+    m_pModelCom->Set_Animation(m_eAnimState);
     m_pModelCom->Set_AnimationLoop(true);
-    m_pModelCom->Set_AnimationBlend(false);
-    m_pModelCom->Play_Animation(0.f);
     m_pModelCom->Set_AnimationBlend(true);
 
     m_iEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
@@ -55,35 +51,43 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
             m_Event = e;
         });
 
-    m_pModelCom->Register_Event("Open", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Open"), m_pTransformCom->Get_State(STATE::POSITION));
-        });
+#pragma region 3D UI
+
+#pragma endregion
 
     return S_OK;
 }
 
-void CBigChest::Priority_Update(_float fTimeDelta)
+void CNPC_Gacha::Priority_Update(_float fTimeDelta)
 {
     if (false == m_isCollision)
     {
         m_Event.None();
     }
+
+    m_pGachaTalkUI->Priority_Update(fTimeDelta);
 }
 
-void CBigChest::Update(_float fTimeDelta)
+void CNPC_Gacha::Update(_float fTimeDelta)
 {
     Animation_Update(fTimeDelta);
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         Animation_Change(fTimeDelta);
+
+    m_pGachaTalkUI->Update(fTimeDelta);
 }
 
-void CBigChest::Late_Update(_float fTimeDelta)
+void CNPC_Gacha::Late_Update(_float fTimeDelta)
 {
     CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
+
+    m_pGachaTalkUI->Late_Update(fTimeDelta);
+
+    m_pGachaTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
 }
 
-HRESULT CBigChest::Render()
+HRESULT CNPC_Gacha::Render()
 {
     CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
@@ -103,9 +107,9 @@ HRESULT CBigChest::Render()
     return S_OK;
 }
 
-HRESULT CBigChest::Ready_Components(void* pArg)
+HRESULT CNPC_Gacha::Ready_Components(void* pArg)
 {
-    BIGCHEST_DESC* pDesc = static_cast<BIGCHEST_DESC*>(pArg);
+    DANJIN_DESC* pDesc = static_cast<DANJIN_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
     LEVEL eLevel = pDesc->eLevel;
@@ -121,11 +125,11 @@ HRESULT CBigChest::Ready_Components(void* pArg)
     return S_OK;
 }
 
-HRESULT CBigChest::Ready_Collision(void* pArg)
+HRESULT CNPC_Gacha::Ready_Collision(void* pArg)
 {
 #pragma region 스태틱 몸체
     CBody::BODY_BOXSHAPE_DESC StaticBodyDesc{};
-    StaticBodyDesc.vExtent = _float3(1.f, 0.5f, 0.5f);
+    StaticBodyDesc.vExtent = _float3(0.3f, 1.f, 0.3f);
     StaticBodyDesc.bIsTrigger = false;
     StaticBodyDesc.bStartActive = true;
     StaticBodyDesc.eMotion = EMotionType::Static;
@@ -154,7 +158,7 @@ HRESULT CBigChest::Ready_Collision(void* pArg)
 
 #pragma region 트리거 영역
     CBody::BODY_BOXSHAPE_DESC TriggerDesc{};
-    TriggerDesc.vExtent = _float3(0.75f, 0.5f, 0.75f);
+    TriggerDesc.vExtent = _float3(2.f, 1.f, 2.f);
     TriggerDesc.bIsTrigger = true;
     TriggerDesc.bStartActive = true;
     TriggerDesc.eMotion = EMotionType::Kinematic;
@@ -165,15 +169,12 @@ HRESULT CBigChest::Ready_Collision(void* pArg)
     TriggerDesc.fRestitution = 0.0f;
     TriggerDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT);
 
-    XMStoreFloat3(&TriggerDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION) + XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * 1.f);
+    XMStoreFloat3(&TriggerDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
     TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
-
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
-
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_TriggerCollisionDesc.pGameObject = this;
     m_TriggerCollisionDesc.isForceVaildation = true;
-    //pCollDesc.pInfo = ?? // 작성하기
     TriggerDesc.pCollisionDesc = &m_TriggerCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -184,12 +185,12 @@ HRESULT CBigChest::Ready_Collision(void* pArg)
     return S_OK;
 }
 
-HRESULT CBigChest::Ready_Interaction_Guide(void* pArg)
+HRESULT CNPC_Gacha::Ready_Interaction_Guide(void* pArg)
 {
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("열기"), 1.f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("대화"), 1.5f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 
@@ -198,9 +199,53 @@ HRESULT CBigChest::Ready_Interaction_Guide(void* pArg)
     return S_OK;
 }
 
-void CBigChest::Input_Interact_Event(_float fTimeDelta)
+HRESULT CNPC_Gacha::Ready_3D_Talk_UI(void* pArg)
 {
-    if (ANIM_STATE::OPENING == m_eAnimState || ANIM_STATE::CLOSING == m_eAnimState)
+    CUIObject::UIOBJECT_DESC Desc;
+
+    Desc.iUIType = ENUM_CLASS(UITYPE::PANEL);
+    Desc.vLocalPos = { 0.f, 0.f };
+    Desc.vLocalSize = { 1.7f, 1.7f };
+    Desc.szName = "Gacha_TalkUI";
+    m_pGachaTalkUI = static_cast<CUI_Talk_Dangin*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Dangin"), &Desc));
+    CHECK_NULLPTR(m_pGachaTalkUI, E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CNPC_Gacha::Ready_DefaultSetting(void* pArg)
+{
+    return S_OK;
+}
+
+HRESULT CNPC_Gacha::Bind_Materials(_uint iMeshIndex)
+{
+    m_iMtrlFlags = 0;
+
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+        m_iMtrlFlags |= M_DIFFUSE;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
+        m_iMtrlFlags |= M_NORMAL;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
+        m_iMtrlFlags |= M_EMISSIVE;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
+        m_iMtrlFlags |= M_SPECULAR;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalicTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
+        m_iMtrlFlags |= M_METALIC;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
+        m_iMtrlFlags |= M_ROUGHNESS;
+
+    m_iMtrlFlags &= ~M_EMISSIVE;
+    m_iMtrlFlags &= ~M_SPECULAR;
+
+    m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
+
+    return S_OK;
+}
+
+void CNPC_Gacha::Input_Interact_Event(_float fTimeDelta)
+{
+    if (ANIM_STATE::TALK_START == m_eAnimState || ANIM_STATE::TALK_IDLE == m_eAnimState || ANIM_STATE::TALK_END == m_eAnimState)
         return;
 
     _bool isPressing = { false };
@@ -209,16 +254,6 @@ void CBigChest::Input_Interact_Event(_float fTimeDelta)
     {
         isPressing = m_pGuide->IsPressing();
     }
-    else if (m_pGameInstance->Key_Down(DIK_LCONTROL))
-    {
-        EventInteractType InteractType = {};
-
-        InteractType.eState = EventInteractType::END;
-
-        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
-
-        return;
-    }
 
     if (true == isPressing)
     {
@@ -226,36 +261,23 @@ void CBigChest::Input_Interact_Event(_float fTimeDelta)
 
         EventInteractType InteractType = {};
 
-        InteractType.eInteractType = INTERACTIVE_TYPE::CHEST;
+        InteractType.eInteractType = INTERACTIVE_TYPE::GACHANPC;
 
         InteractType.eState = EventInteractType::BEGIN;
 
-        EventChest ChestEvent = {};
+        EventNPC NPCEvent = {};
 
-        _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Position_Ch")) * m_pTransformCom->Get_WorldMatrix();
+        NPCEvent.vPlayerPosition = _float4(-60.462f, -92.26f, -41.949f, 1.f);
+        XMStoreFloat4(&NPCEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
 
-        XMStoreFloat4(&ChestEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-        XMStoreFloat4(&ChestEvent.vPlayerPosition, OffSetMatrix.r[3]);
-
-        InteractType.ChestEvent = ChestEvent;
+        InteractType.NPCEvent = NPCEvent;
 
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
     }
 }
 
-void CBigChest::Animation_Update(_float fTimeDelta)
+void CNPC_Gacha::Animation_Update(_float fTimeDelta)
 {
-    if (0.f != m_fColTimeAcc)
-    {
-        m_fColTimeAcc += fTimeDelta;
-
-        if (0.931f <= m_fColTimeAcc)
-        {
-            m_fColTimeAcc = 0.f;
-            m_pStaticCom->Collision_Active(true);
-        }
-    }
-
     if (false == m_isCollision)
         return;
 
@@ -263,104 +285,86 @@ void CBigChest::Animation_Update(_float fTimeDelta)
 
     if (m_Event.isOn())               // 켠다는 신호
     {
-        if (ANIM_STATE::CLOSE == m_eAnimState)
+        // 해금 전 IDLE 상태
+        if (ANIM_STATE::IDLE == m_eAnimState)
         {
-            SoundOnce(TEXT("IP_Chest_Open"), m_fInteract_Volume);
-
-            m_pStaticCom->Collision_Active(false);
-
             m_pGuide->Update_Visible(false);
 
-            // 닫긴 상자 상호 작용 시
-            m_eAnimState = ANIM_STATE::OPENING;
+            // 처음 상호 작용 시
+            m_eAnimState = ANIM_STATE::TALK_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
 
+            m_pGachaTalkUI->On_Panel();
+
             EventInteractType InteractType = {};
 
-            InteractType.eInteractType = INTERACTIVE_TYPE::CHEST;
+            InteractType.eInteractType = INTERACTIVE_TYPE::GACHANPC;
             InteractType.isEvent = true;
 
-            EventChest ChestEvent = {};
+            EventNPC NPCEvent = {};
 
-            _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Position_Ch")) * m_pTransformCom->Get_WorldMatrix();
+            NPCEvent.vPlayerPosition = _float4(-60.462f, -92.26f, -41.949f, 1.f);
+            XMStoreFloat4(&NPCEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
 
-            XMStoreFloat4(&ChestEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-            XMStoreFloat4(&ChestEvent.vPlayerPosition, OffSetMatrix.r[3]);
-            ChestEvent.Items = m_Items;
-            ChestEvent.isChestOpened = false;
+            InteractType.NPCEvent = NPCEvent;
 
-            InteractType.ChestEvent = ChestEvent;
-
-            // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
+            // NPC를 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+            m_pClientInstance->Camera_Set_NpcTalk(true, _float3(247.15f, 5.01f, 143.43f), _float3(0.59f, -0.11f, -0.80f));
         }
     }
     else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
     {
-        if (ANIM_STATE::OPEN == m_eAnimState)
+        if (ANIM_STATE::TALK_IDLE == m_eAnimState)
         {
-            m_eAnimState = ANIM_STATE::CLOSING;
+            m_eAnimState = ANIM_STATE::TALK_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
+
+            m_pClientInstance->Camera_Set_NpcTalk(false, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f));
         }
     }
 }
 
-void CBigChest::Animation_Change(_float fTimeDelta)
+void CNPC_Gacha::Animation_Change(_float fTimeDelta)
 {
-    if (ANIM_STATE::OPENING == m_eAnimState)
+    // NPC 가동 끝나면
+    if (ANIM_STATE::TALK_START == m_eAnimState)       // BEFORE_START 가 끝나면 BEFORE_LOOP ( 플레이어가 UI랑 상호 작용 )
     {
-        m_fColTimeAcc += fTimeDelta;
-
-        // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
-        m_eAnimState = ANIM_STATE::OPEN;
-        m_pModelCom->Set_Animation(ANIM_STATE::OPEN);
+        // 처음 상호 작용 후 애니메이션 루프로 전환 및 이벤트 발생
+        m_eAnimState = ANIM_STATE::TALK_IDLE;
+        m_pModelCom->Set_Animation(m_eAnimState);
         m_pModelCom->Set_AnimationLoop(true);
-
-        EventInteractType InteractType = {};
-
-        InteractType.eInteractType = INTERACTIVE_TYPE::CHEST;
-        InteractType.isEvent = true;
-
-        EventChest ChestEvent = {};
-
-        _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Position_Ch")) * m_pTransformCom->Get_WorldMatrix();
-
-        XMStoreFloat4(&ChestEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-        XMStoreFloat4(&ChestEvent.vPlayerPosition, OffSetMatrix.r[3]);
-        ChestEvent.Items = m_Items;
-        ChestEvent.isChestOpened = true;
-
-        InteractType.ChestEvent = ChestEvent;
-
-        // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
-        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
     }
-    if (ANIM_STATE::CLOSING == m_eAnimState)
+    // NPC 상호 작용 종료 후 ( 첫 해금 O )
+    if (ANIM_STATE::TALK_END == m_eAnimState)
     {
         if (true == m_isCollision)
             m_pGuide->Update_Visible(true);
 
-        // 처음 상호 작용 후 애니메이션 루프로 전환
-        m_eAnimState = ANIM_STATE::CLOSE;
-        m_pModelCom->Set_Animation(ANIM_STATE::CLOSE);
+        // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
+        m_eAnimState = ANIM_STATE::IDLE;
+        m_pModelCom->Set_Animation(m_eAnimState);
         m_pModelCom->Set_AnimationLoop(true);
+
+        m_Event.None();
     }
 }
 
-void CBigChest::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
+void CNPC_Gacha::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
 
-    if(ANIM_STATE::CLOSE == m_eAnimState)
+    if (ANIM_STATE::IDLE == m_eAnimState)
         m_pGuide->Update_Visible(true);
 
     m_isCollision = true;
 }
 
-void CBigChest::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
+void CNPC_Gacha::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
@@ -368,50 +372,59 @@ void CBigChest::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _
     m_isCollision = true;
 }
 
-void CBigChest::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
+void CNPC_Gacha::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
         return;
+
+    // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
+    if (ANIM_STATE::TALK_END != m_eAnimState && ANIM_STATE::IDLE != m_eAnimState)
+    {
+        m_eAnimState = ANIM_STATE::TALK_END;
+        m_pModelCom->Set_Animation(m_eAnimState);
+        m_pModelCom->Set_AnimationLoop(true);
+    }
 
     m_pGuide->Update_Visible(false);
 
     m_isCollision = false;
 }
 
-CBigChest* CBigChest::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CNPC_Gacha* CNPC_Gacha::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-    CBigChest* pInstance = new CBigChest(pDevice, pContext);
+    CNPC_Gacha* pInstance = new CNPC_Gacha(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {
-        MSG_BOX(TEXT("Failed to Created : CBigChest"));
+        MSG_BOX(TEXT("Failed to Created : CNPC_Gacha"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-CGameObject* CBigChest::Clone(void* pArg)
+CGameObject* CNPC_Gacha::Clone(void* pArg)
 {
-    CBigChest* pInstance = new CBigChest(*this);
+    CNPC_Gacha* pInstance = new CNPC_Gacha(*this);
 
     if (FAILED(pInstance->Initialize_Clone(pArg)))
     {
-        MSG_BOX(TEXT("Failed to Cloned : CBigChest"));
+        MSG_BOX(TEXT("Failed to Cloned : CNPC_Gacha"));
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CBigChest::Free()
+void CNPC_Gacha::Free()
 {
-    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), m_iEventID);
-
     __super::Free();
 
     Safe_Release(m_pStaticCom);
     Safe_Release(m_pTriggerCom);
+    Safe_Release(m_pGachaTalkUI);
+
+    Safe_Release(m_pClientInstance);
 
     if (nullptr != m_pGuide)
     {

@@ -2716,6 +2716,7 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         case INTERACTIVE_TYPE::DANJIN:
         case INTERACTIVE_TYPE::DUIMUK:
         case INTERACTIVE_TYPE::DAPHRONA:
+        case INTERACTIVE_TYPE::GACHANPC:
         {
             isDone = false;
             if (m_pBody->Get_Model()->IsFinished()) {
