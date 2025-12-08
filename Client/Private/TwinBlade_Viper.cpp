@@ -162,9 +162,11 @@ void CTwinBlade_Viper::Late_Update(_float fTimeDelta)
     {
         if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
             return;
+
+        m_pEffect[0]->Late_Update(fTimeDelta);
+        m_pEffect[1]->Late_Update(fTimeDelta);
     }
-    m_pEffect[0]->Late_Update(fTimeDelta);
-    m_pEffect[1]->Late_Update(fTimeDelta);
+
 }
 
 HRESULT CTwinBlade_Viper::Render()

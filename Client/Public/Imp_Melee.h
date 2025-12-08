@@ -41,8 +41,16 @@ private:
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();
     HRESULT							Ready_AnimEvent();
+    HRESULT                         Ready_SFX();
+    
     void                            Update_SwordPos();
     void                            Update_MeshTrail();
+    void                            SFX_Move();
+    void                            SFX_HIT();
+    void                            SFX_DEAD();
+    void                            SFX_REALIZE();
+    void                            SFX_SLEEP();
+
 
 private:
     class CBody_Imp_Melee*          m_pBody = { nullptr };
