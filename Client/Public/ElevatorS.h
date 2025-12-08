@@ -59,6 +59,9 @@ private:
     _float4 m_vUpPos = {};
     _float4 m_vDownPos = {};
 
+    _bool m_isStart = { false };
+    _bool m_isLoop = { false };
+
     _float m_fTimeAcc = { 0.f };
 
 private:

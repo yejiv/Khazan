@@ -86,6 +86,13 @@ void CUnLockGear::Priority_Update(_float fTimeDelta)
     {
         m_Event.None();
     }
+
+    if (true == m_EventGimmick.isUnLockGearAvailable(m_iEventID) && false == m_isGimmickDone)
+    {
+        m_isGimmickDone = true;
+
+        SoundOnce(TEXT("IP_Statue_Done"), m_fInteract_Volume);
+    }
 }
 
 void CUnLockGear::Update(_float fTimeDelta)
