@@ -57,7 +57,7 @@ private:
     _bool m_isSwitchPressed = { false };                // 스위치가 눌렸는지 안눌렸는지
 
     _float4 m_vUpPos = {};
-    _float4 m_vDownPos = {};
+    _float4 m_vDownPos = {};    
 
     _float m_fTimeAcc = { 0.f };
 

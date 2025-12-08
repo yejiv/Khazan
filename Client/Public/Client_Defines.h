@@ -17,23 +17,23 @@ namespace Client
 	enum class GUIDE_TYPE { LOCKON, GUARD, UNDERWORLD, DODGE, BURTALATTACK, FALLATTACK, IMPULSE,  END};
 	enum class LEVEL { STATIC, LOADING, TITLE, TEST, HEINMACH, CREVICE, EMBARS, VIPER, END };
 	enum class COLLISION_LAYER { 
-        MAP_STATIC, 
+        MAP_STATIC,  // 0
         MAP_DYNAMIC, 
         MAP_INTERACT, 
         PLAYER, 
         PLAYER_ATTACK, 
-        PLAYER_SEARCH, 
+        PLAYER_SEARCH, //5
         MONSTER, 
         MONSTERATTACK,
         ITEM, 
         EFFECT, 
         SKILL, 
-        CAMERA, 
+        CAMERA, // 10
         MAP_STATIC_TRIGGER, 
         MAP_MOVE_PLATFORM, 
         MAP_DEST, 
         MAP_CHUNK, 
-        TEST,
+        TEST, // 15
         CONTROLLER,
         INTERACT_OBJECT,
 

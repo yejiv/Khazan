@@ -6,7 +6,7 @@ namespace Engine
     enum class TARGET_DIR { F, B, L, R, FR, FL, BR, BL, END };
     enum class MODELTYPE { NONANIM, ANIM };
     enum class COLLIDER { AABB, OBB, SPHERE, END };
-    enum class SHAPE { CAPSULE, SPHERE, BOX, MESH, CONVEX, END };
+    enum class SHAPE { CAPSULE, SPHERE, BOX, MESH, CONVEX, CYLINDER, END };
     enum class JOLT_BP_LAYER { MOVING, NON_MOVING, TRIGGER, END };
     enum class JOLT_COLLSION_TYPE { BODY, CHAR, CHARVIR, END };
     enum class NAV_POINT { A, B, C, END };
