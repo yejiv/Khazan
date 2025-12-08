@@ -99,6 +99,9 @@ private:
     class CSkipButton* m_pSkipButton = { nullptr };
     class CKhazan_GSword* m_pKhazan = { nullptr };
 
+private:
+    void Set_Viper2Phase_ShaderSettings();
+
 public:
     static CSequence_Viper_SecondPhase* Create(class CViper* pViper, class CKhazan_GSword* pKhazan);
     virtual void Free() override;

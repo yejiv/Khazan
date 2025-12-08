@@ -18,11 +18,12 @@ public:
 public:
     virtual void OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
 
-
+private:
+    void                                Set_ViperBerserkerStart_ShaderSettings();
 
 public:
-    static CAS_P2_SwingRound_Viper*         Create();
-    virtual void                            Free() override;
+    static CAS_P2_SwingRound_Viper*     Create();
+    virtual void                        Free() override;
 
 };
 
