@@ -49,6 +49,9 @@ HRESULT CImp_Range::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimEvent()))
         return E_FAIL;
 
+    if (FAILED(Ready_SFX()))
+        return E_FAIL;
+
       m_pController = CAI_Controller_Imp_Range::Create(this);
       if (nullptr == m_pController)
           return E_FAIL;
@@ -245,33 +248,15 @@ HRESULT CImp_Range::Ready_AnimEvent()
 
     pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = true;
-
         Cast_MagicBall(0);
-        });
-    pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        });
-    pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 15.f);
 
-        });
-
-    pModel->Register_Event("ShotSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Shoot_MagicBall(0);
         });
 
 
     pModel->Register_Event("CastSpell2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Cast_MagicBall(1);
-        });
-    pModel->Register_Event("CastSpell2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-
-        });
-    pModel->Register_Event("CastSpell2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-
-        });
-
-    pModel->Register_Event("ShotSpell2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Shoot_MagicBall(1);
-        m_isLookAt = false;
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 15.f);
 
         });
 
@@ -279,20 +264,32 @@ HRESULT CImp_Range::Ready_AnimEvent()
     pModel->Register_Event("CastSpell3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = true;
         Cast_MagicBall(2);
-        });
-    pModel->Register_Event("CastSpell3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
 
         });
-    pModel->Register_Event("CastSpell3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+    pModel->Register_Event("ShotSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = false;
+        Shoot_MagicBall(0);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
 
         });
+
+
+    pModel->Register_Event("ShotSpell2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = false;
+        Shoot_MagicBall(1);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+
+        });
+
 
     pModel->Register_Event("ShotSpell3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = false;
         Shoot_MagicBall(2);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+
         });
-
-
 
 
 #pragma endregion
@@ -301,6 +298,8 @@ HRESULT CImp_Range::Ready_AnimEvent()
     pModel->Register_Event("CastBoomarang", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         
         Cast_Boomarang();
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 15.f);
+
         });
     pModel->Register_Event("HoldBoomarang", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
        
@@ -310,11 +309,142 @@ HRESULT CImp_Range::Ready_AnimEvent()
         Shoot_Boomarang();
         if (nullptr == m_pTarget)
             Look_Target();
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+
         });
 
 #pragma endregion
 
     return S_OK;
+}
+
+HRESULT CImp_Range::Ready_SFX()
+{
+
+    CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+    if (nullptr == pModel)
+        return E_FAIL;
+
+#pragma region MOVEMENT
+
+    pModel->Register_Event("IR_SFX_Walk_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_Move(); });
+    pModel->Register_Event("IR_SFX_Walk_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_Move(); });
+
+#pragma endregion
+
+#pragma region HIT
+
+    pModel->Register_Event("IR_SFX_NormalHit_B", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(1); });
+    pModel->Register_Event("IR_SFX_NormalHit_UF", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(1); });
+    pModel->Register_Event("IR_SFX_NormalHit_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(1); });
+    pModel->Register_Event("IR_SFX_NormalHit_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(1); });
+
+
+    pModel->Register_Event("IR_SFX_StringlHit_U", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(2); });
+    pModel->Register_Event("CA_M_DIWiz_DamageStrong_L_F", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(2); });
+    pModel->Register_Event("IR_SFX_StringlHit_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(2); });
+    pModel->Register_Event("IR_SFX_StringlHit_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(2); });
+
+
+
+#pragma endregion
+
+#pragma region DEAD
+    pModel->Register_Event("IR_SFX_Dead", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_DEAD(); });
+#pragma endregion
+
+#pragma region REALIZE
+    pModel->Register_Event("IM_SFX_Realize_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_REALIZE(); });
+#pragma endregion
+
+
+#pragma region SLEEP
+    pModel->Register_Event("IR_SFX_Sleep_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_SLEEP();  });
+    pModel->Register_Event("IR_SFX_Sleep_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_SLEEP(); });
+    pModel->Register_Event("IR_SFX_Sleep_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_SLEEP(); });
+    pModel->Register_Event("IR_SFX_Sleep_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_SLEEP(); });
+#pragma endregion
+
+
+    return S_OK;
+}
+
+void CImp_Range::SFX_Move()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 40.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 40.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 40.f);
+
+}
+
+void CImp_Range::SFX_HIT(_uint iHitIndex)
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iHitIndex == 1)
+    {
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Dmg_M_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Dmg_M_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Dmg_M_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+    }
+
+    
+    else if(iHitIndex == 2)
+    {
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Dmg_L_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Dmg_L_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Dmg_L_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+    }
+
+
+}
+
+void CImp_Range::SFX_DEAD()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Die_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::DEAD)), 8.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Die_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::DEAD)), 8.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Die_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::DEAD)), 8.f);
+    
+}
+
+void CImp_Range::SFX_REALIZE()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Breath_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Breath_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Breath_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+}
+
+void CImp_Range::SFX_SLEEP()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Laugh_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Laugh_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Laugh_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
 }
 
 
@@ -360,6 +490,14 @@ void CImp_Range::Cast_MagicBall(_uint iIndex)
         TEXT("Layer_Imp_MagicBall"),
         m_MagicBalls[iIndex]
     );
+
+    if(iIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Cast_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 15.f);
+    else if(iIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Cast_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 15.f);
+    else if(iIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Cast_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 15.f);
+
 }
 
 void CImp_Range::Shoot_MagicBall(_uint iIndex)
@@ -402,6 +540,13 @@ void CImp_Range::Shoot_MagicBall(_uint iIndex)
     pMagicBall->Set_IsActive(true);
     pMagicBall->Fire_Projectile();
 
+    if (iIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Shot_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 15.f);
+    else if (iIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Shot_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 15.f);
+    else if (iIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Shot_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 15.f);
+
 }
 
 void CImp_Range::Cast_Boomarang()
@@ -432,12 +577,17 @@ void CImp_Range::Cast_Boomarang()
         TEXT("Layer_Imp_Boomarang"),
         m_pBoomarang
     );
+
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 20.f);
+
 }
 
 void CImp_Range::Cast_Failed()
 {
     if(nullptr != m_pBoomarang)
         m_pBoomarang->Set_IsDead(true);
+
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Fail (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 5.f);
 }
 
 void CImp_Range::Hold_Boomarang()
@@ -455,6 +605,8 @@ void CImp_Range::Hold_Boomarang()
     m_pBoomarang->Set_SpawnDir(vNormalize);
     m_pBoomarang->Set_SpanwPoint(vSpawnPoint);
     m_pBoomarang->Reset();
+
+
 }
 
 void CImp_Range::Shoot_Boomarang()
@@ -477,6 +629,8 @@ void CImp_Range::Shoot_Boomarang()
     m_pBoomarang->Reset();
     m_pBoomarang->Set_IsActive(true);
     m_pBoomarang->Fire_Projectile();
+
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 20.f);
 }
 
 void CImp_Range::HPUI_Dead()

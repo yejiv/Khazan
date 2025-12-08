@@ -23,9 +23,6 @@ HRESULT CProjectile_Imp_MagicBall::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-   /* if (FAILED(Ready_Components()))
-        return E_FAIL;*/
-
     if (FAILED(Ready_Colliders()))
         return E_FAIL;
 
@@ -138,10 +135,24 @@ void CProjectile_Imp_MagicBall::Enter_State(PRJSTATE eNextState)
     switch (m_eState)
     {
     case Client::CProjectile::LOOP:
+        m_pGameInstance->PlaySoundLoop(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Loop (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 20.f);
         break;
     case Client::CProjectile::CRASHED:
+    {
+
+        _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Exp_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 20.f);
+
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Exp_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 20.f);
+
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Exp_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 20.f);
         m_isActive = false;
         break;
+    }
     case Client::CProjectile::END:
         m_isDead = true;
         break;
