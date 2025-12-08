@@ -33,7 +33,7 @@ public:
 	_float						Get_MaxStamina() const { return m_fMaxStamina; }
 	_float						Get_MoveSpeed() const{ return m_fMoveSpeed; }
     FMOD_CHANNEL**              Get_SoundChannel(_int iIndex);
-	// Set함수는 다르게 작동할수도 있을 것 같아서  일단 Get만 만들었습니다.
+
     void                        Set_HP(_float fCurrentfHp, _float fMaxHp) { m_fCurrentHP = fCurrentfHp; m_fMaxHP = fMaxHp; }
     void                        Set_Stamina(_float fCurrnetStamina, _float fMaxStamina) { m_fCurrentStamina = fCurrnetStamina; m_fMaxStamina = fMaxStamina; }
 
@@ -54,8 +54,6 @@ public:
 
 public:
     virtual void                Creature_Release();
-
-
 
 protected:
 	_float						m_fCurrentHP = {};
