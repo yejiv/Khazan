@@ -774,6 +774,7 @@ namespace Engine
         unsigned int iObjectLayer;
         wstring strName;
         bool isForceVaildation = false;
+        bool isMovePlatform = false;
         void* pInfo = nullptr;
     }COLLISION_DESC;
 

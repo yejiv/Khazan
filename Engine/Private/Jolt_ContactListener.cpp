@@ -55,7 +55,7 @@ void CJolt_ContactListener::OnContactAdded(const Body& inBody1, const Body& inBo
 
 	if (pBody1Desc == nullptr || pBody2Desc == nullptr || pBody1Desc->pGameObject == nullptr || pBody2Desc->pGameObject == nullptr)
 		return;
-
+    
 	if (!pBody1Desc->pGameObject->Get_IsDead() && !pBody2Desc->pGameObject->Get_IsDead())
 	{
 		pBody1Desc->pGameObject->Collision_Enter(pBody2Desc, pBody2Desc->iObjectLayer,
