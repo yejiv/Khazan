@@ -1477,6 +1477,9 @@
     <Filter Include="02.GameObject\Part Object\Weapon">
       <UniqueIdentifier>{e3683a3e-77d2-44ac-be33-f4754c5ee95c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Sound">
+      <UniqueIdentifier>{f4674566-2961-488c-86e5-81e3a816f105}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2856,6 +2859,7 @@
     <ClInclude Include="..\public\WeaponObject.h">
       <Filter>02.GameObject\Part Object\Weapon</Filter>
     </ClInclude>
+    <ClInclude Include="CKhazan_SoundHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4215,6 +4219,7 @@
     <ClCompile Include="..\private\WeaponObject.cpp">
       <Filter>02.GameObject\Part Object\Weapon</Filter>
     </ClCompile>
+    <ClCompile Include="CKhazan_SoundHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">

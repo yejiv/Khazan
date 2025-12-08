@@ -605,6 +605,7 @@
     <ClInclude Include="..\Public\Viper_Trigger.h" />
     <ClInclude Include="..\public\WeaponObject.h" />
     <ClInclude Include="..\Public\Yetuga.h" />
+    <ClInclude Include="CKhazan_SoundHelper.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientPch.h" />
     <ClInclude Include="framework.h" />
@@ -1072,6 +1073,7 @@
     <ClCompile Include="..\Private\AS_P2_SwingCombo_VIper.cpp" />
     <ClCompile Include="..\Private\AS_P2_SwingRound_Viper.cpp" />
     <ClCompile Include="..\Private\AS_P2_ThrowRock_VIper.cpp" />
+    <ClCompile Include="CKhazan_SoundHelper.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
