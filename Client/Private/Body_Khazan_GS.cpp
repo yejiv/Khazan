@@ -183,7 +183,7 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     XMStoreFloat4(&vResultPos, vPosition);
 
     m_pGameInstance->Set_LightPosition(TEXT("Viper_Thunder"), ENUM_CLASS(LEVEL::VIPER), vResultPos);
-    m_pGameInstance->Set_LightPosition(TEXT("Viper_Thunder_Ambient"), ENUM_CLASS(LEVEL::VIPER), vPos);
+    //m_pGameInstance->Set_LightPosition(TEXT("Viper_Thunder_Ambient"), ENUM_CLASS(LEVEL::VIPER), vPos);
 }
 
 void CBody_Khazan_GS::Late_Update(_float fTimeDelta)

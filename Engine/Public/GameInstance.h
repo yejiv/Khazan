@@ -86,7 +86,6 @@ public:
 public:
 	void Set_EnableShadow(_bool isEnable);
 	void Set_EnableSSAO(_bool isEnable);
-	void Set_EnableFog(_bool isEnable);
 	void Set_EnableToonShade(_bool isEnable);
 	void Set_EnableOutline(_bool isEnable);
     void Set_EnableRimLight(_bool isEnable);
@@ -377,7 +376,8 @@ public:
 
 #pragma region FOG
 	HRESULT						Bind_Fog_ShaderResources(class CShader* pShader);
-	FOG_CONFIG					Get_FogConfig();
+    void                        Set_EnableFog(_bool isEnable);
+    FOG_CONFIG					Get_FogConfig();
 	void						Set_FogConfig(FOG_CONFIG Config);
 	_uint						Get_NumFogNoiseTextures();
 	ID3D11ShaderResourceView*	Get_FogNoiseTexture(_uint iTextureIndex);

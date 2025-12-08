@@ -294,19 +294,29 @@ void CViper::Priority_Update(_float fTimeDelta)
 void CViper::Update(_float fTimeDelta)
 {
     // Test
-    if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-    {
-        CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
-        //  Viper_2PhaseBerserker_ShaderSettings();
-        Spawn_BloodDecal();
-    }
+    //  if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+    //  {
+    //      CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+    //      //  Viper_2PhaseBerserker_ShaderSettings();
+    //      Spawn_BloodDecal();
+    //  }
 
     if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
     {
         if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
         {
             CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
-            Viper_Cinematic_ShaderSettings();
+            Viper_2PhaseBerserker_ShaderSettings();
+        }
+    }
+
+    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
+    {
+        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+        {
+            //  CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+            //  Viper_2PhaseBerserkerEnd_ShaderSettings();
+            Start_Thunder(0.6f, 6);
         }
     }
 
@@ -395,7 +405,8 @@ void CViper::Update(_float fTimeDelta)
             pTrail->Update(fTimeDelta);
     }
 
-    FX_2PhaseEyeTrail();
+    if (m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "is_Berserker"))
+        FX_2PhaseEyeTrail();
 
     for (auto& pTrail : m_pLineTrail)
         pTrail->Update(fTimeDelta);
@@ -2513,7 +2524,7 @@ HRESULT CViper::Ready_AnimEvent()
         {
 
             m_pPahse2Body->Set_OnAttackCollision(false);
-            CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+            //  CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
 
         });
 
@@ -2731,7 +2742,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood_once"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
         CClientInstance::GetInstance()->ActiveCamera_Shaking(0.8f, 0.8f);
         
-        // Test
+        // HDR 노란빛 조명
         LIGHT_TRANSITION_DESC LightDesc{};
         LightDesc.fDuration = 3.f;
         LightDesc.vFadeTime = _float2(3.f, 0.f);
@@ -2764,7 +2775,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood_once"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
         CClientInstance::GetInstance()->ActiveCamera_Shaking(0.8f, 0.8f);
         
-        // Test
+        // 어두운 흰 조명
         LIGHT_TRANSITION_DESC LightDesc{};
         LightDesc.fDuration = 1.f;
         LightDesc.vFadeTime = _float2(1.f, 0.f);
@@ -2773,7 +2784,6 @@ HRESULT CViper::Ready_AnimEffectEvent()
         LightDesc.vSpecular = LightDesc.vDiffuse;
         LightDesc.isReturnToStart = false;
         m_pGameInstance->Start_LightTransition(TEXT("Viper_CutScene_PointLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
-
         });
 
     pModel->Register_Event("BloodMouth5_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -3217,6 +3227,28 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("Cutscene_LastRoar_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), rot, m_pTransformCom->Get_State(STATE::POSITION));
+        // 트윈 블레이드 범위 줄이기
+        LIGHT_DESC LightDesc{};
+        LightDesc.eType = LIGHT_DESC::POINT;
+        LightDesc.vDiffuse = _float4(2.f, 1.5f, 1.2f, 1.f);
+        LightDesc.vAmbient = _float4(0.5f, 0.35f, 0.3f, 1.f);
+        LightDesc.vSpecular = LightDesc.vDiffuse;
+        LightDesc.fRange = 3.5f;
+        m_pGameInstance->Set_LightDesc(TEXT("Viper_TwinBlade_R"), ENUM_CLASS(LEVEL::VIPER), LightDesc);
+        // 쉐이킹
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.2f, 2.f);
+        // 레디얼 블러
+        RADIAL_BLUR_DESC RadialDesc{};
+        RadialDesc.vCenterUV = _float2(0.5f, 0.5f);
+        RadialDesc.fSampleRadius = 0.05f;
+        RadialDesc.vMaskRadius = _float2(0.f, 0.3f);
+        RadialDesc.fExponent = 1.f;
+        RadialDesc.iNumSamples = 16;
+        RadialDesc.fAttenuation = 0.1f;
+        RadialDesc.fStrength = 1.f;
+        RadialDesc.fDuration = 2.f;
+        RadialDesc.vFadeTime = _float2(0.5f, 0.5f);
+        m_pGameInstance->Start_RadialBlur(RadialDesc);
         });
 
     pModel->Register_Event("Cutscene_LastRoar_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -3228,6 +3260,38 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     pModel->Register_Event("GrabGround_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("mist4"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Hand").r[3]);
+        });
+
+    pModel->Register_Event("CameraShaking10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
+        });
+
+    pModel->Register_Event("CameraShaking11", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
+        });
+
+    pModel->Register_Event("CameraShaking12", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
+        });
+
+    pModel->Register_Event("CameraShaking13", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
+        });
+
+    pModel->Register_Event("CameraShaking14", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
+        });
+
+    pModel->Register_Event("CameraShaking15", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
+        });
+
+    pModel->Register_Event("CameraShaking16", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
+        });
+
+    pModel->Register_Event("CameraShaking17", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.f);
         });
 
     // MeshTrail
@@ -3266,6 +3330,55 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("MeshTrail_SW9", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
     pModel->Register_Event("MeshTrail_SW10", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
     pModel->Register_Event("MeshTrail_SW11", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_2PhaseSwordTrail(); });
+
+    // 버서커 모드
+    // 번!!!!개!!!!!
+    pModel->Register_Event("DashDrift_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("DashDrift_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashDrift_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("DashDrift_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashDrift_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("DashDrift_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+
+    pModel->Register_Event("DashDriftEnd_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("DashDriftEnd_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashDriftEnd_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("DashDriftEnd_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashDriftEnd_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+
+    pModel->Register_Event("DashUpper_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashUpper_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("DashUpper_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashUpper_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("DashUpper_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashUpper_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashUpper_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashUpper_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("DashUpper_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashUpper_Thunder9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("DashUpper_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+
+    pModel->Register_Event("JumpAttack_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("JumpAttack_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("JumpAttack_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("JumpAttack_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("JumpAttack_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("JumpAttack_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("JumpAttack_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("JumpAttack_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("JumpAttack_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("JumpAttack_Thunder9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("JumpAttack_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+
+    pModel->Register_Event("SwingCombo_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("SwingCombo_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("SwingCombo_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("SwingCombo_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("SwingCombo_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
 
     // ======================================== [ Cinematic ] ========================================
 
@@ -3385,6 +3498,28 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     pModel->Register_Event("CameraShaking9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.f);
+        });
+
+    pModel->Register_Event("Cinematic_LastCameraShaking", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.5f, 1.5f);
+        // 시네마틱 컷씬 조명 끄기
+        LIGHT_TRANSITION_DESC LightTransDesc{};
+        LightTransDesc.fDuration = 1.f;
+        LightTransDesc.vFadeTime = _float2(1.f, 0.f);
+        LightTransDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+        LightTransDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+        LightTransDesc.vSpecular = LightTransDesc.vDiffuse;
+        LightTransDesc.isReturnToStart = false;
+        LightTransDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(TEXT("Viper_CutScene_PointLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false); };
+        m_pGameInstance->Start_LightTransition(TEXT("Viper_CutScene_PointLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightTransDesc);
+        // 트윈 블레이드 범위 늘리기
+        LIGHT_DESC LightDesc{};
+        LightDesc.eType = LIGHT_DESC::POINT;
+        LightDesc.vDiffuse = _float4(2.f, 1.5f, 1.2f, 1.f);
+        LightDesc.vAmbient = _float4(0.5f, 0.35f, 0.3f, 1.f);
+        LightDesc.vSpecular = LightDesc.vDiffuse;
+        LightDesc.fRange = 15.f;
+        m_pGameInstance->Set_LightDesc(TEXT("Viper_TwinBlade_R"), ENUM_CLASS(LEVEL::VIPER), LightDesc);
         });
 
     return S_OK;
@@ -3646,7 +3781,6 @@ void CViper::Viper_Cinematic_ShaderSettings()
     CloudDesc.fDynamic = 1.f;
     static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 1))->Start_LerpCloud(CloudDesc, fDuration);
     
-    // Test
     LightDesc.fDuration = fDuration;
     LightDesc.vFadeTime = _float2(fDuration, 0.f);
     LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
@@ -3658,8 +3792,11 @@ void CViper::Viper_Cinematic_ShaderSettings()
 
 void CViper::Viper_2PhaseBerserker_ShaderSettings()
 {
-    _float fDuration = 3.f;
+    // 림라이트 끄기
+    m_pGameInstance->Set_EnableRimLight(false);
+
     // 광전사 모드 셰이더 세팅
+    _float fDuration = 3.f;
 
     // 메인 조명 끄기
     LIGHT_TRANSITION_DESC LightDesc{};
@@ -3674,8 +3811,8 @@ void CViper::Viper_2PhaseBerserker_ShaderSettings()
     // 점 조명 : 그레이 조명 켜지기, 오렌지, 화이트, 무기 조명은 꺼지기
     LightDesc.fDuration = fDuration;
     LightDesc.vFadeTime = _float2(fDuration, 0.f);
-    LightDesc.vDiffuse = _float4(1.f, 0.95f, 0.8f, 1.f);
-    LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 0.5f);
+    LightDesc.vDiffuse = _float4(0.409f, 0.381f, 0.295f, 1.f);
+    LightDesc.vAmbient = _float4(0.7f, 0.7f, 0.7f, 0.7f);
     LightDesc.vSpecular = LightDesc.vDiffuse;
     LightDesc.isReturnToStart = false;
     m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_Gray"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
@@ -3711,6 +3848,7 @@ void CViper::Viper_2PhaseBerserker_ShaderSettings()
     FogDesc.vColor = _float4(0.f, 0.f, 0.f, 0.f);
     FogDesc.isUseHeight = false;
     FogDesc.isUseNoise = false;
+    FogDesc.Callback = [&]() { m_pGameInstance->Set_EnableFog(false); };
     m_pGameInstance->Start_FogTransition(fDuration, FogDesc);
 
     // 스카이 검정
@@ -3735,9 +3873,120 @@ void CViper::Viper_2PhaseBerserker_ShaderSettings()
     CloudDesc.vLightDir = _float3(0.f, 0.f, 0.f);
     CloudDesc.fDynamic = 0.f;
     static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 1))->Start_LerpCloud(CloudDesc, fDuration);
+}
 
-    // 림라이트 끄기
-    m_pGameInstance->Set_EnableRimLight(false);
+void CViper::Viper_2PhaseBerserkerEnd_ShaderSettings()
+{
+    // 림라이트 켜기
+    m_pGameInstance->Set_EnableRimLight(true);
+
+    _float fDuration = 3.f;
+
+    // 메인 조명
+    LIGHT_TRANSITION_DESC LightDesc{};
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.7f, 0.7f, 0.7f, 0.7f);
+    LightDesc.vAmbient = _float4(0.4f, 0.4f, 0.4f, 0.4f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    // ON
+    // 플레이어 주변광 점조명 주황색
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(1.f, 0.371f, 0.f, 1.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.0f);
+    LightDesc.vSpecular = _float4(0.5f, 0.185f, 0.0f, 1.f);
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_Orange"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    // 플레이어 주변광 점조명 흰색
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_White"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    // 바이퍼 무기 조명
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(2.f, 1.5f, 1.2f, 1.f);
+    LightDesc.vAmbient = _float4(0.5f, 0.35f, 0.3f, 1.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Viper_TwinBlade_R"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+    FOG_CONFIG FogConfig = m_pGameInstance->Get_FogConfig();
+    FogConfig.isUseSubColor = false;
+    FogConfig.isUseHeight = false;
+    m_pGameInstance->Set_FogConfig(FogConfig);
+
+    // 포그 세팅 (어두운 보라색)
+    FOG_TRANSITION_DESC FogDesc{};
+    FogDesc.fDensity = 0.05f;
+    FogDesc.fBias = 0.8f;
+    FogDesc.vColor = _float4(0.f, 0.012f, 0.039f, 1.f);
+    FogDesc.isUseHeight = false;
+    FogDesc.isUseNoise = false;
+    m_pGameInstance->Start_FogTransition(fDuration, FogDesc);
+
+    // 스카이 박스 세팅
+    SKY_DESC SkyDesc{};
+    SkyDesc.vNebulaColorR = _float3(0.f, 0.035f, 0.082f);
+    SkyDesc.vNebulaColorG = _float3(0.f, 0.035f, 0.082f);
+    SkyDesc.vNebulaColorB = _float3(0.f, 0.f, 0.f);
+    SkyDesc.fStarStrength = 2.f;
+    SkyDesc.fMoonSize = 0.8f;
+    SkyDesc.vMoonDirection = _float3(-0.21f, 0.19f, 1.f);
+    SkyDesc.vMoonColor = _float3(0.822f, 0.822f, 0.822f);
+    SkyDesc.fMoonIntensity = 0.3f;
+    static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 0))->Start_LerpSky(SkyDesc, fDuration);
+
+    // 클라우드 세팅
+    CLOUD_DESC CloudDesc{};
+    CloudDesc.vCloudColor = _float3(1.f, 1.f, 1.f);
+    CloudDesc.fCloudSpeed = 0.25f;
+    CloudDesc.fCloudScale = 1.f;
+    CloudDesc.fCloudDensity = 2.f;
+    CloudDesc.fCloudLightIntensity = 0.2f;
+    CloudDesc.vLightDir = _float3(0.f, 1.f, 0.f);
+    CloudDesc.fDynamic = 1.f;
+    static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 1))->Start_LerpCloud(CloudDesc, fDuration);
+
+    // Test
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("Player_PointLight_Gray"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+}
+
+void CViper::Start_Thunder(_float fDuration, _uint iBlinkCount)
+{
+    m_pGameInstance->Set_LightEnable(TEXT("Viper_Thunder_Ambient"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), true);
+    m_pGameInstance->Set_LightEnable(TEXT("Viper_Thunder"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), true);
+
+    LIGHT_TRANSITION_DESC LightDesc{};
+    LightDesc.fDuration = fDuration;
+    LightDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightDesc.vDiffuse = _float4(9.f, 8.5f, 7.f, 1.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.isReturnToStart = true;
+    LightDesc.iBlinkCount = iBlinkCount;
+    LightDesc.Callback = [&]() 
+        { 
+            m_pGameInstance->Set_LightEnable(TEXT("Viper_Thunder"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false);
+            m_pGameInstance->Set_LightEnable(TEXT("Viper_Thunder_Ambient"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false);
+        };
+
+    m_pGameInstance->Start_LightTransition(TEXT("Viper_Thunder"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
 }
 
 void CViper::Spawn_BloodDecal()

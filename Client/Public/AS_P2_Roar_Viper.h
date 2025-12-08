@@ -15,10 +15,12 @@ public:
     virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
     virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
+private:
+    void                        Set_ViperBerserkerEnd_ShaderSettings();
 
 public:
-    static CAS_P2_Roar_Viper*               Create();
-    virtual void                            Free() override;
+    static CAS_P2_Roar_Viper*   Create();
+    virtual void                Free() override;
 
 };
 

@@ -34,6 +34,7 @@ private:
     _bool                                   m_isTransition = {};
     LIGHT_DESC                              m_StartLightDesc = {};
     _float                                  m_fBlinkPeriod = {};
+    function<void()>                        m_Callback = {};
 
     // Backup
     LIGHT_DESC                              m_OriginalLightDesc = {};
