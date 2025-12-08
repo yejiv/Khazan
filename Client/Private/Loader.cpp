@@ -357,7 +357,7 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         return E_FAIL;
     
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Fire"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/fire1"))))
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/newfire"))))
         return E_FAIL;
     
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Open"),
@@ -2242,6 +2242,12 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
         return E_FAIL;
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Statue_Twinkle"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/Statue_Twinkle"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/Big_labber_on"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On_Static"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/labber_gear_on"))))
         return E_FAIL;
 #pragma endregion
      

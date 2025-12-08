@@ -239,6 +239,7 @@ void CLevel_Effect::Create_Element()
 		}
 		if (ImGui::BeginTabItem("Sprite Effect"))
 		{
+            ImGui::InputFloat3("Center : ", m_fCenter);
             const char* textures[] = { "test0", "test1", "test2",  "test3",  "flare", "Fire_Sprite", "Fire_Sprite2",  "flare", "blood" };
             ImGui::Combo("Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
@@ -525,6 +526,7 @@ void CLevel_Effect::Create_Sprite_Element()
 	data.fMaskScrollSpeed = m_bMaskScrollSpeed;
 	data.bIsScrollVertical = m_bIsScrollVertical;
 	data.bIsScrollInverse = m_bScrollDir;
+	data.fOffset = _float3(m_fCenter[0], m_fCenter[1], m_fCenter[2]);
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }
