@@ -1477,6 +1477,9 @@
     <Filter Include="02.GameObject\Part Object\Weapon">
       <UniqueIdentifier>{e3683a3e-77d2-44ac-be33-f4754c5ee95c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\NPC\Gacha">
+      <UniqueIdentifier>{4871b972-f1b3-43a7-a923-e75d4ec13fce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2856,6 +2859,9 @@
     <ClInclude Include="..\public\WeaponObject.h">
       <Filter>02.GameObject\Part Object\Weapon</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\NPC_Gacha.h">
+      <Filter>02.GameObject\NPC\Gacha</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4214,6 +4220,9 @@
     </ClCompile>
     <ClCompile Include="..\private\WeaponObject.cpp">
       <Filter>02.GameObject\Part Object\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Gacha.cpp">
+      <Filter>02.GameObject\NPC\Gacha</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

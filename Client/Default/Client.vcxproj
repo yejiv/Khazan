@@ -377,6 +377,7 @@
     <ClInclude Include="..\Public\NPC_Danjin.h" />
     <ClInclude Include="..\Public\NPC_Daphrona.h" />
     <ClInclude Include="..\Public\NPC_Duimuk.h" />
+    <ClInclude Include="..\Public\NPC_Gacha.h" />
     <ClInclude Include="..\Public\Obelisk.h" />
     <ClInclude Include="..\Public\Pot.h" />
     <ClInclude Include="..\public\Popup_Item.h" />
@@ -841,6 +842,7 @@
     <ClCompile Include="..\Private\NPC_Danjin.cpp" />
     <ClCompile Include="..\Private\NPC_Daphrona.cpp" />
     <ClCompile Include="..\Private\NPC_Duimuk.cpp" />
+    <ClCompile Include="..\Private\NPC_Gacha.cpp" />
     <ClCompile Include="..\Private\Obelisk.cpp" />
     <ClCompile Include="..\Private\Pot.cpp" />
     <ClCompile Include="..\private\Popup_Item.cpp" />

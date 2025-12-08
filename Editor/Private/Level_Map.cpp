@@ -958,6 +958,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
     m_Prototypes_Inter.push_back("NPC_Daphrona");
     m_Prototypes_Inter.push_back("NPC_Duimuk");
     m_Prototypes_Inter.push_back("NPC_Danjin");
+    m_Prototypes_Inter.push_back("NPC_Gacha");
     m_Prototypes_Inter.push_back("DanjinJar");
     m_Prototypes_Inter.push_back("DestinyStone");
     m_Prototypes_Inter.push_back("DestructibleProp");
@@ -1320,6 +1321,21 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Danjin"), TIME_CHANNEL::WORLD, &DanjinDesc), );
                 }
+                else if ("NPC_Gacha" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CNPC_Gacha::GACHA_NPC_DESC GachaNPCDesc = {};
+
+                    GachaNPCDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    GachaNPCDesc.eLevel = LEVEL::MAP;
+                    memcpy(GachaNPCDesc.szModelName, strModelTag.c_str(), sizeof(GachaNPCDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&GachaNPCDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    GachaNPCDesc.eInteractiveType = INTERACTIVE_TYPE::GACHANPC;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Gacha"), TIME_CHANNEL::WORLD, &GachaNPCDesc), );
+                }
                 else if ("DanjinJar" == m_Prototypes_Inter[m_iIndex_PrtInter])
                 {
                     CDanjinJar::DANJINJAR_DESC DanjinJarDesc = {};
@@ -1651,27 +1667,42 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 
 				m_pFixPropObj->Set_BladeNexus_ID(m_iFix_BN_ID);
 			}
-			if (INTERACTIVE_TYPE::CHEST == m_pFixPropObj->Get_InteractiveType())
-			{
-				ImGui::Text("== CHEST INFORMATION ==");
-				ImGui::Text("BEFORE");
+            if (INTERACTIVE_TYPE::CHEST == m_pFixPropObj->Get_InteractiveType())
+            {
+                ImGui::Text("== CHEST INFORMATION ==");
+                ImGui::Text("BEFORE");
 
-				ImGui::Text("FIRST ITEM : %d", m_ItemBox.iItem_0);
-				ImGui::Text("SECOND ITEM : %d", m_ItemBox.iItem_1);
-				ImGui::Text("THIRD ITEM : %d", m_ItemBox.iItem_2);
-				SEPARATOR;
-				ImGui::Text("FIX ITEM");
-				ImGui::Text("FIX FIRST ITEM : "); SAMELINE;
-				ImGui::InputInt("##item_list_fix_0", &m_FixItemBox.iItem_0);
-				ImGui::Text("FIX SECOND ITEM : "); SAMELINE;
-				ImGui::InputInt("##item_list_fix_1", &m_FixItemBox.iItem_1);
-				ImGui::Text("FIX THIRD ITEM : "); SAMELINE;
-				ImGui::InputInt("##item_list_fix_2", &m_FixItemBox.iItem_2);
+                ImGui::Text("FIRST ITEM : %d", m_ItemBox.iItem_0);
+                ImGui::Text("SECOND ITEM : %d", m_ItemBox.iItem_1);
+                ImGui::Text("THIRD ITEM : %d", m_ItemBox.iItem_2);
+                SEPARATOR;
+                ImGui::Text("FIX ITEM");
+                ImGui::Text("FIX FIRST ITEM : "); SAMELINE;
+                ImGui::InputInt("##item_list_fix_0", &m_FixItemBox.iItem_0);
+                ImGui::Text("FIX SECOND ITEM : "); SAMELINE;
+                ImGui::InputInt("##item_list_fix_1", &m_FixItemBox.iItem_1);
+                ImGui::Text("FIX THIRD ITEM : "); SAMELINE;
+                ImGui::InputInt("##item_list_fix_2", &m_FixItemBox.iItem_2);
 
-				m_pFixPropObj->Set_ItemBox(m_FixItemBox);
+                m_pFixPropObj->Set_ItemBox(m_FixItemBox);
 
-				SEPARATOR;
-			}
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::TOMBSTONE == m_pFixPropObj->Get_InteractiveType())
+            {
+                ImGui::Text("== TOMBSTONE INFORMATION ==");
+                ImGui::Text("BEFORE");
+
+                ImGui::Text("TOMBSTONE ID : %d", m_iTS_ID);
+                SEPARATOR;
+                ImGui::Text("FIX ID");
+                ImGui::Text("FIX ID : "); SAMELINE;
+                ImGui::InputInt("##ts_id_fix", &m_iFix_TS_ID);
+
+                m_pFixPropObj->Set_TombStone_ID(m_iFix_TS_ID);
+
+                SEPARATOR;
+            }
             if (INTERACTIVE_TYPE::TRIGGER == m_pFixPropObj->Get_InteractiveType())
             {
                 ImGui::Text("== TRIGGER INFORMATION ==");
@@ -1888,6 +1919,13 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
                 CNPC_Danjin* pDanjin = static_cast<CNPC_Danjin*>(m_pFixPropObj);
 
                 ImGui::Text("== DANJIN ==");
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::GACHANPC == m_pFixPropObj->Get_InteractiveType())
+            {
+                CNPC_Gacha* pGachaNPC = static_cast<CNPC_Gacha*>(m_pFixPropObj);
+
+                ImGui::Text("== GACHA NPC ==");
                 SEPARATOR;
             }
             if (INTERACTIVE_TYPE::DANJINJAR == m_pFixPropObj->Get_InteractiveType())
@@ -2487,10 +2525,15 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 							m_iFix_BN_ID = m_iBN_ID = m_pFixPropObj->Get_BladeNexus_ID();
 						}
 
-						if (INTERACTIVE_TYPE::CHEST == m_pFixPropObj->Get_InteractiveType())
-						{
-							m_FixItemBox = m_ItemBox = m_pFixPropObj->Get_ItemBox();
-						}
+                        if (INTERACTIVE_TYPE::CHEST == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            m_FixItemBox = m_ItemBox = m_pFixPropObj->Get_ItemBox();
+                        }
+
+                        if (INTERACTIVE_TYPE::TOMBSTONE == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            m_iFix_TS_ID = m_iTS_ID = m_pFixPropObj->Get_TombStoneID();
+                        }
 
                         if (INTERACTIVE_TYPE::TRIGGER == m_pFixPropObj->Get_InteractiveType())
                         {
@@ -2585,7 +2628,8 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 
                         if (INTERACTIVE_TYPE::DAPHRONA == m_pFixPropObj->Get_InteractiveType() ||
                             INTERACTIVE_TYPE::DUIMUK == m_pFixPropObj->Get_InteractiveType() ||
-                            INTERACTIVE_TYPE::DANJIN == m_pFixPropObj->Get_InteractiveType())
+                            INTERACTIVE_TYPE::DANJIN == m_pFixPropObj->Get_InteractiveType() ||
+                            INTERACTIVE_TYPE::GACHANPC == m_pFixPropObj->Get_InteractiveType())
                         {
                             // NPC 일단 빈칸
                         }
@@ -4955,7 +4999,9 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 			}
             if (INTERACTIVE_TYPE::TOMBSTONE == eType)
             {
-                _int o_ing = 0;
+                _int iTombStoneID = {};
+                iTombStoneID = pProp->Get_TombStoneID();
+                WriteFile(hObjectFile, &iTombStoneID, sizeof(_int), &dwByte, nullptr);
             }
             if (INTERACTIVE_TYPE::ELEVATOR == eType)
             {
@@ -5036,7 +5082,8 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
             }
             if (INTERACTIVE_TYPE::DAPHRONA == eType ||
                 INTERACTIVE_TYPE::DUIMUK == eType ||
-                INTERACTIVE_TYPE::DANJIN == eType)
+                INTERACTIVE_TYPE::DANJIN == eType ||
+                INTERACTIVE_TYPE::GACHANPC == eType)
             {
                 // NPC 일단 공백
             }
@@ -5642,6 +5689,8 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 TombStoneDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
 
+                CHECK_FALSE(ReadFile(hObjectFile, &TombStoneDesc.iTombStone_ID, sizeof(_int), &dwByte, nullptr), false);
+
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"), TIME_CHANNEL::WORLD, &TombStoneDesc), false);
             }
@@ -5883,6 +5932,21 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Danjin"), TIME_CHANNEL::WORLD, &DanjinDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::GACHANPC == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CNPC_Gacha::GACHA_NPC_DESC GachaNPCDesc = {};
+
+                GachaNPCDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                GachaNPCDesc.eLevel = LEVEL::MAP;
+                memcpy(GachaNPCDesc.szModelName, TEXT("Prototype_Component_Model_NPC_Gacha"), sizeof(GachaNPCDesc.szModelName));		// 프로토타입 태그명
+
+                GachaNPCDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                GachaNPCDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Gacha"), TIME_CHANNEL::WORLD, &GachaNPCDesc), false);
             }
             else if (INTERACTIVE_TYPE::DANJINJAR == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
             {

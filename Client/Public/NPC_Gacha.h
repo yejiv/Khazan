@@ -9,7 +9,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CNPC_Danjin final : public CProp_Interactive
+class CNPC_Gacha final : public CProp_Interactive
 {
 private:
     enum ANIM_STATE
@@ -29,9 +29,9 @@ public:
     }DANJIN_DESC;
 
 private:
-    CNPC_Danjin(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CNPC_Danjin(const CNPC_Danjin& Prototype);
-    virtual ~CNPC_Danjin() = default;
+    CNPC_Gacha(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    CNPC_Gacha(const CNPC_Gacha& Prototype);
+    virtual ~CNPC_Gacha() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
@@ -47,7 +47,7 @@ private:
 
     class CInteraction_Guide* m_pGuide = { nullptr };
 
-    class CUI_Talk_Dangin* m_pDanginTalkUI = { nullptr };
+    class CUI_Talk_Dangin* m_pGachaTalkUI = { nullptr };
 
 private:
     EventObject m_Event = {};
@@ -77,7 +77,7 @@ public:
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
 public:
-    static CNPC_Danjin* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    static CNPC_Gacha* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CGameObject* Clone(void* pArg) override;
     virtual void Free() override;
 };

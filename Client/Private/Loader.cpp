@@ -1691,6 +1691,10 @@ HRESULT CLoader::Loading_For_Embars_Model()
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_BigChest"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
 
+    /* Prototype_Component_Model_TombStone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_TombStone"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_BigTombStone_Destruct_001/WIP_BGQ_BigTombStone_Destruct_001.dat")), E_FAIL);
+
 #pragma region 엘리베이터 ( 스몰 사이즈 )
     /* Prototype_Component_Model_SmallElevator */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_SmallElevator"),
@@ -1812,6 +1816,10 @@ HRESULT CLoader::Loading_For_Embars_Model()
 #pragma endregion
 
 #pragma region NPC ( 야매 )
+    /* Prototype_Component_Model_NPC_Gacha */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_NPC_Gacha"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_NPC_Danjin001/C_NPC_Danjin001.dat")), E_FAIL);
+
     /* Prototype_Component_Model_NPC_Daphrona */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_NPC_Daphrona"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_NPC_Seona/C_NPC_Seona.dat")), E_FAIL);
@@ -2131,6 +2139,10 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
 #pragma endregion
 
 #pragma region NPC ( 야매 )
+    /* Prototype_GameObject_Prop_NPC_Gacha */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Gacha"),
+        CNPC_Gacha::Create(m_pDevice, m_pContext)), E_FAIL);
+
     /* Prototype_GameObject_Prop_NPC_Daphrona */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Daphrona"),
         CNPC_Daphrona::Create(m_pDevice, m_pContext)), E_FAIL);
