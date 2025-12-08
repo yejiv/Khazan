@@ -141,6 +141,10 @@ private:
 
     class CTarget_BrutalAttack*     m_pBrutalAttack = { nullptr };
 
+private :
+    _uint                           m_iFXIdx;
+
+
 private:
     HRESULT                         Ready_Prototype();
 

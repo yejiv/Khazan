@@ -53,33 +53,24 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
         CTransform* pYetugaTransform = static_cast<CTransform*>(m_pYetuga->Get_Component(TEXT("Com_Transform")));
         pYetugaTransform->LookAt(XMVectorSet(507.5f, -9.15f, 260.09f, 1.f));
         //2. 작은 눈안개 깔기 시작
-        if (m_fTime < 4.f)
+        if (!m_isSnowSmoke)
         {
-            if (m_fSnowTime > 0.4f)
-            {
-                m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"), XMVectorSet(
-                    513.90f,
-                    -7.44f,
-                    240.47,
-                    1.f));
-                for (size_t i = 0; i < 1; ++i)
-                {
-                    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"), XMVectorSet(
-                        m_pGameInstance->Rand(500.f, 530.f),
-                        -7.44f,
-                        m_pGameInstance->Rand(217.f, 240.f),
-                        1.f));
-                }
-                m_fSnowTime = 0.f;
-            }
+            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"), XMVectorSet(
+                513.90f,
+                -7.44f,
+                240.47,
+                1.f));
 
-            if (!m_isCameraAnimation && m_fTime > 0.5f)
-            {
-                m_pClientInstance->Camera_Set_Animation(TEXT("Yetuga_CutScene"));
-                m_pClientInstance->Fade_In();
-                m_isCameraAnimation = true;
-            }
+            m_isSnowSmoke = true;
         }
+
+        if (!m_isCameraAnimation && m_fTime > 0.5f)
+        {
+            m_pClientInstance->Camera_Set_Animation(TEXT("Yetuga_CutScene"));
+            m_pClientInstance->Fade_In();
+            m_isCameraAnimation = true;
+        }
+
         if (m_fTime > 1.5f && !m_isYetugaJump)
         {
             CAS_CutScene_Yetuga* Cut_Yetuga = m_pYetuga->Get_Yetuga_CutSceneState();

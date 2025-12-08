@@ -160,6 +160,12 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
         //사다리 전
         if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::EMBARS))
             m_pCharVirCom->Teleport(XMVectorSet(43.f, -81.f, -47.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+
+
+        // 바이퍼
+        if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::VIPER))
+            m_pCharVirCom->Teleport(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+        
     }
 
     if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
