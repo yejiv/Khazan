@@ -119,11 +119,14 @@ CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSe
 void CJolt_Manager::Add_Constraint(Constraint* pConstraint)
 {
     m_pPhysics->AddConstraint(pConstraint);
+
+    m_Constraints.push_back(pConstraint);
 }
 
 void CJolt_Manager::Remove_Constraint(Constraint* pConstraint)
 {
     m_pPhysics->RemoveConstraint(pConstraint);
+
 }
 
 HRESULT CJolt_Manager::Set_PhysicsSystem()
@@ -401,6 +404,8 @@ void CJolt_Manager::Debug_Render()
     m_pPhysics->DrawBodies(m_DrawSetting, m_pDebugRenderer, m_DrawFilter);
     for (RayCastDesc RC : m_RayCasts)
         m_pDebugRenderer->DrawLine(LoadVec3(RC.vStart), LoadVec3(RC.vEnd), RC.vColor);
+    m_pPhysics->DrawConstraints(m_pDebugRenderer);
+
     // 디버그 렌더 패스 종료
     m_pDebugRenderer->EndFrame();
 }
@@ -440,6 +445,10 @@ void CJolt_Manager::Free()
             bi.DestroyBody(id);
         }
     }*/
+
+    for (auto pConstraint : m_Constraints)
+        m_pPhysics->RemoveConstraint(pConstraint);
+
     m_BodyDescs.clear();
 
 #ifdef _DEBUG
