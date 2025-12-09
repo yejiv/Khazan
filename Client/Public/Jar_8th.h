@@ -45,6 +45,8 @@ private:
 
     EventHallElevator m_Event = {};
 
+    _bool m_isTurn = { false };
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_TalkUI(void* pArg);

@@ -545,6 +545,9 @@ HRESULT CRenderer::Render_PostScene()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Diffuse"), m_pShader, "g_DiffuseTexture")))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Emissive"), m_pShader, "g_EmissiveTexture")))
+        return E_FAIL;
+
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Shade"), m_pShader, "g_ShadeTexture")))
         return E_FAIL;
 
