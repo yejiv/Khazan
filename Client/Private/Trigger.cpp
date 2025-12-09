@@ -93,7 +93,7 @@ HRESULT CTrigger::Ready_Collision(void* pArg)
     TriggerDesc.bIsTrigger = true;
     TriggerDesc.bStartActive = true;
     TriggerDesc.eMotion = EMotionType::Kinematic;
-    TriggerDesc.eQuality = EMotionQuality::LinearCast;
+    TriggerDesc.eQuality = EMotionQuality::Discrete;
     TriggerDesc.eShapeType = SHAPE::BOX;
     TriggerDesc.fFriction = 0.8f;
     TriggerDesc.fMass = 1.0f;

@@ -1,6 +1,6 @@
 #pragma once
 #include "Client_Defines.h"
-#include "PartObject.h"
+#include "WeaponObject.h"
 #include "Dragonian_Rampage.h"
 
 NS_BEGIN(Engine)
@@ -12,7 +12,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CDragonian_Claw_L final : public CPartObject
+class CDragonian_Claw_L final : public CWeaponObject
 {
 public:
     typedef struct tagWeaponDesc : public PARTOBJECT_DESC

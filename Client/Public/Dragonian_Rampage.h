@@ -13,6 +13,12 @@ NS_BEGIN(Client)
 class CDragonian_Rampage final : public CMonster
 {
 public:
+    typedef struct tagDragonianRampageTag : public CMonster::MONSTER_DESC
+    {
+        _bool isSleep = { false };
+
+    }DRAGON_RAMPAGE_MONSTER_DESC;
+
     enum class MONSTATE { ATTACK_DEFAULT, ATTACK_BACK, ATTACK_RUSH, DEAD, GRORRY, BRUTAL, DAMAGE, TURN, LOCKON, SLEEP, WALK, END };
     enum class ATTACKSTATE { DEFAULT, RUSH, BACK, END};
     enum class ATTACK_BODY : _uint { HAND_L = 1 << 0, HAND_R = 1 << 1, TAIL = 1 << 2, END = 1 << 3 };
@@ -61,6 +67,8 @@ public:
 
         _bool               isStamina_Regen = {};
         ATTACKSTATE         eAttack_State = { ATTACKSTATE::END };
+
+        _bool               isMotionSleep = {};
     }MONDATA;
 
 private:
@@ -109,10 +117,8 @@ private:
     class CMeshTrail*               m_pMeshTrail[ENUM_CLASS(CLAW::END)] = {};
 
     CBody*                          m_pHitBodyCom = { nullptr };
-    CBody*                          m_pTaileCom = { nullptr };
 
     _float4x4*                      m_pBodySocketMatrix = { nullptr };
-    _float4x4*                      m_pTailSocketMatrix = { nullptr };
     _float4x4*                      m_pLockOnSocketMatrix = { nullptr };
     _float4                         m_vLockOnPos = {};
 

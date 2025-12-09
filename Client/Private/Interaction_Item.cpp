@@ -29,7 +29,7 @@ HRESULT CInteraction_Item::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     if (FAILED(Ready_Effect(pArg)))
-        return E_FAIL;
+        return E_FAIL;  
 
     if (FAILED(Ready_Guide(pArg)))
         return E_FAIL;
@@ -92,6 +92,8 @@ void CInteraction_Item::Ready_Item(_uint iItemIndex, _vector vPos)
     m_pTransformCom->Set_State(STATE::POSITION, vPos);
     m_pBodyCom->Set_Pos(m_pTransformCom->Get_State(STATE::POSITION));    
     m_pEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
+
+    m_isShow = true;
 }
 
 void CInteraction_Item::RandNormal_Item(_vector vPos)
@@ -101,6 +103,8 @@ void CInteraction_Item::RandNormal_Item(_vector vPos)
     m_pTransformCom->Set_State(STATE::POSITION, vPos);
     m_pBodyCom->Set_Pos(m_pTransformCom->Get_State(STATE::POSITION));
     m_pEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
+
+    m_isShow = true;
 }
 
 void CInteraction_Item::Special_Item(_wstring strNameTag, _vector vPos)
@@ -113,15 +117,21 @@ void CInteraction_Item::Special_Item(_wstring strNameTag, _vector vPos)
     m_pTransformCom->Set_State(STATE::POSITION, vPos);
     m_pBodyCom->Set_Pos(m_pTransformCom->Get_State(STATE::POSITION));
     m_pEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
+
+    m_isShow = true;
 }
 
 void CInteraction_Item::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
+    if (m_isShow)
     {
-        m_pGuide->Update_Visible(true);
-        m_isGuideVisible = true;
+        if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
+        {
+            m_pGuide->Update_Visible(true);
+            m_isGuideVisible = true;
+        }
     }
+    
 }
 
 void CInteraction_Item::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -130,11 +140,15 @@ void CInteraction_Item::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObject
 
 void CInteraction_Item::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
+    if (m_isShow)
     {
-        m_pGuide->Update_Visible(false);
-        m_isGuideVisible = false;
+        if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
+        {
+            m_pGuide->Update_Visible(false);
+            m_isGuideVisible = false;
+        }
     }
+    
 }
 
 HRESULT CInteraction_Item::Ready_Components(void* pArg)
@@ -163,7 +177,7 @@ HRESULT CInteraction_Item::Ready_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::DEFAULT, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("가동"), 1.f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::DEFAULT, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("획득"), 1.f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(m_iLevelIndex, TEXT("Layer_UI"), m_pGuide);
 
@@ -192,7 +206,8 @@ HRESULT CInteraction_Item::Ready_Collision(void* pArg)
     XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;    
+    m_tCollisionDesc.pGameObject = this;
+    m_tCollisionDesc.isForceVaildation = true;
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -219,6 +234,8 @@ void CInteraction_Item::Item_Check()
 
             Safe_Release(m_pBodyCom);
             Remove_Component(TEXT("Com_Body"));
+
+            m_isShow = false;
         }
     }
 }
@@ -272,7 +289,7 @@ void CInteraction_Item::Free()
     __super::Free();
     if (m_pGuide)
     {
-        m_pGuide->Set_IsDead(true);
+        //m_pGuide->Set_IsDead(true);
         m_pGuide = nullptr;
     }
 

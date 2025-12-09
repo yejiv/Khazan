@@ -29,11 +29,23 @@ public:
     virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
+public:
+    void                            SFX_Move();
+    void                            SFX_HIT(_uint iHitIndex);
+    void                            SFX_DEAD();
+    void                            SFX_SLEEP();
+    void                            SFX_REALIZE();
+
 private:
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();
     HRESULT							Ready_Projectiles();
     HRESULT							Ready_AnimEvent();
+    HRESULT                         Ready_SFX();
+
+
+
+
 
 private:
     void                            Cast_MagicBall(_uint iIndex);

@@ -254,6 +254,8 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
 
+    m_pSound_Manager->Update();
+
 #ifdef _DEBUG
 
 #endif
@@ -535,10 +537,6 @@ void CGameInstance::Set_EnableRimLight(_bool isEnable)
     m_pRenderer->Set_EnableRimLight(isEnable);
 }
 
-void CGameInstance::Set_EnableFog(_bool isEnable)
-{
-	m_pRenderer->Set_EnableFog(isEnable);
-}
 #endif
 
 void CGameInstance::Set_ToonShadeLevel(_float fLevel)
@@ -1385,6 +1383,10 @@ HRESULT CGameInstance::Bind_Fog_ShaderResources(CShader* pShader)
 {
 	return m_pFog->Bind_Fog_ShaderResources(pShader);
 }
+void CGameInstance::Set_EnableFog(_bool isEnable)
+{
+    m_pFog->Set_EnableFog(isEnable);
+}
 FOG_CONFIG CGameInstance::Get_FogConfig()
 {
 	return m_pFog->Get_FogConfig();
@@ -1722,6 +1724,14 @@ void CGameInstance::PlaySoundLoop(const TCHAR* pSoundKey, float fVolume, FMOD_CH
     m_pSound_Manager->PlaySoundLoop(pSoundKey, fVolume, ppOutChannel);
 }
 
+void CGameInstance::PlaySound_FadeIn(const TCHAR* pSoundKey, float fVolume, float fFadeTime, bool isLoop, FMOD_CHANNEL** ppOutChannel)
+{
+    if (isLoop)
+        m_pSound_Manager->PlaySoundLoop_FadeIn(pSoundKey, fVolume, fFadeTime, ppOutChannel);
+    else
+        m_pSound_Manager->PlaySoundOnce_FadeIn(pSoundKey, fVolume, fFadeTime, ppOutChannel);
+}
+
 void CGameInstance::StopAll()
 {
     m_pSound_Manager->StopAll();
@@ -1732,6 +1742,11 @@ void CGameInstance::StopByKey(const TCHAR* pSoundKey)
     m_pSound_Manager->StopByKey(pSoundKey);
 }
 
+void CGameInstance::StopByKey_FadeOut(const TCHAR* pSoundKey, _float fFadeTime)
+{
+    m_pSound_Manager->StopByKey_FadeOut(pSoundKey, fFadeTime);
+}
+
 void CGameInstance::StopByChannel(FMOD_CHANNEL** ppOutChannel)
 {
     m_pSound_Manager->StopByChannel(ppOutChannel);
@@ -1739,7 +1754,7 @@ void CGameInstance::StopByChannel(FMOD_CHANNEL** ppOutChannel)
 
 bool CGameInstance::IsPlayingByKey(const TCHAR* pSoundKey)
 {
-    return m_pSound_Manager->IsPlayingByKey(pSoundKey);;
+    return m_pSound_Manager->IsPlayingByKey(pSoundKey);
 }
 
 void CGameInstance::SetVolumeByKey(const TCHAR* pSoundKey, float fVolume)

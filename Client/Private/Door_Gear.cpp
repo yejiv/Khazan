@@ -80,6 +80,10 @@ void CDoor_Gear::Update(_float fTimeDelta)
         BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
     XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+
+    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On_Static"), m_iEffectIdx,
+        XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)),
+        XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
 }
 
 void CDoor_Gear::Late_Update(_float fTimeDelta)
@@ -177,9 +181,15 @@ void CDoor_Gear::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::IDLE1 == m_eAnimState)
         {
+            m_pGameInstance->PlaySoundOnce(TEXT("IP_Door_Gear_Active.wav"), XMLoadFloat4x4(&m_CombinedWorldMatrix).r[3], nullptr, 0.5f);
+
             m_eAnimState = ANIM_STATE::ACTIVATION;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
+            //가동시작!
+            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On"), 
+                XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)), 
+                XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
         }
     }
 }
@@ -198,6 +208,11 @@ void CDoor_Gear::Animation_Change(_float fTimeDelta)
         m_EventGate.isActiveGear2 = true;
 
         m_pGameInstance->Emit_Event<EventGateGear>(ENUM_CLASS(m_eEventType), m_EventGate);
+        //가동 끝! 
+        m_iEffectIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On_Static"),
+            XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)),
+            XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
+        
     }
 }
 

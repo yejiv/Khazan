@@ -34,6 +34,9 @@ HRESULT CMapObject::Initialize_Clone(void* pArg)
     if (INTERACTIVE_TYPE::CHEST == m_eInteractiveType)
         m_ItemBox = pDesc->ItemBox;
 
+    if (INTERACTIVE_TYPE::TOMBSTONE == m_eInteractiveType)
+        m_iTombStoneID = pDesc->iTombStone_ID;
+
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
     return S_OK;

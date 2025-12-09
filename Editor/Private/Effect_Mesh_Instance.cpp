@@ -98,7 +98,6 @@ HRESULT CEffect_Mesh_Instance::Render()
 
 void CEffect_Mesh_Instance::Save_Data(ofstream& os)
 {
-    m_sData.fTurbulenceSampleSize = 0.1f;
     os.write(reinterpret_cast<char*>(&m_iEffect_Type), sizeof(_uint));
     os.write(reinterpret_cast<char*>(&m_sData), sizeof(PARTICLE_DESC));
 }
@@ -155,7 +154,7 @@ void CEffect_Mesh_Instance::Edit_Element()
                                     "StrongAtk0", "StrongAtk1", "FastAtk03_Slash", "GrappleAtk02_Slash", "StrongAtk03_Slash"
                                     , "Cylinder_003", "Cylinder_003_02", "Cylinder_003_Noise" , "Spine", "Circle_002" ,"Sphere","CircleTwist", "CircleTwist2", "Plane" , "circle001", "circle002", "Ice",  "Rock", "Crystal", "Ring_Twist"
                                     , "CircleMesh0", "CircleMesh1", "CircleMesh2", "CircleMesh3", "CircleMesh4", "CircleMesh5", "ViperHandTrail" , "Viper_Sphere_Verticle_Trail"
-                                    , "blood0"  , "blood1"  , "blood2", "Tornado" };
+                                    , "blood0"  , "blood1"  , "blood2", "Tornado" , "HalfClinder0", "HalfClinder1", "HalfClinder2" };
     ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_sEditingData.iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 
     ImGui::Checkbox("Do Mask Scrolling", &m_bIsMaskScrolling);

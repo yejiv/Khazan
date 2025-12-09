@@ -25,7 +25,6 @@ void CAS_Sleep_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 {
     CImp_Range* pImp = static_cast<CImp_Range*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
-    //CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
     CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
 
     switch (m_eState)
@@ -36,6 +35,7 @@ void CAS_Sleep_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
             if (!m_isChanged)
             {
                 pModel->Set_Animation(2);
+                pImp->SFX_REALIZE();
                 m_eState = IMP_SlEEP_STATE::WAKEUP;
             }
         }

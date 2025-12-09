@@ -3,12 +3,12 @@
 #include "AI_Controller.h"
 
 CHalberd_Weapon::CHalberd_Weapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CPartObject{ pDevice,pContext }
+    :CWeaponObject{ pDevice,pContext }
 {
 }
 
 CHalberd_Weapon::CHalberd_Weapon(const CHalberd_Weapon& Prototype)
-    :CPartObject(Prototype)
+    :CWeaponObject(Prototype)
 {
 }
 
@@ -205,9 +205,10 @@ void CHalberd_Weapon::Free()
 {
     __super::Free();
 
-    Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
+    Safe_Release(m_pModelCom);
     Safe_Release(m_pOwnerTransform);
     Safe_Release(m_pBodyComp);
     Safe_Release(m_pTextureCom);
+
 }
