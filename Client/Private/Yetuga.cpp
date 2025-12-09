@@ -228,7 +228,7 @@ void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
         DECAL_DESC Desc{};
         Desc.fLifeTime = 8.f;
         Desc.vFadeTime = _float2(0.2f, 0.2f);
-        Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::END)));
+        Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
         XMStoreFloat3(&Desc.vPosition, vDecalPos);
         Desc.vScale = _float3(
             m_pGameInstance->Rand(4.f, 8.f),
