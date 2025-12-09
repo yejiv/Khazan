@@ -137,6 +137,8 @@ void CProjectile_Yetuga::Enter_State(PRJSTATE eNextState)
 		break;
 	case Client::CProjectile::CRASHED:
 		m_pModelCom->Set_Animation(2);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_fastball_obj_explosion_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 10.f);
+
 		m_isActive = false;
 		break;
 	case Client::CProjectile::END:

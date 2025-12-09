@@ -101,6 +101,10 @@ HRESULT CLantern_Khazan_GS::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    _float fEmissiveIntensity = 3.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
+        return E_FAIL;
+
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);

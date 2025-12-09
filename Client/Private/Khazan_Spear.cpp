@@ -149,7 +149,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     m_pTalkUI = static_cast<CUI_Talk_Daphrona*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Daphrona"), &Desc));
     CHECK_NULLPTR(m_pTalkUI, E_FAIL);
     Desc.szName = "Dangin_TalkUI";
-    m_pDanginTalkUI = static_cast<CUI_Talk_Dangin*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Dangin"), &Desc));
+    m_pDanginTalkUI = static_cast<CUI_Talk_Dangin*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("), &Desc));
     CHECK_NULLPTR(m_pDanginTalkUI, E_FAIL);
     Desc.szName = "Trader_TalkUI";
     m_pTraderTalkUI = static_cast<CUI_Talk_Trader*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Trader"), &Desc));
@@ -369,7 +369,7 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     DECAL_DESC Desc{};
     Desc.fLifeTime = 8.f;
     Desc.vFadeTime = _float2(0.2f, 0.2f);
-    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::END)));
+    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
     XMStoreFloat3(&Desc.vPosition, vDecalPos);
     Desc.vScale = _float3(
         m_pGameInstance->Rand(3.f, 5.f),

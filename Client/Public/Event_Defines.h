@@ -23,6 +23,7 @@ namespace Client {
         HALL_ELEVATOR_UNLOCK,
         ELEVATOR_SKIP,
         BLADENEXUS_POP,
+        OBELISK_DESTRUCT,
 		END };
 
 	// Structs
@@ -411,4 +412,8 @@ namespace Client {
         _bool   isEquip;
     };
     struct EVENT_SKILL_RESET { };
+
+    struct EVENT_OBELISK_DESTRUCT {
+        _bool   isDestruct;
+    };
 }

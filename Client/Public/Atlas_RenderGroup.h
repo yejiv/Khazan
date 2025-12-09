@@ -30,6 +30,7 @@ public:
 	virtual HRESULT					Render() override;
 
 	virtual void					Add_Renderer() override;
+    void                            Reset_Buffer();
 public:
 	HRESULT							Add_UIInstance(const VTXINSTANCE_UI* pUIData);
 	_float4							Get_AtlasUV(const string pFrameName, _uint iTextureIndex);

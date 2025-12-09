@@ -24,6 +24,8 @@ void CAS_Dead_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1003);
     static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 3000);
     m_pGameInstance->Emit_Event<EventPopBN>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), { true });
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_roar_die_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 50.f);
+
 }
 
 void CAS_Dead_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

@@ -6,6 +6,8 @@
 #include "GiantGate_Part_R.h"
 
 #include "Interaction_Guide.h"
+#include "ClientInstance.h"
+#include "UI_HUD.h"
 
 CGiantGate::CGiantGate(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
@@ -227,6 +229,7 @@ void CGiantGate::Input_Interact_Event(_float fTimeDelta)
 
     if (true == isPressing)
     {
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
         m_pGuide->Update_Visible(false);
 
         EventInteractType InteractType = {};

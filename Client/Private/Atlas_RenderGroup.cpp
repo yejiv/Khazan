@@ -87,6 +87,11 @@ void CAtlas_RenderGroup::Add_Renderer()
 		return;
 }
 
+void CAtlas_RenderGroup::Reset_Buffer()
+{
+    m_pVIBufferCom->Reset();
+}
+
 HRESULT CAtlas_RenderGroup::Add_UIInstance(const VTXINSTANCE_UI* pUIData)
 {
 	m_isRender = true;

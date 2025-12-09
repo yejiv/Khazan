@@ -139,6 +139,44 @@ HRESULT CDanjinJar::Bind_Materials(_uint iMeshIndex)
     return S_OK;
 }
 
+HRESULT CDanjinJar::Bind_ShaderResources()
+{
+    // 월드 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
+
+    // 뷰 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW)), E_FAIL);
+
+    // 투영 행렬 쉐이더에 바인딩
+    CHECK_FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ)), E_FAIL);
+
+    // 카메라 위치 바인딩 (자체 림 라이트)
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float3)), E_FAIL);
+
+    _float fEdgeIntensity = 0.5f;
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float)), E_FAIL);
+
+    _float fShadeIntensity = 0.5f;
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float)), E_FAIL);
+
+    _float fDiffusePower = 2.f;
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fDiffusePower", &fDiffusePower, sizeof(_float)), E_FAIL);
+
+    _float fRimPower = 1.f;
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float)), E_FAIL);
+
+    _float fRimIntensity = 0.5f;
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &fRimIntensity, sizeof(_float)), E_FAIL);
+
+    _float3 vRimColor = _float3(0.9f, 1.f, 0.8f);
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3)), E_FAIL);
+
+    _float fRimEmissive = 2.f;
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float)), E_FAIL);
+
+    return S_OK;
+}
+
 void CDanjinJar::AnimChange(ANIM_STATE eAnimState, _bool isLoop, _bool isCheck)
 {
     if (true == isCheck)
