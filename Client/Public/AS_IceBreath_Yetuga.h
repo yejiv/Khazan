@@ -20,6 +20,11 @@ public:
 
 private:
 	PHASE							m_eState = { PHASE::END };
+    _float                          m_fIceBreathTimeAcc = {};
+    _float                          m_fIceBreathSoundInterval = 0.3f;
+
+    _uint                           m_iIceBreathSoundChannelIndex = 0;
+    vector<FMOD_CHANNEL**>          m_IceBreathChannels;
 
 public:
 	static CAS_IceBreath_Yetuga*	Create();

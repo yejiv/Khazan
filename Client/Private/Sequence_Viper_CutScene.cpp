@@ -10,7 +10,7 @@
 #include "CharacterVirtual.h"
 #include "Khazan_GSword.h"
 #include "AI_Controller_Viper.h"
-#include "SkipButton.h"
+#include "SkipButton.h""
 
 CSequence_Viper_CutScene::CSequence_Viper_CutScene(CViper* pViper, CKhazan_GSword* pKhazan)
     : m_pGameInstance{ CGameInstance::GetInstance() }
@@ -197,7 +197,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         if (m_fSkipTime > 3.f && !m_isEnd)
         {
             Start_FogTransition();
-            m_pViper->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-31.938f, -29.986f, 198.162f, 1.f));
+            CCharacterVirtual* pCharVir = dynamic_cast<CCharacterVirtual*>(m_pViper->Get_Component(TEXT("Com_CharacterVirtual")));
+            pCharVir->Teleport(XMVectorSet(-31.938f, -29.986f, 198.162f, 1.f), m_pViper->Get_Transform()->Get_Rotation_Quat(), m_pViper->Get_Transform());
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);
             m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;

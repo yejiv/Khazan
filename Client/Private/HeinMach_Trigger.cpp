@@ -207,6 +207,8 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(3.f, Desc);
 
+            m_pClientInstance->HeinMach_CutScene();
+
             m_isDead = true;
         }
         else if (m_strTriggerKey == "Yetuga")
@@ -258,6 +260,8 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma region 동굴 정방향
         else if (m_strTriggerKey == "CaveEntry")
         {
+            m_pClientInstance->HeinMach_Cave_Entry();
+
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.035f;
             Desc.fBias = 1.f;
@@ -294,6 +298,8 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
         }
         else if (m_strTriggerKey == "CaveExit")
         {
+            m_pClientInstance->HeinMach_Halberd();
+
             Start_SkyTransition(m_Sky_Desc, m_Cloud_Desc, 7.f);
 
             FOG_TRANSITION_DESC Desc{};
@@ -395,6 +401,8 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma endregion
         else if (m_strTriggerKey == "Talk_03")
         {
+            m_pClientInstance->HeinMach_Entry();
+
             SEQ_REQ_PLAY_DESC tPlayDesc{};
             tPlayDesc.tId.iSeq = 1100;
             tPlayDesc.pAsset = L"Start_Chat";

@@ -53,7 +53,10 @@ public:
 	// 해당 파일명으로 재생중인 사운드의 볼륨 조절
 	void SetVolumeByKey(const TCHAR* pSoundKey, float fVolume);
 
-
+    void Resume(const TCHAR* pSoundKey);
+    void Resume_Fade(const TCHAR* pSoundKey, float fFadeTime);
+    void Pause(const TCHAR* pSoundKey);
+    void Pause_Fade(const TCHAR* pSoundKey, float fFadeTime);
 
 private:
 	void LoadSoundFile();

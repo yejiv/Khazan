@@ -1498,6 +1498,33 @@
     <Filter Include="02.GameObject\UI\Talk\Gacha">
       <UniqueIdentifier>{9964e281-dd7f-4521-9304-87973c358457}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\DajinJar_Pet">
+      <UniqueIdentifier>{f8dcc684-140f-4761-93d0-0b34529e4558}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\DajinJar_Pet\Body">
+      <UniqueIdentifier>{f216cd22-ffdf-4f2b-a3a7-343c5f873b13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Pet_Danjinjar">
+      <UniqueIdentifier>{92cb877a-e996-4d1f-9816-420245012ff8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Pet_Danjinjar">
+      <UniqueIdentifier>{1cbf49ee-2c0f-4abe-8098-a0fb5079eab5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Pet_Danjinjar\Idle">
+      <UniqueIdentifier>{dd7bc3a2-ee4a-4459-8826-6744911c1c12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Pet_Danjinjar\Move">
+      <UniqueIdentifier>{507bb1ca-4a88-4303-986e-390dcb677881}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Pet_Danjinjar\TP">
+      <UniqueIdentifier>{a62575b1-1af8-413b-b748-cfd24897967e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Pet_Danjinjar\Damage">
+      <UniqueIdentifier>{8429aa00-843d-4dab-a8ce-b38cca4a5ade}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\BGM">
+      <UniqueIdentifier>{1e20612b-95ca-4ae1-bf18-fc34af90623e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2893,6 +2920,30 @@
     <ClInclude Include="..\public\UI_Talk_Gacha.h">
       <Filter>02.GameObject\UI\Talk\Gacha</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Pet_Danjinjar.h">
+      <Filter>02.GameObject\Creature\Monster\DajinJar_Pet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Body_Pet_Danjinjar.h">
+      <Filter>02.GameObject\Creature\Monster\DajinJar_Pet\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AI_Controller_Pet_Danjinjar.h">
+      <Filter>92.AI\Controller\Pet_Danjinjar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Pet_Danjinjar_Idle.h">
+      <Filter>92.AI\State\Pet_Danjinjar\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Pet_Danjinjar_Move.h">
+      <Filter>92.AI\State\Pet_Danjinjar\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Pet_Danjinjar_Damage.h">
+      <Filter>92.AI\State\Pet_Danjinjar\Damage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Pet_Danjinjar_TP.h">
+      <Filter>92.AI\State\Pet_Danjinjar\TP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BGM_Manager.h">
+      <Filter>94.ClientInstance\BGM</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4267,6 +4318,30 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Talk_Gacha.cpp">
       <Filter>02.GameObject\UI\Talk\Gacha</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Pet_Danjinjar.cpp">
+      <Filter>02.GameObject\Creature\Monster\DajinJar_Pet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Body_Pet_Danjinjar.cpp">
+      <Filter>02.GameObject\Creature\Monster\DajinJar_Pet\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AI_Controller_Pet_Danjinjar.cpp">
+      <Filter>92.AI\Controller\Pet_Danjinjar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Pet_Danjinjar_Idle.cpp">
+      <Filter>92.AI\State\Pet_Danjinjar\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Pet_Danjinjar_Move.cpp">
+      <Filter>92.AI\State\Pet_Danjinjar\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Pet_Danjinjar_Damage.cpp">
+      <Filter>92.AI\State\Pet_Danjinjar\Damage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Pet_Danjinjar_TP.cpp">
+      <Filter>92.AI\State\Pet_Danjinjar\TP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BGM_Manager.cpp">
+      <Filter>94.ClientInstance\BGM</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

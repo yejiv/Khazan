@@ -61,6 +61,8 @@ protected:
 
     _bool IsPlayingSound(const _tchar* pSoundKey);
 
+    void Sound_FadeIn(const _tchar* pSoundKey, _float fVolume = 1.0f, _float fFadeTime = 1.0f, _bool isLoop = true, FMOD_CHANNEL** ppOutChannel = nullptr);
+
     // 2D Sound
     void SoundOnce(const _tchar* pSoundKey, _float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
     void SoundLoop(const _tchar* pSoundKey, _float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
