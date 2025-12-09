@@ -17,6 +17,9 @@ void CAS_RightHand_5Hit_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     pModel->Set_Animation(61);
     pModel->Set_AnimationLoop(false);
+
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_dempseyroll_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+
 }
 
 void CAS_RightHand_5Hit_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -62,8 +65,8 @@ void CAS_RightHand_5Hit_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollis
         if (nullptr == pOwnerTransform)
             return;
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-        //pTarget->KnockBack(vLook, 20.f, 3.f);
-        //pTarget->KnockBack(vLook, 15.f, 50.f);
+        pTarget->KnockBack(vLook, 15.f, 50.f);
+        pTarget->Take_Damage(10.f,HITREACTION::KNOCKBACK_NORMAL);
     }
 
 

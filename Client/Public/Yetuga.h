@@ -17,7 +17,7 @@ public:
     void                            Yetuga_Land(_fvector vGoalPosition, _float fSpeed);
     class CAS_CutScene_Yetuga*      Get_Yetuga_CutSceneState();
 
-
+    vector<const _tchar*>           Get_IceBreathSound() { return m_IceBreathSounds; }
 
 
 public:
@@ -30,12 +30,11 @@ public:
 	virtual HRESULT					Render_Shadow() { return S_OK; }
 
 public:
-    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
-    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
-    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void                    Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void                    Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void                    Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
     void                            Update_Landing(_float fTimeDelta);
-
 
 private:
 	HRESULT							Ready_Components();
@@ -43,6 +42,11 @@ private:
 	HRESULT							Ready_Projectiles();
 	HRESULT							Ready_AnimEvent();
 	HRESULT							Ready_AnimEffectEvent(class CModel* pModel);
+    HRESULT                         Ready_SFX();
+
+public:
+    void                            SFX_Move(_uint iIndex);
+
 
 private:
 	// ThrowBall
@@ -98,6 +102,9 @@ private:
     _float  m_fLandingHorizontalSpeed = 0.f;   
     _float  m_fLandingVerticalSpeed = 0.f;    
     _float  m_fGravity = -10.f;
+
+    vector<const _tchar*>            m_IceBreathSounds;
+
 
 
 
