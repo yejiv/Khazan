@@ -120,6 +120,7 @@ private:
     map<BodyID, uint64>                 m_BodyDescs;
 
     vector<RayCastDesc>  m_RayCasts;
+    vector<Constraint*> m_Constraints;
 private:
     // 생성 파라미터 보관(선택)
     _uint m_iMaxBodies = { 2048 };

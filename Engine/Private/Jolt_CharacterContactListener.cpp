@@ -25,7 +25,7 @@ bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtu
 
     if (pCharDesc1 == nullptr || pCharDesc1->pGameObject == nullptr || pBody1Desc == nullptr || pBody1Desc->pGameObject == nullptr)
         return false;
-
+    
     if (m_pBodyInterface->IsSensor(inBodyID2))
         return false;
 
