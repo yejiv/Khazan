@@ -27,6 +27,7 @@ public:
     _bool            Try_DamagedTS_After(_bool isWeapon);
     _bool            Try_BoxOpen(_bool isUsedSet);
     _bool            Try_Lachryma();
+    _bool            Try_Heal();
 
 public:
     _bool           Is_Interaction() const { return m_isInteraction; }

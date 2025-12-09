@@ -1209,14 +1209,13 @@ _bool CKhazan_Spear::Attack_Input(_float fTimeDelta)
 
 
     /* dodge 공격 */
-    else if ((m_iPrevMainState & CAT::M_MOVE) && (m_iPrevSubState & MOV::MOVE_DODGE) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
+    else if (Has_Status(DODGE_ENDING) && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
     {
-        if (m_pAnimAttack->Try_DodgeAttack(m_ePrevDir))
+        if (m_pAnimAttack->Try_DodgeAttack(m_pAnimMove->Get_DodgeDirection()))
         {
             Clear_Step0();
             Add_State(CAT::M_ATTACK);
             Add_SubState(ATT::ATK_DODGEATK);
-           // Remove_State(CAT::M_MOVE);
             m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_WEAK);
           
             return true;
@@ -1445,6 +1444,12 @@ _bool CKhazan_Spear::Guard_Input(_float fTimeDelta)
 
 _bool CKhazan_Spear::Interaction_Input(_float fTimeDelta)
 {
+    //라크리마 
+    if (m_pGameInstance->Key_Down(DIK_1)) {
+        if (m_pPlayerData->fCulHp < m_pPlayerData->fMaxHp)
+            m_pAnimInteraction->Try_Lachryma();
+    }
+
     //랜턴
     if (m_pGameInstance->Key_Down(DIK_2)) {
         _bool isEquip = !m_pLantern->Get_Equipped();
@@ -1452,12 +1457,11 @@ _bool CKhazan_Spear::Interaction_Input(_float fTimeDelta)
             m_pLantern->Set_Equipped(isEquip);
     }
 
-    //라크리마 
-    if (m_pGameInstance->Key_Down(DIK_1)) {
+    //힐
+    if (m_pGameInstance->Key_Down(DIK_3)) {
         if (m_pPlayerData->fCulHp < m_pPlayerData->fMaxHp)
-            m_pAnimInteraction->Try_Lachryma();
+            m_pAnimInteraction->Try_Heal();
     }
-
     return false; 
 }   
 
