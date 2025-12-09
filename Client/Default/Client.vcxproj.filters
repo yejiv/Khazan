@@ -1495,6 +1495,9 @@
     <Filter Include="03.MiniGame\Gacha\SeleteUI">
       <UniqueIdentifier>{007d416f-1406-482b-b6f5-846f0360d88e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94.ClientInstance\BGM">
+      <UniqueIdentifier>{1e20612b-95ca-4ae1-bf18-fc34af90623e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2887,6 +2890,9 @@
     <ClInclude Include="..\public\UI_Gacha_Selete.h">
       <Filter>03.MiniGame\Gacha\SeleteUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BGM_Manager.h">
+      <Filter>94.ClientInstance\BGM</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4258,6 +4264,9 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Gacha_Selete.cpp">
       <Filter>03.MiniGame\Gacha\SeleteUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BGM_Manager.cpp">
+      <Filter>94.ClientInstance\BGM</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

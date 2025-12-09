@@ -417,6 +417,19 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
         *m_pModelCom->Get_CurTrackPosition() = 50.f;
         m_isAnimChange = true;
         m_pModelCom->AnimationLoop(false);
+
+        switch (m_Event.eStep)
+        {
+        case EventHallElevator::STEP_1:
+            Sound_FadeIn(TEXT("IP_Embars_Event_01"), m_fInteract_Volume, 2.f, false);
+            break;
+        case EventHallElevator::STEP_2:
+            Sound_FadeIn(TEXT("IP_Embars_Event_02"), m_fInteract_Volume, 2.f, false);
+            break;
+        case EventHallElevator::STEP_3:
+            Sound_FadeIn(TEXT("IP_Embars_Event_03"), m_fInteract_Volume, 2.f, false);
+            break;
+        }
     }
     else if (ANIM_STATE::IDLE == m_eAnimState)
     {
@@ -456,7 +469,7 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
 
 void CElevatorL::Animation_Change(_float fTimeDelta)
 {
-    if (ANIM_STATE::INNER_STOPPING == m_eAnimState)
+    /*if (ANIM_STATE::INNER_STOPPING == m_eAnimState)
     {
         m_fLimitTimeAcc = 0.f;
 
@@ -473,7 +486,7 @@ void CElevatorL::Animation_Change(_float fTimeDelta)
         Gimmick.Set_GimmickClear();
         m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK1), Gimmick);
     }
-    else if (true == m_isAnimChange)
+    else */if (true == m_isAnimChange)
     {
         m_fLimitTimeAcc = 0.f;
 
@@ -497,9 +510,16 @@ void CElevatorL::Animation_Change(_float fTimeDelta)
         }
         case ANIM_STATE::MID_STOP:
         {
-            m_eAnimState = ANIM_STATE::INNER_STOPPING;
+            m_eAnimState = ANIM_STATE::OUTER_STOPPING;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-            m_pModelCom->AnimationLoop(false);
+            m_pModelCom->AnimationLoop(true);
+
+            m_isVerticalActive = true;
+            m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK1;
+
+            EventGimmick Gimmick = {};
+            Gimmick.Set_GimmickClear();
+            m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK1), Gimmick);
             break;
         }
         case ANIM_STATE::OUTER_STOPPING:
@@ -588,6 +608,9 @@ void CElevatorL::Gimmick_Event_Skip(_float fTimeDelta)
     {
     case EventHallElevator::UNLOCK_STATE::STEP_1:
     {
+        if (IsPlayingSound(TEXT("IP_Embars_Event_01")))
+            SoundStop_FadeOut(TEXT("IP_Embars_Event_01"), 2.f);
+
         m_eAnimState = ANIM_STATE::MID_STOP;
         m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
         m_pModelCom->AnimationLoop(true);
@@ -601,6 +624,9 @@ void CElevatorL::Gimmick_Event_Skip(_float fTimeDelta)
     }
     case EventHallElevator::UNLOCK_STATE::STEP_2:
     {
+        if (IsPlayingSound(TEXT("IP_Embars_Event_02")))
+            SoundStop_FadeOut(TEXT("IP_Embars_Event_02"), 2.f);
+
         m_eAnimState = ANIM_STATE::OUTER_STOPPING;
         m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
         m_pModelCom->AnimationLoop(true);
@@ -614,6 +640,9 @@ void CElevatorL::Gimmick_Event_Skip(_float fTimeDelta)
     }
     case EventHallElevator::UNLOCK_STATE::STEP_3:
     {
+        if (IsPlayingSound(TEXT("IP_Embars_Event_03")))
+            SoundStop_FadeOut(TEXT("IP_Embars_Event_03"), 2.f);
+
         m_pModelCom->AnimationLoop(false);
 
         m_isAnimChange = true;

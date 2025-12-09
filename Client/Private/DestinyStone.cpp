@@ -211,6 +211,8 @@ void CDestinyStone::Event_Update(_float fTimeDelta)
 
     if (m_Event.isOn())               // 켠다는 신호
     {
+        SoundOnce(TEXT("IP_DestinyStone_Disappear"), m_fInteract_Volume);
+
         m_pGuide->Update_Visible(false);
 
         m_isInteracted = true;

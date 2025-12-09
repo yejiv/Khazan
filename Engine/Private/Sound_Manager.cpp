@@ -238,6 +238,8 @@ void CSound_Manager::PlaySoundOnce_FadeIn(const TCHAR* pSoundKey, float fVolume,
     FMOD_System_PlaySound(m_pSystem, pSound, nullptr, TRUE, &pCh);
     if (!pCh) return;
 
+    FMOD_Channel_SetMode(pCh, FMOD_DEFAULT);
+
     unsigned long long dspClock = 0;
     FMOD_Channel_GetDSPClock(pCh, 0, &dspClock);
 
@@ -371,6 +373,113 @@ void CSound_Manager::SetVolumeByKey(const TCHAR* pSoundKey, float fVolume)
             if (FMOD_Channel_GetCurrentSound(ch, &cur) == FMOD_OK && cur == pTarget)
             {
                 FMOD_Channel_SetVolume(ch, fVolume * m_fGloval_Volume);
+            }
+        });
+}
+
+void CSound_Manager::Resume(const TCHAR* pSoundKey)
+{
+    FMOD_SOUND* pTarget = nullptr;
+    if (!FindSound(pSoundKey, &pTarget))
+        return;
+
+    ForEachPlayingChannel([&](FMOD_CHANNEL* ch) {
+            FMOD_SOUND* cur = nullptr;
+            if (FMOD_Channel_GetCurrentSound(ch, &cur) == FMOD_OK && cur == pTarget)
+            {
+                FMOD_Channel_SetPaused(ch, FALSE);
+            }
+        });
+}
+
+void CSound_Manager::Resume_Fade(const TCHAR* pSoundKey, float fFadeTime)
+{
+    FMOD_SOUND* pTarget = nullptr;
+    if (!FindSound(pSoundKey, &pTarget))
+        return;
+
+    ForEachPlayingChannel([&](FMOD_CHANNEL* ch)
+        {
+            FMOD_SOUND* cur = nullptr;
+            if (FMOD_Channel_GetCurrentSound(ch, &cur) == FMOD_OK && cur == pTarget)
+            {
+                FMOD_Channel_RemoveFadePoints(ch, 0, ULLONG_MAX);
+
+                FMOD_Channel_SetPaused(ch, FALSE);
+
+                unsigned long long dspClock = 0;
+                FMOD_Channel_GetDSPClock(ch, nullptr, &dspClock);
+
+                int iSampleRate = 48000;
+                FMOD_System_GetSoftwareFormat(m_pSystem, &iSampleRate, nullptr, nullptr);
+
+                unsigned long long fadeEnd =
+                    dspClock + (unsigned long long)(fFadeTime * iSampleRate);
+
+                float fTargetVolume = m_fGloval_Volume;
+
+                FMOD_Channel_SetVolume(ch, 0.0f);
+
+                FMOD_Channel_AddFadePoint(ch, dspClock, 0.0f);
+                FMOD_Channel_AddFadePoint(ch, fadeEnd, fTargetVolume);
+            }
+        });
+}
+
+void CSound_Manager::Pause(const TCHAR* pSoundKey)
+{
+    FMOD_SOUND* pTarget = nullptr;
+    if (!FindSound(pSoundKey, &pTarget))
+        return;
+
+    ForEachPlayingChannel([&](FMOD_CHANNEL* ch) {
+            FMOD_SOUND* cur = nullptr;
+            if (FMOD_Channel_GetCurrentSound(ch, &cur) == FMOD_OK && cur == pTarget)
+            {
+                FMOD_Channel_SetPaused(ch, TRUE);
+            }
+        });
+}
+
+void CSound_Manager::Pause_Fade(const TCHAR* pSoundKey, float fFadeTime)
+{
+    FMOD_SOUND* pTarget = nullptr;
+    if (!FindSound(pSoundKey, &pTarget))
+        return;
+
+    ForEachPlayingChannel([&](FMOD_CHANNEL* ch)
+        {
+            FMOD_SOUND* cur = nullptr;
+            if (FMOD_Channel_GetCurrentSound(ch, &cur) == FMOD_OK && cur == pTarget)
+            {
+                float fCurrentAudibility = 0.0f;
+                FMOD_Channel_GetAudibility(ch, &fCurrentAudibility);
+
+                FMOD_Channel_RemoveFadePoints(ch, 0, ULLONG_MAX);
+                FMOD_Channel_SetVolume(ch, 1.0f);
+
+                float fLocalStartVolume = fCurrentAudibility;
+                if (m_fGloval_Volume != 0.0f)
+                    fLocalStartVolume = fCurrentAudibility / m_fGloval_Volume;
+
+                if (fLocalStartVolume > 1.0f)
+                    fLocalStartVolume = 1.0f;
+
+                unsigned long long dspClock = 0;
+                FMOD_Channel_GetDSPClock(ch, nullptr, &dspClock);
+
+                int iSampleRate = 48000;
+                FMOD_System_GetSoftwareFormat(m_pSystem, &iSampleRate, nullptr, nullptr);
+
+                unsigned long long fadeEnd =
+                    dspClock + (unsigned long long)(fFadeTime * iSampleRate);
+
+                FMOD_Channel_AddFadePoint(ch, dspClock, fLocalStartVolume);
+                FMOD_Channel_AddFadePoint(ch, fadeEnd, 0.0f);
+
+                FMOD_Channel_SetDelay(ch, 0, fadeEnd, false);
+
+                FMOD_Channel_SetPaused(ch, TRUE);
             }
         });
 }

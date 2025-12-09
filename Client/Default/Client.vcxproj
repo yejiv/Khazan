@@ -290,6 +290,7 @@
     <ClInclude Include="..\Public\AS_Dr_Rampage_LockOn.h" />
     <ClInclude Include="..\Public\AttackState_Yetuga.h" />
     <ClInclude Include="..\Public\Barrel.h" />
+    <ClInclude Include="..\Public\BGM_Manager.h" />
     <ClInclude Include="..\Public\BigChest.h" />
     <ClInclude Include="..\public\BladeNexus_List.h" />
     <ClInclude Include="..\public\BladeNexus_Map_BG.h" />
@@ -693,6 +694,7 @@
     <ClCompile Include="..\Private\AS_P2_SlashDobule_Viper.cpp" />
     <ClCompile Include="..\Private\AS_P2_SlashStomp_Viper.cpp" />
     <ClCompile Include="..\Private\AS_StingGrab_Viper.cpp" />
+    <ClCompile Include="..\Private\BGM_Manager.cpp" />
     <ClCompile Include="..\Private\Body_Cinematic_Viper.cpp" />
     <ClCompile Include="..\private\Body_Dragonian_Melee.cpp" />
     <ClCompile Include="..\Private\AS_5HitCombo_Viper.cpp" />

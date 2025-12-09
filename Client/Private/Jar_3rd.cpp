@@ -365,10 +365,26 @@ _float4 CJar_3rd::Get_NextStepPos()
         vTargetPos = m_DanjinJarStep.vStep5;
         break;
     case STEP5:
-        vTargetPos = m_DanjinJarStep.vStep6;
+        if (m_EventGimmick.isStatueSection0())
+        {
+            m_iStepState = STEP12;
+            vTargetPos = m_DanjinJarStep.vStep13;
+        }
+        else
+        {
+            vTargetPos = m_DanjinJarStep.vStep6;
+        }
         break;
     case STEP6:
-        vTargetPos = m_DanjinJarStep.vStep7;
+        if (m_EventGimmick.isStatueSection0())
+        {
+            m_iStepState = STEP12;
+            vTargetPos = m_DanjinJarStep.vStep13;
+        }
+        else
+        {
+            vTargetPos = m_DanjinJarStep.vStep7;
+        }
         break;
     case STEP7:
         vTargetPos = m_DanjinJarStep.vStep8;
@@ -377,10 +393,26 @@ _float4 CJar_3rd::Get_NextStepPos()
         vTargetPos = m_DanjinJarStep.vStep9;
         break;
     case STEP9:
-        vTargetPos = m_DanjinJarStep.vStep10;
+        if (m_EventGimmick.isStatueSection0())
+        {
+            m_iStepState = STEP12;
+            vTargetPos = m_DanjinJarStep.vStep13;
+        }
+        else
+        {
+            vTargetPos = m_DanjinJarStep.vStep10;
+        }
         break;
     case STEP10:
-        vTargetPos = m_DanjinJarStep.vStep11;
+        if (m_EventGimmick.isStatueSection0())
+        {
+            m_iStepState = STEP12;
+            vTargetPos = m_DanjinJarStep.vStep13;
+        }
+        else
+        {
+            vTargetPos = m_DanjinJarStep.vStep11;
+        }
         break;
     case STEP11:
         if (m_EventGimmick.isStatueSection0())
