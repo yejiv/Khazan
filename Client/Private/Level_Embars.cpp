@@ -93,9 +93,7 @@ HRESULT CLevel_Embars::Initialize()
     m_pClientInstance->Set_PlayerInput(true);
 #pragma endregion
 
-    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_MiniGame"),
-        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_MiniGame_Gacha"), TIME_CHANNEL::WORLD), E_FAIL);
-
+    CHECK_FAILED(Ready_Layer_Pet(TEXT("Layer_Pet")), E_FAIL);
 	return S_OK;
 }
 
@@ -1431,6 +1429,29 @@ HRESULT CLevel_Embars::Ready_Map_Decal(const _wstring& strLayerTag, const _tchar
     }
 
     CloseHandle(hFile);
+
+    return S_OK;
+}
+
+HRESULT CLevel_Embars::Ready_Layer_Pet(const _wstring& strLayerTag)
+{
+    CMonster::MONSTER_DESC MonsterDesc{};
+    MonsterDesc.fAttack = 100.f;
+    MonsterDesc.fMaxHP = 100.f;
+    MonsterDesc.fMaxStamina = 250.f;
+    MonsterDesc.fMoveSpeed = 10.f;
+    MonsterDesc.fSpeedPerSec = 3.f;
+    MonsterDesc.fRotationPerSec = 180.f;
+    XMStoreFloat4x4(&MonsterDesc.WorldMatrix, XMMatrixIdentity());
+    MonsterDesc.WorldMatrix.m[3][0] = 0.f;
+    MonsterDesc.WorldMatrix.m[3][1] = 0.f;
+    MonsterDesc.WorldMatrix.m[3][2] = 5.f;
+
+    MonsterDesc.strName = "Pet_Danjinjar";
+    MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::EMBARS);
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), strLayerTag,
+        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Pet_Danjinjar"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
 
     return S_OK;
 }

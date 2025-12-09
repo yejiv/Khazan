@@ -72,16 +72,21 @@ HRESULT CObelisk::Initialize_Clone(void* pArg)
     m_DestoryQueue.push(11);
     m_DestoryQueue.push(12);
 
+    m_iEventID = m_pGameInstance->Subscribe_Event<EVENT_OBELISK_DESTRUCT>(ENUM_CLASS(EVENT_TYPE::OBELISK_DESTRUCT), [&](const EVENT_OBELISK_DESTRUCT& e)
+        {
+            m_isDestruct = e.isDestruct;
+        });
 
     return S_OK;
 }
 
 void CObelisk::Priority_Update(_float fTimeDelta)
 {
-    //if (m_pGameInstance->Key_Down(DIK_7))
-    //{
-    //    Destory();
-    //}
+    if (m_isDestruct)
+    {
+        Destory();
+        m_isDestruct = false;
+    }
 
     for (auto Chunk : m_Chunks)
     {

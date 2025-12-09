@@ -177,6 +177,30 @@ public:
     void Seq_Clear();
 #pragma endregion
 
+#pragma region BGM_MANAGER
+public:
+    _float Get_Volume_BGM();
+    void Set_Volume_BGM(_float fVolume);
+
+public:
+    void PlayBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f);
+    void ChangeBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f);
+    void Mute_BGM();
+    void UnMute_BGM();
+
+    void HeinMach_Entry();
+    void HeinMach_CutScene();
+    void HeinMach_Cave_Entry();
+    void HeinMach_Halberd();
+    void HeinMach_Yetuga_Entry();
+
+public:
+    void BGM_Stop(_float fFadeTime = 1.f);
+
+    void BGM_Resume(_bool isFade = false, _float fFadeTime = 1.f);
+    void BGM_Pause(_bool isFade = false, _float fFadeTime = 1.f);
+#pragma endregion
+
 #ifdef _DEBUG
 #pragma region CAMERA_CONTROLLER
 	void CameraTool_Clear();
@@ -198,6 +222,7 @@ private:
 	CPlayerData_Manager* m_pPlayerData_Manager = { nullptr };
     class CInteract_Manager* m_pInteract_Manager = { nullptr };
     class CSequence_Data_Manager* m_pSeq_Data_Manager = { nullptr };
+    class CBGM_Manager* m_pBGM_Manager = { nullptr };
 
      _bool                  m_isPlayerInput = { true };
 #ifdef _DEBUG

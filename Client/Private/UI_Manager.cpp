@@ -349,6 +349,12 @@ void CUI_Manager::UIObjectToRenderer()
 		Safe_Release(m_pRenderUI[i]);
 	}
 
+    if (!m_isUIRanderAll)
+    {
+        for (auto pAtlasGroup : m_pAtlasRenderGroup)
+            pAtlasGroup->Reset_Buffer();
+    }
+
 	m_pRenderUI.clear();
 }
 

@@ -29,6 +29,8 @@ void CAS_Rush_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_fCurrentTime = 0.f;
     m_isEnd = false;
 
+
+
 }
 
 void CAS_Rush_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -49,6 +51,8 @@ void CAS_Rush_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
             {
                 pModel->Set_Animation(37);
                 m_isEnd = true;
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_charge_tackle_end_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+
             }
         }
     }
@@ -58,6 +62,8 @@ void CAS_Rush_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
     {
         pModel->Set_Animation(38);
         m_isCrashed = true;
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_charge_tackle_stun_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+
     }
 
  

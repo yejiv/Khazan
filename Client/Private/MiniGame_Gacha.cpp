@@ -1,8 +1,42 @@
 #include "MiniGame_Gacha.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 #include "RandomBox.h"
 #include "UI_Gacha_Selete.h"
+
+
+void CMiniGame_Gacha::Start_MiniGame(MINIGAME_LEVEL eLevel)
+{
+    if (eLevel == MINIGAME_LEVEL::EASY)
+    {
+        m_iSuffleCount = m_pGameInstance->Rand(10, 15);
+        m_fSpeed = 2.f;
+        m_fSpeedCount = 3.f;
+        m_fAddSpeed = 0.5f;
+    }
+    else if (eLevel == MINIGAME_LEVEL::NORMAL)
+    {
+        m_iSuffleCount = m_pGameInstance->Rand(15, 20);
+        m_fSpeed = 2.f;
+        m_fSpeedCount = 3.f;
+        m_fAddSpeed = 2.f;
+    }
+    else if (eLevel == MINIGAME_LEVEL::HARD)
+    {
+        m_iSuffleCount = m_pGameInstance->Rand(30, 45);
+        m_fSpeed = 4.f;
+        m_fSpeedCount = 2.f;
+        m_fAddSpeed = 1.5f;
+    }
+    m_eState = SUCCES_NOTICE;
+    m_iSpeedCount = 0;
+    m_iSeleteNum = m_pGameInstance->Rand(0, 2);
+    m_iSuccesNum = m_pBox[m_iSeleteNum]->Get_Index();
+    m_fAcctime = 0.f;
+    m_fGuidePosY = 1.5f;
+    m_fGuideCount = 3;
+}
 
 CMiniGame_Gacha::CMiniGame_Gacha(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CGameObject{ pDevice, pContext }
@@ -33,11 +67,16 @@ void CMiniGame_Gacha::Priority_Update(_float fTimeDelta)
 {   
     for (auto pBox : m_pBox)
         pBox->Priority_Update(fTimeDelta);
+
+
+    m_pBox[0]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
+    m_pBox[1]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
+    m_pBox[2]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
 }
 
 void CMiniGame_Gacha::Update(_float fTimeDelta)
 {
-    if (m_eState == END)
+    if (m_eState == SELETE_NUM)
         Input_Key();
     else if (m_eState == SUCCES_NOTICE)
         Update_Notice(fTimeDelta);
@@ -56,7 +95,7 @@ void CMiniGame_Gacha::Late_Update(_float fTimeDelta)
         pBox->Late_Update(fTimeDelta);
 
     _vector vPos = m_pBox[m_iSeleteNum]->Get_Position();
-    if (m_eState == END || m_eState == SUCCES_NOTICE)
+    if (m_eState == SELETE_NUM || m_eState == SUCCES_NOTICE)
         m_pSeleteUI->Late_Update(fTimeDelta, XMVectorSetY(vPos, XMVectorGetY(vPos) + m_fGuidePosY));
 
     _float4 vLightPos{};
@@ -100,9 +139,13 @@ HRESULT CMiniGame_Gacha::Setting_Object()
         pRandomBox->Set_Index(i);
     }
 
-    m_pBox[0]->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-1.f, 0.2f, 5.f, 1.f));
-    m_pBox[1]->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.2f, 5.f, 1.f));
-    m_pBox[2]->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(1.f, 0.2f, 5.f, 1.f));
+    m_pBox[0]->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-67.325f, -92.26f, -44.777f, 1.f));
+    m_pBox[1]->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-67.325f, -92.26f, -41.831f, 1.f));
+    m_pBox[2]->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-67.325f, -92.26f, -38.842, 1.f));
+
+    m_pBox[0]->Get_Transform()->Rotation(0.f, 80.f, 0.f);
+    m_pBox[1]->Get_Transform()->Rotation(0.f, 80.f, 0.f);
+    m_pBox[2]->Get_Transform()->Rotation(0.f, 80.f, 0.f);
 
     return S_OK;
 }
@@ -111,15 +154,15 @@ void CMiniGame_Gacha::Setting_Suffle()
 {
     --m_iSuffleCount;
     ++m_iSpeedCount;
-    if (m_iSpeedCount >= 5)
+    if (m_iSpeedCount >= m_fSpeedCount)
     {
-        m_fSpeed += 5.f;
+        m_fSpeed += m_fAddSpeed;
         m_iSpeedCount = 0.f;
     }
 
     if (m_iSuffleCount <= 0)
     {
-        m_eState = END;
+        m_eState = SELETE_NUM;
         m_iSeleteNum = 0;
         m_fGuidePosY = 1.5f;
     }
@@ -157,12 +200,12 @@ void CMiniGame_Gacha::Setting_Suffle()
                 break;
             case 1:
                 m_vSuffleVector2.push_back(vposB);
-                m_vSuffleVector2.push_back(XMVectorSetZ((vposA + vposB) * 0.5f, XMVectorGetZ(vposA) + 1.f));
+                m_vSuffleVector2.push_back(XMVectorSetX((vposA + vposB) * 0.5f, XMVectorGetX(vposA) + 2.f));
                 m_vSuffleVector2.push_back(vposA);
                 break;
             default:
                 m_vSuffleVector2.push_back(vposB);
-                m_vSuffleVector2.push_back(XMVectorSetZ((vposA + vposB) * 0.5f, XMVectorGetZ(vposA) - 1.f));
+                m_vSuffleVector2.push_back(XMVectorSetX((vposA + vposB) * 0.5f, XMVectorGetX(vposA) - 2.f));
                 m_vSuffleVector2.push_back(vposA);
                 break;
             }
@@ -172,13 +215,13 @@ void CMiniGame_Gacha::Setting_Suffle()
             if (m_pGameInstance->Rand(0, 1) == 0)
             {
                 m_vSuffleVector2.push_back(vposB);
-                m_vSuffleVector2.push_back(XMVectorSetZ((vposA + vposB) * 0.5f, XMVectorGetZ(vposA) + 1.f));
+                m_vSuffleVector2.push_back(XMVectorSetX((vposA + vposB) * 0.5f, XMVectorGetX(vposA) + 2.f));
                 m_vSuffleVector2.push_back(vposA);
             }
             else
             {
                 m_vSuffleVector2.push_back(vposB);
-                m_vSuffleVector2.push_back(XMVectorSetZ((vposA + vposB) * 0.5f, XMVectorGetZ(vposA) - 1.f));
+                m_vSuffleVector2.push_back(XMVectorSetX((vposA + vposB) * 0.5f, XMVectorGetX(vposA) - 2.f));
                 m_vSuffleVector2.push_back(vposA);
             }
         }
@@ -244,40 +287,23 @@ void CMiniGame_Gacha::Update_Notice(_float fTimeDelta)
 
 void CMiniGame_Gacha::Input_Key()
 {
-    //m_pGameInstance->Change_InputType(INPUT_TYPE::UI);
-    if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-    {
-        m_iSuffleCount = m_pGameInstance->Rand(30, 45);
-        m_eState = SUCCES_NOTICE;
-        m_iSpeedCount = 0;
-        m_fSpeed = 5.f;
-        m_iSeleteNum = m_pGameInstance->Rand(0, 2);
-        m_iSuccesNum = m_pBox[m_iSeleteNum]->Get_Index();
-        m_fAcctime = 0.f;
-        m_fGuidePosY = 1.5f;
-        m_fGuideCount = 3;
-    }
-    if (m_pGameInstance->Key_Down(DIK_A))
+    if (m_pGameInstance->Key_Down(DIK_A, INPUT_TYPE::WORLD_UI))
     {
         --m_iSeleteNum;
         m_iSeleteNum < 0 ? m_iSeleteNum = 2 : m_iSeleteNum;
     }
-    else if (m_pGameInstance->Key_Down(DIK_D))
+    else if (m_pGameInstance->Key_Down(DIK_D, INPUT_TYPE::WORLD_UI))
     {
         ++m_iSeleteNum;
         m_iSeleteNum > 2 ? m_iSeleteNum = 0 : m_iSeleteNum;
     }
-    else if (m_pGameInstance->Key_Down(DIK_F) && m_iSuccesNum == m_pBox[m_iSeleteNum]->Get_Index())
+    else if (m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::WORLD_UI))
     {
-        m_iSuffleCount = m_pGameInstance->Rand(30, 45);
-        m_eState = SUCCES_NOTICE;
-        m_iSpeedCount = 0;
-        m_fSpeed = 5.f;
-        m_iSeleteNum = m_pGameInstance->Rand(0, 2);
-        m_iSuccesNum = m_pBox[m_iSeleteNum]->Get_Index();
-        m_fAcctime = 0.f;
-        m_fGuidePosY = 1.5f;
-        m_fGuideCount = 3;
+        m_eState = END;
+        if (m_iSuccesNum == m_pBox[m_iSeleteNum]->Get_Index())
+            m_isSucces = true;
+        else
+            m_iSuccesNum = false;
     }
 }
 

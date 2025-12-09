@@ -70,11 +70,13 @@ void CElevatorS::Update(_float fTimeDelta)
         {
             m_isStart = true;
 
-            SoundOnce(TEXT("IP_Elevator_Start"), m_fInteract_Volume);
+            //SoundOnce(TEXT("IP_Elevator_Start"), m_fInteract_Volume);
         }
         
         if (IsPlayingSound(TEXT("IP_Elevator_Start")))
-            return;
+        {
+
+        }
         else
         {
             if (false == m_isLoop)
@@ -85,13 +87,16 @@ void CElevatorS::Update(_float fTimeDelta)
             }
         }
 
-        if (ELEVATOR_STATE::UP == m_eState)
+        if (true == m_isLoop)
         {
-            Lerp_ElevatorMove(fTimeDelta, m_vUpPos, m_vDownPos, 25.f);
-        }
-        else if (ELEVATOR_STATE::DOWN == m_eState)
-        {
-            Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 25.f);
+            if (ELEVATOR_STATE::UP == m_eState)
+            {
+                Lerp_ElevatorMove(fTimeDelta, m_vUpPos, m_vDownPos, 25.f);
+            }
+            else if (ELEVATOR_STATE::DOWN == m_eState)
+            {
+                Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 25.f);
+            }
         }
     }
 
@@ -150,6 +155,8 @@ void CElevatorS::Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4
         SoundOnce(TEXT("IP_Elevator_End"), m_fInteract_Volume);
 
         m_isActiveElevator = false;
+        m_isLoop = false;
+        m_isStart = false;
 
         m_fTimeAcc = 0.f;
 
