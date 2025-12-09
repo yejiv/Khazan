@@ -63,7 +63,7 @@ private:
     HRESULT Ready_Map_Decal(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
 #pragma endregion
-
+    HRESULT Ready_Layer_Pet(const _wstring& strLayerTag);
     _bool Wait_All_Futures();
 
 private:

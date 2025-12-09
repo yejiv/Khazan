@@ -71,6 +71,7 @@
 #include "Dragonian_Rampage.h"
 #include "Elamein.h"
 #include "Halberd.h"
+#include "Pet_Danjinjar.h"
 #pragma endregion
 
 #pragma region UI
@@ -84,7 +85,6 @@
 
 #include "Effect_Prefab.h"
 
-#include "MiniGame_Gacha.h"
 //static mutex g_GpuGate;
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -1981,6 +1981,10 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Monster_Elamein"),
         CElamein::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Pet_Danjinjar"),
+        CPet_Danjinjar::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
+        return E_FAIL;
 #pragma endregion
 
 #pragma endregion
@@ -2296,11 +2300,6 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
         return E_FAIL;
 #pragma endregion
 
-#pragma region MiniGame
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_MiniGame_Gacha"),
-        CMiniGame_Gacha::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
-        return E_FAIL;
-#pragma endregion
     return S_OK;
 }
 

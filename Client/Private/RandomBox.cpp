@@ -86,7 +86,7 @@ HRESULT CRandomBox::Ready_Components()
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(m_iPrototypeIndex, TEXT("Prototype_Component_Model_NPC_DanjinJar_A"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_NPC_DanjinJar_A"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
