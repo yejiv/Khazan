@@ -71,6 +71,10 @@ void CJar_3rd::Update(_float fTimeDelta)
 
     m_pTriggerCom->Sync_Update(m_pTransformCom);
     m_pTriggerCom->Update(fTimeDelta, m_pTransformCom);
+
+    _float4 vPosition{};
+    XMStoreFloat4(&vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+    m_pGameInstance->Set_LightPosition(TEXT("DanjinJar_3"), ENUM_CLASS(LEVEL::EMBARS), vPosition);
 }
 
 void CJar_3rd::Late_Update(_float fTimeDelta)
@@ -90,36 +94,9 @@ HRESULT CJar_3rd::Render()
 
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
-        if (true == Skip_Mesh(i))
-            continue;
-
-        _float fShadeIntensity = 3.f;
-        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float)), E_FAIL);
-
-        _float fEdgeIntensity = 1.f;
-
-        switch (i)
-        {
-        case MESH_BODY:
-            fEdgeIntensity = 1.2f;
-            break;
-        case MESH_HEAD:
-            break;
-        case MESH_CENTER:
-        case MESH_LEFT:
-        case MESH_RIGHT:
-            fEdgeIntensity = 2.6f;
-            break;
-        }
-
-        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float)), E_FAIL);
-
         Bind_Materials(i);
-
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
-
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(20), E_FAIL);
-
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
 
@@ -171,8 +148,8 @@ HRESULT CJar_3rd::Bind_Materials(_uint iMeshIndex)
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
         m_iMtrlFlags |= M_ROUGHNESS;
 
-    //m_iMtrlFlags &= ~M_EMISSIVE;
-    //m_iMtrlFlags &= ~M_SPECULAR;
+    //  m_iMtrlFlags &= ~M_EMISSIVE;
+    //  m_iMtrlFlags &= ~M_SPECULAR;
 
     m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 
@@ -365,10 +342,26 @@ _float4 CJar_3rd::Get_NextStepPos()
         vTargetPos = m_DanjinJarStep.vStep5;
         break;
     case STEP5:
-        vTargetPos = m_DanjinJarStep.vStep6;
+        if (m_EventGimmick.isStatueSection0())
+        {
+            m_iStepState = STEP12;
+            vTargetPos = m_DanjinJarStep.vStep13;
+        }
+        else
+        {
+            vTargetPos = m_DanjinJarStep.vStep6;
+        }
         break;
     case STEP6:
-        vTargetPos = m_DanjinJarStep.vStep7;
+        if (m_EventGimmick.isStatueSection0())
+        {
+            m_iStepState = STEP12;
+            vTargetPos = m_DanjinJarStep.vStep13;
+        }
+        else
+        {
+            vTargetPos = m_DanjinJarStep.vStep7;
+        }
         break;
     case STEP7:
         vTargetPos = m_DanjinJarStep.vStep8;
@@ -377,10 +370,26 @@ _float4 CJar_3rd::Get_NextStepPos()
         vTargetPos = m_DanjinJarStep.vStep9;
         break;
     case STEP9:
-        vTargetPos = m_DanjinJarStep.vStep10;
+        if (m_EventGimmick.isStatueSection0())
+        {
+            m_iStepState = STEP12;
+            vTargetPos = m_DanjinJarStep.vStep13;
+        }
+        else
+        {
+            vTargetPos = m_DanjinJarStep.vStep10;
+        }
         break;
     case STEP10:
-        vTargetPos = m_DanjinJarStep.vStep11;
+        if (m_EventGimmick.isStatueSection0())
+        {
+            m_iStepState = STEP12;
+            vTargetPos = m_DanjinJarStep.vStep13;
+        }
+        else
+        {
+            vTargetPos = m_DanjinJarStep.vStep11;
+        }
         break;
     case STEP11:
         if (m_EventGimmick.isStatueSection0())

@@ -40,8 +40,13 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
 {
     m_fTime += fTimeDelta;
     
-
     Skip_KeyInput(fTimeDelta);
+
+    if (!m_isPlayerInpusBlock)
+    {
+        m_pClientInstance->Set_PlayerInput(false);
+        m_isPlayerInpusBlock = true;
+    }
 
     if (!m_isSkip)
     {
@@ -107,6 +112,13 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             m_isFadeIn2 = true;
         }
 
+        if (m_fTime > 12.f && !m_isViperHismaLook)
+        {
+            // 칼 처음 본 시점
+            m_pGameInstance->PlaySoundLoop(TEXT("Fire_Burning.mp3"), 0.3f);
+            m_isViperHismaLook = true;
+        }
+
         if (m_fTime > 16.f && !m_isCameraSet3)
         {
             m_pCamera->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-29.916, -28.389f, 184.220f, 1.f));
@@ -121,6 +133,14 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             m_pCamera->Get_Transform()->Look_Dir(XMVectorSet(0.051, -0.277, 0.959, 0.f));
             m_pClientInstance->Camera_Set_Animation(TEXT("Viper_SecondPhase5"));
             m_isCameraSet4 = true;
+        }
+
+        if (m_fTime > 30.f && !m_isViperPickUp)
+        {
+            // 칼 마지막으로 보는 시점
+            m_pGameInstance->StopByKey_FadeOut(TEXT("Fire_Burning.mp3"), 8.f);
+
+            m_isViperPickUp = true;
         }
 
         if (m_fTime > 30.f && !m_isFadeOut3)
@@ -345,6 +365,7 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
 
             //dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_CutSceneFinished();
+            m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
         }
 
@@ -401,6 +422,7 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
         {
             m_pClientInstance->Camera_Force_AniEnd();
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_CutSceneFinished();
+            m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
         }
     }
@@ -429,11 +451,6 @@ void CSequence_Viper_SecondPhase::Jump(_float fTime)
 _bool CSequence_Viper_SecondPhase::IsEnd() const
 {
     return m_isEnd;
-}
-
-void CSequence_Viper_SecondPhase::Push_Obelisk(CObelisk* pObelisk)
-{
-    m_Obelisks.push(pObelisk);
 }
 
 void CSequence_Viper_SecondPhase::Skip_KeyInput(_float fTimeDelta)

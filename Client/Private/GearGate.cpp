@@ -53,6 +53,9 @@ void CGearGate::Update(_float fTimeDelta)
     {
         if (ANIM_STATE::IDLE1 == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_Gate_Open_Start"), m_pTransformCom->Get_State(STATE::POSITION), nullptr, m_fInteract_Volume * 1.5f);
+            SoundLoop(TEXT("IP_Door_Gear_Idle"), m_pTransformCom->Get_State(STATE::POSITION), nullptr, m_fInteract_Volume);
+
             m_eAnimState = ANIM_STATE::ACTIVATION;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
