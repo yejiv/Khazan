@@ -18,6 +18,7 @@
 #include "Camera_Compre.h"
 #include "Sequence_Viper_SecondPhase.h"
 #include "Sequence_Viper_CutScene.h"
+#include "Sequence_Viper_Destruct_Obelisk.h"
 
 #pragma region ITEM
 #include "Interaction_Item.h"
@@ -357,8 +358,7 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
 	_uint iObjectCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-    _uint iDestIndex = { 0 };
-
+    _uint iDestIndex = { 0 };    
 	// 오브젝트 총 개수만큼 순회
 	for (_uint i = 0; i < iObjectCnt; ++i)
 	{
@@ -388,9 +388,7 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
 		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
 
 		ObjectDesc.Properties = PropProperties;
-
-        //CSequence_Viper_SecondPhase* pSeq = dynamic_cast<CSequence_Viper_SecondPhase*>(m_pClientInstance->Find_Sequence(TEXT("Viper_SecondPhase")));
-
+       
         if (wcscmp(ObjectDesc.szModelName, L"Prototype_Component_Model_WP_TDL_Bridge_Collision_004") == 0)
         {
             CProp_Destructible::PROP_DEST_DESC ObeliskDesc = {};
@@ -1131,6 +1129,11 @@ HRESULT CLevel_Viper::Ready_Sequence()
     SEQ_REQ_PLAY_DESC desc{};
     pSequence->Initialize(desc);
     m_pClientInstance->Push_Sequence(TEXT("Viper_SecondPhase"), pSequence);
+
+    CSequence_Viper_Destruct_Obelisk* pDestSequence = CSequence_Viper_Destruct_Obelisk::Create();
+    SEQ_REQ_PLAY_DESC DestDesc{};
+    pDestSequence->Initialize(DestDesc);
+    m_pClientInstance->Push_Sequence(TEXT("Viper_Destruct_Obelisk"), pDestSequence);
 
     return S_OK;
 }

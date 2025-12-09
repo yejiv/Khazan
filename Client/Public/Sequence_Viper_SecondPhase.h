@@ -30,9 +30,6 @@ public:
     SEQ_ID  GetId() const override { return m_Id; }
 
 public:
-    void Push_Obelisk(class CObelisk* pObelisk);
-
-public:
     void Set_Skip(_bool isSkip) { m_isSkip = true; }
 
 public:
@@ -91,8 +88,6 @@ private:
     _bool   m_isSkipKey = { false };
 
     _bool   m_isEnd = { false };
-
-    queue<class CObelisk*> m_Obelisks;
 
     class CGameInstance* m_pGameInstance = { nullptr };
     class CClientInstance* m_pClientInstance = { nullptr };

@@ -1498,6 +1498,9 @@
     <Filter Include="02.GameObject\UI\Talk\Gacha">
       <UniqueIdentifier>{9964e281-dd7f-4521-9304-87973c358457}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.Sequence\Viper\Destruct_Oblelist">
+      <UniqueIdentifier>{79183dec-fb03-4f86-9656-8dc26ffa52fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2893,6 +2896,9 @@
     <ClInclude Include="..\public\UI_Talk_Gacha.h">
       <Filter>02.GameObject\UI\Talk\Gacha</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sequence_Viper_Destruct_Obelisk.h">
+      <Filter>04.Sequence\Viper\Destruct_Oblelist</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4267,6 +4273,9 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Talk_Gacha.cpp">
       <Filter>02.GameObject\UI\Talk\Gacha</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sequence_Viper_Destruct_Obelisk.cpp">
+      <Filter>04.Sequence\Viper\Destruct_Oblelist</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

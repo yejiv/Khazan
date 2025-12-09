@@ -19,6 +19,7 @@
 #include "LineTrail.h"
 #include "SkySphere.h"
 #include "CloudSphere.h"
+#include "Sequence_Viper_Destruct_Obelisk.h"
 
 CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -2902,6 +2903,16 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     pModel->Register_Event("CameraShaking3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         // 건물 부시기
+        /*CSequence_Viper_Destruct_Obelisk* pSeq = dynamic_cast<CSequence_Viper_Destruct_Obelisk*>(CClientInstance::GetInstance()->Find_Sequence(TEXT("Viper_Destruct_Obelisk")));
+        SEQ_REQ_PLAY_DESC tPlayDesc{};
+        tPlayDesc.tId.iSeq = 110020;
+        tPlayDesc.pAsset = L"Obelisk";
+        tPlayDesc.fStartTime = 0.f;
+        CClientInstance::GetInstance()->Remove_Sequence(TEXT("Viper_Destruct_Obelisk"));
+        m_pGameInstance->SEQ_AdoptAndPlay(pSeq, tPlayDesc, true);*/
+
+        m_pGameInstance->Emit_Event<EVENT_OBELISK_DESTRUCT>(ENUM_CLASS(EVENT_TYPE::OBELISK_DESTRUCT), EVENT_OBELISK_DESTRUCT{ true });
+
         Viper_Cinematic_ShaderSettings();
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.5f, 1.f);
         // 블링크 림라이트 시작

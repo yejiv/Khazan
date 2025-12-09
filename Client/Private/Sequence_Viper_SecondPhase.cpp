@@ -438,11 +438,6 @@ _bool CSequence_Viper_SecondPhase::IsEnd() const
     return m_isEnd;
 }
 
-void CSequence_Viper_SecondPhase::Push_Obelisk(CObelisk* pObelisk)
-{
-    m_Obelisks.push(pObelisk);
-}
-
 void CSequence_Viper_SecondPhase::Skip_KeyInput(_float fTimeDelta)
 {
     if (!m_isSkipKey)
