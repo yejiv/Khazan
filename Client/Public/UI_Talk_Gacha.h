@@ -12,67 +12,73 @@ NS_BEGIN(Client)
 class CUI_Talk_Gacha final : public CUI_Panel
 {
 private:
-    enum class TALKSTATE { TALKING, NEXT, END };
     enum class UIANIMSTATE { ON, OFF, END };
+    enum class TALK_TYPE { START, GACHA, TALK, MINIGAME, SUCCES, END };
 private:
     CUI_Talk_Gacha(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CUI_Talk_Gacha(const CUI_Talk_Gacha& Prototype);
     virtual ~CUI_Talk_Gacha() = default;
 
 public:
-    _bool                           isEmptyNextEvent();
-    _bool                           isExistNextTalk();
-    _bool                           isTalkingEnd();
-
-    _bool                           isTalking();
-
-    HRESULT                         On_Panel(_int iTalkIndex);
+    void                            On_Panel();
     void                            Off_Panel();
 public:
     void                            Update_UITransform(_vector vPos);
 
 public:
-    virtual HRESULT			        Initialize_Prototype() override;
+    virtual HRESULT			        Initialize_Prototype(_int iPorotoLevel);
     virtual HRESULT			        Initialize_Clone(void* pArg) override;
     virtual void			        Priority_Update(_float fTimeDelta) override;
     virtual void			        Update(_float fTimeDelta) override;
     virtual void			        Late_Update(_float fTimeDelta) override;
     virtual HRESULT			        Render() override;
-
+    virtual	HRESULT				    Update_Switch(void* pArg);
 private:
-    CShader* m_pShaderCom = { nullptr };
-    CTexture* m_pTextureCom = { nullptr };
-    CVIBuffer_Rect* m_pVIBufferCom = { nullptr };
-    vector<class CUI_WorldTex*>     m_BG;
-    class CUI_WorldTextBox* m_pText1 = { nullptr };
+    CShader*                        m_pShaderCom = { nullptr };
+    CTexture*                       m_pTextureCom = { nullptr };
+    CVIBuffer_Rect*                 m_pVIBufferCom = { nullptr };
+
+    class CUI_WorldTextBox*         m_pName = { nullptr };
+    class CUI_WorldTextBox*         m_pText1 = { nullptr };
+    class CUI_WorldTextBox*         m_pText2 = { nullptr };
+    class CUI_WorldTextBox*         m_pText3 = { nullptr };
+
+    vector<class CUI_WorldTex*>     m_BG_Line;
+    vector<class CUI_WorldTex*>     m_Key_Guide;
+    vector<class CUI_WorldList*>    m_pList;
+
+    class CUI_WorldTex*             m_pNameBG = { nullptr };
+
+    _int                            m_iSelete = {};
+    _int                            m_iTalkIndex = {};
+    _int                            m_iMaxTalk = { 3 };
+    TALK_TYPE                       m_eType = { TALK_TYPE::END };
+
+    _bool                           m_isUp = {};
+
     _float							m_fAccTime = {};
     UIANIMSTATE						m_eAnimState = { UIANIMSTATE::END };
-    TALKSTATE                       m_eTaking = { TALKSTATE::END };
+    _bool                           m_isUIOpen = {};
+
     _float                          m_fSpeedWeight = {};
+    FMOD_CHANNEL*                   m_pChannel = { nullptr };
 
-    FMOD_CHANNEL* m_pChannel = { nullptr };
-
-    _wstring                        m_wstrFullText = {};
-    _wstring                        m_wstrCulText = {};
-    _wstring                        m_wstrSound = {};
-    _float                          m_fTalktime = {};
-
-    _int                            m_iNextEvent = {};
-    _float                          m_fTextSpeed = {};
-    _float                          m_fDeleyTime = {};
-
-    _float                          m_fTalkEndTime = {};
-    _bool                           m_isTalkingEnd = { false };
-
+    class CMiniGame_Gacha*          m_pGacha = {nullptr};
+    _bool                           m_isSucces = {};
+  
 private:
+    HRESULT                         Ready_Prototype();
     HRESULT					        Ready_Component();
     HRESULT                         Ready_Children();
 
+    void                            Update_Selete();
+    void                            Setting_Talk();
+
+    void                            List_Selete();
     void						    UI_Animation(_float fTimeDelta);
-    void                            Update_Font(_float fTimeDelta);
 public:
-    static CUI_Talk_Gacha* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    virtual CGameObject* Clone(void* pArg) override;
+    static CUI_Talk_Gacha*          Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iPorotoLevel);
+    virtual CGameObject*            Clone(void* pArg) override;
     virtual void			        Free() override;
 };
 

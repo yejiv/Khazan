@@ -170,6 +170,7 @@
     <ClInclude Include="..\Public\AI_Controller_Gomdol.h" />
     <ClInclude Include="..\Public\AI_Controller_Imp_Melee.h" />
     <ClInclude Include="..\Public\AI_Controller_Imp_Range.h" />
+    <ClInclude Include="..\public\AI_Controller_Pet_Danjinjar.h" />
     <ClInclude Include="..\Public\AI_Controller_Viper.h" />
     <ClInclude Include="..\Public\AI_Controller_Yetuga.h" />
     <ClInclude Include="..\public\Amount.h" />
@@ -262,6 +263,10 @@
     <ClInclude Include="..\Public\AS_P2_SideMove_Viper.h" />
     <ClInclude Include="..\Public\AS_P2_SlashDobule_Viper.h" />
     <ClInclude Include="..\Public\AS_P2_SlashStomp_Viper.h" />
+    <ClInclude Include="..\public\AS_Pet_Danjinjar_Damage.h" />
+    <ClInclude Include="..\public\AS_Pet_Danjinjar_Idle.h" />
+    <ClInclude Include="..\public\AS_Pet_Danjinjar_Move.h" />
+    <ClInclude Include="..\public\AS_Pet_Danjinjar_TP.h" />
     <ClInclude Include="..\Public\AS_Quick2Hit_Viper.h" />
     <ClInclude Include="..\Public\AS_RightHand_5Hit_Yetuga.h" />
     <ClInclude Include="..\Public\AS_Run_Viper.h" />
@@ -300,6 +305,7 @@
     <ClInclude Include="..\public\Body_Elamein.h" />
     <ClInclude Include="..\Public\Body_Imp_Melee.h" />
     <ClInclude Include="..\Public\Body_Khazan_GS.h" />
+    <ClInclude Include="..\public\Body_Pet_Danjinjar.h" />
     <ClInclude Include="..\Public\Body_Phase2_Viper.h" />
     <ClInclude Include="..\Public\Body_Viper.h" />
     <ClInclude Include="..\Public\Core_Viper.h" />
@@ -380,6 +386,7 @@
     <ClInclude Include="..\Public\NPC_Duimuk.h" />
     <ClInclude Include="..\Public\NPC_Gacha.h" />
     <ClInclude Include="..\Public\Obelisk.h" />
+    <ClInclude Include="..\public\Pet_Danjinjar.h" />
     <ClInclude Include="..\Public\Pot.h" />
     <ClInclude Include="..\public\Popup_Item.h" />
     <ClInclude Include="..\public\Popup_Reset.h" />
@@ -634,6 +641,7 @@
     <ClCompile Include="..\private\AI_Controller_Dragonian_Rampage.cpp" />
     <ClCompile Include="..\Private\AI_Controller_Halberd.cpp" />
     <ClCompile Include="..\private\AI_Controller_Elamein.cpp" />
+    <ClCompile Include="..\private\AI_Controller_Pet_Danjinjar.cpp" />
     <ClCompile Include="..\Private\AS_CutScene_2Phase_Viper.cpp" />
     <ClCompile Include="..\Private\AS_CutScene_Start_Viper.cpp" />
     <ClCompile Include="..\private\AS_Dr_Melee_Attack.cpp" />
@@ -693,6 +701,10 @@
     <ClCompile Include="..\Private\AS_P2_SideMove_Viper.cpp" />
     <ClCompile Include="..\Private\AS_P2_SlashDobule_Viper.cpp" />
     <ClCompile Include="..\Private\AS_P2_SlashStomp_Viper.cpp" />
+    <ClCompile Include="..\private\AS_Pet_Danjinjar_Damage.cpp" />
+    <ClCompile Include="..\private\AS_Pet_Danjinjar_Idle.cpp" />
+    <ClCompile Include="..\private\AS_Pet_Danjinjar_Move.cpp" />
+    <ClCompile Include="..\private\AS_Pet_Danjinjar_TP.cpp" />
     <ClCompile Include="..\Private\AS_StingGrab_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Cinematic_Viper.cpp" />
     <ClCompile Include="..\private\Body_Dragonian_Melee.cpp" />
@@ -703,6 +715,7 @@
     <ClCompile Include="..\Private\Body_Dragonian_Rampage.cpp" />
     <ClCompile Include="..\Private\Body_Halberd.cpp" />
     <ClCompile Include="..\private\Body_Elamein.cpp" />
+    <ClCompile Include="..\private\Body_Pet_Danjinjar.cpp" />
     <ClCompile Include="..\Private\Body_Phase2_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp" />
     <ClCompile Include="..\Private\Core_Viper.cpp" />
@@ -850,6 +863,7 @@
     <ClCompile Include="..\Private\NPC_Duimuk.cpp" />
     <ClCompile Include="..\Private\NPC_Gacha.cpp" />
     <ClCompile Include="..\Private\Obelisk.cpp" />
+    <ClCompile Include="..\private\Pet_Danjinjar.cpp" />
     <ClCompile Include="..\Private\Pot.cpp" />
     <ClCompile Include="..\private\Popup_Item.cpp" />
     <ClCompile Include="..\private\Popup_Reset.cpp" />
