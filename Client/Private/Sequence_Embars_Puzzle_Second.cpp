@@ -4,6 +4,7 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "SkipButton.h"
+#include "UI_HUD.h"
 
 CSequence_Embars_Puzzle_Second::CSequence_Embars_Puzzle_Second()
     : m_pGameInstance{ CGameInstance::GetInstance() }
@@ -20,7 +21,8 @@ HRESULT CSequence_Embars_Puzzle_Second::Initialize(const SEQ_REQ_PLAY_DESC& tDes
 
     m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/VerticalGate2");
     m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Turn_Elevator");
-    //CClientInstance::GetInstance()->Set_UIAllRenderSet(false);
+    static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+    m_pClientInstance->Set_PlayerInput(false);
     return S_OK;
 }
 
@@ -68,7 +70,8 @@ void CSequence_Embars_Puzzle_Second::Update(_float fTimeDelta)
         else if (m_fTime >= 21.f)
         {
             m_pClientInstance->Fade_In();
-            //CClientInstance::GetInstance()->Set_UIAllRenderSet(true);
+            static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+            m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
         }
     }
@@ -94,7 +97,8 @@ void CSequence_Embars_Puzzle_Second::Update(_float fTimeDelta)
         if (m_fSkipTime > 2.f && !m_isSkipFadeIn)
         {
             m_pClientInstance->Fade_In();
-            //CClientInstance::GetInstance()->Set_UIAllRenderSet(true);
+            static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+            m_pClientInstance->Set_PlayerInput(true);
             m_isSkipFadeIn = true;
         }
 

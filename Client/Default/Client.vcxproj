@@ -584,6 +584,7 @@
     <ClInclude Include="..\public\UI_Store.h" />
     <ClInclude Include="..\public\UI_Talk_Dangin.h" />
     <ClInclude Include="..\public\UI_Talk_Danjinjar.h" />
+    <ClInclude Include="..\public\UI_Talk_Gacha.h" />
     <ClInclude Include="..\public\UI_Talk_Trader.h" />
     <ClInclude Include="..\public\UI_WorldFX.h" />
     <ClInclude Include="..\public\UI_WorldList.h" />
@@ -1046,6 +1047,7 @@
     <ClCompile Include="..\private\UI_Store.cpp" />
     <ClCompile Include="..\private\UI_Talk_Dangin.cpp" />
     <ClCompile Include="..\private\UI_Talk_Danjinjar.cpp" />
+    <ClCompile Include="..\private\UI_Talk_Gacha.cpp" />
     <ClCompile Include="..\private\UI_Talk_Trader.cpp" />
     <ClCompile Include="..\private\UI_WorldFX.cpp" />
     <ClCompile Include="..\private\UI_WorldList.cpp" />

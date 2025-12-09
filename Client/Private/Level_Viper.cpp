@@ -38,7 +38,7 @@ HRESULT CLevel_Viper::Initialize()
 
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
     CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
-    //CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+    CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
        
     // 우선 맵 오브젝트 서브 레벨 로드
     
@@ -52,7 +52,7 @@ HRESULT CLevel_Viper::Initialize()
     // 맵 오브젝트 서브 레벨 로드
     for (_uint i = 0; i < VIPER_SUBLV; ++i)
     {        
-        //CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     }
 
     CHECK_FAILED(Ready_Sequence(), E_FAIL);
@@ -65,7 +65,7 @@ HRESULT CLevel_Viper::Initialize()
     //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Laye0r_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
-    CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
+    //CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
     //CClientInstance::GetInstance()->Fade_Out();
     CHECK_FAILED(Ready_Item(), E_FAIL);
     if (!Wait_All_Futures())
@@ -357,8 +357,7 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
 	_uint iObjectCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
 
-    _uint iDestIndex = { 0 };
-
+    _uint iDestIndex = { 0 };    
 	// 오브젝트 총 개수만큼 순회
 	for (_uint i = 0; i < iObjectCnt; ++i)
 	{
@@ -388,9 +387,7 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
 		CHECK_FALSE(ReadFile(hFile, &PropProperties, sizeof(MAPOBJECT_PROPERTIES), &dwByte, nullptr), false);
 
 		ObjectDesc.Properties = PropProperties;
-
-        //CSequence_Viper_SecondPhase* pSeq = dynamic_cast<CSequence_Viper_SecondPhase*>(m_pClientInstance->Find_Sequence(TEXT("Viper_SecondPhase")));
-
+       
         if (wcscmp(ObjectDesc.szModelName, L"Prototype_Component_Model_WP_TDL_Bridge_Collision_004") == 0)
         {
             CProp_Destructible::PROP_DEST_DESC ObeliskDesc = {};
@@ -404,7 +401,6 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
             ObeliskDesc.WorldMatrix._42 -= 400.f;
             ObeliskDesc.iIndex = iDestIndex;
             CObelisk* pObelisk = dynamic_cast<CObelisk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Obelisk"), &ObeliskDesc));
-            //pSeq->Push_Obelisk(pObelisk);
             m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag, pObelisk);            
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
                 ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Obelisk"), TIME_CHANNEL::WORLD, &ObeliskDesc)))

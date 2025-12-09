@@ -27,7 +27,7 @@ CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 CViper::CViper(const CViper& Prototype)
     :CMonster{ Prototype }
-{
+{ 
 }
 
 _float4* CViper::Get_LockOnPosition()
@@ -2902,6 +2902,8 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     pModel->Register_Event("CameraShaking3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         // 건물 부시기
+        m_pGameInstance->Emit_Event<EVENT_OBELISK_DESTRUCT>(ENUM_CLASS(EVENT_TYPE::OBELISK_DESTRUCT), EVENT_OBELISK_DESTRUCT{ true });
+
         Viper_Cinematic_ShaderSettings();
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.5f, 1.f);
         // 블링크 림라이트 시작
@@ -3878,7 +3880,7 @@ void CViper::Viper_2PhaseBerserker_ShaderSettings()
 void CViper::Viper_2PhaseBerserkerEnd_ShaderSettings()
 {
     // 림라이트 켜기
-    m_pGameInstance->Set_EnableRimLight(true);
+    m_pGameInstance-> Set_EnableRimLight(true);
 
     _float fDuration = 3.f;
 

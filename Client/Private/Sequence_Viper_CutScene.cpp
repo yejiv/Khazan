@@ -27,7 +27,7 @@ HRESULT CSequence_Viper_CutScene::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
     m_pCamera = dynamic_cast<CCamera_Compre*>(m_pClientInstance->Get_ActiveCamera());    
     m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_1Phase_CutScene");
     m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_1Phase_CutScene2");
-
+    m_pClientInstance->Set_PlayerInput(false);
     return S_OK;
 }
 
@@ -166,7 +166,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         if (m_fTime >= 45.f)
         {
             Start_FogTransition();
-            dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);        
+            dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);  
+            m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
         }
     }
@@ -196,7 +197,9 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         if (m_fSkipTime > 3.f && !m_isEnd)
         {
             Start_FogTransition();
+            m_pViper->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-31.938f, -29.986f, 198.162f, 1.f));
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);
+            m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
         }
     }

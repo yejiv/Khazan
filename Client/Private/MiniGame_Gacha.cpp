@@ -1,8 +1,10 @@
 #include "MiniGame_Gacha.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 #include "RandomBox.h"
 #include "UI_Gacha_Selete.h"
+
 
 CMiniGame_Gacha::CMiniGame_Gacha(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CGameObject{ pDevice, pContext }
