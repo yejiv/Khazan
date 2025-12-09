@@ -1,8 +1,10 @@
 #include "MiniGame_Gacha.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 #include "RandomBox.h"
 #include "UI_Gacha_Selete.h"
+
 
 CMiniGame_Gacha::CMiniGame_Gacha(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CGameObject{ pDevice, pContext }
@@ -252,6 +254,7 @@ void CMiniGame_Gacha::Input_Key()
         m_fAcctime = 0.f;
         m_fGuidePosY = 1.5f;
         m_fGuideCount = 3;
+        CClientInstance::GetInstance()->Set_UIAllRenderSet(true);
     }
     if (m_pGameInstance->Key_Down(DIK_A))
     {
