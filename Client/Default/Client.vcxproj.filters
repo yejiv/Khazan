@@ -1495,6 +1495,9 @@
     <Filter Include="03.MiniGame\Gacha\SeleteUI">
       <UniqueIdentifier>{007d416f-1406-482b-b6f5-846f0360d88e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\UI\Talk\Gacha">
+      <UniqueIdentifier>{9964e281-dd7f-4521-9304-87973c358457}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2887,6 +2890,9 @@
     <ClInclude Include="..\public\UI_Gacha_Selete.h">
       <Filter>03.MiniGame\Gacha\SeleteUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Talk_Gacha.h">
+      <Filter>02.GameObject\UI\Talk\Gacha</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4258,6 +4264,9 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_Gacha_Selete.cpp">
       <Filter>03.MiniGame\Gacha\SeleteUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Talk_Gacha.cpp">
+      <Filter>02.GameObject\UI\Talk\Gacha</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
