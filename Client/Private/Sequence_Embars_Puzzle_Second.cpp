@@ -21,6 +21,7 @@ HRESULT CSequence_Embars_Puzzle_Second::Initialize(const SEQ_REQ_PLAY_DESC& tDes
     m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/VerticalGate2");
     m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Turn_Elevator");
     //CClientInstance::GetInstance()->Set_UIAllRenderSet(false);
+    m_pClientInstance->Set_PlayerInput(false);
     return S_OK;
 }
 
@@ -69,6 +70,7 @@ void CSequence_Embars_Puzzle_Second::Update(_float fTimeDelta)
         {
             m_pClientInstance->Fade_In();
             //CClientInstance::GetInstance()->Set_UIAllRenderSet(true);
+            m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
         }
     }
@@ -95,6 +97,7 @@ void CSequence_Embars_Puzzle_Second::Update(_float fTimeDelta)
         {
             m_pClientInstance->Fade_In();
             //CClientInstance::GetInstance()->Set_UIAllRenderSet(true);
+            m_pClientInstance->Set_PlayerInput(true);
             m_isSkipFadeIn = true;
         }
 

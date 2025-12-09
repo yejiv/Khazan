@@ -37,7 +37,7 @@ HRESULT CSequence_Yetuga_CutScene::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 
     
     //CClientInstance::GetInstance()->Set_UIAllRenderSet(false);
-
+    m_pClientInstance->Set_PlayerInput(false);
     return S_OK;
 }
 
@@ -191,6 +191,7 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
         {
             dynamic_cast<CAI_Controller_Yetuga*>(m_pYetuga->Get_Controller())->Set_ControllerActivate(true);
             //CClientInstance::GetInstance()->Set_UIAllRenderSet(true);
+            m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
         }
     }
@@ -227,6 +228,7 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
         {
             dynamic_cast<CAI_Controller_Yetuga*>(m_pYetuga->Get_Controller())->Set_ControllerActivate(true);
             //CClientInstance::GetInstance()->Set_UIAllRenderSet(true);
+            m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
         }
         

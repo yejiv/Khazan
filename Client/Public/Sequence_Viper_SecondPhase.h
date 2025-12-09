@@ -43,6 +43,8 @@ private:
     _float  m_fTime{ 0.f };
     _float  m_fSkipTime = { 0.f };
 
+    _bool m_isPlayerInpusBlock = { false };
+
     _bool m_isFadeOut1 = { false };
     _bool m_isFadeIn1 = { false };
     _bool m_isFadeOut2 = { false };

@@ -40,8 +40,13 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
 {
     m_fTime += fTimeDelta;
     
-
     Skip_KeyInput(fTimeDelta);
+
+    if (!m_isPlayerInpusBlock)
+    {
+        m_pClientInstance->Set_PlayerInput(false);
+        m_isPlayerInpusBlock = true;
+    }
 
     if (!m_isSkip)
     {
@@ -345,6 +350,7 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
 
             //dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_CutSceneFinished();
+            m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
         }
 
@@ -401,6 +407,7 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
         {
             m_pClientInstance->Camera_Force_AniEnd();
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_CutSceneFinished();
+            m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
         }
     }

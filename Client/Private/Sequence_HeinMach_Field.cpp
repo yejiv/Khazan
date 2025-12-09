@@ -19,6 +19,7 @@ HRESULT CSequence_HeinMach_Field::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 
 	string filePath = "../../Client/Bin/Data/Camera/Animation/HeinMach";
     CClientInstance::GetInstance()->Camera_Set_Animation_Json(filePath);
+    CClientInstance::GetInstance()->Set_PlayerInput(false);
 
     return S_OK;
 }
@@ -55,6 +56,7 @@ void CSequence_HeinMach_Field::Update(_float fTimeDelta)
     if (m_fTime >= 16.f)
     {
         //CClientInstance::GetInstance()->Set_UIAllRenderSet(true);
+        CClientInstance::GetInstance()->Set_PlayerInput(true);
         m_State = STATE::End;
     }
         

@@ -27,7 +27,7 @@ CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 CViper::CViper(const CViper& Prototype)
     :CMonster{ Prototype }
-{
+{ 
 }
 
 _float4* CViper::Get_LockOnPosition()
@@ -3878,7 +3878,7 @@ void CViper::Viper_2PhaseBerserker_ShaderSettings()
 void CViper::Viper_2PhaseBerserkerEnd_ShaderSettings()
 {
     // 림라이트 켜기
-    m_pGameInstance->Set_EnableRimLight(true);
+    m_pGameInstance-> Set_EnableRimLight(true);
 
     _float fDuration = 3.f;
 
