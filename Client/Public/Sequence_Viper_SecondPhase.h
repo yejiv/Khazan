@@ -88,6 +88,9 @@ private:
     _bool   m_isSkipFadeIn = { false };
     _bool   m_isSkipKey = { false };
 
+    _bool   m_isViperHismaLook = { false };
+    _bool   m_isViperPickUp = { false };
+
     _bool   m_isEnd = { false };
 
     queue<class CObelisk*> m_Obelisks;
