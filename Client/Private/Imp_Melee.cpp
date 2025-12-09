@@ -43,6 +43,9 @@ HRESULT CImp_Melee::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimEvent()))
         return E_FAIL;
 
+    if (FAILED(Ready_SFX()))
+        return E_FAIL;
+
     m_pController = CAI_Controller_Imp_Melee::Create(this);
     if (nullptr == m_pController)
         return E_FAIL;
@@ -236,12 +239,12 @@ HRESULT CImp_Melee::Ready_AnimEvent()
 
     pModel->Register_Event("NontStopAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_isLookAt = false;
-        m_fTurnSpeed = 10.f;
         m_pWeapon->Set_OnAttackCollision(false);
         });
 
     pModel->Register_Event("NontStopAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = true;
+        m_fTurnSpeed = 30.f;
         m_pWeapon->Set_OnAttackCollision(true);
         });
 
@@ -256,6 +259,7 @@ HRESULT CImp_Melee::Ready_AnimEvent()
 
     pModel->Register_Event("ChainAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = true;
+        m_fTurnSpeed = 20.f;
         m_pWeapon->Set_OnAttackCollision(true);
         });
 
@@ -266,6 +270,7 @@ HRESULT CImp_Melee::Ready_AnimEvent()
 
     pModel->Register_Event("ChainAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = true;
+        m_fTurnSpeed = 20.f;
         m_pWeapon->Set_OnAttackCollision(true);
         });
 
@@ -276,6 +281,7 @@ HRESULT CImp_Melee::Ready_AnimEvent()
 
     pModel->Register_Event("ChainAttack3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = true;
+        m_fTurnSpeed = 30.f;
         m_pWeapon->Set_OnAttackCollision(true);
         });
 
@@ -284,12 +290,14 @@ HRESULT CImp_Melee::Ready_AnimEvent()
         m_pWeapon->Set_OnAttackCollision(false);
         });
 
-    pModel->Register_Event("ChainAttack_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_isLookAt = true;
+    pModel->Register_Event("ChainAttack_After", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_fTurnSpeed = 20.f;
+            m_isLookAt = true;
         });
 
     pModel->Register_Event("ChainAttack_After", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        m_isLookAt = false;
+            m_isLookAt = false;
         });
 
 #pragma endregion
@@ -303,6 +311,110 @@ HRESULT CImp_Melee::Ready_AnimEvent()
     pModel->Register_Event("NonStopAtk_Trail02", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
 
 #pragma endregion
+
+    return S_OK;
+}
+
+HRESULT CImp_Melee::Ready_SFX()
+{
+    CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+    if (nullptr == pModel)
+        return E_FAIL;
+
+#pragma region MOVEMENT
+
+    pModel->Register_Event("IM_Run_Step_SFX_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_Move();});
+    pModel->Register_Event("IM_Run_Step_SFX_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_Move(); });
+    pModel->Register_Event("IM_Run_Step_SFX_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_Move(); });
+
+#pragma endregion
+
+#pragma region NONSTOPATK
+
+    pModel->Register_Event("IM_NSSFX_Swish_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        {  
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpElite_Swish_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 5.f);
+        });
+    pModel->Register_Event("IM_NSSFX_Swish_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
+        { 
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpElite_Swish_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 5.f);
+        });
+
+    pModel->Register_Event("IM_NSSFX_Attack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        { 
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_ATK_S_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 4.f);
+
+        });
+    pModel->Register_Event("IM_NSSFX_Attack_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
+        { 
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_ATK_S_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 4.f);
+        });
+
+
+#pragma endregion
+
+#pragma region CHAINATK
+
+    pModel->Register_Event("IM_ChainSwish_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpElite_Swish_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 5.f);
+        });
+    pModel->Register_Event("IM_ChainSwish_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpElite_Swish_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 5.f);
+        });
+
+    pModel->Register_Event("IM_ChainSwish_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpElite_Swish_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 5.f);
+
+        });
+    
+
+    pModel->Register_Event("IM_ChainAttackSFX_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_ATK_S_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 4.f);
+        });
+    pModel->Register_Event("IM_ChainAttackSFX_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_ATK_S_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 4.f);
+        });
+
+    pModel->Register_Event("IM_ChainAttackSFX_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_ATK_S_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 4.f);
+
+        });
+
+
+#pragma endregion
+
+#pragma region HIT
+
+    pModel->Register_Event("IM_SFX_Hit_F", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(); });
+    pModel->Register_Event("IM_SFX_Hit_B", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(); });
+    pModel->Register_Event("IM_SFX_Hit_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(); });
+    pModel->Register_Event("IM_SFX_Hit_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(); });
+
+#pragma endregion
+
+#pragma region DEAD
+    pModel->Register_Event("IM_NSSFX_Dead_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_DEAD(); });
+#pragma endregion
+
+#pragma region REALIZE
+    pModel->Register_Event("IM_SFX_Realize_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_REALIZE(); });
+#pragma endregion
+
+
+#pragma region SLEEP
+    pModel->Register_Event("IM_SFX_Sleep_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_SLEEP();  });
+    pModel->Register_Event("IM_SFX_Sleep_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_SLEEP(); });
+    pModel->Register_Event("IM_SFX_Sleep_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_SLEEP(); });
+    pModel->Register_Event("IM_SFX_Sleep_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_SLEEP(); });
+#pragma endregion
+
+
 
     return S_OK;
 }
@@ -324,6 +436,66 @@ void CImp_Melee::Update_MeshTrail()
     _vector vSwordStart = XMLoadFloat4(&m_vSwordStart);
     _vector vSwordEnd = XMLoadFloat4(&m_vSwordEnd);
     m_pMeshTrail->Add_ControlPoint(vSwordEnd, vSwordStart);
+}
+
+void CImp_Melee::SFX_Move()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 40.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 40.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 40.f);
+}
+
+void CImp_Melee::SFX_HIT()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Dmg_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 5.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Dmg_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 5.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Dmg_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 5.f);
+}
+
+void CImp_Melee::SFX_DEAD()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Die_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::DEAD)), 8.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Die_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::DEAD)), 8.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Die_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::DEAD)), 8.f);
+}
+
+void CImp_Melee::SFX_REALIZE()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Charge_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Charge_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Charge_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+}
+
+void CImp_Melee::SFX_SLEEP()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Idle_01 (SFX)"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 20.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Idle_01 (SFX)"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 20.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Idle_01 (SFX)"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 20.f);
 }
 
 CImp_Melee* CImp_Melee::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

@@ -209,6 +209,10 @@ void CRootBody::Free()
         }
 
     }
+    
+    for (auto pChild : m_ChildBodys)
+        Safe_Release(pChild);
+    m_ChildBodys.clear();
 
     Safe_Release(m_pDevice);
     Safe_Release(m_pContext);

@@ -18,6 +18,12 @@ private:
 		END
 	};
 
+    enum class TOMBSTONE_ID
+    {
+        IN_EMBARS, IN_HIDDEN,
+        ID_END
+    };
+
 public:
 	typedef struct tagTombStoneDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
 	{
@@ -48,7 +54,7 @@ private:
 	ANIM_STATE m_eAnimState = { ANIM_STATE::BEFORE_IDLE };
 
 private:
-	_tchar m_szPlaceName[MAX_PATH] = {};
+    _int m_iTombStoneID = { 0 };
 
 	_float3 m_vPlayerPosition = {};
 
@@ -69,7 +75,7 @@ private:
 	virtual HRESULT Ready_Components(void* pArg) override;
 	HRESULT Ready_Collision(void* pArg);
 	HRESULT Ready_Interaction_Guide(void* pArg);
-	HRESULT Ready_PlaceName(void* pArg);
+    HRESULT Ready_DefaultSetting(void* pArg);
 	virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
 
 	void Input_Interact_Event(_float fTimeDelta);

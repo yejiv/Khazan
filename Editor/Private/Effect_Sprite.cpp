@@ -20,7 +20,8 @@ HRESULT CEffect_Sprite::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     Apply(pArg);
-
+    m_iEffect_Type = 2;
+    m_fCurTime = 0;
     m_pTransformCom->Scale(_float3(2.f, 2.f, 2.f));
     //m_pTransformCom->Scale(_float3(m_sData.fSize, m_sData.fSize * m_sData.fSizeRatio, m_sData.fSize));
 
@@ -34,7 +35,7 @@ void CEffect_Sprite::Priority_Update(_float fTimeDelta)
 
 void CEffect_Sprite::Update(_float fTimeDelta)
 {
-    m_fCurTime += fTimeDelta * 10.f;
+    m_fCurTime += fTimeDelta;
 
     if (m_fCurTime > m_sData.fSpriteSpeed)
     {
@@ -48,12 +49,13 @@ void CEffect_Sprite::Update(_float fTimeDelta)
  
     if (m_iUVIdx == (m_sData.iCol * m_sData.iRow))
     {
-        if (m_sData.IsLoop == false)
-            m_TimeTracks.pop_back(); 
+        if (m_sData.IsLoop == false) 
+        {
+            m_bRunning = false;
+            m_TimeTracks.pop_back();
+        }
         m_iUVIdx = 0;
-        m_bRunning = false;
     }
-    //(뭔가 끝내라는 이벤트 -> 이거 루프 세팅 false로 바꿔주기)
     
     __super::Update(fTimeDelta);
 }
@@ -89,6 +91,7 @@ void CEffect_Sprite::Edit_Element()
     _bool            loop = (_int)m_sEditingData.IsLoop;
 
     //checkBox - isloop
+    ImGui::InputFloat3("Center : ", reinterpret_cast<_float*>(&m_sEditingData.fOffset));
     ImGui::InputFloat("Size : ", reinterpret_cast<_float*>(&m_sEditingData.fSize));
     ImGui::InputFloat("Size Ratio : ", &m_sEditingData.fSizeRatio);
     ImGui::InputFloat("Sprite Speed : ", reinterpret_cast<_float*>(&m_sEditingData.fSpriteSpeed));
@@ -140,7 +143,7 @@ HRESULT CEffect_Sprite::Ready_Component()
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Point"),
         TEXT("Com_Buffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
         return E_FAIL;
 
@@ -162,7 +165,7 @@ HRESULT CEffect_Sprite::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
 
-    if(FAILED(m_pShaderCom->Bind_RawValue("g_vSourceColor", &m_sData.vColor, sizeof(_float4))))
+    if(FAILED(m_pShaderCom->Bind_RawValue("g_vSourceColor", &m_sEditingData.vColor, sizeof(_float4))))
         return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_numCols", &iCol, sizeof(_float))))
@@ -194,6 +197,8 @@ void CEffect_Sprite::Apply(void* pArg)
 {
     m_sData = *static_cast<SPRITE_DESC*>(pArg); 
     m_sEditingData = m_sData;
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_sData.fOffset.x, m_sData.fOffset.y, m_sData.fOffset.z, 1.f));
+
 }
 
 CEffect_Sprite* CEffect_Sprite::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, void* pArg)

@@ -394,6 +394,8 @@ void CStatue::Animation_Update(_float fTimeDelta)
             break;
         }
 
+        SoundOnce(TEXT("IP_Statue_Rotation"), m_fInteract_Volume);
+
         // 예지 조각상 돌리는 먼지 ( 오프셋은 맞춰야 할 거 같습니다 )
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Statue_Dust"), m_pTransformCom->Get_State(STATE::POSITION));
         if (true == isEventSetting)

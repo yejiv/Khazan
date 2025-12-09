@@ -117,16 +117,17 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
     
     vector vMask = g_Texture.Sample(PointSampler, In.vTexcoord);
     
-    vector vSourColor = float4(g_vSourceColor.xyz, 1.f);
-    vector vFinalColor = vSourColor * vMask;
-    vFinalColor.a = max(max(vMask.r, vMask.g), vMask.b);
-
-    float vDestAlpha = max(max(vMask.r, vMask.g), vMask.b);
-    
+    //vector vSourColor = float4(g_vSourceColor.xyz, 1.f);
+    //vector vFinalColor = vSourColor * vMask;
+    //vFinalColor.a = max(max(vMask.r, vMask.g), vMask.b);
+    vector vSourColor = g_vSourceColor * vMask;
+    //vFinalColor = vMask.r * vMask.g * vMask.b * g_vSourceColor.a;
+    vector vFinalColor;
+    vFinalColor = vector(vSourColor.rgb, vMask.r * g_vSourceColor.a);
     if (vFinalColor.a <= 0)
         discard;
 
-    vFinalColor.xyz *= (g_vSourceColor.a + 1);
+    //vFinalColor.xyz *= (g_vSourceColor.a + 1);
     
     float z = In.vProjPos.z / In.vProjPos.w;
     float weight = max(1e-5, exp(-z * 0.75f));

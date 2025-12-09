@@ -265,6 +265,8 @@ void CBigChest::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::CLOSE == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_Chest_Open"), m_fInteract_Volume);
+
             m_pStaticCom->Collision_Active(false);
 
             m_pGuide->Update_Visible(false);

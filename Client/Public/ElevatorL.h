@@ -69,6 +69,8 @@ public:
 
 private:
     class CBody* m_pBodyCom = { nullptr };
+    class CBody* m_pMidBodyCom = { nullptr };
+    class CBody* m_pTopBodyCom = { nullptr };
     class CBody* m_pTriggerCom = { nullptr };
 
 private:
@@ -100,6 +102,8 @@ private:
     _uint m_iSkipEventID = { 0 };
 
 private:
+    COLLISION_DESC m_CollisionMidDesc;
+    COLLISION_DESC m_CollisionTopDesc;
     COLLISION_DESC m_TriggerCollisionDesc;
 
 private:

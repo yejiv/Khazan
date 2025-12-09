@@ -3,12 +3,12 @@
 #include "AI_Controller.h"
 
 CDragonian_Claw_R::CDragonian_Claw_R(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CPartObject{ pDevice,pContext }
+    :CWeaponObject{ pDevice,pContext }
 {
 }
 
 CDragonian_Claw_R::CDragonian_Claw_R(const CDragonian_Claw_R& Prototype)
-    :CPartObject(Prototype)
+    :CWeaponObject(Prototype)
 {
 }
 

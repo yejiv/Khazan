@@ -129,6 +129,9 @@ private:
 
     class CTarget_BrutalAttack*     m_pBrutalAttack = {nullptr};
 
+private :   //fx
+    _uint                           m_iFXidx;
+
 private:
     HRESULT                         Ready_Prototype();
 
@@ -145,6 +148,13 @@ private:
 
     void                            Move_Sound();
     void                            Run_Sound();
+
+private :  //fx
+    void                            Call_StampFX();
+    void                            Call_StingFX();
+    void                            Update_StingFX();
+
+
 public:
     static CHalberd*                Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;

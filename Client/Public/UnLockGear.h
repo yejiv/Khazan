@@ -68,6 +68,8 @@ private:
 
     _bool m_isForceOff = { false };
 
+    _bool m_isGimmickDone = { false };
+
 private:
     COLLISION_DESC m_TriggerCollisionDesc;
 

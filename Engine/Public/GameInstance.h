@@ -470,12 +470,15 @@ public:
     void                        PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, _float3 vVel = { 0.f, 0.f, 0.f }, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
     void                        PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, _float3 vVel = { 0.f, 0.f, 0.f }, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
 
-
     void                        PlaySoundOnce(const TCHAR* pSoundKey, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
     void                        PlaySoundLoop(const TCHAR* pSoundKey, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
+
+    void                        PlaySound_FadeIn(const TCHAR* pSoundKey, float fVolume = 1.0f, float fFadeTime = 1.f, bool isLoop = true, FMOD_CHANNEL** ppOutChannel = nullptr);
+
     void                        StopAll();
 
     void                        StopByKey(const TCHAR* pSoundKey);
+    void                        StopByKey_FadeOut(const TCHAR* pSoundKey, _float fFadeTime = 1.f);
     void                        StopByChannel(FMOD_CHANNEL** ppOutChannel);
     bool                        IsPlayingByKey(const TCHAR* pSoundKey);
     void                        SetVolumeByKey(const TCHAR* pSoundKey, float fVolume);
