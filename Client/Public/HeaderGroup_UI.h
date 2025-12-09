@@ -74,3 +74,4 @@
 #include "UI_Talk_Dangin.h"
 #include "UI_Talk_Trader.h"
 #include "UI_Talk_Danjinjar.h"
+#include "UI_Talk_Gacha.h"

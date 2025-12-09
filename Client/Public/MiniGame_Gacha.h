@@ -4,7 +4,13 @@
 NS_BEGIN(Client)
 class CMiniGame_Gacha final : public CGameObject
 {
-    enum GACHA_STATE { SUCCES_NOTICE, SHUFFLE, SHUFFLE_SET, END};
+public:
+    enum class MINIGAME_LEVEL {EASY, NORMAL, HARD, END};
+    enum GACHA_STATE { SUCCES_NOTICE, SHUFFLE, SHUFFLE_SET, SELETE_NUM, END};
+public:
+    void                        Start_MiniGame(MINIGAME_LEVEL eLevel);
+    GACHA_STATE                 Get_GachaState() { return m_eState; }
+    _bool                       isSucces() { return m_isSucces; }
 public:
     CMiniGame_Gacha(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CMiniGame_Gacha(const CMiniGame_Gacha& Prototype);
@@ -21,7 +27,7 @@ private:
     vector<class CRandomBox*>   m_pBox;
     class CUI_Gacha_Selete*     m_pSeleteUI = {nullptr};
     GACHA_STATE                 m_eState = { GACHA_STATE::END };
-    
+    MINIGAME_LEVEL              m_eMiniGameLevel = { MINIGAME_LEVEL::END };
     _int                        m_iSuffleIndex1 = {};
     _int                        m_iSuffleIndex2 = {};
 
@@ -35,11 +41,15 @@ private:
 
     _int                        m_iSpeedCount = {};
     _float                      m_fSpeed = {};
+    _float                      m_fAddSpeed = {};
+    _int                        m_fSpeedCount = {};
     _int                        m_iSuccesNum = {};
     _int                        m_iSeleteNum = {};
 
     _float                      m_fGuidePosY = {};
     _int                        m_fGuideCount = {};
+
+    _bool                       m_isSucces = {};
 private:
     HRESULT                     Ready_Prototype();
     HRESULT                     Setting_Object();

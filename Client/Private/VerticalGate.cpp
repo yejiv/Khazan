@@ -68,6 +68,17 @@ void CVerticalGate::Priority_Update(_float fTimeDelta)
 
 void CVerticalGate::Update(_float fTimeDelta)
 {
+    if (true == m_isSoundStart)
+    {
+        if (false == IsPlayingSound(TEXT("IP_VG_Open_Start")))
+        {
+            //SoundOnce(TEXT("IP_VG_Open_End"), m_pTransformCom->Get_State(STATE::POSITION), nullptr, m_fInteract_Volume);
+            SoundOnce(TEXT("IP_VG_Open_End"), m_fInteract_Volume);
+
+            m_isSoundStart = false;
+        }
+    }
+
     Animation_Update(fTimeDelta);
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
@@ -128,6 +139,15 @@ void CVerticalGate::Animation_Update(_float fTimeDelta)
             m_eAnimState = ANIM_STATE::ACTIVATION;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->AnimationLoop(false);
+
+            //SoundOnce(TEXT("IP_VG_Open_Start"), m_pTransformCom->Get_State(STATE::POSITION), nullptr, m_fInteract_Volume);
+            SoundOnce(TEXT("IP_VG_Open_Start"), m_fInteract_Volume);
+
+            if (false == m_isSoundStart)
+            {
+                m_isSoundStart = true;
+            }
+
             break;
         case ANIM_STATE::IDLE2:
             m_eAnimState = ANIM_STATE::DEACTIVATION;

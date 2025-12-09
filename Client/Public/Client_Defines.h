@@ -40,6 +40,7 @@ namespace Client
 
         CLOTH,
         CLOTHBODY,
+        PET,
         END };
 
 	enum class KHAZAN_MAP { HEINMACH, CREVICE, EMBARS, VIPER, END };
@@ -69,7 +70,7 @@ namespace Client
     enum class EQUIPMENTTYPE { NONE, SPEAR, GSWORD, HEAD, TORSO, ARM, LEG, SHOES, FACE, END };
 
 
-    enum class MONSFX { NONE, REALIZE, MOVE, ATVO, SWISH, HITVO, DEAD, END };
+    enum class MONSFX { NONE, REALIZE, MOVE, ATVO, SWISH, HITVO, DEAD, EFFECT1,EFFECT2,EFFECT3 ,END };
 
     typedef struct tagDamageInfo 
     {

@@ -36,6 +36,8 @@ void CAS_Smash_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     }
     
     pModel->Set_Animation(animID);
+
+
 }
 
 void CAS_Smash_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

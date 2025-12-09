@@ -400,6 +400,8 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
         // 해금 전 IDLE 상태
         if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
         {
+            CClientInstance::GetInstance()->BGM_Pause(true);
+
             SoundOnce(TEXT("IP_TS_Before_Start"), m_fInteract_Volume);
 
             m_pGuide->Update_Visible(false);
@@ -456,6 +458,8 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
         // 해금 후 IDLE 상태
         else if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         {
+            CClientInstance::GetInstance()->BGM_Pause(true);
+
             SoundOnce(TEXT("IP_TS_On"), m_fInteract_Volume);
 
             m_pGuide->Update_Visible(false);
@@ -486,6 +490,8 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::BEFORE_LOOP == m_eAnimState)
         {
+            CClientInstance::GetInstance()->BGM_Resume(true);
+
             SoundStop_FadeOut(TEXT("IP_TS_Loop"), 3.f);
             SoundOnce(TEXT("IP_TS_Off"), m_fInteract_Volume);
 
@@ -495,6 +501,8 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
         }
         if (ANIM_STATE::AFTER_LOOP == m_eAnimState)
         {
+            CClientInstance::GetInstance()->BGM_Resume(true);
+
             SoundStop_FadeOut(TEXT("IP_TS_Loop_Vocal"), 3.f);
             SoundOnce(TEXT("IP_TS_Off"), m_fInteract_Volume);
 

@@ -8,7 +8,7 @@
 #include "CharacterVirtual.h"
 #include "AI_Controller_Yetuga.h"
 #include "SkipButton.h"
-
+#include "UI_HUD.h"
 
 CSequence_Yetuga_CutScene::CSequence_Yetuga_CutScene(CYetuga* pYetuga)
     : m_pClientInstance{ CClientInstance::GetInstance() }
@@ -36,8 +36,8 @@ HRESULT CSequence_Yetuga_CutScene::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
     pCharVir->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 0.f));    
 
     
-    //CClientInstance::GetInstance()->Set_UIAllRenderSet(false);
-
+    static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+    m_pClientInstance->Set_PlayerInput(false);
     return S_OK;
 }
 
@@ -190,7 +190,8 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
         if (m_fTime > 14.f)
         {
             dynamic_cast<CAI_Controller_Yetuga*>(m_pYetuga->Get_Controller())->Set_ControllerActivate(true);
-            //CClientInstance::GetInstance()->Set_UIAllRenderSet(true);
+            static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+            m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
         }
     }
@@ -226,7 +227,8 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
         if (m_fSkipTime > 3.f && !m_isEnd)
         {
             dynamic_cast<CAI_Controller_Yetuga*>(m_pYetuga->Get_Controller())->Set_ControllerActivate(true);
-            //CClientInstance::GetInstance()->Set_UIAllRenderSet(true);
+            static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+            m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
         }
         
