@@ -68,6 +68,9 @@ void CProjectile_Boomarang::Update(_float fTimeDelta)
 
     if (m_isActive)
     {
+
+        Enter_State(BOOMARANGSTATE::LOOP);
+
         if(m_fCurrentTime < m_fReturnTime)
             m_pTransformCom->Go_Straight(fTimeDelta);
 
@@ -191,6 +194,44 @@ HRESULT CProjectile_Boomarang::Bind_ShaderResources()
     return S_OK;
 }
 
+void CProjectile_Boomarang::Enter_State(BOOMARANGSTATE eNextState)
+{
+    if (m_eState == eNextState)
+        return;
+
+    m_eState = eNextState;
+
+
+    switch (m_eState)
+    {
+    case Client::BOOMARANGSTATE::LOOP:
+        m_pGameInstance->PlaySoundLoop(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Cast_Spin (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 5.f);
+        break;
+    case Client::BOOMARANGSTATE::CRASHED:
+
+        break;
+    case Client::BOOMARANGSTATE::END:
+        break;
+    default:
+        break;
+    }
+
+}
+
+void CProjectile_Boomarang::BoomarangHitSFX()
+{
+     _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Exp_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Exp_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Exp_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+}
+
 void CProjectile_Boomarang::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
@@ -216,7 +257,9 @@ void CProjectile_Boomarang::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherOb
             if (!m_isDamageForward)
             {
                 pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+                BoomarangHitSFX();
                 m_isDamageForward = true;
+
             }
         }
         else if (fCurrnetTIme >= m_fReturnTime + m_fPauseTime)
@@ -224,6 +267,7 @@ void CProjectile_Boomarang::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherOb
             if (!m_isDamageReturn)
             {
                 pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+                BoomarangHitSFX();
                 m_isDamageReturn = true;
             }
         }

@@ -72,6 +72,13 @@ public:
 		class CModel* pModel = { nullptr };
         class CTransform* pTransform = { nullptr };
 	}BODY_CONVEXSHAPE_DESC;
+
+    typedef struct tagCylinderShape : BODY_DESC
+    {
+        _float				fHeight;
+        _float				fRadius;
+    }BODY_CYLINDERSHAPE_DESC;
+
 private:
 	CBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CBody(const CBody& Prototype);
@@ -88,6 +95,9 @@ public:
 
 	virtual void Update(_float fTimeDelta, _matrix WorldMatirx, _vector& outQuatRotation, _vector& outPosition);
 	virtual void Sync_Update(_matrix WorldMatirx);
+
+    void MoveKinematic(_float fTimeDelta, class CTransform* pTransform);
+    void MoveKinematic(_float fTimeDelta, _matrix WorldMatirx);
     
 public:
 	void	Activate(_bool isActivate) { true == isActivate ? m_pBodyInterface->ActivateBody(m_BodyID) : m_pBodyInterface->DeactivateBody(m_BodyID); }
@@ -120,7 +130,7 @@ public:
 
     _vector         Get_Pos();
     _vector         Get_Rot();
-
+    _float3         Get_Velocity();
 
 private:
 	Body* m_pBody = { nullptr };

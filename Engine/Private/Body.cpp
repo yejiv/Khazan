@@ -48,7 +48,7 @@ HRESULT CBody::Initialize_Clone(void* pArg)
 
     // Trigger(센서) 처리
     BCS.mIsSensor = pDesc->bIsTrigger;
-    BCS.mUserData = static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc));
+    BCS.mUserData = static_cast<uint64>(reinterpret_cast<uintptr_t>(pDesc->pCollisionDesc));        
     // Dynamic 질량/관성(필요 시 주석 해제하여 특정 질량/관성 지정)
     if (m_eMotion == EMotionType::Dynamic)
     {
@@ -169,6 +169,64 @@ void CBody::Sync_Update(_matrix WorldMatirx)
         Set_PosRot(vTranslation, vRotation);
 }
 
+void CBody::MoveKinematic(_float fTimeDelta, CTransform* pTransform)
+{
+    if (!m_pBodyInterface->IsAdded(m_BodyID))
+        return;
+
+    if (!m_pBodyInterface->IsActive(m_BodyID))
+    {
+        m_pBodyInterface->ActivateBody(m_BodyID);
+    }
+
+    if (m_pBody->GetMotionType() == EMotionType::Kinematic)
+    {
+        _vector vScale{}, vRotation{}, vTranslation{};
+
+        if (!XMMatrixDecompose(&vScale, &vRotation, &vTranslation, pTransform->Get_WorldMatrix()))
+            return;
+
+        m_pBodyInterface->MoveKinematic(
+            m_BodyID,
+            LoadVec3(vTranslation),
+            LoadQuat(vRotation),
+            fTimeDelta
+        );
+
+        Vec3 a = m_pBody->GetLinearVelocity();
+        int b = 1;
+        return;
+    }
+}
+
+void CBody::MoveKinematic(_float fTimeDelta, _matrix WorldMatirx)
+{
+    if (!m_pBodyInterface->IsAdded(m_BodyID))
+        return;
+
+    if (!m_pBodyInterface->IsActive(m_BodyID))
+    {
+        m_pBodyInterface->ActivateBody(m_BodyID);
+    }
+
+    if (m_pBody->GetMotionType() == EMotionType::Kinematic)
+    {
+        // Kinematic은 Transform -> Body만
+        _vector vScale{}, vRotation{}, vTranslation{};
+
+        if (!XMMatrixDecompose(&vScale, &vRotation, &vTranslation, WorldMatirx))
+            return;
+
+        m_pBodyInterface->MoveKinematic(
+            m_BodyID,
+            LoadVec3(vTranslation),
+            LoadQuat(vRotation),
+            fTimeDelta
+        );
+        return;
+    }
+}
+
 void CBody::Set_PosRot(_vector vPos, _vector vRot)
 {
     m_pBodyInterface->SetPositionAndRotation(m_BodyID, LoadVec3(vPos), LoadQuat(vRot), EActivation::Activate);
@@ -191,6 +249,12 @@ _vector CBody::Get_Rot()
     Quat vRotation = m_pBodyInterface->GetRotation(m_BodyID);
 
     return XMVectorSet(vRotation.GetX(), vRotation.GetY(), vRotation.GetZ(), vRotation.GetW());
+}
+
+_float3 CBody::Get_Velocity()
+{
+    Vec3 vVelocity = m_pBody->GetLinearVelocity();
+    return _float3(vVelocity.GetX(), vVelocity.GetY(), vVelocity.GetZ());
 }
 
 void CBody::Add_Force(_float fMass)
@@ -440,6 +504,13 @@ void CBody::Build_Shape(BODY_DESC* pDesc, RefConst<Shape>& pShape)
             shapeRot,
             scaledHull
         );
+        break;
+    }
+    case SHAPE::CYLINDER:
+    {
+        BODY_CYLINDERSHAPE_DESC* pCylinderDesc = static_cast<BODY_CYLINDERSHAPE_DESC*>(pDesc);
+        pShape = new CylinderShape(pCylinderDesc->fHeight * 0.5f, pCylinderDesc->fRadius);
+        pShape = new RotatedTranslatedShape(LoadVec3(pCylinderDesc->vShapeOffset), LoadQuat(pCylinderDesc->vShapeRotation), pShape);
         break;
     }
     default:

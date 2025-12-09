@@ -1,6 +1,6 @@
 #pragma once
 #include "Client_Defines.h"
-#include "PartObject.h"
+#include "WeaponObject.h"
 #include "Halberd.h"
 
 NS_BEGIN(Engine)
@@ -12,7 +12,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CHalberd_Weapon final : public CPartObject
+class CHalberd_Weapon final : public CWeaponObject
 {
 public:
     typedef struct tagWeaponDesc : public PARTOBJECT_DESC

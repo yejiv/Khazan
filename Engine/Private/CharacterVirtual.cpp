@@ -377,6 +377,39 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
         return;
     }
 
+    const bool supported = m_pCharVir->IsSupported();
+    const BodyID groundBody = m_pCharVir->GetGroundBodyID();
+
+    COLLISION_DESC* pBodyDesc = nullptr;
+    if (supported && !groundBody.IsInvalid() && m_pBodyInterface)
+    {
+        pBodyDesc = reinterpret_cast<COLLISION_DESC*>(
+            static_cast<std::uintptr_t>(
+                m_pBodyInterface->GetUserData(groundBody)
+                )
+            );
+    }
+
+    const bool isElevatorNow =
+        supported &&
+        pBodyDesc != nullptr &&
+        pBodyDesc->isMovePlatform &&
+        !m_isJump && !m_isDive && !m_isOnLadder && !m_isPower;
+
+    if (isElevatorNow && !m_isOnElevator)
+    {
+        m_isOnElevator = true;
+
+        RVec3 pos = m_pCharVir->GetPosition();
+        RVec3 groundPos = m_pCharVir->GetGroundPosition();
+        m_fElevatorOffsetY = (float)(pos.GetY() - groundPos.GetY());
+    }
+    else if (!isElevatorNow && m_isOnElevator)
+    {
+        m_isOnElevator = false;
+        m_fElevatorOffsetY = 0.0f;
+    }
+
     if (!m_pCharVir->IsSupported())
     {
 
@@ -447,12 +480,24 @@ void CCharacterVirtual::StepFixed(_float fTimeDelta)
     if (!IsFiniteVec3(m_vVelocity))
         m_vVelocity = JPH::Vec3::sZero();
 
+    if (m_isOnElevator)
+    {
+        RVec3 pos = m_pCharVir->GetPosition();
+        RVec3 groundPos = m_pCharVir->GetGroundPosition();
+
+        double targetY = groundPos.GetY() + (double)m_fElevatorOffsetY;
+        pos.SetY(targetY);
+        m_pCharVir->SetPosition(pos);
+
+    }
+
+
     m_pCharVir->SetLinearVelocity(m_vVelocity);
 
     m_pGameInstance->CharVir_ExtendedUpdate(
         fTimeDelta,
         m_pCharVir,
-        m_vGravity,
+        m_isOnElevator ? Vec3::sZero() : m_vGravity,
         m_iNumObjectLayer,
         m_pBodyFilter,
         m_pShapeFilter,

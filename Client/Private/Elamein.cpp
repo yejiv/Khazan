@@ -205,7 +205,6 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_PartObjects(), E_FAIL);
     m_pHeadMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Head");
     m_pBodySocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Spine2");
-    m_pLeftLegSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-R-Foot");
     m_pLockOnSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Bip001-Spine2");
     m_vLockOnPosition = &m_vLockOnPos;
 
@@ -378,29 +377,7 @@ HRESULT CElamein::Ready_Components()
 
 
     _vector vMatScale{}, vMatQuat{}, vMatPos{};
-
     CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-    BodyDesc.vExtent = { 1.5f, 0.5f, 0.5f };
-    BodyDesc.eMotion = EMotionType::Kinematic;
-    BodyDesc.eQuality = EMotionQuality::Discrete;
-    BodyDesc.eShapeType = SHAPE::BOX;
-    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-    BodyDesc.bIsTrigger = true;
-
-    _matrix LegMat = XMLoadFloat4x4(m_pLeftLegSocketMatrix) * m_pTransformCom->Get_WorldMatrix();
-    for (uint32_t i = 0; i < 3; i++)
-        LegMat.r[i] = XMVector3Normalize(LegMat.r[i]);
-
-    XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, LegMat);
-
-    XMStoreFloat3(&BodyDesc.vPos, vMatPos);
-    XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
-
-    BodyDesc.vShapeOffset = _float3(0.4f, -0.f, 0.f);
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
-
-    CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_LegBody"), (CComponent**)&m_pLeftLegCom, &BodyDesc);
-
     BodyDesc.vExtent = { 0.9f, 2.2f, 0.9f };
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
@@ -582,6 +559,62 @@ HRESULT CElamein::Ready_AnimEvent()
     pModel->Register_Event("Run_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
     pModel->Register_Event("Run_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
 
+    //Effect
+    pModel->Register_Event("Wind_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Smoke_Small"), m_pTransformCom->Get_State(STATE::POSITION)); });
+
+    pModel->Register_Event("HeadCrusher_Jump_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Jump"), m_pTransformCom->Get_State(STATE::POSITION));});
+    pModel->Register_Event("HeadCrusher_Jump_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Land_Sword"), XMLoadFloat4(&m_vSword_End)); });
+
+    pModel->Register_Event("NormalAtk_Jump_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Jump"), m_pTransformCom->Get_State(STATE::POSITION)); });
+    pModel->Register_Event("NormalAtk_Jump_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        _float4x4 SwordMatrix = m_pSword->Get_CombindMat();
+        _vector vSwordPos = XMVectorSet(SwordMatrix._41, SwordMatrix._42, SwordMatrix._43, 1.f);
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Land_Sword"), vSwordPos);
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Smoke_Small"), m_pTransformCom->Get_State(STATE::POSITION));
+        });
+
+    pModel->Register_Event("RapidSlash_Dust_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Smoke_Small"), m_pTransformCom->Get_State(STATE::POSITION)); });
+
+    pModel->Register_Event("Enchant_Sound", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _float4x4 SwordMatrix = m_pSword->Get_CombindMat();
+        _vector pos = XMVectorSet(SwordMatrix._41, SwordMatrix._42, SwordMatrix._43, 1.f);  
+        _vector vUp = XMVectorSet(SwordMatrix._21, SwordMatrix._22, SwordMatrix._23, 0.f);
+        pos += XMVector3Normalize(vUp) * 0.45f;  
+        m_iFXIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Spark_Loop"), pos); });
+    pModel->Register_Event("Enchant_Sound", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        _float4x4 SwordMatrix = m_pSword->Get_CombindMat();
+        _vector pos = XMVectorSet(SwordMatrix._41, SwordMatrix._42, SwordMatrix._43, 1.f);
+        _vector vUp = XMVectorSet(SwordMatrix._21, SwordMatrix._22, SwordMatrix._23, 0.f);
+        pos += XMVector3Normalize(vUp) * 0.45f;  
+        m_pGameInstance->Update_Effect_Position(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Spark_Loop"), m_iFXIdx, pos); });
+    pModel->Register_Event("Enchant_Sound", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Spark_Loop"));});
+    
+    pModel->Register_Event("ShieldStomp_Land_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _float4x4 SwordMatrix = m_pShield->Get_CombindMat();
+        _vector pos = XMVectorSet(SwordMatrix._41, SwordMatrix._42, SwordMatrix._43, 1.f);
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Land_Shield"), pos); });
+    
+    pModel->Register_Event("ShieldThrow_Land_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _float4x4 SwordMatrix = m_pShield->Get_CombindMat();
+        _vector pos = XMVectorSet(SwordMatrix._41, SwordMatrix._42, SwordMatrix._43, 1.f);
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Land_Shield"), pos);
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Smoke_Small"), m_pTransformCom->Get_State(STATE::POSITION));
+        });
+
+    //범수야도와줘라
+    //pModel->Register_Event("SphereWind_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    //    _matrix SwordMatrix = m_pSword->Get_Transform()->Get_WorldMatrix();
+    //    m_iFXIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Sword_Wind"), SwordMatrix, XMLoadFloat4(&m_vSword_End)); });
+    //
+    //pModel->Register_Event("SphereWind_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+    //    _matrix SwordMatrix = m_pSword->Get_Transform()->Get_WorldMatrix();
+    //    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Sword_Wind"), m_iFXIdx, SwordMatrix, XMLoadFloat4(&m_vSword_End)); });
     return S_OK;
 }
 
@@ -622,19 +655,6 @@ void CElamein::Update_Body(_float fTimeDelta)
     }
 
     _bool isAttack = m_Data.iAttackBody_State & (_uint)CElamein::ATTACK_BODY::RIGHT_LEG;
-    m_pLeftLegCom->Collision_Active(isAttack);
-
-    if (isAttack)
-    {
-        _matrix TailMat = XMLoadFloat4x4(m_pLeftLegSocketMatrix);
-        for (uint32_t i = 0; i < 3; i++)
-            TailMat.r[i] = XMVector3Normalize(TailMat.r[i]);
-        TailMat *= m_pTransformCom->Get_WorldMatrix();
-
-        XMMatrixDecompose(&vMatScale, &vMatQuat, &vMatPos, TailMat);
-        m_pLeftLegCom->Sync_Update(TailMat);
-        m_pLeftLegCom->Update(fTimeDelta, TailMat, vMatQuat, vMatPos);
-    }
 }
 
 void CElamein::Update_MeshTrail()
@@ -650,7 +670,7 @@ void CElamein::Set_DefaultTrail()
     Config.fLifeTime = 0.25f;
     Config.iTextureIdx = 8;
     Config.iDivisionCount = 10;
-    Config.vColor = _float4(1.7058, 1.7058, 1.7058, 1.f);
+    Config.vColor = _float4(1.7058f, 1.7058f, 1.7058f, 1.f);
     m_pMeshTrail->Set_TrailConfig(Config);
 }
 

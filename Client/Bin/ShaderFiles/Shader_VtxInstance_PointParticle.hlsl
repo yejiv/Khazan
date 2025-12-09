@@ -245,8 +245,8 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     if (vMask.r <= 0)
         discard;
     
-    vector vFinalColor = g_vSourceColor * vMask.r;
-    //vFinalColor.a *= vMask.r;
+    vector vFinalColor = g_vSourceColor;
+    vFinalColor.a = g_vSourceColor.a * vMask.r;
     
     if (vFinalColor.a <= 0)
         discard;

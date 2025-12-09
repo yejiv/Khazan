@@ -83,6 +83,8 @@
 #pragma endregion
 
 #include "Effect_Prefab.h"
+
+#include "MiniGame_Gacha.h"
 //static mutex g_GpuGate;
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -357,7 +359,7 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         return E_FAIL;
     
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Fire"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/fire1"))))
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/newfire"))))
         return E_FAIL;
     
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Open"),
@@ -1147,6 +1149,11 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("ITEM_FX"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item"))))
         return E_FAIL;
+     
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Halberd_Weapon_Wind"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Helberd_Spear"))))
+        return E_FAIL;
+
 #pragma endregion
 
 #pragma region Item
@@ -2255,11 +2262,43 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Statue_Twinkle"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/Statue_Twinkle"))))
         return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/Big_labber_on"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On_Static"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/labber_gear_on"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Jump"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Elamein/Jump"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Land_Shield"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Elamein/Land_Shield"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Land_Sword"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Elamein/Land_Sword"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Spark_Loop"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Elamein/Spark_Loop"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Sword_Wind"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Elamein/Sword_Wind"))))
+        return E_FAIL; 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Smoke_Small"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Smoke_Small"))))
+        return E_FAIL;
+
 #pragma endregion
      
 #pragma region Item
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Item"),
         CInteraction_Item::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+#pragma endregion
+
+#pragma region MiniGame
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_MiniGame_Gacha"),
+        CMiniGame_Gacha::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
         return E_FAIL;
 #pragma endregion
     return S_OK;
@@ -2749,6 +2788,8 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 #pragma endregion
 
 #pragma region EFFECT
+    Loading_For_Effect_Static(ENUM_CLASS(LEVEL::VIPER));
+
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_snow1"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/snow1"))))
         return E_FAIL;
@@ -2907,6 +2948,11 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Point_Particle_Blust"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Point_Particle_Blust"))))
+        return E_FAIL;
+
+    //임시 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Halberd_Weapon_Wind"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Helberd_Spear"))))
         return E_FAIL;
 
 #pragma endregion

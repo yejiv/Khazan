@@ -186,22 +186,26 @@ HRESULT CAI_Controller_Halberd::Ready_FSM(class CCreature* pOwner)
 
     CHECK_NULLPTR(pFsm, E_FAIL);
 
-    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CHalberd::MONSTATE::ATTACK_LONG), CAS_Halberd_Attack_Long::Create()), E_FAIL);
-    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CHalberd::MONSTATE::ATTACK_DEFAULT), CAS_Halberd_Attack_default::Create()), E_FAIL);
     CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CHalberd::MONSTATE::DEAD), CAS_Halberd_Dead::Create()), E_FAIL);
     CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CHalberd::MONSTATE::GRORRY), CAS_Halberd_Groggy::Create()), E_FAIL);
+    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CHalberd::MONSTATE::ATTACK_LONG), CAS_Halberd_Attack_Long::Create()), E_FAIL);
+    
+    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CHalberd::MONSTATE::ATTACK_DEFAULT), CAS_Halberd_Attack_default::Create()), E_FAIL);
     CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CHalberd::MONSTATE::BRUTAL), CAS_Halberd_Brutal::Create()), E_FAIL);
+    
     CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CHalberd::MONSTATE::LOCKON), CAS_Halberd_LockOn::Create()), E_FAIL);
     CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CHalberd::MONSTATE::DAMAGE), CAS_Halberd_Damage::Create()), E_FAIL);
+    
     CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CHalberd::MONSTATE::TURN), CAS_Halberd_Turn::Create()), E_FAIL);
     CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CHalberd::MONSTATE::SLEEP), CAS_Halberd_Sleep::Create()), E_FAIL);
     
     m_pFSM = pFsm;
 
     m_pMonData->isSleep = true;
-    pFsm->Set_CulState(ENUM_CLASS(CHalberd::MONSTATE::SLEEP), pOwner);
 
+    pFsm->Set_CulState(ENUM_CLASS(CHalberd::MONSTATE::SLEEP), pOwner);
     return S_OK;
+
 }
 
 BTNODESTATE CAI_Controller_Halberd::Damage_Check(CGameObject* pOwner)
@@ -344,4 +348,5 @@ CAI_Controller_Halberd* CAI_Controller_Halberd::Create(CCreature* pOwner)
 void CAI_Controller_Halberd::Free()
 {
     __super::Free();
+    m_pMonData = nullptr;
 }

@@ -43,6 +43,9 @@ private:
     _bool m_isGuideVisible = { false };
 
 
+    _bool m_isShow = { false };
+
+
 private:
     vector<_uint> m_NormalItemIndex;
     map<_wstring, _uint> m_SpecialItemIndex;

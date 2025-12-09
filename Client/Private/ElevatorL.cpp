@@ -67,6 +67,15 @@ void CElevatorL::Priority_Update(_float fTimeDelta)
     __super::Priority_Update(fTimeDelta);
     m_pEffect->Priority_Update(fTimeDelta);
 
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
+    {
+        m_eMoveState = MOVE_STATE::MIDTODOWN;
+        m_pModelCom->Set_Animation(ENUM_CLASS(ANIM_STATE::IDLE));
+        Animation_Change(fTimeDelta);
+        m_pModelCom->AnimationLoop(false);
+        m_isAnimChange = true;
+    }
+
 }
 
 void CElevatorL::Update(_float fTimeDelta)
@@ -81,11 +90,16 @@ void CElevatorL::Update(_float fTimeDelta)
     VerticalOnTime_Update(fTimeDelta);
 
     __super::Update(fTimeDelta);
-    m_pBodyCom->Sync_Update(m_pTransformCom);
-    m_pTriggerCom->Sync_Update(m_pTransformCom);
 
-    m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
-    m_pTriggerCom->Update(fTimeDelta, m_pTransformCom);
+    m_pBodyCom->MoveKinematic(fTimeDelta, m_pTransformCom);
+    m_pMidBodyCom->MoveKinematic(fTimeDelta, m_pTransformCom);
+    m_pTopBodyCom->MoveKinematic(fTimeDelta, m_pTransformCom);
+    m_pTriggerCom->MoveKinematic(fTimeDelta, m_pTransformCom);
+    //m_pBodyCom->Sync_Update(m_pTransformCom);
+    //m_pTriggerCom->Sync_Update(m_pTransformCom);
+
+    //m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
+    //m_pTriggerCom->Update(fTimeDelta, m_pTransformCom);
 
     m_pEffect->Update(fTimeDelta);
 }
@@ -263,30 +277,84 @@ HRESULT CElevatorL::Ready_PartObjects(void* pArg)
 HRESULT CElevatorL::Ready_Collision(void* pArg)
 {
 #pragma region 스태틱 몸체
-    CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-    BodyDesc.vExtent = _float3(17.f, 1.2f, 17.f);
+    CBody::BODY_CYLINDERSHAPE_DESC BodyDesc{};
+    BodyDesc.fRadius = 16.9f;
+    BodyDesc.fHeight = 2.f;
     BodyDesc.bIsTrigger = false;
     BodyDesc.bStartActive = true;
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::LinearCast;
-    BodyDesc.eShapeType = SHAPE::BOX;
+    BodyDesc.eShapeType = SHAPE::CYLINDER;
     BodyDesc.fFriction = 0.8f;
     BodyDesc.fMass = 1.0f;
     BodyDesc.fRestitution = 0.0f;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM);
 
     XMStoreFloat3(&BodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
-
     XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
-    BodyDesc.vShapeOffset = _float3(0.f, -0.95f, 0.f);
+    BodyDesc.vShapeOffset = _float3(0.f, -0.80f, 0.f);
     m_tCollisionDesc.pGameObject = this;
     m_tCollisionDesc.isForceVaildation = true;
-    //pCollDesc.pInfo = ?? // 작성하기
+    m_tCollisionDesc.isMovePlatform = true;
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
+        return E_FAIL;
+
+    CBody::BODY_CYLINDERSHAPE_DESC MidBodyDesc{};
+    MidBodyDesc.fRadius = 11.5f;
+    MidBodyDesc.fHeight = 2.f;
+    MidBodyDesc.bIsTrigger = false;
+    MidBodyDesc.bStartActive = true;
+    MidBodyDesc.eMotion = EMotionType::Kinematic;
+    MidBodyDesc.eQuality = EMotionQuality::LinearCast;
+    MidBodyDesc.eShapeType = SHAPE::CYLINDER;
+    MidBodyDesc.fFriction = 0.8f;
+    MidBodyDesc.fMass = 1.0f;
+    MidBodyDesc.fRestitution = 0.0f;
+    MidBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM);
+
+    XMStoreFloat3(&MidBodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+
+    XMStoreFloat4(&MidBodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+
+    MidBodyDesc.vShapeOffset = _float3(0.f, -0.67f, 0.f);
+    m_CollisionMidDesc.pGameObject = this;
+    m_CollisionMidDesc.isForceVaildation = true;
+    m_CollisionMidDesc.isMovePlatform = true;
+    MidBodyDesc.pCollisionDesc = &m_CollisionMidDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body2"), reinterpret_cast<CComponent**>(&m_pMidBodyCom), &MidBodyDesc)))
+        return E_FAIL;
+
+    CBody::BODY_CYLINDERSHAPE_DESC TopBodyDesc{};
+    TopBodyDesc.fRadius = 5.f;
+    TopBodyDesc.fHeight = 2.f;
+    TopBodyDesc.bIsTrigger = false;
+    TopBodyDesc.bStartActive = true;
+    TopBodyDesc.eMotion = EMotionType::Kinematic;
+    TopBodyDesc.eQuality = EMotionQuality::LinearCast;
+    TopBodyDesc.eShapeType = SHAPE::CYLINDER;
+    TopBodyDesc.fFriction = 0.8f;
+    TopBodyDesc.fMass = 1.0f;
+    TopBodyDesc.fRestitution = 0.0f;
+    TopBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM);
+
+    XMStoreFloat3(&TopBodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+
+    XMStoreFloat4(&TopBodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+
+    TopBodyDesc.vShapeOffset = _float3(0.f, -0.59f, 0.f);
+    m_CollisionTopDesc.pGameObject = this;
+    m_CollisionTopDesc.isForceVaildation = true;
+    m_CollisionTopDesc.isMovePlatform = true;
+    TopBodyDesc.pCollisionDesc = &m_CollisionTopDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body3"), reinterpret_cast<CComponent**>(&m_pTopBodyCom), &TopBodyDesc)))
         return E_FAIL;
 #pragma endregion
 

@@ -374,6 +374,7 @@
     <ClInclude Include="..\Public\LoadingObj_BN.h" />
     <ClInclude Include="..\public\Inven_State_Panel.h" />
     <ClInclude Include="..\public\Lantern_Khazan_Spear.h" />
+    <ClInclude Include="..\public\MiniGame_Gacha.h" />
     <ClInclude Include="..\Public\NPC_Danjin.h" />
     <ClInclude Include="..\Public\NPC_Daphrona.h" />
     <ClInclude Include="..\Public\NPC_Duimuk.h" />
@@ -387,6 +388,7 @@
     <ClInclude Include="..\Public\Projectile_Rock_Viper.h" />
     <ClInclude Include="..\Public\Prop_Chunk.h" />
     <ClInclude Include="..\Public\Prop_Destructible.h" />
+    <ClInclude Include="..\public\RandomBox.h" />
     <ClInclude Include="..\Public\Sequence_Data_Manager.h" />
     <ClInclude Include="..\Public\Sequence_Embars_Puzzle_First.h" />
     <ClInclude Include="..\Public\Sequence_Embars_Puzzle_Second.h" />
@@ -469,6 +471,7 @@
     <ClInclude Include="..\public\UI_Announce_Over.h" />
     <ClInclude Include="..\public\UI_Announce_Result.h" />
     <ClInclude Include="..\public\UI_Announce_Symbol.h" />
+    <ClInclude Include="..\public\UI_Gacha_Selete.h" />
     <ClInclude Include="..\public\UI_Guide_Icon.h" />
     <ClInclude Include="..\Public\HeaderGroup_UI.h" />
     <ClInclude Include="..\Public\HeinMach_Trigger.h" />
@@ -606,6 +609,7 @@
     <ClInclude Include="..\Public\Viper_Trigger.h" />
     <ClInclude Include="..\public\WeaponObject.h" />
     <ClInclude Include="..\Public\Yetuga.h" />
+    <ClInclude Include="CKhazan_SoundHelper.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientPch.h" />
     <ClInclude Include="framework.h" />
@@ -839,6 +843,7 @@
     <ClCompile Include="..\Private\LoadingObj_BN.cpp" />
     <ClCompile Include="..\private\Inven_State_Panel.cpp" />
     <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp" />
+    <ClCompile Include="..\private\MiniGame_Gacha.cpp" />
     <ClCompile Include="..\Private\NPC_Danjin.cpp" />
     <ClCompile Include="..\Private\NPC_Daphrona.cpp" />
     <ClCompile Include="..\Private\NPC_Duimuk.cpp" />
@@ -852,6 +857,7 @@
     <ClCompile Include="..\Private\Projectile_Rock_Viper.cpp" />
     <ClCompile Include="..\Private\Prop_Chunk.cpp" />
     <ClCompile Include="..\Private\Prop_Destructible.cpp" />
+    <ClCompile Include="..\private\RandomBox.cpp" />
     <ClCompile Include="..\Private\Sequence_Data_Manager.cpp" />
     <ClCompile Include="..\Private\Sequence_Embars_Puzzle_First.cpp" />
     <ClCompile Include="..\Private\Sequence_Embars_Puzzle_Second.cpp" />
@@ -929,6 +935,7 @@
     <ClCompile Include="..\private\UI_Announce_Over.cpp" />
     <ClCompile Include="..\private\UI_Announce_Result.cpp" />
     <ClCompile Include="..\private\UI_Announce_Symbol.cpp" />
+    <ClCompile Include="..\private\UI_Gacha_Selete.cpp" />
     <ClCompile Include="..\private\UI_Guide_Icon.cpp" />
     <ClCompile Include="..\Private\HeinMach_Trigger.cpp" />
     <ClCompile Include="..\Private\Head_Yetuga.cpp" />
@@ -1074,6 +1081,7 @@
     <ClCompile Include="..\Private\AS_P2_SwingCombo_VIper.cpp" />
     <ClCompile Include="..\Private\AS_P2_SwingRound_Viper.cpp" />
     <ClCompile Include="..\Private\AS_P2_ThrowRock_VIper.cpp" />
+    <ClCompile Include="CKhazan_SoundHelper.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

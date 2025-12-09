@@ -117,6 +117,9 @@ HRESULT CDragonian_Melee::Initialize_Prototype(_int iLevel)
 
 HRESULT CDragonian_Melee::Initialize_Clone(void* pArg)
 {
+    DRAGON_MELEE_MONSTER_DESC* pDesc = static_cast<DRAGON_MELEE_MONSTER_DESC*>(pArg);
+
+    m_Data.isMotionSleep = pDesc->isSleep;
 
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 

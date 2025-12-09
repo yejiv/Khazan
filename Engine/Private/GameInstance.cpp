@@ -537,10 +537,6 @@ void CGameInstance::Set_EnableRimLight(_bool isEnable)
     m_pRenderer->Set_EnableRimLight(isEnable);
 }
 
-void CGameInstance::Set_EnableFog(_bool isEnable)
-{
-	m_pRenderer->Set_EnableFog(isEnable);
-}
 #endif
 
 void CGameInstance::Set_ToonShadeLevel(_float fLevel)
@@ -1386,6 +1382,10 @@ void CGameInstance::Set_GaussianBlurConfig(GAUSSIAN_BLUR_CONFIG Config)
 HRESULT CGameInstance::Bind_Fog_ShaderResources(CShader* pShader)
 {
 	return m_pFog->Bind_Fog_ShaderResources(pShader);
+}
+void CGameInstance::Set_EnableFog(_bool isEnable)
+{
+    m_pFog->Set_EnableFog(isEnable);
 }
 FOG_CONFIG CGameInstance::Get_FogConfig()
 {

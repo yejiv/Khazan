@@ -4,12 +4,12 @@
 #include "Body.h"
 
 CBody_Elamein::CBody_Elamein(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CPartObject{ pDevice,pContext }
+    :CWeaponObject{ pDevice,pContext }
 {
 }
 
 CBody_Elamein::CBody_Elamein(const CBody_Elamein& Prototype)
-    :CPartObject(Prototype)
+    :CWeaponObject(Prototype)
 {
 }
 
@@ -48,7 +48,7 @@ HRESULT CBody_Elamein::Initialize_Clone(void* pArg)
     m_pModelCom->Set_OwnerTransform(&m_CombinedWorldMatrix);
 
     _float4x4 PreTransformMatrix;
-    XMStoreFloat4x4(&PreTransformMatrix, XMMatrixScaling(0.00012, 0.00012, 0.00012) * XMMatrixRotationY(XMConvertToRadians(180.0f)));
+    XMStoreFloat4x4(&PreTransformMatrix, XMMatrixScaling(0.00012f, 0.00012f, 0.00012f) * XMMatrixRotationY(XMConvertToRadians(180.0f)));
     m_pModelCom->Set_PreTransformMatrix(PreTransformMatrix);
     return S_OK;
 }
@@ -80,6 +80,7 @@ void CBody_Elamein::Update(_float fTimeDelta)
 
     Update_CombinedMatrix();
     m_pData->isAnimFinash = m_pModelCom->Play_Animation(fTimeDelta * m_pData->fDeltaSpeed);
+    Update_Body(fTimeDelta);
 
     _matrix BoneMatrix = XMLoadFloat4x4(m_pClothBodyMatrix);
 
@@ -224,6 +225,24 @@ HRESULT CBody_Elamein::Ready_Components()
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_ClothBody"), (CComponent**)&m_pClothBody, &BodyDesc), E_FAIL);
 
+    m_pSocketMatrix = m_pModelCom->Get_BoneMatrix("Bip001-R-Foot");
+
+    BodyDesc.vExtent = { 1.5f, 0.5f, 0.5f };
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete;
+    BodyDesc.eShapeType = SHAPE::BOX;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    BodyDesc.bIsTrigger = true;
+
+    XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(m_pSocketMatrix) * XMLoadFloat4x4(m_pParentMatrix));
+    BodyDesc.vPos = { m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43 };
+    XMStoreFloat4(&BodyDesc.vQuat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&m_CombinedWorldMatrix)));
+
+    BodyDesc.vShapeOffset = _float3(0.4f, -0.f, 0.f);
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_LegBody"), (CComponent**)&m_pBodyComp, &BodyDesc), E_FAIL);
+
 
     return S_OK;
 }
@@ -253,6 +272,30 @@ HRESULT CBody_Elamein::Bind_Dissolve()
     return S_OK;
 }
 
+void CBody_Elamein::Update_Body(_float fTimeDelta)
+{
+    _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+
+    for (uint32_t i = 0; i < 3; i++)
+        BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
+    _float4x4 CombinedWorldMatrix = {};
+
+    XMStoreFloat4x4(&CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+    _bool isAttakc = m_pData->iAttackBody_State & (_uint)CElamein::ATTACK_BODY::RIGHT_LEG;
+    m_pBodyComp->Collision_Active(isAttakc);
+
+    if (!isAttakc)
+        return;
+
+    _matrix WeaponWorld = XMLoadFloat4x4(&CombinedWorldMatrix);
+
+    _vector vScale, vQuat, vPos;
+    XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
+
+    m_pBodyComp->Sync_Update(WeaponWorld);
+    m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
+}
+
 CBody_Elamein* CBody_Elamein::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
 {
     CBody_Elamein* pInstance = new CBody_Elamein(pDevice, pContext);
@@ -279,7 +322,7 @@ CGameObject* CBody_Elamein::Clone(void* pArg)
 void CBody_Elamein::Free()
 {
     __super::Free();
-
+    Safe_Release(m_pBodyComp);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);

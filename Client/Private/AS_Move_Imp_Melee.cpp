@@ -18,7 +18,17 @@ void CAS_Move_Imp_Melee::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     pModel->Set_Animation(30);
     pModel->Set_AnimationLoop(true);
     m_fSpeed = pBB->Get_Value<_float>(pImp->Get_Name(), "RunSpeed");
-    
+
+
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Akt_L_01 (SFX).wav"), pImp->Get_Position(), pImp->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Akt_L_01 (SFX).wav"), pImp->Get_Position(), pImp->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Akt_L_01 (SFX).wav"), pImp->Get_Position(), pImp->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+
 }
 
 void CAS_Move_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
