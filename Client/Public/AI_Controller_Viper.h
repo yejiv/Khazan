@@ -69,9 +69,7 @@ public:
 
 private:
     HRESULT                     Ready_CoolDown();
-    
-
-
+    void                        Set_ViperBerserkerStart_ShaderSettings();
 
 private:
     _bool                                   m_isActiveController = { false };

@@ -97,6 +97,9 @@ private:
 private:
     void                            Viper_Cinematic_ShaderSettings();
     void                            Viper_2PhaseBerserker_ShaderSettings();
+    void                            Viper_2PhaseBerserkerEnd_ShaderSettings();
+    void                            Start_Thunder(_float fDuration, _uint iBlinkCount);
+
     void                            Spawn_BloodDecal();
 
 private:

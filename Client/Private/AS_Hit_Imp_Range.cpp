@@ -28,6 +28,11 @@ void CAS_Hit_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     pModel->Set_AnimationLoop(false);
 
 
+    if (iAnimIndex >= 16 && iAnimIndex <= 19)
+        pImp->SFX_HIT(1);
+    else if (iAnimIndex >= 21 && iAnimIndex <= 24)
+        pImp->SFX_HIT(2);
+
 }
 
 void CAS_Hit_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

@@ -364,6 +364,9 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\16.DestinyStone\Gem">
       <UniqueIdentifier>{7e7dbbc0-48aa-4f9b-bf98-ade76ec70acb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Gacha">
+      <UniqueIdentifier>{b685266e-7ec6-4952-9798-031bc29c88ce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -693,6 +696,9 @@
     <ClInclude Include="..\Public\DestinyGem.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\16.DestinyStone\Gem</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\NPC_Gacha.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Gacha</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -1016,6 +1022,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\DestinyGem.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\16.DestinyStone\Gem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Gacha.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Gacha</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -248,6 +248,7 @@ HRESULT CLadder::Ready_Collision(void* pArg)
 
     TriggerUpPosDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::UP_POS_CH)].pGameObject = this;
+    m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::UP_POS_CH)].isForceVaildation = true;
     m_eLadderPoints[ENUM_CLASS(LADDER_POINT::UP_POS_CH)] = LADDER_POINT::UP_POS_CH;
     m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::UP_POS_CH)].pInfo = &m_eLadderPoints[ENUM_CLASS(LADDER_POINT::UP_POS_CH)];
     TriggerUpPosDesc.pCollisionDesc = &m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::UP_POS_CH)];
@@ -287,6 +288,7 @@ HRESULT CLadder::Ready_Collision(void* pArg)
 
     TriggerDownPosDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)].pGameObject = this;
+    m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)].isForceVaildation = true;
     m_eLadderPoints[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)] = LADDER_POINT::DOWN_POS_CH;
     m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)].pInfo = &m_eLadderPoints[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)];
     TriggerDownPosDesc.pCollisionDesc = &m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)];

@@ -156,7 +156,6 @@ HRESULT CHalberd::Initialize_Prototype(_int iLevel)
 HRESULT CHalberd::Initialize_Clone(void* pArg)
 {
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
-
     CHECK_FAILED(Ready_MonData(), E_FAIL);
     CHECK_FAILED(Ready_ETC(), E_FAIL);
 
@@ -326,8 +325,8 @@ HRESULT CHalberd::Ready_ETC()
     m_pBlackBoard = m_pController->Get_BlackBoard();
     Safe_AddRef(m_pBlackBoard);
     m_pBlackBoard->Set_Value<CGameObject*>(m_strName, "Target", m_pTarget);
-
     return S_OK;
+
 }
 
 HRESULT CHalberd::Ready_Components()
@@ -705,10 +704,10 @@ void CHalberd::Free()
         m_pUI_HP->Set_IsDead(true);
 
     Safe_Release(m_pMeshTrail);
-    __super::Free();
-    Safe_Release(m_pBody);
     Safe_Release(m_pBlackBoard);
+    Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
+    Safe_Release(m_pHitBodyCom);
     m_Data.pOwner = nullptr;
-
+    __super::Free();
 }

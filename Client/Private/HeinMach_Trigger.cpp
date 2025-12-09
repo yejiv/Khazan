@@ -489,7 +489,7 @@ void CHeinMach_Trigger::Free()
     __super::Free();
 
     Safe_Release(m_pClientInstance);
-    //Safe_Release(m_pHeinMach_Field);
-    //Safe_Release(m_pHeinMach_Yetuga);
-    //Safe_Release(m_pHeinMach_Start_Chat);
+    Safe_Release(m_pHeinMach_Field);
+    Safe_Release(m_pHeinMach_Yetuga);
+    Safe_Release(m_pHeinMach_Start_Chat);
 }

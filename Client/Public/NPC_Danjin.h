@@ -18,7 +18,6 @@ private:
         TALK_END,
         TALK_IDLE,
         TALK_START,
-        WEEP,
         END
     };
 

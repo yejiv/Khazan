@@ -2569,9 +2569,9 @@ HRESULT CKhazan_GSword::Ready_Collision()
     m_tPlayerCollisionDesc.strName = TEXT("Khazan_Body");
     tCharVirDesc.pCollisionDesc = &m_tPlayerCollisionDesc;
     tCharVirDesc.vStickToFloorStepDown = _float3(0.f, -0.5f, 0);
-    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.8f, 0.f);
-    tCharVirDesc.fWalkStairsMinStepForward = 0.05f;
-    tCharVirDesc.fWalkStairsStepForwardTest = 0.3f;    
+    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.3f, 0.f);
+    tCharVirDesc.fWalkStairsMinStepForward = 0.1f;
+    tCharVirDesc.fWalkStairsStepForwardTest = 0.4f;    
     tCharVirDesc.vWalkStairsStepDownExtra = _float3(0.f, -0.25f, 0.f);
     tCharVirDesc.fWalkStairsCosAngleForwardContact = cosf(XMConvertToRadians(60.f));
 
@@ -2722,6 +2722,7 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         case INTERACTIVE_TYPE::DANJIN:
         case INTERACTIVE_TYPE::DUIMUK:
         case INTERACTIVE_TYPE::DAPHRONA:
+        case INTERACTIVE_TYPE::GACHANPC:
         {
             isDone = false;
             if (m_pBody->Get_Model()->IsFinished()) {

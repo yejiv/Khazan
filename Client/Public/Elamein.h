@@ -120,10 +120,8 @@ private:
     class CMeshTrail*               m_pMeshTrail = { nullptr };
 
     CBody*                          m_pHitBodyCom = { nullptr };
-    CBody*                          m_pLeftLegCom = { nullptr };
 
     _float4x4*                      m_pBodySocketMatrix = { nullptr };
-    _float4x4*                      m_pLeftLegSocketMatrix = { nullptr };
     _float4x4*                      m_pLockOnSocketMatrix = { nullptr };
     _float4                         m_vLockOnPos = {};
 

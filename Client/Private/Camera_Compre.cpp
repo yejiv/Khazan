@@ -669,9 +669,11 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
 
     if (m_isLockOn)
     {
-        if (m_pLockMonster == nullptr ||
-            m_pLockMonster->Get_IsDead() == true ||
-            m_pLockMonster->Get_IsActive() == false)
+        CMonster* pMonster = dynamic_cast<CMonster*>(m_pLockMonster);
+        if (pMonster == nullptr ||
+            pMonster->Get_IsDead() == true ||
+            pMonster->Get_IsActive() == false ||
+            pMonster->Get_CurrentHP() <= 0)
         {
             m_fLockOnDelay = 0.f;
             m_isLockOn = false;
@@ -682,6 +684,7 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
             m_fSmoothingVelocityPitch = 0.f;
             return;
         }
+
         
         if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::WB))
         {

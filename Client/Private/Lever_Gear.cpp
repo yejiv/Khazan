@@ -151,6 +151,8 @@ void CLever_Gear::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::IDLE1 == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_Lever_Gear_Active1"), Get_Position(), nullptr, m_fInteract_Volume);
+
             m_eAnimState = ANIM_STATE::ACTIVATION1;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
@@ -166,6 +168,8 @@ void CLever_Gear::Animation_Change(_float fTimeDelta)
 {
     if (ANIM_STATE::ACTIVATION1 == m_eAnimState)
     {
+        SoundOnce(TEXT("IP_Lever_Gear_Active2"), Get_Position(), nullptr, m_fInteract_Volume);
+
         // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
         m_eAnimState = ANIM_STATE::ACTIVATION2;
         m_pModelCom->Set_Animation(m_eAnimState);

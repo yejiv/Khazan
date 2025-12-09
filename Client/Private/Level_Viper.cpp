@@ -763,7 +763,7 @@ HRESULT CLevel_Viper::Ready_Lights()
     LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
     LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
     LightDesc.vSpecular = LightDesc.vDiffuse;
-    LightDesc.fRange = 20.f;
+    LightDesc.fRange = 15.f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Player_PointLight_Gray"), ENUM_CLASS(LEVEL::VIPER), LightDesc)))
         return E_FAIL;
 
@@ -787,17 +787,17 @@ HRESULT CLevel_Viper::Ready_Lights()
 
     LightDesc.eType = LIGHT_DESC::POINT;
     LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
-    LightDesc.vDiffuse = _float4(0.9f, 0.8f, 0.7f, 1.f);
-    LightDesc.vAmbient = _float4(0.8f, 0.6f, 0.4f, 1.f);
+    LightDesc.vDiffuse = _float4(0.9f, 0.85f, 0.7f, 1.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
     LightDesc.vSpecular = LightDesc.vDiffuse;
-    LightDesc.fRange = 40.f;
+    LightDesc.fRange = 15.f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Viper_Thunder"), ENUM_CLASS(LEVEL::VIPER), LightDesc, false)))
         return E_FAIL;
 
     LightDesc.eType = LIGHT_DESC::POINT;
-    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vPosition = _float4(-30.2f, -29.8f, 173.7f, 1.f);
     LightDesc.vDiffuse = _float4(0.9f, 0.8f, 0.7f, 1.f);
-    LightDesc.vAmbient = _float4(0.8f, 0.6f, 0.4f, 1.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
     LightDesc.vSpecular = LightDesc.vDiffuse;
     LightDesc.fRange = 100.f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Viper_Thunder_Ambient"), ENUM_CLASS(LEVEL::VIPER), LightDesc, false)))

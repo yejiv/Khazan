@@ -114,7 +114,7 @@ void CLight_Manager::Clear(_uint iLevelIndex)
 void CLight_Manager::Start_LightTransition(const _wstring& strLightTag, _uint iLevelIndex, const LIGHT_TRANSITION_DESC& Desc, _bool isRestore)
 {
     CLight* pLight = Find_Light(strLightTag, iLevelIndex);
-    if (nullptr == pLight || nullptr != m_pTransLight)
+    if (nullptr == pLight)
         return;
     
     pLight->Start_LightTransition(Desc, isRestore);
@@ -126,8 +126,7 @@ void CLight_Manager::Backup_LightDesc(const _wstring& strLightTag, _uint iLevelI
     if (nullptr == pLight)
         return;
     
-    LIGHT_DESC LightDesc = *pLight->Get_LightDesc();
-    m_OriginalLightDesc[strLightTag] = LightDesc; // 덮어씌우기
+    pLight->Backup_LightDesc();
 }
 
 const LIGHT_DESC* CLight_Manager::Get_LightDesc(const _wstring& strLightTag, _uint iLevelIndex)
@@ -178,8 +177,6 @@ CLight_Manager* CLight_Manager::Create(_uint iNumLevels)
 void CLight_Manager::Free()
 {
 	__super::Free();
-
-    Safe_Release(m_pTransLight);
 
 	for (_uint i = 0; i < m_iNumLevels; ++i)
 	{
