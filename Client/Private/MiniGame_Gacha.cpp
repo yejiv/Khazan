@@ -254,7 +254,6 @@ void CMiniGame_Gacha::Input_Key()
         m_fAcctime = 0.f;
         m_fGuidePosY = 1.5f;
         m_fGuideCount = 3;
-        CClientInstance::GetInstance()->Set_UIAllRenderSet(true);
     }
     if (m_pGameInstance->Key_Down(DIK_A))
     {
