@@ -292,8 +292,7 @@ vector<class CPrefab*>* CEffect_Manager::Find_Effect_Layer(_uint iLayerLevelInde
 
 	if (iter == m_pEffectLayers[iLayerLevelIndex].end())
 	{
-		m_pEffectLayers[iLayerLevelIndex][strLayerTag];
-		//m_pEffectLayers[iLayerLevelIndex].emplace(strLayerTag);
+		m_pEffectLayers[iLayerLevelIndex][strLayerTag]; 
 		iter = m_pEffectLayers[iLayerLevelIndex].find(strLayerTag);
 	}
 

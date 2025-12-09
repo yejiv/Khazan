@@ -112,6 +112,13 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             m_isFadeIn2 = true;
         }
 
+        if (m_fTime > 12.f && !m_isViperHismaLook)
+        {
+            // 칼 처음 본 시점
+            m_pGameInstance->PlaySoundLoop(TEXT("Fire_Burning.mp3"), 0.3f);
+            m_isViperHismaLook = true;
+        }
+
         if (m_fTime > 16.f && !m_isCameraSet3)
         {
             m_pCamera->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-29.916, -28.389f, 184.220f, 1.f));
@@ -126,6 +133,14 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             m_pCamera->Get_Transform()->Look_Dir(XMVectorSet(0.051, -0.277, 0.959, 0.f));
             m_pClientInstance->Camera_Set_Animation(TEXT("Viper_SecondPhase5"));
             m_isCameraSet4 = true;
+        }
+
+        if (m_fTime > 30.f && !m_isViperPickUp)
+        {
+            // 칼 마지막으로 보는 시점
+            m_pGameInstance->StopByKey_FadeOut(TEXT("Fire_Burning.mp3"), 8.f);
+
+            m_isViperPickUp = true;
         }
 
         if (m_fTime > 30.f && !m_isFadeOut3)
