@@ -394,7 +394,6 @@
     <ClInclude Include="..\Public\Sequence_Embars_Puzzle_Second.h" />
     <ClInclude Include="..\Public\Sequence_Embars_Puzzle_Third.h" />
     <ClInclude Include="..\Public\Sequence_Viper_CutScene.h" />
-    <ClInclude Include="..\Public\Sequence_Viper_Destruct_Obelisk.h" />
     <ClInclude Include="..\Public\Sequence_Viper_SecondPhase.h" />
     <ClInclude Include="..\public\Skill_BG_Smoke.h" />
     <ClInclude Include="..\public\Skill_Slot_Flag.h" />
@@ -865,7 +864,6 @@
     <ClCompile Include="..\Private\Sequence_Embars_Puzzle_Second.cpp" />
     <ClCompile Include="..\Private\Sequence_Embars_Puzzle_Third.cpp" />
     <ClCompile Include="..\Private\Sequence_Viper_CutScene.cpp" />
-    <ClCompile Include="..\Private\Sequence_Viper_Destruct_Obelisk.cpp" />
     <ClCompile Include="..\Private\Sequence_Viper_SecondPhase.cpp" />
     <ClCompile Include="..\private\Skill_BG_Smoke.cpp" />
     <ClCompile Include="..\private\Skill_Slot_Flag.cpp" />

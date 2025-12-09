@@ -18,7 +18,6 @@
 #include "Camera_Compre.h"
 #include "Sequence_Viper_SecondPhase.h"
 #include "Sequence_Viper_CutScene.h"
-#include "Sequence_Viper_Destruct_Obelisk.h"
 
 #pragma region ITEM
 #include "Interaction_Item.h"
@@ -402,7 +401,6 @@ HRESULT CLevel_Viper::Ready_Layer_MapObject_SubLV(const _wstring& strLayerTag, c
             ObeliskDesc.WorldMatrix._42 -= 400.f;
             ObeliskDesc.iIndex = iDestIndex;
             CObelisk* pObelisk = dynamic_cast<CObelisk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Obelisk"), &ObeliskDesc));
-            //pSeq->Push_Obelisk(pObelisk);
             m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag, pObelisk);            
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
                 ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Obelisk"), TIME_CHANNEL::WORLD, &ObeliskDesc)))
@@ -1129,11 +1127,6 @@ HRESULT CLevel_Viper::Ready_Sequence()
     SEQ_REQ_PLAY_DESC desc{};
     pSequence->Initialize(desc);
     m_pClientInstance->Push_Sequence(TEXT("Viper_SecondPhase"), pSequence);
-
-    CSequence_Viper_Destruct_Obelisk* pDestSequence = CSequence_Viper_Destruct_Obelisk::Create();
-    SEQ_REQ_PLAY_DESC DestDesc{};
-    pDestSequence->Initialize(DestDesc);
-    m_pClientInstance->Push_Sequence(TEXT("Viper_Destruct_Obelisk"), pDestSequence);
 
     return S_OK;
 }
