@@ -2,12 +2,12 @@
 #include "GameInstance.h"
 
 CBody_Dragonian_Rampage::CBody_Dragonian_Rampage(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CPartObject{ pDevice,pContext }
+    :CWeaponObject{ pDevice,pContext }
 {
 }
 
 CBody_Dragonian_Rampage::CBody_Dragonian_Rampage(const CBody_Dragonian_Rampage& Prototype)
-    :CPartObject(Prototype)
+    :CWeaponObject(Prototype)
 {
 }
 
@@ -90,6 +90,7 @@ void CBody_Dragonian_Rampage::Update(_float fTimeDelta)
 
     Update_CombinedMatrix();
     m_pData->isAnimFinash = m_pModelCom->Play_Animation(fTimeDelta);
+    Update_Body(fTimeDelta);
 }
 
 void CBody_Dragonian_Rampage::Late_Update(_float fTimeDelta)
@@ -158,7 +159,25 @@ HRESULT CBody_Dragonian_Rampage::Ready_Components()
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
+    m_pSocketMatrix = m_pModelCom->Get_BoneMatrix("Bip001-Tail4");
+
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
+    CBody::BODY_BOXSHAPE_DESC BodyDesc{};
+    BodyDesc.vExtent = { 1.2f, 0.7f, 0.7f };
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete;
+    BodyDesc.eShapeType = SHAPE::BOX;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    BodyDesc.bIsTrigger = true;
+
+    XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(m_pSocketMatrix) * XMLoadFloat4x4(m_pParentMatrix));
+    BodyDesc.vPos = { m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43 };
+    XMStoreFloat4(&BodyDesc.vQuat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&m_CombinedWorldMatrix)));
+
+    BodyDesc.vShapeOffset = _float3(0.f, -0.f, 0.f);
+    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_TailBody"), (CComponent**)&m_pBodyComp, &BodyDesc);
 
     return S_OK;
 }
@@ -188,6 +207,31 @@ HRESULT CBody_Dragonian_Rampage::Bind_Dissolve()
     return S_OK;
 }
 
+void CBody_Dragonian_Rampage::Update_Body(_float fTimeDelta)
+{
+    m_pSocketMatrix = m_pModelCom->Get_BoneMatrix("Bip001-Tail4");
+    _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
+
+    for (uint32_t i = 0; i < 3; i++)
+        BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
+    _float4x4 CombinedWorldMatrix = {};
+
+    XMStoreFloat4x4(&CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+    _bool isAttakc = m_pData->iAttackBody_State & (_uint)CDragonian_Rampage::ATTACK_BODY::TAIL;
+    m_pBodyComp->Collision_Active(isAttakc);
+    if (!isAttakc)
+        return;
+
+    _matrix WeaponWorld = XMLoadFloat4x4(&CombinedWorldMatrix);
+
+    _vector vScale, vQuat, vPos;
+    XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
+
+    m_pBodyComp->Sync_Update(WeaponWorld);
+    m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
+
+}
+
 CBody_Dragonian_Rampage* CBody_Dragonian_Rampage::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
 {
     CBody_Dragonian_Rampage* pInstance = new CBody_Dragonian_Rampage(pDevice, pContext);
@@ -214,7 +258,7 @@ CGameObject* CBody_Dragonian_Rampage::Clone(void* pArg)
 void CBody_Dragonian_Rampage::Free()
 {
     __super::Free();
-
+    Safe_Release(m_pBodyComp);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);

@@ -75,8 +75,25 @@ void CIronGate::Update(_float fTimeDelta)
 
     if (true == m_isUnLock)
     {
+        if (false == IsPlayingSound(TEXT("IP_IronGate_UnLock")))
+        {
+            if (false == m_isOpen)
+            {
+                m_isOpen = true;
+
+                SoundOnce(TEXT("IP_IronGate_Open"), m_fInteract_Volume);
+            }
+        }
+
         if (true == m_pModelCom->Play_Animation(fTimeDelta))
         {
+            if (false == m_isEnd)
+            {
+                m_isEnd = true;
+
+                SoundOnce(TEXT("IP_IronGate_End"), m_fInteract_Volume);
+            }
+
             Animation_Change(fTimeDelta);
         }
     }
@@ -275,6 +292,8 @@ void CIronGate::Animation_Update(_float fTimeDelta)
         if (false == m_isUnLock)
         {
             m_isUnLock = true;
+
+            SoundOnce(TEXT("IP_IronGate_UnLock"), m_fInteract_Volume);
 
             // 조각상 상호작용 시
             EventInteractType InteractType = {};

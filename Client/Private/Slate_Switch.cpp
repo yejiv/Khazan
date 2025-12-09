@@ -64,6 +64,8 @@ void CSlate_Switch::Update(_float fTimeDelta)
     {
         if (ANIM_STATE::IDLE == m_eAnimState)
         {
+            m_pGameInstance->PlaySoundOnce(TEXT("IP_Slate_On.wav"), 0.5f);
+
             m_eAnimState = ANIM_STATE::DIE;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState)); 
 
@@ -75,6 +77,8 @@ void CSlate_Switch::Update(_float fTimeDelta)
     {
         if (ANIM_STATE::DIE == m_eAnimState)
         {
+            m_pGameInstance->PlaySoundOnce(TEXT("IP_Slate_Off.wav"), 0.5f);
+
             m_eAnimState = ANIM_STATE::SPAWN;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
 

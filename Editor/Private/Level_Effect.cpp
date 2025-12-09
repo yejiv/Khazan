@@ -239,6 +239,7 @@ void CLevel_Effect::Create_Element()
 		}
 		if (ImGui::BeginTabItem("Sprite Effect"))
 		{
+            ImGui::InputFloat3("Center : ", m_fCenter);
             const char* textures[] = { "test0", "test1", "test2",  "test3",  "flare", "Fire_Sprite", "Fire_Sprite2",  "flare", "blood" };
             ImGui::Combo("Textures", reinterpret_cast<int*>(&m_iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
@@ -405,7 +406,7 @@ void CLevel_Effect::GetParticleColor()
                                         "StrongAtk0", "StrongAtk1", "FastAtk03_Slash", "GrappleAtk02_Slash", "StrongAtk03_Slash"
                                         , "Cylinder_003", "Cylinder_003_02", "Cylinder_003_Noise" , "Spine", "Circle_002" ,"Sphere","CircleTwist", "CircleTwist2", "Plane" , "circle001", "circle002", "Ice",  "Rock", "Crystal", "Ring_Twist"
                                         , "CircleMesh0", "CircleMesh1", "CircleMesh2", "CircleMesh3", "CircleMesh4", "CircleMesh5", "ViperHandTrail" , "Viper_Sphere_Verticle_Trail"
-                                        , "blood0"  , "blood1"  , "blood2", "Tornado"};
+                                        , "blood0"  , "blood1"  , "blood2", "Tornado", "HalfClinder0", "HalfClinder1", "HalfClinder2" };
 
 		ImGui::Combo("Mesh Shape", reinterpret_cast<int*>(&m_iMeshTypeIdx), Meshes, IM_ARRAYSIZE(Meshes));
 	}
@@ -525,6 +526,7 @@ void CLevel_Effect::Create_Sprite_Element()
 	data.fMaskScrollSpeed = m_bMaskScrollSpeed;
 	data.bIsScrollVertical = m_bIsScrollVertical;
 	data.bIsScrollInverse = m_bScrollDir;
+	data.fOffset = _float3(m_fCenter[0], m_fCenter[1], m_fCenter[2]);
 
 	m_PrefabPrototype->Add_Effect_Element(m_EffectType, &data);
 }

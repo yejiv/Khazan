@@ -151,9 +151,15 @@ void CLever_Gear::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::IDLE1 == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_Lever_Gear_Active1"), Get_Position(), nullptr, m_fInteract_Volume);
+
             m_eAnimState = ANIM_STATE::ACTIVATION1;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
+            _vector Effectpos = m_pTransformCom->Get_State(STATE::POSITION);
+            Effectpos += XMVector4Normalize(m_pTransformCom->Get_State(STATE::UP)) * 1.4f;
+            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On"), m_pTransformCom->Get_WorldMatrix(), Effectpos);
+            //가동시작!
         }
     }
 }
@@ -162,10 +168,16 @@ void CLever_Gear::Animation_Change(_float fTimeDelta)
 {
     if (ANIM_STATE::ACTIVATION1 == m_eAnimState)
     {
+        SoundOnce(TEXT("IP_Lever_Gear_Active2"), Get_Position(), nullptr, m_fInteract_Volume);
+
         // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
         m_eAnimState = ANIM_STATE::ACTIVATION2;
         m_pModelCom->Set_Animation(m_eAnimState);
         m_pModelCom->Set_AnimationLoop(false);
+        //가동끝! 
+        _vector Effectpos = m_pTransformCom->Get_State(STATE::POSITION);
+        Effectpos += XMVector4Normalize(m_pTransformCom->Get_State(STATE::UP)) * 1.4f;
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS),TEXT("LeverGear_On_Static"), m_pTransformCom->Get_WorldMatrix(), Effectpos);
 
         m_EventGate.isActiveGear1 = true;
 

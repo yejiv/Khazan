@@ -49,9 +49,17 @@ void CFog::Update(_float fTimeDelta)
     m_fTransTimeAcc += fTimeDelta;
 
 	_float fRatio = m_fTransTimeAcc / m_fDuration;
+
 	if (fRatio >= 1.f)
 	{
 		fRatio = 1.f;
+
+        if (nullptr != m_Callback)
+        {
+            m_Callback();
+            m_Callback = nullptr;
+        }
+
 		m_isTransition = false;
 	}
 
@@ -62,6 +70,9 @@ void CFog::Update(_float fTimeDelta)
 
 HRESULT CFog::Bind_Fog_ShaderResources(CShader* pShader)
 {
+    if (FAILED(pShader->Bind_Bool("g_isEnableFog", &m_isEnable)))
+        return E_FAIL;
+
     _uint iFogMode = static_cast<_uint>(m_Config.eType);
     if (FAILED(pShader->Bind_RawValue("g_iFogMode", &iFogMode, sizeof(_uint))))
         return E_FAIL;
@@ -135,7 +146,11 @@ ID3D11ShaderResourceView* CFog::Get_FogNoiseTexture(_uint iTextureIndex)
 
 void CFog::Start_FogTransition(_float fDuration, const FOG_TRANSITION_DESC& Desc)
 {
+    m_isEnable = true;
 	m_isTransition = true;
+
+    m_Callback = Desc.Callback;
+
     m_fTransTimeAcc = 0.f;
 	m_fDuration = fDuration;
 	m_TargetFog = Desc;

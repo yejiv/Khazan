@@ -8,6 +8,9 @@ NS_END
 
 NS_BEGIN(Client)
 
+
+enum class BOOMARANGSTATE { SHOT, LOOP, CRASHED, END };
+
 class CProjectile_Boomarang final : public CProjectile
 {
 public:
@@ -18,7 +21,7 @@ public:
     }BOOMARANG_DESC;
 
 
-
+    
 private:
     CProjectile_Boomarang(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CProjectile_Boomarang(const CProjectile_Boomarang& Protptype);
@@ -43,7 +46,11 @@ private:
     HRESULT						        Ready_Colliders();
     HRESULT						        Bind_ShaderResources();
 
+    void                                Enter_State(BOOMARANGSTATE eNextState);
 
+
+private:
+    void                                BoomarangHitSFX();
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
@@ -61,6 +68,8 @@ private:
 
     _bool                               m_isDamageForward = { false };
     _bool                               m_isDamageReturn = { false };
+
+    BOOMARANGSTATE                      m_eState = { BOOMARANGSTATE::END };
 
 
 public:

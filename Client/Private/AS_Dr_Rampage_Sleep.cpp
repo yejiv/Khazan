@@ -11,7 +11,7 @@ void CAS_Dr_Rampage_Sleep::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_pMonData = &static_cast<CDragonian_Rampage*>(pOwner)->Get_Data();
 
     m_pMonData->pOwner->Hp_Visivle(false);
-    m_pMonData->iAnimIndex = 8;
+    m_pMonData->isMotionSleep ? m_pMonData->iAnimIndex = 8 : m_pMonData->iAnimIndex = 9;
     m_eState = SLEEP;
 
 }
@@ -25,7 +25,7 @@ void CAS_Dr_Rampage_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _flo
     else if (m_eState == SLEEP && !m_pMonData->isSleep)
     {
         m_pGameInstance->PlaySoundOnce(TEXT("Mon_dragonian_wakeup_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0));
-        m_pMonData->iAnimIndex = 6;
+        m_pMonData->isMotionSleep ? m_pMonData->iAnimIndex = 6 : m_pMonData->iAnimIndex = 7;
         m_pMonData->pOwner->Hp_Visivle(true);
         m_eState = GETUP;
     }

@@ -34,7 +34,7 @@ HRESULT CTombStone::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
-    CHECK_FAILED(Ready_PlaceName(pArg), E_FAIL);
+    CHECK_FAILED(Ready_DefaultSetting(pArg), E_FAIL);
 
     m_eAnimState = ANIM_STATE::BEFORE_IDLE;
     m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_IDLE);
@@ -198,12 +198,15 @@ HRESULT CTombStone::Ready_Interaction_Guide(void* pArg)
     return S_OK;
 }
 
-HRESULT CTombStone::Ready_PlaceName(void* pArg)
+HRESULT CTombStone::Ready_DefaultSetting(void* pArg)
 {
     TOMBSTONE_DESC* pDesc = static_cast<TOMBSTONE_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
-    memcpy(m_szPlaceName, TEXT("툼스톤 파일드라이버"), sizeof(m_szPlaceName));
+    _int* pTombStoneID = static_cast<_int*>(pDesc->pOtherDesc);
+    CHECK_NULLPTR(pTombStoneID, E_FAIL);
+
+    m_iTombStoneID = *pTombStoneID;
 
     return S_OK;
 }

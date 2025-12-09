@@ -56,8 +56,6 @@ HRESULT CLevel_HeinMach::Initialize()
 
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 
-        //CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
-
         CHECK_FAILED(Ready_Layer_Decal(), E_FAIL);
 
         CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
@@ -448,6 +446,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Dawn_BloodTrail2"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GS_StrongATK"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Ghost_Dark_Shadow_Land"),1);
+
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Halberd_Weapon_Wind"), 3);
 
     return S_OK;
 }
@@ -1412,12 +1412,6 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_DEST(const _wstring& strLayerTag,
         return E_FAIL;
 
     return S_OK;
-}
-
-HRESULT CLevel_HeinMach::Ready_Layer_UI()
-{
-
-	return S_OK;
 }
 
 _bool CLevel_HeinMach::Wait_All_Futures()

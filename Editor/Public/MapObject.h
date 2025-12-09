@@ -26,7 +26,8 @@ public:
 
 		INTERACTIVE_TYPE eInteractiveType{ INTERACTIVE_TYPE::END };
 
-		_int iBladeNexus_ID{};
+        _int iBladeNexus_ID{};
+        _int iTombStone_ID{};
 
 		ITEMBOX_DESC ItemBox{};
 
@@ -50,9 +51,11 @@ public:
 	const _uint Get_MapObjectID() const { return m_iMapObjectID; }
 	const INTERACTIVE_TYPE Get_InteractiveType() const { return m_eInteractiveType; }
 	const _int Get_BladeNexus_ID() const { return m_iBladeNexusID; }
+    const _int Get_TombStoneID() const { return m_iTombStoneID; }
 	const ITEMBOX_DESC Get_ItemBox() const { return m_ItemBox; }
 
-	void Set_BladeNexus_ID(_uint BladeNexusID) { m_iBladeNexusID = BladeNexusID; }
+    void Set_TombStone_ID(_uint iTombStoneID) { m_iTombStoneID = iTombStoneID; }
+    void Set_BladeNexus_ID(_uint BladeNexusID) { m_iBladeNexusID = BladeNexusID; }
 	void Set_ItemBox(ITEMBOX_DESC ItemBoxDesc) { m_ItemBox = ItemBoxDesc; }
 
 protected:
@@ -63,6 +66,7 @@ protected:
 
 	INTERACTIVE_TYPE m_eInteractiveType{ INTERACTIVE_TYPE::END };
 	_int m_iBladeNexusID = { 0 };
+    _int m_iTombStoneID = { 0 };
 	ITEMBOX_DESC m_ItemBox = {};
 
 public:

@@ -66,6 +66,25 @@ void CElevatorS::Update(_float fTimeDelta)
 
     if (true == m_isActiveElevator)
     {
+        if (false == m_isStart)
+        {
+            m_isStart = true;
+
+            SoundOnce(TEXT("IP_Elevator_Start"), m_fInteract_Volume);
+        }
+        
+        if (IsPlayingSound(TEXT("IP_Elevator_Start")))
+            return;
+        else
+        {
+            if (false == m_isLoop)
+            {
+                m_isLoop = true;
+
+                SoundLoop(TEXT("IP_Elevator_Loop"), m_fInteract_Volume);
+            }
+        }
+
         if (ELEVATOR_STATE::UP == m_eState)
         {
             Lerp_ElevatorMove(fTimeDelta, m_vUpPos, m_vDownPos, 25.f);
@@ -127,6 +146,9 @@ void CElevatorS::Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4
 
     if (0.1f > fDistance)
     {
+        SoundStop_FadeOut(TEXT("IP_Elevator_Loop"), 0.5f);
+        SoundOnce(TEXT("IP_Elevator_End"), m_fInteract_Volume);
+
         m_isActiveElevator = false;
 
         m_fTimeAcc = 0.f;

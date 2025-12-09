@@ -53,7 +53,6 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
         CTransform* pYetugaTransform = static_cast<CTransform*>(m_pYetuga->Get_Component(TEXT("Com_Transform")));
         pYetugaTransform->LookAt(XMVectorSet(507.5f, -9.15f, 260.09f, 1.f));
         //2. 작은 눈안개 깔기 시작
-
         if (!m_isSnowSmoke)
         {
             m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"), XMVectorSet(

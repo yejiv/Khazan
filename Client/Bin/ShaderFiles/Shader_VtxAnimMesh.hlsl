@@ -77,6 +77,7 @@ bool g_HasEmissive;
 float g_fGreenIntensity = 1.f;
 bool g_isEnableRimLight, g_isBlinkRimLight;
 float g_fMinRimIntensity;
+bool g_isMaskDiffuse = false;
 
 // Imp
 float g_fDiffusePower = 1.f;
@@ -1117,6 +1118,66 @@ PS_OUT PS_MAIN_DISSOLVE_EYE_DEFAULT(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_VIPER_WEAPON(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+
+    float4 vEmissiveDesc = float4(0.f, 0.f, 0.f, 0.f);
+    if (g_HasEmissive)
+        vEmissiveDesc = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 0.f;
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    vMtrlDiffuse *= fEdgeMask;
+    vMtrlDiffuse *= fShadeMask;
+    
+    vMtrlDiffuse.g *= g_fGreenIntensity;
+    
+    float fMask = vEmissiveDesc.g;
+    vMtrlDiffuse += vMtrlDiffuse * fMask * g_fEmissiveIntensity;
+
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vDiffuse.a = vMtrlDiffuse.r;
+    
+    // Rim Light
+    if (g_isEnableRimLight)
+    {
+        vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+        float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+        fRim = pow(fRim, g_fRimPower);
+        float fFinalIntensity = g_vRimColor * fRim * g_fRimLightIntensity;
+        
+        if (g_isBlinkRimLight)
+        {
+            fFinalIntensity = g_fRimLightIntensity / 2.f * (1.f + cos(g_fTimeDelta * g_fCycleSpeed));
+            fFinalIntensity = clamp(fFinalIntensity, g_fMinRimIntensity, 1.f);
+        }
+        
+        float3 vRimColor = g_vRimColor * fRim * fFinalIntensity;
+
+        Out.vDiffuse.rgb = vMtrlDiffuse.rgb + vRimColor * g_fRimEmissive; // Rim Emissive
+    }
+
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass        // 0 번
@@ -1411,5 +1472,17 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_RUNE_EMISSIVE();
+    }
+
+    // 바이퍼 무기 마스크 패스        ( 25번 )
+    pass Viper_Weapon
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_VIPER_WEAPON();
     }
 }

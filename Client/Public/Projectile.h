@@ -35,6 +35,7 @@ public:
 	void					Set_SpanwPoint(_float3 vSpanwPoint) { m_vSpawnPoint = vSpanwPoint; }
 	void					Set_SpawnDir(_float3 vSpawnDir) { m_vSpawnDir = vSpawnDir; };
 	void					Set_Visible(_bool isVisible) { m_isVisible = isVisible; }
+    FMOD_CHANNEL**          Get_SoundChannel(_int iIndex);
 	void					Fire_Projectile() { m_eState = PRJSTATE::LOOP; }
 public:
 	virtual HRESULT			Initialize_Prototype() override;
@@ -49,6 +50,8 @@ public:
 protected:
 	CModel*					m_pModelCom = { nullptr };
 	CShader*				m_pShaderCom = { nullptr };
+    vector<FMOD_CHANNEL*>   m_pChannel;
+
 
 protected:
 	_float					m_fLifeTime = {};

@@ -170,8 +170,7 @@ HRESULT CBody_Halberd::Ready_Components()
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
-    m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
-
+    m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);  
 
     m_tCapeCollDesc.pGameObject = this;
     CClothBody::CLOTH_BODY_DESC ClothDesc;
@@ -199,7 +198,6 @@ HRESULT CBody_Halberd::Ready_Components()
 
     // Bip001-Pelvis
     m_tClothBodyCollDesc.pGameObject = this;
-
     CBody::BODY_BOXSHAPE_DESC BodyDesc{};
     BodyDesc.vExtent = { 6.f, 0.3f, 6.f };
     BodyDesc.eMotion = EMotionType::Kinematic;
@@ -273,10 +271,14 @@ void CBody_Halberd::Free()
 {
     __super::Free();
 
-    Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
-    Safe_Release(m_pOwnerTransform);
+    Safe_Release(m_pModelCom);
     Safe_Release(m_pTextureCom);
+    Safe_Release(m_pOwnerTransform);
     Safe_Release(m_pCapeBody);
     Safe_Release(m_pClothBody);
+
+    m_pData = nullptr;
+    m_tClothBodyCollDesc.pGameObject = nullptr;
+    m_tCapeCollDesc.pGameObject = nullptr;
 }

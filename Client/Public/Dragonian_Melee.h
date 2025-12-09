@@ -14,6 +14,12 @@ class CDragonian_Melee final : public CMonster
 public:
     enum class MONSTATE { DEAD, GRORRY, BRUTAL, ATTACK, DAMAGE, LOCKON, SLEEP, TURN, END };
 
+    typedef struct tagDragonianMeleeTag : public CMonster::MONSTER_DESC
+    {
+        _bool isSleep = { false };
+
+    }DRAGON_MELEE_MONSTER_DESC;
+
     typedef struct TagMonData{
         //Anim
         _int                iAnimIndex = {};
@@ -53,6 +59,8 @@ public:
         CDragonian_Melee*   pOwner = { nullptr };
  
         _bool               isStamina_Regen = {};
+
+        _bool               isMotionSleep = {};
     }MONDATA;
 
 private:

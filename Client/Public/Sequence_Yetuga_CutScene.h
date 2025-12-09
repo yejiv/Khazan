@@ -49,7 +49,7 @@ private:
     _bool   m_isCameraAnimation = { false };
     _bool   m_isFadeIn = { false };
 
-    _bool   m_isSnowSmoke = { true };
+    _bool   m_isSnowSmoke = { false };
     _bool   m_isYetugaJump = { false };
     _bool   m_isYetugaLand = { false };
     _bool   m_isYetugaRoar1 = { false };

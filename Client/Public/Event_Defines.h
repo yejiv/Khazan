@@ -356,7 +356,8 @@ namespace Client {
         bool isNPC() {
             return (INTERACTIVE_TYPE::DANJIN == eInteractType ||
                 INTERACTIVE_TYPE::DAPHRONA == eInteractType ||
-                INTERACTIVE_TYPE::DUIMUK == eInteractType);
+                INTERACTIVE_TYPE::DUIMUK == eInteractType ||
+                INTERACTIVE_TYPE::GACHANPC == eInteractType);
         }
 	};
 
