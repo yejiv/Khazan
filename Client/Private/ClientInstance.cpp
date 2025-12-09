@@ -11,6 +11,7 @@
 #include "Interact_Manager.h"
 #include "Sequence_Data_Manager.h"
 #include "Sequence_Interface.h"
+#include "BGM_Manager.h"
 #ifdef _DEBUG
 #include "Debug_Manager.h"
 #include "Camera_Controller.h"
@@ -57,6 +58,9 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
     m_pSeq_Data_Manager = CSequence_Data_Manager::Create();
     if (nullptr == m_pSeq_Data_Manager)
         return E_FAIL;
+
+    m_pBGM_Manager = CBGM_Manager::Create();
+    CHECK_NULLPTR(m_pBGM_Manager, E_FAIL);
 
 #ifdef _DEBUG
 	m_pDebug_Manager = CDebug_Manager::Create();
@@ -470,6 +474,79 @@ void CClientInstance::Seq_Clear()
 
 #pragma endregion
 
+#pragma region BGM_MANAGER
+
+_float CClientInstance::Get_Volume_BGM()
+{
+    return m_pBGM_Manager->Get_Volume_BGM();
+}
+
+void CClientInstance::Set_Volume_BGM(_float fVolume)
+{
+    m_pBGM_Manager->Set_Volume_BGM(fVolume);
+}
+
+void CClientInstance::PlayBGM(const _tchar* pSoundKey, _float fFadeTime)
+{
+    m_pBGM_Manager->PlayBGM(pSoundKey, fFadeTime);
+}
+
+void CClientInstance::ChangeBGM(const _tchar* pSoundKey, _float fFadeTime)
+{
+    m_pBGM_Manager->ChangeBGM(pSoundKey, fFadeTime);
+}
+
+void CClientInstance::Mute_BGM()
+{
+    m_pBGM_Manager->Mute_BGM();
+}
+
+void CClientInstance::UnMute_BGM()
+{
+    m_pBGM_Manager->UnMute_BGM();
+}
+
+void CClientInstance::HeinMach_Entry()
+{
+    m_pBGM_Manager->HeinMach_Entry();
+}
+
+void CClientInstance::HeinMach_CutScene()
+{
+    m_pBGM_Manager->HeinMach_CutScene();
+}
+
+void CClientInstance::HeinMach_Cave_Entry()
+{
+    m_pBGM_Manager->HeinMach_Cave_Entry();
+}
+
+void CClientInstance::HeinMach_Halberd()
+{
+    m_pBGM_Manager->HeinMach_Halberd();
+}
+
+void CClientInstance::HeinMach_Yetuga_Entry()
+{
+    m_pBGM_Manager->HeinMach_Yetuga_Entry();
+}
+
+void CClientInstance::BGM_Stop(_float fFadeTime)
+{
+    m_pBGM_Manager->BGM_Stop(fFadeTime);
+}
+
+void CClientInstance::BGM_Resume(_bool isFade, _float fFadeTime)
+{
+    m_pBGM_Manager->BGM_Resume(isFade, fFadeTime);
+}
+
+void CClientInstance::BGM_Pause(_bool isFade, _float fFadeTime)
+{
+    m_pBGM_Manager->BGM_Pause(isFade, fFadeTime);
+}
+
+#pragma endregion
 
 #ifdef _DEBUG
 #pragma region CAMERA_MANAGER
@@ -492,6 +569,7 @@ void CClientInstance::Release_Client()
 	Safe_Release(m_pPlayer_Manager);
     Safe_Release(m_pInteract_Manager);
     Safe_Release(m_pSeq_Data_Manager);
+    Safe_Release(m_pBGM_Manager);
 
 #ifdef _DEBUG	
 	Safe_Release(m_pDebug_Manager);

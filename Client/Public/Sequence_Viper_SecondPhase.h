@@ -30,9 +30,6 @@ public:
     SEQ_ID  GetId() const override { return m_Id; }
 
 public:
-    void Push_Obelisk(class CObelisk* pObelisk);
-
-public:
     void Set_Skip(_bool isSkip) { m_isSkip = true; }
 
 public:
@@ -42,6 +39,8 @@ private:
     SEQ_ID m_Id{};
     _float  m_fTime{ 0.f };
     _float  m_fSkipTime = { 0.f };
+
+    _bool m_isPlayerInpusBlock = { false };
 
     _bool m_isFadeOut1 = { false };
     _bool m_isFadeIn1 = { false };
@@ -88,9 +87,10 @@ private:
     _bool   m_isSkipFadeIn = { false };
     _bool   m_isSkipKey = { false };
 
-    _bool   m_isEnd = { false };
+    _bool   m_isViperHismaLook = { false };
+    _bool   m_isViperPickUp = { false };
 
-    queue<class CObelisk*> m_Obelisks;
+    _bool   m_isEnd = { false };
 
     class CGameInstance* m_pGameInstance = { nullptr };
     class CClientInstance* m_pClientInstance = { nullptr };

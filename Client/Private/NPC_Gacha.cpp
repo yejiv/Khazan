@@ -4,7 +4,7 @@
 
 #include "Interaction_Guide.h"
 
-#include "UI_Talk_Dangin.h"
+#include "UI_Talk_Gacha.h"
 
 #include "ClientInstance.h"
 
@@ -207,7 +207,7 @@ HRESULT CNPC_Gacha::Ready_3D_Talk_UI(void* pArg)
     Desc.vLocalPos = { 0.f, 0.f };
     Desc.vLocalSize = { 1.7f, 1.7f };
     Desc.szName = "Gacha_TalkUI";
-    m_pGachaTalkUI = static_cast<CUI_Talk_Dangin*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Dangin"), &Desc));
+    m_pGachaTalkUI = static_cast<CUI_Talk_Gacha*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Gacha"), &Desc));
     CHECK_NULLPTR(m_pGachaTalkUI, E_FAIL);
 
     return S_OK;
@@ -267,7 +267,7 @@ void CNPC_Gacha::Input_Interact_Event(_float fTimeDelta)
 
         EventNPC NPCEvent = {};
 
-        NPCEvent.vPlayerPosition = _float4(-60.462f, -92.26f, -41.949f, 1.f);
+        NPCEvent.vPlayerPosition = _float4(-60.172f, -92.26f, -37.281f, 1.f);
         XMStoreFloat4(&NPCEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
 
         InteractType.NPCEvent = NPCEvent;
@@ -304,7 +304,7 @@ void CNPC_Gacha::Animation_Update(_float fTimeDelta)
 
             EventNPC NPCEvent = {};
 
-            NPCEvent.vPlayerPosition = _float4(-60.462f, -92.26f, -41.949f, 1.f);
+            NPCEvent.vPlayerPosition = _float4(-60.172f, -92.26f, -37.281f, 1.f);
             XMStoreFloat4(&NPCEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
 
             InteractType.NPCEvent = NPCEvent;
@@ -312,7 +312,7 @@ void CNPC_Gacha::Animation_Update(_float fTimeDelta)
             // NPC를 바라볼 수 있도록 포지션만 던짐 ( 귀검 애니메이션 아직 종료 X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
-            m_pClientInstance->Camera_Set_NpcTalk(true, _float3(247.15f, 5.01f, 143.43f), _float3(0.59f, -0.11f, -0.80f));
+            m_pClientInstance->Camera_Set_NpcTalk(true, _float3(-61.155f, -91.044f, -38.491f), _float3(-0.871f, 0.126f, 0.475f));
         }
     }
     else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨

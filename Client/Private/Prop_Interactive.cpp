@@ -122,6 +122,14 @@ _bool CProp_Interactive::IsPlayingSound(const _tchar* pSoundKey)
     return m_pGameInstance->IsPlayingByKey(wstrAddWav.c_str());
 }
 
+void CProp_Interactive::Sound_FadeIn(const _tchar* pSoundKey, _float fVolume, _float fFadeTime, _bool isLoop, FMOD_CHANNEL** ppOutChannel)
+{
+    _wstring wstrAddWav = pSoundKey;
+    wstrAddWav += TEXT(".wav");
+
+    m_pGameInstance->PlaySound_FadeIn(wstrAddWav.c_str(), fVolume, fFadeTime, isLoop, ppOutChannel);
+}
+
 void CProp_Interactive::SoundOnce(const _tchar* pSoundKey, _float fVolume, FMOD_CHANNEL** ppOutChannel)
 {
     _wstring wstrAddWav = pSoundKey;

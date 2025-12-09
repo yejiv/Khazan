@@ -532,11 +532,6 @@ void CGameInstance::Set_EnableOutline(_bool isEnable)
 	m_pRenderer->Set_EnableOutline(isEnable);
 }
 
-void CGameInstance::Set_EnableRimLight(_bool isEnable)
-{
-    m_pRenderer->Set_EnableRimLight(isEnable);
-}
-
 #endif
 
 void CGameInstance::Set_ToonShadeLevel(_float fLevel)
@@ -557,6 +552,11 @@ void CGameInstance::Set_OutlineConfig(OUTLINE_CONFIG Config)
 void CGameInstance::Set_SpecularPower(_float2 vPower)
 {
     m_pRenderer->Set_SpecularPower(vPower);
+}
+
+void CGameInstance::Set_EnableRimLight(_bool isEnable)
+{
+    m_pRenderer->Set_EnableRimLight(isEnable);
 }
 
 RIM_LIGHT_DESC CGameInstance::Get_RimLightDesc()
@@ -1760,6 +1760,26 @@ bool CGameInstance::IsPlayingByKey(const TCHAR* pSoundKey)
 void CGameInstance::SetVolumeByKey(const TCHAR* pSoundKey, float fVolume)
 {
     m_pSound_Manager->SetVolumeByKey(pSoundKey, fVolume);
+}
+
+void CGameInstance::Sound_Resume(const TCHAR* pSoundKey)
+{
+    m_pSound_Manager->Resume(pSoundKey);
+}
+
+void CGameInstance::Sound_Resume_Fade(const TCHAR* pSoundKey, float fFadeTime)
+{
+    m_pSound_Manager->Resume_Fade(pSoundKey, fFadeTime);
+}
+
+void CGameInstance::Sound_Pause(const TCHAR* pSoundKey)
+{
+    m_pSound_Manager->Pause(pSoundKey);
+}
+
+void CGameInstance::Sound_Pause_Fade(const TCHAR* pSoundKey, float fFadeTime)
+{
+    m_pSound_Manager->Pause_Fade(pSoundKey, fFadeTime);
 }
 
 #pragma endregion

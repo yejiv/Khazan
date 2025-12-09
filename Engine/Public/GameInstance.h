@@ -88,7 +88,6 @@ public:
 	void Set_EnableSSAO(_bool isEnable);
 	void Set_EnableToonShade(_bool isEnable);
 	void Set_EnableOutline(_bool isEnable);
-    void Set_EnableRimLight(_bool isEnable);
 #endif
 
 public:
@@ -96,6 +95,7 @@ public:
 	OUTLINE_CONFIG Get_OutlineConfig();
 	void Set_OutlineConfig(OUTLINE_CONFIG Config);
     void Set_SpecularPower(_float2 vPower);
+    void Set_EnableRimLight(_bool isEnable);
     RIM_LIGHT_DESC Get_RimLightDesc();
     void Set_RimLightDesc(RIM_LIGHT_DESC Desc);
 #pragma endregion
@@ -482,6 +482,11 @@ public:
     void                        StopByChannel(FMOD_CHANNEL** ppOutChannel);
     bool                        IsPlayingByKey(const TCHAR* pSoundKey);
     void                        SetVolumeByKey(const TCHAR* pSoundKey, float fVolume);
+
+    void                        Sound_Resume(const TCHAR* pSoundKey);
+    void                        Sound_Resume_Fade(const TCHAR* pSoundKey, float fFadeTime = 1.f);
+    void                        Sound_Pause(const TCHAR* pSoundKey);
+    void                        Sound_Pause_Fade(const TCHAR* pSoundKey, float fFadeTime = 1.f);
 #pragma endregion
 
 private:
