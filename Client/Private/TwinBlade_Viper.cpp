@@ -153,6 +153,10 @@ void CTwinBlade_Viper::Update(_float fTimeDelta)
 
         m_pEffect[0]->Update(fTimeDelta);
         m_pEffect[1]->Update(fTimeDelta);
+
+        //¾ê ¾ø¾îÁú ¶§
+        //m_pEffect[0]->SetClose();
+        //m_pEffect[1]->SetClose();
     }
 }
 

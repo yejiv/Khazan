@@ -66,6 +66,8 @@ private:
 
     _uint m_iEventLisID = { 0 };
 
+    _uint   m_iEffectIdx;
+
 private:
     HRESULT Ready_Components(void* pArg);
 

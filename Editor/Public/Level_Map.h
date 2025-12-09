@@ -100,6 +100,8 @@ private:
 
 	_int m_iBN_ID = {};
 	_int m_iFix_BN_ID = {};
+    _int m_iTS_ID = {};
+    _int m_iFix_TS_ID = {};
 
 	CMapObject::ITEMBOX_DESC m_ItemBox = {};
 	CMapObject::ITEMBOX_DESC m_FixItemBox = {};

@@ -120,10 +120,8 @@ private:
     class CMeshTrail*               m_pMeshTrail = { nullptr };
 
     CBody*                          m_pHitBodyCom = { nullptr };
-    CBody*                          m_pLeftLegCom = { nullptr };
 
     _float4x4*                      m_pBodySocketMatrix = { nullptr };
-    _float4x4*                      m_pLeftLegSocketMatrix = { nullptr };
     _float4x4*                      m_pLockOnSocketMatrix = { nullptr };
     _float4                         m_vLockOnPos = {};
 
@@ -140,6 +138,10 @@ private:
     _float4                         m_vSword_Start = {};
 
     class CTarget_BrutalAttack*     m_pBrutalAttack = { nullptr };
+
+private :
+    _uint                           m_iFXIdx;
+
 
 private:
     HRESULT                         Ready_Prototype();

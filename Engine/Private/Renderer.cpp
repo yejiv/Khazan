@@ -554,14 +554,11 @@ HRESULT CRenderer::Render_PostScene()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
         return E_FAIL;
 
-    if (true == isEnableFog())
-        if (FAILED(m_pGameInstance->Bind_Fog_ShaderResources(m_pShader)))
-            return E_FAIL;
+    if (FAILED(m_pGameInstance->Bind_Fog_ShaderResources(m_pShader)))
+        return E_FAIL;
 
 #ifdef _DEBUG
     if (FAILED(m_pShader->Bind_Bool("g_isEnableShadow", &m_isEnableShadow)))
-        return E_FAIL;
-    if (FAILED(m_pShader->Bind_Bool("g_isEnableFog", &m_isEnableFog)))
         return E_FAIL;
 #endif
 
@@ -845,8 +842,8 @@ HRESULT CRenderer::Render_Combined()
 #ifdef _DEBUG
     if (FAILED(m_pShader->Bind_Bool("g_isEnableShadow", &m_isEnableShadow)))
         return E_FAIL;
-    if (FAILED(m_pShader->Bind_Bool("g_isEnableFog", &m_isEnableFog)))
-        return E_FAIL;
+    //  if (FAILED(m_pShader->Bind_Bool("g_isEnableFog", &m_isEnableFog)))
+    //      return E_FAIL;
     if (FAILED(m_pShader->Bind_Bool("g_isEnableOutline", &m_isEnableOutline)))
         return E_FAIL;
     if (FAILED(m_pShader->Bind_Bool("g_isEnableDistortion", &m_isEnableDistortion)))
@@ -1352,15 +1349,6 @@ _bool CRenderer::isEnableSSAO()
 {
 #ifdef _DEBUG
     return m_isEnableSSAO;
-#else
-    return true;
-#endif
-}
-
-_bool CRenderer::isEnableFog()
-{
-#ifdef _DEBUG
-    return m_isEnableFog;
 #else
     return true;
 #endif

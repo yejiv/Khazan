@@ -17,6 +17,8 @@
 #pragma endregion
 
 #include "UI_Announce_MapName.h"
+#include "Dragonian_Melee.h"
+#include "Dragonian_Rampage.h"
 
 CLevel_Embars::CLevel_Embars(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -89,6 +91,9 @@ HRESULT CLevel_Embars::Initialize()
 
     m_pClientInstance->Set_PlayerInput(true);
 #pragma endregion
+
+    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_MiniGame"),
+        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_MiniGame_Gacha"), TIME_CHANNEL::WORLD), E_FAIL);
 
 	return S_OK;
 }
@@ -209,6 +214,15 @@ HRESULT CLevel_Embars::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("DoorOpen"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("labber"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Statue_Dust"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On_Static"), 4);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On"), 4);
+
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Jump"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Land_Shield"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Land_Sword"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Spark_Loop"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Sword_Wind"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Smoke_Small"), 10);
 
     return S_OK;
 }
@@ -521,7 +535,7 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
 
         if ("Dragonian_Melee" == MonsterData.MonsterKey[i])
         {
-            CMonster::MONSTER_DESC MonsterDesc{};
+            CDragonian_Melee::DRAGON_MELEE_MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 20.f;
             MonsterDesc.fMaxHP = 100.f;
             MonsterDesc.fMaxStamina = 70.f;
@@ -532,14 +546,14 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
             MonsterDesc.WorldMatrix = WorldMatrix;
             MonsterDesc.strName = "Dragonian_Melee";
             MonsterDesc.iLevelIndex = ENUM_CLASS(eCurrentLevel);
-
+            MonsterDesc.isSleep = false;
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
                 ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
         else if ("Dragonian_Claw" == MonsterData.MonsterKey[i])
         {
-            CMonster::MONSTER_DESC MonsterDesc{};
+            CDragonian_Rampage::DRAGON_RAMPAGE_MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
             MonsterDesc.fMaxHP = 100.f;
             MonsterDesc.fMaxStamina = 100.f;
@@ -551,10 +565,47 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
 
             MonsterDesc.strName = "Dragonian_Rampage";
             MonsterDesc.iLevelIndex = ENUM_CLASS(eCurrentLevel);
-
+            MonsterDesc.isSleep = false;
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
                 ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
 
+                return E_FAIL;
+        }
+        else if ("Dragonian_Melee_Sleep" == MonsterData.MonsterKey[i])
+        {
+            CDragonian_Melee::DRAGON_MELEE_MONSTER_DESC MonsterDesc{};
+            MonsterDesc.fAttack = 20.f;
+            MonsterDesc.fMaxHP = 100.f;
+            MonsterDesc.fMaxStamina = 70.f;
+            MonsterDesc.fMoveSpeed = 10.f;
+            MonsterDesc.fSpeedPerSec = 3.f;
+            MonsterDesc.fRotationPerSec = 180.f;
+
+            MonsterDesc.WorldMatrix = WorldMatrix;
+            MonsterDesc.strName = "Dragonian_Melee";
+            MonsterDesc.iLevelIndex = ENUM_CLASS(eCurrentLevel);
+            MonsterDesc.isSleep = true;
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+                ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+                return E_FAIL;
+        }
+        else if ("Dragonian_Claw_Sleep" == MonsterData.MonsterKey[i])
+        {
+            CDragonian_Rampage::DRAGON_RAMPAGE_MONSTER_DESC MonsterDesc{};
+            MonsterDesc.fAttack = 10.f;
+            MonsterDesc.fMaxHP = 100.f;
+            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMoveSpeed = 10.f;
+            MonsterDesc.fSpeedPerSec = 3.f;
+            MonsterDesc.fRotationPerSec = 180.f;
+
+            MonsterDesc.WorldMatrix = WorldMatrix;
+
+            MonsterDesc.strName = "Dragonian_Rampage";
+            MonsterDesc.iLevelIndex = ENUM_CLASS(eCurrentLevel);
+            MonsterDesc.isSleep = true;
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+                ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
         else if ("Elamein" == MonsterData.MonsterKey[i])
@@ -685,6 +736,14 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
+        case INTERACTIVE_TYPE::TOMBSTONE:
+        {
+            _int iTombStoneID = {};
+            CHECK_FALSE(ReadFile(hFile, &iTombStoneID, sizeof(_int), &dwByte, nullptr), E_FAIL);
+            ObjectDesc.pOtherDesc = &iTombStoneID;
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_TombStone"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
         case INTERACTIVE_TYPE::ELEVATOR:
         {
             CElevatorS::ELEVATOR_POS ElevatorPos = {};
@@ -780,6 +839,11 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
         case INTERACTIVE_TYPE::GIANTGATE:
         {
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_GiantGate"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
+        case INTERACTIVE_TYPE::GACHANPC:
+        {
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_NPC_Gacha"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
         case INTERACTIVE_TYPE::DAPHRONA:

@@ -156,6 +156,8 @@ void CBody_Phase2_Viper::Update(_float fTimeDelta)
         }       
     }
 
+    // Radial Blur 센터 설정
+    m_pGameInstance->Set_RadialBlurCenter(Get_BoneMatrix("Bone_tongue_04").r[3]);
 }
 
 void CBody_Phase2_Viper::Late_Update(_float fTimeDelta)
@@ -186,7 +188,7 @@ HRESULT CBody_Phase2_Viper::Render()
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
         return E_FAIL;
 
-    _float fEmissiveIntensity = 10.f;
+    _float fEmissiveIntensity = 15.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
         return E_FAIL;
 

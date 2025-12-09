@@ -3,12 +3,12 @@
 #include "AI_Controller.h"
 
 CElamein_Sword::CElamein_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CPartObject{ pDevice,pContext }
+    :CWeaponObject{ pDevice,pContext }
 {
 }
 
 CElamein_Sword::CElamein_Sword(const CElamein_Sword& Prototype)
-    :CPartObject(Prototype)
+    :CWeaponObject(Prototype)
 {
 }
 
@@ -32,7 +32,7 @@ HRESULT CElamein_Sword::Initialize_Clone(void* pArg)
     m_pTransformCom->Rotation(XMConvertToRadians(0.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
     CHECK_FAILED(Ready_Components(), E_FAIL);
     _float4x4 PreTransformMatrix;
-    XMStoreFloat4x4(&PreTransformMatrix, XMMatrixScaling(0.00012, 0.00012, 0.00012) * XMMatrixRotationY(XMConvertToRadians(180.0f)));
+    XMStoreFloat4x4(&PreTransformMatrix, XMMatrixScaling(0.00012f, 0.00012f, 0.00012f) * XMMatrixRotationY(XMConvertToRadians(180.0f)));
     m_pModelCom->Set_PreTransformMatrix(PreTransformMatrix);
 
     CHECK_FAILED(Ready_Collision(), E_FAIL);

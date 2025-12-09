@@ -17,10 +17,22 @@ void CAS_Elamein_Sleep::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAS_Elamein_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
+    static int idx = 0;
+    int a[] = { 51, 56, 71, 77, 79, 89, 93, 95, 96, 66};
+
     if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
     {
         m_isChange ? m_isChange = false : m_isChange = true;
-        m_isChange ? m_pMonData->iAnimIndex = 101 : m_pMonData->iAnimIndex = 83;
+        
+        if (m_isChange == false)
+        {
+            ++idx;
+            if (idx > 9)
+                idx = 0;
+        }
+
+        //m_isChange ? m_pMonData->iAnimIndex = 101 : m_pMonData->iAnimIndex = 51;
+        m_isChange ? m_pMonData->iAnimIndex = 101 : m_pMonData->iAnimIndex = a[9];
     }
  
     if (!m_pMonData->isSleep)
