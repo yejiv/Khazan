@@ -174,6 +174,8 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
         }
         else if (m_strTriggerKey == "B1_Entry")
         {
+            CClientInstance::GetInstance()->Embars_Entry();
+
             // 지하 포그
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.05f;

@@ -476,6 +476,16 @@ void CClientInstance::Seq_Clear()
 
 #pragma region BGM_MANAGER
 
+_float CClientInstance::Get_FadeTime_BGM()
+{
+    return m_pBGM_Manager->Get_FadeTime_BGM();
+}
+
+void CClientInstance::Set_FadeTime_BGM(_float fFadeTime)
+{
+    m_pBGM_Manager->Set_FadeTime_BGM(fFadeTime);
+}
+
 _float CClientInstance::Get_Volume_BGM()
 {
     return m_pBGM_Manager->Get_Volume_BGM();
@@ -484,6 +494,21 @@ _float CClientInstance::Get_Volume_BGM()
 void CClientInstance::Set_Volume_BGM(_float fVolume)
 {
     m_pBGM_Manager->Set_Volume_BGM(fVolume);
+}
+
+void CClientInstance::Mute_BGM()
+{
+    m_pBGM_Manager->Mute_BGM();
+}
+
+void CClientInstance::UnMute_BGM()
+{
+    m_pBGM_Manager->UnMute_BGM();
+}
+
+void CClientInstance::Clear_CurrentKey_BGM()
+{
+    m_pBGM_Manager->Clear_CurrentKey();
 }
 
 void CClientInstance::PlayBGM(const _tchar* pSoundKey, _float fFadeTime)
@@ -496,14 +521,14 @@ void CClientInstance::ChangeBGM(const _tchar* pSoundKey, _float fFadeTime)
     m_pBGM_Manager->ChangeBGM(pSoundKey, fFadeTime);
 }
 
-void CClientInstance::Mute_BGM()
+void CClientInstance::PlayBattleBGM(const _tchar* pSoundKey, _float fFadeTime)
 {
-    m_pBGM_Manager->Mute_BGM();
+    m_pBGM_Manager->PlayBattleBGM(pSoundKey, fFadeTime);
 }
 
-void CClientInstance::UnMute_BGM()
+void CClientInstance::EndBattleBGM(_float fFadeTime)
 {
-    m_pBGM_Manager->UnMute_BGM();
+    m_pBGM_Manager->EndBattleBGM(fFadeTime);
 }
 
 void CClientInstance::HeinMach_Entry()
@@ -529,6 +554,11 @@ void CClientInstance::HeinMach_Halberd()
 void CClientInstance::HeinMach_Yetuga_Entry()
 {
     m_pBGM_Manager->HeinMach_Yetuga_Entry();
+}
+
+void CClientInstance::Embars_Entry()
+{
+    m_pBGM_Manager->Embars_Entry();
 }
 
 void CClientInstance::BGM_Stop(_float fFadeTime)

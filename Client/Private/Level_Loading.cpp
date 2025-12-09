@@ -92,6 +92,7 @@ void CLevel_Loading::Update(_float fTimeDelta)
 		{
             Ready_CleanImgUI();
 			m_pClientInstance->Clear_CameraManager(ENUM_CLASS(m_pClientInstance->Get_CurrLevel()));
+            m_pClientInstance->Clear_CurrentKey_BGM();
 #ifdef _DEBUG
 			m_pClientInstance->CameraTool_Clear();
 #endif
