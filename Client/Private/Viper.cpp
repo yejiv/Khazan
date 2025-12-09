@@ -305,8 +305,9 @@ void CViper::Update(_float fTimeDelta)
     {
         if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
         {
-            CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
-            Viper_2PhaseBerserker_ShaderSettings();
+            Spawn_EmissiveCrackDecal(m_pTransformCom->Get_State(STATE::POSITION));
+            CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.f);
+            //  Viper_2PhaseBerserker_ShaderSettings();
         }
     }
 
@@ -405,7 +406,9 @@ void CViper::Update(_float fTimeDelta)
             pTrail->Update(fTimeDelta);
     }
 
-    if (m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "is_Berserker"))
+    m_isBerserker = m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "is_Berserker");
+
+    if (m_isBerserker)
         FX_2PhaseEyeTrail();
 
     for (auto& pTrail : m_pLineTrail)
@@ -2942,10 +2945,14 @@ HRESULT CViper::Ready_AnimEffectEvent()
     
     pModel->Register_Event("Hand_Stomp_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
+        // 이미시브 데칼 스폰
+        Spawn_EmissiveCrackDecal(m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
     
     pModel->Register_Event("Hand_Stomp_Strong_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land_Big"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
+        // 이미시브 데칼 스폰
+        Spawn_EmissiveCrackDecal(m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
     
     pModel->Register_Event("Sword_Swing_Double_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -2970,6 +2977,8 @@ HRESULT CViper::Ready_AnimEffectEvent()
     
     pModel->Register_Event("Hand_DashUpper_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land_Big"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
+        // 이미시브 데칼 스폰
+        Spawn_EmissiveCrackDecal(m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
     
     pModel->Register_Event("Hand_DashUpper_STR_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -2996,6 +3005,8 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("Sword_Swing_Stamp_Fin_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), 칼 위치);
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land_Big"), m_pTransformCom->Get_State(STATE::POSITION));
+        // 이미시브 데칼 스폰
+        Spawn_EmissiveCrackDecal(m_pTransformCom->Get_State(STATE::POSITION));
         });
     
     //pModel->Register_Event("FakeRun_Trail0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -3031,8 +3042,10 @@ HRESULT CViper::Ready_AnimEffectEvent()
     //    });
     
     pModel->Register_Event("SwingRound_Land_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-          //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), 창 위치);
-          m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pTransformCom->Get_State(STATE::POSITION));
+        //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), 창 위치);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pTransformCom->Get_State(STATE::POSITION));
+        // 이미시브 데칼 스폰
+        Spawn_EmissiveCrackDecal(m_pTransformCom->Get_State(STATE::POSITION));
         });
     
     pModel->Register_Event("JumpAtk_Roar_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -3045,7 +3058,9 @@ HRESULT CViper::Ready_AnimEffectEvent()
         });
     
     pModel->Register_Event("JumpAtk_Jump_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-          m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land_Big"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land_Big"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
+        // 이미시브 데칼 스폰
+        Spawn_EmissiveCrackDecal(m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
     
     pModel->Register_Event("JumpAtk_Stamp_RightHand_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -3055,6 +3070,8 @@ HRESULT CViper::Ready_AnimEffectEvent()
     
     pModel->Register_Event("JumpAtk_Stamp_RightHand_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
+        // 이미시브 데칼 스폰
+        Spawn_EmissiveCrackDecal(m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
     
     pModel->Register_Event("Roar_2Phase_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -3333,52 +3350,52 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     // 버서커 모드
     // 번!!!!개!!!!!
-    pModel->Register_Event("DashDrift_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("DashDrift_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("DashDrift_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("DashDrift_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("DashDrift_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("DashDrift_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashDrift_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashDrift_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashDrift_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashDrift_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashDrift_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashDrift_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
 
-    pModel->Register_Event("DashDriftEnd_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("DashDriftEnd_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("DashDriftEnd_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("DashDriftEnd_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("DashDriftEnd_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("DashDriftEnd_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashDriftEnd_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashDriftEnd_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashDriftEnd_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashDriftEnd_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
 
-    pModel->Register_Event("DashUpper_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("DashUpper_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("DashUpper_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("DashUpper_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("DashUpper_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("DashUpper_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.3f, 3); });
-    pModel->Register_Event("DashUpper_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("DashUpper_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("DashUpper_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("DashUpper_Thunder9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("DashUpper_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashUpper_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashUpper_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashUpper_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashUpper_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashUpper_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashUpper_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashUpper_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashUpper_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashUpper_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashUpper_Thunder9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashUpper_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
 
-    pModel->Register_Event("JumpAttack_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("JumpAttack_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("JumpAttack_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("JumpAttack_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("JumpAttack_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("JumpAttack_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("JumpAttack_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("JumpAttack_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("JumpAttack_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("JumpAttack_Thunder9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("JumpAttack_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
+    pModel->Register_Event("JumpAttack_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("JumpAttack_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("JumpAttack_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("JumpAttack_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("JumpAttack_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("JumpAttack_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("JumpAttack_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("JumpAttack_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("JumpAttack_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("JumpAttack_Thunder9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("JumpAttack_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
 
-    pModel->Register_Event("SwingCombo_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("SwingCombo_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("SwingCombo_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("SwingCombo_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("SwingCombo_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("SwingCombo_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("SwingCombo_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("SwingCombo_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.1f, 1); });
-    pModel->Register_Event("SwingCombo_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("SwingCombo_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("SwingCombo_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("SwingCombo_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("SwingCombo_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
 
     // ======================================== [ Cinematic ] ========================================
 
@@ -4000,7 +4017,7 @@ void CViper::Spawn_BloodDecal()
     _float fOffset = 2.f;
     _float fPosX = XMVectorGetX(vDecalPos);
     _float fPosZ = XMVectorGetZ(vDecalPos);
-    Desc.vScale = _float3(5.5f, 0.7f, 5.5f);
+    Desc.vScale = _float3(7.f, 0.7f, 7.f);
     Desc.isRandomTexture = false;
 
     for (_uint i = 0; i < 10; ++i)
@@ -4012,6 +4029,24 @@ void CViper::Spawn_BloodDecal()
         Desc.iTextureIndex = static_cast<_uint>(m_pGameInstance->Rand(1.f, 4.f));
         m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Decal"), Desc);
     }
+}
+
+void CViper::Spawn_EmissiveCrackDecal(_fvector vPosition)
+{
+    DECAL_DESC Desc{};
+    Desc.fLifeTime = 5.f;
+    Desc.vFadeTime = _float2(0.2f, 0.2f);
+    Desc.eType = DECALTYPE::EMISSIVE;
+    XMStoreFloat3(&Desc.vPosition, vPosition);
+    Desc.vScale = _float3(7.f, 0.7f, 7.f);
+    Desc.EmissiveDesc.vBaseColor = _float3(0.12f, 0.1f, 0.08f);
+    Desc.EmissiveDesc.vEmissiveColor = _float3(1.2f, 1.f, 0.8f);
+    Desc.EmissiveDesc.vBorderColor = _float3(0.f, 0.f, 0.f);
+    Desc.EmissiveDesc.fEmissiveMaskPower = 1.f;
+    Desc.EmissiveDesc.fEmissiveIntensity = 3.f;
+    Desc.isRandomTexture = false;
+    Desc.iTextureIndex = 7;
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Decal"), Desc);
 }
 
 CViper* CViper::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
