@@ -464,14 +464,12 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
         const _float clampNear = m_fLockClampNearDist;
         const _float clampFar = m_fLockClampFarDist;
 
-        // 가까울수록 kDist → 1, 멀수록 → 0
         const _float kDist = 1.f - Saturate((playerToTargetDistance - clampNear) / (clampFar - clampNear));
 
-        const _float pitchDownLimit = XMConvertToRadians(m_fLockPitchDownClampDeg); // 아래
-        const _float pitchUpLimitTight = XMConvertToRadians(m_fLockPitchUpClampDeg);   // 위 "빡센" 한계 (근거리용)
-        const _float pitchUpLimitHard = m_fPitchMax;                                  // 전체 상한 (멀리서 허용)
+        const _float pitchDownLimit = XMConvertToRadians(m_fLockPitchDownClampDeg);
+        const _float pitchUpLimitTight = XMConvertToRadians(m_fLockPitchUpClampDeg);
+        const _float pitchUpLimitHard = m_fPitchMax;
 
-        // 1) 기본: 너무 내려보는 건 기존처럼 부드럽게 막기
         if (kDist > 0.f)
         {
             if (targetPitch < pitchDownLimit)
@@ -480,35 +478,23 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
             }
         }
 
-        // 2) 위쪽 한계 동적 계산
-        //    - 타겟이 위에 있고(targetHeightDiff > 0)
-        //    - 거리도 가깝고(kDist ↑)
-        //    → pitchUpLimitTight 쪽으로 점점 조이기
-        _float dynamicUpLimit = pitchUpLimitHard; // 기본은 느슨한 한계 (m_fPitchMax)
+        _float dynamicUpLimit = pitchUpLimitHard;
 
-        // "얼마나 위에 있는지"를 0~1로 정규화 (2m 이상이면 그냥 1)
         _float kHeight = 0.f;
         if (targetHeightDiff > 0.f)
         {
-            const _float refHeight = 2.0f; // 적당한 기준 높이, 필요시 튜닝
+            const _float refHeight = 2.0f; 
             kHeight = Saturate(targetHeightDiff / refHeight);
         }
 
-        // kDist : 가까울수록 1
-        // kHeight : 위로 올라갈수록 1
-        // 둘을 곱으면 "가까이 + 위"일 때만 크게 1에 가까워짐
         _float kTight = Saturate(kDist * kHeight);
 
         if (kTight > 0.f)
         {
-            // kTight = 0 -> pitchUpLimitHard (멀거나 높이차 적을 때)
-            // kTight = 1 -> pitchUpLimitTight (가깝고 위에 있을 때, 가장 빡센 한계)
             dynamicUpLimit = Lerp(pitchUpLimitHard, pitchUpLimitTight, kTight);
         }
         else if (kDist > 0.f)
         {
-            // 타겟이 위에 있진 않지만 "가까울 때 회전 너무 심한 것"을 조금만 잡고 싶으면
-            // 기존 로직 느낌으로 거리에 따라만 살짝 조이기
             dynamicUpLimit = Lerp(pitchUpLimitHard, pitchUpLimitTight, kDist);
         }
 
