@@ -922,7 +922,18 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     m_pModelCom->Register_Event("StrongAtk_Charge_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
     m_pModelCom->Register_Event("StrongAtk_Charge_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
 
-    m_pModelCom->Register_Event("StrongAtk_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust1(m_pParentTransform->Get_WorldMatrix().r[3]); });
+    m_pModelCom->Register_Event("StrongAtk_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {       
+        FX_StrongAtk_Charge_Blust1(m_pParentTransform->Get_WorldMatrix().r[3]); 
+
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.2f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(70.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+        });
     m_pModelCom->Register_Event("StrongAtk_Charge_Stamp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {   
         _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
         _matrix W_withOffset = XMMatrixTranslation(-1.f, 0.f, 1.f) * W;
@@ -931,9 +942,24 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     );
 
     /*보름달 트레일*/
-    m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_BlueTrail(); });
+    m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        Set_BlueTrail(); 
+
+        FOVModifier tMod{};
+        tMod.strID = TEXT("FullMoon");
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.5f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(70.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+        });
     m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
-    m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
+    m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
+        Set_BaseTrail();
+        m_pClientInstance->ActiveCamera_KillFov(TEXT("FullMoon"));
+        });
     /*보름달 Blust*/
     m_pModelCom->Register_Event("Full_Moon_Spike0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust3(m_pParentTransform->Get_WorldMatrix().r[3]); });
     m_pModelCom->Register_Event("Full_Moon_Spike1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Spear_Spike(); }); 
@@ -947,6 +973,15 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiralSpear_SpearFX"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
 
         FX_StrongAtk_Charge_Blust1(m_pParentTransform->Get_WorldMatrix().r[3]);
+
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.5f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(70.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
 
     m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
@@ -1040,6 +1075,16 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
         m_isEnableMotionTrail = true;
         m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
+
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 0.7f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(50.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+
         });
 
     m_pModelCom->Register_Event("SprintAtk_Strong_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -1148,6 +1193,15 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         RBDesc.vFadeTime = _float2(0.25f, 0.5f);
         m_pGameInstance->Start_RadialBlur(RBDesc);
 
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 0.5f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(50.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+
         });
 
     // 찰나 베기
@@ -1168,11 +1222,23 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
         m_isEnableMotionTrail = true;
         m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
+
+        FOVModifier tMod{};
+        tMod.strID = TEXT("SprintAtk");
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.25f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(50.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+
         });
 
     m_pModelCom->Register_Event("SprintAtk_Fast_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), false);
         m_isEnableMotionTrail = false;
+        m_pClientInstance->ActiveCamera_KillFov(TEXT("SprintAtk"));
         });
 
     // 그림자 참격
@@ -1190,6 +1256,15 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         RBDesc.fDuration = 1.5f;
         RBDesc.vFadeTime = _float2(0.25f, 0.5f);
         m_pGameInstance->Start_RadialBlur(RBDesc);
+
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.5f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(50.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);        
         });
 
     m_pModelCom->Register_Event("Tempest_MoonVeil_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -1215,10 +1290,22 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
         m_isEnableMotionTrail = true;
         m_iCurMotionTrailAnimIndex = m_pModelCom->Get_CurAnimIndex();
+
+        FOVModifier tMod{};
+        tMod.strID = TEXT("Dodge");
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 0.5f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(50.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), false);
         m_isEnableMotionTrail = false;
+        
+        m_pClientInstance->ActiveCamera_KillFov(TEXT("Dodge"));
         });
 
     // 닷지 어택
