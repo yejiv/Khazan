@@ -42,6 +42,8 @@ private:
 
     _uint m_iEventID = { 0 };
 
+    _bool m_isSoundStart = { false };
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
 

@@ -100,6 +100,7 @@ HRESULT CDanjinJar::Ready_Collision(void* pArg)
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc.pGameObject = this;
+    m_tCollisionDesc.isForceVaildation = true;
     //pCollDesc.pInfo = ?? // 작성하기
     TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
 

@@ -482,6 +482,11 @@ public:
     void                        StopByChannel(FMOD_CHANNEL** ppOutChannel);
     bool                        IsPlayingByKey(const TCHAR* pSoundKey);
     void                        SetVolumeByKey(const TCHAR* pSoundKey, float fVolume);
+
+    void                        Sound_Resume(const TCHAR* pSoundKey);
+    void                        Sound_Resume_Fade(const TCHAR* pSoundKey, float fFadeTime = 1.f);
+    void                        Sound_Pause(const TCHAR* pSoundKey);
+    void                        Sound_Pause_Fade(const TCHAR* pSoundKey, float fFadeTime = 1.f);
 #pragma endregion
 
 private:
