@@ -11,6 +11,7 @@
 CAS_Groggy_Yetuga::CAS_Groggy_Yetuga()
 	:m_fGroggyTime{ 7.f }
 {
+
 }
 
 void CAS_Groggy_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
@@ -25,6 +26,9 @@ void CAS_Groggy_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 	m_eState = GROGGY::START;
 	pModel->Set_Animation(89);
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_gro_strong_start_02 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 50.f);
+
+
 }
 
 void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -45,6 +49,8 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
 			m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
 			m_pBrutalAttack->Setting_BrutalAttack(m_vBonePosition, m_fGroggyTime);
+            m_pGameInstance->PlaySoundLoop(TEXT("Mon_vo_yetuga_gro_strong_loop_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 20.f);
+
 		}
 		break;
 
@@ -57,7 +63,7 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 		{
 			m_eState = GROGGY::RECOVERY;
 			pModel->Set_Animation(91);
-
+            m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_vo_yetuga_gro_strong_loop_01 (SFX).wav"),1.f);
 			if (m_isBrutalAttackSuccess)
 			{
                 CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
@@ -78,6 +84,7 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
         if (pModel->Play_Animation(fTimeDelta))
         {
+            //Mon_vo_yetuga_stamina_recover_roar_01 (SFX).wav
             m_eState = GROGGY::END;              
             pModel->Set_Animation(93);   
             pYetuga->Set_RequestRecoveryStamina(true);

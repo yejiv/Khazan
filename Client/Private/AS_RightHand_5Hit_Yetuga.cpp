@@ -19,7 +19,7 @@ void CAS_RightHand_5Hit_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     pModel->Set_AnimationLoop(false);
 
     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_dempseyroll_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dempseyroll_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
 }
 
 void CAS_RightHand_5Hit_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

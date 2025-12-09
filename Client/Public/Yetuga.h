@@ -46,7 +46,7 @@ private:
 
 public:
     void                            SFX_Move(_uint iIndex);
-
+    void                            SFX_HIT(_uint iHitIndex);
 
 private:
 	// ThrowBall

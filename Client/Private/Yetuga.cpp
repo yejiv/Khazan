@@ -340,8 +340,9 @@ void CYetuga::Pick_Stone()
         m_pHoldStone
     );
 
-    m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_fastball_start_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 10.f);
 
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_fastball_start_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 30.f);
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_fastball_start_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
 }
 
 void CYetuga::Hold_Stone()
@@ -383,7 +384,8 @@ void CYetuga::Throw_Stone()
     CModel* pModel = static_cast<CModel*>(m_pHoldStone->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(1);
 
-    m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_fastball_shoot_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 10.f);
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_fastball_shoot_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_fastball_shoot_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 30.f);
 
 }
 
@@ -1211,6 +1213,9 @@ HRESULT CYetuga::Ready_AnimEvent()
             Desc.fDuration = 1.5f;
             Desc.vFadeTime = _float2(0.3f, 1.f);
             m_pGameInstance->Start_RadialBlur(Desc);
+
+            
+
         });
 
     pModel->Register_Event("Jump_Grab_Jump", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -1278,6 +1283,9 @@ HRESULT CYetuga::Ready_AnimEvent()
             m_pHead->Set_OnAttackCollision(true);
             m_pBody->Set_AttackCollision_Back(true);
             m_isGhost = true;
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_charge_tackle_run_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+
+
         });
 
     pModel->Register_Event("RushCheck", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -1285,7 +1293,15 @@ HRESULT CYetuga::Ready_AnimEvent()
             m_pHead->Set_OnAttackCollision(false);
             m_pBody->Set_AttackCollision_Back(false);
             m_isGhost = false;
+
         });
+
+    pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+   
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_charge_tackle_start_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+
+        });
+
 
 
 #pragma endregion
@@ -1527,7 +1543,6 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 #pragma endregion
 
-
     return S_OK;
     
 }
@@ -1609,6 +1624,7 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
 
     //charge attack - 달리기 전에 왼발 구르기
     //pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    //  
     //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
     //    }); 
 
@@ -1871,7 +1887,7 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
 
 HRESULT CYetuga::Ready_SFX()
 {
-
+    //Mon_vo_yetuga_dmg_weak_01 (SFX).wav
     CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
     if (nullptr == pModel)
         return E_FAIL;
@@ -1913,27 +1929,42 @@ HRESULT CYetuga::Ready_SFX()
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_normal_atk2_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
         });
 
+    pModel->Register_Event("SFX_NormalAttackVO", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_normal_atk2_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        });
+    pModel->Register_Event("SFX_NormalAttackVO", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_normal_atk2_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        });
+
 #pragma endregion
 
 #pragma region BACKMOVE
 
     pModel->Register_Event("SFX_BackMove1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
+            
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
         });
     pModel->Register_Event("SFX_BackMove2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_02 (SFX).wavs"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
         });
 
     pModel->Register_Event("SFX_Dodge", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
+
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
         });
 
     pModel->Register_Event("SFX_BackMove2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move2_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_icebreath_back_jump_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
         });
 
 #pragma endregion
@@ -1942,6 +1973,7 @@ HRESULT CYetuga::Ready_SFX()
     pModel->Register_Event("SFX_BackJump1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_jump_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_jump_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
         });
 #pragma endregion
 
@@ -1958,6 +1990,12 @@ HRESULT CYetuga::Ready_SFX()
         {
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_counter_atk_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
         });
+
+    pModel->Register_Event("SFX_CounterAttackVO", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_counter_atk_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        });
+
 #pragma endregion
 
 #pragma region TURNATTACK
@@ -1971,6 +2009,11 @@ HRESULT CYetuga::Ready_SFX()
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_turn_atk_whoosh_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
         });
 
+    pModel->Register_Event("SFX_TurnAttackVO", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_turn_atk_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        });
+    
 #pragma endregion
 
 #pragma region SIDEMOVELONG
@@ -1978,11 +2021,13 @@ HRESULT CYetuga::Ready_SFX()
     pModel->Register_Event("SFX_SideMoveLong_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_side_move_long_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_side_move_long_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
         });
 
     pModel->Register_Event("SFX_SideMoveLong_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_side_move_long_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_side_move_long_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
         });
 
 #pragma endregion
@@ -1992,6 +2037,28 @@ HRESULT CYetuga::Ready_SFX()
     pModel->Register_Event("SFX_BackPress", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_jump_back_press_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+        });
+
+
+    pModel->Register_Event("SFX_BackPressVO", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_jump_back_press_1_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+
+        });
+
+    pModel->Register_Event("SFX_BackPressVO", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_jump_back_press_2_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        });
+
+#pragma endregion
+
+#pragma region THROWBALL
+
+    pModel->Register_Event("SFX_ThrowBallEnd", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_fastball_end1_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath2_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
         });
 
 #pragma endregion
@@ -2008,17 +2075,19 @@ HRESULT CYetuga::Ready_SFX()
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_dash_atk_impact_01(SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
         });
 
+    pModel->Register_Event("SFX_DashAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dash_atk_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        });
+
 #pragma endregion
-
-#pragma region DAMPSYROLL
-
-#pragma endregion 
 
 #pragma region ARMAGEDDON
 
     pModel->Register_Event("SFX_Armageddon_Start_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_armageddon_start_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_armageddon_start_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
         });
 
     pModel->Register_Event("SFX_Armageddon_Start_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -2039,6 +2108,8 @@ HRESULT CYetuga::Ready_SFX()
     pModel->Register_Event("SFX_Armageddon_JumpStart1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_armageddon_jump_start_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_armageddon_jump_start_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+         
         });
 
     pModel->Register_Event("SFX_Armageddon_JumpStart2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
@@ -2049,12 +2120,17 @@ HRESULT CYetuga::Ready_SFX()
     pModel->Register_Event("SFX_Armageddon_JumpEnd", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_armageddon_jump_end_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_armageddon_jump_end_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        });
+
+    pModel->Register_Event("SFX_ArmageddonEndVO", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_armageddon_end_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
         });
 
 #pragma endregion
 
-
-#pragma ICEBREATH
+#pragma region ICEBREATH
 
     pModel->Register_Event("SFX_IceBreathEnd", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
@@ -2062,9 +2138,70 @@ HRESULT CYetuga::Ready_SFX()
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isIceCreate", false);
             
         });
+    pModel->Register_Event("SFX_IceBreathVO_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_icebreath1_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+
+        });
+
+    pModel->Register_Event("SFX_IceBreathVO_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_icebreath1_roar_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+
+        });
+
+    pModel->Register_Event("SFX_IceBreathVO_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_icebreath_end_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+
+        });
 
 #pragma endregion
 
+#pragma region ROAR
+
+    pModel->Register_Event("SFX_Roar", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_roar2_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        });
+    pModel->Register_Event("SFX_Roar", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_roar2_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        });
+
+#pragma endregion
+
+#pragma region JUMPGRAB
+ 
+    pModel->Register_Event("SFX_GrabSuccess_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_rush_grab_success_up_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        });
+    pModel->Register_Event("SFX_GrabSuccess_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_rush_grab_success_jump_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        });
+
+
+    pModel->Register_Event("SFX_GrabSuccess_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_rush_grab_success_down_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        });
+    pModel->Register_Event("SFX_GrabSuccess_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_rush_grab_success_end_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        });
+
+#pragma endregion
+
+#pragma region STAMINARECOVER
+
+    pModel->Register_Event("SFX_StaminaRecover", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_stamina_recover_roar_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 50.f);
+        });
+
+#pragma endregion
 
     return S_OK;
 }
@@ -2152,6 +2289,64 @@ void CYetuga::SFX_Move(_uint iIndex)
 
 
     }
+}
+
+void CYetuga::SFX_HIT(_uint iHitIndex)
+{
+
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 5);
+
+    if (iHitIndex == 0)
+    {
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_weak_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_weak_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_weak_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+
+        else if (iSoundIndex == 3)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_weak_04 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 4)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_weak_05 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 5)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_weak_06 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+
+    }
+    else if (iHitIndex == 1)
+    {
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_nomal_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_nomal_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_nomal_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+
+        else if (iSoundIndex == 3)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_nomal_04 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 4)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_nomal_05 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 5)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_nomal_06 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+    }
+
+
+    else if (iHitIndex == 2)
+    {
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_strong_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_strong_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_strong_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 3)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_strong_04 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 4)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_strong_05 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 5)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_strong_06 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+    }
+
 }
 
 

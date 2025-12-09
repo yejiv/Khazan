@@ -26,6 +26,8 @@ void CAS_JumpGrab_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     pModel->Set_Animation(57);
     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_rush_grab_wing_whoosh_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_rush_grab_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+
 }
 
 void CAS_JumpGrab_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
