@@ -28,6 +28,13 @@ void CAS_Hit_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     pModel->Set_Animation(iAnimIndex);
     pModel->Set_AnimationLoop(false);
 
+    if (iAnimIndex >= 74 && iAnimIndex <= 77)
+        pYetuga->SFX_HIT(0);
+    else if (iAnimIndex >= 63 && iAnimIndex <= 67)
+        pYetuga->SFX_HIT(1);
+    else if (iAnimIndex >= 79 && iAnimIndex <= 82)
+        pYetuga->SFX_HIT(2);
+
 }
 
 void CAS_Hit_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -71,6 +78,8 @@ _uint CAS_Hit_Yetuga::Make_AnimIndex(HITREACTION eHitreaction, HIT_DIR eHitDir)
     // static 으로 두는 이유는  매번 Enter로 들어오면 변수를 만들어야해서 딱 처음 1번만 초기화 하도록하기 위해서
     static _uint table[ENUM_CLASS(HITREACTION::END)][ENUM_CLASS(HIT_DIR::END)] =
     {
+        {0,0,0,0,},
+        {0,0,0,0},
         // WEAK
         {74,75,76,77},
         // NORMAL

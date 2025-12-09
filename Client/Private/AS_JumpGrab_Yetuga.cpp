@@ -8,6 +8,7 @@
 
 CAS_JumpGrab_Yetuga::CAS_JumpGrab_Yetuga()
 {
+    
 }
 
 void CAS_JumpGrab_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
@@ -24,6 +25,8 @@ void CAS_JumpGrab_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 
     pModel->Set_Animation(57);
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_rush_grab_wing_whoosh_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_rush_grab_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
 
 }
 
@@ -49,12 +52,16 @@ void CAS_JumpGrab_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     if (isGrabbed && !m_isGrabbed)
     {
         pModel->Set_Animation(58);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_rush_grab_success_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
         m_isGrabbed = true;
     }
 
     if (pModel->Play_Animation(fTimeDelta))
     {
         pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isJumpGrabFinished", true);
+        
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_rush_grab_end_01(SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+
         pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pYetuga);
     }
 
