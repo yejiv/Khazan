@@ -675,8 +675,8 @@ void CChildBody::Free()
 
     if (m_pConstraint != nullptr)
     {
-        m_pGameInstance->Remove_Constraint(m_pConstraint);
-        m_pConstraint = nullptr;
+        /*m_pGameInstance->Remove_Constraint(m_pConstraint);
+        m_pConstraint = nullptr;*/
     }
 
     if (!m_BodyID.IsInvalid() && m_pBodyInterface)
