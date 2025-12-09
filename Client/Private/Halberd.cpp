@@ -172,8 +172,10 @@ HRESULT CHalberd::Initialize_Clone(void* pArg)
     MeshDesc.iTextureIdx = 20;
     MeshDesc.fLifeTime = 0.4f;
     MeshDesc.iDivisionCount = 10.f;
-    MeshDesc.vColor = _float4(0.3804f, 0.3059f, 0.0667f, 0.5098f);
-    MeshDesc.vSubColor = _float4(0.6863f, 0.0f, 0.0f, 3.9216f);
+    //MeshDesc.vColor = _float4(0.3804f, 0.3059f, 0.0667f, 0.5098f);
+    //MeshDesc.vSubColor = _float4(0.6863f, 0.0f, 0.0f, 3.9216f);
+    MeshDesc.vColor = _float4(0.1f, 0.1f, 0.1f, 0.5098f);
+    MeshDesc.vSubColor = _float4(1.f, 1.f, 1.f, 3.9216f);
     m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
     m_fRecoveryPerSec = 10.f;
@@ -422,15 +424,20 @@ HRESULT CHalberd::Ready_AnimEvent()
                                                                                    m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_swing_a_02 (SFX).wav"), Get_Position(), Get_SoundChannel(1), 3.f);
                                                                                    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_atk_l_02 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 3.f); });
 
-    pModel->Register_Event("Whirlwind_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
-    pModel->Register_Event("Whirlwind_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
-    pModel->Register_Event("Whirlwind_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
-    pModel->Register_Event("Whirlwind_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {Update_MeshTrail(); LockOnLerp(m_fTimeDelta, 2.5f); });
+    pModel->Register_Event("Whirlwind_0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {/*Update_MeshTrail();*/ LockOnLerp(m_fTimeDelta, 2.5f); });
+    pModel->Register_Event("Whirlwind_1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {/*Update_MeshTrail();*/ LockOnLerp(m_fTimeDelta, 2.5f); });
+    pModel->Register_Event("Whirlwind_2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {/*Update_MeshTrail();*/ LockOnLerp(m_fTimeDelta, 2.5f); });
+    pModel->Register_Event("Whirlwind_3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {/*Update_MeshTrail();*/ LockOnLerp(m_fTimeDelta, 2.5f); });
 
     pModel->Register_Event("Whirlwind_0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; });
     pModel->Register_Event("Whirlwind_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; });
     pModel->Register_Event("Whirlwind_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; });
     pModel->Register_Event("Whirlwind_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {m_Data.isAttack_Collinder = false; });
+
+    pModel->Register_Event("Trail0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
+    pModel->Register_Event("Trail1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
+    pModel->Register_Event("Trail2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
+    pModel->Register_Event("Trail3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_MeshTrail(); });
 
     //디폴트 공격 2
     pModel->Register_Event("Swing_0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_Data.isAttack_Collinder = true; 
@@ -528,6 +535,18 @@ HRESULT CHalberd::Ready_AnimEvent()
     pModel->Register_Event("Rush_Move_01", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
     pModel->Register_Event("Rush_Move_02", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Run_Sound(); });
 
+    //Effect
+    
+
+    pModel->Register_Event("Stamp0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Call_StampFX(); });
+    pModel->Register_Event("Stamp1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Call_StampFX(); });
+    pModel->Register_Event("Stamp2_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Call_StampFX(); });
+
+    pModel->Register_Event("Sting0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Call_StingFX(); });
+    pModel->Register_Event("Sting0_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_StingFX(); });
+    pModel->Register_Event("Sting1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Call_StingFX(); });
+    pModel->Register_Event("Sting1_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Update_StingFX(); });
+
     return S_OK;
 }
 
@@ -619,6 +638,29 @@ void CHalberd::Run_Sound()
     case 5:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_05 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
     default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_empirehalberd_foley_walk_rustle_06 (SFX).wav"), Get_Position(), Get_SoundChannel(4), 1.5f);             break;
     }
+}
+
+void CHalberd::Call_StampFX()
+{
+    _float4x4 SwordMatrix = m_pWeapon->Get_CombindMat();
+    _vector vUp = { SwordMatrix._21, SwordMatrix._22, SwordMatrix._23 };
+    _vector vPos = { SwordMatrix._41, SwordMatrix._42, SwordMatrix._43 };
+    vPos += XMVector3Normalize(vUp) * 2.1f;
+    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Stamp"), vPos);
+}
+
+void CHalberd::Call_StingFX()
+{
+    _float4x4 Swordfloat4x4 = m_pWeapon->Get_CombindMat();
+    _matrix SwordMatrix = XMLoadFloat4x4(&Swordfloat4x4);
+    m_iFXidx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Halberd_Weapon_Wind"), SwordMatrix, SwordMatrix.r[3]);
+}
+
+void CHalberd::Update_StingFX()
+{
+    _float4x4 Swordfloat4x4 = m_pWeapon->Get_CombindMat();
+    _matrix SwordMatrix = XMLoadFloat4x4(&Swordfloat4x4);    
+    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Halberd_Weapon_Wind"), m_iFXidx, SwordMatrix, SwordMatrix.r[3]);
 }
 
 void CHalberd::Rush()

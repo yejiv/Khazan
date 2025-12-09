@@ -45,6 +45,8 @@ private:
     _float3 m_vCharacterPosition = {};
 
     _bool m_isUnLock = { false };
+    _bool m_isOpen = { false };
+    _bool m_isEnd = { false };
 
     _float m_fColTimeAcc = { 0.f };
 

@@ -28,6 +28,9 @@ HRESULT CEffect_Sprite::Initialize_Clone()
         return E_FAIL; 
 
     m_bLoop = m_sData.IsLoop;
+    m_fCurTime = 0;
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(m_sData.fOffset.x, m_sData.fOffset.y, m_sData.fOffset.z, 1.f));
+    //m_pTransformCom->Scale(_float3(2.f, 2.f, 2.f));
 
     return S_OK;
 }
@@ -53,12 +56,13 @@ void CEffect_Sprite::Update(_float fTimeDelta)
  
     if (m_iUVIdx == (m_sData.iCol * m_sData.iRow))
     {
-        if (m_bLoop == false)
-            m_TimeTracks.pop_back(); 
+        if (m_sData.IsLoop == false)
+        {
+            m_bRunning = false;
+            m_TimeTracks.pop_back();
+        }
         m_iUVIdx = 0;
-        m_bRunning = false;
     }
-    //(뭔가 끝내라는 이벤트 -> 이거 루프 세팅 false로 바꿔주기)
     
     __super::Update(fTimeDelta);
 }
@@ -73,7 +77,6 @@ HRESULT CEffect_Sprite::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    //m_pShaderCom->Begin((_uint)m_Data.TextureBindType);
     m_pShaderCom->Begin(0);
 
     m_pVIBufferCom->Bind_Resources();
@@ -135,7 +138,7 @@ HRESULT CEffect_Sprite::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
 
-    if(FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_sData.vColor, sizeof(_float4))))
+    if(FAILED(m_pShaderCom->Bind_RawValue("g_vSourceColor", &m_sData.vColor, sizeof(_float4))))
         return E_FAIL;
 
     if (FAILED(m_pShaderCom->Bind_RawValue("g_numCols", &iCol, sizeof(_float))))

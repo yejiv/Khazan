@@ -163,6 +163,8 @@ private:
 
     _bool m_isUseRootMotion = { false };
 
+    _bool  m_isOnElevator = false;
+    _float m_fElevatorOffsetY = 0.0f;
 
     MOVE_MODE m_eMove_Mode = { MOVE_MODE::NORMAL };
 public:

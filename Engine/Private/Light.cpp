@@ -38,7 +38,15 @@ void CLight::Update(_float fTimeDelta)
         m_LightDesc = FinalLightDesc;
 
         m_fBlinkPeriod = 0.f;
+        
+        if (nullptr != m_Callback)
+        {
+            m_Callback();
+            m_Callback = nullptr;
+        }
+
         m_isTransition = false;
+        
         return;
     }
 
@@ -172,11 +180,17 @@ HRESULT CLight::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 
 void CLight::Start_LightTransition(const LIGHT_TRANSITION_DESC& Desc, _bool isRestore)
 {
+    // 이미 보간 중이면 덮어쓰기 방지
+    if (true == m_isTransition)
+        return;
+
     m_StartLightDesc = m_LightDesc;
 
+    m_isEnable = true;
     m_isTransition = true;
     m_fTransTimeAcc = 0.f;
     m_TargetLightDesc = Desc;
+    m_Callback = Desc.Callback;
 
     if (true == isRestore)
     {

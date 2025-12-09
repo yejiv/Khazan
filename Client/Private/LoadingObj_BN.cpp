@@ -157,6 +157,7 @@ void CLoadingObj_BN::Animation_Update(_float fTimeDelta)
         // 해금 전 IDLE 상태
         if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_TS_On"), m_fInteract_Volume);
             // 처음 상호 작용 시
             m_eAnimState = ANIM_STATE::BEFORE_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
@@ -165,6 +166,7 @@ void CLoadingObj_BN::Animation_Update(_float fTimeDelta)
         // 해금 후 IDLE 상태
         else if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_TS_On"), m_fInteract_Volume);
             // 2번 이상의 상호 작용 시
             m_eAnimState = ANIM_STATE::AFTER_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));

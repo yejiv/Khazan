@@ -1477,6 +1477,12 @@
     <Filter Include="02.GameObject\Part Object\Weapon">
       <UniqueIdentifier>{e3683a3e-77d2-44ac-be33-f4754c5ee95c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Sound">
+      <UniqueIdentifier>{f4674566-2961-488c-86e5-81e3a816f105}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\Gacha">
+      <UniqueIdentifier>{4871b972-f1b3-43a7-a923-e75d4ec13fce}</UniqueIdentifier>
+    </Filter>
     <Filter Include="03.MiniGame">
       <UniqueIdentifier>{18ff468f-e40f-4dcb-be03-2f02d5c7d199}</UniqueIdentifier>
     </Filter>
@@ -2868,6 +2874,10 @@
     <ClInclude Include="..\public\WeaponObject.h">
       <Filter>02.GameObject\Part Object\Weapon</Filter>
     </ClInclude>
+    <ClInclude Include="CKhazan_SoundHelper.h" />
+    <ClInclude Include="..\Public\NPC_Gacha.h">
+      <Filter>02.GameObject\NPC\Gacha</Filter>
+    </ClInclude>
     <ClInclude Include="..\public\MiniGame_Gacha.h">
       <Filter>03.MiniGame\Gacha</Filter>
     </ClInclude>
@@ -4235,6 +4245,10 @@
     </ClCompile>
     <ClCompile Include="..\private\WeaponObject.cpp">
       <Filter>02.GameObject\Part Object\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="CKhazan_SoundHelper.cpp" />
+    <ClCompile Include="..\Private\NPC_Gacha.cpp">
+      <Filter>02.GameObject\NPC\Gacha</Filter>
     </ClCompile>
     <ClCompile Include="..\private\MiniGame_Gacha.cpp">
       <Filter>03.MiniGame\Gacha</Filter>

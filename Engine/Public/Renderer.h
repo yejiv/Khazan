@@ -55,7 +55,6 @@ public:
 public:
 	void Set_EnableShadow(_bool isEnable) { m_isEnableShadow = isEnable; }
 	void Set_EnableSSAO(_bool isEnable) { m_isEnableSSAO = isEnable; }
-	void Set_EnableFog(_bool isEnable) { m_isEnableFog = isEnable; }
 	void Set_EnableToonShade(_bool isEnable) { m_isEnableToonShade = isEnable; }
 	void Set_EnableOutline(_bool isEnable) { m_isEnableOutline = isEnable; }
     void Set_EnableRimLight(_bool isEnable) { m_isEnableRimLight = isEnable; }
@@ -110,7 +109,6 @@ private:
 	_bool						m_isEnableDebugRender = {};
 	_bool						m_isEnableShadow = { true };
 	_bool						m_isEnableSSAO = { true };
-	_bool						m_isEnableFog = { true };
 	_bool						m_isEnableToonShade = { true };
 	_bool						m_isEnableOutline = {};
 	_bool						m_isEnableVignette = {};
@@ -165,7 +163,6 @@ private:
 private:
 	_bool isEnableShadow();
 	_bool isEnableSSAO();
-	_bool isEnableFog();
 	_bool isEnableToonShade();
     _bool isEnableRimLight();
 

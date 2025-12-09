@@ -26,6 +26,7 @@ public:
 		_float	fMaskScrollSpeed;
 		_uint	bIsScrollVertical;
 		_uint	bIsScrollInverse;
+		_float3	fOffset;
 	}SPRITE_DESC;
 
 private:

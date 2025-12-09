@@ -42,6 +42,8 @@ namespace Engine
         bool            isReturnToStart;
 
         unsigned int    iBlinkCount;
+
+        function<void()> Callback;
     }LIGHT_TRANSITION_DESC;
 
 	typedef struct tagKeyFrame
@@ -214,17 +216,18 @@ namespace Engine
 
     typedef struct tagFogTransitionDesc
     {
-        float			fDensity;		// 지수용
-        float	        fBias;          // 원색 방지 보정용
-        XMFLOAT4		vColor;
-        bool            isUseHeight;
-        float           fBaseHeight;
-        bool            isUseNoise;
-        XMFLOAT2        vNoiseSpeed;
-        XMFLOAT2        vNoiseScale;
-        float           fNoiseStrength;
-        float           fNoiseContrast;
-        unsigned int    iNoiseIndex;
+        float			    fDensity;		// 지수용
+        float	            fBias;          // 원색 방지 보정용
+        XMFLOAT4		    vColor;
+        bool                isUseHeight;
+        float               fBaseHeight;
+        bool                isUseNoise;
+        XMFLOAT2            vNoiseSpeed;
+        XMFLOAT2            vNoiseScale;
+        float               fNoiseStrength;
+        float               fNoiseContrast;
+        unsigned int        iNoiseIndex;
+        function<void()>    Callback;       // 보간 끝날 시 실행할 함수
     }FOG_TRANSITION_DESC;
 
     typedef struct tagFogConfig
@@ -774,6 +777,7 @@ namespace Engine
         unsigned int iObjectLayer;
         wstring strName;
         bool isForceVaildation = false;
+        bool isMovePlatform = false;
         void* pInfo = nullptr;
     }COLLISION_DESC;
 

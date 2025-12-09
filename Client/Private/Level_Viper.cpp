@@ -38,7 +38,7 @@ HRESULT CLevel_Viper::Initialize()
 
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
     CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
-    CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+    //CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
        
     // 우선 맵 오브젝트 서브 레벨 로드
     
@@ -52,7 +52,7 @@ HRESULT CLevel_Viper::Initialize()
     // 맵 오브젝트 서브 레벨 로드
     for (_uint i = 0; i < VIPER_SUBLV; ++i)
     {        
-        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
+        //CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Viper"), TEXT("Viper"), i, LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     }
 
     CHECK_FAILED(Ready_Sequence(), E_FAIL);
@@ -65,7 +65,7 @@ HRESULT CLevel_Viper::Initialize()
     //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
     CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Laye0r_MapObject_Inst"), TEXT("Viper"), LEVEL::VIPER, KHAZAN_MAP::VIPER), E_FAIL);
 
-    //CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
+    CHECK_FAILED(Ready_Layer_Monster_Viper(TEXT("Layer_Monster")), E_FAIL);
     //CClientInstance::GetInstance()->Fade_Out();
     CHECK_FAILED(Ready_Item(), E_FAIL);
     if (!Wait_All_Futures())
@@ -763,7 +763,7 @@ HRESULT CLevel_Viper::Ready_Lights()
     LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
     LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
     LightDesc.vSpecular = LightDesc.vDiffuse;
-    LightDesc.fRange = 20.f;
+    LightDesc.fRange = 15.f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Player_PointLight_Gray"), ENUM_CLASS(LEVEL::VIPER), LightDesc)))
         return E_FAIL;
 
@@ -787,17 +787,17 @@ HRESULT CLevel_Viper::Ready_Lights()
 
     LightDesc.eType = LIGHT_DESC::POINT;
     LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
-    LightDesc.vDiffuse = _float4(0.9f, 0.8f, 0.7f, 1.f);
-    LightDesc.vAmbient = _float4(0.8f, 0.6f, 0.4f, 1.f);
+    LightDesc.vDiffuse = _float4(0.9f, 0.85f, 0.7f, 1.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
     LightDesc.vSpecular = LightDesc.vDiffuse;
-    LightDesc.fRange = 40.f;
+    LightDesc.fRange = 15.f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Viper_Thunder"), ENUM_CLASS(LEVEL::VIPER), LightDesc, false)))
         return E_FAIL;
 
     LightDesc.eType = LIGHT_DESC::POINT;
-    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vPosition = _float4(-30.2f, -29.8f, 173.7f, 1.f);
     LightDesc.vDiffuse = _float4(0.9f, 0.8f, 0.7f, 1.f);
-    LightDesc.vAmbient = _float4(0.8f, 0.6f, 0.4f, 1.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
     LightDesc.vSpecular = LightDesc.vDiffuse;
     LightDesc.fRange = 100.f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Viper_Thunder_Ambient"), ENUM_CLASS(LEVEL::VIPER), LightDesc, false)))
@@ -1044,6 +1044,10 @@ HRESULT CLevel_Viper::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_CutSceen_Land"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Point_Particle_Blust"), 1);
    
+
+    //임시
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Stamp"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Halberd_Weapon_Wind"), 3);
     return S_OK;
 }
 
