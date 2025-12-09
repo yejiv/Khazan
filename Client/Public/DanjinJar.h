@@ -135,6 +135,7 @@ protected:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_Collision(void* pArg);
     virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
+    virtual HRESULT Bind_ShaderResources() override;
 
 protected:
     void AnimChange(ANIM_STATE eAnimState, _bool isLoop = false, _bool isCheck = false);

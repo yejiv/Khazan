@@ -140,6 +140,9 @@ HRESULT CLever_Gear::Bind_Materials(_uint iMeshIndex)
     m_iMtrlFlags &= ~M_EMISSIVE;
     m_iMtrlFlags &= ~M_SPECULAR;
 
+    if (RUNE == iMeshIndex && true == m_EventGate.isFirstStep())
+        m_iMtrlFlags |= M_EMISSIVE;
+
     m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 
     return S_OK;

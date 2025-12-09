@@ -96,7 +96,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
 
-        const float dt_unscaled = pGameInstance->Get_TimeDelta(TEXT("Timer_Default"));
+
+		const float dt_unscaled = pGameInstance->Get_TimeDelta(TEXT("Timer_Default"));
         pGameInstance->Update_HitStop(dt_unscaled);
 
         fTimeAcc += dt_unscaled;

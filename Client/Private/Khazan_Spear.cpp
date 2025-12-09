@@ -369,7 +369,7 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     DECAL_DESC Desc{};
     Desc.fLifeTime = 8.f;
     Desc.vFadeTime = _float2(0.2f, 0.2f);
-    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::END)));
+    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
     XMStoreFloat3(&Desc.vPosition, vDecalPos);
     Desc.vScale = _float3(
         m_pGameInstance->Rand(3.f, 5.f),

@@ -557,11 +557,13 @@ PS_OUT PS_RUNE_EMISSIVE(PS_IN In)
     float3 runeColor = float3(0.2f, 0.8f, 1.0f);
     float3 energyColor = float3(0.1f, 0.6f, 0.9f);
     float3 noiseColor = float3(0.05f, 0.15f, 0.3f);
-
-    float3 emissive =
-          runeMask * runeColor * 18.0f
-        + energyMask * energyColor * 6.0f
-        + noiseMask * noiseColor * 2.0f;
+    
+    float3 emissive = float3(0.f, 0.f, 0.f);
+    
+    if (IsFlag(M_EMISSIVE))
+    {
+        emissive = runeMask * runeColor * 18.0f + energyMask * energyColor * 6.0f + noiseMask * noiseColor * 2.0f;
+    }
 
     Out.vDiffuse = float4(0.f, 0.f, 0.f, 1.f);
     Out.vNormal = float4(0.5f, 0.5f, 1.f, 0.f);
@@ -599,7 +601,7 @@ PS_OUT PS_LANTERN(PS_IN In)
     float fEmissvie = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord).g;
 
     Out.vEmissive = float4(fEmissvie, fEmissvie, fEmissvie, 1.f);
-    //  Out.vEmissive *= 2.f;
+    Out.vEmissive *= g_fEmissiveIntensity;
     
     return Out;
 }
@@ -875,7 +877,8 @@ PS_OUT PS_MAIN_SHIELD_EMISSIVE(PS_IN In)
     if (vEmissive.g >= 0.95f)
     {
         float3 vColor = { 2.455f, 1.937f, 2.784f };
-        Out.vDiffuse.rgb = Out.vDiffuse.rgb + vColor * 0.3f * g_fEmissiveValue;
+        //  Out.vDiffuse.rgb = Out.vDiffuse.rgb + vColor * 0.3f * g_fEmissiveValue;
+        Out.vEmissive.rgb = Out.vDiffuse.rgb + vColor * 0.3f * g_fEmissiveValue;
     }
     
     Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
@@ -1032,13 +1035,16 @@ PS_OUT PS_DANJINJAR(PS_IN In)
     if (IsFlag(M_NORMAL))
     {
         vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
-        
-        float3 vNormal = vMtrlNormal.xyz * 2.f - 1.f;
-        
-        float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
-        vNormal = mul(vNormal, WorldMatrix);
-        
-        vMtrlNormal = float4(normalize(vNormal.xyz), 0.f);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     }
     
     vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
@@ -1047,28 +1053,32 @@ PS_OUT PS_DANJINJAR(PS_IN In)
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     }
     
-    Out.vDiffuse = vMtrlDiffuse * g_fShadeIntensity;
-    Out.vDiffuse.g *= g_fEdgeIntensity;
-    Out.vNormal = vector(vMtrlNormal.xyz * 0.5f + 0.5f, 0.f);
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+
+    // Rim Light
+    vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+    float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+    fRim = pow(fRim, g_fRimPower);
+
+    float3 vRimColor = g_vRimColor * fRim * g_fRimLightIntensity;
+    
+    Out.vDiffuse = vMtrlDiffuse + float4(vRimColor, 1.f) * g_fRimEmissive;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
-    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular = vMtrlSpecular;
     Out.vSpecular.a = 0.f;
-    Out.vEmissive = vector(0.20f, 0.17f, 0.f, 1.f);
+    Out.vEmissive = vMtrlDiffuse * g_fDiffusePower;
     
-    // if (IsFlag(M_METALIC))
-    // {
-    //     vector vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
-    //     
-    //     float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMtrlMetalic.r);
-    //     float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMtrlMetalic.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
-    //     
-    //     Out.vDiffuse *= fEdgeMask;
-    //     Out.vDiffuse *= fShadeMask;
-    //     
-    //     return Out;
-    // }
-    
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMtrlMetalic.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMtrlMetalic.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+
     return Out;
 }
 

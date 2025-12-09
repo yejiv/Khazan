@@ -268,6 +268,8 @@ void CGiantGate::Animation_Update(_float fTimeDelta)
         {
             m_isUnLock = true;
 
+            SoundOnce(TEXT("IP_Gate_Open_Start"), m_fInteract_Volume);
+
             // 조각상 상호작용 시
             EventInteractType InteractType = {};
 

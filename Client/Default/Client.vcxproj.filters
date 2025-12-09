@@ -1522,6 +1522,9 @@
     <Filter Include="92.AI\State\Pet_Danjinjar\Damage">
       <UniqueIdentifier>{8429aa00-843d-4dab-a8ce-b38cca4a5ade}</UniqueIdentifier>
     </Filter>
+    <Filter Include="94.ClientInstance\BGM">
+      <UniqueIdentifier>{1e20612b-95ca-4ae1-bf18-fc34af90623e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2938,6 +2941,9 @@
     <ClInclude Include="..\public\AS_Pet_Danjinjar_TP.h">
       <Filter>92.AI\State\Pet_Danjinjar\TP</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BGM_Manager.h">
+      <Filter>94.ClientInstance\BGM</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4333,6 +4339,9 @@
     </ClCompile>
     <ClCompile Include="..\private\AS_Pet_Danjinjar_TP.cpp">
       <Filter>92.AI\State\Pet_Danjinjar\TP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BGM_Manager.cpp">
+      <Filter>94.ClientInstance\BGM</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

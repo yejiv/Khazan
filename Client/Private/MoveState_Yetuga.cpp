@@ -37,6 +37,7 @@ void CMoveState_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         pModel->Set_Animation(7);
 
     }  
+
 }
 
 

@@ -50,6 +50,7 @@ HRESULT CLevel_Embars::Initialize()
 
 
     CHECK_FAILED(Ready_Lights(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+    CHECK_FAILED(Ready_Lights(), E_FAIL);
 
     CHECK_FAILED(Ready_FireLights(TEXT("Embars_Point"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
@@ -1125,6 +1126,39 @@ HRESULT CLevel_Embars::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentL
     LightDesc1.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
     LightDesc1.fRange = 2.45f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Lantern"), ENUM_CLASS(LEVEL::EMBARS), LightDesc1, false)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CLevel_Embars::Ready_Lights()
+{
+    LIGHT_DESC LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(2.f, 1.6f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(1.f, 0.8f, 0.5f, 1.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 1.f;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_1"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, true)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_2"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, true)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_3"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, true)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_4"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, true)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_5"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, true)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_6"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, true)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_7"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, true)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_8"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, true)))
         return E_FAIL;
 
     return S_OK;

@@ -40,7 +40,6 @@ void CAS_Dodge_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
    
 
     pModel->Set_Animation(iAnimID);
-   
 }
 
 void CAS_Dodge_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

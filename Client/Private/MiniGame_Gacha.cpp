@@ -97,6 +97,10 @@ void CMiniGame_Gacha::Late_Update(_float fTimeDelta)
     _vector vPos = m_pBox[m_iSeleteNum]->Get_Position();
     if (m_eState == SELETE_NUM || m_eState == SUCCES_NOTICE)
         m_pSeleteUI->Late_Update(fTimeDelta, XMVectorSetY(vPos, XMVectorGetY(vPos) + m_fGuidePosY));
+
+    _float4 vLightPos{};
+    XMStoreFloat4(&vLightPos, vPos);
+    m_pGameInstance->Set_LightPosition(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), vLightPos);
 }
 
 HRESULT CMiniGame_Gacha::Ready_Prototype()

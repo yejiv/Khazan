@@ -226,6 +226,7 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
     vector vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
 
     if (1.f == vDiffuse.r && 1.f == vDiffuse.g && 1.f == vDiffuse.b && 0.f == vDiffuse.a)
         discard;
@@ -233,7 +234,7 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    Out.vColor = vDiffuse * vShade + vSpecular;
+    Out.vColor = vDiffuse * vShade + vSpecular + vEmissive;
     
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
@@ -363,14 +364,15 @@ PS_OUT_BLUR_X PS_BRIGHTNESS(PS_IN In)
 {
     PS_OUT_BLUR_X Out;
 
-    //  float4 vEmissive = g_EmissiveTexture.SampleLevel(ClampSampler, In.vTexcoord, 0.f);
+    //  float3 vEmissiveColor = g_EmissiveTexture.SampleLevel(ClampSampler, In.vTexcoord, 0.f).rgb;
     //  float3 vEmissiveColor = vEmissive.rgb * vEmissive.a;
 
     float3 vPostSceneColor = g_PostSceneTexture.SampleLevel(ClampSampler, In.vTexcoord, 0.f).rgb;
 
     float3 vBrightColor = max(vPostSceneColor - 1.f, 0.f);
-        
-    //  float3 vCombinedColor = vEmissiveColor + vBrightColor;
+    //  float3 vBrightEmissiveColor = max(vEmissiveColor - 1.f, 0.f);
+
+    //  float3 vCombinedColor = vBrightEmissiveColor + vBrightColor;
 
     Out.vBlurX = float4(vBrightColor, 1.f);
     

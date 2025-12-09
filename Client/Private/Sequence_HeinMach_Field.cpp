@@ -3,6 +3,7 @@
 #include "UI_Announce_MapName.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
+#include "UI_HUD.h"
 
 CSequence_HeinMach_Field::CSequence_HeinMach_Field(CCamera_Compre* pCamera)
     : m_pCamera_Compre { pCamera }
@@ -19,6 +20,7 @@ HRESULT CSequence_HeinMach_Field::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 
 	string filePath = "../../Client/Bin/Data/Camera/Animation/HeinMach";
     CClientInstance::GetInstance()->Camera_Set_Animation_Json(filePath);
+    CClientInstance::GetInstance()->Set_PlayerInput(false);    
 
     return S_OK;
 }
@@ -30,7 +32,7 @@ void CSequence_HeinMach_Field::Update(_float fTimeDelta)
 
     if (!m_isCameraStart)
     {
-        //CClientInstance::GetInstance()->Set_UIAllRenderSet(false);
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
         m_pCamera_Compre->Set_Animation(TEXT("HeinMach"));
 
         m_isCameraStart = true;
@@ -54,7 +56,8 @@ void CSequence_HeinMach_Field::Update(_float fTimeDelta)
 
     if (m_fTime >= 16.f)
     {
-        //CClientInstance::GetInstance()->Set_UIAllRenderSet(true);
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+        CClientInstance::GetInstance()->Set_PlayerInput(true);
         m_State = STATE::End;
     }
         

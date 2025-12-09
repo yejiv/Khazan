@@ -1164,6 +1164,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust"), m_pParentTransform->Get_State(STATE::POSITION));
         // 디스토션
         Start_LongDistortion();
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(50.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
 
     m_pModelCom->Register_Event("GS_WeakAtk01_Charge_Ground", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -1198,12 +1206,29 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     //강공 차지
     m_pModelCom->Register_Event("GS_StrongAtk01_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust10"), m_pParentTransform->Get_State(STATE::POSITION)); //흰색
+
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.5f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(70.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         }); 
 
     //강기발현
         //강기발현 차지
     m_pModelCom->Register_Event("GS_StrongAtk01_Force_Release_Charge", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust9"), m_pParentTransform->Get_State(STATE::POSITION));
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(70.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
 
         //Strong Charge - 해금 X
@@ -1296,6 +1321,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("GS_AsheFork_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt), XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)));
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger1"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(70.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         }); 
 
     //거대한 포효
@@ -1304,6 +1337,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         Spawn_CrackDecal();
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
         Start_DefaultVignette();
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(75.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
 
     //정면 돌파
@@ -1313,6 +1354,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         // 레디얼 블러
         Start_DefaultRadialBlur();
         Start_DefaultDistortion();
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(40.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
 
     m_pModelCom->Register_Event("GS_ChargeCrash_Wind", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
@@ -1352,6 +1401,15 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt), XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)));
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger1"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("particle2"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(45.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
 
     // 내재된 분노 
@@ -1361,6 +1419,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
         Start_DefaultVignette();
         Start_FullScreenDistortion();
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(75.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
 
     // 귀신 어둠의 그림자 
@@ -1369,6 +1435,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         _vector rot = Decompose_Rotation(XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt));
         m_iFXIdx_Spining = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger0"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);
         Start_DefaultDistortion();
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.5f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(45.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
 
     m_pModelCom->Register_Event("GS_GhostLiberation_Landing", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
@@ -1391,6 +1465,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         //한계극복 차징
     m_pModelCom->Register_Event("GS_StrongAtk01_Charge_Unlock_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust9"), m_pParentTransform->Get_State(STATE::POSITION)); //빨강!
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.5f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(40.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
 
     m_pModelCom->Register_Event("GS_Apocalypse_Land", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -1442,6 +1524,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("GhostSlash_Charge03_Turn_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         // 레디얼 블러
         Start_LongRadialBlur();
+        FOVModifier tMod{};
+        tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+        tMod.fDuration = 1.5f;
+        tMod.fFrom = XMConvertToRadians(60.f);
+        tMod.fTo = XMConvertToRadians(70.f);
+        tMod.iPriority = 1.f;
+        tMod.Ease = EaseOutQuad;
+        m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
     m_pModelCom->Register_Event("GhostSlash_Charge03_Turn_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         // 카메라 쉐이킹
