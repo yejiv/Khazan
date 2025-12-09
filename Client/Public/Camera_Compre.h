@@ -131,7 +131,7 @@ private:
     _float m_fTargetMaxDistance = { 20.f };
 
     _float m_fLockPitchDownClampDeg = -35.f;
-    _float m_fLockPitchUpClampDeg = 25.f;
+    _float m_fLockPitchUpClampDeg = 10.f;
 
     // 적용 거리
     _float m_fLockClampNearDist = 3.f;
