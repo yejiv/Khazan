@@ -204,25 +204,71 @@ public:
 
 #pragma region BGM_MANAGER
 public:
+    // 글로벌 볼륨 말고 BGM 로컬 볼륨 ( 고정 )
     _float Get_Volume_BGM();
     void Set_Volume_BGM(_float fVolume);
 
+    // BGM 음소거
+    void BGM_Mute();
+    // BGM 음소거 해제
+    void BGM_UnMute();
+
+    // 레벨 전환시 BGM_Mgr에 있는 Curr BGM Key 초기화
+    void Clear_CurrentKey_BGM();
+
 public:
+    // SoundKey로 현재 진행중인게 있는지 검사 후 BGM 재생
     void PlayBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f);
+    // 기존 Key값을 교체하면서 크로스 페이드 하며 BGM 교체
     void ChangeBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f);
-    void Mute_BGM();
-    void UnMute_BGM();
+    // 전투시 호출 할 사운드 키값
+    void PlayBattleBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f);
+    // 전투 종료시 호출
+    void EndBattleBGM(_float fFadeTime = 1.f);
 
-    void HeinMach_Entry();
-    void HeinMach_CutScene();
-    void HeinMach_Cave_Entry();
-    void HeinMach_Halberd();
-    void HeinMach_Yetuga_Entry();
+#pragma region 하인마흐 프리셋
+
+    void BGM_HeinMach_Entry(_float fFadeTime = 1.f);
+    void BGM_HeinMach_Dawn(_float fFadeTime = 1.f);
+    void BGM_HeinMach_CutScene(_float fFadeTime = 1.f);
+    void BGM_HeinMach_Cave(_float fFadeTime = 1.f);
+    void BGM_HeinMach_Day(_float fFadeTime = 1.f);
+    void BGM_HeinMach_Halberd(_float fFadeTime = 1.f);
+    void BGM_HeinMach_Yetuga_CutScene(_float fFadeTime = 1.f);
+    void BGM_HeinMach_Yetuga_1Phase(_float fFadeTime = 1.f);
+
+#pragma endregion
+
+#pragma region 엠바스 프리셋
+
+    void BGM_Embars_Entry(_float fFadeTime = 1.f);
+    void BGM_Embars_B1(_float fFadeTime = 1.f);
+    void BGM_Embars_Club(_float fFadeTime = 1.f);
+    void BGM_Embars_Club_Game(_float fFadeTime = 1.f);
+    void BGM_Embars_Gacha(_float fFadeTime = 1.f);
+    void BGM_Embars_1F(_float fFadeTime = 1.f);
+    void BGM_Embars_Elamein(_float fFadeTime = 1.f);
+
+#pragma endregion
+
+#pragma region 바이퍼 프리셋
+
+    void BGM_Viper_Entry(_float fFadeTime = 1.f);
+    void BGM_Viper_1PhaseCutScene(_float fFadeTime = 1.f);
+    void BGM_Viper_1Phase(_float fFadeTime = 1.f);
+    void BGM_Viper_2PhaseCutScene(_float fFadeTime = 1.f);
+    void BGM_Viper_2Phase(_float fFadeTime = 1.f);
+    void BGM_Viper_End(_float fFadeTime = 1.f);
+
+#pragma endregion
 
 public:
+    // BGM 정지
     void BGM_Stop(_float fFadeTime = 1.f);
 
+    // BGM 재시작 ( isFade 가 true 면 FadeIn )
     void BGM_Resume(_bool isFade = false, _float fFadeTime = 1.f);
+    // BGM 정지 ( isFade 가 true 면 FadeOut )
     void BGM_Pause(_bool isFade = false, _float fFadeTime = 1.f);
 #pragma endregion
 
