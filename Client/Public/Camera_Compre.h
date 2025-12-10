@@ -51,7 +51,7 @@ public:
     HRESULT LockOn(_float fTimeDelta);
     void Update_BlendBack(_float fTimeDelta);
     void Update_InteractFocus(_float fTimeDelta);
-    void Update_NpcTalk(_float fTimeDelta);
+    void Update_PoseBlend(_float fTimeDelta);
 
 public:
     void LockOn_Check(_float fTimeDelta);
@@ -84,6 +84,21 @@ public:
 public:
     void Start_InteractFocus(CAMERA_FORCE_DIR eDir, _float fScreenX, _float fFrameDur, _bool isHold);
     void Exit_PostForceFrameRight(_bool isSmoothReturn = true, _float fReturnDur = 0.22f);
+
+public:
+    CAMERA_POSE CaptureCurrentPose() const;
+    void ApplyPose(const CAMERA_POSE& tPose);
+
+    void PushCurrentPose();
+    void PushPose(const CAMERA_POSE& pose);
+    _bool HasPose() const { return !m_PoseStack.empty(); }
+    void ClearPoseStack() { m_PoseStack.clear(); }
+
+    void StartPoseBlendTo(const CAMERA_POSE& targetPose, _float fDuration, _bool bPushCurrent);
+
+    void ReturnToPreviousPose(_float fDuration);
+
+    void Play_SubShotOnce(const CAMERA_POSE& subShotPose, _float fInDur, _float fOutDur);
 
 public:
     CAMERA_COMPRE_DESC  Get_Desc();
@@ -131,7 +146,7 @@ private:
     _float m_fTargetMaxDistance = { 20.f };
 
     _float m_fLockPitchDownClampDeg = -35.f;
-    _float m_fLockPitchUpClampDeg = 25.f;
+    _float m_fLockPitchUpClampDeg = 10.f;
 
     // 적용 거리
     _float m_fLockClampNearDist = 3.f;
@@ -229,6 +244,9 @@ private:
     _float3 m_vNpcCamTargetPos = _float3(0.f, 0.f, 0.f);
     _float3 m_vNpcCamLookAt = _float3(0.f, 0.f, 0.f);
 
+    // 스택형 화면 전환
+    vector<CAMERA_POSE> m_PoseStack;
+    POSE_BLEND_STATE    m_tPoseBlend;
 
     mutex m_CollMonsterMutex;
 

@@ -63,21 +63,26 @@ void CBGM_Manager::PlayBGM(const _tchar* pSoundKey, _float fFadeTime)
     m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), fVolume, fFadeTime);
 }
 
-void CBGM_Manager::ChangeBGM(const _tchar* pSoundKey, _float fFadeTime)
+void CBGM_Manager::ChangeBGM(const _tchar* pSoundKey, _float fFadeTime, _bool isWav)
 {
     _wstring wstrNewKey = pSoundKey;
 
     CHECK_TRUE(wstrNewKey.empty(), );
 
-    wstrNewKey += TEXT(".wav");
+    if(isWav)
+       wstrNewKey += TEXT(".wav");
+    else
+        wstrNewKey += TEXT(".mp3");
 
     CHECK_EQUAL(wstrNewKey, m_wstrCurrentKey_BGM, );
 
     if (!m_wstrCurrentKey_BGM.empty())
         m_pGameInstance->StopByKey_FadeOut(m_wstrCurrentKey_BGM.c_str(), fFadeTime);
 
-    Change_CurrentBGM(pSoundKey);
-
+    if (isWav)
+        Change_CurrentBGM(pSoundKey);
+    else
+        m_wstrCurrentKey_BGM = wstrNewKey;
     _float fVolume = true == m_isMute ? 0.f : m_fVolume_BGM;
 
     m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), fVolume, fFadeTime);
@@ -177,12 +182,12 @@ void CBGM_Manager::Embars_B1(_float fFadeTime)
 
 void CBGM_Manager::Embars_Club(_float fFadeTime)
 {
-
+    ChangeBGM(TEXT("BGM_MiniGame_Default"), fFadeTime);
 }
 
 void CBGM_Manager::Embars_Club_Game(_float fFadeTime)
 {
-
+    ChangeBGM(TEXT("BGM_MiniGame_Club"), fFadeTime, false);
 }
 
 void CBGM_Manager::Embars_Gacha(_float fFadeTime)

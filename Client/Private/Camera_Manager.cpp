@@ -4,6 +4,93 @@
 #include "Camera_Compre.h"
 
 
+static inline float Saturate(float x) { return Clamp(x, 0.f, 1.f); }
+
+
+static inline float SmoothDampScalar(float current, float target, float& currentVel, float smoothTime, float dt)
+{
+    const float eps = 1e-4f;
+    float omega = 2.0f / max(eps, smoothTime);
+    float x = omega * dt;
+    float expv = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
+
+    float change = current - target;
+    float temp = (currentVel + omega * change) * dt;
+    currentVel = (currentVel - omega * temp) * expv;
+    float output = target + (change + temp) * expv;
+    return output;
+}
+
+static inline float Clamp(float v, float lo, float hi) { return max(lo, min(v, hi)); }
+
+static inline float WrapAngle(float a) {
+    const float twoPi = XM_PI * 2.0f;
+    while (a > XM_PI) a -= twoPi;
+    while (a < -XM_PI) a += twoPi;
+    return a;
+}
+
+static inline float DeltaAngle(float a, float b) {
+    // shortest path from a to b in (-pi..pi]
+    float d = WrapAngle(b - a);
+    return d;
+}
+
+static inline float SmoothDampAngle(float current, float target, float& currentVel, float smoothTime, float dt)
+{
+    float delta = DeltaAngle(current, target);
+    float out = SmoothDampScalar(0.f, delta, currentVel, smoothTime, dt);
+    return WrapAngle(current + out);
+}
+
+static inline void BuildSafeBasis(_vector vLookIn, _vector& outRight, _vector& outUp, _vector& outLook)
+{
+    const _vector vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+    // Look 정규화 + 너무 짧으면 이전 값이나 fallback 사용해야 함
+    _vector look = XMVector3Normalize(vLookIn);
+    if (XMVectorGetX(XMVector3LengthSq(look)) < 1e-6f)
+    {
+        // 완전 비는 경우를 방지하기 위해 아주 기본 방향으로 fallback
+        look = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+    }
+
+    _vector right = XMVector3Cross(vWorldUp, look);
+    float rightLenSq = XMVectorGetX(XMVector3LengthSq(right));
+
+    if (rightLenSq < 1e-6f)
+    {
+        // look 이 거의 (0, ±1, 0) 이면, 임의의 축을 하나 선택해서 다시 만든다.
+        // 예: x축 기반으로 새 basis 생성
+        _vector arbitrary = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+        right = XMVector3Cross(arbitrary, look);
+        rightLenSq = XMVectorGetX(XMVector3LengthSq(right));
+
+        if (rightLenSq < 1e-6f)
+        {
+            // 그래도 0이면 마지막 fallback
+            right = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+        }
+    }
+
+    right = XMVector3Normalize(right);
+    _vector up = XMVector3Normalize(XMVector3Cross(look, right));
+
+    outLook = look;
+    outRight = right;
+    outUp = up;
+}
+
+static inline _vector LoadFloat3(const _float3& v)
+{
+    return XMLoadFloat3(&v);
+}
+
+static inline void StoreFloat3(_float3& out, _vector v)
+{
+    XMStoreFloat3(&out, v);
+}
+
 CCamera_Manager::CCamera_Manager()
 	: m_pGameInstance{ CGameInstance::GetInstance() }
 {
@@ -134,6 +221,48 @@ void CCamera_Manager::ActiveCamera_KillFov(const _wstring& strID)
 
 	m_pActiveCamera->Kill_FOVModifier(strID);
 }
+
+void CCamera_Manager::Play_FOVZoomSequence(
+    const _wstring& strID,
+    _float fZoomFOV,     // 줌인 목표 FOV (라디안)
+    _float fInDuration,  // 줌 인 시간
+    _float fHoldDuration,// 고정 시간
+    _float fOutDuration, // 줌 아웃 시간
+    _int   iPriority
+)
+{
+    if (m_pActiveCamera == nullptr)
+        return;
+
+    m_pActiveCamera->Play_FOVZoomSequence(strID, fZoomFOV, fInDuration, fHoldDuration, fOutDuration, iPriority);
+}
+
+void CCamera_Manager::Start_FOVHoldZoom(
+    const _wstring& strID,
+    _float fZoomFOV,     // 줌인 목표 FOV (라디안)
+    _float fInDuration,  // 줌 인 시간
+    _int   iPriority 
+)
+{
+    if (m_pActiveCamera == nullptr)
+        return;
+
+    m_pActiveCamera->Start_FOVHoldZoom(strID, fZoomFOV, fInDuration, iPriority);
+}
+
+
+// 홀드 해제 → 줌 아웃
+void CCamera_Manager::Release_FOVHoldZoom(
+    const _wstring& strID,
+    _float fOutDuration  // 줌 아웃 시간
+)
+{
+    if (m_pActiveCamera == nullptr)
+        return;
+
+    m_pActiveCamera->Release_FOVHoldZoom(strID, fOutDuration);
+}
+
 
 void CCamera_Manager::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
 {
@@ -367,6 +496,66 @@ void CCamera_Manager::Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos, _float3 v
     CCamera_Compre* pCameraCompre = dynamic_cast<CCamera_Compre*>(pCamera);
     pCameraCompre->Set_NpcTalk(isNpcTalk, vTargetPos, vLookAt);
     
+}
+
+void CCamera_Manager::Play_SubShotOnce(const CAMERA_POSE& subShotPose, _float fInDur, _float fOutDur)
+{
+    CCamera* pCamera = Get_ActiveCamera();
+    if (pCamera == nullptr)
+        return;
+
+    CCamera_Compre* pCameraCompre = dynamic_cast<CCamera_Compre*>(pCamera);
+    pCameraCompre->Play_SubShotOnce(subShotPose, fInDur, fOutDur);
+}
+
+CAMERA_POSE CCamera_Manager::MakePose(const _float3& vPos, const _float3& vLookDir)
+{
+    CAMERA_POSE pose{};
+
+    // pos / lookDir 를 XMVector로 변환
+    _vector vPosWS = LoadFloat3(vPos);
+    _vector vLook = LoadFloat3(vLookDir);
+
+    // lookDir 로부터 right / up / look 안전하게 만들기
+    _vector vR, vU, vL;
+    BuildSafeBasis(vLook, vR, vU, vL);
+
+    // CAMERAPOSE에 저장
+    StoreFloat3(pose.vPos, vPosWS);
+    StoreFloat3(pose.vRight, vR);
+    StoreFloat3(pose.vUp, vU);
+    StoreFloat3(pose.vLook, vL);
+
+    return pose;
+}
+
+CAMERA_POSE CCamera_Manager::MakePose_FromTarget(const _float3& vPos, const _float3& vTargetPos)
+{
+    _vector vPosWS = LoadFloat3(vPos);
+    _vector vTargetWS = LoadFloat3(vTargetPos);
+
+    _vector vDir = XMVectorSubtract(vTargetWS, vPosWS); // target - pos
+
+    CAMERA_POSE pose{};
+    _vector vR, vU, vL;
+    BuildSafeBasis(vDir, vR, vU, vL);
+
+    StoreFloat3(pose.vPos, vPosWS);
+    StoreFloat3(pose.vRight, vR);
+    StoreFloat3(pose.vUp, vU);
+    StoreFloat3(pose.vLook, vL);
+
+    return pose;
+}
+
+void CCamera_Manager::ReturnToPreviousPose(_float fDuration)
+{
+    CCamera* pCamera = Get_ActiveCamera();
+    if (pCamera == nullptr)
+        return;
+
+    CCamera_Compre* pCameraCompre = dynamic_cast<CCamera_Compre*>(pCamera);
+    pCameraCompre->ReturnToPreviousPose(fDuration);
 }
 
 void CCamera_Manager::Force_AniEnd()

@@ -1,5 +1,6 @@
 #include "AS_Elamein_Dead.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 #include "Interaction_Item.h"
 CAS_Elamein_Dead::CAS_Elamein_Dead()
 {
@@ -17,7 +18,7 @@ void CAS_Elamein_Dead::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_die_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(1));
     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_die_a_01 (Korean(KR)).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0));
-
+    CClientInstance::GetInstance()->BGM_Embars_B1(3.f);
 }
 
 void CAS_Elamein_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
