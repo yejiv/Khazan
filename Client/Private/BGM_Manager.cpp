@@ -15,6 +15,12 @@ HRESULT CBGM_Manager::Initialize()
 
 void CBGM_Manager::Update(_float fTimeDelta)
 {
+    switch (m_eState)
+    {
+    case BGM_STATE::HEINMACH_DAWN:
+
+        break;
+    }
 }
 
 void CBGM_Manager::Mute_BGM()
@@ -113,46 +119,117 @@ void CBGM_Manager::EndBattleBGM(_float fFadeTime)
     m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), fVolume, fFadeTime);
 }
 
-void CBGM_Manager::HeinMach_Entry()
+void CBGM_Manager::HeinMach_Entry(_float fFadeTime)
 {
+    m_eState = BGM_STATE::HEINMACH_DAWN;
+
     Change_CurrentBGM(TEXT("AMB_BG_Field_Cold_Windy"));
 
     m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM);
 }
 
-void CBGM_Manager::HeinMach_CutScene()
+void CBGM_Manager::HeinMach_Dawn(_float fFadeTime)
 {
-    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Whistle"));
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy"), fFadeTime);
 }
 
-void CBGM_Manager::HeinMach_Cave_Entry()
+void CBGM_Manager::HeinMach_Cave(_float fFadeTime)
 {
-    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Harsh"), 1.f);
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Whistle"), fFadeTime);
 }
 
-void CBGM_Manager::HeinMach_Halberd()
+void CBGM_Manager::HeinMach_Day(_float fFadeTime)
 {
-    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Narrow"), 1.f);
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Narrow"), fFadeTime);
 }
 
-void CBGM_Manager::HeinMach_Yetuga_Entry()
+void CBGM_Manager::HeinMach_CutScene(_float fFadeTime)
 {
-    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy"), 1.f);
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Harsh"), fFadeTime);
 }
 
-void CBGM_Manager::Embars_Entry()
+void CBGM_Manager::HeinMach_Halberd(_float fFadeTime)
+{
+    ChangeBGM(TEXT("bgm_Elite_Halberd"), fFadeTime);
+}
+
+void CBGM_Manager::HeinMach_Yetuga_CutScene(_float fFadeTime)
+{
+    ChangeBGM(TEXT("AMB_BG_Embars_Loop_B"), fFadeTime);
+}
+
+void CBGM_Manager::HeinMach_Yetuga_1Phase(_float fFadeTime)
+{
+    ChangeBGM(TEXT("bgm_Yetuga_1Phase"), fFadeTime);
+}
+
+void CBGM_Manager::Embars_Entry(_float fFadeTime)
 {
     Change_CurrentBGM(TEXT("AMB_BG_Embars_Loop_A"));
 
-    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM);
+    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM, 3.f);
 }
 
-void CBGM_Manager::Embars_FirstElevator()
+void CBGM_Manager::Embars_B1(_float fFadeTime)
 {
+    ChangeBGM(TEXT("AMB_BG_Embars_Loop_B"), fFadeTime);
 }
 
-void CBGM_Manager::Embars_LastElevator()
+void CBGM_Manager::Embars_Club(_float fFadeTime)
 {
+
+}
+
+void CBGM_Manager::Embars_Club_Game(_float fFadeTime)
+{
+
+}
+
+void CBGM_Manager::Embars_Gacha(_float fFadeTime)
+{
+
+}
+
+void CBGM_Manager::Embars_1F(_float fFadeTime)
+{
+    ChangeBGM(TEXT("AMB_BG_Embars_Loop_A"), fFadeTime);
+}
+
+void CBGM_Manager::Embars_Elamein(_float fFadeTime)
+{
+    ChangeBGM(TEXT("bgm_Elite_Elamein"), fFadeTime);
+}
+
+void CBGM_Manager::Viper_Entry(_float fFadeTime)
+{
+    Change_CurrentBGM(TEXT("AMB_BG_Field_Cold_Windy_Narrow"));
+
+    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM, fFadeTime);
+}
+
+void CBGM_Manager::Viper_1PhaseCutScene(_float fFadeTime)
+{
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Narrow"), fFadeTime);
+}
+
+void CBGM_Manager::Viper_1Phase(_float fFadeTime)
+{
+    ChangeBGM(TEXT("bgm_Viper_1phase"), fFadeTime);
+}
+
+void CBGM_Manager::Viper_2PhaseCutScene(_float fFadeTime)
+{
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Narrow"), fFadeTime);
+}
+
+void CBGM_Manager::Viper_2Phase(_float fFadeTime)
+{
+    ChangeBGM(TEXT("bgm_Viper_2phase"), fFadeTime);
+}
+
+void CBGM_Manager::Viper_End(_float fFadeTime)
+{
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy"), fFadeTime);
 }
 
 void CBGM_Manager::BGM_Stop(_float fFadeTime)

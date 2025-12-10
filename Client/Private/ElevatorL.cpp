@@ -169,6 +169,8 @@ void CElevatorL::Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4
         case MOVE_STATE::DOWNTOUP:
             m_eMoveState = MOVE_STATE::UP;
 
+            SoundStop(TEXT("IP_ElevatorStone_Loop"));
+
             m_isActiveElevator = false;
 
             m_isAvailableSwitch = true;
@@ -438,8 +440,9 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
             m_eMoveState = MOVE_STATE::MIDTODOWN;
         }
 
-        if (m_isSwitchPressed && m_eMoveState == MOVE_STATE::DOWN)
+        if (m_isActiveElevator && m_eMoveState == MOVE_STATE::DOWN)
         {
+            SoundLoop(TEXT("IP_ElevatorStone_Loop"), m_fInteract_Volume);
             m_isSwitchPressed = false;
             m_eMoveState = MOVE_STATE::DOWNTOUP;
         }
@@ -458,7 +461,9 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
             break;
         case MOVE_STATE::DOWNTOUP:
             if (true == m_isActiveElevator)
+            {             
                 Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 30.f);
+            }
             break;
         default:
             break;
@@ -469,24 +474,7 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
 
 void CElevatorL::Animation_Change(_float fTimeDelta)
 {
-    /*if (ANIM_STATE::INNER_STOPPING == m_eAnimState)
-    {
-        m_fLimitTimeAcc = 0.f;
-
-        m_isAnimChange = false;
-
-        m_eAnimState = ANIM_STATE::OUTER_STOPPING;
-        m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-        m_pModelCom->AnimationLoop(true);
-
-        m_isVerticalActive = true;
-        m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK1;
-
-        EventGimmick Gimmick = {};
-        Gimmick.Set_GimmickClear();
-        m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK1), Gimmick);
-    }
-    else */if (true == m_isAnimChange)
+    if (true == m_isAnimChange)
     {
         m_fLimitTimeAcc = 0.f;
 

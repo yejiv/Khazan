@@ -207,7 +207,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(3.f, Desc);
 
-            m_pClientInstance->HeinMach_CutScene();
+            m_pClientInstance->BGM_HeinMach_CutScene();
 
             m_isDead = true;
         }
@@ -260,7 +260,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma region 동굴 정방향
         else if (m_strTriggerKey == "CaveEntry")
         {
-            m_pClientInstance->HeinMach_Cave_Entry();
+            m_pClientInstance->BGM_HeinMach_Cave();
 
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.035f;
@@ -298,7 +298,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
         }
         else if (m_strTriggerKey == "CaveExit")
         {
-            m_pClientInstance->HeinMach_Halberd();
+            m_pClientInstance->BGM_HeinMach_Day();
 
             Start_SkyTransition(m_Sky_Desc, m_Cloud_Desc, 7.f);
 
@@ -336,6 +336,8 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma region 동굴 역방향
         else if (m_strTriggerKey == "CaveEntry_Rev")
         {
+            m_pClientInstance->BGM_HeinMach_Dawn();
+
             // 동굴 전 포그
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.05f;
@@ -373,6 +375,8 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
         }
         else if (m_strTriggerKey == "CaveExit_Rev")
         {
+            m_pClientInstance->BGM_HeinMach_Cave();
+
             Start_SkyTransition(m_Sky_Desc, m_Cloud_Desc, 2.f);
             
             // 동굴 중간 ~ 출구 포그
@@ -401,7 +405,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma endregion
         else if (m_strTriggerKey == "Talk_03")
         {
-            m_pClientInstance->HeinMach_Entry();
+            m_pClientInstance->BGM_HeinMach_Entry();
 
             SEQ_REQ_PLAY_DESC tPlayDesc{};
             tPlayDesc.tId.iSeq = 1100;

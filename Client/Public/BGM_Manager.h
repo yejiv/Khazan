@@ -7,10 +7,13 @@ NS_BEGIN(Client)
 
 class CBGM_Manager final : public CBase
 {
-private:
-    enum class BGM_State
+public:
+    enum class BGM_STATE
     {
-
+        NONE,
+        HEINMACH_DAWN, HINEMACH_CAVE, HEINMACH_DAY, HEINMACH_BOSS,
+        EMBARS_1F, EMBARS_B1,
+        VIPER_ENTRY, VIPER_1PHASE, VIPER_2PHASE
     };
 
 private:
@@ -22,9 +25,6 @@ public:
     void Update(_float fTimeDelta);
 
 public:
-    _float Get_FadeTime_BGM() { return m_fFadeTime_BGM; }
-    void Set_FadeTime_BGM(_float fFadeTime) { m_fFadeTime_BGM = fFadeTime; }
-
     _float Get_Volume_BGM() { return m_fVolume_BGM; }
     void Set_Volume_BGM(_float fVolume) { m_fVolume_BGM = fVolume; }
 
@@ -41,19 +41,37 @@ public:
 
 #pragma region 하인마흐 프리셋
 
-    void HeinMach_Entry();
-    void HeinMach_CutScene();
-    void HeinMach_Cave_Entry();
-    void HeinMach_Halberd();
-    void HeinMach_Yetuga_Entry();
+    void HeinMach_Entry(_float fFadeTime = 1.f);
+    void HeinMach_Dawn(_float fFadeTime = 1.f);
+    void HeinMach_CutScene(_float fFadeTime = 1.f);
+    void HeinMach_Cave(_float fFadeTime = 1.f);
+    void HeinMach_Day(_float fFadeTime = 1.f);
+    void HeinMach_Halberd(_float fFadeTime = 1.f);
+    void HeinMach_Yetuga_CutScene(_float fFadeTime = 1.f);
+    void HeinMach_Yetuga_1Phase(_float fFadeTime = 1.f);
 
 #pragma endregion
 
 #pragma region 엠바스 프리셋
 
-    void Embars_Entry();
-    void Embars_FirstElevator();
-    void Embars_LastElevator();
+    void Embars_Entry(_float fFadeTime = 1.f);
+    void Embars_B1(_float fFadeTime = 1.f);
+    void Embars_Club(_float fFadeTime = 1.f);
+    void Embars_Club_Game(_float fFadeTime = 1.f);
+    void Embars_Gacha(_float fFadeTime = 1.f);
+    void Embars_1F(_float fFadeTime = 1.f);
+    void Embars_Elamein(_float fFadeTime = 1.f);
+
+#pragma endregion
+
+#pragma region 바이퍼 프리셋
+
+    void Viper_Entry(_float fFadeTime = 1.f);
+    void Viper_1PhaseCutScene(_float fFadeTime = 1.f);
+    void Viper_1Phase(_float fFadeTime = 1.f);
+    void Viper_2PhaseCutScene(_float fFadeTime = 1.f);
+    void Viper_2Phase(_float fFadeTime = 1.f);
+    void Viper_End(_float fFadeTime = 1.f);
 
 #pragma endregion
 
@@ -71,11 +89,10 @@ private:
     _wstring m_wstrStoreKey_BGM = {};
 
     _float m_fVolume_BGM = { 0.25f };
-    _float m_fFadeTime_BGM = { 1.f };
 
     _bool m_isMute = { false };
 
-    BGM_State m_eState = {};
+    BGM_STATE m_eState = {};
 
 private:
     void Change_CurrentBGM(const _tchar* pSoundKey);

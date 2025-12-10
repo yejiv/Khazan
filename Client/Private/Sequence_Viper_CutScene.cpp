@@ -60,6 +60,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         // 1차 페이드 인
         if (m_fTime > 1.5f && !m_isFadeIn)
         {
+            m_pClientInstance->BGM_Viper_1PhaseCutScene();
+
             m_pClientInstance->Fade_In(nullptr, 3.f);
             m_isFadeIn = true;
         }
@@ -109,6 +111,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         // 착지하여 살짝 보고 페이드아웃
         if (m_fTime > 40.f && !m_isSecondFadeOut)
         {
+            m_pClientInstance->BGM_Viper_1Phase(5.f);
+
             m_pClientInstance->Fade_Out(nullptr, 5.f);
             m_isSecondFadeOut = true;
         }
@@ -192,6 +196,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         {
             m_pClientInstance->Fade_In();
             m_isSkipFadeIn = true;
+
+            m_pClientInstance->BGM_Viper_1Phase(2.f);
         }
 
         if (m_fSkipTime > 3.f && !m_isEnd)

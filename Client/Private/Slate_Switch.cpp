@@ -210,7 +210,7 @@ HRESULT CSlate_Switch::Bind_Materials(_uint iMeshIndex)
     m_iMtrlFlags &= ~M_EMISSIVE;
     m_iMtrlFlags &= ~M_SPECULAR;
 
-    m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_bool));
+    m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 
     return S_OK;
 }

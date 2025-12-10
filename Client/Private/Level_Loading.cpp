@@ -100,6 +100,8 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			m_pClientInstance->Set_CurrLevel(m_eNextLevelID);
 		}
 
+        m_pGameInstance->StopAll();
+
 		CLevel* pNewLevel = { nullptr };
 
 		switch (m_eNextLevelID)
@@ -129,7 +131,6 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			break;
 		}
 
-        m_pGameInstance->StopAll();
 		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(m_eNextLevelID), pNewLevel)))
 			return;
 	}
