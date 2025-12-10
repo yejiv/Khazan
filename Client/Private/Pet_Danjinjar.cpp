@@ -212,7 +212,7 @@ HRESULT CPet_Danjinjar::Ready_Components()
     m_tCollisionDesc.pGameObject = this;
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    //ƒ∏Ω∂ Desc
+    //Ï∫°Ïäê Desc
     tCharVirDesc.fRadius = 1.2f;
     tCharVirDesc.fHeight = 0.4f;
 

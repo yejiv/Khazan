@@ -607,7 +607,7 @@ HRESULT CElamein::Ready_AnimEvent()
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Smoke_Small"), m_pTransformCom->Get_State(STATE::POSITION));
         });
 
-    //¹ü¼ö¾ßµµ¿ÍÁà¶ó
+    //ë²”ìˆ˜ì•¼ë„ì™€ì¤˜ë¼
     //pModel->Register_Event("SphereWind_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
     //    _matrix SwordMatrix = m_pSword->Get_Transform()->Get_WorldMatrix();
     //    m_iFXIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Sword_Wind"), SwordMatrix, XMLoadFloat4(&m_vSword_End)); });
