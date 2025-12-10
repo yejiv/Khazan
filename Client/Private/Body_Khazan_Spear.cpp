@@ -3,6 +3,8 @@
 #include "GameInstance.h"
 #include "ClientInstance.h"
 #include "MeshTrail.h"
+//테스트!! 지우기
+#include "LineTrail.h"
 #include "Spear_Khazan_Spear.h"
 #include "Damage_Text.h"
 #include "Target_BrutalAttack.h"
@@ -93,6 +95,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
 void CBody_Khazan_Spear::Priority_Update(_float fTimeDelta)
 {
     m_pTrail->Priority_Update(fTimeDelta);
+
 }
 
 void CBody_Khazan_Spear::Update(_float fTimeDelta)
@@ -123,7 +126,8 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
         Trigger_MotionTrail(TEXT(""), false);
     }
 
-
+    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+     
 }
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -144,7 +148,6 @@ void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
     //      return;
 
     m_pTrail->Late_Update(fTimeDelta);
-
 }
 
 HRESULT CBody_Khazan_Spear::Render()
@@ -877,7 +880,7 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
     MeshDsc.iDivisionCount = 10.f;
     MeshDsc.vColor = _float4(1.f, 1.f, 1.f, 1.f);
     m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
-
+     
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
     MTDesc.pOwnerMasterModel = m_pModelCom;
     MTDesc.HasPartModels = true;
