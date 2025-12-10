@@ -2652,7 +2652,7 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         {
             m_isInteractEventSetting = true;
             /*  UnArmed 애니메이션 재생  (조각상 + 귀석때는 안함)*/
-            if (!Has_Status(BLOCK_ATK_SKILL_GUARD) && INTERACTIVE_TYPE::DESTINYSTONE != m_EventInteract.eInteractType)
+            if (!Has_Status(BLOCK_ATK_SKILL_GUARD) && INTERACTIVE_TYPE::DESTINYSTONE != m_EventInteract.eInteractType && INTERACTIVE_TYPE::TOMBSTONE != m_EventInteract.eInteractType)
             {
                 if (Has_Status(SPEAR))
                     m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
@@ -2678,6 +2678,12 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         {
             isDone = false;
             if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+            break;
+        }
+        case INTERACTIVE_TYPE::TOMBSTONE:
+        {
+            //isDone = false;
+            //if (m_pBody->Get_Model()->IsFinished())  isDone = true;
             break;
         }
         case INTERACTIVE_TYPE::LEVER:
@@ -2785,7 +2791,7 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         {
             Chest_Event(fTimeDelta);
         }
-        // 경계의 틈 툼스톤일때
+        // 비밀방 엠바스 툼스톤일때
         if (INTERACTIVE_TYPE::TOMBSTONE == m_EventInteract.eInteractType)
         {
             TombStone_Event(fTimeDelta);
@@ -2965,7 +2971,7 @@ void CKhazan_GSword::TombStone_Event(_float fTimeDelta)
     // 툼스톤 가동 끝나고 가동 LOOP 진입
     else if (true == TSEvent.isTSOpened)
     {
-        // 플레이어 툼스톤 LOOP 애니메이션?
+        m_pCharVirCom->Teleport(XMLoadFloat4(&TSEvent.vPlayerTPPos), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
     }
 
     m_EventInteract.End_Event();
