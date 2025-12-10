@@ -209,10 +209,6 @@ void CMonster::Update(_float fTimeDelta)
 {
 
      __super::Update(fTimeDelta);
-
-    //m_pRigidBodyCom->Sync_Update(m_pTransformCom);
-
-
 }
 
 void CMonster::Late_Update(_float fTimeDelta)
