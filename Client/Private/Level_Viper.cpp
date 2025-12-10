@@ -80,7 +80,7 @@ HRESULT CLevel_Viper::Initialize()
 
     CClientInstance::GetInstance()->Fade_In();
 
-    CClientInstance::GetInstance()->Set_Volume_BGM(0.25f);
+    CClientInstance::GetInstance()->Set_Volume_BGM(0.45f);
     CClientInstance::GetInstance()->BGM_Viper_Entry();
 
     //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_snow1"), XMVectorSet(0.f, 0.f, 0.f, 1.f));
