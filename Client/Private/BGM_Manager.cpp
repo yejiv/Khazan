@@ -190,9 +190,19 @@ void CBGM_Manager::Embars_Club_Game(_float fFadeTime)
     ChangeBGM(TEXT("BGM_MiniGame_Club"), fFadeTime, false);
 }
 
-void CBGM_Manager::Embars_Gacha(_float fFadeTime)
+void CBGM_Manager::Embars_Club_Shuffle_0(_float fFadeTime)
 {
+    ChangeBGM(TEXT("BGM_Minigame_Shuffle_0"), fFadeTime, false);
+}
 
+void CBGM_Manager::Embars_Club_Shuffle_1(_float fFadeTime)
+{
+    ChangeBGM(TEXT("BGM_Minigame_Shuffle_1"), fFadeTime, false);
+}
+
+void CBGM_Manager::Embars_Club_Shuffle_2(_float fFadeTime)
+{
+    ChangeBGM(TEXT("BGM_Minigame_Shuffle_2"), fFadeTime, false);
 }
 
 void CBGM_Manager::Embars_1F(_float fFadeTime)
