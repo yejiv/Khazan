@@ -290,6 +290,36 @@ void CClientInstance::ActiveCamera_KillFov(const _wstring& strID)
 {
 	m_pCamera_Manager->ActiveCamera_KillFov(strID);
 }
+void CClientInstance::Camera_Play_FOVZoomSequence(
+    const _wstring& strID,
+    _float fZoomFOV,
+    _float fInDuration,
+    _float fHoldDuration,
+    _float fOutDuration,
+    _int   iPriority
+)
+{
+    m_pCamera_Manager->Play_FOVZoomSequence(strID, fZoomFOV, fInDuration, fHoldDuration, fOutDuration, iPriority);
+}
+
+void CClientInstance::Camera_Start_FOVHoldZoom(
+    const _wstring& strID,
+    _float fZoomFOV,
+    _float fInDuration,
+    _int   iPriority
+)
+{
+    m_pCamera_Manager->Start_FOVHoldZoom(strID, fZoomFOV, fInDuration, iPriority);
+}
+
+// È¦µå ÇØÁ¦ ¡æ ÁÜ ¾Æ¿ô
+void CClientInstance::Camera_Release_FOVHoldZoom(
+    const _wstring& strID,
+    _float fOutDuration
+)
+{
+    m_pCamera_Manager->Release_FOVHoldZoom(strID, fOutDuration);
+}
 void CClientInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
 {
 	m_pCamera_Manager->Save_Json(iLevelIndex, strCameraTag, pOutData);
@@ -325,6 +355,22 @@ HRESULT CClientInstance::Camera_Set_Animation_Json(string strAnimationTag)
 void CClientInstance::Camera_Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos, _float3 vLookAt)
 {
     m_pCamera_Manager->Set_NpcTalk(isNpcTalk, vTargetPos, vLookAt);
+}
+void CClientInstance::Camera_SubShot(const CAMERA_POSE& subShotPose, _float fInDur, _float fOutDur)
+{
+    m_pCamera_Manager->Play_SubShotOnce(subShotPose, fInDur, fOutDur);
+}
+CAMERA_POSE CClientInstance::Camera_MakePose(const _float3& vPos, const _float3& vLookDir)
+{
+    return m_pCamera_Manager->MakePose(vPos, vLookDir);
+}
+CAMERA_POSE CClientInstance::Camera_MakePose_FromTarget(const _float3& vPos, const _float3& vTargetPos)
+{
+    return m_pCamera_Manager->MakePose_FromTarget(vPos, vTargetPos);
+}
+void CClientInstance::Camera_ReturnToPreviousPose(_float fDuration)
+{
+    m_pCamera_Manager->ReturnToPreviousPose(fDuration);
 }
 void CClientInstance::Camera_Force_AniEnd()
 {
