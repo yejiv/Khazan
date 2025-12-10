@@ -96,15 +96,18 @@ void CBody_Elamein::Update(_float fTimeDelta)
 
     m_pClothBody->Sync_Update(ClothWorld);
     m_pClothBody->Update(fTimeDelta, ClothWorld, vQuat, vPos);
-
-    m_pCapeBody->Priority_Update(fTimeDelta);
-
-    m_pCapeBody->Update(fTimeDelta);
+    if (m_pData->iAnimIndex != 31 && m_pData->iAnimIndex != 35 && m_pData->iAnimIndex != 51 && m_pData->iAnimIndex != 95)
+    {
+        m_pCapeBody->Priority_Update(fTimeDelta);
+        m_pCapeBody->Update(fTimeDelta);
+    }     
 }
 
 void CBody_Elamein::Late_Update(_float fTimeDelta)
 {
-    m_pCapeBody->Late_Update(fTimeDelta);
+    if (m_pData->iAnimIndex != 31 && m_pData->iAnimIndex != 35 && m_pData->iAnimIndex != 51 && m_pData->iAnimIndex != 95)
+        m_pCapeBody->Late_Update(fTimeDelta);
+    
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 }
@@ -196,8 +199,8 @@ HRESULT CBody_Elamein::Ready_Components()
     ClothDesc.fMass = 0.05f;
     ClothDesc.fMinDistance = 1.f;
     ClothDesc.fMaxDistance = 1.0f;
-    ClothDesc.fSpringFrequency = 2.f;
-    ClothDesc.fSpringDamping = 3.f;
+    ClothDesc.fSpringFrequency = 4.f;
+    ClothDesc.fSpringDamping = 2.f;
     ClothDesc.eType = CLOTHTYPE::CAPE;
     ClothDesc.pCollisionDesc = &m_tCapeCollDesc;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_ClothBody"),

@@ -74,9 +74,16 @@ private:
 
     _float4x4               m_CombindMatrix = {};
 
+    _bool m_isFirstSync = true;
+    RVec3 m_vPrevAnimPos = RVec3::sZero();
+    Quat  m_qPrevAnimRot = Quat::sIdentity();
+    float m_fFreezeTimer = 0.f;
+
 private:
     HRESULT Ready_Child(ROOT_BODY_DESC* pDesc);
     HRESULT Ready_Body(ROOT_BODY_DESC* pDesc);
+
+    void HardSnapToAnimation(const RVec3& pos, const Quat& rot);
 
 public:
     static CRootBody* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, ROOT_BODY_DESC* pDesc);

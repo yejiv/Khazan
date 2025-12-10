@@ -1061,6 +1061,11 @@ const BodyLockInterfaceLocking* CGameInstance::Get_BodyLockInterface()
     return m_pJolt_Manager->Get_BodyLockInterface();
 }
 
+_bool CGameInstance::IsObjectLayerPairValid(_uint iObjectLayer1, _uint iObjectLayer2)
+{
+	return m_pJolt_Manager->IsObjectLayerPairValid(ObjectLayer(iObjectLayer1), ObjectLayer(iObjectLayer2));
+}
+
 #ifdef _DEBUG
 void CGameInstance::Jolt_Test()
 {

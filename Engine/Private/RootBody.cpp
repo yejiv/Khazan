@@ -53,9 +53,16 @@ void CRootBody::Priority_Update(_float fTimeDelta)
 
 void CRootBody::Update(_float fTimeDelta)
 {
+    if (m_fFreezeTimer > 0.f)
+    {
+        m_fFreezeTimer -= fTimeDelta;
+        if (m_fFreezeTimer < 0.f) 
+            m_fFreezeTimer = 0.f;
+    }
+
     for (auto Child : m_ChildBodys)
     {
-        Child->Update(fTimeDelta);
+        Child->Update(fTimeDelta, m_fFreezeTimer > 0.f);
     }
 }
 
@@ -63,7 +70,7 @@ void CRootBody::Late_Update(_float fTimeDelta)
 {    
     for (auto Child : m_ChildBodys)
     {
-        Child->Late_Update(0.5f);
+        Child->Late_Update(0.5f, m_fFreezeTimer > 0.f);
     }
 }
 
@@ -71,7 +78,7 @@ void CRootBody::SyncFromAnimation(_float fTimeDelta)
 {
     if (!m_pBody || !m_pOwnerTransform)
         return;
-    
+
     _matrix NonScaleBoneMatrix = m_pBone->Get_CombinedTransformationMatrix();
     for (_uint i = 0; i < 3; ++i)
         NonScaleBoneMatrix.r[i] = XMVector3Normalize(NonScaleBoneMatrix.r[i]);
@@ -87,7 +94,46 @@ void CRootBody::SyncFromAnimation(_float fTimeDelta)
     if (!IsFiniteVec3(Vec3(pos)) || !rot.IsNormalized())
         return;
 
-    m_pBodyInterface->MoveKinematic(m_BodyID, pos, rot, fTimeDelta);
+    // === 1) 첫 프레임 처리 ===
+    if (m_isFirstSync)
+    {
+        m_isFirstSync = false;
+        m_vPrevAnimPos = pos;
+        m_qPrevAnimRot = rot;
+
+        HardSnapToAnimation(pos, rot); // 맨 처음에는 그냥 붙여두기
+        return;
+    }
+
+    // === 2) 이동량 / 회전량 체크 ===
+    Vec3 delta = Vec3(pos - m_vPrevAnimPos);
+    float dist = delta.Length();   // 한 프레임 이동 거리(월드)
+
+    // 회전 변화량 (쿼터니언 내적 → 각도)
+    float dotRot = m_qPrevAnimRot.Dot(rot);
+    dotRot = clamp(dotRot, -1.0f, 1.0f);
+    float angle = 2.0f * acosf(fabsf(dotRot)); // 라디안
+
+    const float teleportDist = 0.6f;        // 한 프레임에 60cm 이상 이동하면 텔레포트 취급
+    const float teleportAngle = XMConvertToRadians(70.0f); // 70도 이상이면 텔레포트 취급
+
+    bool bTeleport = (dist > teleportDist) || (angle > teleportAngle);
+
+    if (bTeleport)
+    {
+        // 넉백, 순간이동, 강한 피격 등
+        HardSnapToAnimation(pos, rot);
+        // 몇 프레임 동안 cloth 물리 끔 (애니메이션에만 붙이기)
+        m_fFreezeTimer = 0.2f; // 0.2초 정도
+    }
+    else
+    {
+        // 평상시에는 정상적으로 키네마틱 이동
+        m_pBodyInterface->MoveKinematic(m_BodyID, pos, rot, fTimeDelta);
+    }
+
+    m_vPrevAnimPos = pos;
+    m_qPrevAnimRot = rot;
 }
 
 void CRootBody::ApplyToBones(_float fAlpha)
@@ -182,6 +228,18 @@ HRESULT CRootBody::Ready_Body(ROOT_BODY_DESC* pDesc)
     m_BodyID = m_pBody->GetID();
 
     return S_OK;
+}
+
+void CRootBody::HardSnapToAnimation(const RVec3& pos, const Quat& rot)
+{
+    // 루트 바디를 애니메이션 포즈로 강제 세팅
+    m_pBodyInterface->SetPositionAndRotation(m_BodyID, pos, rot, EActivation::DontActivate);
+    m_pBodyInterface->SetLinearVelocity(m_BodyID, Vec3::sZero());
+    m_pBodyInterface->SetAngularVelocity(m_BodyID, Vec3::sZero());
+
+    // 이 루트 아래 모든 ChildBody 도 애니메이션 기준으로 리셋
+    for (auto Child : m_ChildBodys)
+        Child->HardSnapToAnimationRecursive();
 }
 
 CRootBody* CRootBody::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, ROOT_BODY_DESC* tDesc)

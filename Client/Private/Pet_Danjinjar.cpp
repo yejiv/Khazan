@@ -210,6 +210,7 @@ HRESULT CPet_Danjinjar::Ready_Components()
     tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 
     m_tCollisionDesc.pGameObject = this;
+    m_tCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PET);
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
     //Ä¸½¶ Desc
