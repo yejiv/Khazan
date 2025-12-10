@@ -69,7 +69,8 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
             ++it;
     }
 
-    m_bRunning = (m_pVIBufferCom->Update(fTimeDelta) == true && m_TimeTracks.size() == 0) ? false : true;
+    if(m_bRunning)
+        m_bRunning = (m_pVIBufferCom->Update(fTimeDelta) == true && m_TimeTracks.size() == 0) ? false : true;
 
     if (m_sData.bGravity)
         m_pVIBufferCom->UpdateGravity(fTimeDelta);

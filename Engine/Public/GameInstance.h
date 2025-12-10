@@ -426,6 +426,8 @@ public:
 	void		Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _matrix worldmatrix, _gvector Position);
 	void		Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID);
 	void		Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag);
+	void		Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID);
+	void		Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag);
 #pragma endregion
 
 #pragma region DISTORTION

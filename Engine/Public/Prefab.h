@@ -28,6 +28,7 @@ public:
 	_uint							GetID() { return m_iID; }
 	_bool							IsActive() {return m_bPlaying; }
 	void							SetClose();
+	void							SetClose_Force();
 
 
 protected:

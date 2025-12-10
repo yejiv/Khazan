@@ -184,6 +184,27 @@ void CEffect_Manager::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPro
         effect->SetClose(); 
 }
 
+void CEffect_Manager::Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)
+{
+    auto Layer = Find_Effect_Layer(iLayerLevelIndex, strPrototypeTag);
+
+    if (nullptr == Layer || Layer->size() <= ID || nullptr == (*Layer)[ID])
+        return;
+
+    (*Layer)[ID]->SetClose_Force();
+}
+
+void CEffect_Manager::Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag)
+{
+    auto Layer = Find_RunningEffect_Layer(strPrototypeTag);
+
+    if (nullptr == Layer)
+        return;
+
+    for (auto effect : *Layer)
+        effect->SetClose_Force();
+}
+
 void CEffect_Manager::Priority_Update(_float fEffectTimeDelta)
 {
 	for (size_t i = 0; i < m_iNumLevels; i++)
