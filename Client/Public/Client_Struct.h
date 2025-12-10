@@ -201,4 +201,22 @@ namespace Client
         XMFLOAT4        vColor;
         XMFLOAT4        vSubColor;
     }TRAIL_CONFIG;
+
+    struct CAMERA_POSE
+    {
+        _float3 vPos;
+        _float3 vRight;
+        _float3 vUp;
+        _float3 vLook;
+    };
+
+    struct POSE_BLEND_STATE
+    {
+        _bool   isActive = false;
+        _float  fTime = 0.f;
+        _float  fDuration = 0.f;
+
+        CAMERA_POSE Start;
+        CAMERA_POSE Target;
+    };
 }
