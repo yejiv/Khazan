@@ -156,9 +156,6 @@ HRESULT CBladeNexus::Render()
     {
         Bind_Materials(i);
 
-        _bool isBNEye = { 5 == i };
-        m_pShaderCom->Bind_RawValue("g_isBNEye", &isBNEye, sizeof(_bool));
-
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(8), E_FAIL);
@@ -285,13 +282,8 @@ HRESULT CBladeNexus::Ready_DefaultSetting(void* pArg)
         memcpy(m_szPlaceName, TEXT("설인의 대지"), sizeof(m_szPlaceName));
         break;
     case static_cast<_int>(BLADENEXUS_ID::HEINMACH_YETUGA):
-    {
-        memcpy(m_szPlaceName, TEXT("물음표"), sizeof(m_szPlaceName));
-
-        // 예투가 죽었다는 이벤트 받으면 위치 옮길 예정 ( 아래에서 뿅 )
-
+        memcpy(m_szPlaceName, TEXT("예투가의 레어"), sizeof(m_szPlaceName));
         break;
-    }
     case static_cast<_int>(BLADENEXUS_ID::EMBARS_UNDER):
         memcpy(m_szPlaceName, TEXT("잊혀진 사원의 지하"), sizeof(m_szPlaceName));
         break;

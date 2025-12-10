@@ -272,6 +272,8 @@ void CPet_Danjinjar::State_Change(_bool isStart)
 {
     if (isStart)
         m_isActive = true;
+    else
+        m_isActive = false;
 }
 
 CPet_Danjinjar* CPet_Danjinjar::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)

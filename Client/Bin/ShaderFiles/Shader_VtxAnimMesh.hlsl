@@ -31,9 +31,6 @@ bool g_isSpecular = false;
 bool g_isMetalic = false;
 bool g_isRoughness = false;
 
-// 귀검 관련 전역 변수
-bool g_isBNEye = false;
-
 /* 모델 전체 뼈기준(x) */
 /* 특정 메시에 영향ㅇ르 주는 뼈들 */
 matrix g_BoneMatrices[512];
