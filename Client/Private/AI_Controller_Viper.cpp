@@ -81,27 +81,27 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         {
             //m_pBB->Set_Value<_uint>(m_strMonstertag,"DebugIndex",0);
             CViper* pViper = static_cast<CViper*>(pOwner);
-            //pViper->Set_PhaseWeapon_Phase2();
-            pViper->Set_Weapon_Phase1();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::QUICK2HIT), pViper);
+            pViper->Set_PhaseWeapon_Phase2();
+            //pViper->Set_Weapon_Phase1();
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHDRIFT), pViper);
         }
 
         if (m_pGameInstance->Key_Down(DIK_N))
         {
             //m_pBB->Set_Value<_uint>(m_strMonstertag, "DebugIndex", 1);
             CViper* pViper = static_cast<CViper*>(pOwner);
-            //pViper->Set_PhaseWeapon_Phase2();
-            pViper->Set_Weapon_Phase1();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::JUMPSMASH), pViper);
+            pViper->Set_PhaseWeapon_Phase2();
+            //pViper->Set_Weapon_Phase1();
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_THROWROCK), pViper);
         }
 
         if (m_pGameInstance->Key_Down(DIK_M))
         {
             CViper* pViper = static_cast<CViper*>(pOwner);
 
-            //pViper->Set_PhaseWeapon_Phase2();
-            pViper->Set_Weapon_Phase1();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::COMBO5HIT), pViper);
+            pViper->Set_PhaseWeapon_Phase2();
+            //pViper->Set_Weapon_Phase1();
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_FAKERUNATTACK), pViper);
         }
 
     }

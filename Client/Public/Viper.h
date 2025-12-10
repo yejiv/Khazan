@@ -74,6 +74,7 @@ public:
     
 
     void                            Set_Teleport(_fvector vPos);
+    void                            SFX_DASHDRIFT();
 
 private:
     HRESULT							Ready_Components();
@@ -82,6 +83,7 @@ private:
     HRESULT							Ready_AnimEvent();
     HRESULT						    Ready_AnimEffectEvent();
     HRESULT                         Ready_SFX_P1();
+    HRESULT                         Ready_SFX_P2();
 
 private:
     void							Pick_ViperRock();
@@ -98,6 +100,9 @@ private:
     void                            SFX_ATTACK();
     void                            SFX_ATTACK_END();
 
+    void                            SFX_Move_P2(_uint iIndex);
+    void                            SFX_STOMP_P2(_uint iIndex);
+    void                            SFX_HAND_SWISH(_uint iIndex);
 private:
     void                            Viper_Cinematic_ShaderSettings();
     void                            Viper_2PhaseBerserker_ShaderSettings();
