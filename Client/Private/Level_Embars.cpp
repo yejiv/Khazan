@@ -1446,9 +1446,9 @@ HRESULT CLevel_Embars::Ready_Layer_Pet(const _wstring& strLayerTag)
     MonsterDesc.fSpeedPerSec = 3.f;
     MonsterDesc.fRotationPerSec = 180.f;
     XMStoreFloat4x4(&MonsterDesc.WorldMatrix, XMMatrixIdentity());
-    MonsterDesc.WorldMatrix.m[3][0] = 0.f;
-    MonsterDesc.WorldMatrix.m[3][1] = 0.f;
-    MonsterDesc.WorldMatrix.m[3][2] = 5.f;
+    MonsterDesc.WorldMatrix.m[3][0] = -58.26f;
+    MonsterDesc.WorldMatrix.m[3][1] = -92.f;
+    MonsterDesc.WorldMatrix.m[3][2] = -38.42f;
 
     MonsterDesc.strName = "Pet_Danjinjar";
     MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::EMBARS);

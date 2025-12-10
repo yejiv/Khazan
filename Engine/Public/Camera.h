@@ -180,7 +180,7 @@ protected:
 	_float				m_fBaseFOV = XMConvertToRadians(60.f);   // 기본 FOV
 	vector<FOVModifier> m_vFOVMods;
 	_float				m_fFOVSmooth = 20.f;   // 클수록 빠르게 따라감
-	_float				m_fFOVMin = XMConvertToRadians(30.f);
+	_float				m_fFOVMin = XMConvertToRadians(20.f);
 	_float				m_fFOVMax = XMConvertToRadians(110.f);
 	
 public:

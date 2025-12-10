@@ -35,7 +35,7 @@ public:
 
 public:
     void PlayBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f);
-    void ChangeBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f);
+    void ChangeBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f, _bool isWav = true);
     void PlayBattleBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f);
     void EndBattleBGM(_float fFadeTime = 1.f);
 

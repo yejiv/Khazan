@@ -4,10 +4,11 @@
 
 #include "RandomBox.h"
 #include "UI_Gacha_Selete.h"
-
+#include "UI_Inven.h"
 
 void CMiniGame_Gacha::Start_MiniGame(MINIGAME_LEVEL eLevel)
 {
+    m_eMiniGameLevel = eLevel;
     if (eLevel == MINIGAME_LEVEL::EASY)
     {
         m_iSuffleCount = m_pGameInstance->Rand(10, 15);
@@ -28,6 +29,7 @@ void CMiniGame_Gacha::Start_MiniGame(MINIGAME_LEVEL eLevel)
         m_fSpeed = 4.f;
         m_fSpeedCount = 2.f;
         m_fAddSpeed = 1.5f;
+        m_isHardCount++;
     }
     m_eState = SUCCES_NOTICE;
     m_iSpeedCount = 0;
@@ -36,10 +38,17 @@ void CMiniGame_Gacha::Start_MiniGame(MINIGAME_LEVEL eLevel)
     m_fAcctime = 0.f;
     m_fGuidePosY = 1.5f;
     m_fGuideCount = 3;
+    m_pGameInstance->Set_LightEnable(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), true);
+    _float4 vLightPos{};
+    XMStoreFloat4(&vLightPos, m_pBox[m_iSeleteNum]->Get_Position());
+    m_pGameInstance->Set_LightPosition(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), vLightPos);
 
-    // ¹Ì´Ï°ÔÀÓ À§Ä¡·Î È­¸é ÀüÈ¯
+    for(auto pBox : m_pBox)
+        pBox->Get_Model()->Set_Animation(1);
+    // ë¯¸ë‹ˆê²Œìž„ ìœ„ì¹˜ë¡œ í™”ë©´ ì „í™˜
     CAMERA_POSE Pose = CClientInstance::GetInstance()->Camera_MakePose(_float3(-62.071f, -89.988f, -41.670f), _float3(-0.934f, -0.358f, 0.008f));
     CClientInstance::GetInstance()->Camera_SubShot(Pose, 0.3f, 0.3f);
+
 }
 
 CMiniGame_Gacha::CMiniGame_Gacha(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -72,16 +81,12 @@ void CMiniGame_Gacha::Priority_Update(_float fTimeDelta)
     for (auto pBox : m_pBox)
         pBox->Priority_Update(fTimeDelta);
 
-
-    m_pBox[0]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
-    m_pBox[1]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
-    m_pBox[2]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
 }
 
 void CMiniGame_Gacha::Update(_float fTimeDelta)
 {
     if (m_eState == SELETE_NUM)
-        Input_Key();
+        Update_Selete(fTimeDelta);
     else if (m_eState == SUCCES_NOTICE)
         Update_Notice(fTimeDelta);
     else if (m_eState == SHUFFLE_SET)
@@ -93,7 +98,10 @@ void CMiniGame_Gacha::Update(_float fTimeDelta)
     else if (m_eState == SELECT_END1)
         Update_Selete_End1(fTimeDelta);
     else if (m_eState == SELECT_END2)
-        Update_Selete_End2(fTimeDelta);
+        Update_Selete_End2(fTimeDelta);        
+    else
+        for (auto pBox : m_pBox)
+            pBox->Get_Model()->Set_Animation(1);
 
     for (auto pBox : m_pBox)
         pBox->Update(fTimeDelta);
@@ -104,13 +112,11 @@ void CMiniGame_Gacha::Late_Update(_float fTimeDelta)
     for (auto pBox : m_pBox)
         pBox->Late_Update(fTimeDelta);
 
-    _vector vPos = m_pBox[m_iSeleteNum]->Get_Position();
     if (m_eState == SELETE_NUM || m_eState == SUCCES_NOTICE)
+    {
+        _vector vPos = m_pBox[m_iSeleteNum]->Get_Position();
         m_pSeleteUI->Late_Update(fTimeDelta, XMVectorSetY(vPos, XMVectorGetY(vPos) + m_fGuidePosY));
-
-    _float4 vLightPos{};
-    XMStoreFloat4(&vLightPos, vPos);
-    m_pGameInstance->Set_LightPosition(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), vLightPos);
+    }
 }
 
 HRESULT CMiniGame_Gacha::Ready_Prototype()
@@ -146,17 +152,16 @@ HRESULT CMiniGame_Gacha::Setting_Object()
         CRandomBox* pRandomBox = static_cast<CRandomBox*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iPrototypeIndex, TEXT("Prototype_PartObject_MiniGame_RandomBox"), &Desc));
         CHECK_NULLPTR(pRandomBox, E_FAIL);
         m_pBox.push_back(pRandomBox);
-        pRandomBox->Set_Index(i);
+        pRandomBox->Set_Index(i); 
     }
 
     m_pBox[0]->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-67.325f, -92.26f, -44.777f, 1.f));
     m_pBox[1]->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-67.325f, -92.26f, -41.831f, 1.f));
     m_pBox[2]->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-67.325f, -92.26f, -38.842, 1.f));
 
-    m_pBox[0]->Get_Transform()->Rotation(0.f, 80.f, 0.f);
-    m_pBox[1]->Get_Transform()->Rotation(0.f, 80.f, 0.f);
-    m_pBox[2]->Get_Transform()->Rotation(0.f, 80.f, 0.f);
-
+    m_pBox[0]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
+    m_pBox[1]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
+    m_pBox[2]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
     return S_OK;
 }
 
@@ -172,9 +177,15 @@ void CMiniGame_Gacha::Setting_Suffle()
 
     if (m_iSuffleCount <= 0)
     {
+        m_pGameInstance->Set_LightEnable(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), true);
         m_eState = SELETE_NUM;
         m_iSeleteNum = 0;
         m_fGuidePosY = 1.5f;
+
+        _float4 vLightPos{};
+        XMStoreFloat4(&vLightPos, m_pBox[m_iSeleteNum]->Get_Position());
+        m_pGameInstance->Set_LightPosition(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), vLightPos);
+
     }
     else
     {
@@ -191,6 +202,7 @@ void CMiniGame_Gacha::Setting_Suffle()
         }
 
         m_eState = SHUFFLE;
+        m_pGameInstance->PlaySoundOnce(TEXT("MiniGame_Shuffle.mp3"));
 
         _vector vposA = m_pBox[m_iSuffleIndex1]->Get_Position();
         _vector vposB = m_pBox[m_iSuffleIndex2]->Get_Position();
@@ -277,8 +289,10 @@ void CMiniGame_Gacha::Update_Suffle(_float fTimeDelta)
 void CMiniGame_Gacha::Update_Notice(_float fTimeDelta)
 {
     if (m_fGuideCount <= 0)
+    {
         m_eState = SHUFFLE_SET;
-
+        m_pGameInstance->Set_LightEnable(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), false);
+    }
     m_fAcctime += fTimeDelta;
     
     if (m_fAcctime >= 1.f)
@@ -297,47 +311,119 @@ void CMiniGame_Gacha::Update_Notice(_float fTimeDelta)
 
 void CMiniGame_Gacha::Update_Selete_End0(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD0, INPUT_TYPE::WORLD_UI))
-    {        
-        CAMERA_POSE tCameraPose = CClientInstance::GetInstance()->Camera_MakePose(_float3(-62.444f, -90.443f, -41.798f), _float3(-0.830f, -0.241f, -0.503f)); // ¿ÞÂÊ ¹Ù¶óº¸±â
-        //CAMERA_POSE tCameraPose = CClientInstance::GetInstance()->Camera_MakePose(_float3(-62.444f, -90.443f, -41.798f), _float3(-0.952f, -0.307f, -0.008f)); // °¡¿îµ¥ ¹Ù¶óº¸±â
-        //CAMERA_POSE tCameraPose = CClientInstance::GetInstance()->Camera_MakePose(_float3(-62.444f, -90.443f, -41.798f), _float3(-0.827f, -0.224f, 0.515f)); // ¿À¸¥ÂÊ ¹Ù¶óº¸±â
-        CClientInstance::GetInstance()->Camera_SubShot(tCameraPose, 0.2f, 0.2f);
-        float zoomFov = XMConvertToRadians(35.f);
-        CClientInstance::GetInstance()->Camera_Start_FOVHoldZoom(L"DanginZoom", zoomFov, 3.f, 0);
+    if (m_eEndAnime == ANIM_STATE::START)
+    {
+        if (m_pBox[m_iSeleteNum]->isAnimFinish())
+        {
+            if (m_isSucces)
+            {
+                m_pBox[m_iSeleteNum]->Get_Model()->Set_Animation(13);
+                m_eEndAnime = ANIM_STATE::DANCE;
+            }
+            else
+            {
+                m_pBox[m_iSeleteNum]->Get_Model()->Set_Animation(5);
+                m_pGameInstance->PlaySoundOnce(TEXT("MiniGame_Fail.mp3"));
+                m_eEndAnime = ANIM_STATE::END;
+            }
+        }
+    }
+    else  if (m_eEndAnime == ANIM_STATE::DANCE)
+    {
+        m_pBox[m_iSeleteNum]->Get_Transform()->LookAt_Lerp(XMLoadFloat4(m_pGameInstance->Get_CamPosition()), fTimeDelta, 1.5f);
+        if (*m_pBox[m_iSeleteNum]->Get_Model()->Get_CurTrackPosition() >= 260.f)
+        {
+            m_eEndAnime = ANIM_STATE::END;
+        }
+    }
+    else
+    {
+        m_fEffectTime = 0.f;
         m_eState = SELECT_END1;
+        CClientInstance::GetInstance()->Camera_Release_FOVHoldZoom(L"DanginZoom", 0.5f);
+        if(m_eMiniGameLevel == MINIGAME_LEVEL::HARD && m_isSucces)
+            CClientInstance::GetInstance()->BGM_Embars_Club_Game();
     }
 }
 
 void CMiniGame_Gacha::Update_Selete_End1(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD1, INPUT_TYPE::WORLD_UI))
+    m_fEffectTime += fTimeDelta;
+    if (m_fEffectTime > 1.f)
     {
-        CClientInstance::GetInstance()->Camera_Release_FOVHoldZoom(L"DanginZoom", 0.5f);        
         m_eState = SELECT_END2;
+        CClientInstance::GetInstance()->Camera_ReturnToPreviousPose(0.5f);
     }
 }
 
 void CMiniGame_Gacha::Update_Selete_End2(_float fTimeDelta)
 {
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD2, INPUT_TYPE::WORLD_UI))
+    if (m_isSucces)
     {
-        CClientInstance::GetInstance()->Camera_ReturnToPreviousPose(0.5f);
-        m_eState = END;
+        if (m_eMiniGameLevel == MINIGAME_LEVEL::EASY)
+        {
+            static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1004);
+        }
+        else if (m_eMiniGameLevel == MINIGAME_LEVEL::NORMAL)
+        {
+            static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(5011);
+        }
+        else if (!m_isGet_Pet && m_eMiniGameLevel == MINIGAME_LEVEL::HARD)
+        {
+            m_isGet_Pet = true;
+            m_pGameInstance->Emit_Event<EVENT_PET_STATE>(ENUM_CLASS(EVENT_TYPE::PET), EVENT_PET_STATE{ true });
+        }
     }
+    m_eState = END;
+
+    m_pGameInstance->Set_LightEnable(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), false);
+    m_pBox[0]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
+    m_pBox[1]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
+    m_pBox[2]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
+    for (auto pBox : m_pBox)
+        pBox->Get_Model()->Set_Animation(1);
 }
 
-void CMiniGame_Gacha::Input_Key()
+void CMiniGame_Gacha::Update_Selete(_float fTimeDelta)
 {
+    if (m_eMiniGameLevel == MINIGAME_LEVEL::HARD && m_isHardCount >= 2 && m_pBox[m_iSeleteNum]->Get_Index() == m_iSuccesNum)
+    {
+        m_fLightTime += fTimeDelta;
+        if (m_fLightTime >= 0.3f)
+        {
+            m_fLightTime = 0.f;
+            m_pGameInstance->Set_LightEnable(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), m_isHardLight);
+            m_isHardLight ? m_isHardLight = false : m_isHardLight = true;
+        }
+    }
+    else
+    {
+        m_pGameInstance->Set_LightEnable(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), true);
+    }
+
     if (m_pGameInstance->Key_Down(DIK_A, INPUT_TYPE::WORLD_UI))
     {
         --m_iSeleteNum;
         m_iSeleteNum < 0 ? m_iSeleteNum = 2 : m_iSeleteNum;
+
+        _float4 vLightPos{};
+        XMStoreFloat4(&vLightPos, m_pBox[m_iSeleteNum]->Get_Position());
+        m_pGameInstance->Set_LightPosition(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), vLightPos);
+
+        _wstring wstrSound = TEXT("UI_common_mouse_over_0") + to_wstring(m_pGameInstance->Rand(1, 4)) + TEXT(" (SFX).wav");
+        m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
     }
     else if (m_pGameInstance->Key_Down(DIK_D, INPUT_TYPE::WORLD_UI))
     {
         ++m_iSeleteNum;
         m_iSeleteNum > 2 ? m_iSeleteNum = 0 : m_iSeleteNum;
+
+        _float4 vLightPos{};
+        XMStoreFloat4(&vLightPos, m_pBox[m_iSeleteNum]->Get_Position());
+        m_pGameInstance->Set_LightPosition(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), vLightPos);
+
+        _wstring wstrSound = TEXT("UI_common_mouse_over_0") + to_wstring(m_pGameInstance->Rand(1, 4)) + TEXT(" (SFX).wav");
+        m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
     }
     else if (m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::WORLD_UI))
     {
@@ -345,7 +431,25 @@ void CMiniGame_Gacha::Input_Key()
         if (m_iSuccesNum == m_pBox[m_iSeleteNum]->Get_Index())
             m_isSucces = true;
         else
-            m_iSuccesNum = false;
+            m_isSucces = false;
+
+        CAMERA_POSE tCameraPose = {};
+        if(m_iSeleteNum == 0)
+            tCameraPose = CClientInstance::GetInstance()->Camera_MakePose(_float3(-62.444f, -90.443f, -41.798f), _float3(-0.830f, -0.241f, -0.503f)); // ì™¼ìª½ ë°”ë¼ë³´ê¸°
+        else if (m_iSeleteNum == 1)
+            tCameraPose = CClientInstance::GetInstance()->Camera_MakePose(_float3(-62.444f, -90.443f, -41.798f), _float3(-0.952f, -0.307f, -0.008f)); // ê°€ìš´ë° ë°”ë¼ë³´ê¸°
+        else
+            tCameraPose = CClientInstance::GetInstance()->Camera_MakePose(_float3(-62.444f, -90.443f, -41.798f), _float3(-0.827f, -0.224f, 0.515f)); // ì˜¤ë¥¸ìª½ ë°”ë¼ë³´ê¸°
+ 
+        CClientInstance::GetInstance()->Camera_SubShot(tCameraPose, 0.2f, 0.2f);
+        _float zoomFov = XMConvertToRadians(20.f);
+        CClientInstance::GetInstance()->Camera_Start_FOVHoldZoom(L"DanginZoom", zoomFov, 1.5f, 0);
+
+        if(m_isSucces)
+            m_pBox[m_iSeleteNum]->Get_Model()->Set_Animation(12);
+        else
+            m_pBox[m_iSeleteNum]->Get_Model()->Set_Animation(4);
+        m_eEndAnime = ANIM_STATE::START;
     }
 }
 

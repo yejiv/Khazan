@@ -24,6 +24,7 @@ namespace Client {
         ELEVATOR_SKIP,
         BLADENEXUS_POP,
         OBELISK_DESTRUCT,
+        PET,
 		END };
 
 	// Structs
@@ -415,5 +416,9 @@ namespace Client {
 
     struct EVENT_OBELISK_DESTRUCT {
         _bool   isDestruct;
+    };
+
+    struct EVENT_PET_STATE {
+        _bool isStart;
     };
 }

@@ -26,7 +26,7 @@ HRESULT CRandomBox::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pModelCom->Set_Animation(0);
+    m_pModelCom->Set_Animation(1);
 
     return S_OK;
 }
@@ -37,8 +37,7 @@ void CRandomBox::Priority_Update(_float fTimeDelta)
 
 void CRandomBox::Update(_float fTimeDelta)
 {
-    m_pModelCom->Set_Animation(1);
-    m_pModelCom->Play_Animation(fTimeDelta);
+    m_bisAnimFinish = m_pModelCom->Play_Animation(fTimeDelta);
 }
 
 void CRandomBox::Late_Update(_float fTimeDelta)
@@ -80,6 +79,9 @@ HRESULT CRandomBox::Render()
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
+        if (Skip_Mesh(i))
+            continue;
+
         _uint iMtrlFlags = 0;
 
         if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0)))
@@ -131,6 +133,65 @@ HRESULT CRandomBox::Bind_ShaderResources()
         return E_FAIL;
 
     return S_OK;
+}
+
+_bool CRandomBox::Skip_Mesh(_uint iMeshIndex)
+{
+    switch ((ANIM_STATE)m_pModelCom->Get_CurAnimIndex())
+    {
+    case ANIM_STATE::DANCE1_ACTIVE:
+    case ANIM_STATE::DANCE1_LOOP:
+        if (MESH_CENTER == iMeshIndex)
+            return true;
+        break;
+    case ANIM_STATE::FLIPPING_ACTIVE:
+    case ANIM_STATE::FLIPPING_LOOP:
+        if (MESH_RIGHT == iMeshIndex)
+            return true;
+        break;
+    case ANIM_STATE::LIE_ACTIVE:
+    case ANIM_STATE::LIE_LOOP:
+        if (MESH_RIGHT == iMeshIndex || MESH_LEFT == iMeshIndex)
+            return true;
+        break;
+    case ANIM_STATE::WALK_ACTIVE:
+    case ANIM_STATE::WALK_LOOP:
+        if (MESH_CENTER == iMeshIndex)
+            return true;
+        break;
+    case ANIM_STATE::LEAN_ACTIVE:
+    case ANIM_STATE::LEAN_LOOP:
+        if (MESH_CENTER == iMeshIndex)
+            return true;
+        break;
+    case ANIM_STATE::SHADOWBOXING_ACTIVE:
+    case ANIM_STATE::SHADOWBOXING_LOOP:
+        if (MESH_RIGHT == iMeshIndex)
+            return true;
+        break;
+    case ANIM_STATE::DANCE2_ACTIVE:
+    case ANIM_STATE::DANCE2_LOOP:
+        if (MESH_CENTER == iMeshIndex)
+            return true;
+        break;
+    case ANIM_STATE::DANCE3_ACTIVE:
+    case ANIM_STATE::DANCE3_LOOP:
+        if (MESH_RIGHT == iMeshIndex || MESH_LEFT == iMeshIndex)
+            return true;
+        break;
+    case ANIM_STATE::DRSTRANGE_ACTIVE:
+    case ANIM_STATE::DRSTRANGE_LOOP:
+        break;
+    case ANIM_STATE::DEACTIVE:
+        if (MESH_BODY == iMeshIndex || MESH_CENTER == iMeshIndex || MESH_RIGHT == iMeshIndex || MESH_LEFT == iMeshIndex)
+            return true;
+        break;
+    case ANIM_STATE::DEACTIVE_IDLE:
+        return true;
+        break;
+    }
+
+    return false;
 }
 
 CRandomBox* CRandomBox::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)
