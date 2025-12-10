@@ -6,7 +6,7 @@ class CMiniGame_Gacha final : public CGameObject
 {
 public:
     enum class MINIGAME_LEVEL {EASY, NORMAL, HARD, END};
-    enum GACHA_STATE { SUCCES_NOTICE, SHUFFLE, SHUFFLE_SET, SELETE_NUM, END};
+    enum GACHA_STATE { SUCCES_NOTICE, SHUFFLE, SHUFFLE_SET, SELETE_NUM, SELECT_END0, SELECT_END1, SELECT_END2, END};
 public:
     void                        Start_MiniGame(MINIGAME_LEVEL eLevel);
     GACHA_STATE                 Get_GachaState() { return m_eState; }
@@ -57,6 +57,9 @@ private:
     void                        Setting_Suffle();
     void                        Update_Suffle(_float fTimeDelta);
     void                        Update_Notice(_float fTimeDelta);
+    void                        Update_Selete_End0(_float fTimeDelta);
+    void                        Update_Selete_End1(_float fTimeDelta);
+    void                        Update_Selete_End2(_float fTimeDelta);
     void                        Input_Key();
 public:
     static CMiniGame_Gacha*     Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);

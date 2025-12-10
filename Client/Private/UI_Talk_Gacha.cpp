@@ -169,6 +169,8 @@ void CUI_Talk_Gacha::Update(_float fTimeDelta)
         {
             m_eType = TALK_TYPE::SUCCES;
             m_isSucces = m_pGacha->isSucces();
+            // 미니게임 끝난 위치
+            CClientInstance::GetInstance()->Camera_ReturnToPreviousPose(0.5f);
         }
     }
     if (!m_IsUpdate)
@@ -197,7 +199,7 @@ void CUI_Talk_Gacha::Update(_float fTimeDelta)
             {
                 m_eType = TALK_TYPE::MINIGAME;
                 Update_Selete();
-                m_pGacha->Start_MiniGame((CMiniGame_Gacha::MINIGAME_LEVEL)m_iSelete);
+                m_pGacha->Start_MiniGame((CMiniGame_Gacha::MINIGAME_LEVEL)m_iSelete);                
                 m_iSelete = 0;
             }
         }
