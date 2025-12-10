@@ -36,18 +36,37 @@ public:
 	void		Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID);
 	void		Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag);
 
-private:
-	class CGameInstance*								m_pGameInstance = { nullptr };
-	_uint												m_iNumLevels = {};
-	_uint												m_iCurLevel;
-	unordered_map<_wstring, vector<class CPrefab*>>*	m_pEffectLayers = {};	//본체 - 인덱스로 바로 접근해야함
-	unordered_map<_wstring, deque<class CPrefab*>>*		m_pEffectPools = {};	//위,끝만 삽입 삭제가 일어나서 deque
-	unordered_map<_wstring, list<class CPrefab*>>*		m_pRunningEffects = {};	//중간 삽입도 일어나서 list
+//private:
+//	class CGameInstance*								m_pGameInstance = { nullptr };
+//	_uint												m_iNumLevels = {};
+//	_uint												m_iCurLevel;
+//
+//	unordered_map<_wstring, vector<class CPrefab*>>*	m_pEffectLayers = {};	//본체 - 인덱스로 바로 접근해야함
+//	unordered_map<_wstring, vector<class CPrefab*>>*	m_pEffectPools = {};	 
+//	//unordered_map<_wstring, list<class CPrefab*>>*	m_pRunningEffects = {};	//중간 삽입도 일어나서 list
+//
+//    vector<class CPrefab*>                              m_pRunningEffects_Test;
+//
+//private:
+//	vector<class CPrefab*>* Find_Effect_Layer(_uint iLayerLevelIndex, const _wstring& strLayerTag);
+//    vector<class CPrefab*>* Find_Effect_Pool(_uint iLayerLevelIndex, const _wstring& strLayerTag);
+//	//list<class CPrefab*>* Find_RunningEffect_Layer(const _wstring& strLayerTag);
 
 private:
-	vector<class CPrefab*>* Find_Effect_Layer(_uint iLayerLevelIndex, const _wstring& strLayerTag);
-	deque<class CPrefab*>* Find_Effect_Pool(_uint iLayerLevelIndex, const _wstring& strLayerTag);
-	list<class CPrefab*>* Find_RunningEffect_Layer(const _wstring& strLayerTag);
+    class CGameInstance* m_pGameInstance = { nullptr };
+    _uint												m_iNumLevels = {};
+    _uint												m_iCurLevel;
+
+    unordered_map<_wstring, vector<class CPrefab*>>* m_pEffectLayers = {};	//본체 - 인덱스로 바로 접근해야함
+    unordered_map<_wstring, deque<class CPrefab*>>* m_pEffectPools = {};
+    unordered_map<_wstring, list<class CPrefab*>>*	m_pRunningEffects = {};	//중간 삽입도 일어나서 list
+
+    vector<class CPrefab*>                              m_pRunningEffects_Test;
+
+private:
+    vector<class CPrefab*>* Find_Effect_Layer(_uint iLayerLevelIndex, const _wstring& strLayerTag);
+    deque<class CPrefab*>* Find_Effect_Pool(_uint iLayerLevelIndex, const _wstring& strLayerTag);
+    list<class CPrefab*>* Find_RunningEffect_Layer(const _wstring& strLayerTag);
 
 private :
     _vector Decompose_Rotation(_matrix W);

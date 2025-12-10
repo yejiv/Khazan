@@ -52,9 +52,6 @@
     <Filter Include="01.Utility\04.Prototypes">
       <UniqueIdentifier>{ed302dd2-ef7d-4d86-a247-b9658d5f090c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\02.GameObject\UIObject">
-      <UniqueIdentifier>{5c88d794-9383-4a8a-8347-680051d0a38c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\Transform">
       <UniqueIdentifier>{8bf04c38-7325-4a7a-8f27-7272b9148467}</UniqueIdentifier>
     </Filter>
@@ -177,9 +174,6 @@
     </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Mesh">
       <UniqueIdentifier>{2b9ab067-39b0-4d29-bbf5-98929792d67e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\02.GameObject\UIObject\Parent">
-      <UniqueIdentifier>{54f95aaf-6316-4314-94d9-df09f0191430}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Utility\95.AI">
       <UniqueIdentifier>{131fd22b-e9d4-4072-9982-a851e9e8a3e1}</UniqueIdentifier>
@@ -445,6 +439,12 @@
     <Filter Include="01.Utility\18.Decal\Map">
       <UniqueIdentifier>{dac4b490-ec59-4818-a32a-011590004b52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\02.GameObject\Pool\UIObject">
+      <UniqueIdentifier>{5c88d794-9383-4a8a-8347-680051d0a38c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\Pool\UIObject\Parent">
+      <UniqueIdentifier>{54f95aaf-6316-4314-94d9-df09f0191430}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -484,7 +484,7 @@
       <Filter>01.Utility\04.Prototypes</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UIObject.cpp">
-      <Filter>01.Utility\02.GameObject\UIObject</Filter>
+      <Filter>01.Utility\02.GameObject\Pool\UIObject</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Transform.cpp">
       <Filter>01.Utility\03.Component\Transform</Filter>
@@ -646,7 +646,7 @@
       <Filter>01.Utility\03.Component\VIBuffer\Instance\UI</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UIParent.cpp">
-      <Filter>01.Utility\02.GameObject\UIObject\Parent</Filter>
+      <Filter>01.Utility\02.GameObject\Pool\UIObject\Parent</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
@@ -897,7 +897,7 @@
       <Filter>01.Utility\04.Prototypes</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UIObject.h">
-      <Filter>01.Utility\02.GameObject\UIObject</Filter>
+      <Filter>01.Utility\02.GameObject\Pool\UIObject</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Transform.h">
       <Filter>01.Utility\03.Component\Transform</Filter>
@@ -1065,7 +1065,7 @@
       <Filter>01.Utility\03.Component\VIBuffer\Instance\UI</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UIParent.h">
-      <Filter>01.Utility\02.GameObject\UIObject\Parent</Filter>
+      <Filter>01.Utility\02.GameObject\Pool\UIObject\Parent</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
