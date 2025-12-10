@@ -2835,26 +2835,35 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("Cubcscene1_Breath0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_breath_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 40.f);
         });
 
     pModel->Register_Event("Cubcscene1_Breath1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_breath_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 40.f);
+
         });
 
     pModel->Register_Event("Cubcscene1_Breath2_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_breath_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 40.f);
+
         });
 
     pModel->Register_Event("Cubcscene1_Breath3_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_breath_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 40.f);
+
         });
 
     pModel->Register_Event("Cubcscene1_Breath4_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_breath_04 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 40.f);
+
         });
 
     pModel->Register_Event("Cubcscene1_Roar_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -2872,6 +2881,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     pModel->Register_Event("WeaponDown_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Soward_Particle_red"), m_pBody->Get_BoneMatrix("Bip001-R-Hand").r[3]);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_roar_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 40.f);
         });
 
     /////=========================================================== [ 2P ] ================================================================================ ////
@@ -4134,7 +4144,50 @@ HRESULT CViper::Ready_SFX_P1()
      );
 #pragma endregion
 
-    
+         
+
+#pragma region CS_SIT
+   
+     pModel->Register_Event("SFX_JumpStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+         {
+             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_jump_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+         }
+     );
+#pragma endregion
+
+#pragma region CS_TALK
+
+     pModel->Register_Event("SFX_cs_DWSWDDSLand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+         {
+             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_foley1_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_impact_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 30.f);
+         }
+     );
+
+     pModel->Register_Event("SFX_Land_Breath_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+         {
+             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_breath_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+         }
+     );
+
+     pModel->Register_Event("SFX_Land_Breath_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+         {
+             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_breath_04 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+         }
+     );
+
+#pragma endregion
+
+#pragma region CS_ROAR
+
+     pModel->Register_Event("SFX_CutScene_Roar", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+         {
+             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_jump_start_roar_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+         }
+     );
+
+#pragma endregion
+
 
 
     return S_OK;
