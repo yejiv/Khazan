@@ -124,6 +124,7 @@ HRESULT CRandomBox::Ready_Components()
 HRESULT CRandomBox::Bind_ShaderResources()
 {
     m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix");
+    
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
         return E_FAIL;
 
