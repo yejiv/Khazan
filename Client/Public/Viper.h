@@ -84,6 +84,11 @@ private:
     HRESULT						    Ready_AnimEffectEvent();
     HRESULT                         Ready_SFX_P1();
     HRESULT                         Ready_SFX_P2();
+    HRESULT                         Ready_SFX_CIN();
+
+
+
+
 
 private:
     void							Pick_ViperRock();
@@ -99,7 +104,6 @@ private:
     void                            SFX_Move();
     void                            SFX_ATTACK();
     void                            SFX_ATTACK_END();
-    void                            SFX_P2_ATTACK_VO(_uint iIndex);
 
     void                            SFX_P2_ATTACK_VO_END(_uint iIndex);
     void                            SFX_Move_P2(_uint iIndex);
