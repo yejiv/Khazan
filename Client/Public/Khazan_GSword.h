@@ -80,6 +80,8 @@ public:
         PC_BACK, PC_BACK_LEFT, PC_LEFT, PC_FRONT_LEFT
     };
 
+    enum PLAYER_UPDATE_FX { FX_LACRIMA, FX_LACRIMA_HAND, PLAYER_UPDATE_FX_END };
+
 private:
     CKhazan_GSword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CKhazan_GSword(const CKhazan_GSword& Prototype);
@@ -153,7 +155,7 @@ private:
     _float4x4*                  m_pWeaponR_Matrix = { nullptr };
     _float4x4*                  m_pGSword_Matrix = { nullptr };
    // _float4x4					m_pGSword_WorldMatrix = {};
-   // _matrix						m_Offset_Matrix = {};
+    _matrix						m_Offset_Matrix = {};
     _bool						m_isEnableControl = { true };
     COLLISION_DESC				m_tPlayerCollisionDesc = {};
 
@@ -209,6 +211,7 @@ private:
     /* SnowEffect SpawnTime*/
 private:
     _float                      m_EffectTimeDelta;
+    _uint                       m_FXIdx[PLAYER_UPDATE_FX_END];
 
 private:
     void			Update_Stats(_float fTimeDelta);

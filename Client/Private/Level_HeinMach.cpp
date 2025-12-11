@@ -92,7 +92,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CClientInstance::GetInstance()->Fade_Out();
 
-    CClientInstance::GetInstance()->Set_Volume_BGM(0.45f);
+    CClientInstance::GetInstance()->Set_Volume_BGM(0.65f);
     CClientInstance::GetInstance()->BGM_HeinMach_Entry();
 
     if (!Wait_All_Futures())
@@ -428,6 +428,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight_static_connect"), 4);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"), 100);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("ITEM_FX"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("stone_blust"), 1);
 
     // [GS] 
 
@@ -878,6 +879,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
 	}
 	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
 
+    _uint iDestinyStoneIndex = { 0 };
+
 	// 1. 오브젝트의 총 개수
 	_uint iObjectCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
@@ -937,7 +940,12 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
         }
         case INTERACTIVE_TYPE::DESTINYSTONE:
         {
+            ObjectDesc.pOtherDesc = &iDestinyStoneIndex;
+
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_DestinyStone"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+
+            ++iDestinyStoneIndex;
+
             break;
         }
         case INTERACTIVE_TYPE::DESTRUCTIBLE:

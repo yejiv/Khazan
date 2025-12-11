@@ -2,6 +2,7 @@
 #include "ClientInstance.h"
 #include "GameInstance.h"
 
+#include "UI_Atlas_Icon.h"
 #include "UI_TextBox.h"
 #include "UI_Default_Tex.h"
 #include "UI_BackGround.h"
@@ -131,6 +132,11 @@ HRESULT CPopup_Item::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, v
         else if (strName == "Line_0" || strName == "Line_1" || strName == "Line_2" || strName == "Line_3" || strName == "Line_4")
         {
             pChild->Set_Color({ 1.f, 1.f, 1.f, 0.7f });
+        }
+        else if (strName == "Gold_Icon")
+        {
+            static_cast<CUI_Atlas_Icon*>(pChild)->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Item_Material_GraveStuff_UI.png", 2), 2);
+
         }
     }
 

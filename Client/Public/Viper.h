@@ -101,9 +101,11 @@ private:
     void                            SFX_ATTACK_END();
     void                            SFX_P2_ATTACK_VO(_uint iIndex);
 
+    void                            SFX_P2_ATTACK_VO_END(_uint iIndex);
     void                            SFX_Move_P2(_uint iIndex);
     void                            SFX_STOMP_P2(_uint iIndex);
     void                            SFX_HAND_SWISH(_uint iIndex);
+
 private:
     void                            Viper_Cinematic_ShaderSettings();
     void                            Viper_2PhaseBerserker_ShaderSettings();

@@ -367,6 +367,9 @@
     <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Gacha">
       <UniqueIdentifier>{b685266e-7ec6-4952-9798-031bc29c88ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\Prop\03.Interactive\18.Illusion_Wall">
+      <UniqueIdentifier>{c4089ec3-ab5a-4ef2-ab88-d585c4d23b02}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h">
@@ -699,6 +702,9 @@
     <ClInclude Include="..\Public\NPC_Gacha.h">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Gacha</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Illusion_Wall.h">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\18.Illusion_Wall</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Editor.ico">
@@ -1025,6 +1031,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\NPC_Gacha.cpp">
       <Filter>02.GameObject\MapObject\Prop\03.Interactive\14.NPC\Gacha</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Illusion_Wall.cpp">
+      <Filter>02.GameObject\MapObject\Prop\03.Interactive\18.Illusion_Wall</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

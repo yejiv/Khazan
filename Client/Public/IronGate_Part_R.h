@@ -41,11 +41,16 @@ private:
 private:
     _float4x4* m_pSocketMatrix = { nullptr };
 
+    // Blink Rim Light Shader
+    _float m_fBlinkTimeAcc = {};
+    _bool m_isEnableBlink = {};
+
 private:
     HRESULT Ready_Components(void* pArg);
 
     HRESULT Bind_ShaderResources();
     HRESULT Bind_Materials(_uint iMeshIndex);
+    HRESULT Bind_Blink_ShaderResources();
 
 public:
     static CIronGate_Part_R* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

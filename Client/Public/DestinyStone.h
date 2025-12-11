@@ -10,6 +10,7 @@ class CDestinyStone final : public CProp_Interactive
 public:
     typedef struct tagDestinyStoneDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
     {
+        _uint iDSIndex{};
 
     }DESTINYSTONE_DESC;
 
@@ -39,6 +40,13 @@ private:
     EventObject m_Event = {};
 
     _bool m_isInteracted = { false };
+    _bool m_isDissolved = { false };
+
+    _wstring m_wstrLightTag = {};
+
+    // Blink Rim Light Shader
+    _float m_fBlinkTimeAcc = {};
+    _bool m_isEnableBlink = {};
 
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
@@ -49,6 +57,7 @@ private:
     void Event_Update(_float fTimeDelta);
     void Input_Interact_Event(_float fTimeDelta);
     HRESULT Bind_Materials(_uint iMeshIndex) override;
+    HRESULT Bind_Blink_ShaderResources();
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;

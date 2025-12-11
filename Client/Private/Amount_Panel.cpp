@@ -25,6 +25,14 @@ void CAmount_Panel::Add_Value(_int IValue)
 		m_pAddValueText->Update_Visible(true);
 	}
 	m_iAddValue += IValue;
+
+    _wstring strAddCount = TEXT("+");
+    if (m_iAddValue < 0)
+        strAddCount = {};
+
+    strAddCount += IntToWstring(m_iAddValue);
+    m_pAddValueText->Set_Text(strAddCount);
+    
 }
 
 void CAmount_Panel::Setting_Index(CAmount::AMOUNT_TYPE eType, _uint* iCulValue)
@@ -184,16 +192,19 @@ HRESULT CAmount_Panel::Ready_Component()
 _wstring CAmount_Panel::IntToWstring(_int iValue)
 {
 	_wstring wstrValue = {};
-	if (iValue > 999)
+	if (abs(iValue) > 999)
 	{
-		_int iTemp = iValue * 0.001;
-		wstrValue = to_wstring(iTemp);
-		wstrValue += TEXT(",");
-		iTemp = iValue - (1000 * iTemp);
-		if (iTemp <= 0)
-			wstrValue += TEXT("000");
-		else
-			wstrValue += to_wstring(iTemp);
+		_int iTemp = abs(iValue) * 0.001;
+        wstrValue = to_wstring(iTemp);
+        wstrValue += TEXT(",");
+        iTemp = abs(iValue) - (1000 * iTemp);
+        if (iTemp <= 0)
+            wstrValue += TEXT("000");
+        else
+            wstrValue += to_wstring(iTemp);
+
+        if (0 > iValue)
+            wstrValue = TEXT("-") + wstrValue;
 	}
 	else
 	{
@@ -225,7 +236,7 @@ void CAmount_Panel::AddValue_Check(_float fTimeDelta)
 		}
 		else if (m_iAddValue > 0)
 		{
-			m_iAccValue += 1;
+			m_iAccValue += 10;
 
 			if (m_iAddValue < m_iAccValue)
 			{
@@ -244,7 +255,7 @@ void CAmount_Panel::AddValue_Check(_float fTimeDelta)
 		}
         else if (m_iAddValue < 0)
         {
-            m_iAccValue += 1;
+            m_iAccValue += 10;
 
             if (m_iAddValue > m_iAccValue)
             {

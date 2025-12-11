@@ -268,6 +268,22 @@ void CKhazan_Spear::Update(_float fTimeDelta)
         }
     }
     m_pGameInstance->ListenerPosSet(m_pTransformCom->Get_State(STATE::POSITION), m_pTransformCom->Get_State(STATE::LOOK), m_pTransformCom->Get_State(STATE::UP));
+
+    if (m_pAnimInteraction->Is_Lachryma())
+    {
+        m_pBody->Start_HealRimLight(8.f, _float2(5.f, 1.f), 1.5f);
+        m_pSpear->Start_HealRimLight(8.f, _float2(5.f, 1.f), 1.5f);
+    }
+    else if (m_pAnimInteraction->Is_Heal())
+    {
+        m_pBody->Start_HealRimLight(1.6f, _float2(0.5f, 0.2f), 1.f);
+        m_pSpear->Start_HealRimLight(1.6f, _float2(0.5f, 0.2f), 1.f);
+    }
+    else
+    {
+        m_pBody->Reset_HealRimLightFlag();
+        m_pSpear->Reset_HealRimLightFlag();
+    }
 }
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
@@ -387,7 +403,7 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     );
     Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
     Desc.isRandomTexture = true;
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 
     switch (eHitreaction)
     {
@@ -1453,6 +1469,9 @@ _bool CKhazan_Spear::Guard_Input(_float fTimeDelta)
 
 _bool CKhazan_Spear::Interaction_Input(_float fTimeDelta)
 {
+    _matrix mat_arm = XMLoadFloat4x4(m_pBody->Get_BoneMatrix("Muscle_L_ForeTwist1"));
+    _matrix mat_hand = XMLoadFloat4x4(m_pBody->Get_BoneMatrix("FX_L_Hand_02"));
+
     //라크리마 
     if (m_pGameInstance->Key_Down(DIK_1)) {
         if (m_pPlayerData->fCulHp < m_pPlayerData->fMaxHp)
@@ -1465,33 +1484,27 @@ _bool CKhazan_Spear::Interaction_Input(_float fTimeDelta)
         if(m_pAnimInteraction->Try_Lantern(isEquip))
             m_pLantern->Set_Equipped(isEquip);
     }
-
-
+    
     //힐
     if (m_pGameInstance->Key_Down(DIK_3)) {
         if (m_pPlayerData->fCulHp < m_pPlayerData->fMaxHp)
-            m_pAnimInteraction->Try_Heal();
+            if(m_pAnimInteraction->Try_Heal())
+            {
+                m_FXIdx[FX_LACRIMA] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), mat_arm, (m_SpearOffset_Matrix * mat_arm * m_pTransformCom->Get_WorldMatrix()).r[3]);
+                m_FXIdx[FX_LACRIMA_HAND] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"),(m_SpearOffset_Matrix * mat_hand * m_pTransformCom->Get_WorldMatrix()).r[3]);
+            }
     }
-    
-    _float4x4* arm = m_pBody->Get_BoneMatrix("FX_L_Hand_01");
-    _float4x4* hand = m_pBody->Get_BoneMatrix("FX_L_Hand_02");
-    _matrix mat_arm = XMLoadFloat4x4(m_pBody->Get_BoneMatrix("FX_L_Hand_01"));
-    _matrix mat_hand = XMLoadFloat4x4(m_pBody->Get_BoneMatrix("FX_L_Hand_02"));
 
     //라크리마 
     if (m_pGameInstance->Key_Down(DIK_1)) {
         if (m_pPlayerData->fCulHp < m_pPlayerData->fMaxHp)
-            if (m_pAnimInteraction->Try_Lachryma())
-            { 
-                m_FXIdx[FX_LACRIMA]= m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(),TEXT("Lachryma"), mat_hand.r[3]);
-                m_FXIdx[FX_LACRIMA_HAND] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(),TEXT("Lachryma_Arm"), mat_arm, mat_arm.r[3]);
-            }
+            m_pAnimInteraction->Try_Lachryma();
     }
 
-    if (m_pAnimInteraction->Is_Lachryma())
+    if (m_pAnimInteraction->Is_Heal())
     {
-       m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"), m_FXIdx[FX_LACRIMA], mat_hand.r[3]);
-       m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), m_FXIdx[FX_LACRIMA_HAND], mat_arm, mat_arm.r[3]);
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), m_FXIdx[FX_LACRIMA], mat_arm, (m_SpearOffset_Matrix * mat_arm * m_pTransformCom->Get_WorldMatrix()).r[3]);
+        m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"), m_FXIdx[FX_LACRIMA_HAND], (m_SpearOffset_Matrix * mat_hand * m_pTransformCom->Get_WorldMatrix()).r[3]);
     }
     return false; 
 }   

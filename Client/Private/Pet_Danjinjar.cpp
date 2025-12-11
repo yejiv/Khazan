@@ -114,6 +114,7 @@ HRESULT CPet_Danjinjar::Initialize_Clone(void* pArg)
 
     m_pGameInstance->Subscribe_Event<EVENT_PET_STATE>(ENUM_CLASS(EVENT_TYPE::PET), [&](const EVENT_PET_STATE& e) {State_Change(e.isStart); });
     m_isActive = false;
+
     return S_OK;
 }
 
@@ -139,8 +140,7 @@ void CPet_Danjinjar::Update(_float fTimeDelta)
     m_pTalk->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
     m_pTalk->Update(fTimeDelta);
     
-    //if (m_pTalk->isTalkingEnd())
-    //    m_pTalk->Off_Panel();
+    m_pGameInstance->Set_LightEnable(TEXT("DanjinJar_Pet"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false);
 
     _float4 vPosition{};
     XMStoreFloat4(&vPosition, m_pTransformCom->Get_State(STATE::POSITION));
@@ -279,9 +279,14 @@ HRESULT CPet_Danjinjar::Ready_MonData()
 void CPet_Danjinjar::State_Change(_bool isStart)
 {
     if (isStart)
+    {
+        m_pGameInstance->Set_LightEnable(TEXT("DanjinJar_Pet"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), true);
         m_isActive = true;
+    }
     else
-        m_isActive = false;
+    {
+        m_Data.isEnd = true;
+    }
 }
 
 CPet_Danjinjar* CPet_Danjinjar::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)

@@ -17,6 +17,7 @@ public:
     typedef struct tagDestinyGemDesc : public CPartObject::PARTOBJECT_DESC
     {
         _bool* pConsumed{ nullptr };
+        _bool* pDissolved{ nullptr };
 
         LEVEL eLevel{ LEVEL::END };
 
@@ -41,11 +42,19 @@ private:
     CTexture* m_pDissolveTextureCom = { nullptr };
 
     _bool* m_pConsumed = { nullptr };
+    _bool* m_pDissolved = { nullptr };
 
     _float m_fTimeAcc = { 0.f };
     _float m_fDecreaseAlpha = { 0.f };
 
     _uint m_iNumGem = { 1 };
+
+private :
+    class CEffect_Prefab*   m_fEffect = { nullptr };
+    _bool                   m_bBlustFX;
+    // Blink Rim Light Shader
+    _float m_fBlinkTimeAcc = {};
+    _bool m_isEnableBlink = {};
 
 private:
     HRESULT Ready_Components(void* pArg);
@@ -53,6 +62,7 @@ private:
     HRESULT Bind_DissolveValues();
     HRESULT Bind_ShaderResources();
     HRESULT Bind_Materials(_uint iMeshIndex);
+    HRESULT Bind_Blink_ShaderResources();
 
 public:
     static CDestinyGem* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

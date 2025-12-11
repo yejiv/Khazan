@@ -90,6 +90,8 @@ public:
     void                        Set_MotionTrailCallBack(function<void(const _wstring&, _bool)> callback) { m_OnMotionTrailCallBack = callback; }
     void                        Trigger_MotionTrail(const _wstring& strKey, _bool isActive) { if (m_OnMotionTrailCallBack)m_OnMotionTrailCallBack(strKey, isActive); }
     void                        On_MotionTrail(const _wstring strKey, _bool isActive) { m_pMotionTrailCom->Set_Config(strKey); m_isActiveMotionTrail = isActive; }
+    void                        Start_HealRimLight(_float fDuration, const _float2& vFadeTime, _float fMaxIntensity);
+    void                        Reset_HealRimLightFlag() { m_isFinishedHealRimLight = false; }
 
 public:
     const TRAIL_CONFIG&         Get_TrailConfig() const;
@@ -184,13 +186,16 @@ private:
     _bool                       m_isCollision;
     _float4                     m_fCollisionPos;
 
-    // Shader
+    /* Shader */
     _bool                       m_isEnableEdge = { true };
     _bool                       m_isActiveMotionTrail = { false };
     _bool                       m_isEnableAnimEvent = {};
     _uint                       m_iCurAnimEventIndex = {};
     OUTLINE_CONFIG              m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
     function<void(const _wstring&, _bool)>  m_OnMotionTrailCallBack;
+    _bool                       m_isEnableHealRimLight = { false };
+    _bool                       m_isFinishedHealRimLight = { false };
+    PLAYER_HEAL_RIMLIGHT_DESC   m_HealRimLightDesc;
 
     /* event */
     _bool                       m_isEableGiantHuntEvent= { false };

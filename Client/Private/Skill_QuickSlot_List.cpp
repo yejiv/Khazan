@@ -222,6 +222,7 @@ HRESULT CSkill_QuickSlot_List::Load_UI(nlohmann::json& pInData, _uint iPrototype
         {
             m_pHover = static_cast<CUI_Default_Tex*>(pChild);
             Safe_AddRef(m_pHover);
+            m_pHover->Set_Depth(2.5f);
         }
     }
 

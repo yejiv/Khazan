@@ -51,9 +51,18 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
     if (!m_isSkip)
     {
         CTransform* pYetugaTransform = static_cast<CTransform*>(m_pYetuga->Get_Component(TEXT("Com_Transform")));
-        pYetugaTransform->LookAt(XMVectorSet(507.5f, -9.15f, 260.09f, 1.f));
+        pYetugaTransform->LookAt(XMVectorSet(507.5f, -20.f, 260.09f, 1.f));
+
+
+        if (!m_isCameraAnimation && m_fTime > 0.5f)
+        {
+            m_pClientInstance->Camera_Set_Animation(TEXT("Yetuga_CutScene"));
+            m_pClientInstance->Fade_In();
+            m_isCameraAnimation = true;
+        }
+
         //2. 작은 눈안개 깔기 시작
-        if (!m_isSnowSmoke)
+        if (!m_isSnowSmoke && m_fTime > 0.75f)
         {
             m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"), XMVectorSet(
                 513.90f,
@@ -62,13 +71,6 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
                 1.f));
 
             m_isSnowSmoke = true;
-        }
-
-        if (!m_isCameraAnimation && m_fTime > 0.5f)
-        {
-            m_pClientInstance->Camera_Set_Animation(TEXT("Yetuga_CutScene"));
-            m_pClientInstance->Fade_In();
-            m_isCameraAnimation = true;
         }
 
         if (m_fTime > 1.5f && !m_isYetugaJump)

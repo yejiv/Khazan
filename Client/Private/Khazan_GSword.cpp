@@ -128,6 +128,7 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     m_iStopMoveIndexTable[7] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Run_Stop_F_LF");
     m_iStopMoveIndexTable[8] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_Stop_F");
     m_iStopMoveIndexTable[9] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Sprint_Stop_F");
+    m_Offset_Matrix = XMMatrixRotationX(XMConvertToRadians(-90));
 
     m_pGSword->Set_Enble(true);
     m_strName = "Khazan";
@@ -260,6 +261,23 @@ void CKhazan_GSword::Update(_float fTimeDelta)
         }
     }
     m_pGameInstance->ListenerPosSet(m_pTransformCom->Get_State(STATE::POSITION), m_pTransformCom->Get_State(STATE::LOOK), m_pTransformCom->Get_State(STATE::UP));
+
+
+	if (m_pAnimInteraction->Is_Lachryma())
+	{
+		m_pBody->Start_HealRimLight(8.f, _float2(5.f, 1.f), 1.5f);
+		m_pGSword->Start_HealRimLight(8.f, _float2(5.f, 1.f), 1.5f);
+	}
+	else if (m_pAnimInteraction->Is_Heal())
+	{
+		m_pBody->Start_HealRimLight(1.6f, _float2(0.5f, 0.2f), 1.f);
+		m_pGSword->Start_HealRimLight(1.6f, _float2(0.5f, 0.2f), 1.f);
+	}
+	else
+	{
+		m_pBody->Reset_HealRimLightFlag();
+		m_pGSword->Reset_HealRimLightFlag();
+	}
 }
 
 void CKhazan_GSword::Late_Update(_float fTimeDelta)
@@ -385,7 +403,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
     );
     Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
     Desc.isRandomTexture = true;
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 
     /* Play Damaged Animation */
     switch (eHitreaction)
@@ -1526,6 +1544,9 @@ _bool CKhazan_GSword::Guard_Input(_float fTimeDelta)
 
 _bool CKhazan_GSword::Interaction_Input(_float fTimeDelta)
 {
+    _matrix mat_arm = XMLoadFloat4x4(m_pBody->Get_BoneMatrix("Muscle_L_ForeTwist1"));
+    _matrix mat_hand = XMLoadFloat4x4(m_pBody->Get_BoneMatrix("FX_L_Hand_02"));
+
     //랜턴
     if (m_pGameInstance->Key_Down(DIK_2)) {
         _bool isEquip = !m_pLantern->Get_Equipped();
@@ -1542,9 +1563,18 @@ _bool CKhazan_GSword::Interaction_Input(_float fTimeDelta)
     //힐 템
     if (m_pGameInstance->Key_Down(DIK_3)) {
         if (m_pPlayerData->fCulHp < m_pPlayerData->fMaxHp)
-            m_pAnimInteraction->Try_Heal();
+            if (m_pAnimInteraction->Try_Heal())
+            {
+                m_FXIdx[FX_LACRIMA] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), mat_arm, (m_Offset_Matrix * mat_arm * m_pTransformCom->Get_WorldMatrix()).r[3]);
+                m_FXIdx[FX_LACRIMA_HAND] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"), (m_Offset_Matrix * mat_hand * m_pTransformCom->Get_WorldMatrix()).r[3]);
+            }
     }
 
+    if (m_pAnimInteraction->Is_Heal())
+    {
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), m_FXIdx[FX_LACRIMA], mat_arm, (m_Offset_Matrix * mat_arm * m_pTransformCom->Get_WorldMatrix()).r[3]);
+        m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"), m_FXIdx[FX_LACRIMA_HAND], (m_Offset_Matrix * mat_hand * m_pTransformCom->Get_WorldMatrix()).r[3]);
+    }
 
     return false;
 }
@@ -2368,6 +2398,7 @@ HRESULT CKhazan_GSword::Ready_AnimationStateMachine()
     if (m_pAnimInteraction == nullptr)
         return E_FAIL;
     m_pAnimInteraction->Set_Model(m_pBody->Get_Model());
+    m_pAnimInteraction->Initialize();
 
     m_pAnimDamaged = CKhazan_GS_Anim_Damaged::Create();
     if (m_pAnimDamaged == nullptr)
