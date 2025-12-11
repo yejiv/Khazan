@@ -43,6 +43,7 @@ public:
 private:
     class CModel* m_pModelCom = { nullptr };
     class CBody* m_pBodyCom = { nullptr };
+    CTexture* m_pDissolveTextureCom = { nullptr };
 
     _bool m_isDestruct = { false };
     _bool m_isDestroyStart = { false };
@@ -62,11 +63,18 @@ private:
     _bool m_isExplode = { false };
     _bool m_isVortexExplode = { false };
     _bool m_isVortex = { false };
+
+    _float m_fTimeAcc = { 0.f };
+    _float m_fDecreaseAlpha = { 0.f };
+
+    _float4 m_vEdgeColor;
+    
 private:
     HRESULT Ready_Components(void* pArg);
     HRESULT Ready_Collision(void* pArg);
     virtual HRESULT Bind_ShaderResources();
     HRESULT Bind_Materials(_uint iMeshIndex);
+    HRESULT Bind_DissolveValues();
 
 public:
     static CProp_Chunk* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

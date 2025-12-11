@@ -65,6 +65,7 @@ public:
     _bool*              Get_FinishedAnimation() { return &m_isFinishedAnimation; }
     CModel*             Get_Model() { return m_pModelCom; }
     OUTLINE_CONFIG      Get_OutlineConfig() { return m_OutlineConfig; }
+    _bool               IsAttackActive() { return m_isAttackActive; }           // 검 충돌체 활성화 되어있는지 여부 return ( Update 마지막 줄에서 수행 중 )
 
 public:
     void                Set_IsGuarding(_bool* pIsGuarding) { m_pIsGuarding = pIsGuarding; }
@@ -104,7 +105,7 @@ private:
     class CTransform*           m_pParentTransform = { nullptr };
     class CGSword_Khazan_GS*    m_pGSword = { nullptr };
     class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
-    class CKhazan_SoundHelper* m_pSoundHelper = { nullptr };
+    class CKhazan_SoundHelper*  m_pSoundHelper = { nullptr };
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
     CShader*                    m_pShaderCom = { nullptr };
@@ -115,11 +116,11 @@ private:
     unordered_map<EQUIPMENTTYPE, _wstring>  m_EquippedParts;   // 현재 파츠 <파츠종류, 파츠 이름>
     vector<CModel*>                         m_RenderParts;    // 빠른 렌더링을 위한 캐시 (렌더링할 파츠들만)
 
-    CBody*                      m_pBodyCom_Attack = { nullptr };            //검 공격시 사용하는 졸트 바디
-    CBody*                      m_pBodyCom_RangeAttack = { nullptr };   //범위 공격에 졸트 바디
-    CBody*                      m_pBodyCom_BodyAttack = { nullptr };   //플레이어 바디에 붙이는 졸트바디 (공격용)
-    CBody*                      m_pBodyCom_Guard = { nullptr };         //검 방어에 사용하는 졸트 바디
-    CBody*                      m_pBodyCom_Search = { nullptr };        //몬스터 서치에 사용하는 졸트 바디 
+    CBody*                      m_pBodyCom_Attack        = { nullptr };            //검 공격시 사용하는 졸트 바디
+    CBody*                      m_pBodyCom_RangeAttack  = { nullptr };   //범위 공격에 졸트 바디
+    CBody*                      m_pBodyCom_BodyAttack    = { nullptr };   //플레이어 바디에 붙이는 졸트바디 (공격용)
+    CBody*                      m_pBodyCom_Guard         = { nullptr };         //검 방어에 사용하는 졸트 바디
+    CBody*                      m_pBodyCom_Search        = { nullptr };        //몬스터 서치에 사용하는 졸트 바디 
 
     PLAYER_DATA*                m_pPlayerData;
     COLLISION_DESC				m_tAttackCollisionDesc = {};
@@ -185,6 +186,8 @@ private:
 
     _bool                       m_isCollision;
     _float4                     m_fCollisionPos;
+
+    _bool                       m_isAttackActive = { false };                       // 검 충돌체 활성화 되어있는지 여부
 
     /* Shader */
     _bool                       m_isEnableEdge = { true };

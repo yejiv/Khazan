@@ -19,6 +19,8 @@ public:
 
         _float4x4* pSocketMatrix = { nullptr };
 
+        _bool* pUnLock{ nullptr };
+
     }IRONGATE_PART_LEFT_DESC;
 
 private:
@@ -41,9 +43,10 @@ private:
 private:
     _float4x4* m_pSocketMatrix = { nullptr };
 
+    _bool* m_pUnLock = { nullptr };
+
     // Blink Rim Light Shader
     _float m_fBlinkTimeAcc = {};
-    _bool m_isEnableBlink = {};
 
 private:
     HRESULT Ready_Components(void* pArg);

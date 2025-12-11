@@ -71,11 +71,6 @@ void CLever_Gear::Update(_float fTimeDelta)
         Animation_Change(fTimeDelta);
 
     m_fBlinkTimeAcc += fTimeDelta;
-
-    // Test
-    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
-        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-            m_isEnableBlink = !m_isEnableBlink;
 }
 
 void CLever_Gear::Late_Update(_float fTimeDelta)
@@ -97,7 +92,7 @@ HRESULT CLever_Gear::Render()
 
         if (GEAR == i)
         {
-            if (true == m_isEnableBlink)
+            if (false == m_EventGate.isFirstStep())
             {
                 if (FAILED(Bind_Blink_ShaderResources()))
                     return E_FAIL;
