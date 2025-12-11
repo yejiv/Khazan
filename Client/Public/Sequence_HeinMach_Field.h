@@ -35,6 +35,7 @@ private:
 
     _bool   m_isCameraStart = { false };
     _bool   m_isFieldName = { false };
+    _bool   m_isPlayerInput = { false };
 
     class CCamera_Compre* m_pCamera_Compre = { nullptr };
     class CGameInstance* m_pGameInstance = { nullptr };
