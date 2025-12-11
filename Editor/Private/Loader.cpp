@@ -395,6 +395,14 @@ HRESULT CLoader::Loading_For_Map_Level()
 
 #pragma endregion
 
+#pragma region 신기루 벽
+
+    /* Prototype_Component_Model_Illusion_Wall */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_Component_Model_Illusion_Wall"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_B/WP_BGQ_Walldeco_Base_001_01/WP_BGQ_Walldeco_Base_001_01.dat")), E_FAIL);
+
+#pragma endregion
+
 #pragma region 파괴 가능 오브젝트 : 모델
 
     /* Prototype_Component_Model_Fence */
@@ -659,6 +667,12 @@ HRESULT CLoader::Loading_For_Map_Level()
     /* Prototype_GameObject_Prop_DestinyStone_Gem */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DestinyStone_Gem"),
         CDestinyGem::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 신기루 벽
+    /* Prototype_GameObject_Prop_Illusion_Wall */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Illusion_Wall"),
+        CIllusion_Wall::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma region 파괴 가능 오브젝트 : 객체

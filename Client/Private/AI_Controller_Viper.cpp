@@ -83,7 +83,7 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
             CViper* pViper = static_cast<CViper*>(pOwner);
             pViper->Set_PhaseWeapon_Phase2();
             //pViper->Set_Weapon_Phase1();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHDRIFT), pViper);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDUPPER), pViper);
         }
 
         if (m_pGameInstance->Key_Down(DIK_N))
@@ -92,7 +92,7 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
             CViper* pViper = static_cast<CViper*>(pOwner);
             pViper->Set_PhaseWeapon_Phase2();
             //pViper->Set_Weapon_Phase1();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_THROWROCK), pViper);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_JUMPATTACK), pViper);
         }
 
         if (m_pGameInstance->Key_Down(DIK_M))
@@ -101,7 +101,7 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
             pViper->Set_PhaseWeapon_Phase2();
             //pViper->Set_Weapon_Phase1();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_FAKERUNATTACK), pViper);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SLASHDOUBLE), pViper);
         }
 
     }

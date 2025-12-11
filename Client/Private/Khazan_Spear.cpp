@@ -124,9 +124,10 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     /*  기본 셋팅*/
     m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData(); // 플레이어 데이터 연결  
     m_pClientInstance->UsedSpear();
+    m_pClientInstance->Force_PlayerIdleCallBack([this] {m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand")); });
+
     m_pSpear->Set_Enble(false);
     m_strName = "Khazan";
-
     m_EffectTimeDelta = 0.f;
 
     m_pCharVirCom->Set_Position(XMVectorSet(0.f, 10.f, 0.f, 1.f));
@@ -182,6 +183,14 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 
 void CKhazan_Spear::Update(_float fTimeDelta)
 {
+
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_P))
+    {
+
+        m_pCharVirCom->Teleport(XMVectorSet(120.f, 8.f, 116.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+
+    }
+
     if (m_isEnableControl)
     {
         m_fTimeAcc += fTimeDelta;
@@ -259,6 +268,22 @@ void CKhazan_Spear::Update(_float fTimeDelta)
         }
     }
     m_pGameInstance->ListenerPosSet(m_pTransformCom->Get_State(STATE::POSITION), m_pTransformCom->Get_State(STATE::LOOK), m_pTransformCom->Get_State(STATE::UP));
+
+    if (m_pAnimInteraction->Is_Lachryma())
+    {
+        m_pBody->Start_HealRimLight(8.f, _float2(5.f, 1.f), 1.5f);
+        m_pSpear->Start_HealRimLight(8.f, _float2(5.f, 1.f), 1.5f);
+    }
+    else if (m_pAnimInteraction->Is_Heal())
+    {
+        m_pBody->Start_HealRimLight(1.6f, _float2(0.5f, 0.2f), 1.f);
+        m_pSpear->Start_HealRimLight(1.6f, _float2(0.5f, 0.2f), 1.f);
+    }
+    else
+    {
+        m_pBody->Reset_HealRimLightFlag();
+        m_pSpear->Reset_HealRimLightFlag();
+    }
 }
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)
@@ -378,7 +403,7 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     );
     Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
     Desc.isRandomTexture = true;
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 
     switch (eHitreaction)
     {
@@ -1560,6 +1585,7 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
     {
         return;
     }
+ 
 
     /* Move  */
     if (((Has_Status(LOCKON) && m_eDir.iDirFlag != m_ePrevDir && m_eDir.iDirFlag > 0)) || Has_State(CAT::M_MOVE) && !Has_State(CAT::M_ATTACK | CAT::M_GUARD))
@@ -1579,7 +1605,7 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
     /* Idle */
     else if (!Has_State(CAT::M_END - 2))
     {
-        
+
         _uint iCurAnimIndex = m_pBody->Get_Model()->Get_CurAnimIndex();
         if (m_pBody->Get_Model()->Check_MinAnimationTime() && iCurAnimIndex != 279 && iCurAnimIndex != 19)
             m_pBody->Get_Model()->Set_Animation(Has_Status(SPEAR) ? m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand") : m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand"));
@@ -2555,7 +2581,7 @@ void CKhazan_Spear::Clear_Step2()
         Clear_SubState();
         Remove_State(CAT::M_MOVE);
     }
-    Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | ROTATION | SPRINT_AGAIN_REQUEST | READY_ASSAULT | DODGE_ENDING);
+    Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | ROTATION | SPRINT_AGAIN_REQUEST | READY_ASSAULT );
 
     m_eDir.iDirFlag = 0;
     m_eWorldDir.iDirFlag = 0;
@@ -2675,8 +2701,6 @@ HRESULT CKhazan_Spear::Ready_Collision()
     tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.3f, 0.f);
     tCharVirDesc.fWalkStairsMinStepForward = 0.1f;
     tCharVirDesc.fWalkStairsStepForwardTest = 0.4f;
-
-
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
@@ -2802,7 +2826,9 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         case INTERACTIVE_TYPE::CHECKPOINT:
         {
             isDone = false;
-            if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+            if(Has_Status(INJURED)) isDone = true;
+            else if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+
             break;
         }
         case INTERACTIVE_TYPE::LEVER:
@@ -2959,7 +2985,6 @@ void CKhazan_Spear::BladeNexus_Event(_float fTimeDelta)
     if (false == BNEvent.isBNOpened)
     {
 
-
         // 귀검 첫 해금 시
         if (true == BNEvent.isUnLock)
         {
@@ -2968,7 +2993,7 @@ void CKhazan_Spear::BladeNexus_Event(_float fTimeDelta)
             // 첫 해금 플레이어    애니메이션 재생 
             if (m_pAnimInteraction->Try_DamagedTS_Before(isweapon))
             {
-				if(isweapon) 
+                if(isweapon)
 					m_pBody->Get_Model()->AnimationSetIndexIncrease();
 
                 Clear_State();

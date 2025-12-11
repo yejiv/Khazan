@@ -25,7 +25,9 @@ void CAS_Dr_Melee_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
     }
     else if (m_eState == SLEEP && !m_pMonData->isSleep)
     {
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_dragonian_wakeup_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0));
+        if (m_pMonData->isMotionSleep)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_dragonian_wakeup_01 (SFX).wav"), pOwner->Get_Position());
+        
         m_pMonData->isMotionSleep ? m_pMonData->iAnimIndex = 32 : m_pMonData->iAnimIndex = 39;
         m_pMonData->pOwner->Hp_Visivle(true);
         m_eState = GETUP;

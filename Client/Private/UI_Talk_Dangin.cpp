@@ -387,10 +387,13 @@ HRESULT CUI_Talk_Dangin::Ready_Children()
 void CUI_Talk_Dangin::Ready_Item()
 {
     m_ItemIndex.push_back(1101);
-    m_ItemIndex.push_back(1102);
-    m_ItemIndex.push_back(3001);
-    m_ItemIndex.push_back(3006);
-    m_ItemIndex.push_back(3002);
+    m_ItemIndex.push_back(5001);
+    m_ItemIndex.push_back(5002);
+    m_ItemIndex.push_back(5003);
+    m_ItemIndex.push_back(5004);
+    m_ItemIndex.push_back(5005);
+    m_ItemIndex.push_back(1001);
+    m_ItemIndex.push_back(1002);
 }
 
 void CUI_Talk_Dangin::Update_Selete()

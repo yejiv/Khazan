@@ -72,7 +72,7 @@ public:
         | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST
         | FALLING | FALLING_ATTACK | PRE_LAND  | DODGING | STATUE_MODE
         | BRUTAL_BEGIN | BRUTAL_READY | BRUTAL_SUCCESS
-        | BLOCK_ATK_SKILL_GUARD  | DODGE_ENDING | LADDER_CLIMBING | LADDER_CLIMBING_ROTATION  ,
+        | BLOCK_ATK_SKILL_GUARD  | LADDER_CLIMBING | LADDER_CLIMBING_ROTATION  ,
 
     };
     enum PLAYER_CAMERA_DIR {
@@ -183,7 +183,7 @@ private:
 
     /* recovery */
     _float2                     m_fIntervalStaminaRecovery = { 0.f, 0.25f };
-    _float2                     m_fWaitStaminaRecovery = { 0.f, 1.f };
+    _float2                     m_fWaitStaminaRecovery = { 0.f, 1.58f };
 
     /* Ladder  Climb */
     _float4                     m_fLadderClimbPos= { 0.f,0.f,0.f,0.f }; 
@@ -195,8 +195,8 @@ private:
     /* Move Speed */
     _float				        m_fInjuredSpeed = { 1.15f };
     _float				        m_fWalkSpeed = { 1.7f };
-    _float				        m_fRunSpeed = { 4.8f };
-    _float				        m_fSprintSpeed = { 10.3f };
+    _float				        m_fRunSpeed = { 4.4f };
+    _float				        m_fSprintSpeed = { 7.2f };
 
     /*  Attack */
     const _float				m_fChargingStartIntervalTime = { 0.25f }; // 차징 시작 시간

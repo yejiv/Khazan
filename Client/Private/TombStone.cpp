@@ -77,26 +77,23 @@ HRESULT CTombStone::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    // 옆면 이미시브
+    _float fEmissiveIntensity = 30.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    // 룬 문자 이미시브
+    _float fDiffuseBluePower = 50.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fDiffuseBluePower", &fDiffuseBluePower, sizeof(_float))))
+        return E_FAIL;
+
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
 
-        /*
-        if (1 == i)     // 1 == 룬문자
-        {
-            _bool isEmissive = { true };
-            m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_SPECULAR, 0);
-            m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
-
-            m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &m_fEmissiveIntensity, sizeof(_float));
-            m_pShaderCom->Bind_RawValue("g_isEnableEmissive", &m_isEnableEmissive, sizeof(_bool));
-            m_pShaderCom->Bind_RawValue("g_isEnableBloom", &m_isEnableBloom, sizeof(_bool));
-        }
-        */
-
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(29), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -231,8 +228,8 @@ HRESULT CTombStone::Bind_Materials(_uint iMeshIndex)
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
         m_iMtrlFlags |= M_SPECULAR;
 
-    m_iMtrlFlags &= ~M_EMISSIVE;
-    m_iMtrlFlags &= ~M_SPECULAR;
+    //  m_iMtrlFlags &= ~M_EMISSIVE;
+    //  m_iMtrlFlags &= ~M_SPECULAR;
 
     m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 

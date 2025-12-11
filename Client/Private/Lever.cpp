@@ -88,6 +88,13 @@ void CLever::Update(_float fTimeDelta)
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         Animation_Change(fTimeDelta);
+
+    m_fBlinkTimeAcc += fTimeDelta;
+
+    // Test
+    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
+        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+            m_isEnableBlink = !m_isEnableBlink;
 }
 
 void CLever::Late_Update(_float fTimeDelta)
@@ -99,6 +106,9 @@ HRESULT CLever::Render()
 {
     CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CLever : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     for (_uint i = 0; i < iNumMeshes; ++i)
@@ -107,7 +117,15 @@ HRESULT CLever::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        if (true == m_isEnableBlink)
+        {
+            if (FAILED(Bind_Blink_ShaderResources()))
+                return E_FAIL;
+
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(30), E_FAIL);
+        }
+        else
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -425,6 +443,35 @@ void CLever::Animation_Change(_float fTimeDelta)
             m_pGameInstance->Emit_Event<EventGateGear>(ENUM_CLASS(m_eEventType), m_EventGate);
         }
     }
+}
+
+HRESULT CLever::Bind_Blink_ShaderResources()
+{
+    _float fRimPower = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRimIntensity = 1.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &fRimIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    // 반짝이는 림라이트 이미시브
+    _float fRimEmissive = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fTimeDelta", &m_fBlinkTimeAcc, sizeof(_float))))
+        return E_FAIL;
+
+    _float fCycleSpeed = 3.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fCycleSpeed", &fCycleSpeed, sizeof(_float))))
+        return E_FAIL;
+
+    _float3 vRimColor = _float3(1.f, 1.f, 1.f);
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3))))
+        return E_FAIL;
+
+    return S_OK;
 }
 
 void CLever::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)

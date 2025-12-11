@@ -962,6 +962,7 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
     m_Prototypes_Inter.push_back("DanjinJar");
     m_Prototypes_Inter.push_back("DestinyStone");
     m_Prototypes_Inter.push_back("DestructibleProp");
+    m_Prototypes_Inter.push_back("Illusion_Wall");
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -1386,6 +1387,21 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Destructible"), TIME_CHANNEL::WORLD, &DestructiblePropDesc), );
+                }
+                else if ("Illusion_Wall" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CIllusion_Wall::ILLUSION_WALL_DESC IllusionWallDesc = {};
+
+                    IllusionWallDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    IllusionWallDesc.eLevel = LEVEL::MAP;
+                    memcpy(IllusionWallDesc.szModelName, strModelTag.c_str(), sizeof(IllusionWallDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&IllusionWallDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    IllusionWallDesc.eInteractiveType = INTERACTIVE_TYPE::ILLUSION_WALL;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Illusion_Wall"), TIME_CHANNEL::WORLD, &IllusionWallDesc), );
                 }
 #pragma endregion
 
@@ -2025,6 +2041,13 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 
                 SEPARATOR;
             }
+            if (INTERACTIVE_TYPE::ILLUSION_WALL == m_pFixPropObj->Get_InteractiveType())
+            {
+                CIllusion_Wall* pIllusionWall = static_cast<CIllusion_Wall*>(m_pFixPropObj);
+
+                ImGui::Text("== ILLUSION WALL ==");
+                SEPARATOR;
+            }
 
 #pragma endregion
 
@@ -2647,6 +2670,11 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
                         if (INTERACTIVE_TYPE::DESTRUCTIBLE == m_pFixPropObj->Get_InteractiveType())
                         {
                             // 파괴 가능 오브젝트 일단 빈칸
+                        }
+
+                        if (INTERACTIVE_TYPE::ILLUSION_WALL == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            // 신기루 벽 오브젝트 일단 빈칸
                         }
 
 						m_isFixInteractObjectWindow = true;
@@ -5111,6 +5139,10 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 
                 WriteFile(hObjectFile, &eModelType, sizeof(CDestructible_Prop::MODEL_TYPE), &dwByte, nullptr);
             }
+            if (INTERACTIVE_TYPE::ILLUSION_WALL == eType)
+            {
+                // 신기루 벽 일단 공백
+            }
 		}
 	}
 
@@ -6004,6 +6036,21 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Destructible"), TIME_CHANNEL::WORLD, &DestructiblePropDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::ILLUSION_WALL == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CIllusion_Wall::ILLUSION_WALL_DESC IllusionWallDesc = {};
+
+                IllusionWallDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                IllusionWallDesc.eLevel = LEVEL::MAP;
+                memcpy(IllusionWallDesc.szModelName, TEXT("Prototype_Component_Model_Illusion_Wall"), sizeof(IllusionWallDesc.szModelName));		// 프로토타입 태그명
+
+                IllusionWallDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                IllusionWallDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Illusion_Wall"), TIME_CHANNEL::WORLD, &IllusionWallDesc), false);
             }
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));

@@ -145,6 +145,41 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
         Spawn_Guard_FX();
     m_bGuradFX[0] = false;
     m_bGuradFX[1] = false;
+
+    // Heal RimLight
+    if (m_isEnableHealRimLight)
+    {
+        m_HealRimLightDesc.fTimeAcc += fTimeDelta;
+
+        if (m_HealRimLightDesc.fDuration <= m_HealRimLightDesc.fTimeAcc)
+        {
+            m_isEnableHealRimLight = false;
+            m_isFinishedHealRimLight = true;
+            m_HealRimLightDesc.fTimeAcc = 0.f;
+            m_HealRimLightDesc.fTargetIntensity = 0.f;
+        }
+
+        _float fIntensityRatio = 1.f;
+
+        // 페이드 아웃 계산
+        if (m_HealRimLightDesc.fTimeAcc > m_HealRimLightDesc.vFadeTime.y)
+        {
+            _float fFadeDuration = m_HealRimLightDesc.fDuration - m_HealRimLightDesc.vFadeTime.y;
+            _float fFadeTimeAcc = m_HealRimLightDesc.fTimeAcc - m_HealRimLightDesc.vFadeTime.y;
+            _float fRatio = (fFadeTimeAcc / fFadeDuration);
+            fIntensityRatio = 1.f - fRatio;
+            fIntensityRatio = max(0.f, fIntensityRatio);
+        }
+
+        // Fade In
+        if (m_HealRimLightDesc.fTimeAcc < m_HealRimLightDesc.vFadeTime.x)
+        {
+            fIntensityRatio = m_HealRimLightDesc.fTimeAcc / m_HealRimLightDesc.vFadeTime.x;
+            fIntensityRatio = min(1.f, fIntensityRatio);
+        }
+
+        m_HealRimLightDesc.fRimLightIntensity = m_HealRimLightDesc.fTargetIntensity * fIntensityRatio;
+    }
 }
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -183,6 +218,28 @@ HRESULT CBody_Khazan_Spear::Render()
 
     _float fShadeIntensity = 0.2f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    // Heal RimLight
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableHealRimLight", &m_isEnableHealRimLight)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+
+    _float fRimPower = 2.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &m_HealRimLightDesc.fRimLightIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRimEmissive = 2.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float))))
+        return E_FAIL;
+
+    _float3 vRimColor = _float3(1.f, 0.f, 0.f);
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3))))
         return E_FAIL;
 
     for (size_t i = 0; i < iNumMeshes; i++)
@@ -324,7 +381,7 @@ void CBody_Khazan_Spear::Render_Part(CModel* pModel)
         if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             continue;
 
-        m_pShaderCom->Begin(1);
+        m_pShaderCom->Begin(28);
         pModel->Render(i);
     }
 }
@@ -655,6 +712,18 @@ _bool CBody_Khazan_Spear::isEnableMotionTrail()
 void CBody_Khazan_Spear::Start_MotionTrail(_float fDuration)
 {
     m_pMotionTrailCom->Start_MotionTrail(fDuration);
+}
+
+void CBody_Khazan_Spear::Start_HealRimLight(_float fDuration, const _float2& vFadeTime, _float fMaxIntensity)
+{
+    if (true == m_isFinishedHealRimLight)
+        return;
+
+    m_isEnableHealRimLight = true;
+    m_HealRimLightDesc.fDuration = fDuration;
+    m_HealRimLightDesc.vFadeTime = vFadeTime;
+    m_HealRimLightDesc.vFadeTime.y = m_HealRimLightDesc.fDuration - m_HealRimLightDesc.vFadeTime.y;
+    m_HealRimLightDesc.fTargetIntensity = fMaxIntensity;
 }
 
 const TRAIL_CONFIG& CBody_Khazan_Spear::Get_TrailConfig() const
@@ -2075,6 +2144,7 @@ void CBody_Khazan_Spear::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
+    Safe_Release(m_pSoundHelper);
 
     m_CollMonsters.clear();
 

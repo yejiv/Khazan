@@ -4,6 +4,7 @@
 
 #include "UI_TextBox.h"
 #include "UI_Default_Tex.h"
+#include "UI_Atlas_Icon.h"
 #include "Store_Slot.h"
 
 #include "ItemInfo_Other.h"
@@ -184,6 +185,10 @@ HRESULT CStore_List::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, v
         {
             m_pGold = static_cast<CUI_TextBox*>(pChild);
             Safe_AddRef(m_pGold);
+        }
+        else if (strName == "Gold_Icon")
+        {
+            static_cast<CUI_Atlas_Icon*>(pChild)->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Item_Material_GraveStuff_UI.png", 2), 2);
         }
     }
 
