@@ -132,6 +132,7 @@ void CDebug_Manager::Ready_JoltDebug()
         Labels.push_back("CLOTH");
         Labels.push_back("CLOTHBODY");
         Labels.push_back("PET");
+        Labels.push_back("MONSTER_SEARCH");
 
 		for (size_t i = 0; i < Labels.size(); i++)
 		{

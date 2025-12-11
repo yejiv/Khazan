@@ -237,6 +237,10 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
         
         m_HealRimLightDesc.fRimLightIntensity = m_HealRimLightDesc.fTargetIntensity * fIntensityRatio;
     }
+
+    m_isAttackActive = m_pBodyCom_Attack->Get_Collision_Active()
+        || m_pBodyCom_RangeAttack->Get_Collision_Active()
+        || m_pBodyCom_BodyAttack->Get_Collision_Active();
 }
 
 void CBody_Khazan_GS::Late_Update(_float fTimeDelta)

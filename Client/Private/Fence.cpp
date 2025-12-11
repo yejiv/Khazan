@@ -5,6 +5,7 @@
 #include "Body.h"
 #include "Prop_Chunk.h"
 #include "Body_Khazan_Spear.h"
+#include "Body_Khazan_GS.h"
 
 CFence::CFence(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Destructible{ pDevice, pContext }
@@ -58,6 +59,31 @@ void CFence::Update(_float fTimeDelta)
     {
         Chunk->Update(fTimeDelta);
     }
+
+    if (m_isPlayDestroy)
+    {
+        m_isPlayDestroy = false;
+
+        _int iRand = m_pGameInstance->Rand(0, 4);
+        switch (iRand)
+        {
+        case 0:
+            m_pGameInstance->PlaySoundOnce(TEXT("DP_Wood_Chaos_A.wav"), Get_Position(), nullptr, m_fDestroyVolume);
+            break;
+        case 1:
+            m_pGameInstance->PlaySoundOnce(TEXT("DP_Wood_Chaos_B.wav"), Get_Position(), nullptr, m_fDestroyVolume);
+            break;
+        case 2:
+            m_pGameInstance->PlaySoundOnce(TEXT("DP_Wood_Chaos_C.wav"), Get_Position(), nullptr, m_fDestroyVolume);
+            break;
+        case 3:
+            m_pGameInstance->PlaySoundOnce(TEXT("DP_Wood_Chaos_D.wav"), Get_Position(), nullptr, m_fDestroyVolume);
+            break;
+        default:
+            m_pGameInstance->PlaySoundOnce(TEXT("DP_Wood_Chaos_A.wav"), Get_Position(), nullptr, m_fDestroyVolume);
+            break;
+        }
+    }
 }
 
 void CFence::Late_Update(_float fTimeDelta)
@@ -99,7 +125,12 @@ void CFence::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _fl
             if (m_iLevelIndex == ENUM_CLASS(LEVEL::HEINMACH))
             {
                 CBody_Khazan_Spear* pKhazan = dynamic_cast<CBody_Khazan_Spear*>(pDesc->pGameObject);
-                if(pKhazan) isAttack = pKhazan->Get_IsAttackCollisionActive();
+                if (pKhazan) isAttack = pKhazan->Get_IsAttackCollisionActive();
+            }
+            else if (m_iLevelIndex == ENUM_CLASS(LEVEL::EMBARS))
+            {
+                CBody_Khazan_GS* pKhazan = dynamic_cast<CBody_Khazan_GS*>(pDesc->pGameObject);
+                if (pKhazan) isAttack = pKhazan->IsAttackActive();
             }
 
             if (isAttack)
@@ -111,6 +142,8 @@ void CFence::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _fl
 
                     Chunk->Destory(vVel, vContactPoint);
                 }
+
+                m_isPlayDestroy = true;
             }
         }
     }

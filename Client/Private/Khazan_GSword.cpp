@@ -260,7 +260,7 @@ void CKhazan_GSword::Update(_float fTimeDelta)
             m_EffectTimeDelta = 0.f;
         }
     }
-    m_pGameInstance->ListenerPosSet(m_pTransformCom->Get_State(STATE::POSITION), m_pTransformCom->Get_State(STATE::LOOK), m_pTransformCom->Get_State(STATE::UP));
+    m_pGameInstance->ListenerPosSet(m_pTransformCom->Get_State(STATE::POSITION), XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)), XMVector3Normalize(m_pTransformCom->Get_State(STATE::UP)));
 
 
 	if (m_pAnimInteraction->Is_Lachryma())
@@ -493,7 +493,7 @@ void CKhazan_GSword::Set_Camera(CCamera_Compre* pCamera)
     
 void CKhazan_GSword::Set_Position(_float4 vPos)
 {
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat4(&vPos), 1.f));
+    m_pCharVirCom->Teleport(XMLoadFloat4(&vPos), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
 }
 
 void CKhazan_GSword::Update_Stats(_float fTimeDelta)

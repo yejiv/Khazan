@@ -402,9 +402,17 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight_static_connect"))))
         return E_FAIL;
 
-    //  if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("ITEM_FX"),
-    //      CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item"))))
-    //      return E_FAIL;
+      if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("ITEM_FX"),
+          CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item"))))
+          return E_FAIL;
+
+      if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("ITEM_RARE_FX"),
+          CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item_rare"))))
+          return E_FAIL;
+
+      if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("ITEM_UNIQUE_FX"),
+          CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item_unique"))))
+          return E_FAIL;
 
     // [GS]
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("FerociousMomentum0"),
@@ -1161,10 +1169,6 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
         
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Smoke"))))
-        return E_FAIL;
-
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("ITEM_FX"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item"))))
         return E_FAIL;
      
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Halberd_Weapon_Wind"),
@@ -2285,9 +2289,6 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
 #pragma region EFFECT
     Loading_For_Effect_Static(ENUM_CLASS(LEVEL::EMBARS));
 
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("ITEM_FX"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item"))))
-        return E_FAIL;
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elevator_Spark"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/SparkTime"))))
         return E_FAIL;
@@ -3017,10 +3018,6 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
         return E_FAIL;
 
 #pragma endregion
-
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("ITEM_FX"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item"))))
-        return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Item"),
         CInteraction_Item::Create(m_pDevice, m_pContext))))

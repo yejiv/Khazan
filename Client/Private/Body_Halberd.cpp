@@ -59,6 +59,9 @@ void CBody_Halberd::Priority_Update(_float fTimeDelta)
 
 void CBody_Halberd::Update(_float fTimeDelta)
 {
+    if (!m_pData->isSearch)
+        return;
+
     if (m_iPreAnim != m_pData->iAnimIndex)
     {
         m_pModelCom->Set_Animation(m_pData->iAnimIndex);
@@ -104,6 +107,9 @@ void CBody_Halberd::Update(_float fTimeDelta)
 
 void CBody_Halberd::Late_Update(_float fTimeDelta)
 {
+    if (!m_pData->isSearch)
+        return;
+
     m_pCapeBody->Late_Update(fTimeDelta);
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;

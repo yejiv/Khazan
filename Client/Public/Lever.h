@@ -61,7 +61,6 @@ private:
 
     // Blink Rim Light Shader
     _float m_fBlinkTimeAcc = {};
-    _bool m_isEnableBlink = {};
 
 private:
     COLLISION_DESC m_TriggerCollisionDesc;

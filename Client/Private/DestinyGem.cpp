@@ -83,11 +83,6 @@ void CDestinyGem::Update(_float fTimeDelta)
     }
 
     Update_CombinedMatrix();
-
-    // Test
-    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
-        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-            m_isEnableBlink = !m_isEnableBlink;
 }
 
 void CDestinyGem::Late_Update(_float fTimeDelta)
@@ -119,7 +114,7 @@ HRESULT CDestinyGem::Render()
 
         Bind_DissolveValues();
 
-        if (true == m_isEnableBlink)
+        if (false == *m_pConsumed)
         {
             if (FAILED(Bind_Blink_ShaderResources()))
                 return E_FAIL;

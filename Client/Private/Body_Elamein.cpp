@@ -59,6 +59,9 @@ void CBody_Elamein::Priority_Update(_float fTimeDelta)
 
 void CBody_Elamein::Update(_float fTimeDelta)
 {
+    if (!m_pData->isSearch)
+        return;
+
     if (m_iPreAnim != m_pData->iAnimIndex)
     {
         m_pModelCom->Set_Animation(m_pData->iAnimIndex);
@@ -108,10 +111,13 @@ void CBody_Elamein::Update(_float fTimeDelta)
 
 void CBody_Elamein::Late_Update(_float fTimeDelta)
 {
+    if (!m_pData->isSearch)
+        return;
 //#ifdef NDEBUG
     if (m_pData->iAnimIndex != 31 && m_pData->iAnimIndex != 35 && m_pData->iAnimIndex != 51 && m_pData->iAnimIndex != 95)
         m_pCapeBody->Late_Update(fTimeDelta);
 //#endif
+    
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 }
