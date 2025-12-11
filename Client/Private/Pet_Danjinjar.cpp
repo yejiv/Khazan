@@ -138,6 +138,13 @@ void CPet_Danjinjar::Update(_float fTimeDelta)
 
     m_pTalk->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
     m_pTalk->Update(fTimeDelta);
+    
+    //if (m_pTalk->isTalkingEnd())
+    //    m_pTalk->Off_Panel();
+
+    _float4 vPosition{};
+    XMStoreFloat4(&vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+    m_pGameInstance->Set_LightPosition(TEXT("DanjinJar_Pet"), ENUM_CLASS(LEVEL::EMBARS), vPosition);
 }
 
 void CPet_Danjinjar::Late_Update(_float fTimeDelta)

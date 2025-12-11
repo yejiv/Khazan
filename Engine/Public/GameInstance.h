@@ -95,6 +95,7 @@ public:
 	OUTLINE_CONFIG Get_OutlineConfig();
 	void Set_OutlineConfig(OUTLINE_CONFIG Config);
     void Set_SpecularPower(_float2 vPower);
+    void Set_SpecularAttenuation(_float fAttenuation);
     void Set_EnableRimLight(_bool isEnable);
     RIM_LIGHT_DESC Get_RimLightDesc();
     void Set_RimLightDesc(RIM_LIGHT_DESC Desc);

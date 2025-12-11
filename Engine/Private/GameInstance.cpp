@@ -554,6 +554,11 @@ void CGameInstance::Set_SpecularPower(_float2 vPower)
     m_pRenderer->Set_SpecularPower(vPower);
 }
 
+void CGameInstance::Set_SpecularAttenuation(_float fAttenuation)
+{
+    m_pRenderer->Set_SpecularAttenuation(fAttenuation);
+}
+
 void CGameInstance::Set_EnableRimLight(_bool isEnable)
 {
     m_pRenderer->Set_EnableRimLight(isEnable);

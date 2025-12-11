@@ -75,6 +75,7 @@ HRESULT CLevel_Embars::Initialize()
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
     CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
+    CHECK_FAILED(Ready_Layer_Decal(), E_FAIL);
 
     CClientInstance::GetInstance()->Fade_In([this]() {Start_Event(); });
 
@@ -240,13 +241,36 @@ HRESULT CLevel_Embars::Ready_Shader_Settings()
     m_pGameInstance->Set_ShadowDesc(ShadowDesc);
 
     // 초기 Fog
-    FOG_TRANSITION_DESC FogDesc{};
-    FogDesc.fDensity = 0.05f;
-    FogDesc.fBias = 0.8f;
-    FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
-    FogDesc.isUseHeight = false;
-    FogDesc.isUseNoise = false;
-    m_pGameInstance->Start_FogTransition(0.f, FogDesc);
+    //  FOG_TRANSITION_DESC FogDesc{};
+    //  FogDesc.fDensity = 0.05f;
+    //  FogDesc.fBias = 0.8f;
+    //  FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
+    //  FogDesc.isUseHeight = false;
+    //  FogDesc.isUseNoise = false;
+    //  m_pGameInstance->Start_FogTransition(0.f, FogDesc);
+
+    // 포그 라이트 블리드 1 설정
+    FOG_CONFIG FogConfig{};
+    FogConfig.eType = FOG_CONFIG::EXP;
+    FogConfig.fDensity = 0.05f;
+    FogConfig.fBias = 0.8f;
+    FogConfig.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
+    FogConfig.Noise.isEnable = false;
+    FogConfig.isUseHeight = false;
+    FogConfig.isUseSubColor = false;
+    FogConfig.fLightBleedStrength = 1.f;
+    m_pGameInstance->Set_FogConfig(FogConfig);
+
+    // 림 라이트 강도 줄이기
+    RIM_LIGHT_DESC RimDesc{};
+    RimDesc.fPower = 5.f;
+    RimDesc.isToonLight = false;
+    RimDesc.fToonThreshold = 1.f;
+    RimDesc.fIntensity = 0.15f;
+    m_pGameInstance->Set_RimLightDesc(RimDesc);
+
+    // 스페큘러 강도 줄이기
+    m_pGameInstance->Set_SpecularAttenuation(1.5f);
 
     return S_OK;
 }
@@ -1120,7 +1144,6 @@ HRESULT CLevel_Embars::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentL
 
     CloseHandle(hFile);
 
-
     LIGHT_DESC LightDesc1 = {};
     LightDesc1.eType = LIGHT_DESC::POINT;
     LightDesc1.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
@@ -1162,6 +1185,19 @@ HRESULT CLevel_Embars::Ready_Lights()
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, true)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_Pet"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, true)))
+        return E_FAIL;
+
+    LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 5.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("BladeNexus_ActivateLight"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
         return E_FAIL;
 
     return S_OK;
@@ -1432,6 +1468,16 @@ HRESULT CLevel_Embars::Ready_Map_Decal(const _wstring& strLayerTag, const _tchar
     }
 
     CloseHandle(hFile);
+
+    return S_OK;
+}
+
+HRESULT CLevel_Embars::Ready_Layer_Decal()
+{
+    // Decal
+    if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal"),
+        ENUM_CLASS(LEVEL::EMBARS), TEXT("Pool_Decal"), nullptr, 100)))
+        return E_FAIL;
 
     return S_OK;
 }

@@ -5349,8 +5349,8 @@ void CViper::Start_Thunder(_float fDuration, _uint iBlinkCount)
 void CViper::Spawn_BloodDecal()
 {
     DECAL_DESC Desc{};
-    Desc.fLifeTime = 55.f;
-    Desc.vFadeTime = _float2(0.2f, 0.2f);
+    Desc.fLifeTime = 49.f;
+    Desc.vFadeTime = _float2(0.2f, 0.f);
     Desc.vColor = _float3(0.2245f, 0.08f, 0.08f);
     Desc.eType = DECALTYPE::CIRCLE;
     _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);

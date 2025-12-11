@@ -1145,9 +1145,7 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
 		m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
 	}
     
-
 	CloseHandle(hFile);
-
 
     LIGHT_DESC LightDesc1 = {};
     LightDesc1.eType = LIGHT_DESC::POINT;
@@ -1157,6 +1155,16 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
     LightDesc1.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
     LightDesc1.fRange = 2.45f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Lantern"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc1, false)))
+        return E_FAIL;
+
+    LIGHT_DESC LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 9.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("BladeNexus_ActivateLight"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc, false)))
         return E_FAIL;
 
 	return S_OK;

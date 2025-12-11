@@ -731,11 +731,11 @@ HRESULT CLevel_Viper::Ready_Lights()
         return E_FAIL;
 
     LightDesc.eType = LIGHT_DESC::POINT;
-    LightDesc.vPosition = _float4(-30.103f, -29.9f, 185.861f, 1.f);
+    LightDesc.vPosition = _float4(-30.103f, -27.f, 185.861f, 1.f);
     LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
     LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
     LightDesc.vSpecular = LightDesc.vDiffuse;
-    LightDesc.fRange = 3.5f;
+    LightDesc.fRange = 4.5f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Viper_CutScene_PointLight"), ENUM_CLASS(LEVEL::VIPER), LightDesc)))
         return E_FAIL;
 
@@ -1072,6 +1072,7 @@ HRESULT CLevel_Viper::Ready_Shader_Settings()
     FogConfig.isUseSubColor = true;
     FogConfig.fSubColorStartHeight = 1154.f;
     FogConfig.vSubColor = _float4(0.235f, 0.318f, 0.341f, 1.f);
+    FogConfig.fLightBleedStrength = 0.f;
     m_pGameInstance->Set_FogConfig(FogConfig);
 
     // 초기 스카이 박스 세팅

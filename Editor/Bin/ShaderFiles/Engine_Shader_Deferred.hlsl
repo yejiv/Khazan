@@ -120,7 +120,8 @@ PS_OUT_LIGHT PS_DIRECTIONAL(PS_IN In)
     float fSpecularBase = max(dot(normalize(vReflect) * -1.f, vLook), 0.f);
     float fSpecular = pow(fSpecularBase, fShininess);
     
-    Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f;
+    float4 vResultSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f;
+    Out.vSpecular = pow(vResultSpecular, g_fSpecularAttuenation);
     
     if (0.f == vSpecularDesc.a)
         return Out;
@@ -159,7 +160,7 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     
     float fAtt = saturate((g_fLightRange - fDistance) / g_fLightRange);
     
-    float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
+    float fShade = max(dot(vNormal * -1.f, normalize(vLightDir)), 0.f);
 
     // 엠비언트 따로 계산
     float fAmbient = g_vLightAmbient * g_vMtrlAmbient;
@@ -185,7 +186,6 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     else
         Out.vShade = g_vLightDiffuse * (fLightIntensity + fAmbient) * fAtt;
 
-    
     // Specular
     vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     float fSpecularValue = vSpecularDesc.g;
@@ -198,7 +198,8 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     float fSpecularBase = max(dot(normalize(vReflect) * -1.f, vLook), 0.f);
     float fSpecular = pow(fSpecularBase, fShininess);
     
-    Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f * fAtt;
+    float4 vResultSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f * fAtt;
+    Out.vSpecular = pow(vResultSpecular, g_fSpecularAttuenation);
     
     if (0.f == vSpecularDesc.a)
         return Out;
@@ -234,7 +235,8 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    Out.vColor = vDiffuse * vShade + vSpecular + vEmissive;
+    float4 vLitColor = vDiffuse * vShade + vEmissive;
+    Out.vColor = vLitColor + vSpecular;
     
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
@@ -265,6 +267,13 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
         else if (2 == g_iFogMode)
             fFogFactor = fExpSquare;
 
+        fFogFactor = clamp(fFogFactor, 0.f, g_fFogBias);
+        
+        float fBrightness = max(vLitColor.r, max(vLitColor.g, vLitColor.b));
+        float fFogAtt = saturate(fBrightness * g_fFogLightBleedStrength);
+        
+        fFogFactor = saturate(fFogFactor - fFogAtt);
+        
         if (true == g_isEnableFogNoise)
         {
             float2 vNoiseTexcoord;
@@ -278,9 +287,7 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
         
             fFogFactor = lerp(fFogFactor, fFogFactor * fNoise, g_fNoiseStrength);
         }
-    
-        fFogFactor = clamp(fFogFactor, 0.f, g_fFogBias);
-    
+        
         if (true == g_isUseHeightFog)
         {
             // Height 계산

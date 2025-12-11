@@ -102,7 +102,16 @@ HRESULT CLoadingObj_BN::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(8), E_FAIL);
+        if (i == 1)
+        {
+            _float4 vCristalColor = _float4(8.5f, 4.5f, 3.f, 1.f);
+            if (FAILED(m_pShaderCom->Bind_RawValue("g_vCristalColor", &vCristalColor, sizeof(_float4))))
+                return E_FAIL;
+
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(27), E_FAIL);
+        }
+        else
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(8), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
