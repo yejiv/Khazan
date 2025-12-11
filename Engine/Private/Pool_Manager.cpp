@@ -48,6 +48,8 @@ CGameObject* CPool_Manager::Pop_PoolObject(_uint iLayerLevelIndex, const _wstrin
 {
 	deque<CGameObject*>* pPool = Find_Pool(iLayerLevelIndex, strPoolTag);
 
+    OutputDebugStringA(("Pop Pool Name: " + WStringToAnsi(strPoolTag) + "\n").c_str());
+
 	if (pPool == nullptr || pPool->size() <= 0)
 		return nullptr;
 
@@ -68,6 +70,8 @@ CGameObject* CPool_Manager::Pop_PoolObject(_uint iLayerLevelIndex, const _wstrin
 
 HRESULT CPool_Manager::Reset_PoolObject(CGameObject* pGameObject)
 {
+    OutputDebugStringA(("Reset Pool Name: " + WStringToAnsi(pGameObject->Get_Tag()) + "\n").c_str());
+
 	pGameObject->Set_IsPool(true);
 	pGameObject->Set_IsDead(false);
     pGameObject->Set_IsActive(true);

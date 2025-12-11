@@ -293,6 +293,10 @@ void CUI_QuickSlot_Item::Input_KeyState()
             }
             else if(m_iItemIndex >= 1001 && m_iItemIndex <= 1004)
             {
+                _bool isAticv = CClientInstance::GetInstance()->Get_PlayerData().fCulHp < CClientInstance::GetInstance()->Get_PlayerData().fMaxHp;
+                if (!isAticv)
+                    return;
+
                 --*m_iItemCount;
                 if (*m_iItemCount <= 0)
                 {

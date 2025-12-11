@@ -84,6 +84,9 @@ HRESULT CJar_7th::Render()
 
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
+        if (Skip_Mesh(i))
+            continue;
+
         Bind_Materials(i);
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(20), E_FAIL);
@@ -238,6 +241,7 @@ void CJar_7th::Animation_Change(_float fTimeDelta)
     case ANIM_STATE::DEACTIVE:
         AnimChange(ANIM_STATE::DEACTIVE_IDLE, true);
         m_pModelCom->Set_AnimationBlend(false);
+        m_pGameInstance->Set_LightEnable(TEXT("DanjinJar_7"), ENUM_CLASS(LEVEL::EMBARS), false);
         break;
     }
 }

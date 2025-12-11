@@ -57,6 +57,8 @@ private:
     _bool                       m_isHardLight = {};
 
     _float                      m_fEffectTime = {};
+
+    _bool                       m_isItemEffect = {};
     //애니메이션 관련
     ANIM_STATE                  m_eEndAnime = { ANIM_STATE ::END};
     _bool                       m_isGet_Pet = { false };

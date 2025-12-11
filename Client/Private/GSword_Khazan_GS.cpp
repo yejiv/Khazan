@@ -55,7 +55,6 @@ void CGSword_Khazan_GS::Priority_Update(_float fTimeDelta)
 {
     if (!m_isEnble)
         return;
-
 }
 
 void CGSword_Khazan_GS::Update(_float fTimeDelta)

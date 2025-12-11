@@ -104,6 +104,7 @@ private:
     class CTransform*           m_pParentTransform = { nullptr };
     class CGSword_Khazan_GS*    m_pGSword = { nullptr };
     class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
+    class CKhazan_SoundHelper* m_pSoundHelper = { nullptr };
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
     CShader*                    m_pShaderCom = { nullptr };
@@ -166,7 +167,7 @@ private:
 
     /* 가드 */
     _bool                       m_isJustGuardOnce = { false };
-    _float2                     m_fJustGuardTime = { 0.f, 0.83f };
+    _float2                     m_fJustGuardTime = { 0.f, 1.6f };
     _float4*                    m_pGuardRotationTarget = { nullptr };
 
     /* Monster Search, Brutal */
@@ -206,6 +207,8 @@ private:
     _float                      m_fDissolveDecreaseAlphaValue = { 0.f };
     const _float4               m_fDissolveColor = { 0.8f, 0.65f, 0.4f, 1.0f };
 
+    /* Sound */
+    vector<FMOD_CHANNEL*>       m_pChannel;
 
     /*  mutex */
     mutex                       m_CollMonsterMutex;
@@ -223,6 +226,7 @@ private:
     void            Update_GuardRotation(_float fTimeDelta);        //가드시 충돌방향으로 회전
     void            Start_GuardRotation(_float3 vContactPoint);     //가드시 충돌방향으로 회전을 위한 초기화
     void            Exception_Animaition(); // 애니메이션 이상한 것들 처리 
+    FMOD_CHANNEL**  Get_SoundChannel(_int iIndex);
 
     /* notify */
  private:
@@ -235,6 +239,7 @@ private:
     HRESULT             Ready_Components();
     HRESULT             Ready_Colliders();
     HRESULT             Ready_AnimationEvents();
+    HRESULT				Ready_AnimationEvent_SFX();
     HRESULT             Ready_Equipment();
     void                Equip_Part(EQUIPMENTTYPE eType, const _wstring& strPartName); //파츠 갈아 입기
     void                Update_QuickRenderCache();  //빠른 랜더용 파츠모음 (모션트레일도 여기서 랜더용 파츠 갈아끼우기)

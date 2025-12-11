@@ -20,7 +20,8 @@ void CAS_P2_Roar_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(43);
-
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_combo_stand_roar_01 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+    
     // 로어 애니메이션 시작
     Set_ViperBerserkerEnd_ShaderSettings();
 }

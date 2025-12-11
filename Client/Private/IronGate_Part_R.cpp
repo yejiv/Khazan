@@ -86,7 +86,7 @@ HRESULT CIronGate_Part_R::Render()
             if (FAILED(Bind_Blink_ShaderResources()))
                 return E_FAIL;
 
-            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(14), E_FAIL);
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(15), E_FAIL);
         }
         else
             CHECK_FAILED_ASSERT(m_pShaderCom->Begin(4), E_FAIL);
