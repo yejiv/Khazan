@@ -59,6 +59,7 @@ public:
         _float              fWarkSpeed = { 10.f };
         CHalberd*           pOwner = { nullptr };
 
+        _bool               isSearch = { false };
     }MONDATA;
 private:
     CHalberd(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -108,6 +109,7 @@ private:
     class CBlackBoard*              m_pBlackBoard = { nullptr };
     class CMon_HP*                  m_pUI_HP = { nullptr };
     class CMeshTrail*               m_pMeshTrail = { nullptr };
+    class CBody*                    m_pBodyComp = { nullptr };
 
     CBody*                          m_pHitBodyCom = { nullptr };
 

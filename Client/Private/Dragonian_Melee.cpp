@@ -198,6 +198,20 @@ void CDragonian_Melee::Update(_float fTimeDelta)
 
 void CDragonian_Melee::Late_Update(_float fTimeDelta)
 {
+    if (m_Data.isSearch)
+    {
+        m_pBodyComp->Collision_Active(false);
+    }
+    else
+    {
+        _matrix WeaponWorld = m_pTransformCom->Get_WorldMatrix();
+
+        _vector vScale, vQuat, vPos;
+        XMMatrixDecompose(&vScale, &vQuat, &vPos, WeaponWorld);
+
+        m_pBodyComp->Sync_Update(WeaponWorld);
+        m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
+    }
     CContainerObject::Late_Update(fTimeDelta);
 
     m_pMeshTrail->Late_Update(fTimeDelta);
@@ -252,7 +266,10 @@ ID3D11ShaderResourceView* CDragonian_Melee::Get_TrailTexture(_uint iIndex)
 
 void CDragonian_Melee::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-
+    if (pMyDesc->iObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER_SEARCH))
+    {
+        m_Data.isSearch = true;
+    }
 }
 
 void CDragonian_Melee::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -328,6 +345,20 @@ HRESULT CDragonian_Melee::Ready_Components()
     
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc), E_FAIL);
+
+    CBody::BODY_BOXSHAPE_DESC SearchBodyDesc{};
+     SearchBodyDesc.vExtent = { 50.f, 50.f, 50.f };
+    SearchBodyDesc.eMotion = EMotionType::Kinematic;
+    SearchBodyDesc.eQuality = EMotionQuality::Discrete;
+    SearchBodyDesc.eShapeType = SHAPE::BOX;
+    SearchBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER_SEARCH);
+    SearchBodyDesc.bIsTrigger = true;
+    XMStoreFloat3(&SearchBodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    XMStoreFloat4(&SearchBodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+    SearchBodyDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
+    SearchBodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_Body_Search"), (CComponent**)&m_pBodyComp, &SearchBodyDesc), E_FAIL);
 
 
     return S_OK;
@@ -573,4 +604,5 @@ void CDragonian_Melee::Free()
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
     Safe_Release(m_pBlackBoard);
+    Safe_Release(m_pBodyComp);
 }

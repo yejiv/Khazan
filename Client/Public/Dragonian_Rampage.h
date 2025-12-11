@@ -69,6 +69,8 @@ public:
         ATTACKSTATE         eAttack_State = { ATTACKSTATE::END };
 
         _bool               isMotionSleep = {};
+
+        _bool               isSearch = { false };
     }MONDATA;
 
 private:
@@ -117,6 +119,7 @@ private:
     class CMeshTrail*               m_pMeshTrail[ENUM_CLASS(CLAW::END)] = {};
 
     CBody*                          m_pHitBodyCom = { nullptr };
+    class CBody*                    m_pBodyComp = { nullptr };
 
     _float4x4*                      m_pBodySocketMatrix = { nullptr };
     _float4x4*                      m_pLockOnSocketMatrix = { nullptr };
@@ -142,7 +145,7 @@ private:
     _float4                         m_vClawR_2_End = {};
     _float4                         m_vClawR_3_End = {};
 
-    class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
+    class CTarget_BrutalAttack*     m_pBrutalAttack = { nullptr };
 
 private:
     HRESULT                         Ready_Prototype();

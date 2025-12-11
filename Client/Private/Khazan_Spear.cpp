@@ -267,7 +267,7 @@ void CKhazan_Spear::Update(_float fTimeDelta)
             m_EffectTimeDelta = 0.f;
         }
     }
-    m_pGameInstance->ListenerPosSet(m_pTransformCom->Get_State(STATE::POSITION), m_pTransformCom->Get_State(STATE::LOOK), m_pTransformCom->Get_State(STATE::UP));
+    m_pGameInstance->ListenerPosSet(m_pTransformCom->Get_State(STATE::POSITION), XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)), XMVector3Normalize(m_pTransformCom->Get_State(STATE::UP)));
 
     if (m_pAnimInteraction->Is_Lachryma())
     {
