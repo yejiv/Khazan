@@ -402,6 +402,11 @@ void CBody::Collision_Active(_bool isActive)
     }
 }
 
+_bool CBody::Get_Collision_Active()
+{
+    return m_pBodyInterface->IsAdded(m_BodyID);
+}
+
 void CBody::Build_Shape(BODY_DESC* pDesc, RefConst<Shape>& pShape)
 {
     switch (pDesc->eShapeType)

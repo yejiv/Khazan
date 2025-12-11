@@ -44,6 +44,9 @@ protected:
 
     vector<class CProp_Chunk*> m_Chunks;
 
+    _bool m_isPlayDestroy = { false };
+    _float m_fDestroyVolume = { 5.f };
+
 protected:
     HRESULT Ready_Components(void* pArg);
     HRESULT Ready_Collision(void* pArg);
