@@ -95,6 +95,9 @@ bool g_isEnableHealRimLight;
 // TombStone
 float g_fDiffuseBluePower;
 
+// Gear
+float3 g_vRuneColor;
+
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -546,37 +549,25 @@ PS_OUT PS_RUNE_EMISSIVE(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
 
-    float4 tex = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    float4 vMaskTexture = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    if (tex.a < 0.1f)
-        discard;
+    float fRuneMask = vMaskTexture.r;
+    float fGreenMask = vMaskTexture.g;
+    float fBlueMask = vMaskTexture.b;
 
-    // 마스크 분리
-    float runeMask = tex.r;
-    float energyMask = tex.g;
-    float noiseMask = tex.b;
-
-    // 원작 느낌의 청록 블루 계열
-    float3 runeColor = float3(0.2f, 0.8f, 1.0f);
-    float3 energyColor = float3(0.1f, 0.6f, 0.9f);
-    float3 noiseColor = float3(0.05f, 0.15f, 0.3f);
-    
-    float3 emissive = float3(0.f, 0.f, 0.f);
+    float4 vResultColor = float4(0.f, 0.f, 0.f, 1.f);
     
     if (IsFlag(M_EMISSIVE))
     {
-        emissive = runeMask * runeColor * 18.0f + energyMask * energyColor * 6.0f + noiseMask * noiseColor * 2.0f;
+        vResultColor = float4(g_vRuneColor, 1.f) * fRuneMask * g_fEmissiveIntensity;
+        vResultColor *= fGreenMask * fBlueMask;
     }
 
-    Out.vDiffuse = float4(0.f, 0.f, 0.f, 1.f);
-    Out.vNormal = float4(0.5f, 0.5f, 1.f, 0.f);
+    Out.vDiffuse = vResultColor;
+    Out.vNormal = float4(0.f, 0.f, 0.f, 0.f);
     Out.vSpecular = float4(0.f, 0.f, 0.f, 0.f);
-
     Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
-
-    // 반드시 Emissive로 출력
-    Out.vEmissive = float4(emissive, 1.f);
 
     return Out;
 }

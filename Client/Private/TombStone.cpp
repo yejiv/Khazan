@@ -91,19 +91,6 @@ HRESULT CTombStone::Render()
     {
         Bind_Materials(i);
 
-        /*
-        if (1 == i)     // 1 == 룬문자
-        {
-            _bool isEmissive = { true };
-            m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_SPECULAR, 0);
-            m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
-
-            m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &m_fEmissiveIntensity, sizeof(_float));
-            m_pShaderCom->Bind_RawValue("g_isEnableEmissive", &m_isEnableEmissive, sizeof(_bool));
-            m_pShaderCom->Bind_RawValue("g_isEnableBloom", &m_isEnableBloom, sizeof(_bool));
-        }
-        */
-
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(29), E_FAIL);
