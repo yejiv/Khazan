@@ -47,6 +47,10 @@ private:
 
     _uint m_iNumGem = { 1 };
 
+private :
+    class CEffect_Prefab*   m_fEffect = { nullptr };
+    _bool                   m_bBlustFX;
+
 private:
     HRESULT Ready_Components(void* pArg);
 
