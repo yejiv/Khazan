@@ -27,19 +27,19 @@ namespace Client
         MONSTERATTACK,
         ITEM, 
         EFFECT, 
-        SKILL, 
-        CAMERA, // 10
+        SKILL,  // 10
+        CAMERA,
         MAP_STATIC_TRIGGER, 
         MAP_MOVE_PLATFORM, 
         MAP_DEST, 
-        MAP_CHUNK, 
-        TEST, // 15
+        MAP_CHUNK, // 15
+        TEST,
         CONTROLLER,
         INTERACT_OBJECT,
 
 
         CLOTH,
-        CLOTHBODY,
+        CLOTHBODY, // 20
         PET,
         END };
 

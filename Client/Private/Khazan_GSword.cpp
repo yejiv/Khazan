@@ -2652,7 +2652,7 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         {
             m_isInteractEventSetting = true;
             /*  UnArmed 애니메이션 재생  (조각상 + 귀석때는 안함)*/
-            if (!Has_Status(BLOCK_ATK_SKILL_GUARD) && INTERACTIVE_TYPE::DESTINYSTONE != m_EventInteract.eInteractType)
+            if (!Has_Status(BLOCK_ATK_SKILL_GUARD) && INTERACTIVE_TYPE::DESTINYSTONE != m_EventInteract.eInteractType && INTERACTIVE_TYPE::TOMBSTONE != m_EventInteract.eInteractType)
             {
                 if (Has_Status(SPEAR))
                     m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
@@ -2678,6 +2678,12 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         {
             isDone = false;
             if (m_pBody->Get_Model()->IsFinished())  isDone = true;
+            break;
+        }
+        case INTERACTIVE_TYPE::TOMBSTONE:
+        {
+            //isDone = false;
+            //if (m_pBody->Get_Model()->IsFinished())  isDone = true;
             break;
         }
         case INTERACTIVE_TYPE::LEVER:
@@ -2785,7 +2791,7 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         {
             Chest_Event(fTimeDelta);
         }
-        // 경계의 틈 툼스톤일때
+        // 비밀방 엠바스 툼스톤일때
         if (INTERACTIVE_TYPE::TOMBSTONE == m_EventInteract.eInteractType)
         {
             TombStone_Event(fTimeDelta);
@@ -2957,6 +2963,7 @@ void CKhazan_GSword::TombStone_Event(_float fTimeDelta)
     // 툼스톤에 접촉 후 상호 작용 ( 툼스톤 가동 )
     if (false == TSEvent.isTSOpened)
     {
+        TSEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         // 플레이어 Look -> 툼스톤 ( 기우는거 보정하려고 이렇게 코드 넣어놨습니다. )
         m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&TSEvent.vPlayerPosition));
         TSEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
@@ -2965,7 +2972,7 @@ void CKhazan_GSword::TombStone_Event(_float fTimeDelta)
     // 툼스톤 가동 끝나고 가동 LOOP 진입
     else if (true == TSEvent.isTSOpened)
     {
-        // 플레이어 툼스톤 LOOP 애니메이션?
+        m_pCharVirCom->Teleport(XMLoadFloat4(&TSEvent.vPlayerTPPos), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
     }
 
     m_EventInteract.End_Event();
@@ -3060,9 +3067,9 @@ void CKhazan_GSword::UnLockGear_Event(_float fTimeDelta)
     }
 
 
-    //ULGearEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    ULGearEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
-    //m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&ULGearEvent.vPlayerPosition));
+    m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&ULGearEvent.vPlayerPosition));
     ULGearEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&ULGearEvent.vPosition));
 

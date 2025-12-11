@@ -69,7 +69,8 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
             ++it;
     }
 
-    m_bRunning = (m_pVIBufferCom->Update(fTimeDelta) == true && m_TimeTracks.size() == 0) ? false : true;
+    if(m_bRunning)
+        m_bRunning = (m_pVIBufferCom->Update(fTimeDelta) == true && m_TimeTracks.size() == 0) ? false : true;
 
     if (m_sData.bGravity)
         m_pVIBufferCom->UpdateGravity(fTimeDelta);
@@ -80,14 +81,6 @@ void CEffect_Point_Instance::Update(_float fTimeDelta)
         m_pVIBufferCom->UpdateTurbulence(fTimeDelta, m_fAccTime);
     }
 
-    //if (m_fSpriteTime * 100.f > m_sData.fSpriteSpeed)
-    //{
-    //    ++m_iUVIdx;
-    //    m_fSpriteTime = 0.f;
-    //}
-    //
-    //if (m_iUVIdx == (m_sData.iCol * m_sData.iRow))
-    //    m_iUVIdx = 0;
     if (m_sData.fSpriteSpeed && m_fSpriteTime * 100.f > m_sData.fSpriteSpeed)
     {
         ++m_iUVIdx;

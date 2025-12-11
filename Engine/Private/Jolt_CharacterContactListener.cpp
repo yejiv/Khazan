@@ -25,6 +25,11 @@ bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtu
 
     if (pCharDesc1 == nullptr || pCharDesc1->pGameObject == nullptr || pBody1Desc == nullptr || pBody1Desc->pGameObject == nullptr)
         return false;
+
+    if (!m_pGameInstance->IsObjectLayerPairValid(pCharDesc1->iObjectLayer, pBody1Desc->iObjectLayer))
+    {
+        return false;
+    }
     
     if (m_pBodyInterface->IsSensor(inBodyID2))
         return false;
@@ -42,6 +47,11 @@ bool CJolt_CharacterContactListener::OnCharacterContactValidate(const JPH::Chara
 {
     COLLISION_DESC* pCharDesc1 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
     COLLISION_DESC* pCharDesc2 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inOtherCharacter->GetUserData()));
+
+    if (!m_pGameInstance->IsObjectLayerPairValid(pCharDesc1->iObjectLayer, pCharDesc2->iObjectLayer))
+    {
+        return false;
+    }
 
     if (pCharDesc1->pGameObject->Get_IsGhost() || pCharDesc2->pGameObject->Get_IsGhost())
     {

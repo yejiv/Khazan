@@ -56,6 +56,8 @@ void CSequence_HeinMach_Field::Update(_float fTimeDelta)
 
     if (m_fTime >= 16.f)
     {
+        CClientInstance::GetInstance()->BGM_HeinMach_Dawn();
+
         static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
         CClientInstance::GetInstance()->Set_PlayerInput(true);
         m_State = STATE::End;

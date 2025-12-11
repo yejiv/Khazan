@@ -519,6 +519,9 @@ HRESULT CRenderer::Render_Lights()
     if (FAILED(m_pShader->Bind_RawValue("g_fRimIntensity", &m_RimLightDesc.fIntensity, sizeof(_float))))
         return E_FAIL;
 
+    if (FAILED(m_pShader->Bind_RawValue("g_fSpecularAttuenation", &m_fSpecularAttenuation, sizeof(_float))))
+        return E_FAIL;
+
 	_bool isSSAO = isEnableSSAO();
 	if (FAILED(m_pShader->Bind_Bool("g_isEnableSSAO", &isSSAO)))
 		return E_FAIL;

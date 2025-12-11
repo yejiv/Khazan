@@ -209,7 +209,7 @@ private :
     _uint                       m_iFXIdx_Spining;
     _uint                       m_iFXIdx_BodyWind;
     _uint                       m_iFXIdx_Trail;
-    //_float                      m_SmokeSpawnTIme;
+    _bool                       m_bGuradFX[2];
 
 private:
     _bool            Update_Dead(_float fTimeDelta);
@@ -271,6 +271,7 @@ private:
     void FX_Trail();
     void Set_BaseTrail();
     void Set_BrightTrail();
+    void Spawn_Guard_FX();
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

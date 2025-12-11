@@ -62,7 +62,7 @@ void CClothBody::Priority_Update(_float fTimeDelta)
 
     for (auto Root : m_RootBodys)
     {
-        Root->Priority_Update(fTimeDelta);
+        Root->Priority_Update(clothDt);
     }
 }
 
@@ -84,7 +84,7 @@ void CClothBody::Update(_float fTimeDelta)
 
     for (auto Root : m_RootBodys)
     {
-        Root->Update(fTimeDelta);
+        Root->Update(clothDt);
     }
 }
 
@@ -106,7 +106,7 @@ void CClothBody::Late_Update(_float fTimeDelta)
 
     for (auto Root : m_RootBodys)
     {
-        Root->Late_Update(fTimeDelta);
+        Root->Late_Update(clothDt);
     }
 }
 

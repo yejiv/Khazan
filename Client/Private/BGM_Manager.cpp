@@ -15,15 +15,36 @@ HRESULT CBGM_Manager::Initialize()
 
 void CBGM_Manager::Update(_float fTimeDelta)
 {
+    switch (m_eState)
+    {
+    case BGM_STATE::HEINMACH_DAWN:
+
+        break;
+    }
+}
+
+void CBGM_Manager::Set_Volume_BGM(_float fVolume)
+{
+    m_fVolume_BGM = fVolume;
+
+    m_pGameInstance->SetVolumeByKey(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM);
 }
 
 void CBGM_Manager::Mute_BGM()
 {
+    CHECK_TRUE(m_wstrCurrentKey_BGM.empty(), );
+
+    m_isMute = true;
+
     m_pGameInstance->SetVolumeByKey(m_wstrCurrentKey_BGM.c_str(), 0.f);
 }
 
 void CBGM_Manager::UnMute_BGM()
 {
+    CHECK_TRUE(m_wstrCurrentKey_BGM.empty(), );
+
+    m_isMute = false;
+
     m_pGameInstance->SetVolumeByKey(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM);
 }
 
@@ -35,67 +56,208 @@ void CBGM_Manager::Clear_CurrentKey()
 void CBGM_Manager::PlayBGM(const _tchar* pSoundKey, _float fFadeTime)
 {
     _wstring wstrNewKey = pSoundKey;
+
+    CHECK_TRUE(wstrNewKey.empty(), );
+
     wstrNewKey += TEXT(".wav");
 
-    if (m_pGameInstance->IsPlayingByKey(wstrNewKey.c_str()))
-        return;
+    CHECK_TRUE(m_pGameInstance->IsPlayingByKey(wstrNewKey.c_str()), );
 
     Change_CurrentBGM(pSoundKey);
 
     m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM, fFadeTime);
 }
 
-void CBGM_Manager::ChangeBGM(const _tchar* pSoundKey, _float fFadeTime)
+void CBGM_Manager::ChangeBGM(const _tchar* pSoundKey, _float fFadeTime, _bool isWav)
 {
     _wstring wstrNewKey = pSoundKey;
-    wstrNewKey += TEXT(".wav");
 
-    if (wstrNewKey == m_wstrCurrentKey_BGM)
-        return;
+    CHECK_TRUE(wstrNewKey.empty(), );
 
-    m_pGameInstance->StopByKey_FadeOut(m_wstrCurrentKey_BGM.c_str(), fFadeTime);
+    if(isWav)
+       wstrNewKey += TEXT(".wav");
+    else
+        wstrNewKey += TEXT(".mp3");
 
-    Change_CurrentBGM(pSoundKey);
+    CHECK_EQUAL(wstrNewKey, m_wstrCurrentKey_BGM, );
+
+    if (!m_wstrCurrentKey_BGM.empty())
+        m_pGameInstance->StopByKey_FadeOut(m_wstrCurrentKey_BGM.c_str(), fFadeTime);
+
+    if (isWav)
+        Change_CurrentBGM(pSoundKey);
+    else
+        m_wstrCurrentKey_BGM = wstrNewKey;
 
     m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM, fFadeTime);
 }
 
-void CBGM_Manager::HeinMach_Entry()
+void CBGM_Manager::PlayBattleBGM(const _tchar* pSoundKey, _float fFadeTime)
 {
+    _wstring wstrNewKey = pSoundKey;
+
+    CHECK_TRUE(wstrNewKey.empty(), );
+
+    wstrNewKey += TEXT(".wav");
+
+    if (!m_wstrCurrentKey_BGM.empty())
+        m_pGameInstance->StopByKey_FadeOut(m_wstrCurrentKey_BGM.c_str(), fFadeTime);
+
+    if (m_wstrStoreKey_BGM.empty())
+        m_wstrStoreKey_BGM = m_wstrCurrentKey_BGM;
+
+    m_wstrCurrentKey_BGM = wstrNewKey;
+
+    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM, fFadeTime);
+}
+
+void CBGM_Manager::EndBattleBGM(_float fFadeTime)
+{
+    CHECK_TRUE(m_wstrStoreKey_BGM.empty(), );
+
+    if (!m_wstrCurrentKey_BGM.empty())
+        m_pGameInstance->StopByKey_FadeOut(m_wstrCurrentKey_BGM.c_str(), fFadeTime);
+
+    m_wstrCurrentKey_BGM = m_wstrStoreKey_BGM;
+    m_wstrStoreKey_BGM.clear();
+
+    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM, fFadeTime);
+}
+
+void CBGM_Manager::HeinMach_Entry(_float fFadeTime)
+{
+    m_eState = BGM_STATE::HEINMACH_DAWN;
+
     Change_CurrentBGM(TEXT("AMB_BG_Field_Cold_Windy"));
 
     m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM);
 }
 
-void CBGM_Manager::HeinMach_CutScene()
+void CBGM_Manager::HeinMach_Dawn(_float fFadeTime)
 {
-    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Whistle"));
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy"), fFadeTime);
 }
 
-void CBGM_Manager::HeinMach_Cave_Entry()
+void CBGM_Manager::HeinMach_Cave(_float fFadeTime)
 {
-    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Harsh"), 1.f);
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Whistle"), fFadeTime);
 }
 
-void CBGM_Manager::HeinMach_Halberd()
+void CBGM_Manager::HeinMach_Day(_float fFadeTime)
 {
-    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Narrow"), 1.f);
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Narrow"), fFadeTime);
 }
 
-void CBGM_Manager::HeinMach_Yetuga_Entry()
+void CBGM_Manager::HeinMach_CutScene(_float fFadeTime)
 {
-    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy"), 1.f);
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Harsh"), fFadeTime);
+}
+
+void CBGM_Manager::HeinMach_Halberd(_float fFadeTime)
+{
+    ChangeBGM(TEXT("bgm_Elite_Halberd"), fFadeTime);
+}
+
+void CBGM_Manager::HeinMach_Yetuga_CutScene(_float fFadeTime)
+{
+    ChangeBGM(TEXT("AMB_BG_Embars_Loop_B"), fFadeTime);
+}
+
+void CBGM_Manager::HeinMach_Yetuga_1Phase(_float fFadeTime)
+{
+    ChangeBGM(TEXT("bgm_Yetuga_1Phase"), fFadeTime);
+}
+
+void CBGM_Manager::Embars_Entry(_float fFadeTime)
+{
+    Change_CurrentBGM(TEXT("AMB_BG_Embars_Loop_A"));
+
+    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM, 3.f);
+}
+
+void CBGM_Manager::Embars_B1(_float fFadeTime)
+{
+    ChangeBGM(TEXT("AMB_BG_Embars_Loop_B"), fFadeTime);
+}
+
+void CBGM_Manager::Embars_Club(_float fFadeTime)
+{
+    ChangeBGM(TEXT("BGM_MiniGame_Default"), fFadeTime);
+}
+
+void CBGM_Manager::Embars_Club_Game(_float fFadeTime)
+{
+    ChangeBGM(TEXT("BGM_MiniGame_Club"), fFadeTime, false);
+}
+
+void CBGM_Manager::Embars_Club_Shuffle_0(_float fFadeTime)
+{
+    ChangeBGM(TEXT("BGM_Minigame_Shuffle_0"), fFadeTime, false);
+}
+
+void CBGM_Manager::Embars_Club_Shuffle_1(_float fFadeTime)
+{
+    ChangeBGM(TEXT("BGM_Minigame_Shuffle_1"), fFadeTime, false);
+}
+
+void CBGM_Manager::Embars_Club_Shuffle_2(_float fFadeTime)
+{
+    ChangeBGM(TEXT("BGM_Minigame_Shuffle_2"), fFadeTime, false);
+}
+
+void CBGM_Manager::Embars_1F(_float fFadeTime)
+{
+    ChangeBGM(TEXT("AMB_BG_Embars_Loop_A"), fFadeTime);
+}
+
+void CBGM_Manager::Embars_Elamein(_float fFadeTime)
+{
+    ChangeBGM(TEXT("bgm_Elite_Elamein"), fFadeTime);
+}
+
+void CBGM_Manager::Viper_Entry(_float fFadeTime)
+{
+    Change_CurrentBGM(TEXT("AMB_BG_Field_Cold_Windy_Narrow"));
+
+    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM, fFadeTime);
+}
+
+void CBGM_Manager::Viper_1PhaseCutScene(_float fFadeTime)
+{
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Narrow"), fFadeTime);
+}
+
+void CBGM_Manager::Viper_1Phase(_float fFadeTime)
+{
+    ChangeBGM(TEXT("bgm_Viper_1phase"), fFadeTime);
+}
+
+void CBGM_Manager::Viper_2PhaseCutScene(_float fFadeTime)
+{
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy_Narrow"), fFadeTime);
+}
+
+void CBGM_Manager::Viper_2Phase(_float fFadeTime)
+{
+    ChangeBGM(TEXT("bgm_Viper_2phase"), fFadeTime);
+}
+
+void CBGM_Manager::Viper_End(_float fFadeTime)
+{
+    ChangeBGM(TEXT("AMB_BG_Field_Cold_Windy"), fFadeTime);
 }
 
 void CBGM_Manager::BGM_Stop(_float fFadeTime)
 {
-    m_pGameInstance->StopByKey_FadeOut(m_wstrCurrentKey_BGM.c_str(), fFadeTime);
+    CHECK_TRUE(m_wstrCurrentKey_BGM.empty(), );
 
-    Clear_CurrentKey();
+    m_pGameInstance->StopByKey_FadeOut(m_wstrCurrentKey_BGM.c_str(), fFadeTime);
 }
 
 void CBGM_Manager::BGM_Resume(_bool isFade, _float fFadeTime)
 {
+    CHECK_TRUE(m_wstrCurrentKey_BGM.empty(), );
+
     if (isFade)
         m_pGameInstance->Sound_Resume_Fade(m_wstrCurrentKey_BGM.c_str(), fFadeTime);
     else
@@ -104,6 +266,8 @@ void CBGM_Manager::BGM_Resume(_bool isFade, _float fFadeTime)
 
 void CBGM_Manager::BGM_Pause(_bool isFade, _float fFadeTime)
 {
+    CHECK_TRUE(m_wstrCurrentKey_BGM.empty(), );
+
     if (isFade)
         m_pGameInstance->Sound_Pause_Fade(m_wstrCurrentKey_BGM.c_str(), fFadeTime);
     else

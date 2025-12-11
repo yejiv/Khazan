@@ -2904,7 +2904,6 @@
     <ClInclude Include="..\public\WeaponObject.h">
       <Filter>02.GameObject\Part Object\Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="CKhazan_SoundHelper.h" />
     <ClInclude Include="..\Public\NPC_Gacha.h">
       <Filter>02.GameObject\NPC\Gacha</Filter>
     </ClInclude>
@@ -2943,6 +2942,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\BGM_Manager.h">
       <Filter>94.ClientInstance\BGM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Khazan_SoundHelper.h">
+      <Filter>02.GameObject\Creature\Khazan\Sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -4204,9 +4206,6 @@
     <ClCompile Include="..\Private\Interaction_Object.cpp">
       <Filter>02.GameObject\Interation_Object</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Interaction_Item.cpp">
-      <Filter>02.GameObject\Interation_Object\Item</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\AS_P2_LockOn_Viper.cpp">
       <Filter>92.AI\State\Viper\Phase2\19.Lockon</Filter>
     </ClCompile>
@@ -4303,7 +4302,6 @@
     <ClCompile Include="..\private\WeaponObject.cpp">
       <Filter>02.GameObject\Part Object\Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="CKhazan_SoundHelper.cpp" />
     <ClCompile Include="..\Private\NPC_Gacha.cpp">
       <Filter>02.GameObject\NPC\Gacha</Filter>
     </ClCompile>
@@ -4342,6 +4340,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\BGM_Manager.cpp">
       <Filter>94.ClientInstance\BGM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Khazan_SoundHelper.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Interaction_Item.cpp">
+      <Filter>02.GameObject\Interation_Object\Item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

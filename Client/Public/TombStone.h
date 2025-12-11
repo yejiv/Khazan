@@ -14,15 +14,23 @@ class CTombStone final : public CProp_Interactive
 private:
 	enum ANIM_STATE
 	{
-		AFTER_END, AFTER_IDLE, AFTER_LOOP, AFTER_START, BEFORE_IDLE, BEFORE_START,
+		AFTER_END,
+        AFTER_IDLE,
+        AFTER_LOOP,
+        AFTER_START,
+        BEFORE_IDLE,
+        BEFORE_START,
 		END
 	};
 
     enum class TOMBSTONE_ID
     {
         IN_EMBARS, IN_HIDDEN,
-        ID_END
+        END
     };
+    // TP
+    // 엠바스로 : (-24.338f, -92.2f, -42.551f, 1.f)
+    // 비밀방으로 : (-61.895f, -92.2f, -41.636f, 1.f)
 
 public:
 	typedef struct tagTombStoneDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC

@@ -88,8 +88,9 @@ void CProjectile_Imp_MagicBall::Update(_float fTimeDelta)
 
     m_fEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
     m_fEffect->Update(fTimeDelta);
-    m_pLineTrail->Update(fTimeDelta);
     m_pLineTrail->Add_ControlPoint(m_pTransformCom->Get_State(STATE::POSITION));
+    m_pLineTrail->Update(fTimeDelta);
+    
 }
 
 void CProjectile_Imp_MagicBall::Late_Update(_float fTimeDelta)

@@ -112,7 +112,7 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
     Particle.vLifeTime.x += g_fTimeDelta;
 
     if (Particle.vLifeTime.x >= Particle.vLifeTime.y
-		|| (SpeedData.fSpeed.x < 0 && length(vMoveDir).x < 1.f))
+		|| (SpeedData.fSpeed.x < 0 && length(vMoveDir).x < 0.1f))
     {
         Particle.vLifeTime.x = 0.f;
         Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
@@ -122,10 +122,8 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
         Particle.vUp = float4(0.f, g_InputData[iIndex].fSize, 0.f, 0.f);
         Particle.vLook = float4(0.f, 0.f, g_InputData[iIndex].fSize, 0.f);
         if (g_bIsLoop == 0)
-            Particle.bDead = 1.f;   //전부 다 여기 들어간다.
+            Particle.bDead = 1.f;
     }
-    
-    
 	
     if (Particle.vRight.x <= 0.f)
     {
