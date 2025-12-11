@@ -37,7 +37,7 @@ public:
 public:
     _bool           Is_Interaction() const { return m_isInteraction; }
     
-
+    _bool           Is_Heal() const;
 private:
     class CClientInstance*  m_pClientInstance = { nullptr };
     PLAYER_DATA*            m_pPlayerData = { nullptr };

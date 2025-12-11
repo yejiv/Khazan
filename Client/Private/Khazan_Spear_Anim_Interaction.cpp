@@ -124,6 +124,12 @@ _bool CKhazan_Spear_Anim_Interaction::Is_Lachryma() const
 
 }
 
+_bool CKhazan_Spear_Anim_Interaction::Is_Heal() const
+{
+    return m_pModel->Get_CurAnimIndex() == m_pModel->Get_AnimIndexByName("CA_P_Kazan_Heal_01");
+
+}
+
 
 
 CKhazan_Spear_Anim_Interaction* CKhazan_Spear_Anim_Interaction::Create()

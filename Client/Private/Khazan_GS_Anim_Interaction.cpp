@@ -220,6 +220,11 @@ _bool CKhazan_GS_Anim_Interaction::Try_GiantGate(_bool isUsedSet)
     return true;
 }
 
+_bool CKhazan_GS_Anim_Interaction::Is_Heal() const
+{
+    return m_pModel->Get_CurAnimIndex() == m_pModel->Get_AnimIndexByName("CA_P_Kazan_Heal_01");
+}
+
 CKhazan_GS_Anim_Interaction* CKhazan_GS_Anim_Interaction::Create()
 {
     CKhazan_GS_Anim_Interaction* pInstance = new CKhazan_GS_Anim_Interaction();
