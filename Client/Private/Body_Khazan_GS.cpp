@@ -11,7 +11,11 @@
 #include "SoftBody.h"
 #include "WeaponObject.h"
 #include "Monster.h"
+#include "Khazan_SoundHelper.h"
 
+
+using  SOUND_TYPE = CKhazan_SoundHelper::PC_SOUND_GROUPTYPE;
+using  SOUND_CHANNEL = CKhazan_SoundHelper::PC_SOUND_CHANNEL;
 
 CBody_Khazan_GS::CBody_Khazan_GS(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
@@ -56,6 +60,12 @@ HRESULT CBody_Khazan_GS::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimationEvents()))
         return E_FAIL;
 
+    /* 사운드 헬퍼  */
+    m_pSoundHelper = CKhazan_SoundHelper::Create();
+
+    if (FAILED(Ready_AnimationEvent_SFX()))
+        return E_FAIL;
+
     /* 뼈 행렬 가지고오기 */
     m_pMatGSwordBody = m_pModelCom->Get_BoneMatrix("FX_R_GSword_02");
     m_pMatGSwordTip = m_pModelCom->Get_BoneMatrix("FX_Weapon_R_Gsword_End");
@@ -97,7 +107,7 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     {
         m_isEnableAnimEvent = false;
         Trigger_MotionTrail(TEXT("MT_Life5_RedGray"), false);
-        Remove_Status(CKhazan_GSword::DODGE_ENDING);
+        //Remove_Status(CKhazan_GSword::DODGE_ENDING);
     }
 
     /* 이펙트 안꺼지는거 끄기  */
@@ -192,6 +202,41 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
         Spawn_Guard_FX();
     m_bGuradFX[0] = false;
     m_bGuradFX[1] = false;
+
+    // Heal RimLight
+    if (m_isEnableHealRimLight)
+    {
+        m_HealRimLightDesc.fTimeAcc += fTimeDelta;
+        
+        if (m_HealRimLightDesc.fDuration <= m_HealRimLightDesc.fTimeAcc)
+        {
+            m_isEnableHealRimLight = false;
+            m_isFinishedHealRimLight = true;
+            m_HealRimLightDesc.fTimeAcc = 0.f;
+            m_HealRimLightDesc.fTargetIntensity = 0.f;
+        }
+        
+        _float fIntensityRatio = 1.f;
+        
+        // 페이드 아웃 계산
+        if (m_HealRimLightDesc.fTimeAcc > m_HealRimLightDesc.vFadeTime.y)
+        {
+        	_float fFadeDuration = m_HealRimLightDesc.fDuration - m_HealRimLightDesc.vFadeTime.y;
+        	_float fFadeTimeAcc = m_HealRimLightDesc.fTimeAcc - m_HealRimLightDesc.vFadeTime.y;
+        	_float fRatio = (fFadeTimeAcc / fFadeDuration);
+            fIntensityRatio = 1.f - fRatio;
+            fIntensityRatio = max(0.f, fIntensityRatio);
+        }
+        
+        // Fade In
+        if (m_HealRimLightDesc.fTimeAcc < m_HealRimLightDesc.vFadeTime.x)
+        {
+            fIntensityRatio = m_HealRimLightDesc.fTimeAcc / m_HealRimLightDesc.vFadeTime.x;
+            fIntensityRatio = min(1.f, fIntensityRatio);
+        }
+        
+        m_HealRimLightDesc.fRimLightIntensity = m_HealRimLightDesc.fTargetIntensity * fIntensityRatio;
+    }
 }
 
 void CBody_Khazan_GS::Late_Update(_float fTimeDelta)
@@ -225,6 +270,28 @@ HRESULT CBody_Khazan_GS::Render()
 
     _float fShadeIntensity = 0.2f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    // Heal RimLight
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableHealRimLight", &m_isEnableHealRimLight)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+
+    _float fRimPower = 2.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &m_HealRimLightDesc.fRimLightIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRimEmissive = 2.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float))))
+        return E_FAIL;
+
+    _float3 vRimColor = _float3(1.f, 0.f, 0.f);
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3))))
         return E_FAIL;
 
     _uint    iNumMeshes = m_pModelCom->Get_NumMeshes();
@@ -366,7 +433,7 @@ void CBody_Khazan_GS::Render_Part(CModel* pModel)
         if(Has_State(1u))
             m_pShaderCom->Begin(17);
         else
-            m_pShaderCom->Begin(1);
+            m_pShaderCom->Begin(28);
         pModel->Render(i);
     }
 }
@@ -786,6 +853,18 @@ void CBody_Khazan_GS::Start_MotionTrail(_float fDuration)
     m_pMotionTrailCom->Start_MotionTrail(fDuration);
 }
 
+void CBody_Khazan_GS::Start_HealRimLight(_float fDuration, const _float2& vFadeTime, _float fMaxIntensity)
+{
+    if (true == m_isFinishedHealRimLight)
+        return;
+
+    m_isEnableHealRimLight = true;
+    m_HealRimLightDesc.fDuration = fDuration;
+    m_HealRimLightDesc.vFadeTime = vFadeTime;
+    m_HealRimLightDesc.vFadeTime.y = m_HealRimLightDesc.fDuration - m_HealRimLightDesc.vFadeTime.y;
+    m_HealRimLightDesc.fTargetIntensity = fMaxIntensity;
+}
+
 const TRAIL_CONFIG& CBody_Khazan_GS::Get_TrailConfig() const
 {
     return m_pTrail->Get_TrailConfig();
@@ -908,6 +987,14 @@ void CBody_Khazan_GS::Exception_Animaition()
     //
     //}
       
+}
+
+FMOD_CHANNEL** CBody_Khazan_GS::Get_SoundChannel(_int iIndex)
+{
+    if (m_pChannel.size() <= iIndex)
+        m_pChannel.resize(iIndex + 1, nullptr);
+
+    return &m_pChannel[iIndex];
 }
 
 HRESULT CBody_Khazan_GS::Bind_ShaderResources()
@@ -1618,7 +1705,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
         m_isEnableAnimEvent = false;
-        Remove_Status(CKhazan_GSword::DODGE_ENDING);
+        //Remove_Status(CKhazan_GSword::DODGE_ENDING);
         });
 
     // 닷지 어택
@@ -1659,20 +1746,138 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         });
     m_pModelCom->Register_Event("WeaponOn", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGSword->Set_Equipped(true);
-        m_pClientInstance->Set_PlayerInput(true);
-        cout << "WeaponOn!!!" << endl;
+
+        if (!Has_Status(CKhazan_GSword::STATUE_MODE))
+            m_pClientInstance->Set_PlayerInput(true);
+
         });
     m_pModelCom->Register_Event("WeaponOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGSword->Set_Equipped(false);
-        if (!Has_Status(CKhazan_GSword::STATUE_MODE))
-            m_pClientInstance->Set_PlayerInput(false);
-        cout << "WeaponOff!!!" << endl;
+        m_pClientInstance->Set_PlayerInput(false);
         });
 
 #pragma endregion
 
     return S_OK;
-} 
+}
+HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
+{
+    /* (노티파이 키 값 , 노티파이 최대 수, 진입점, 사운드 그룹 타입, 볼륨, 어떤 채널사용 ) */
+    auto Register_EventGroup = [&](const string& strEventKey, _int iCount, ANIM_EVENT_TRIGGERTYPE eTrigger, SOUND_TYPE eSoundType, _float fVolume, SOUND_CHANNEL eChannelType) {
+
+        if (iCount <= 0) return;
+
+        for (_int i = 1; i <= iCount; ++i)
+        {
+            string strTempEventKey = strEventKey;
+
+            std::stringstream ss;
+            ss << std::setw(2) << std::setfill('0') << i;
+            strTempEventKey += "_" + ss.str();
+
+            m_pModelCom->Register_Event(strTempEventKey, eTrigger, [this, eSoundType, fVolume, eChannelType]() {
+                m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), 10.f, Get_SoundChannel(eChannelType)); });
+        }
+    };
+
+
+    /* Idle*/
+    Register_EventGroup("SFX_Idle", 3, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::IDLE, 10.f, SOUND_CHANNEL::VOICE);
+    //Register_EventGroup("SFX_Idle_Rattle", 3, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::IDLE_RATTLE, 10.f, SOUND_CHANNEL::MOVE);
+
+    /* Move */
+    Register_EventGroup("SFX_Move_Injure_R", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_L, 0.2f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Injure_L", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_R, 0.2f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Walk", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_WALK, 0.15f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Run", 12, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RUN, 0.25f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Sprint_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_START, 0.6f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Move_Sprint", 16, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT, 0.35f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Sprint_Stop", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_STOP, 0.35f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Sprint_Rattle", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_RATTLE, 0.35f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Dodge_Front", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_DODGE_FRONT, 0.45f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Dodge_Rear", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_DODGE_REAR, 0.45f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Dodge_Side", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_DODGE_SIDE, 0.45f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Fall", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_FALL, 0.7f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Randing", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RANDING, 1.f, SOUND_CHANNEL::MOVE);
+
+    /* Attack */
+    Register_EventGroup("SFX_Attack_Gs_Weak1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK1, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Weak1_Impact", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK1_IMPACT, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Weak2", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK2, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Weak3", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK3, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Weak3_Impact", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK3_IMPACT, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Weak3_Foley", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK3_FOLEY, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Weak1_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK1_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Weak1_Charging_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK1_CHARGING_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Weak2_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK2_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Weak2_Charging_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK2_CHARGING_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Strong", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_STRONG, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Strong_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_STRONG_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Strong_Charging_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_STRONG_CHARGING_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Dodge_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_DODGE_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Dodge_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_DODGE_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Dodge_Impact", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_DODGE_IMPACT, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Brutal_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_BRUTAL_START, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Brutal1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_BRUTAL1, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Brutal2", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_BRUTAL2, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Fall", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_FALL, 0.8f, SOUND_CHANNEL::WEAPON);
+
+    /* Skill */
+    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_START, 0.8f, SOUND_CHANNEL::EFFECT1);
+    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Success", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_SUCCESS, 0.8f, SOUND_CHANNEL::EFFECT2);
+    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Bloodshed_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_BLOODSHED_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Bloodshed_Charging_Success", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_BLOODSHED_CHARGING_SUCCESS, 0.8f, SOUND_CHANNEL::EFFECT1);
+    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Bloodshed_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_BLOODSHED_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Bloodshed_Success", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_BLOODSHED_SUCCESS, 0.8f, SOUND_CHANNEL::EFFECT2);
+    Register_EventGroup("SFX_Skill_Gs_Gianthunt_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_GIANTHUNT_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Gianthunt_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_GIANTHUNT_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Phantom_Shadowofdarkness_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_PHANTOM_SHADOWOFDARKNESS_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Phantom_Shadowofdarkness_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_PHANTOM_SHADOWOFDARKNESS_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Limit_Break_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_LIMIT_BREAK_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Limit_Break_Loop", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_LIMIT_BREAK_LOOP, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Limit_Break_Charging_FX", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_LIMIT_BREAK_CHARGING_FX, 0.8f, SOUND_CHANNEL::EFFECT1);
+    Register_EventGroup("SFX_Skill_Gs_Limit_Break_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_LIMIT_BREAK_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Limit_Break_End", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_LIMIT_BREAK_END, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Break_Through_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREAK_THROUGH_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Break_Through_Run", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREAK_THROUGH_RUN, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Break_Through_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREAK_THROUGH_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Warcry_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_WARCRY_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Warcry_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_WARCRY_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Inner_Fury_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_INNER_FURY_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Inner_Fury_Charging_Success", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_INNER_FURY_CHARGING_SUCCESS, 0.8f, SOUND_CHANNEL::EFFECT1);
+    Register_EventGroup("SFX_Skill_Gs_Inner_Fury_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_INNER_FURY_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+
+    /* Disc */ 
+    Register_EventGroup("SFX_GS_Weapon_Rustle", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GS_WEAPON_RUSTLE, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_GS_Pose_Return1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GS_POSE_RETURN1, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_GS_Pose_Return2", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GS_POSE_RETURN2, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_GS_Pose_Return3", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GS_POSE_RETURN3, 0.8f, SOUND_CHANNEL::WEAPON);
+
+    /* Damaged */
+    Register_EventGroup("SFX_Damaged_Normal", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::DAMAGED_NORMAL, 1.f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Damaged_Hard", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::DAMAGED_HARD, 1.f, SOUND_CHANNEL::VOICE);
+
+    /* Guard*/
+    Register_EventGroup("SFX_Guard_On_Gs", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_ON_GS, 1.f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Guard_Off_Gs", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_OFF_GS, 1.f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Guard_Tunal", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_TUNAL, 1.f, SOUND_CHANNEL::EFFECT1);
+    Register_EventGroup("SFX_Guard_Success", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_SUCCESS, 1.f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Justguard_Effect", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::JUSTGUARD_EFFECT, 1.f, SOUND_CHANNEL::EFFECT2);
+    Register_EventGroup("SFX_Justguard", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::JUSTGUARD, 1.f, SOUND_CHANNEL::WEAPON);
+
+    /* Interaction */
+    Register_EventGroup("SFX_Interaction_Lacrima_Get", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::INTERACTION_LACRIMA_GET, 1.f, SOUND_CHANNEL::INTERACTION);
+    Register_EventGroup("SFX_Interaction_Heal", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::INTERACTION_HEAL, 1.f, SOUND_CHANNEL::INTERACTION);
+    Register_EventGroup("SFX_Interaction_Lantern_On", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::INTERACTION_LANTERN_ON, 1.f, SOUND_CHANNEL::INTERACTION);
+    Register_EventGroup("SFX_Interaction_Lantern_Off", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::INTERACTION_LANTERN_OFF, 1.f, SOUND_CHANNEL::INTERACTION);
+    Register_EventGroup("SFX_Interaction_Gs_Armed", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::INTERACTION_GS_ARMED, 1.f, SOUND_CHANNEL::INTERACTION);
+    Register_EventGroup("SFX_Interaction_Gs_Unarmed", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::INTERACTION_GS_UNARMED, 1.f, SOUND_CHANNEL::INTERACTION);
+
+    return S_OK;
+}
+
 
 HRESULT CBody_Khazan_GS::Ready_Equipment()
 {
@@ -1848,7 +2053,7 @@ void CBody_Khazan_GS::Spawn_EmissiveDecal(_bool isUseOffset)
         Desc.iTextureIndex = 2;
     }
 
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 }
 
 void CBody_Khazan_GS::Spawn_CrackDecal()
@@ -1869,7 +2074,7 @@ void CBody_Khazan_GS::Spawn_CrackDecal()
     Desc.isRandomTexture = false;
     Desc.iTextureIndex = 7;
 
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 }
 
 void CBody_Khazan_GS::Spawn_CircleBloodDecal()
@@ -1886,7 +2091,7 @@ void CBody_Khazan_GS::Spawn_CircleBloodDecal()
     Desc.isRandomTexture = false;
     Desc.iTextureIndex = 0;
 
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 }
 
 void CBody_Khazan_GS::Spawn_LinearBloodDecal()
@@ -1912,7 +2117,7 @@ void CBody_Khazan_GS::Spawn_LinearBloodDecal()
     Desc.isRandomTexture = false;
     Desc.iTextureIndex = 3;
 
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 }
 
 void CBody_Khazan_GS::Start_DefaultVignette()
@@ -2129,4 +2334,8 @@ void CBody_Khazan_GS::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
+    Safe_Release(m_pSoundHelper);
+    
+    m_CollMonsters.clear();
+
 }

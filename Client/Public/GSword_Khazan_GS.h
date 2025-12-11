@@ -61,6 +61,8 @@ public:
         m_pMotionTrailCom->Set_Config(strKey);
         m_isActiveMotionTrail = isActive;
     }
+    void                        Start_HealRimLight(_float fDuration, const _float2& vFadeTime, _float fMaxIntensity);
+    void                        Reset_HealRimLightFlag() { m_isFinishedHealRimLight = false; }
 
 private:
 	CShader*					m_pShaderCom = { nullptr };
@@ -87,6 +89,10 @@ private:
     /* Motion Trail */
     function<void(const _wstring&, _bool)>  m_OnMotionTrailCallBack;
     _bool                       m_isActiveMotionTrail = { false };
+
+    _bool                       m_isEnableHealRimLight = { false };
+    _bool                       m_isFinishedHealRimLight = { false };
+    PLAYER_HEAL_RIMLIGHT_DESC   m_HealRimLightDesc;
 
 private:
     void        Change_Weapon(EQUIPMENTTYPE type, const _wstring& strPartName);

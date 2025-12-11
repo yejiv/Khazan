@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "ClientInstance.h"
 #include "Interaction_Item.h"
+#include "Amount.h"
+
 CAS_Elamein_Dead::CAS_Elamein_Dead()
 {
 }
@@ -10,6 +12,9 @@ void CAS_Elamein_Dead::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     if (m_pMonData == nullptr)
         m_pMonData = &static_cast<CElamein*>(pOwner)->Get_Data();
+
+    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, 2800);
+    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 7200);
 
     TARGET_DIR eDir = m_pMonData->pOwner->Get_DIR();
 

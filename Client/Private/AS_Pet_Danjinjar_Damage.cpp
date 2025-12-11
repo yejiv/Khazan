@@ -13,7 +13,13 @@ void CAS_Pet_Danjinjar_Damage::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_pMonData->isTPDanjin = true;
     m_pMonData->iAnimIndex = 18;
     m_fAccTime = 2.f;
-    m_pMonData->pOwner->isTalk(true, 1003);
+    
+    switch (m_pGameInstance->Rand(0, 2))
+    {
+    case 0:    m_pMonData->pOwner->isTalk(true, 1003); break;
+    case 1:    m_pMonData->pOwner->isTalk(true, 1004); break;
+    case 2:    m_pMonData->pOwner->isTalk(true, 1005); break;
+    }
 }
 
 void CAS_Pet_Danjinjar_Damage::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

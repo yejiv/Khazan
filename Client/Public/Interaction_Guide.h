@@ -2,6 +2,12 @@
 #include "UI_Panel.h"
 #include "Client_Defines.h"
 
+NS_BEGIN(Engine)
+class CShader;
+class CTexture;
+class CVIBuffer_Rect;
+NS_END
+
 NS_BEGIN(Client)
 class CInteraction_Guide final : public CUI_Panel
 {
@@ -28,9 +34,15 @@ public:
 	virtual void				Reset() override;
 
 private:
-	class CUI_TextBox*			m_pTextBox = { nullptr };
+	CShader*					m_pShaderCom = { nullptr };
+	CTexture*					m_pTextureCom = { nullptr };
+	CVIBuffer_Rect*				m_pVIBufferCom = { nullptr };
+	
+    class CUI_TextBox*			m_pTextBox = { nullptr };
 	class CUI_Guide_Gauge*		m_pGauge = { nullptr };
 	class CInteraction_Icon*	m_pIcon = {nullptr};
+    class CUI_Atlas_Icon*       m_pKeyIcon = { nullptr };
+
 	const _float4x4*			m_pTagetMat = { nullptr };
 
 	GUIDE_TYPE					m_eGuideType = {};
@@ -41,6 +53,7 @@ private:
 	_bool						m_bIsFiash = {};
 private:
 	HRESULT						Ready_Prototype();
+    HRESULT                     Ready_Component();
 	HRESULT						Ready_Children();
 	void						Update_WorldPos();
 
