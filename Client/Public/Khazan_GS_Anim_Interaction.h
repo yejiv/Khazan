@@ -13,7 +13,7 @@ private:
 
 
 public:
-    HRESULT			Initialize_Prototype();
+    HRESULT			Initialize();
 
 public:
     void Enter() override;
@@ -36,6 +36,9 @@ public:
 
 public:
     _bool           Is_Interaction() const { return m_isInteraction; }
+
+    _bool           Is_Lachryma() const;
+    _bool           Is_Heal() const;
     
 
 private:
@@ -46,7 +49,8 @@ private:
     _bool           m_isInteraction = { false };
     //_bool           m_isReserve = { false };
 
-    
+    _uint           m_iLachrymaAnimIndex = {};
+    _uint           m_iHealAnimIndex = {};
 
 
 public:

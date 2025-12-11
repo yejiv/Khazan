@@ -115,6 +115,7 @@ void CUI_Inven::Priority_Update(_float fTimeDelta)
        Add_Item(2004);
        Add_Item(1101);
        
+       Add_Item(4001);
        Add_Item(4011);
        Add_Item(3001);
 

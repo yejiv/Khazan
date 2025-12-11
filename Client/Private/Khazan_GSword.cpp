@@ -260,6 +260,23 @@ void CKhazan_GSword::Update(_float fTimeDelta)
         }
     }
     m_pGameInstance->ListenerPosSet(m_pTransformCom->Get_State(STATE::POSITION), m_pTransformCom->Get_State(STATE::LOOK), m_pTransformCom->Get_State(STATE::UP));
+
+
+	if (m_pAnimInteraction->Is_Lachryma())
+	{
+		m_pBody->Start_HealRimLight(8.f, _float2(5.f, 1.f), 1.5f);
+		m_pGSword->Start_HealRimLight(8.f, _float2(5.f, 1.f), 1.5f);
+	}
+	else if (m_pAnimInteraction->Is_Heal())
+	{
+		m_pBody->Start_HealRimLight(1.6f, _float2(0.5f, 0.2f), 1.f);
+		m_pGSword->Start_HealRimLight(1.6f, _float2(0.5f, 0.2f), 1.f);
+	}
+	else
+	{
+		m_pBody->Reset_HealRimLightFlag();
+		m_pGSword->Reset_HealRimLightFlag();
+	}
 }
 
 void CKhazan_GSword::Late_Update(_float fTimeDelta)
@@ -385,7 +402,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
     );
     Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
     Desc.isRandomTexture = true;
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 
     /* Play Damaged Animation */
     switch (eHitreaction)
@@ -2368,6 +2385,7 @@ HRESULT CKhazan_GSword::Ready_AnimationStateMachine()
     if (m_pAnimInteraction == nullptr)
         return E_FAIL;
     m_pAnimInteraction->Set_Model(m_pBody->Get_Model());
+    m_pAnimInteraction->Initialize();
 
     m_pAnimDamaged = CKhazan_GS_Anim_Damaged::Create();
     if (m_pAnimDamaged == nullptr)

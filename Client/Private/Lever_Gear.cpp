@@ -94,6 +94,14 @@ HRESULT CLever_Gear::Render()
         }
         else if (RUNE == i)
         {
+            _float3 vRuneColor = _float3(0.f, 1.f, 1.5f);
+            if (FAILED(m_pShaderCom->Bind_RawValue("g_vRuneColor", &vRuneColor, sizeof(_float3))))
+                return E_FAIL;
+
+            _float fEmissiveIntensity = 40.f;
+            if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
+                return E_FAIL;
+
             CHECK_FAILED_ASSERT(m_pShaderCom->Begin(24), E_FAIL);
         }
 
