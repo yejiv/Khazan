@@ -1,7 +1,8 @@
 #include "AS_Dr_Melee_Dead.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 #include "Interaction_Item.h"
-
+#include "Amount.h"
 CAS_Dr_Melee_Dead::CAS_Dr_Melee_Dead()
 {
 }
@@ -13,6 +14,8 @@ void CAS_Dr_Melee_Dead::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     m_pMonData->iAnimIndex = 19;
     m_eState = DIE;
+    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, 600);
+    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 2500);
 
     switch (m_pGameInstance->Rand(1, 3))
     {

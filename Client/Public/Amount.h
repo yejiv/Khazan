@@ -41,9 +41,9 @@ private:
 	vector<class CAmount_Panel*>		m_pAmount;
 
 	_bool								m_isAddValue = {};
-	_uint*								m_iGold = {};
-	_uint*								m_iLachryma = {};
-	_uint*								m_iStone = {};
+    _uint								m_iAmountGold = {};
+    _uint								m_iAmountLachryma = {};
+	_uint								m_iAmountStone = {};
 
     vector<_bool>                       m_isAddAmount = {};
 
