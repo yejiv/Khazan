@@ -4204,9 +4204,6 @@
     <ClCompile Include="..\Private\Interaction_Object.cpp">
       <Filter>02.GameObject\Interation_Object</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Interaction_Item.cpp">
-      <Filter>02.GameObject\Interation_Object\Item</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\AS_P2_LockOn_Viper.cpp">
       <Filter>92.AI\State\Viper\Phase2\19.Lockon</Filter>
     </ClCompile>
@@ -4342,6 +4339,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\BGM_Manager.cpp">
       <Filter>94.ClientInstance\BGM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Interaction_Item.cpp">
+      <Filter>02.GameObject\Interation_Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

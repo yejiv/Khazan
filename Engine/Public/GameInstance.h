@@ -245,6 +245,8 @@ public:
     PhysicsSystem* Get_Jolt();
     BodyInterface* Get_BodyInterface();
     const BodyLockInterfaceLocking* Get_BodyLockInterface();
+
+    _bool IsObjectLayerPairValid(_uint iObjectLayer1, _uint iObjectLayer2);
 #ifdef _DEBUG
 	void Jolt_Test();
 

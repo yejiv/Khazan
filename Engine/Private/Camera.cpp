@@ -685,6 +685,125 @@ void CCamera::Update_FOVChannel(_float fTimeDelta)
     }
 }
 
+void CCamera::Play_FOVZoomSequence(const _wstring& strID, _float fZoomFOV, _float fInDuration, _float fHoldDuration, _float fOutDuration, _int iPriority)
+{
+    // 방어 코드
+    if (fInDuration < 0.f)   fInDuration = 0.f;
+    if (fHoldDuration < 0.f) fHoldDuration = 0.f;
+    if (fOutDuration < 0.f)  fOutDuration = 0.f;
+
+    _float fTotal = fInDuration + fHoldDuration + fOutDuration;
+    if (fTotal <= 1e-4f)
+        return; // 할 게 없음
+
+    // 정규화된 구간 비율
+    const _float inN = (fInDuration > 0.f) ? (fInDuration / fTotal) : 0.f;
+    const _float holdN = (fHoldDuration > 0.f) ? (fHoldDuration / fTotal) : 0.f;
+    const _float outN = (fOutDuration > 0.f) ? (fOutDuration / fTotal) : 0.f;
+
+    FOVModifier Mod{};
+    Mod.strID = strID;
+    Mod.eMode = FOVModifier::FOV_MODE::PRIORITY;
+    Mod.fFrom = m_fBaseFOV;  // 시작 FOV = 베이스
+    Mod.fTo = fZoomFOV;    // 줌인 목표 FOV
+    Mod.fDuration = fTotal;
+    Mod.fTime = 0.f;
+    Mod.iPriority = iPriority;
+    Mod.isAlive = true;
+
+    // Ease: 0~1(t) → 0~1 비율 반환
+    //  - 0 ~ inN      : 0 → 1 (줌 인)
+    //  - inN ~ inN+holdN : 1 유지 (홀드)
+    //  - inN+holdN ~ 1 : 1 → 0 (줌 아웃)
+    Mod.Ease = [inN, holdN, outN](float t) -> float
+        {
+            t = std::clamp(t, 0.f, 1.f);
+
+            const _float endIn = inN;
+            const _float endHold = inN + holdN;
+            const _float endOut = inN + holdN + outN; // 이론상 1
+
+            if (inN > 0.f && t < endIn)
+            {
+                // 인 구간 : 0 → 1
+                _float x = t / inN;
+                // 필요하면 smoothstep 사용:
+                // x = x * x * (3.f - 2.f * x);
+                return x;
+            }
+            else if (holdN > 0.f && t < endHold)
+            {
+                // 홀드 구간 : 1 유지
+                return 1.f;
+            }
+            else if (outN > 0.f && t < endOut)
+            {
+                // 아웃 구간 : 1 → 0
+                _float x = (t - endHold) / outN;
+                // smoothstep 형태로 부드럽게:
+                // x = x * x * (3.f - 2.f * x);
+                return 1.f - x;
+            }
+
+            // 혹시든 나머지 구간 (끝났거나 이상한 경우): 원래대로
+            return 0.f;
+        };
+
+    // 기존 시스템을 통해 추가
+    Push_FOVModifier(Mod);
+}
+
+void CCamera::Start_FOVHoldZoom(const _wstring& strID, _float fZoomFOV, _float fInDuration, _int iPriority)
+{
+    if (fInDuration <= 0.f)
+        fInDuration = 0.001f;
+
+    FOVModifier Mod{};
+    Mod.strID = strID;
+    Mod.eMode = FOVModifier::FOV_MODE::PRIORITY;
+    Mod.fFrom = m_fBaseFOV;
+    Mod.fTo = fZoomFOV;
+    Mod.fDuration = fInDuration;
+    Mod.fTime = 0.f;
+    Mod.iPriority = iPriority;
+    Mod.isAlive = true;
+
+    Mod.Ease = [fInDuration](_float t) -> float
+        {
+            t = std::clamp(t, 0.f, 1.f);
+            float s = t * t * (3.f - 2.f * t);
+            return s;
+        };
+
+    Push_FOVModifier(Mod);
+}
+
+void CCamera::Release_FOVHoldZoom(const _wstring& strID, _float fOutDuration)
+{
+    if (fOutDuration <= 0.f)
+        fOutDuration = 0.001f;
+
+    _int idx = FindModIndexByID(strID);
+    if (idx < 0)
+        return;
+
+    auto& Mod = m_vFOVMods[idx];
+
+    Mod.eMode = FOVModifier::FOV_MODE::PRIORITY;
+    Mod.fFrom = m_fFovy;
+    Mod.fTo = m_fBaseFOV;
+    Mod.fDuration = fOutDuration;
+    Mod.fTime = 0.f;
+
+    Mod.Ease = [](float t) -> float
+        {
+            t = std::clamp(t, 0.f, 1.f);
+            float s = t * t * (3.f - 2.f * t);
+            return s;
+        };
+
+}
+
 _int CCamera::FindModIndexByID(const _wstring& strID) const
 {
 	for (_int i = 0; i < static_cast<_int>(m_vFOVMods.size()); i++)

@@ -36,6 +36,10 @@ void CMiniGame_Gacha::Start_MiniGame(MINIGAME_LEVEL eLevel)
     m_fAcctime = 0.f;
     m_fGuidePosY = 1.5f;
     m_fGuideCount = 3;
+
+    // 미니게임 위치로 화면 전환
+    CAMERA_POSE Pose = CClientInstance::GetInstance()->Camera_MakePose(_float3(-62.071f, -89.988f, -41.670f), _float3(-0.934f, -0.358f, 0.008f));
+    CClientInstance::GetInstance()->Camera_SubShot(Pose, 0.3f, 0.3f);
 }
 
 CMiniGame_Gacha::CMiniGame_Gacha(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -84,6 +88,12 @@ void CMiniGame_Gacha::Update(_float fTimeDelta)
         Setting_Suffle();
     else if (m_eState == SHUFFLE)
         Update_Suffle(fTimeDelta);
+    else if (m_eState == SELECT_END0)
+        Update_Selete_End0(fTimeDelta);
+    else if (m_eState == SELECT_END1)
+        Update_Selete_End1(fTimeDelta);
+    else if (m_eState == SELECT_END2)
+        Update_Selete_End2(fTimeDelta);
 
     for (auto pBox : m_pBox)
         pBox->Update(fTimeDelta);
@@ -285,6 +295,38 @@ void CMiniGame_Gacha::Update_Notice(_float fTimeDelta)
 
 }
 
+void CMiniGame_Gacha::Update_Selete_End0(_float fTimeDelta)
+{
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD0, INPUT_TYPE::WORLD_UI))
+    {        
+        CAMERA_POSE tCameraPose = CClientInstance::GetInstance()->Camera_MakePose(_float3(-62.444f, -90.443f, -41.798f), _float3(-0.830f, -0.241f, -0.503f)); // 왼쪽 바라보기
+        //CAMERA_POSE tCameraPose = CClientInstance::GetInstance()->Camera_MakePose(_float3(-62.444f, -90.443f, -41.798f), _float3(-0.952f, -0.307f, -0.008f)); // 가운데 바라보기
+        //CAMERA_POSE tCameraPose = CClientInstance::GetInstance()->Camera_MakePose(_float3(-62.444f, -90.443f, -41.798f), _float3(-0.827f, -0.224f, 0.515f)); // 오른쪽 바라보기
+        CClientInstance::GetInstance()->Camera_SubShot(tCameraPose, 0.2f, 0.2f);
+        float zoomFov = XMConvertToRadians(35.f);
+        CClientInstance::GetInstance()->Camera_Start_FOVHoldZoom(L"DanginZoom", zoomFov, 3.f, 0);
+        m_eState = SELECT_END1;
+    }
+}
+
+void CMiniGame_Gacha::Update_Selete_End1(_float fTimeDelta)
+{
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD1, INPUT_TYPE::WORLD_UI))
+    {
+        CClientInstance::GetInstance()->Camera_Release_FOVHoldZoom(L"DanginZoom", 0.5f);        
+        m_eState = SELECT_END2;
+    }
+}
+
+void CMiniGame_Gacha::Update_Selete_End2(_float fTimeDelta)
+{
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD2, INPUT_TYPE::WORLD_UI))
+    {
+        CClientInstance::GetInstance()->Camera_ReturnToPreviousPose(0.5f);
+        m_eState = END;
+    }
+}
+
 void CMiniGame_Gacha::Input_Key()
 {
     if (m_pGameInstance->Key_Down(DIK_A, INPUT_TYPE::WORLD_UI))
@@ -299,7 +341,7 @@ void CMiniGame_Gacha::Input_Key()
     }
     else if (m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::WORLD_UI))
     {
-        m_eState = END;
+        m_eState = SELECT_END0;
         if (m_iSuccesNum == m_pBox[m_iSeleteNum]->Get_Index())
             m_isSucces = true;
         else
