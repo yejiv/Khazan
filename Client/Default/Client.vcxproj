@@ -340,6 +340,7 @@
     <ClInclude Include="..\Public\GiantGate.h" />
     <ClInclude Include="..\Public\GiantGate_Part_L.h" />
     <ClInclude Include="..\Public\GiantGate_Part_R.h" />
+    <ClInclude Include="..\Public\Illusion_Wall.h" />
     <ClInclude Include="..\Public\Imp_Melee.h" />
     <ClInclude Include="..\Public\Imp_Sword.h" />
     <ClInclude Include="..\Public\Interaction_Item.h" />
@@ -818,6 +819,7 @@
     <ClCompile Include="..\private\Cursor_Circle_Fx.cpp" />
     <ClCompile Include="..\Private\Fence.cpp" />
     <ClCompile Include="..\Private\FSM_Imp_Melee.cpp" />
+    <ClCompile Include="..\Private\Illusion_Wall.cpp" />
     <ClCompile Include="..\Private\Imp_Melee.cpp" />
     <ClCompile Include="..\Private\Imp_Sword.cpp" />
     <ClCompile Include="..\Private\Interaction_Item.cpp" />

@@ -61,7 +61,7 @@ private:
     unordered_map<_wstring, deque<class CPrefab*>>* m_pEffectPools = {};
     unordered_map<_wstring, list<class CPrefab*>>*	m_pRunningEffects = {};	//중간 삽입도 일어나서 list
 
-    vector<class CPrefab*>                              m_pRunningEffects_Test;
+    //vector<class CPrefab*>                              m_pRunningEffects_Test;
 
 private:
     vector<class CPrefab*>* Find_Effect_Layer(_uint iLayerLevelIndex, const _wstring& strLayerTag);

@@ -98,7 +98,12 @@ public:
     _bool                       Is_UsedSkill(_uint iSkill);
     
     /* 플레이어 입력 막기 */
-    void                        Set_PlayerInput(_bool isInput) { m_isPlayerInput = isInput; }
+    void                        Set_PlayerInput(_bool isInput, _bool isIdle = false) { 
+        m_isPlayerInput = isInput;
+        if (isIdle && m_OnForcePlayerAnimationIdle)
+            m_OnForcePlayerAnimationIdle(); 
+    }
+    void                        Force_PlayerIdleCallBack(function<void()> callback) { m_OnForcePlayerAnimationIdle = callback; }
     inline _bool                Get_PlayerInput() const { return m_isPlayerInput; }
 
 #pragma endregion
@@ -298,6 +303,7 @@ private:
     class CBGM_Manager* m_pBGM_Manager = { nullptr };
 
      _bool                  m_isPlayerInput = { true };
+     function<void()>       m_OnForcePlayerAnimationIdle;
 #ifdef _DEBUG
 	class CDebug_Manager* m_pDebug_Manager = { nullptr };
 	class CCamera_Controller* m_pCamera_Controller = { nullptr };

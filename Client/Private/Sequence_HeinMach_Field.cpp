@@ -20,7 +20,7 @@ HRESULT CSequence_HeinMach_Field::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 
 	string filePath = "../../Client/Bin/Data/Camera/Animation/HeinMach";
     CClientInstance::GetInstance()->Camera_Set_Animation_Json(filePath);
-    CClientInstance::GetInstance()->Set_PlayerInput(false);    
+    CClientInstance::GetInstance()->Set_PlayerInput(false, true);    
 
     return S_OK;
 }

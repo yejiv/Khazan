@@ -96,10 +96,7 @@ HRESULT CLoadingObj_BN::Render()
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
-
-        _bool isBNEye = { 5 == i };
-        m_pShaderCom->Bind_RawValue("g_isBNEye", &isBNEye, sizeof(_bool));
-
+        
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
         if (i == 1)

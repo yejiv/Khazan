@@ -118,83 +118,93 @@ HRESULT CKhazan_SoundHelper::Initialize()
 	// =================================================================================
 	//  GS Attack & Skill
 	// =================================================================================
+    // 약공
+    EmplaceGroup(ATTACK_GS_WEAK1, TEXT("efx_gsword_weakatk01_01 (SFX)"), 4);
+    EmplaceGroup(ATTACK_GS_WEAK1_IMPACT, TEXT("efx_gsword_weakatk01_impact_01 (SFX)"), 4);
+    EmplaceGroup(ATTACK_GS_WEAK2, TEXT("efx_gsword_weakatk02_01 (SFX)"), 4);
+    EmplaceGroup(ATTACK_GS_WEAK3, TEXT("efx_gsword_weakatk03_01 (SFX)"), 4);
+    EmplaceGroup(ATTACK_GS_WEAK3_IMPACT, TEXT("efx_gsword_weakatk03_impact_01 (SFX)"), 6);
+    EmplaceGroup(ATTACK_GS_WEAK3_FOLEY, TEXT("efx_gsword_weakatk03_foley_end_01 (SFX)"), 4);
 
-	EmplaceGroup(ATTACK_GS_WEAK1, TEXT("efx_gsword_weakatk01_01 (SFX)"), 4);
-	EmplaceGroup(ATTACK_GS_WEAK1_IMPACT, TEXT("efx_gsword_weakatk01_impact_01 (SFX)"), 4);
-	EmplaceGroup(ATTACK_GS_WEAK2, TEXT("efx_gsword_weakatk02_01 (SFX)"), 4);
-	// 약공 임팩트2: 없음 -> 맵에 삽입하지 않음 (노티파이에서 무시)
-	EmplaceGroup(ATTACK_GS_WEAK3, TEXT("efx_gsword_weakatk03_01 (SFX)"), 4);
-	EmplaceGroup(ATTACK_GS_WEAK3_IMPACT, TEXT("efx_gsword_weakatk03_impact_01 (SFX)"), 6);
-	EmplaceGroup(ATTACK_GS_WEAK3_FOLEY, TEXT("efx_gsword_weakatk03_foley_end_01 (SFX)"), 4);
+    // 약공 차징 
+    EmplaceGroup(ATTACK_GS_WEAK1_CHARGING, TEXT("efx_gsword_weakatk03_charge_01 (SFX)"), 4);
+    EmplaceGroup(ATTACK_GS_WEAK1_CHARGING_ATTACK, TEXT("efx_gsword_weakatk_chargeatk_01 (SFX)"), 4);
+    EmplaceGroup(ATTACK_GS_WEAK2_CHARGING, TEXT("efx_gsword_weakatk03_charge_01 (SFX)"), 4);
+    EmplaceGroup(ATTACK_GS_WEAK2_CHARGING_ATTACK, TEXT("efx_gsword_weakatk_chargeatk_01 (SFX)"), 4);
 
-	// 약공 차징 
-	EmplaceGroup(ATTACK_GS_WEAK1_CHARGING, TEXT("efx_gsword_weakatk03_charge_01 (SFX)"), 4);
-	EmplaceGroup(ATTACK_GS_WEAK1_CHARGING_ATTACK, TEXT("efx_gsword_weakatk_chargeatk_01 (SFX)"), 4);
-	EmplaceGroup(ATTACK_GS_WEAK2_CHARGING, TEXT("efx_gsword_weakatk03_charge_01 (SFX)"), 4); // 동일 키
-	EmplaceGroup(ATTACK_GS_WEAK2_CHARGING_ATTACK, TEXT("efx_gsword_weakatk_chargeatk_01 (SFX)"), 4); // 동일 키
+    // 강공
+    EmplaceGroup(ATTACK_GS_STRONG, TEXT("PLYR_GSword_Swish_Strong_01 (SFX)"), 3);
 
-	//강공
-	EmplaceGroup(ATTACK_GS_STRONG, TEXT("PLYR_GSword_Swish_Strong_01 (SFX)"), 3);
+    // 강공 차징
+    EmplaceGroup(ATTACK_GS_STRONG_CHARGING, TEXT("PLYR_GSword_StrongAtk_Charge_01 (SFX)"), 1);
+    EmplaceGroup(ATTACK_GS_STRONG_CHARGING_ATTACK, TEXT("PLYR_GSword_StrongAtk_Explo_01 (SFX)"), 1);
 
-	//강공 차징
-	EmplaceGroup(ATTACK_GS_STRONG_CHARGING, TEXT("PLYR_GSword_StrongAtk_Charge_01 (SFX)"), 1);
-	EmplaceGroup(ATTACK_GS_STRONG_CHARGING_ATTACK, TEXT("PLYR_GSword_StrongAtk_Explo_01 (SFX)"), 1);
+    // 닷지
+    EmplaceGroup(ATTACK_GS_DODGE_CHARGING, TEXT("efx_gsword_common_charge_a_01 (SFX)"), 3);
+    EmplaceGroup(ATTACK_GS_DODGE_ATTACK, TEXT("PLYR_GSword_DodgeAtk_01 (SFX)"), 3);
+    EmplaceGroup(ATTACK_GS_DODGE_IMPACT, TEXT("efx_gsword_dodgeatk_impact_01 (SFX)"), 4);
 
-	//닷지공격
-	EmplaceGroup(ATTACK_GS_DODGE_ATTACK, TEXT("PLYR_GSword_DodgeAtk_01 (SFX)"), 3);
-	EmplaceGroup(ATTACK_GS_DODGE_IMPACT, TEXT("efx_gsword_dodgeatk_impact_01 (SFX)"), 4);
+    // 브루탈
+    EmplaceGroup(ATTACK_GS_BRUTAL_START, TEXT("efx_gsword_com_grapple_start_01 (SFX)"), 1);
+    EmplaceGroup(ATTACK_GS_BRUTAL1, TEXT("efx_gsword_com_grapple_atk1_01 (SFX)"), 1);
+    EmplaceGroup(ATTACK_GS_BRUTAL2, TEXT("efx_gsword_com_grapple_atk2_01 (SFX)"), 1);
 
-	//브루탈
-	EmplaceGroup(ATTACK_GS_BRUTAL_START, TEXT("efx_gsword_com_grapple_start_01 (SFX)"), 1);
-	EmplaceGroup(ATTACK_GS_BRUTAL1, TEXT("efx_gsword_com_grapple_atk1_01 (SFX)"), 1);
-	EmplaceGroup(ATTACK_GS_BRUTAL2, TEXT("efx_gsword_com_grapple_atk2_01 (SFX)"), 1);
+    // 낙하
+    EmplaceGroup(ATTACK_GS_FALL, TEXT("PLYR_GSword_FallAtk_Explo_01 (SFX)"), 1);
 
-	//낙하
-	EmplaceGroup(ATTACK_GS_FALL, TEXT("PLYR_GSword_FallAtk_Explo_01 (SFX)"), 1);
+    // --- GS Skill ---
+    // 숨통 끊기 (BREATHTAKING)
+    EmplaceGroup(SKILL_GS_BREATHTAKING_CHARGING, TEXT("efx_gsword_common_charge_c_01 (SFX)"), 3);
+    EmplaceGroup(SKILL_GS_BREATHTAKING_START, TEXT("efx_gsword_ghostslash_start_01 (SFX)"), 2); 
+    EmplaceGroup(SKILL_GS_BREATHTAKING_ATTACK, TEXT("efx_gsword_ghostslash_swish_01 (SFX)"), 3); 
+    EmplaceGroup(SKILL_GS_BREATHTAKING_SUCCESS, TEXT("efx_gsword_ghostslash_success_swish_01 (SFX)"), 3); 
 
-	// GS Skill
-	// 숨통 끊기
-	EmplaceGroup(SKILL_GS_BREATHTAKING_START, TEXT("efx_gsword_ghostslash_start_01 (SFX)"), 1);
-	EmplaceGroup(SKILL_GS_BREATHTAKING_ATTACK, TEXT("efx_gsword_ghostslash_swish_01 (SFX)"), 1);
-	EmplaceGroup(SKILL_GS_BREATHTAKING_SUCCESS, TEXT("efx_gsword_ghostslash_success_swish_01 (SFX)"), 1);
+    // 숨통 끊기 : 태동
+    //EmplaceGroup(SKILL_GS_BREATHTAKING_EMBRYONIC_START, TEXT("efx_gsword_ghostslash_start_02 (SFX)"), 1);
+    //EmplaceGroup(SKILL_GS_BREATHTAKING_EMBRYONIC_ATTACK, TEXT("efx_gsword_ghostslash_swish_02 (SFX)"), 1);
+    //EmplaceGroup(SKILL_GS_BREATHTAKING_EMBRYONIC_SUCCESS, TEXT("efx_gsword_ghostslash_success_swish_02 (SFX)"), 1);
+ 
 
-	// 숨통 끊기 : 태동
-	EmplaceGroup(SKILL_GS_BREATHTAKING_EMBRYONIC_START, TEXT("efx_gsword_ghostslash_start_02 (SFX)"), 1);
-	EmplaceGroup(SKILL_GS_BREATHTAKING_EMBRYONIC_ATTACK, TEXT("efx_gsword_ghostslash_swish_02 (SFX)"), 1);
-	EmplaceGroup(SKILL_GS_BREATHTAKING_EMBRYONIC_SUCCESS, TEXT("efx_gsword_ghostslash_success_swish_02 (SFX)"), 1);
+    // 숨통 끊기 : 선혈 (BLOODSHED)
+    EmplaceGroup(SKILL_GS_BREATHTAKING_BLOODSHED_CHARGING, TEXT("efx_gsword_ghostslash_charge_3_01 (SFX)"), 1);
+    EmplaceGroup(SKILL_GS_BREATHTAKING_BLOODSHED_CHARGING_SUCCESS, TEXT("efx_pc_gsword_ghostslash_charge_suc (SFX)"), 1);
+    EmplaceGroup(SKILL_GS_BREATHTAKING_BLOODSHED_ATTACK, TEXT("efx_gsword_ghostslash_swish_01 (SFX)"), 3); 
+    EmplaceGroup(SKILL_GS_BREATHTAKING_BLOODSHED_SUCCESS, TEXT("efx_gsword_ghostslash_success_swish_01 (SFX)"), 3); 
 
-	// 숨통 끊기 : 선혈
-	EmplaceGroup(SKILL_GS_BREATHTAKING_BLOODSHED_CHARGING, TEXT("efx_gsword_ghostslash_charge_3_01 (SFX)"), 1);
-	EmplaceGroup(SKILL_GS_BREATHTAKING_BLOODSHED_CHARGING_SUCCESS, TEXT("efx_pc_gsword_ghostslash_charge_suc (SFX)"), 1);
-	EmplaceGroup(SKILL_GS_BREATHTAKING_BLOODSHED_ATTACK, TEXT("efx_gsword_ghostslash_swish_03 (SFX)"), 1);
-	EmplaceGroup(SKILL_GS_BREATHTAKING_BLOODSHED_SUCCESS, TEXT("efx_gsword_ghostslash_success_swish_03 (SFX)"), 1);
+    // 거인 사냥 (GIANTHUNT)
+    EmplaceGroup(SKILL_GS_GIANTHUNT_CHARGING, TEXT("efx_gsword_common_charge_blood_a_01 (SFX)"), 3);
+    EmplaceGroup(SKILL_GS_GIANTHUNT_ATTACK, TEXT("efx_pc_gsword_com_explo_md_01 (SFX)"), 2);
 
-	// 거인 사냥
-	EmplaceGroup(SKILL_GS_GIANTHUNT_CHARGING,TEXT("efx_gsword_common_charge_blood_a_01 (SFX)"), 3 );
-	EmplaceGroup(SKILL_GS_GIANTHUNT_ATTACK, TEXT("efx_pc_gsword_com_explo_md_01 (SFX)"), 2);
+    // 귀신 : 어둠의 그림자 (PHANTOM_SHADOWOFDARKNESS)
+    EmplaceGroup(SKILL_GS_PHANTOM_SHADOWOFDARKNESS_CHARGING, TEXT("efx_pc_gsword_soulbringergreatsword_charge (SFX)"), 1);
+    EmplaceGroup(SKILL_GS_PHANTOM_SHADOWOFDARKNESS_ATTACK, TEXT("efx_pc_gsword_com_explo_md_01 (SFX)"), 2);
 
-	// 귀신 : 어둠의 그림자
-	EmplaceGroup(SKILL_GS_PHANTOM_SHADOWOFDARKNESS_CHARGING, TEXT("efx_pc_gsword_soulbringergreatsword_charge (SFX)"), 1);
-	EmplaceGroup(SKILL_GS_PHANTOM_SHADOWOFDARKNESS_ATTACK, TEXT("efx_pc_gsword_com_explo_md_01 (SFX)"), 2);
+    // 한계 극복 (LIMIT_BREAK)
+    EmplaceGroup(SKILL_GS_LIMIT_BREAK_CHARGING, TEXT("efx_gsword_apocalypse_charge_01 (SFX)"), 3);
+    EmplaceGroup(SKILL_GS_LIMIT_BREAK_LOOP, TEXT("efx_gsword_apocalypse_loop_01 (SFX)"), 1);
+    EmplaceGroup(SKILL_GS_LIMIT_BREAK_CHARGING_FX, TEXT("efx_gsword_apocalypse_charge_fx_01 (SFX)"), 1); 
+    EmplaceGroup(SKILL_GS_LIMIT_BREAK_ATTACK, TEXT("efx_gsword_apocalypse_sword_01 (SFX)"), 1);
+    EmplaceGroup(SKILL_GS_LIMIT_BREAK_END, TEXT("efx_gsword_apocalypse_finish_01 (SFX)"), 3);
 
-	// 한계 극복
-	EmplaceGroup(SKILL_GS_LIMIT_BREAK_CHARGING, TEXT("efx_gsword_apocalypse_charge_01 (SFX)"), 3);
-	EmplaceGroup(SKILL_GS_LIMIT_BREAK_LOOP, TEXT("efx_gsword_apocalypse_loop_01 (SFX)"), 1);
-	EmplaceGroup(SKILL_GS_LIMIT_BREAK_ATTACK, TEXT("efx_gsword_apocalypse_sword_01 (SFX)"), 1);
-	EmplaceGroup(SKILL_GS_LIMIT_BREAK_END, TEXT("efx_gsword_apocalypse_finish_01 (SFX)"), 3);
+    // 정면 돌파 (BREAK_THROUGH)
+    EmplaceGroup(SKILL_GS_BREAK_THROUGH_CHARGING, TEXT("efx_gsword_common_charge_c_01 (SFX)"), 1);
+    EmplaceGroup(SKILL_GS_BREAK_THROUGH_RUN, TEXT("efx_gsword_atk_ready_01 (SFX)"), 1); 
+    EmplaceGroup(SKILL_GS_BREAK_THROUGH_ATTACK, TEXT("efx_pc_gsword_com_explo_small_01 (SFX)"), 3);
 
-	// 정면 돌파
-	EmplaceGroup(SKILL_GS_BREAK_THROUGH_CHARGING, TEXT("efx_gsword_common_charge_c_01 (SFX)"), 1	);
-	EmplaceGroup(SKILL_GS_BREAK_THROUGH_ATTACK, TEXT("efx_pc_gsword_com_explo_small_01 (SFX)"), 3);
+    // 거대한 포효 (WARCRY)
+    EmplaceGroup(SKILL_GS_WARCRY_CHARGING, TEXT("efx_pc_gsword_wardeclaration_charge (SFX)"), 1);
+    EmplaceGroup(SKILL_GS_WARCRY_ATTACK, TEXT("efx_pc_gsword_wardeclaration (SFX)"), 1);
 
-	// 거대한 포효
-	EmplaceGroup(SKILL_GS_WARCRY_CHARGING, TEXT("efx_pc_gsword_wardeclaration_charge (SFX)"), 1);
-	EmplaceGroup(SKILL_GS_WARCRY_ATTACK, TEXT("efx_pc_gsword_wardeclaration (SFX)"), 1);
+    // 내재된 분노 (INNER_FURY)
+    EmplaceGroup(SKILL_GS_INNER_FURY_CHARGING, TEXT("efx_gsword_ragingfury_charge_01 (SFX)"), 1);
+    EmplaceGroup(SKILL_GS_INNER_FURY_CHARGING_SUCCESS, TEXT("efx_gsword_ragingfury_charge_suc_01 (SFX)"), 1);
+    EmplaceGroup(SKILL_GS_INNER_FURY_ATTACK, TEXT("efx_gsword_ragingfury_explo_suc_01 (SFX)"), 1);
 
-	// 내재된 분노
-	EmplaceGroup(SKILL_GS_INNER_FURY_CHARGING, TEXT("efx_gsword_ragingfury_charge_01 (SFX)"), 1);
-	EmplaceGroup(SKILL_GS_INNER_FURY_CHARGING_SUCCESS, TEXT("efx_gsword_ragingfury_charge_suc_01 (SFX)"), 1);
-	EmplaceGroup(SKILL_GS_INNER_FURY_ATTACK, TEXT("efx_gsword_ragingfury_explo_suc_01 (SFX)"), 1);
+    // --- 기타 (Misc) --- //
+    EmplaceGroup(GS_WEAPON_RUSTLE, TEXT("PLYR_GSword_Weapon_Rustle_01 (SFX)"), 10); 
+    EmplaceGroup(GS_POSE_RETURN1, TEXT("efx_gsword_pose_return3_01 (SFX)"), 4); 
+    EmplaceGroup(GS_POSE_RETURN2, TEXT("efx_gsword_pose_return4_01 (SFX)"), 4); 
+    EmplaceGroup(GS_POSE_RETURN3, TEXT("efx_gsword_pose_return5_01 (SFX)"), 4); 
 
 
 	// =================================================================================
@@ -207,6 +217,7 @@ HRESULT CKhazan_SoundHelper::Initialize()
 	EmplaceGroup(GUARD_ON_SPEAR, TEXT("efx_pc_spear_guard_on_01 (SFX)"), 4);
 	EmplaceGroup(GUARD_ON_GS, TEXT("efx_pc_gsword_guard_on_01 (SFX)"), 4); 
     EmplaceGroup(GUARD_FOLEY, TEXT("efx_pc_spear_guard_on_foley_01 (SFX)"), 5);
+    EmplaceGroup(GUARD_TUNAL, TEXT("efx_pc_gsword_guard_on_tonal_01 (SFX)"), 4);
     EmplaceGroup(GUARD_SUCCESS, TEXT("barehands_guard_suc_01 (SFX)"), 4);
 	EmplaceGroup(GUARD_OFF_SPEAR, TEXT("efx_pc_dualaxesword_guard_off_01 (SFX)"), 4);
 	EmplaceGroup(GUARD_OFF_GS, TEXT("efx_pc_gsword_guard_off_01 (SFX)"), 3);
@@ -244,7 +255,7 @@ const TCHAR* CKhazan_SoundHelper::Get_NextSoundKey(PC_SOUND_GROUPTYPE type, PC_S
     {
         m_strLastKey[eChannel] = iter->second.Get_NextKey()+ TEXT(".wav");
 
-       // cout <<"=====================" << WStringToAnsi(m_strLastKey[eChannel]) << endl;
+        //cout <<"=====================" << WStringToAnsi(m_strLastKey[eChannel]) << endl;
         return   m_strLastKey[eChannel].c_str();
     }
 

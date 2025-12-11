@@ -34,6 +34,8 @@ HRESULT CInteraction_Item::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Guide(pArg)))
         return E_FAIL;
 
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(100000.f, 100000.f, 100000.f, 0.f));
+
     if (FAILED(Ready_Collision(pArg)))
         return E_FAIL;
 
@@ -59,7 +61,7 @@ HRESULT CInteraction_Item::Initialize_Clone(void* pArg)
     m_SpecialItemIndex.emplace(TEXT("Precept"), 2001); // 호송 명령서
     m_SpecialItemIndex.emplace(TEXT("Record"), 2002); // 어느 병사의 기록
     m_SpecialItemIndex.emplace(TEXT("Handwriting"), 2003); // 도굴꾼의 수기
-    m_SpecialItemIndex.emplace(TEXT("Report"), 2004); // 용족에 대한 보고서
+    m_SpecialItemIndex.emplace(TEXT("Report"), 2004); // 용족에 대한 보고서    
 
     return S_OK;
 }

@@ -19,6 +19,8 @@ public:
 
         _float4x4* pSocketMatrix = { nullptr };
 
+        _bool isOtherModel = { false };
+
     }STATUE_DECO_DESC;
 
 private:

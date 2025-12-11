@@ -47,7 +47,7 @@ protected:
 
 	_bool m_isCollision = { false };
 
-    _float m_fInteract_Volume = { 0.5f };
+    _float m_fInteract_Volume = { 0.75f };
 
 protected:
 	virtual HRESULT Ready_Components(void* pArg) { return S_OK; }

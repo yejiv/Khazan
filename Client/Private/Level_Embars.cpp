@@ -79,7 +79,7 @@ HRESULT CLevel_Embars::Initialize()
 
     CClientInstance::GetInstance()->Fade_In([this]() {Start_Event(); });
 
-    CClientInstance::GetInstance()->Set_Volume_BGM(0.45f);
+    CClientInstance::GetInstance()->Set_Volume_BGM(0.65f);
     CClientInstance::GetInstance()->BGM_Embars_Entry();
 
     if (!Wait_All_Futures())
@@ -1013,6 +1013,11 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
                 break;
             }
             }
+            break;
+        }
+        case INTERACTIVE_TYPE::ILLUSION_WALL:
+        {
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Illusion_Wall"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
         default:

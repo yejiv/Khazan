@@ -196,10 +196,10 @@ private:
 	const	_float				m_fMinSprintTime = { 0.15f };
 
 	/* Move Speed */
-     _float				m_fInjuredSpeed = { 1.15f };
-     _float				m_fWalkSpeed = { 2.6f };
-	 _float				m_fRunSpeed = { 9.f };
-	 _float				m_fSprintSpeed = {15.4f };
+    _float				        m_fInjuredSpeed = { 1.15f };
+    _float				        m_fWalkSpeed = { 1.7f };
+    _float				        m_fRunSpeed = { 4.4f };
+    _float				        m_fSprintSpeed = { 7.2f };
 
 	/*  Attack */
 	const _float				m_fChargingStrongIntervalTime = { 0.25f };

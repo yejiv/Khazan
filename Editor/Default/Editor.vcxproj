@@ -202,6 +202,7 @@
     <ClInclude Include="..\Public\Effect_Terrain.h" />
     <ClInclude Include="..\Public\ElevatorS.h" />
     <ClInclude Include="..\Public\Elevator_Gear.h" />
+    <ClInclude Include="..\Public\Illusion_Wall.h" />
     <ClInclude Include="..\Public\NPC_Gacha.h" />
     <ClInclude Include="..\Public\GearGate.h" />
     <ClInclude Include="..\Public\GiantGate.h" />
@@ -311,6 +312,7 @@
     <ClCompile Include="..\Private\Effect_Terrain.cpp" />
     <ClCompile Include="..\Private\ElevatorS.cpp" />
     <ClCompile Include="..\Private\Elevator_Gear.cpp" />
+    <ClCompile Include="..\Private\Illusion_Wall.cpp" />
     <ClCompile Include="..\Private\NPC_Gacha.cpp" />
     <ClCompile Include="..\Private\GearGate.cpp" />
     <ClCompile Include="..\Private\GiantGate.cpp" />
