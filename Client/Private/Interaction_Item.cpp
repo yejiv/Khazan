@@ -219,7 +219,7 @@ HRESULT CInteraction_Item::Ready_Guide()
 
     m_pGameInstance->Push_PoolObject_ToLayer(m_iLevelIndex, TEXT("Layer_UI"), m_pGuide);
 
-    m_pGuide->Update_Visible(false);
+     m_pGuide->Update_Visible(false);
 
     return S_OK;
 }

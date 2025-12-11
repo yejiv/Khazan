@@ -73,7 +73,6 @@ private:
 
     // Blink Rim Light Shader
     _float m_fBlinkTimeAcc = {};
-    _bool m_isEnableBlink = {};
 
 private:
     class CEffect_Prefab* m_pEffect = { nullptr };

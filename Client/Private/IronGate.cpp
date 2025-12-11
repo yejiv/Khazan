@@ -150,6 +150,8 @@ HRESULT CIronGate::Ready_PartObjects(void* pArg)
     PartLeftDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     PartLeftDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Door_Pivot_L");
 
+    PartLeftDesc.pUnLock = &m_isUnLock;
+
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Gate_L"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_IronGate_Part_L"), &PartLeftDesc), E_FAIL);
 
@@ -158,6 +160,8 @@ HRESULT CIronGate::Ready_PartObjects(void* pArg)
     PartRightDesc.eLevel = eLevel;
     PartRightDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     PartRightDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Door_Pivot_R");
+
+    PartRightDesc.pUnLock = &m_isUnLock;
 
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Gate_R"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_IronGate_Part_R"), &PartRightDesc), E_FAIL);
@@ -232,7 +236,7 @@ HRESULT CIronGate::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("열어이"), 1.f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("해제"), 1.f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_UI"), m_pGuide);
 
