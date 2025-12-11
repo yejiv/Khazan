@@ -38,7 +38,7 @@ void CAS_Elamein_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
     }
     else if (m_eState == RELEASSE)
     {
-        m_pMonData->fDecreaseAlpha += fTimeDelta * 0.35f;
+        m_pMonData->fDecreaseAlpha += fTimeDelta * 0.7f;
 
         if (m_pMonData->fDecreaseAlpha >= 1.f)
         {
