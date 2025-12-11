@@ -81,8 +81,6 @@ protected:
 protected:
     virtual void				Compute_KnockBack(_float fTimeDelta);
 
-
-
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;
 	virtual void				Free() override;

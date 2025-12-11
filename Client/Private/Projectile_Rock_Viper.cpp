@@ -131,15 +131,20 @@ void CProjectile_Rock_Viper::Reset()
 
 void CProjectile_Rock_Viper::Enter_State(PRJSTATE eNextState)
 {
+    if (m_eState == eNextState)
+        return;
+
     m_eState = eNextState;
 
     switch (m_eState)
     {
     case Client::CProjectile::LOOP:
         m_pModelCom->Set_Animation(1);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_projectile_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 30.f);
         break;
     case Client::CProjectile::CRASHED:
         m_pModelCom->Set_Animation(0);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_exp_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 30.f);
         m_isActive = false;
         break;
     case Client::CProjectile::END:
