@@ -1231,7 +1231,23 @@ HRESULT CLevel_Embars::Ready_Lights()
     if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect1"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect2"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect3"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_Pet"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    LightDesc.vDiffuse = _float4(2.5f, 0.8f, 0.8f, 1.f);
+    LightDesc.vPosition = _float4(-67.325f, -90.f, -41.831f, 1.f);
+    LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 0.1f);
+    LightDesc.fRange = 17.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Mirroball"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
         return E_FAIL;
 
     LightDesc = {};

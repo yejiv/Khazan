@@ -384,6 +384,7 @@
     <ClInclude Include="..\public\Inven_State_Panel.h" />
     <ClInclude Include="..\public\Lantern_Khazan_Spear.h" />
     <ClInclude Include="..\public\MiniGame_Gacha.h" />
+    <ClInclude Include="..\public\Minigame_Mirrorball.h" />
     <ClInclude Include="..\Public\NPC_Danjin.h" />
     <ClInclude Include="..\Public\NPC_Daphrona.h" />
     <ClInclude Include="..\Public\NPC_Duimuk.h" />
@@ -863,6 +864,7 @@
     <ClCompile Include="..\private\Inven_State_Panel.cpp" />
     <ClCompile Include="..\private\Lantern_Khazan_Spear.cpp" />
     <ClCompile Include="..\private\MiniGame_Gacha.cpp" />
+    <ClCompile Include="..\private\Minigame_Mirrorball.cpp" />
     <ClCompile Include="..\Private\NPC_Danjin.cpp" />
     <ClCompile Include="..\Private\NPC_Daphrona.cpp" />
     <ClCompile Include="..\Private\NPC_Duimuk.cpp" />

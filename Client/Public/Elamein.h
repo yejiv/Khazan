@@ -66,6 +66,7 @@ public:
         _float              fWarkSpeed = { 10.f };
         CElamein* pOwner = { nullptr };
 
+        _bool               isSearch = { false };
     }MONDATA;
 private:
     CElamein(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -120,6 +121,7 @@ private:
     class CMeshTrail*               m_pMeshTrail = { nullptr };
 
     CBody*                          m_pHitBodyCom = { nullptr };
+    CBody*                          m_pBodyComp = { nullptr };
 
     _float4x4*                      m_pBodySocketMatrix = { nullptr };
     _float4x4*                      m_pLockOnSocketMatrix = { nullptr };

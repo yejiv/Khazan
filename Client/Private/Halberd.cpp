@@ -231,6 +231,9 @@ void CHalberd::Update(_float fTimeDelta)
 
 void CHalberd::Late_Update(_float fTimeDelta)
 {
+    if (m_Data.isSearch)
+        m_pBodyComp->Collision_Active(false);
+
     CContainerObject::Late_Update(fTimeDelta);
     
     m_pMeshTrail->Late_Update(fTimeDelta);
@@ -283,6 +286,11 @@ void CHalberd::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _
 
     if (COLLISION_LAYER::MAP_STATIC == eLayer)
         m_Data.isWallCrushed = true;
+
+    if (pMyDesc->iObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER_SEARCH))
+    {
+        m_Data.isSearch = true;
+    }
 }
 
 void CHalberd::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -378,6 +386,22 @@ HRESULT CHalberd::Ready_Components()
 
     CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_HitBody"), (CComponent**)&m_pHitBodyCom, &BodyDesc);
     m_pHitBodyCom->Activate(true);
+
+
+    CBody::BODY_BOXSHAPE_DESC SearchBodyDesc{};
+  SearchBodyDesc.vExtent = { 50.f, 50.f, 50.f };
+    SearchBodyDesc.eMotion = EMotionType::Kinematic;
+    SearchBodyDesc.eQuality = EMotionQuality::Discrete;
+    SearchBodyDesc.eShapeType = SHAPE::BOX;
+    SearchBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER_SEARCH);
+    SearchBodyDesc.bIsTrigger = true;
+    XMStoreFloat3(&SearchBodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    XMStoreFloat4(&SearchBodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+    SearchBodyDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
+    SearchBodyDesc.pCollisionDesc = &m_tCollisionDesc;
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_Body_Search"), (CComponent**)&m_pBodyComp, &SearchBodyDesc), E_FAIL);
+
     return S_OK;
 }
 
@@ -703,11 +727,14 @@ void CHalberd::Free()
     if (m_pUI_HP != nullptr)
         m_pUI_HP->Set_IsDead(true);
 
+    __super::Free();
+
     Safe_Release(m_pMeshTrail);
     Safe_Release(m_pBlackBoard);
     Safe_Release(m_pBody);
     Safe_Release(m_pWeapon);
     Safe_Release(m_pHitBodyCom);
     m_Data.pOwner = nullptr;
-    __super::Free();
+
+    Safe_Release(m_pBodyComp);
 }
