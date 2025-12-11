@@ -1528,6 +1528,9 @@
     <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\15.Illusion_Wall">
       <UniqueIdentifier>{56f48e69-a95c-4eb3-9f0f-6499f4cb6013}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.MiniGame\Gacha\Mirrorball">
+      <UniqueIdentifier>{5585f41e-a3c8-4b35-baf5-740ee79aad50}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2952,6 +2955,9 @@
     <ClInclude Include="..\Public\Illusion_Wall.h">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\15.Illusion_Wall</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Minigame_Mirrorball.h">
+      <Filter>03.MiniGame\Gacha\Mirrorball</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4355,6 +4361,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Illusion_Wall.cpp">
       <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\15.Illusion_Wall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Minigame_Mirrorball.cpp">
+      <Filter>03.MiniGame\Gacha\Mirrorball</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -27,6 +27,7 @@ public:
 private:
     vector<class CRandomBox*>   m_pBox;
     class CUI_Gacha_Selete*     m_pSeleteUI = {nullptr};
+    class CMinigame_Mirrorball* m_pMirrorball = { nullptr };
     GACHA_STATE                 m_eState = { GACHA_STATE::END };
     MINIGAME_LEVEL              m_eMiniGameLevel = { MINIGAME_LEVEL::END };
     _int                        m_iSuffleIndex1 = {};

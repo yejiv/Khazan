@@ -5,6 +5,8 @@
 #include "UI_State_Panel.h"
 
 #include "UI_TextBox.h"
+#include "UI_Atlas_Icon.h"
+
 CUI_State_MainPanel::CUI_State_MainPanel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Panel{ pDevice, pContext }
 {
@@ -341,6 +343,16 @@ HRESULT CUI_State_MainPanel::Load_UI(nlohmann::json& pInData, _uint iPrototypeLe
     if (FAILED(__super::Load_UI(pInData, iPrototypeLevelID, pArg)))
         return E_FAIL;
 
+    if (m_szName == "Lachryma")
+    {
+        for (auto pChild : m_Children)
+        {
+            if (pChild->Get_Name() == "Lachryma_Icon_1" || pChild->Get_Name() == "Lachryma_Icon_2")
+            {
+                static_cast<CUI_Atlas_Icon*>(pChild)->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Item_Potion_HP_1.png", 2),2);
+            }
+        }
+    }
     return S_OK;
 }
 

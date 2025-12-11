@@ -323,7 +323,13 @@ void CTombStone::Animation_Update(_float fTimeDelta)
             // 툼스톤을 바라볼 수 있도록 포지션만 던짐 ( 툼스톤 애니메이션 아직 종료 X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
-            CClientInstance::GetInstance()->Fade_Out(nullptr, 0.5f);
+            CClientInstance::GetInstance()->Fade_Out([this](){
+                m_pGameInstance->Set_LightEnable(TEXT("Mirroball"), ENUM_CLASS(LEVEL::EMBARS), false);
+                m_pGameInstance->Set_LightEnable(TEXT("GachaSelect1"), ENUM_CLASS(LEVEL::EMBARS), false);
+                m_pGameInstance->Set_LightEnable(TEXT("GachaSelect2"), ENUM_CLASS(LEVEL::EMBARS), false);
+                m_pGameInstance->Set_LightEnable(TEXT("GachaSelect3"), ENUM_CLASS(LEVEL::EMBARS), false);
+                m_pGameInstance->Set_LightEnable(TEXT("MainLight"), ENUM_CLASS(LEVEL::EMBARS), true); 
+                }, 0.5f);
 
             switch (m_iTombStoneID)
             {
