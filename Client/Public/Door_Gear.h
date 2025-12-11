@@ -68,6 +68,12 @@ private:
 
     _uint   m_iEffectIdx;
 
+    _float m_fTimeAcc = {};
+    _float m_fEmissiveIntensity = {};
+    _float m_fMinIntensity{}, m_fMaxIntensity{};
+
+    _bool m_isBlink = {};
+
 private:
     HRESULT Ready_Components(void* pArg);
 

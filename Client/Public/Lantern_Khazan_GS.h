@@ -57,6 +57,8 @@ private:
     _float2                 m_fEquipTime2 = { 0.f ,1.1f };
     _float2                 m_fEquipTime1 = { 0.f ,1.f };
     LEVEL                   m_eCurrentLevel = CClientInstance::GetInstance()->Get_CurrLevel();
+    
+    class CEffect_Prefab*   m_pEffect = { nullptr };
 
 private:
     HRESULT                 Ready_Components();

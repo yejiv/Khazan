@@ -31,6 +31,8 @@ public:
         _bool               isDamage = { false };
         _bool               isIdle = { false };
         CPet_Danjinjar*     pOwner = { nullptr };
+
+        _bool               isEnd = {};
     }MONDATA;
 
 private:

@@ -96,7 +96,7 @@ HRESULT CLoadingObj_BN::Render()
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
-
+        
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
         if (i == 1)

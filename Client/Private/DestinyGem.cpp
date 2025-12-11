@@ -6,6 +6,9 @@
 
 #include "Amount.h"
 
+#include "Effect_Prefab.h"
+
+
 CDestinyGem::CDestinyGem(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
 {
@@ -35,6 +38,15 @@ HRESULT CDestinyGem::Initialize_Clone(void* pArg)
 
     m_iNumGem *= static_cast<_uint>(m_pGameInstance->Rand(2.f, 5.f));
 
+    m_bBlustFX = false; 
+
+    m_fEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("lantern")));
+    if (m_fEffect)
+    {
+        m_fEffect->ResetChildren();
+        m_fEffect->UpdatePosition(XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
+    }
+
     return S_OK;
 }
 
@@ -53,6 +65,13 @@ void CDestinyGem::Update(_float fTimeDelta)
 
     if (1.f <= m_fTimeAcc)
     {
+        if (false == m_bBlustFX)
+        { 
+            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("stone_blust"), XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
+            m_fEffect->SetClose();
+            m_bBlustFX = true;
+        }
+
         m_fDecreaseAlpha += fTimeDelta * 0.2f;
     }
 
@@ -64,6 +83,11 @@ void CDestinyGem::Update(_float fTimeDelta)
     }
 
     Update_CombinedMatrix();
+
+    // Test
+    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
+        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+            m_isEnableBlink = !m_isEnableBlink;
 }
 
 void CDestinyGem::Late_Update(_float fTimeDelta)
@@ -95,7 +119,15 @@ HRESULT CDestinyGem::Render()
 
         Bind_DissolveValues();
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(13), E_FAIL);
+        if (true == m_isEnableBlink)
+        {
+            if (FAILED(Bind_Blink_ShaderResources()))
+                return E_FAIL;
+
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(17), E_FAIL);
+        }
+        else
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(13), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -173,6 +205,35 @@ HRESULT CDestinyGem::Bind_Materials(_uint iMeshIndex)
     return S_OK;
 }
 
+HRESULT CDestinyGem::Bind_Blink_ShaderResources()
+{
+    _float fRimPower = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRimIntensity = 1.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &fRimIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    // 반짝이는 림라이트 이미시브
+    _float fRimEmissive = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fTimeDelta", &m_fBlinkTimeAcc, sizeof(_float))))
+        return E_FAIL;
+
+    _float fCycleSpeed = 3.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fCycleSpeed", &fCycleSpeed, sizeof(_float))))
+        return E_FAIL;
+
+    _float3 vRimColor = _float3(1.f, 0.f, 0.f);
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3))))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 CDestinyGem* CDestinyGem::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CDestinyGem* pInstance = new CDestinyGem(pDevice, pContext);
@@ -206,4 +267,5 @@ void CDestinyGem::Free()
     Safe_Release(m_pDissolveTextureCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pModelCom);
+    Safe_Release(m_fEffect);
 }

@@ -60,6 +60,11 @@ HRESULT CDoor_Gear::Initialize_Clone(void* pArg)
     if (EVENT_TYPE::END != m_eEventType)
         m_iEventLisID = m_pGameInstance->Subscribe_Event<EventGateGear>(ENUM_CLASS(m_eEventType), [&](const EventGateGear& e) { m_EventGate = e; });
 
+    // 룬 문자
+    m_fMinIntensity = 20.f;
+    m_fMaxIntensity = 60.f;
+    m_fEmissiveIntensity = m_fMinIntensity;
+
     return S_OK;
 }
 
@@ -84,6 +89,13 @@ void CDoor_Gear::Update(_float fTimeDelta)
     m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On_Static"), m_iEffectIdx,
         XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)),
         XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
+
+    if (m_isBlink)
+    {
+        m_fTimeAcc += fTimeDelta;
+        _float fRatio = 0.5f * (1.f + cos(m_fTimeAcc * 5.f));
+        m_fEmissiveIntensity = Lerp(m_fMinIntensity, m_fMaxIntensity, fRatio);
+    }
 }
 
 void CDoor_Gear::Late_Update(_float fTimeDelta)
@@ -107,8 +119,15 @@ HRESULT CDoor_Gear::Render()
         {
             CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
         }
-        else if (RUNE == i)
+        else if (RUNE == i) // MeshIndex == 1
         {
+            _float3 vRuneColor = _float3(0.f, 1.f, 1.5f);
+            if (FAILED(m_pShaderCom->Bind_RawValue("g_vRuneColor", &vRuneColor, sizeof(_float3))))
+                return E_FAIL;
+
+            if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &m_fEmissiveIntensity, sizeof(_float))))
+                return E_FAIL;
+
             CHECK_FAILED_ASSERT(m_pShaderCom->Begin(24), E_FAIL);
         }
 
@@ -215,6 +234,8 @@ void CDoor_Gear::Animation_Change(_float fTimeDelta)
         m_iEffectIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On_Static"),
             XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)),
             XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
+        
+        m_isBlink = true;
 
         m_pGameInstance->Emit_Event<EVENT_PET_STATE>(ENUM_CLASS(EVENT_TYPE::PET), EVENT_PET_STATE{ false });
     }

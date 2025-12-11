@@ -82,6 +82,7 @@ void CBody_Elamein::Update(_float fTimeDelta)
     m_pData->isAnimFinash = m_pModelCom->Play_Animation(fTimeDelta * m_pData->fDeltaSpeed);
     Update_Body(fTimeDelta);
 
+//#ifdef NDEBUG
     _matrix BoneMatrix = XMLoadFloat4x4(m_pClothBodyMatrix);
 
     for (uint32_t i = 0; i < 3; i++)
@@ -96,18 +97,21 @@ void CBody_Elamein::Update(_float fTimeDelta)
 
     m_pClothBody->Sync_Update(ClothWorld);
     m_pClothBody->Update(fTimeDelta, ClothWorld, vQuat, vPos);
+
     if (m_pData->iAnimIndex != 31 && m_pData->iAnimIndex != 35 && m_pData->iAnimIndex != 51 && m_pData->iAnimIndex != 95)
     {
-        /*m_pCapeBody->Priority_Update(fTimeDelta);
-        m_pCapeBody->Update(fTimeDelta);*/
+        m_pCapeBody->Priority_Update(fTimeDelta);
+        m_pCapeBody->Update(fTimeDelta);
     }     
+//#endif
 }
 
 void CBody_Elamein::Late_Update(_float fTimeDelta)
 {
-    //if (m_pData->iAnimIndex != 31 && m_pData->iAnimIndex != 35 && m_pData->iAnimIndex != 51 && m_pData->iAnimIndex != 95)
-    //    m_pCapeBody->Late_Update(fTimeDelta);
-    
+//#ifdef NDEBUG
+    if (m_pData->iAnimIndex != 31 && m_pData->iAnimIndex != 35 && m_pData->iAnimIndex != 51 && m_pData->iAnimIndex != 95)
+        m_pCapeBody->Late_Update(fTimeDelta);
+//#endif
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 }
@@ -181,7 +185,7 @@ HRESULT CBody_Elamein::Ready_Components()
         return E_FAIL;
 
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
-
+//#ifdef NDEBUG
     m_tCapeCollDesc.pGameObject = this;
     CClothBody::CLOTH_BODY_DESC ClothDesc;
     ClothDesc.pModel = m_pModelCom;
@@ -202,6 +206,7 @@ HRESULT CBody_Elamein::Ready_Components()
     ClothDesc.fSpringFrequency = 4.f;
     ClothDesc.fSpringDamping = 2.f;
     ClothDesc.eType = CLOTHTYPE::CAPE;
+    m_tCapeCollDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::CLOTH);
     ClothDesc.pCollisionDesc = &m_tCapeCollDesc;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_ClothBody"),
         TEXT("Com_Cloth"), reinterpret_cast<CComponent**>(&m_pCapeBody), &ClothDesc)))
@@ -224,29 +229,31 @@ HRESULT CBody_Elamein::Ready_Components()
     XMStoreFloat4(&BodyDesc.vQuat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&m_CombinedWorldMatrix)));
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
+    m_tClothBodyCollDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::CLOTHBODY);
     BodyDesc.pCollisionDesc = &m_tClothBodyCollDesc;
 
-    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_ClothBody"), (CComponent**)&m_pClothBody, &BodyDesc), E_FAIL);
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_ClothBody"), (CComponent**)&m_pClothBody, &BodyDesc), E_FAIL);    
+//#endif
 
     m_pSocketMatrix = m_pModelCom->Get_BoneMatrix("Bip001-R-Foot");
-
-    BodyDesc.vExtent = { 1.5f, 0.5f, 0.5f };
-    BodyDesc.eMotion = EMotionType::Kinematic;
-    BodyDesc.eQuality = EMotionQuality::Discrete;
-    BodyDesc.eShapeType = SHAPE::BOX;
-    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-    BodyDesc.bIsTrigger = true;
+    m_tCollisionDesc.pGameObject = this;
+    CBody::BODY_BOXSHAPE_DESC CollBodyDesc{};
+    CollBodyDesc.vExtent = { 1.5f, 0.5f, 0.5f };
+    CollBodyDesc.eMotion = EMotionType::Kinematic;
+    CollBodyDesc.eQuality = EMotionQuality::Discrete;
+    CollBodyDesc.eShapeType = SHAPE::BOX;
+    CollBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    CollBodyDesc.bIsTrigger = true;
 
     XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(m_pSocketMatrix) * XMLoadFloat4x4(m_pParentMatrix));
-    BodyDesc.vPos = { m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43 };
-    XMStoreFloat4(&BodyDesc.vQuat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&m_CombinedWorldMatrix)));
+    CollBodyDesc.vPos = { m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43 };
+    XMStoreFloat4(&CollBodyDesc.vQuat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&m_CombinedWorldMatrix)));
 
-    BodyDesc.vShapeOffset = _float3(0.4f, -0.f, 0.f);
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    CollBodyDesc.vShapeOffset = _float3(0.4f, -0.f, 0.f);
+    m_tCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    CollBodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_LegBody"), (CComponent**)&m_pBodyComp, &BodyDesc), E_FAIL);
-
-
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_LegBody"), (CComponent**)&m_pBodyComp, &CollBodyDesc), E_FAIL);
     return S_OK;
 }
 

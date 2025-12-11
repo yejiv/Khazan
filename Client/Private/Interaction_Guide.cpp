@@ -67,6 +67,8 @@ HRESULT CInteraction_Guide::Initialize_Clone(void* pArg)
 	m_fAccTime = 0.f;
 	m_fDelayTime = 3.f;
 	CHECK_FAILED(Ready_Children(), E_FAIL);
+    CHECK_FAILED(Ready_Component(), E_FAIL);
+
 	return S_OK;
 }
 
@@ -92,6 +94,7 @@ void CInteraction_Guide::Update(_float fTimeDelta)
 	m_isPressing = false;
 
 	__super::Update(fTimeDelta);
+    Update_WorldPos();
 }
 
 void CInteraction_Guide::Late_Update(_float fTimeDelta)
@@ -99,9 +102,7 @@ void CInteraction_Guide::Late_Update(_float fTimeDelta)
 	if (!m_isVisible || !m_isActive)
 		return;
 	
-	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::ATLAS, this);
-    Update_WorldPos();
-
+	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
     if (m_eGuideType == GUIDE_TYPE::DEFAULT)
 		m_pTextBox->Late_Update(fTimeDelta);
 	else
@@ -111,6 +112,25 @@ void CInteraction_Guide::Late_Update(_float fTimeDelta)
 
 HRESULT CInteraction_Guide::Render()
 {
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+        return E_FAIL;
+
+    if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix")))
+        return E_FAIL;
+
+    if (FAILED(m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_Texture", 0)))
+        return E_FAIL;
+
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &m_fAlpha, sizeof(_float)), E_FAIL);
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof(_float4)), E_FAIL);
+
+    m_pShaderCom->Begin(1);
+    m_pVIBufferCom->Bind_Resources();
+    m_pVIBufferCom->Render();
+
 	return S_OK;
 }
 
@@ -122,6 +142,10 @@ void CInteraction_Guide::Reset()
 
 HRESULT CInteraction_Guide::Ready_Prototype()
 {
+    if (FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_Tex_F_Key_Icon"),
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Atlas/T_Icon_KB_F.png"), 1))))
+        return E_FAIL;
+
 	if (FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_Tex_Guide_Press"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Common/Guide_Press.png"), 1))))
 		return E_FAIL;
@@ -135,6 +159,23 @@ HRESULT CInteraction_Guide::Ready_Prototype()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+HRESULT CInteraction_Guide::Ready_Component()
+{
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxPosTex_UI"),
+        TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
+        return E_FAIL;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"),
+        TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), nullptr)))
+        return E_FAIL;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Tex_F_Key_Icon"),
+        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr)))
+        return E_FAIL;
+
+    return S_OK;
 }
 
 HRESULT CInteraction_Guide::Ready_Children()
@@ -282,4 +323,8 @@ void CInteraction_Guide::Free()
 	Safe_Release(m_pGauge);
 	Safe_Release(m_pTextBox);
 	Safe_Release(m_pIcon);
+
+    Safe_Release(m_pShaderCom);
+    Safe_Release(m_pTextureCom);
+    Safe_Release(m_pVIBufferCom);
 }

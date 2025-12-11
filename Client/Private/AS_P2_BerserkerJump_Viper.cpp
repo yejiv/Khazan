@@ -52,6 +52,8 @@ void CAS_P2_BerserkerJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
         {
             pModel->Set_Animation(21);
             pViper->SFX_DASHDRIFT();
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_roar_02 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+
             m_eState = BSJUMPSTATE::FRONTJUMP;
         }
     }
@@ -74,6 +76,7 @@ void CAS_P2_BerserkerJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
         {
             m_eState = BSJUMPSTATE::ATTACK;
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_end_atk_whoosh_01 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_roar_02 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
 
             pModel->Set_Animation(20);
         }
