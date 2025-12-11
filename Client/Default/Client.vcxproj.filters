@@ -4341,11 +4341,11 @@
     <ClCompile Include="..\Private\BGM_Manager.cpp">
       <Filter>94.ClientInstance\BGM</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Interaction_Item.cpp">
-      <Filter>02.GameObject\Interation_Object</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Khazan_SoundHelper.cpp">
       <Filter>02.GameObject\Creature\Khazan\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Interaction_Item.cpp">
+      <Filter>02.GameObject\Interation_Object\Item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

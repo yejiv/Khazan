@@ -99,6 +99,7 @@ private:
     void                            SFX_Move();
     void                            SFX_ATTACK();
     void                            SFX_ATTACK_END();
+    void                            SFX_P2_ATTACK_VO(_uint iIndex);
 
     void                            SFX_Move_P2(_uint iIndex);
     void                            SFX_STOMP_P2(_uint iIndex);
