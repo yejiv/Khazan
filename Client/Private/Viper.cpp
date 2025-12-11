@@ -226,11 +226,11 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     
 
     CLineTrail::LINE_TRAIL_DESC LineDesc{};
-    LineDesc.fOffset = 0.25f;
-    LineDesc.fLifeTime = 1.f;
+    LineDesc.fOffset = 0.5f;
+    LineDesc.fLifeTime = 2.f;
     LineDesc.iDivisionCount = 5.f;
     LineDesc.iTextureIdx = 6;
-    LineDesc.vColor = _float4(2.353f, 1.961f, 1.569f, 1.f);
+    LineDesc.vColor = _float4(3.5f, 3.f, 1.6f, 1.f);
     for (_uint i = 0; i < ENUM_CLASS(EYE::END); ++i)
         m_pLineTrail[i] = dynamic_cast<CLineTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_LineTrail"), &LineDesc));
 
@@ -426,14 +426,14 @@ void CViper::Update(_float fTimeDelta)
     //  FX_2PhaseSwordTrail();
     // 이후 2페이즈 광전사 모드일 때부터 호출
 
-    TRAIL_CONFIG Config{};
-    Config.fLifeTime = 1.f;
-    Config.iTextureIdx = 6;
-    Config.iDivisionCount = 5;
-    Config.vColor = _float4(3.353f, 2.961f, 1.569f, 1.f);
-    Config.vSubColor = _float4(0.f, 0.f, 0.f, 0.f);
-    m_pLineTrail[ENUM_CLASS(EYE::LEFT)]->Set_TrailConfig(Config);
-    m_pLineTrail[ENUM_CLASS(EYE::RIGHT)]->Set_TrailConfig(Config);
+    //TRAIL_CONFIG Config{};
+    //Config.fLifeTime = 2.f;
+    //Config.iTextureIdx = 6;
+    //Config.iDivisionCount = 5;
+    //Config.vColor = _float4(3.353f, 2.961f, 1.569f, 1.f);
+    //Config.vSubColor = _float4(0.f, 0.f, 0.f, 0.f);
+    //m_pLineTrail[ENUM_CLASS(EYE::LEFT)]->Set_TrailConfig(Config);
+    //m_pLineTrail[ENUM_CLASS(EYE::RIGHT)]->Set_TrailConfig(Config);
 
    //if (m_pGameInstance->Key_Down(DIK_P))
    // {
@@ -474,7 +474,7 @@ void CViper::Late_Update(_float fTimeDelta)
         for (auto& pTrail : m_p2PhaseTrail)
             pTrail->Late_Update(fTimeDelta);
     }
-
+     
     for (auto& pTrail : m_pLineTrail)
         pTrail->Late_Update(fTimeDelta);
 }
@@ -4687,13 +4687,15 @@ void CViper::FX_2PhaseSwordTrail()
 void CViper::FX_2PhaseEyeTrail()
 {
     _vector vLeftEyePos = m_pPahse2Body->Get_BoneMatrix("Bone_eye_L").r[3];
-    _vector vLeftEyeRight = m_pPahse2Body->Get_BoneMatrix("Bone_eye_L").r[0];
-    vLeftEyePos += vLeftEyeRight * 5.f;
+    //_vector vLeftEyeRight = m_pPahse2Body->Get_BoneMatrix("Bone_eye_L").r[0];
+    _vector vLeftEyeRight = m_pTransformCom->Get_State(STATE::LOOK);
+    vLeftEyePos += XMVector4Normalize(vLeftEyeRight) * 0.1f;
     m_pLineTrail[ENUM_CLASS(EYE::LEFT)]->Add_ControlPoint(vLeftEyePos);
-
+    
     _vector vRightEyePos = m_pPahse2Body->Get_BoneMatrix("Bone_eye_R").r[3];
-    _vector vRightEyeRight = m_pPahse2Body->Get_BoneMatrix("Bone_eye_R").r[0];
-    vRightEyePos += vRightEyeRight * 5.f;
+    //_vector vRightEyeRight = m_pPahse2Body->Get_BoneMatrix("Bone_eye_R").r[0];
+    _vector vRightEyeRight = m_pTransformCom->Get_State(STATE::LOOK);
+    vRightEyePos += XMVector4Normalize(vRightEyeRight) * 0.1f;
     m_pLineTrail[ENUM_CLASS(EYE::RIGHT)]->Add_ControlPoint(vRightEyePos);
 }
 

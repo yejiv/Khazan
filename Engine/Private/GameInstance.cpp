@@ -1583,6 +1583,16 @@ void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strProto
     m_pEffect_Manager->Stop_Effect(iLayerLevelIndex, strPrototypeTag);
 }
 
+void CGameInstance::Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)
+{
+    m_pEffect_Manager->Stop_Effect_Force(iLayerLevelIndex, strPrototypeTag, ID);
+}
+
+void CGameInstance::Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag)
+{
+    m_pEffect_Manager->Stop_Effect_Force(iLayerLevelIndex, strPrototypeTag);
+}
+
 #pragma endregion
 
 #pragma region DISTORTION
