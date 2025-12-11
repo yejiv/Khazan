@@ -192,7 +192,7 @@ void CKhazan_GSword::Update(_float fTimeDelta)
     //    m_pTransformCom->Set_State(STATE::POSITION, vpos);
     //    //m_pCharVirCom->Set_Gravity(g_fGravity);
     //    //m_vGravity = XMVectorSet(0.f, 0.F, 0.f, 0.f);
-    m_pClientInstance->Set_PlayerInput(true);
+
     if (m_isEnableControl)
     {
         m_fTimeAcc += fTimeDelta;
@@ -2138,6 +2138,8 @@ void CKhazan_GSword::Clear_Injured()
 
 void CKhazan_GSword::EnterStatuePuzzle()
 {
+    m_pClientInstance->Set_PlayerInput(false);
+
     if (Has_Status(SPEAR))
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
     if (Has_Status(GSWORD))
@@ -2145,6 +2147,7 @@ void CKhazan_GSword::EnterStatuePuzzle()
 
     Add_Status(BLOCK_ATK_SKILL_GUARD | STATUE_MODE | BAREHAND);
     Remove_Status(GSWORD);
+
     cout << "================= STATUE_MODE On =================" << endl;
 
 }
@@ -2158,7 +2161,6 @@ void CKhazan_GSword::ExitStatuePuzzle()
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed"));
     if (Has_Status(GSWORD))
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));  
-
 
 
     m_pClientInstance->Set_PlayerInput(false);
@@ -2321,14 +2323,14 @@ void CKhazan_GSword::Check_Statue()
 {
     if (!Has_Status(STATUE_MODE)) return;
 
-    if (m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed")) && m_pBody->Get_Model()->Check_MinAnimationTime())
-       // || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"))
+    if (m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_UnArmed")) && m_pBody->Get_Model()->IsFinished())
+       // || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_UnArmed"))
     {
         m_pClientInstance->Set_PlayerInput(true);
     }
 
-    if (m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed")) && m_pBody->Get_Model()->Check_MinAnimationTime())
-       // || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed"))
+    if (m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed")) && m_pBody->Get_Model()->IsFinished())
+       // || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"))
     {
         m_pClientInstance->Set_PlayerInput(true);
         Remove_Status(STATUE_MODE);
@@ -2453,7 +2455,7 @@ void CKhazan_GSword::Clear_Step2()
         Clear_SubState();
         Remove_State(CAT::M_MOVE);
     }
-    Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | ROTATION | SPRINT_AGAIN_REQUEST | DODGING | DODGE_ENDING);
+    Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | ROTATION | SPRINT_AGAIN_REQUEST | DODGING );
 
     m_eDir.iDirFlag = 0;
     m_eWorldDir.iDirFlag = 0;
@@ -3577,6 +3579,10 @@ void CKhazan_GSword::Debug_Widget_Movement()
     {
         m_isEnableControl = !m_isEnableControl;
     }
+    if (m_pClientInstance->Get_PlayerInput())
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[ok] Player Input");
+    else
+        ImGui::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "[ ] Player Input");
 
     ImGui::Separator();
 

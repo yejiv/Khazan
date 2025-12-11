@@ -155,7 +155,7 @@ _bool CKhazan_GS_Anim_Move::Try_ChangeAnimation(GS_MOVEINFO moveInfo)
         }
         else if (moveInfo.iCycle & CYC::CYCLE_END)
         {
-            if (m_curFoot == FOOT_R) iSelectedAnimationIndex = Get_AnimIndexByName("CA_P_Kazan_Gsword_Walk_Stop_F_RF", "CA_P_Kazan_Spear_Walk_Stop_F_RF", "CA_P_Kazan_Gsword_Walk_Stop_F_RF");
+            if (m_curFoot == FOOT_R) iSelectedAnimationIndex = Get_AnimIndexByName("CA_P_Kazan_Gsword_Walk_Stop_F_RF", "CA_P_Kazan_Spear_Walk_Stop_F_RF", "CA_P_Kazan_GSword_Walk_Stop_F_RF");
             else  iSelectedAnimationIndex = Get_AnimIndexByName("CA_P_Kazan_Gsword_Walk_Stop_F_LF", "CA_P_Kazan_Spear_Walk_Stop_F_LF", "CA_P_Kazan_Gsword_Walk_Stop_F_LF");
 
             m_isStopAnimationFinished = true;
@@ -397,7 +397,7 @@ _bool CKhazan_GS_Anim_Move::Check_Dodge()
     {
         for (const auto& animName : s_strGSDodgeAnims)
         {
-            if (curAnimIndex == m_pModel->Get_AnimIndexByName(animName))
+            if (curAnimIndex == m_pModel->Get_AnimIndexByName(animName) && !m_pModel->Check_MinAnimationTime())
             {
                 isDodgeAnim = true;
                 break;
@@ -409,7 +409,7 @@ _bool CKhazan_GS_Anim_Move::Check_Dodge()
     {
         for (const auto& animName : s_strSpearDodgeAnims)  //todo 이상하면 스피어 dodge 추가 
         {
-            if (curAnimIndex == m_pModel->Get_AnimIndexByName(animName))
+            if (curAnimIndex == m_pModel->Get_AnimIndexByName(animName) && !m_pModel->Check_MinAnimationTime())
             {
                 isDodgeAnim = true;
                 break;

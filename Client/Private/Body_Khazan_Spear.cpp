@@ -2075,6 +2075,7 @@ void CBody_Khazan_Spear::Free()
 
     Safe_Release(m_pModelCom);
     Safe_Release(m_pTrail);
+    Safe_Release(m_pSoundHelper);
 
     m_CollMonsters.clear();
 
