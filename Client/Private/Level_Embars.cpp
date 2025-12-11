@@ -79,7 +79,7 @@ HRESULT CLevel_Embars::Initialize()
 
     CClientInstance::GetInstance()->Fade_In([this]() {Start_Event(); });
 
-    CClientInstance::GetInstance()->Set_Volume_BGM(0.45f);
+    CClientInstance::GetInstance()->Set_Volume_BGM(0.65f);
     CClientInstance::GetInstance()->BGM_Embars_Entry();
 
     if (!Wait_All_Futures())

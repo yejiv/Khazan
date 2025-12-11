@@ -48,7 +48,7 @@ void CIllusion_Wall::Update(_float fTimeDelta)
 
     if (1.f <= m_fTimeAcc)
     {
-        m_fDecreaseAlpha += fTimeDelta * 0.5f;
+        m_fDecreaseAlpha += fTimeDelta * 0.2f;
     }
 
     if (false == m_isRemoveWall && 0.5f <= m_fDecreaseAlpha)
