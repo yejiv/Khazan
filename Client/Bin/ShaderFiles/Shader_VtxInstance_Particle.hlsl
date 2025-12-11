@@ -221,7 +221,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
 PS_OUT PS_PRESNEL(PS_IN In)
 {
-    if (In.bDead == true)
+    if (In.bDead)
         discard;
     
     PS_OUT Out = (PS_OUT) 0;

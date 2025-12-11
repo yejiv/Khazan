@@ -53,6 +53,7 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
         if (fDist < 10 +0.1f /*|| pBB->Get_Value<_bool>(pViper->Get_Name(),"isP2_Dash_Abort")*/)
         {
             m_eState = DRIFTSTATE::FINISH;
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_end_atk_whoosh_01 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
             pModel->Set_Animation(20);
         }
     }
@@ -66,6 +67,7 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
         case Client::DRIFTSTATE::START:
         {
             m_eState = DRIFTSTATE::LOOP;
+            pViper->SFX_DASHDRIFT();
             pModel->Set_Animation(21);
         }
         break;

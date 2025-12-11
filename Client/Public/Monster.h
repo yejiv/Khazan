@@ -79,9 +79,6 @@ public:
 
 
 protected:
-	//CRigidBody*						m_pRigidBodyCom = { nullptr };
-
-protected:
 	class CAI_Controller*			m_pController = { nullptr };
 	class CGameObject*				m_pTarget = { nullptr };
 
@@ -102,6 +99,7 @@ protected:
 
     _bool                           m_isDeadFlag = { false };
 
+    _float2                         m_vDecalSize = {};
 //private:
 //	HRESULT Ready_Components();
 

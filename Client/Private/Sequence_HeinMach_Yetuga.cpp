@@ -56,6 +56,8 @@ void CSequence_HeinMach_Yetuga::Update(_float fTimeDelta)
 
         m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
 		m_isEnd = true;
+
+        CClientInstance::GetInstance()->BGM_HeinMach_Yetuga_1Phase();
 	}
 
 

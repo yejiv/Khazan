@@ -84,6 +84,12 @@ public:
     BodyInterface* Get_BodyInterface() { return &(m_pPhysics->GetBodyInterface()); }
     const BodyLockInterfaceLocking* Get_BodyLockInterface() { return &(m_pPhysics->GetBodyLockInterface()); }    
 
+public:
+    bool IsObjectLayerPairValid(ObjectLayer a, ObjectLayer b) const
+    {
+        return m_pObjectLayerPairFilter->ShouldCollide(a, b);
+    }
+
 //public:
 //    void Clear();
 #ifdef _DEBUG

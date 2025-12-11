@@ -79,6 +79,9 @@ HRESULT CBody_Khazan_GS::Initialize_Clone(void* pArg)
 
     m_Offset_Matrix = XMMatrixRotationX(XMConvertToRadians(-90));
 
+    m_bGuradFX[0] = false;
+    m_bGuradFX[1] = false;
+
     return S_OK;
 }
 
@@ -183,7 +186,12 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     XMStoreFloat4(&vResultPos, vPosition);
 
     m_pGameInstance->Set_LightPosition(TEXT("Viper_Thunder"), ENUM_CLASS(LEVEL::VIPER), vResultPos);
-    //m_pGameInstance->Set_LightPosition(TEXT("Viper_Thunder_Ambient"), ENUM_CLASS(LEVEL::VIPER), vPos);
+    //m_pGameInstance->Set_LightPosition(TEXT("Viper_Thunder_Ambient"), ENUM_CLASS(LEVEL::VIPER), vPos); 
+
+    if (m_bGuradFX[0] || m_bGuradFX[1])
+        Spawn_Guard_FX();
+    m_bGuradFX[0] = false;
+    m_bGuradFX[1] = false;
 }
 
 void CBody_Khazan_GS::Late_Update(_float fTimeDelta)
@@ -439,6 +447,7 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
         /* 방어 콜라이더  */
         if (m_isCollGuard_Active)
         {
+            _matrix mat = XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt);
             *m_pParentStatus |= CKhazan_GSword::GUARD;
 
             /* 저스트 가드 타이밍 */
@@ -449,6 +458,8 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
                 /* 몬스터한테 저스트 가드 타이밍 건내주기  */
                 if (pDesc->pGameObject == nullptr) return;
 
+                m_bGuradFX[0] = true;
+
                 CWeaponObject* pMonster = dynamic_cast<CWeaponObject*>(pDesc->pGameObject);
 
                 if (pMonster == nullptr)
@@ -456,7 +467,8 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
 
                 pMonster->On_JustGuardCallback(true);
 
-            }
+            } 
+            m_bGuradFX[1] = true;
 
             /* 가드후 충돌되면 충돌된 지점 봐라보게*/
             Start_GuardRotation(vContactPoint);
@@ -2023,6 +2035,21 @@ void CBody_Khazan_GS::Set_BrightTrail()
     Config.vColor = { 3.529f, 0.f, 0.f, 1.f };
     Config.vSubColor = { 0.f, 0.f, 0.f, 2.f };
     m_pTrail->Set_TrailConfig(Config);
+}
+
+void CBody_Khazan_GS::Spawn_Guard_FX()
+{ 
+    _matrix mat = XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt);
+    if (m_bGuradFX[0])
+    {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("PerfectGaurd"), mat.r[3]);
+        m_bGuradFX[0] = false;
+    }
+    if (m_bGuradFX[1])
+    {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Guard"), mat.r[3]);
+        m_bGuradFX[1] = false;
+    }
 }
 
 CBody_Khazan_GS* CBody_Khazan_GS::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

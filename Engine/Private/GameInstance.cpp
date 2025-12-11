@@ -1066,6 +1066,11 @@ const BodyLockInterfaceLocking* CGameInstance::Get_BodyLockInterface()
     return m_pJolt_Manager->Get_BodyLockInterface();
 }
 
+_bool CGameInstance::IsObjectLayerPairValid(_uint iObjectLayer1, _uint iObjectLayer2)
+{
+	return m_pJolt_Manager->IsObjectLayerPairValid(ObjectLayer(iObjectLayer1), ObjectLayer(iObjectLayer2));
+}
+
 #ifdef _DEBUG
 void CGameInstance::Jolt_Test()
 {
@@ -1576,6 +1581,16 @@ void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strProto
 void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag)
 {
     m_pEffect_Manager->Stop_Effect(iLayerLevelIndex, strPrototypeTag);
+}
+
+void CGameInstance::Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)
+{
+    m_pEffect_Manager->Stop_Effect_Force(iLayerLevelIndex, strPrototypeTag, ID);
+}
+
+void CGameInstance::Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag)
+{
+    m_pEffect_Manager->Stop_Effect_Force(iLayerLevelIndex, strPrototypeTag);
 }
 
 #pragma endregion

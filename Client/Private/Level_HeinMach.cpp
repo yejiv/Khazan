@@ -27,6 +27,8 @@
 
 #pragma region ITEM
 #include "Interaction_Item.h"
+//TEST
+#include "UI_Inven.h"
 #pragma endregion
 
 CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -89,6 +91,9 @@ HRESULT CLevel_HeinMach::Initialize()
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
     CClientInstance::GetInstance()->Fade_Out();
+
+    CClientInstance::GetInstance()->Set_Volume_BGM(0.45f);
+    CClientInstance::GetInstance()->BGM_HeinMach_Entry();
 
     if (!Wait_All_Futures())
         return E_FAIL;
@@ -203,6 +208,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
     else if (m_pGameInstance->Key_Down(DIK_F2, INPUT_TYPE::FORCE))
     {
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
+        static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1004);
     }
 
     if (m_eNextLevel != LEVEL::END)
@@ -446,6 +452,13 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Dawn_BloodTrail2"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GS_StrongATK"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Ghost_Dark_Shadow_Land"),1);
+
+    // [Player Ect] 
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Guard"),100);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("PerfectGaurd"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Lachryma"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Lachryma_Arm"), 3);
+
 
     return S_OK;
 }

@@ -156,9 +156,6 @@ HRESULT CBladeNexus::Render()
     {
         Bind_Materials(i);
 
-        _bool isBNEye = { 5 == i };
-        m_pShaderCom->Bind_RawValue("g_isBNEye", &isBNEye, sizeof(_bool));
-
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
         if (i == 1)
@@ -167,7 +164,7 @@ HRESULT CBladeNexus::Render()
             if (FAILED(m_pShaderCom->Bind_RawValue("g_vCristalColor", &vCristalColor, sizeof(_float4))))
                 return E_FAIL;
             
-            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(26), E_FAIL);
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(27), E_FAIL);
         }
         else
             CHECK_FAILED_ASSERT(m_pShaderCom->Begin(8), E_FAIL);
@@ -294,13 +291,8 @@ HRESULT CBladeNexus::Ready_DefaultSetting(void* pArg)
         memcpy(m_szPlaceName, TEXT("설인의 대지"), sizeof(m_szPlaceName));
         break;
     case static_cast<_int>(BLADENEXUS_ID::HEINMACH_YETUGA):
-    {
-        memcpy(m_szPlaceName, TEXT("물음표"), sizeof(m_szPlaceName));
-
-        // 예투가 죽었다는 이벤트 받으면 위치 옮길 예정 ( 아래에서 뿅 )
-
+        memcpy(m_szPlaceName, TEXT("예투가의 레어"), sizeof(m_szPlaceName));
         break;
-    }
     case static_cast<_int>(BLADENEXUS_ID::EMBARS_UNDER):
         memcpy(m_szPlaceName, TEXT("잊혀진 사원의 지하"), sizeof(m_szPlaceName));
         break;
@@ -409,7 +401,7 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
         // 해금 전 IDLE 상태
         if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
         {
-            CClientInstance::GetInstance()->BGM_Pause(true);
+            CClientInstance::GetInstance()->BGM_Mute();
 
             SoundOnce(TEXT("IP_TS_Before_Start"), m_fInteract_Volume);
 
@@ -485,7 +477,7 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
         // 해금 후 IDLE 상태
         else if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         {
-            CClientInstance::GetInstance()->BGM_Pause(true);
+            CClientInstance::GetInstance()->BGM_Mute();
 
             SoundOnce(TEXT("IP_TS_On"), m_fInteract_Volume);
 
@@ -517,7 +509,7 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::BEFORE_LOOP == m_eAnimState)
         {
-            CClientInstance::GetInstance()->BGM_Resume(true);
+            CClientInstance::GetInstance()->BGM_UnMute();
 
             SoundStop_FadeOut(TEXT("IP_TS_Loop"), 3.f);
             SoundOnce(TEXT("IP_TS_Off"), m_fInteract_Volume);
@@ -528,7 +520,7 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
         }
         if (ANIM_STATE::AFTER_LOOP == m_eAnimState)
         {
-            CClientInstance::GetInstance()->BGM_Resume(true);
+            CClientInstance::GetInstance()->BGM_UnMute();
 
             SoundStop_FadeOut(TEXT("IP_TS_Loop_Vocal"), 3.f);
             SoundOnce(TEXT("IP_TS_Off"), m_fInteract_Volume);

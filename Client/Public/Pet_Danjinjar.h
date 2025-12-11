@@ -80,6 +80,7 @@ private:
 
     HRESULT							Ready_MonData();
 
+    void                            State_Change(_bool isStart);
 public:
     static CPet_Danjinjar*        Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;

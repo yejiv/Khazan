@@ -215,7 +215,8 @@ void CDoor_Gear::Animation_Change(_float fTimeDelta)
         m_iEffectIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On_Static"),
             XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)),
             XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
-        
+
+        m_pGameInstance->Emit_Event<EVENT_PET_STATE>(ENUM_CLASS(EVENT_TYPE::PET), EVENT_PET_STATE{ false });
     }
 }
 

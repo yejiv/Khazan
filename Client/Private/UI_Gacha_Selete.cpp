@@ -34,7 +34,47 @@ HRESULT CUI_Gacha_Selete::Initialize_Clone(void* pArg)
 
 void CUI_Gacha_Selete::Late_Update(_float fTimeDelta, _vector vPos)
 {
+    static _bool itemEffect = false;
+
+    if (m_pGameInstance->Key_Pressing(DIK_TAB, fTimeDelta, INPUT_TYPE::FORCE))
+    {
+        if (m_pGameInstance->Key_Down(DIK_Q, INPUT_TYPE::FORCE))
+        {
+            if (itemEffect == false)
+            {
+                /*[1] 아이템 켜기 */
+                m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Item_normal_Gacha"), vPos);
+                itemEffect = true;
+            }
+            else
+            {
+                /*[2] 아이템 끄기 */
+                m_pGameInstance->Stop_Effect_Force(ENUM_CLASS(LEVEL::EMBARS), TEXT("Item_normal_Gacha"));
+                itemEffect = false;
+            }
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_W, INPUT_TYPE::FORCE))
+        {
+            /*[2] 아이템 터지기 */
+            m_pGameInstance->Stop_Effect_Force(ENUM_CLASS(LEVEL::EMBARS), TEXT("Item_normal_Gacha"));
+            itemEffect - false;
+            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("item_blust"), vPos);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_E, INPUT_TYPE::FORCE))
+        {
+            /*[3] 당첨된 아이템 끄기 -> 이거 나중에 내가 시간 조절해서 알아서 꺼지게 만들 수 있음! 그럼 굳이 호출 안 해도 되는데 의견 부탁! */
+            m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("item_blust"));
+            itemEffect - false;
+        }
+    }
+    
     Update_WorldPos(vPos);
+    
+    //계속 호출해도 상관 없지만 꺼져있을 땐 안 해도 좋음
+    m_pGameInstance->Update_Effect_Position(ENUM_CLASS(LEVEL::EMBARS), TEXT("Item_normal_Gacha"), 0, vPos);
+    
     CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
 }
 

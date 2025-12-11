@@ -108,7 +108,7 @@ HRESULT CLoadingObj_BN::Render()
             if (FAILED(m_pShaderCom->Bind_RawValue("g_vCristalColor", &vCristalColor, sizeof(_float4))))
                 return E_FAIL;
 
-            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(26), E_FAIL);
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(27), E_FAIL);
         }
         else
             CHECK_FAILED_ASSERT(m_pShaderCom->Begin(8), E_FAIL);
