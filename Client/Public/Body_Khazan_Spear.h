@@ -188,6 +188,10 @@ private:
 
     mutex m_CollMonsterMutex;
 
+    _bool               m_bGuradFX[2];
+
+    _bool               m_isHitSound;
+
 private:
     void				Update_Collider(_float fTimeDelta);                     
     void                Check_Guarding(_float fTimeDelta);
@@ -221,6 +225,8 @@ private:
     void    Set_BaseTrail();
     void    Set_BlueTrail();
     void    Set_RedTrail();
+
+    void    Spawn_Guard_FX();
 
     //void	UpdateTrail();
 
