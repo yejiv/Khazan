@@ -150,6 +150,8 @@ HRESULT CIronGate::Ready_PartObjects(void* pArg)
     PartLeftDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     PartLeftDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Door_Pivot_L");
 
+    PartLeftDesc.pUnLock = &m_isUnLock;
+
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Gate_L"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_IronGate_Part_L"), &PartLeftDesc), E_FAIL);
 
@@ -158,6 +160,8 @@ HRESULT CIronGate::Ready_PartObjects(void* pArg)
     PartRightDesc.eLevel = eLevel;
     PartRightDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     PartRightDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Door_Pivot_R");
+
+    PartRightDesc.pUnLock = &m_isUnLock;
 
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Gate_R"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_IronGate_Part_R"), &PartRightDesc), E_FAIL);

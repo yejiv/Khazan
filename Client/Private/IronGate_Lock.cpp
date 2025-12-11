@@ -71,11 +71,6 @@ void CIronGate_Lock::Update(_float fTimeDelta)
     XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
 
     m_fBlinkTimeAcc += fTimeDelta;
-
-    // Test
-    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
-        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-            m_isEnableBlink = !m_isEnableBlink;
 }
 
 void CIronGate_Lock::Late_Update(_float fTimeDelta)
@@ -95,7 +90,7 @@ HRESULT CIronGate_Lock::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        if (true == m_isEnableBlink)
+        if (false == *m_pUnLock)
         {
             if (FAILED(Bind_Blink_ShaderResources()))
                 return E_FAIL;
