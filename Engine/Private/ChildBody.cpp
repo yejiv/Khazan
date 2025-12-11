@@ -142,20 +142,119 @@ void CChildBody::ApplyToBones(_float fAlpha, _bool isFrozen)
     );
 
     // 부모 기준 로컬 위치로 변환
-    _vector physLocalPos = XMVector3TransformCoord(bodyWorldPos, invParentWorld);
+    XMVECTOR physLocalPos = XMVector3TransformCoord(bodyWorldPos, invParentWorld);
 
     // 기준 로컬 포즈 (rest pose)
-    _vector tRest = XMLoadFloat3(&m_vRestLocalPos);
-    _vector rRest = XMLoadFloat4(&m_vRestLocalRot);
+    XMVECTOR tRest = XMLoadFloat3(&m_vRestLocalPos);
+    XMVECTOR rRest = XMLoadFloat4(&m_vRestLocalRot);
 
-    _vector delta = physLocalPos - tRest;
+    float depth = (float)m_iDepth;
+    float depthFactor = 0.2f + 0.6f * (1.0f - expf(-0.5f * depth)); // 0.2~0.8
+    depthFactor = clamp(depthFactor, 0.2f, 0.8f);
+    float finalAlpha = fAlpha * depthFactor;
 
-    // ========= 위/아래, 수평 분리 =========
-    XMVECTOR up = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-    XMVECTOR vertical = XMVector3Dot(delta, up) * up; // Y
-    XMVECTOR horizontal = delta - vertical;            // XZ
+    // rest 방향/길이
+    XMVECTOR restDir = tRest;
+    float restLen = XMVectorGetX(XMVector3Length(restDir));
+    if (restLen < 1e-4f)
+    {
+        restLen = 0.01f;
+        restDir = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+    }
+    else
+    {
+        restDir = XMVectorScale(restDir, 1.0f / restLen);
+    }
 
-    float vLen = XMVectorGetX(XMVector3Dot(vertical, up)); // +면 위, -면 아래
+    //=========================================================
+    // FEELER : 통짜로 크게 휘면서 상하좌우 웨이브 + 길이 유지
+    //=========================================================
+    if (m_eClothType == CLOTHTYPE::FEELER)
+    {
+        XMVECTOR up = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+        // 좌우축 (side) = up × restDir
+        XMVECTOR sideAxis = XMVector3Cross(up, restDir);
+        float sideLenSq = XMVectorGetX(XMVector3LengthSq(sideAxis));
+        if (sideLenSq < 1e-6f)
+            sideAxis = XMVector3Cross(restDir, XMVectorSet(1.f, 0.f, 0.f, 0.f));
+        sideAxis = XMVector3Normalize(sideAxis);
+
+        // 상하축 : restDir 에 수직인 up 성분
+        XMVECTOR upProj = XMVector3Dot(up, restDir) * restDir;
+        XMVECTOR upAxis = up - upProj;
+        float upLenSq = XMVectorGetX(XMVector3LengthSq(upAxis));
+        if (upLenSq < 1e-6f)
+            upAxis = up; // 거의 평행하면 그냥 글로벌 up
+        upAxis = XMVector3Normalize(upAxis);
+
+        // 시간 + depth 기반 웨이브
+        float time = m_fFeelerTime;
+        float freqMain = 2.5f;
+        float phasePerDepth = 0.3f;
+        float phase = depth * phasePerDepth;
+
+        float waveSide = sinf(time * freqMain + phase);
+        float waveUp = cosf(time * (freqMain * 0.8f) + phase * 1.3f);
+
+        float depthNorm = min(depth / 6.0f, 1.0f);      // 0~1
+        float baseAmp = 0.10f;
+        float ampDepth = 0.04f;
+        float amp = (baseAmp + ampDepth * depthNorm) * finalAlpha;
+
+        const float MAX_AMP = 0.40f;
+        if (amp > MAX_AMP) amp = MAX_AMP;
+
+        XMVECTOR waveOffset =
+            sideAxis * (waveSide * amp) +
+            upAxis * (waveUp * amp * 0.8f);
+
+        // 약간 아래로 처지게
+        float baseSagPerDepth = 0.015f;
+        float sag = baseSagPerDepth * depth;
+        XMVECTOR sagOffset = XMVectorSet(0.f, -sag, 0.f, 0.f);
+
+        // 물리 위치와 rest를 섞은 베이스 위치
+        XMVECTOR basePos = XMVectorLerp(tRest, physLocalPos, 0.6f * finalAlpha);
+        // 완전 rest만 쓰고 싶으면: basePos = tRest;
+
+        XMVECTOR finalPos = basePos + waveOffset + sagOffset;
+
+        // ==============================
+        // ★ 길이 유지 : 부모 기준 거리 고정
+        // ==============================
+        float lenNow = XMVectorGetX(XMVector3Length(finalPos));
+        if (lenNow > 1e-4f)
+        {
+            // 거의 안 늘어나게 (여유 조금 주고 싶으면 1.02f 정도)
+            float targetLen = restLen * 1.02f; // 2%만 허용, 빡세게는 1.0f
+            finalPos = XMVectorScale(finalPos, targetLen / lenNow);
+        }
+
+        // 회전은 rest 기준
+        XMVECTOR sOne = XMVectorSet(1.f, 1.f, 1.f, 0.f);
+        XMMATRIX finalLocalM = XMMatrixAffineTransformation(
+            sOne,
+            XMVectorZero(),
+            rRest,
+            finalPos
+        );
+
+        m_pBone->Set_TransformationMatrix(finalLocalM);
+        m_pBone->Update_CombinedTransformationMatrix(pParentBone);
+        return;
+    }
+
+    //=========================================================
+    // 나머지 타입 (SKIRT / CAPE) : 기존 로직 그대로
+    //=========================================================
+    XMVECTOR delta = physLocalPos - tRest;
+
+    XMVECTOR up2 = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    XMVECTOR vertical = XMVector3Dot(delta, up2) * up2;
+    XMVECTOR horizontal = delta - vertical;
+
+    float vLen = XMVectorGetX(XMVector3Dot(vertical, up2));
 
     float maxHoriz;
     float verticalUpScale;
@@ -163,60 +262,41 @@ void CChildBody::ApplyToBones(_float fAlpha, _bool isFrozen)
 
     if (m_eClothType == CLOTHTYPE::SKIRT)
     {
-        maxHoriz = 0.35f;  // 치마는 많이 안 퍼지게
-        verticalUpScale = 0.3f;   // 위로는 30%만
-        baseSagPerDepth = 0.03f;  // depth당 3cm 처짐
-    }
-    if (m_eClothType == CLOTHTYPE::FEELER)
-    {
-        baseSagPerDepth = 0.01f;  // 거의 안 처짐
-        verticalUpScale = 0.7f;
-        maxHoriz = 0.25f;    // 옆으로도 많이 안 퍼지게
+        maxHoriz = 0.35f;
+        verticalUpScale = 0.3f;
+        baseSagPerDepth = 0.03f;
     }
     else // CAPE
     {
-        maxHoriz = 0.6f;   // 망토는 조금 더 많이 퍼져도 됨
-        verticalUpScale = 0.7f;   // 위로도 꽤 움직이게
-        baseSagPerDepth = 0.02f;  // 너무 축 늘어지지 않게
+        maxHoriz = 0.6f;
+        verticalUpScale = 0.7f;
+        baseSagPerDepth = 0.02f;
     }
 
-    // 위로 튀는 건 scale 줄여서 눌러줌
-    XMVECTOR verticalClamped;
-    if (vLen > 0.f)
-        verticalClamped = vertical * verticalUpScale;
-    else
-        verticalClamped = vertical;
+    XMVECTOR verticalClamped = (vLen > 0.f) ? vertical * verticalUpScale : vertical;
 
-    // 수평 퍼짐 길이 제한
     float horizLen = XMVectorGetX(XMVector3Length(horizontal));
     if (horizLen > maxHoriz && horizLen > 1e-6f)
         horizontal = horizontal * (maxHoriz / horizLen);
 
     delta = horizontal + verticalClamped;
 
-    // depth에 따라 영향도 조절 (점점 더 많이 흔들리게)
-    float depth = (float)m_iDepth;
-    float depthFactor = 0.2f + 0.6f * (1.0f - expf(-0.5f * depth)); // 0.2~0.8
-    depthFactor = clamp(depthFactor, 0.2f, 0.8f);
+    float finalAlpha_SK = fAlpha * depthFactor;
 
-    float finalAlpha = fAlpha * depthFactor;
+    float sag_SK = baseSagPerDepth * depth;
+    XMVECTOR sagOffset_SK = XMVectorSet(0.f, -sag_SK, 0.f, 0.f);
 
-    // depth에 따른 기본 처짐
-    float sag = baseSagPerDepth * (float)m_iDepth;
-    XMVECTOR sagOffset = XMVectorSet(0.f, -sag, 0.f, 0.f);
+    XMVECTOR finalPos_SK = tRest + delta * finalAlpha_SK + sagOffset_SK;
 
-    XMVECTOR finalPos = tRest + delta * finalAlpha + sagOffset;
-
-    // scale은 1 유지, 회전은 rest 기준
     XMVECTOR sRest = XMVectorSet(1.f, 1.f, 1.f, 0.f);
-    XMMATRIX finalLocalM = XMMatrixAffineTransformation(
+    XMMATRIX finalLocalM_SK = XMMatrixAffineTransformation(
         sRest,
         XMVectorZero(),
         rRest,
-        finalPos
+        finalPos_SK
     );
 
-    m_pBone->Set_TransformationMatrix(finalLocalM);
+    m_pBone->Set_TransformationMatrix(finalLocalM_SK);
     m_pBone->Update_CombinedTransformationMatrix(pParentBone);
 }
 
