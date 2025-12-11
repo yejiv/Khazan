@@ -6,6 +6,7 @@
 
 #include "ClientInstance.h"
 #include "UI_BladeNexus.h"
+#include "UI_Inven.h"
 
     CBladeNexus::CBladeNexus(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
     : CProp_Interactive{ pDevice, pContext }
@@ -543,6 +544,9 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
 
         switch (m_iBladeNexus_ID)
         {
+        case static_cast<_int>(BLADENEXUS_ID::HEINMACH_ENTER):
+            static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(4011);
+            break;
         case static_cast<_int>(BLADENEXUS_ID::HEINMACH_YETUGA):
             eUIType = CUI_BladeNexus::ONTYPE::EMBARS;
             break;

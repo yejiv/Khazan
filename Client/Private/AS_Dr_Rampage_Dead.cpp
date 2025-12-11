@@ -49,7 +49,7 @@ void CAS_Dr_Rampage_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     }
     else if (m_eState == RELEASSE)
     {
-        m_pMonData->fDecreaseAlpha += fTimeDelta * 0.35f;
+        m_pMonData->fDecreaseAlpha += fTimeDelta * 0.7f;
 
         if (m_pMonData->fDecreaseAlpha >= 1.f)
         {

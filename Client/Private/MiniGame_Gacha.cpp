@@ -6,6 +6,8 @@
 #include "UI_Gacha_Selete.h"
 #include "UI_Inven.h"
 
+#include "Minigame_Mirrorball.h"
+
 void CMiniGame_Gacha::Start_MiniGame(MINIGAME_LEVEL eLevel)
 {
     m_eMiniGameLevel = eLevel;
@@ -56,7 +58,7 @@ void CMiniGame_Gacha::Start_MiniGame(MINIGAME_LEVEL eLevel)
     // 미니게임 위치로 화면 전환
     CAMERA_POSE Pose = CClientInstance::GetInstance()->Camera_MakePose(_float3(-62.071f, -89.988f, -41.670f), _float3(-0.934f, -0.358f, 0.008f));
     CClientInstance::GetInstance()->Camera_SubShot(Pose, 0.3f, 0.3f);
-
+    m_pMirrorball->End_Mirrorball();
 }
 
 CMiniGame_Gacha::CMiniGame_Gacha(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -113,6 +115,8 @@ void CMiniGame_Gacha::Update(_float fTimeDelta)
 
     for (auto pBox : m_pBox)
         pBox->Update(fTimeDelta);
+
+    m_pMirrorball->Update(fTimeDelta);
 }
 
 void CMiniGame_Gacha::Late_Update(_float fTimeDelta)
@@ -172,9 +176,15 @@ HRESULT CMiniGame_Gacha::Setting_Object()
     m_pBox[1]->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-67.325f, -92.26f, -41.831f, 1.f));
     m_pBox[2]->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-67.325f, -92.26f, -38.842, 1.f));
 
+    m_pGameInstance->Set_LightPosition(TEXT("GachaSelect1"), ENUM_CLASS(LEVEL::EMBARS), { -67.325f, -92.26f, -44.777f, 1.f });
+    m_pGameInstance->Set_LightPosition(TEXT("GachaSelect2"), ENUM_CLASS(LEVEL::EMBARS), { -67.325f, -92.26f, -41.831f, 1.f });
+    m_pGameInstance->Set_LightPosition(TEXT("GachaSelect3"), ENUM_CLASS(LEVEL::EMBARS), { -67.325f, -92.26f, -38.842, 1.f});
+
     m_pBox[0]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
     m_pBox[1]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
     m_pBox[2]->Get_Transform()->Rotation(0.f, XMConvertToRadians(90.f), 0.f);
+
+    m_pMirrorball = CMinigame_Mirrorball::Create();
     return S_OK;
 }
 
@@ -334,7 +344,10 @@ void CMiniGame_Gacha::Update_Selete_End0(_float fTimeDelta)
                 m_eEndAnime = ANIM_STATE::END;
 
                 if (m_eMiniGameLevel == MINIGAME_LEVEL::HARD)
+                {
                     CClientInstance::GetInstance()->BGM_Embars_Club_Game();
+                    m_pMirrorball->Start_Mirrorball();
+                }
             }
             else
             {
@@ -562,6 +575,7 @@ void CMiniGame_Gacha::Free()
 {
     __super::Free();
     Safe_Release(m_pSeleteUI);
+    Safe_Release(m_pMirrorball);
     for (auto pbox : m_pBox)
         Safe_Release(pbox);
     m_pBox.clear();

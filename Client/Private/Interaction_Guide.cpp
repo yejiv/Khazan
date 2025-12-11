@@ -94,11 +94,13 @@ void CInteraction_Guide::Update(_float fTimeDelta)
 	m_isPressing = false;
 
 	__super::Update(fTimeDelta);
-    Update_WorldPos();
+    
 }
 
 void CInteraction_Guide::Late_Update(_float fTimeDelta)
 {
+    Update_WorldPos();
+
 	if (!m_isVisible || !m_isActive)
 		return;
 	
