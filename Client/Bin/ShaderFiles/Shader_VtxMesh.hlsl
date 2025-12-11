@@ -464,7 +464,9 @@ PS_OUT PS_DESTINYSTONE(PS_IN In)                       // 맵 오브젝트용 �
     if (IsFlag(M_NORMAL))
         vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    float2 xy = vMtrlNormal.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+    
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
 
@@ -503,7 +505,10 @@ PS_OUT PS_DESTINYGEM(PS_IN In)                       // 맵 오브젝트용 픽�
     if (IsFlag(M_NORMAL))
         vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    float2 xy = vMtrlNormal.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+    
+    
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
 

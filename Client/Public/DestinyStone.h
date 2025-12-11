@@ -10,6 +10,7 @@ class CDestinyStone final : public CProp_Interactive
 public:
     typedef struct tagDestinyStoneDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
     {
+        _uint iDSIndex{};
 
     }DESTINYSTONE_DESC;
 
@@ -39,6 +40,9 @@ private:
     EventObject m_Event = {};
 
     _bool m_isInteracted = { false };
+    _bool m_isDissolved = { false };
+
+    _wstring m_wstrLightTag = {};
 
 private:
     virtual HRESULT Ready_Components(void* pArg) override;

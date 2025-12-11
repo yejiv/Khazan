@@ -17,6 +17,7 @@ public:
     typedef struct tagDestinyGemDesc : public CPartObject::PARTOBJECT_DESC
     {
         _bool* pConsumed{ nullptr };
+        _bool* pDissolved{ nullptr };
 
         LEVEL eLevel{ LEVEL::END };
 
@@ -41,6 +42,7 @@ private:
     CTexture* m_pDissolveTextureCom = { nullptr };
 
     _bool* m_pConsumed = { nullptr };
+    _bool* m_pDissolved = { nullptr };
 
     _float m_fTimeAcc = { 0.f };
     _float m_fDecreaseAlpha = { 0.f };
