@@ -1,5 +1,6 @@
 #include "AS_Halberd_Sleep.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 CAS_Halberd_Sleep::CAS_Halberd_Sleep()
 {
@@ -22,6 +23,7 @@ void CAS_Halberd_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         m_pMonData->iAnimIndex = 47;
         m_pMonData->pOwner->Hp_Visivle(true);
         m_eState = GETUP;
+        CClientInstance::GetInstance()->BGM_HeinMach_Halberd();
     }
     else if (m_eState == GETUP)
     {

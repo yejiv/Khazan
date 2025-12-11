@@ -31,9 +31,6 @@ bool g_isSpecular = false;
 bool g_isMetalic = false;
 bool g_isRoughness = false;
 
-// 귀검 관련 전역 변수
-bool g_isBNEye = false;
-
 /* 모델 전체 뼈기준(x) */
 /* 특정 메시에 영향ㅇ르 주는 뼈들 */
 matrix g_BoneMatrices[512];
@@ -1494,5 +1491,18 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_VIPER_WEAPON();
+    }
+
+    // 맵 애님 패스 ( 논 컬 )        ( 26번 )
+    pass MapAnimNonCullPass
+    {
+
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAP_ANIM();
     }
 }

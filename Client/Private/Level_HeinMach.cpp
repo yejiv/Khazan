@@ -90,6 +90,9 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CClientInstance::GetInstance()->Fade_Out();
 
+    CClientInstance::GetInstance()->Set_Volume_BGM(0.45f);
+    CClientInstance::GetInstance()->BGM_HeinMach_Entry();
+
     if (!Wait_All_Futures())
         return E_FAIL;
 

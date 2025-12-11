@@ -102,6 +102,7 @@ protected:
 
     _bool                           m_isDeadFlag = { false };
 
+    _float2                         m_vDecalSize = {};
 //private:
 //	HRESULT Ready_Components();
 

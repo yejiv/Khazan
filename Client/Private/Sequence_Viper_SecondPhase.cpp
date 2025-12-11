@@ -52,6 +52,7 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
     {
         if (m_fTime > 0.f && !m_isFadeOut1)
         {
+            m_pClientInstance->BGM_Viper_2PhaseCutScene(10.f);
             m_pClientInstance->Fade_Out();
             m_isFadeOut1 = true;
         }
@@ -137,6 +138,8 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
 
         if (m_fTime > 30.f && !m_isViperPickUp)
         {
+            m_pClientInstance->BGM_Viper_2Phase(7.f);
+
             // 칼 마지막으로 보는 시점
             m_pGameInstance->StopByKey_FadeOut(TEXT("Fire_Burning.mp3"), 8.f);
 
@@ -424,6 +427,8 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_CutSceneFinished();
             m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
+
+            m_pClientInstance->BGM_Viper_2Phase(1.f);
         }
     }
 }

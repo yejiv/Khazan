@@ -315,10 +315,10 @@ private:
     /*  하인마스 + 엠바스 */
     void						BladeNexus_Event(_float fTimeDelta);
     void						Chest_Event(_float fTimeDelta);
-    void						TombStone_Event(_float fTimeDelta);     //폐기
 
     /* 앰바스 */
     void						Lever_Event(_float fTimeDelta);
+    void						TombStone_Event(_float fTimeDelta); // 비밀 방 들어가는 툼스톤
     void						Statue_Event(_float fTimeDelta); //조각상 퍼즐
     void						IronGate_Event(_float fTimeDelta); //레버 다음 철문 밀어서열기 (자물쇠 해제)
     void						UnLockGear_Event(_float fTimeDelta);  // ?? CA_P_Kazan_GearSwitch_001_Interation 이거 쓰면될 듯
