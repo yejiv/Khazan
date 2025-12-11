@@ -6,6 +6,9 @@
 
 #include "Amount.h"
 
+#include "Effect_Prefab.h"
+
+
 CDestinyGem::CDestinyGem(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
 {
@@ -35,6 +38,15 @@ HRESULT CDestinyGem::Initialize_Clone(void* pArg)
 
     m_iNumGem *= static_cast<_uint>(m_pGameInstance->Rand(2.f, 5.f));
 
+    m_bBlustFX = false; 
+
+    m_fEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("lantern")));
+    if (m_fEffect)
+    {
+        m_fEffect->ResetChildren();
+        m_fEffect->UpdatePosition(XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
+    }
+
     return S_OK;
 }
 
@@ -53,6 +65,13 @@ void CDestinyGem::Update(_float fTimeDelta)
 
     if (1.f <= m_fTimeAcc)
     {
+        if (false == m_bBlustFX)
+        { 
+            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("stone_blust"), XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
+            m_fEffect->SetClose();
+            m_bBlustFX = true;
+        }
+
         m_fDecreaseAlpha += fTimeDelta * 0.2f;
     }
 
@@ -206,4 +225,5 @@ void CDestinyGem::Free()
     Safe_Release(m_pDissolveTextureCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pModelCom);
+    Safe_Release(m_fEffect);
 }

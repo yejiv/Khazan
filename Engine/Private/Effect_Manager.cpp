@@ -444,19 +444,19 @@ void CEffect_Manager::Free()
         }
         m_pEffectPools[i].clear();
 
-        //for (auto Pair : m_pRunningEffects[i])
-        //{
-        //	for (auto& effect : Pair.second)
-        //        //effect = nullptr;
-        //        Safe_Release(effect);
-        //	Pair.second.clear();
-        //}
-        //m_pRunningEffects[i].clear();
+        for (auto Pair : m_pRunningEffects[i])
+        {
+        	for (auto& effect : Pair.second)
+                //effect = nullptr;
+                Safe_Release(effect);
+        	Pair.second.clear();
+        }
+        m_pRunningEffects[i].clear();
     }
 
     //m_pRunningEffects_Test.clear();
 
     Safe_Delete_Array(m_pEffectLayers);
     Safe_Delete_Array(m_pEffectPools);
-    //Safe_Delete_Array(m_pRunningEffects);
+    Safe_Delete_Array(m_pRunningEffects);
 }

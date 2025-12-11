@@ -26,7 +26,7 @@ bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtu
     if (pCharDesc1 == nullptr || pCharDesc1->pGameObject == nullptr || pBody1Desc == nullptr || pBody1Desc->pGameObject == nullptr)
         return false;
 
-    OutputDebugStringA(("Layer1: " + to_string(pCharDesc1->iObjectLayer) + "Layer2: " + to_string(pBody1Desc->iObjectLayer) + "\n").c_str());
+    //OutputDebugStringA(("Layer1: " + to_string(pCharDesc1->iObjectLayer) + "Layer2: " + to_string(pBody1Desc->iObjectLayer) + "\n").c_str());
 
     if (!m_pGameInstance->IsObjectLayerPairValid(pCharDesc1->iObjectLayer, pBody1Desc->iObjectLayer))
     {
