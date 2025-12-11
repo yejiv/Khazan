@@ -401,9 +401,9 @@ HRESULT CElamein::Ready_Components()
 
     XMStoreFloat3(&BodyDesc.vPos, vMatPos);
     XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
-
+    m_tHitCollisionDesc.pGameObject = this;
     BodyDesc.vShapeOffset = _float3(-0.f, 0.5f, 0.f);
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    BodyDesc.pCollisionDesc = &m_tHitCollisionDesc;
 
     CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_HitBody"), (CComponent**)&m_pHitBodyCom, &BodyDesc);
     m_pHitBodyCom->Activate(true);
@@ -417,8 +417,9 @@ HRESULT CElamein::Ready_Components()
     SearchBodyDesc.bIsTrigger = true;
     XMStoreFloat3(&SearchBodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
     XMStoreFloat4(&SearchBodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+    m_tSearchCollisionDesc.pGameObject = this;
     SearchBodyDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
-    SearchBodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    SearchBodyDesc.pCollisionDesc = &m_tSearchCollisionDesc;
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_Body_Search"), (CComponent**)&m_pBodyComp, &SearchBodyDesc), E_FAIL);
 

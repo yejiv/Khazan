@@ -124,7 +124,9 @@ private:
     _float4                         m_vSword_Start = {};
     _float4                         m_vSword_End = {};
 
-    class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
+    class CTarget_BrutalAttack*     m_pBrutalAttack = { nullptr };
+
+    COLLISION_DESC				    m_tSearchCollisionDesc = {};
  private:
         HRESULT                         Ready_Prototype();
 
