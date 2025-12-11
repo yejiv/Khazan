@@ -29,6 +29,16 @@ HRESULT CStatue::Initialize_Clone(void* pArg)
 {
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
 
+    PROP_INTERACTIVE_DESC* pDesc = static_cast<PROP_INTERACTIVE_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
+
+    STATUE_DESC* pStatueDesc = static_cast<STATUE_DESC*>(pDesc->pOtherDesc);
+    CHECK_NULLPTR(pStatueDesc, E_FAIL);
+
+    m_iUnLockRotation = pStatueDesc->StatueRotation.iUnLockRotation;
+    m_iEventID = pStatueDesc->iEventID;
+    m_iStatueIndex = pStatueDesc->iStatueIndex;
+
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
     CHECK_FAILED(Ready_PartObjects(pArg), E_FAIL);
@@ -40,16 +50,6 @@ HRESULT CStatue::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
 #pragma endregion
-
-    PROP_INTERACTIVE_DESC* pDesc = static_cast<PROP_INTERACTIVE_DESC*>(pArg);
-    CHECK_NULLPTR(pDesc, E_FAIL);
-
-    STATUE_DESC* pStatueDesc = static_cast<STATUE_DESC*>(pDesc->pOtherDesc);
-    CHECK_NULLPTR(pStatueDesc, E_FAIL);
-
-    m_iUnLockRotation = pStatueDesc->StatueRotation.iUnLockRotation;
-    m_iEventID = pStatueDesc->iEventID;
-    m_iStatueIndex = pStatueDesc->iStatueIndex;
 
     m_eAnimState = ANIM_STATE::IDLE_0;
     m_pModelCom->Set_Animation(ENUM_CLASS((ANIM_STATE::IDLE_0)));
@@ -160,6 +160,9 @@ HRESULT CStatue::Ready_PartObjects(void* pArg)
     DecoDesc.eLevel = eLevel;
     DecoDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     DecoDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("P_Body_01");
+
+    if (1 == m_iEventID && 1 == m_iStatueIndex)
+        DecoDesc.isOtherModel = true;
 
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Deco"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_Statue_Deco"), &DecoDesc), E_FAIL);

@@ -79,6 +79,9 @@ HRESULT CJar_4th::Render()
 
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
+        if (Skip_Mesh(i))
+            continue;
+
         Bind_Materials(i);
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(20), E_FAIL);

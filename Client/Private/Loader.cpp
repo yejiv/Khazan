@@ -1751,6 +1751,10 @@ HRESULT CLoader::Loading_For_Embars_Model()
     /* Prototype_Component_Model_Statue_Deco */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Statue_Deco"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Symbol/WP_CTR_Statue_Stone_002/WP_CTR_Statue_Stone_002.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Statue_Deco_Else */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Statue_Deco_Else"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Symbol/WP_DKE_Statue_Stone_003/WP_DKE_Statue_Stone_003.dat")), E_FAIL);    
 #pragma endregion
 
 #pragma region 수직 차단봉
@@ -1865,6 +1869,14 @@ HRESULT CLoader::Loading_For_Embars_Model()
     /* Prototype_Component_Model_NPC_DanjinJar_C */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_NPC_DanjinJar_C"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_M_DanjinJar_C/C_M_DanjinJar_C.dat")), E_FAIL);
+#pragma endregion
+
+#pragma region 신기루 벽
+
+    /* Prototype_Component_Model_Illusion_Wall */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Illusion_Wall"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_B/WP_BGQ_Walldeco_Base_001_01/WP_BGQ_Walldeco_Base_001_01.dat")), E_FAIL);
+
 #pragma endregion
 
 #pragma region 파괴 가능 오브젝트 : 모델
@@ -2212,6 +2224,12 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     /* Prototype_GameObject_Prop_NPC_Jar_8th */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_8th"),
         CJar_8th::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 신기루 벽
+    /* Prototype_GameObject_Prop_Illusion_Wall */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Illusion_Wall"),
+        CIllusion_Wall::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
 #pragma region 파괴 가능 오브젝트 : 객체

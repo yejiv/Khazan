@@ -680,6 +680,51 @@ PS_OUT PS_VIPER_WEAPON(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_ILLUSION_WALL(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    if (vMtrlDiffuse.a <= 0.3f)
+        discard;
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float2 xy = vMtrlNormal.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 1.f;
+    
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+    
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
+
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     /* 특정 패스를 이용해서 점정을 그려냈다. */
@@ -836,5 +881,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAPOBJECT();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_DESTINYGEM();
+    }
+
+    pass IllusionWallPass // 귀석 젬 패스 ( 14번 )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_ILLUSION_WALL();
     }
 }
