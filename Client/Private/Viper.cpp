@@ -4730,7 +4730,7 @@ HRESULT CViper::Ready_SFX_P2()
          });
      pP2Model->Register_Event("SFX_PullOut_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
          {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)));
+             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)));
 
          });
 
