@@ -104,6 +104,11 @@ _bool CKhazan_Spear_Anim_Interaction::Try_Lachryma()
     return true;
 }
 
+_bool CKhazan_Spear_Anim_Interaction::Is_Lachryma() const
+{
+    return m_pModel->Get_CurAnimIndex() == m_pModel->Get_AnimIndexByName("CA_P_Kazan_LacrimaInteraction");
+}
+
 
 
 CKhazan_Spear_Anim_Interaction* CKhazan_Spear_Anim_Interaction::Create()

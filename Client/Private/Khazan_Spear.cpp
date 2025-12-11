@@ -1452,10 +1452,25 @@ _bool CKhazan_Spear::Interaction_Input(_float fTimeDelta)
             m_pLantern->Set_Equipped(isEquip);
     }
 
+    _float4x4* arm = m_pBody->Get_BoneMatrix("FX_L_Hand_01");
+    _float4x4* hand = m_pBody->Get_BoneMatrix("FX_L_Hand_02");
+    _matrix mat_arm = XMLoadFloat4x4(m_pBody->Get_BoneMatrix("FX_L_Hand_01"));
+    _matrix mat_hand = XMLoadFloat4x4(m_pBody->Get_BoneMatrix("FX_L_Hand_02"));
+
     //라크리마 
     if (m_pGameInstance->Key_Down(DIK_1)) {
         if (m_pPlayerData->fCulHp < m_pPlayerData->fMaxHp)
-            m_pAnimInteraction->Try_Lachryma();
+            if (m_pAnimInteraction->Try_Lachryma())
+            { 
+                m_FXIdx[FX_LACRIMA]= m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(),TEXT("Lachryma"), mat_hand.r[3]);
+                m_FXIdx[FX_LACRIMA_HAND] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(),TEXT("Lachryma_Arm"), mat_arm, mat_arm.r[3]);
+            }
+    }
+
+    if (m_pAnimInteraction->Is_Lachryma())
+    {
+       m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"), m_FXIdx[FX_LACRIMA], mat_hand.r[3]);
+       m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), m_FXIdx[FX_LACRIMA_HAND], mat_arm, mat_arm.r[3]);
     }
 
     return false; 

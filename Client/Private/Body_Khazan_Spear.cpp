@@ -3,8 +3,6 @@
 #include "GameInstance.h"
 #include "ClientInstance.h"
 #include "MeshTrail.h"
-//테스트!! 지우기
-#include "LineTrail.h"
 #include "Spear_Khazan_Spear.h"
 #include "Damage_Text.h"
 #include "Target_BrutalAttack.h"
@@ -89,6 +87,9 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
 
     m_pParentTransform->Set_State(STATE::POSITION, XMVectorSet(0.f, 0.f, 0.f, 0.f));
 
+    m_bGuradFX[0] = false;
+    m_bGuradFX[1] = false;
+
     return S_OK;
 }
 
@@ -126,8 +127,10 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
         Trigger_MotionTrail(TEXT(""), false);
     }
 
-    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
-     
+    if (m_bGuradFX[0] || m_bGuradFX[1])
+        Spawn_Guard_FX();
+    m_bGuradFX[0] = false;
+    m_bGuradFX[1] = false;
 }
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -419,24 +422,28 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
         /* 방어 콜라이더  */
         if (m_isSpearPoleActive)
         {
+            _matrix mat = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
             *m_pParentStatus |= CKhazan_Spear::GUARD;
 
             /* 저스트 가드 타이밍 */
             if (!m_isJustGuardOnce && m_fJustGuardTime.x <= m_fJustGuardTime.y) {
                 *m_pParentStatus |= CKhazan_Spear::JUST_GUARD;
                 m_isJustGuardOnce = true;
-
+     
                 /* 몬스터한테 저스트 가드 타이밍 건내주기  */
                 if (pDesc->pGameObject == nullptr) return;
-
+                
+                m_bGuradFX[0] = true;
+                
                 CWeaponObject* pMonster = dynamic_cast<CWeaponObject*>(pDesc->pGameObject);
 
                 if (pMonster == nullptr)
                     return;
 
                 pMonster->On_JustGuardCallback(true);
-
+            
             }
+            m_bGuradFX[1] = true;
 
             /* 가드후 충돌되면 충돌된 지점 봐라보게*/
             Start_GuardRotation(vContactPoint);
@@ -1740,6 +1747,21 @@ void CBody_Khazan_Spear::Set_RedTrail()
     Config.iDivisionCount = 10;
     Config.vColor = _float4(3.529f, 2.569f, 2.569f, 1.f);
     m_pTrail->Set_TrailConfig(Config);
+}
+
+void CBody_Khazan_Spear::Spawn_Guard_FX()
+{ 
+    _matrix mat = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
+    if (m_bGuradFX[0])
+    {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("PerfectGaurd"), mat.r[3]);
+        m_bGuradFX[0] = false;
+    }
+    if (m_bGuradFX[1])
+    {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Guard"), mat.r[3]);
+        m_bGuradFX[1] = false;
+    }
 }
 
 void CBody_Khazan_Spear::UpdateSpearWind(_bool isEnableRadialBlur)
