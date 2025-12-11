@@ -1015,6 +1015,11 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
             }
             break;
         }
+        case INTERACTIVE_TYPE::ILLUSION_WALL:
+        {
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Illusion_Wall"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
         default:
             MSG_BOX(TEXT("잉 있으면 안되는디"));
             break;

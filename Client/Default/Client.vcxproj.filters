@@ -1525,6 +1525,9 @@
     <Filter Include="01.Levels\Test">
       <UniqueIdentifier>{59b05a38-249f-445f-bb87-bf72ea8b8d0d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\15.Illusion_Wall">
+      <UniqueIdentifier>{56f48e69-a95c-4eb3-9f0f-6499f4cb6013}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2946,6 +2949,9 @@
     <ClInclude Include="..\Public\Khazan_SoundHelper.h">
       <Filter>02.GameObject\Creature\Khazan\Sound</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Illusion_Wall.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\15.Illusion_Wall</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4346,6 +4352,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Interaction_Item.cpp">
       <Filter>02.GameObject\Interation_Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Illusion_Wall.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\15.Illusion_Wall</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

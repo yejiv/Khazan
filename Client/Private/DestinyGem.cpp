@@ -31,6 +31,7 @@ HRESULT CDestinyGem::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
     m_pConsumed = pDesc->pConsumed;
+    m_pDissolved = pDesc->pDissolved;
 
     m_iNumGem *= static_cast<_uint>(m_pGameInstance->Rand(2.f, 5.f));
 
@@ -57,6 +58,7 @@ void CDestinyGem::Update(_float fTimeDelta)
 
     if (1.f <= m_fDecreaseAlpha)
     {
+        *m_pDissolved = true;
         static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::STONE, m_iNumGem);
         Set_IsDead(true);
     }
@@ -75,7 +77,7 @@ HRESULT CDestinyGem::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    _float fDiffuseRedPower = 10.f;
+    _float fDiffuseRedPower = 5.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fDiffuseRedPower", &fDiffuseRedPower, sizeof(_float))))
         return E_FAIL;
 
@@ -83,7 +85,7 @@ HRESULT CDestinyGem::Render()
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
         return E_FAIL;
 
-    _float4 vGemColor = _float4(1.25f, 0.25f, 1.25f, 1.f);
+    _float4 vGemColor = _float4(1.25f, 0.25f, 0.25f, 1.f);
     if (FAILED(m_pShaderCom->Bind_RawValue("g_vGemColor", &vGemColor, sizeof(_float4))))
         return E_FAIL;
 

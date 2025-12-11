@@ -38,7 +38,30 @@ HRESULT CDestinyStone::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
+    _uint* pInt = static_cast<_uint*>(pDesc->pOtherDesc);
+    CHECK_NULLPTR(pInt, E_FAIL);
+
+    _tchar m_szLightTag[MAX_PATH] = {  };
+
+    wsprintf(m_szLightTag, TEXT("DestinyStoneLight%d"), *pInt);
+
+    m_wstrLightTag = m_szLightTag;
+
     m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
+
+    LIGHT_DESC LightDesc = {};
+
+    LightDesc.eType = LIGHT_DESC::TYPE::POINT;
+
+    LightDesc.vDiffuse = _float4(0.9f, 0.05f, 0.05f, 1.f);
+    LightDesc.vAmbient = _float4(0.28f, 0.18f, 0.18f, 1.f);
+    LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
+    XMStoreFloat4(&LightDesc.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+    LightDesc.vPosition.y += 1.2f;
+
+    LightDesc.fRange = 2.1f;
+
+    m_pGameInstance->Add_Light(m_wstrLightTag, ENUM_CLASS(LEVEL::HEINMACH), LightDesc, true);
 
     m_iSubscribeEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e)
         {
@@ -53,6 +76,13 @@ void CDestinyStone::Priority_Update(_float fTimeDelta)
     if (false == m_isCollision)
     {
         m_Event.None();
+    }
+
+    if (true == m_isDissolved)
+    {
+        m_isDissolved = false;
+
+        m_pGameInstance->Set_LightEnable(m_wstrLightTag, ENUM_CLASS(LEVEL::HEINMACH), false);
     }
 
     __super::Priority_Update(fTimeDelta);
@@ -207,6 +237,7 @@ HRESULT CDestinyStone::Ready_PartObjects(void* pArg)
     DestinyGemDesc.eLevel = eLevel;
     DestinyGemDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     DestinyGemDesc.pConsumed = &m_isInteracted;
+    DestinyGemDesc.pDissolved = &m_isDissolved;
 
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Gem"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_DestinyStone_Gem"), &DestinyGemDesc), E_FAIL);

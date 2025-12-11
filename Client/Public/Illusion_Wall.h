@@ -3,21 +3,26 @@
 #include "Client_Defines.h"
 #include "Prop_Interactive.h"
 
+NS_BEGIN(Engine)
+class CBody;
+class CTexture;
+NS_END
+
 NS_BEGIN(Client)
 
-class CDestinyStone final : public CProp_Interactive
+class CIllusion_Wall final : public CProp_Interactive
 {
 public:
-    typedef struct tagDestinyStoneDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
+    typedef struct tagIllusionWallDesc : public CProp_Interactive::PROP_INTERACTIVE_DESC
     {
-        _uint iDSIndex{};
 
-    }DESTINYSTONE_DESC;
+
+    }ILLUSION_WALL_DESC;
 
 private:
-    CDestinyStone(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CDestinyStone(const CDestinyStone& Prototype);
-    virtual ~CDestinyStone() = default;
+    CIllusion_Wall(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    CIllusion_Wall(const CIllusion_Wall& Prototype);
+    virtual ~CIllusion_Wall() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
@@ -30,29 +35,21 @@ public:
 private:
     CBody* m_pStaticCom = { nullptr };
     CBody* m_pTriggerCom = { nullptr };
+    CTexture* m_pDissolveTextureCom = { nullptr };
 
-    class CInteraction_Guide* m_pGuide = { nullptr };
-
-private:
     COLLISION_DESC m_TriggerCollisionDesc;
 
 private:
-    EventObject m_Event = {};
+    _float m_fTimeAcc = { 0.f };
+    _float m_fDecreaseAlpha = { 0.f };
 
-    _bool m_isInteracted = { false };
-    _bool m_isDissolved = { false };
-
-    _wstring m_wstrLightTag = {};
+    _bool m_isRemoveWall = { false };
 
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_Collision(void* pArg);
-    HRESULT Ready_Interaction_Guide(void* pArg);
-    HRESULT Ready_PartObjects(void* pArg);
-
-    void Event_Update(_float fTimeDelta);
-    void Input_Interact_Event(_float fTimeDelta);
-    HRESULT Bind_Materials(_uint iMeshIndex) override;
+    virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
+    HRESULT Bind_DissolveValues();
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
@@ -60,7 +57,7 @@ public:
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
 public:
-    static CDestinyStone* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    static CIllusion_Wall* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CGameObject* Clone(void* pArg) override;
     virtual void Free() override;
 };
