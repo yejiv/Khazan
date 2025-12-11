@@ -5,6 +5,7 @@
 
 NS_BEGIN(Engine)
 class CModel;
+class CBody;
 NS_END
 
 NS_BEGIN(Client)
@@ -61,6 +62,8 @@ public:
         _bool               isStamina_Regen = {};
 
         _bool               isMotionSleep = {};
+
+        _bool               isSearch = { false };
     }MONDATA;
 
 private:
@@ -107,6 +110,7 @@ private:
     class CDragonian_Sword*         m_pWeapon = { nullptr };
     class CMon_HP*                  m_pUI_HP = { nullptr };
     class CMeshTrail*               m_pMeshTrail = { nullptr };
+    class CBody*                    m_pBodyComp = { nullptr };
 
     _float4                         m_vHpPos = {};
     _float4x4*                      m_pHeadMatrix = { nullptr };
@@ -120,7 +124,9 @@ private:
     _float4                         m_vSword_Start = {};
     _float4                         m_vSword_End = {};
 
-    class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
+    class CTarget_BrutalAttack*     m_pBrutalAttack = { nullptr };
+
+    COLLISION_DESC				    m_tSearchCollisionDesc = {};
  private:
         HRESULT                         Ready_Prototype();
 

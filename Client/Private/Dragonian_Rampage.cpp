@@ -203,6 +203,9 @@ void CDragonian_Rampage::Update(_float fTimeDelta)
 
 void CDragonian_Rampage::Late_Update(_float fTimeDelta)
 {
+    if (m_Data.isSearch)
+        m_pBodyComp->Collision_Active(false);
+
     CContainerObject::Late_Update(fTimeDelta);
 
     for (auto& pMeshTrail : m_pMeshTrail)
@@ -257,6 +260,11 @@ void CDragonian_Rampage::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 
     if (COLLISION_LAYER::MAP_STATIC == eLayer)
         m_Data.isWallCrushed = true;
+
+    if (pMyDesc->iObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER_SEARCH))
+    {
+        m_Data.isSearch = true;
+    }
 }
 
 void CDragonian_Rampage::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -355,12 +363,29 @@ HRESULT CDragonian_Rampage::Ready_Components()
 
     XMStoreFloat3(&BodyDesc.vPos, vMatPos);
     XMStoreFloat4(&BodyDesc.vQuat, vMatQuat);
-
+    m_tHitCollisionDesc.pGameObject = this;
     BodyDesc.vShapeOffset = _float3(-0.5f, -0.f, 0.f);
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    BodyDesc.pCollisionDesc = &m_tHitCollisionDesc;
 
     CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_HitBody"), (CComponent**)&m_pHitBodyCom, &BodyDesc);
     m_pHitBodyCom->Activate(true);
+
+    CBody::BODY_BOXSHAPE_DESC SearchBodyDesc{};
+  SearchBodyDesc.vExtent = { 50.f, 50.f, 50.f };
+    SearchBodyDesc.eMotion = EMotionType::Kinematic;
+    SearchBodyDesc.eQuality = EMotionQuality::Discrete;
+    SearchBodyDesc.eShapeType = SHAPE::BOX;
+    SearchBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER_SEARCH);
+    SearchBodyDesc.bIsTrigger = true;
+    XMStoreFloat3(&SearchBodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    XMStoreFloat4(&SearchBodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+    m_tSearchCollisionDesc.pGameObject = this;
+    SearchBodyDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
+    SearchBodyDesc.pCollisionDesc = &m_tSearchCollisionDesc;
+    
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_Body_Search"), (CComponent**)&m_pBodyComp, &SearchBodyDesc), E_FAIL);
+
+
     return S_OK;
 }
 
@@ -736,5 +761,6 @@ void CDragonian_Rampage::Free()
     Safe_Release(m_pClaw_L);
     Safe_Release(m_pClaw_R);
     Safe_Release(m_pHitBodyCom);
+    Safe_Release(m_pBodyComp);
     m_Data.pOwner = nullptr;
 }

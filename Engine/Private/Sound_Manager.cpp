@@ -57,7 +57,7 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, float fVolume, FMOD_C
     }
 }
 
-void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel)
+void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel, _float2 vDis)
 {
     FMOD_SOUND* pSound = nullptr;
     if (!FindSound(pSoundKey, &pSound)) return;
@@ -68,13 +68,13 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, _float3
         FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, &pCh);
         if (pCh)
         {
-            FMOD_Channel_SetMode(pCh, FMOD_3D);
+            FMOD_Channel_SetMode(pCh, FMOD_3D | FMOD_3D_LINEARROLLOFF);
             FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
 
             FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
             FMOD_VECTOR fmVel = { vVel.x, vVel.y, vVel.z };
+            FMOD_Channel_Set3DMinMaxDistance(pCh, vDis.x, vDis.y);
             FMOD_Channel_Set3DAttributes(pCh, &fmPos, &fmVel);
-
             if (ppOutChannel) *ppOutChannel = pCh;
         }
     }
@@ -88,17 +88,18 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, _float3
 
         FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, ppOutChannel);
 
-        FMOD_Channel_SetMode(*ppOutChannel, FMOD_3D);
+        FMOD_Channel_SetMode(*ppOutChannel, FMOD_3D | FMOD_3D_LINEARROLLOFF);
         FMOD_Channel_SetVolume(*ppOutChannel, fVolume * m_fGloval_Volume);
 
         FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
         FMOD_VECTOR fmVel = { vVel.x, vVel.y, vVel.z };
         FMOD_Channel_Set3DAttributes(*ppOutChannel, &fmPos, &fmVel);
+        FMOD_Channel_Set3DMinMaxDistance(*ppOutChannel, vDis.x, vDis.y);
 
     }
 }
 
-void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume)
+void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume, _float2 vDis)
 {
     FMOD_SOUND* pSound = nullptr;
     if (!FindSound(pSoundKey, &pSound)) return;
@@ -109,12 +110,13 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, FMOD_CH
         FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, &pCh);
         if (pCh)
         {
-            FMOD_Channel_SetMode(pCh, FMOD_3D);
+            FMOD_Channel_SetMode(pCh, FMOD_3D | FMOD_3D_LINEARROLLOFF);
             FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
 
             FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
             FMOD_VECTOR fmVel = { 0.f, 0.f, 0.f };
             FMOD_Channel_Set3DAttributes(pCh, &fmPos, &fmVel);
+            FMOD_Channel_Set3DMinMaxDistance(pCh, vDis.x, vDis.y);
 
             if (ppOutChannel) *ppOutChannel = pCh;
         }
@@ -129,13 +131,13 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, FMOD_CH
 
         FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, ppOutChannel);
 
-        FMOD_Channel_SetMode(*ppOutChannel, FMOD_3D);
+        FMOD_Channel_SetMode(*ppOutChannel, FMOD_3D | FMOD_3D_LINEARROLLOFF);
         FMOD_Channel_SetVolume(*ppOutChannel, fVolume * m_fGloval_Volume);
 
         FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
         FMOD_VECTOR fmVel = { 0.f, 0.f, 0.f };
         FMOD_Channel_Set3DAttributes(*ppOutChannel, &fmPos, &fmVel);
-
+        FMOD_Channel_Set3DMinMaxDistance(*ppOutChannel, vDis.x, vDis.y);
     }
 }
 
@@ -154,7 +156,7 @@ void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, float fVolume, FMOD_C
     }
 }
 
-void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel)
+void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel, _float2 vDis)
 {
     FMOD_SOUND* pSound = nullptr;
     if (!FindSound(pSoundKey, &pSound)) return;
@@ -166,18 +168,19 @@ void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, _float3
 
     if (pCh)
     {
-        FMOD_Channel_SetMode(pCh, FMOD_3D | FMOD_LOOP_NORMAL);
+        FMOD_Channel_SetMode(pCh, FMOD_3D | FMOD_3D_LINEARROLLOFF | FMOD_LOOP_NORMAL);
         FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
 
         FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
         FMOD_VECTOR fmVel = { vVel.x, vVel.y, vVel.z };
         FMOD_Channel_Set3DAttributes(pCh, &fmPos, &fmVel);
-  
+        FMOD_Channel_Set3DMinMaxDistance(pCh, vDis.x, vDis.y);
+
         if (ppOutChannel) *ppOutChannel = pCh;
     }
 }
 
-void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume)
+void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume, _float2 vDis)
 {
     FMOD_SOUND* pSound = nullptr;
     if (!FindSound(pSoundKey, &pSound)) return;
@@ -189,12 +192,13 @@ void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, FMOD_CH
 
     if (pCh)
     {
-        FMOD_Channel_SetMode(pCh, FMOD_3D | FMOD_LOOP_NORMAL);
+        FMOD_Channel_SetMode(pCh, FMOD_3D | FMOD_3D_LINEARROLLOFF | FMOD_LOOP_NORMAL);
         FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
 
         FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
         FMOD_VECTOR fmVel = { 0.f, 0.f, 0.f };
         FMOD_Channel_Set3DAttributes(pCh, &fmPos, &fmVel);
+        FMOD_Channel_Set3DMinMaxDistance(pCh, vDis.x, vDis.y);
 
         if (ppOutChannel) *ppOutChannel = pCh;
     }
@@ -553,7 +557,6 @@ void CSound_Manager::LoadSoundFile()
                 wkey.resize(wlen - 1);
                 MultiByteToWideChar(CP_ACP, 0, fd.name, -1, wkey.data(), wlen);
             }
-
             m_mapSound.emplace(move(wkey), pSound);
         }
 
@@ -561,6 +564,7 @@ void CSound_Manager::LoadSoundFile()
     }
 
     _findclose(handle);
+
 }
 
 CSound_Manager* CSound_Manager::Create()

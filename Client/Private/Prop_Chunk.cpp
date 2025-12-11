@@ -83,10 +83,21 @@ void CProp_Chunk::Update(_float fTimeDelta)
         m_fLifeTime -= fTimeDelta;
         if (m_fLifeTime <= 0.f)
         {
-            m_pBodyCom->Collision_Active(false);
-            m_isDead = true;
-            m_isActive = false;
-        }
+            m_fTimeAcc += fTimeDelta;
+
+            if (1.f <= m_fTimeAcc)
+            {
+                m_fDecreaseAlpha += fTimeDelta * 0.2f;
+            }
+
+            if (1.f <= m_fDecreaseAlpha)
+            {
+                m_pBodyCom->Collision_Active(false);
+                m_isDead = true;
+                m_isActive = false;
+            }
+                        
+        }        
             
     }
     m_pBodyCom->Update(fTimeDelta, m_pTransformCom);    
@@ -107,9 +118,11 @@ HRESULT CProp_Chunk::Render()
     {
         Bind_Materials(i);
 
+        Bind_DissolveValues();
+
         if (true == isSnow()) CHECK_FAILED(Bind_ShaderResources_ForSnowMap(i), E_FAIL);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(4), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -167,6 +180,9 @@ HRESULT CProp_Chunk::Ready_Components(void* pArg)
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), pDesc->strModelTag,
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Monster_Dissolve"),
+        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom), nullptr), E_FAIL);
 
     return S_OK;
 }
@@ -246,6 +262,19 @@ HRESULT CProp_Chunk::Bind_Materials(_uint iMeshIndex)
     return S_OK;
 }
 
+HRESULT CProp_Chunk::Bind_DissolveValues()
+{
+    CHECK_FAILED(m_pDissolveTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", 0), E_FAIL);
+
+    _float fEdgeWidth = { 0.08f };    
+
+    m_pShaderCom->Bind_RawValue("g_fDecreaseAlpha", &m_fDecreaseAlpha, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeWidth", &fEdgeWidth, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeColor", &m_vEdgeColor, sizeof(_float4));
+
+    return S_OK;
+}
+
 CProp_Chunk* CProp_Chunk::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
     CProp_Chunk* pInstance = new CProp_Chunk(pDevice, pContext);
@@ -277,4 +306,5 @@ void CProp_Chunk::Free()
     __super::Free();
     Safe_Release(m_pModelCom);
     Safe_Release(m_pBodyCom);
+    Safe_Release(m_pDissolveTextureCom);
 }

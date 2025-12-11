@@ -12,6 +12,13 @@ NS_BEGIN(Client)
 
 class CInteraction_Item final : public CInteraction_Object
 {
+public:
+    enum ItemType { NORMAL, SPECIAL, END };
+    typedef struct ItemInfo {
+        _uint iItemIndex;
+        _uint iGrade;
+    }ITEM_INFO;
+
 private:
     CInteraction_Item(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     CInteraction_Item(const CInteraction_Item& Prototype);
@@ -39,6 +46,8 @@ public:
 private:
     class CEffect_Prefab*   m_pEffect = { nullptr };
     _uint m_iItemIndex = {};
+    _uint m_iItemGrade = {};
+    _uint m_iItemType = {};
     class CInteraction_Guide* m_pGuide = { nullptr };
     _bool m_isGuideVisible = { false };
 
@@ -47,8 +56,8 @@ private:
 
 
 private:
-    vector<_uint> m_NormalItemIndex;
-    map<_wstring, _uint> m_SpecialItemIndex;
+    vector<ITEM_INFO> m_NormalItem;
+    map<_wstring, ITEM_INFO> m_SpecialItem;
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
@@ -58,9 +67,14 @@ public:
 private:
     HRESULT Ready_Components(void* pArg);
     HRESULT Bind_ShaderResources(void* pArg);
-    HRESULT Ready_Effect(void* pArg);
-    HRESULT Ready_Guide(void* pArg);
-    HRESULT Ready_Collision(void* pArg);
+    HRESULT Ready_Effect(_uint iGrade);
+    HRESULT Ready_Guide();
+    HRESULT Ready_Collision();
+
+
+private:
+    void Push_NormalItem(_uint iItemIndex, _uint iGrade);
+    void Push_SpecialItem(_wstring strName, _uint iItemIndex, _uint iGrade);
 
 public:
     static CInteraction_Item* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
