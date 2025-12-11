@@ -484,6 +484,12 @@ HRESULT CLevel_HeinMach::Ready_Layer_Item()
 
     m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item"), &desc, 10);
 
+    CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item")));
+
+    pItem->Special_Item(TEXT("Record"), XMVectorSet(345.309f, 0.674f, 378.588f, 1.f));
+
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Item"), pItem);
+
     return S_OK;
 }
 

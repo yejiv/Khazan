@@ -19,6 +19,7 @@
 #include "UI_Announce_MapName.h"
 #include "Dragonian_Melee.h"
 #include "Dragonian_Rampage.h"
+#include "Interaction_Item.h"
 
 CLevel_Embars::CLevel_Embars(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -321,6 +322,12 @@ HRESULT CLevel_Embars::Ready_Layer_Item()
     desc.iLevelIndex = ENUM_CLASS(LEVEL::EMBARS);
 
     m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Item"), ENUM_CLASS(LEVEL::EMBARS), TEXT("Item"), &desc, 10);
+
+    CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Item")));
+
+    pItem->Special_Item(TEXT("Handwriting"), XMVectorSet(109.18f, -83.451f, 52.09f, 1.f));
+
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Item"), pItem);
 
     return S_OK;
 }

@@ -54,9 +54,9 @@ HRESULT CInteraction_Item::Initialize_Clone(void* pArg)
 
     // Special Item
     Push_SpecialItem(TEXT("Precept"), 2001, 3); // 호송 명령서
-    Push_SpecialItem(TEXT("Precept"), 2002, 3); // 어느 병사의 기록
-    Push_SpecialItem(TEXT("Precept"), 2003, 0); // 도굴꾼의 수기
-    Push_SpecialItem(TEXT("Precept"), 2004, 3); // 용족에 대한 보고서    
+    Push_SpecialItem(TEXT("Record"), 2002, 3); // 어느 병사의 기록
+    Push_SpecialItem(TEXT("Handwriting"), 2003, 0); // 도굴꾼의 수기
+    Push_SpecialItem(TEXT("Report"), 2004, 3); // 용족에 대한 보고서    
 
 
     return S_OK;
