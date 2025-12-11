@@ -1,5 +1,6 @@
 #include "AS_Halberd_Dead.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 #include "Interaction_Item.h"
 
 CAS_Halberd_Dead::CAS_Halberd_Dead()
@@ -17,7 +18,7 @@ void CAS_Halberd_Dead::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_eState = DIE;
 
     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_empirehalberd_die_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0));
-
+    CClientInstance::GetInstance()->BGM_HeinMach_Day(3.f);
 }
 
 void CAS_Halberd_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

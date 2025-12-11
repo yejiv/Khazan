@@ -174,6 +174,8 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
         }
         else if (m_strTriggerKey == "B1_Entry")
         {
+            m_pClientInstance->BGM_Embars_B1();
+
             // 지하 포그
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.05f;
@@ -185,6 +187,8 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
         }
         else if (m_strTriggerKey == "B1_Exit")
         {
+            m_pClientInstance->BGM_Embars_1F();
+
             // 1층 포그
             FOG_TRANSITION_DESC FogDesc{};
             FogDesc.fDensity = 0.05f;

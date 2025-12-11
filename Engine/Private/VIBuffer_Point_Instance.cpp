@@ -500,11 +500,25 @@ HRESULT CVIBuffer_Point_Instance::Ready_UAV()
     if (FAILED(m_pDevice->CreateUnorderedAccessView(m_pSpeedBuffer, &UAVDesc, &m_pUAVSpeed)))
         return E_FAIL;
 
+    StructuredBufferDesc.ByteWidth = sizeof(POINT_INSTANCE_SPEED_PARAMS);
     StructuredBufferDesc.Usage = D3D11_USAGE_STAGING;
     StructuredBufferDesc.BindFlags = 0;
     StructuredBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-    if (FAILED(m_pDevice->CreateBuffer(&StructuredBufferDesc, nullptr, &m_pStagingBuffer)))
+    if (FAILED(m_pDevice->CreateBuffer(&StructuredBufferDesc, nullptr, &m_pStagingBuffer[0])))
         return E_FAIL;
+    if (FAILED(m_pDevice->CreateBuffer(&StructuredBufferDesc, nullptr, &m_pStagingBuffer[1])))
+        return E_FAIL; 
+
+    ZeroMemory(&m_SourceBox, sizeof(D3D11_BOX));
+    m_SourceBox.left = 0;
+    m_SourceBox.right = sizeof(POINT_INSTANCE_SPEED_PARAMS);
+    m_SourceBox.top = 0;
+    m_SourceBox.bottom = 1;
+    m_SourceBox.front = 0;
+    m_SourceBox.back = 1;
+
+    m_iReadIdx = 0; 
+    m_iWriteIdx = 1;
 
     return S_OK;
 }
@@ -574,17 +588,20 @@ _bool CVIBuffer_Point_Instance::IsFinish()
 {
     _bool flag = false;
 
-    m_pContext->CopyResource(m_pStagingBuffer, m_pSpeedBuffer);
+    //m_pContext->CopyResource(m_pStagingBuffer, m_pSpeedBuffer);
+    m_pContext->CopySubresourceRegion(m_pStagingBuffer[m_iWriteIdx], 0, 0, 0, 0, m_pSpeedBuffer, 0, &m_SourceBox);
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
-    if (SUCCEEDED(m_pContext->Map(m_pStagingBuffer, 0, D3D11_MAP_READ, 0, &mappedResource)))
+    if (SUCCEEDED(m_pContext->Map(m_pStagingBuffer[m_iReadIdx], 0, D3D11_MAP_READ, 0, &mappedResource)))
     {
         POINT_INSTANCE_SPEED_PARAMS aliveCount = *reinterpret_cast<POINT_INSTANCE_SPEED_PARAMS*>(mappedResource.pData);
-        m_pContext->Unmap(m_pStagingBuffer, 0);
+        m_pContext->Unmap(m_pStagingBuffer[m_iReadIdx], 0);
 
         if (aliveCount.bDead)
             flag = true;
     }
+
+    swap(m_iReadIdx, m_iWriteIdx);
 
     COMPUTE_PASS_DESC PassDesc{};
     PassDesc.SRVs.push_back(m_pSRV);
@@ -601,9 +618,7 @@ _bool CVIBuffer_Point_Instance::IsFinish()
     CComputeShader_Manager::COMPUTE_JOB_DESC JobDesc{};
     JobDesc.pShader = m_ComputeShaders[ENUM_CLASS(CS_PASS::RESET_DEAD_FLAG)];
     JobDesc.PassDesc = PassDesc;
-
-
-
+     
     m_pGameInstance->Add_Job(COMPUTEJOB::UPDATE, JobDesc, true);
 
     return flag;
@@ -646,7 +661,8 @@ void CVIBuffer_Point_Instance::Free()
     Safe_Release(m_pCB);
     Safe_Release(m_pStructuredBuffer);
     Safe_Release(m_pSpeedBuffer);
-    Safe_Release(m_pStagingBuffer);
+    Safe_Release(m_pStagingBuffer[0]);
+    Safe_Release(m_pStagingBuffer[1]);
 
     Safe_Delete_Array(m_pParticleParams);
     Safe_Delete_Array(m_pInstanceVertices);

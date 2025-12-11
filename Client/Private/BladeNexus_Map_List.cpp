@@ -105,6 +105,13 @@ HRESULT CUI_BladeNexus_Map_List::Initialize_Clone(void* pArg)
 
 void CUI_BladeNexus_Map_List::Priority_Update(_float fTimeDelta)
 {
+    if (ButtonClick(g_hWnd, false, true, INPUT_TYPE::UI) || m_bIsSelete && m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
+    {
+        CUI_BladeNexus_Map::BUBBLE_MAP_DESC Desc = {};
+        Desc.iIndex = m_iIndex;
+        Desc.isClick = true;
+        Bubble_EventCall(&Desc);
+    }
 }
 
 void CUI_BladeNexus_Map_List::Update(_float fTimeDelta)
@@ -121,13 +128,6 @@ void CUI_BladeNexus_Map_List::Update(_float fTimeDelta)
         CUI_BladeNexus_Map::BUBBLE_MAP_DESC Desc = {};
         Desc.iIndex = m_iIndex;
         Desc.isClick = false;
-        Bubble_EventCall(&Desc);
-    }
-    if (ButtonClick(g_hWnd, false, true, INPUT_TYPE::UI) || m_bIsSelete && m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))
-    {
-        CUI_BladeNexus_Map::BUBBLE_MAP_DESC Desc = {};
-        Desc.iIndex = m_iIndex;
-        Desc.isClick = true;
         Bubble_EventCall(&Desc);
     }
 }

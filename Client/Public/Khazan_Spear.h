@@ -77,6 +77,8 @@ public:
 		PC_BACK, PC_BACK_LEFT, PC_LEFT, PC_FRONT_LEFT
 	};
 
+    enum PLAYER_UPDATE_FX { FX_LACRIMA, FX_LACRIMA_HAND,  PLAYER_UPDATE_FX_END };
+
 private:
 	CKhazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CKhazan_Spear(const CKhazan_Spear& Prototype);
@@ -211,6 +213,7 @@ private:
 /* SnowEffect SpawnTime*/
 private:
     _float              m_EffectTimeDelta;
+    _uint               m_FXIdx[PLAYER_UPDATE_FX_END];
 
 
 private:

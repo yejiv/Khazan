@@ -21,6 +21,7 @@ void CAS_P2_SwingRound_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
     pModel->Set_Animation(49);
+    pBB->Set_Value<_uint>(pViper->Get_Name(), "BerserkerIndex", 0);
 
 }
 

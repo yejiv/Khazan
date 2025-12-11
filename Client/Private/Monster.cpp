@@ -15,7 +15,6 @@ CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 CMonster::CMonster(const CMonster& Prototype)
     : CCreature{ Prototype }
 {
-
 }
 
 void CMonster::CheckMinDistanceWithPlayer(_float fMinDist, _float fAnimRatio)
@@ -85,11 +84,27 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
         m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
     }
 
-    
-
     _float fValidTime = 3.f;
-    
     m_pController->AI_ApplyDamage(pGameObject,fDamage,ENUM_CLASS(eHitreaction),fValidTime);
+
+    //데칼 스폰
+    _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
+    _float fOffset = 2.f;
+    _float fPosX = XMVectorGetX(vDecalPos);
+    _float fPosZ = XMVectorGetZ(vDecalPos);
+    vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
+    vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
+    
+    DECAL_DESC Desc{};
+    Desc.fLifeTime = 8.f;
+    Desc.vFadeTime = _float2(0.2f, 0.2f);
+    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
+    XMStoreFloat3(&Desc.vPosition, vDecalPos);
+    Desc.vScale = _float3(m_pGameInstance->Rand(m_vDecalSize.x, m_vDecalSize.y), 2.f, m_pGameInstance->Rand(m_vDecalSize.x, m_vDecalSize.y));
+    Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+    Desc.isRandomTexture = true;
+
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
 }
 
 void CMonster::Consume_Stamina(_float fAmout)
@@ -181,7 +196,7 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
 {
     MONSTER_DESC* pDesc = static_cast<MONSTER_DESC*>(pArg);
 
-
+    m_vDecalSize = { 3.f,5.f };
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
@@ -209,10 +224,6 @@ void CMonster::Update(_float fTimeDelta)
 {
 
      __super::Update(fTimeDelta);
-
-    //m_pRigidBodyCom->Sync_Update(m_pTransformCom);
-
-
 }
 
 void CMonster::Late_Update(_float fTimeDelta)

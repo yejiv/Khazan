@@ -60,8 +60,10 @@ private:
     // 트리거 불러오기
     HRESULT Ready_Trigger(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
-    // 데칼 불러오기
+    // 맵 데칼 불러오기
     HRESULT Ready_Map_Decal(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
+    // 데칼 풀 준비
+    HRESULT Ready_Layer_Decal();
 
 #pragma endregion
     HRESULT Ready_Layer_Pet(const _wstring& strLayerTag);

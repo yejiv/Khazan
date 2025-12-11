@@ -32,7 +32,7 @@ HRESULT CHalberd_Weapon::Initialize_Clone(void* pArg)
     m_pTransformCom->Rotation(XMConvertToRadians(0.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
     CHECK_FAILED(Ready_Components(), E_FAIL);
     _float4x4 PreTransformMatrix;
-    XMStoreFloat4x4(&PreTransformMatrix, XMMatrixScaling(0.0001, 0.0001, 0.0001) * XMMatrixRotationY(XMConvertToRadians(180.0f)));
+    XMStoreFloat4x4(&PreTransformMatrix, XMMatrixScaling(0.0001f, 0.0001f, 0.0001f) * XMMatrixRotationY(XMConvertToRadians(180.0f)));
     m_pModelCom->Set_PreTransformMatrix(PreTransformMatrix);
 
     CHECK_FAILED(Ready_Collision(), E_FAIL);

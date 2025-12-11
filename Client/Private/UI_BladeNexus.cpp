@@ -505,8 +505,16 @@ void CUI_BladeNexus::Next_Event()
 	}
 	else if (m_eNextEvent == MENULIST::WARP)
 	{
-        static_cast<CUI_BladeNexus_Map*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus_Map")))->On_Panel(
-            CUI_BladeNexus_Map::ONTYPE::HEINMACH);
+        if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH))
+        {
+            static_cast<CUI_BladeNexus_Map*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus_Map")))->On_Panel(
+                CUI_BladeNexus_Map::ONTYPE::HEINMACH);
+        }
+        else
+        {
+            static_cast<CUI_BladeNexus_Map*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus_Map")))->On_Panel(
+                CUI_BladeNexus_Map::ONTYPE::EMBARS);
+        }
 	}
 	else if (m_eNextEvent == MENULIST::CREVICE)
 	{
