@@ -83,10 +83,10 @@ void CScreenTrail::Update(_float fTimeDelta)
             _float weight = (float)(j + 1) / (float)(m_iDivisionCount);
 
             _vector pos = XMVectorCatmullRom(XMLoadFloat4(&m_ControlPoints[(i - 1) < 0 ? 0 : i - 1].vPos),
-                XMLoadFloat4(&m_ControlPoints[i].vPos),
-                XMLoadFloat4(&m_ControlPoints[i + 1].vPos),
-                XMLoadFloat4(&m_ControlPoints[(i + 2) > m_ControlPoints.size() - 1 ? i + 1 : i + 2].vPos),
-                weight);
+                                            XMLoadFloat4(&m_ControlPoints[i].vPos),
+                                            XMLoadFloat4(&m_ControlPoints[i + 1].vPos),
+                                            XMLoadFloat4(&m_ControlPoints[(i + 2) > m_ControlPoints.size() - 1 ? i + 1 : i + 2].vPos),
+                                            weight);
             _float4 NewNode;
             XMStoreFloat4(&NewNode, pos);
             m_TrailPoints.push_back(NewNode);

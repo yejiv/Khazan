@@ -49,11 +49,11 @@ public:
      HRESULT Initialize(CHILD_BODY_DESC* pDesc);
 
     void Priority_Update(_float fTimeDelta);
-    void Update(_float fTimeDelta);
-    void Late_Update(_float fAlpha);
+    void Update(_float fTimeDelta, _bool isFrozen);
+    void Late_Update(_float fAlpha, _bool isFrozen);
 
 public:
-    void ApplyToBones(_float fAlpha);
+    void ApplyToBones(_float fAlpha, _bool isFrozen);
 
 public:
     void Type_Update(_float fTimeDelta);
@@ -65,6 +65,7 @@ public:
 public:
     void Apply_RootInertia(_float fTimeDelta);
     void ClampToCharacter();
+    void HardSnapToAnimationRecursive();
 
 private:
     ID3D11Device* m_pDevice = { nullptr };
@@ -113,7 +114,7 @@ private:
     HRESULT Ready_Child(CHILD_BODY_DESC* pDesc);
     HRESULT Ready_Body(CHILD_BODY_DESC* pDesc);
 
-    void Limit_Velocity();
+    void Limit_Velocity();    
 
 public:
     static CChildBody* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CHILD_BODY_DESC* pDesc);

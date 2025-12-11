@@ -18,7 +18,7 @@ HRESULT CInteract_Manager::Initialize()
     HEINFirstDesc->iLevel = ENUM_CLASS(LEVEL::HEINMACH);
     HEINFirstDesc->isUnLock = false;
     HEINFirstDesc->strName = TEXT("눈보라 협곡");
-    HEINFirstDesc->vPos = _float4(-0.733f, 0.2f, 33.390f, 1.f);
+    HEINFirstDesc->vPos = _float4(12.776f, 0.2f, 51.948f, 1.f);
 
     Add_BladeNexus(KHAZAN_MAP::HEINMACH, HEINFirstDesc);
 

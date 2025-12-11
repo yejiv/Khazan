@@ -246,19 +246,19 @@ void CCamera_Compre::Update_Free(_float fTimeDelta)
     
     if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta, INPUT_TYPE::FORCE))
     {
-        m_pTransformCom->Go_Straight(fTimeDelta * 1.5f);
+        m_pTransformCom->Go_Straight(fTimeDelta * 8.f);
     }
     if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta, INPUT_TYPE::FORCE))
     {
-        m_pTransformCom->Go_Backward(fTimeDelta * 1.5f);
+        m_pTransformCom->Go_Backward(fTimeDelta * 8.f);
     }
     if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta, INPUT_TYPE::FORCE))
     {
-        m_pTransformCom->Go_Left(fTimeDelta * 1.5f);
+        m_pTransformCom->Go_Left(fTimeDelta * 8.f);
     }
     if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta, INPUT_TYPE::FORCE))
     {
-        m_pTransformCom->Go_Right(fTimeDelta * 1.5f);
+        m_pTransformCom->Go_Right(fTimeDelta * 8.f);
     }
 
     if (m_pGameInstance->Key_Pressing(DIK_NUMPAD7, fTimeDelta, INPUT_TYPE::FORCE))

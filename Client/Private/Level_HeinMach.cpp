@@ -27,6 +27,8 @@
 
 #pragma region ITEM
 #include "Interaction_Item.h"
+//TEST
+#include "UI_Inven.h"
 #pragma endregion
 
 CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -90,7 +92,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CClientInstance::GetInstance()->Fade_Out();
 
-    CClientInstance::GetInstance()->Set_Volume_BGM(0.25f);
+    CClientInstance::GetInstance()->Set_Volume_BGM(0.45f);
     CClientInstance::GetInstance()->BGM_HeinMach_Entry();
 
     if (!Wait_All_Futures())
@@ -206,6 +208,7 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
     else if (m_pGameInstance->Key_Down(DIK_F2, INPUT_TYPE::FORCE))
     {
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
+        static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1004);
     }
 
     if (m_eNextLevel != LEVEL::END)
@@ -449,6 +452,13 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Dawn_BloodTrail2"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GS_StrongATK"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Ghost_Dark_Shadow_Land"),1);
+
+    // [Player Ect] 
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Guard"),100);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("PerfectGaurd"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Lachryma"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Lachryma_Arm"), 3);
+
 
     return S_OK;
 }
@@ -1145,9 +1155,7 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
 		m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
 	}
     
-
 	CloseHandle(hFile);
-
 
     LIGHT_DESC LightDesc1 = {};
     LightDesc1.eType = LIGHT_DESC::POINT;
@@ -1157,6 +1165,16 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
     LightDesc1.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
     LightDesc1.fRange = 2.45f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Lantern"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc1, false)))
+        return E_FAIL;
+
+    LIGHT_DESC LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 9.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("BladeNexus_ActivateLight"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc, false)))
         return E_FAIL;
 
 	return S_OK;

@@ -404,7 +404,7 @@ void CJolt_Manager::Debug_Render()
     m_pPhysics->DrawBodies(m_DrawSetting, m_pDebugRenderer, m_DrawFilter);
     for (RayCastDesc RC : m_RayCasts)
         m_pDebugRenderer->DrawLine(LoadVec3(RC.vStart), LoadVec3(RC.vEnd), RC.vColor);
-    //  m_pPhysics->DrawConstraints(m_pDebugRenderer);
+    m_pPhysics->DrawConstraints(m_pDebugRenderer);
 
     // 디버그 렌더 패스 종료
     m_pDebugRenderer->EndFrame();

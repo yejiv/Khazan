@@ -51,6 +51,7 @@ void CAS_P2_BerserkerJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
         if (pBB->Get_Value<_bool>(pViper->Get_Name(), "SkipMontion"))
         {
             pModel->Set_Animation(21);
+            pViper->SFX_DASHDRIFT();
             m_eState = BSJUMPSTATE::FRONTJUMP;
         }
     }
@@ -72,6 +73,8 @@ void CAS_P2_BerserkerJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
         if (fDist < 10 + 0.1f /*|| pBB->Get_Value<_bool>(pViper->Get_Name(), "isP2_Dash_Abort")*/)
         {
             m_eState = BSJUMPSTATE::ATTACK;
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_end_atk_whoosh_01 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+
             pModel->Set_Animation(20);
         }
     }
@@ -88,6 +91,7 @@ void CAS_P2_BerserkerJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
         if (BSJUMPSTATE::ATTACK == m_eState && m_iJumpCnt != 0)
         {
             m_eState = BSJUMPSTATE::FRONTJUMP;
+            pViper->SFX_DASHDRIFT();
             pModel->Set_Animation(21);
             --m_iJumpCnt;
         }

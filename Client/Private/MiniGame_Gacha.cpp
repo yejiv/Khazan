@@ -295,6 +295,7 @@ void CMiniGame_Gacha::Update_Notice(_float fTimeDelta)
     {
         m_eState = SHUFFLE_SET;
         m_pGameInstance->Set_LightEnable(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), false);
+        //이때 아이템 이펙트 끔!
     }
     m_fAcctime += fTimeDelta;
     
@@ -318,16 +319,21 @@ void CMiniGame_Gacha::Update_Selete_End0(_float fTimeDelta)
     {
         if (m_pBox[m_iSeleteNum]->isAnimFinish())
         {
+            _vector vPos = m_pBox[m_iSeleteNum]->Get_Position();
+            //vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + m_fGuidePosY);
+
             if (m_isSucces)
             {
                 m_pBox[m_iSeleteNum]->Get_Model()->Set_Animation(13);
                 m_eEndAnime = ANIM_STATE::DANCE;
+                m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Gacha_Suceess"), vPos);
             }
             else
             {
                 m_pBox[m_iSeleteNum]->Get_Model()->Set_Animation(5);
                 m_pGameInstance->PlaySoundOnce(TEXT("MiniGame_Fail.mp3"));
                 m_eEndAnime = ANIM_STATE::END;
+                m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Gacha_Fail"), vPos); 
             }
         }
     }

@@ -66,9 +66,13 @@ private :
     ID3D11Buffer*						m_pCB = { nullptr };
 	ID3D11Buffer*						m_pStructuredBuffer = { nullptr };	
 	ID3D11Buffer*						m_pSpeedBuffer = { nullptr };
-	ID3D11Buffer*						m_pStagingBuffer = { nullptr };	
+    ID3D11Buffer*                       m_pStagingBuffer[2];
     ID3D11SamplerState*                 m_pLinearWrapSampler;
 	POINT_INSTANCE_PARAMS*				m_pParticleParams;
+
+    D3D11_BOX                           m_SourceBox;
+    _uint                               m_iReadIdx;
+    _uint                               m_iWriteIdx;
 
 private:
 	_float3								m_vPivot = {}; 
