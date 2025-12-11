@@ -246,6 +246,7 @@ namespace Engine
         bool            isUseSubColor;
         float           fSubColorStartHeight;
         XMFLOAT4        vSubColor;
+        float           fLightBleedStrength;
     }FOG_CONFIG;
 
     typedef struct tagOutlineConfig

@@ -138,6 +138,13 @@ void CPet_Danjinjar::Update(_float fTimeDelta)
 
     m_pTalk->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
     m_pTalk->Update(fTimeDelta);
+    
+    //if (m_pTalk->isTalkingEnd())
+    //    m_pTalk->Off_Panel();
+
+    _float4 vPosition{};
+    XMStoreFloat4(&vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+    m_pGameInstance->Set_LightPosition(TEXT("DanjinJar_Pet"), ENUM_CLASS(LEVEL::EMBARS), vPosition);
 }
 
 void CPet_Danjinjar::Late_Update(_float fTimeDelta)
@@ -219,6 +226,7 @@ HRESULT CPet_Danjinjar::Ready_Components()
     tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 
     m_tCollisionDesc.pGameObject = this;
+    m_tCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PET);
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
     //캡슐 Desc

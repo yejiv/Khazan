@@ -29,6 +29,7 @@ float g_fToonShadeLevel;
 float g_fLightRange;
 float2 g_vSpecularPower;
 float g_fRimPower, g_fRimToonThreshold, g_fRimIntensity;
+float g_fSpecularAttuenation;
 
 // ===== Material =====
 vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.f, 1.f };
@@ -64,6 +65,7 @@ float g_fNoiseStrength, g_fNoiseContrast;
 float g_fFogBaseHeight, g_fFogHeightDensity;
 float g_fSubColorStartHeight;
 float4 g_vFogSubColor;
+float g_fFogLightBleedStrength;
 
 // ===== Outline =====
 float g_fOutlineAlpha, g_fOutlineBias;

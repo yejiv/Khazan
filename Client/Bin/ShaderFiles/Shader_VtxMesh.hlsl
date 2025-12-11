@@ -59,6 +59,10 @@ float g_fDiffusePower = 1.f;
 // 바이퍼
 float g_fEmissiveIntensity = 1.f;
 
+// 잼스톤
+float g_fDiffuseRedPower;
+float4 g_vGemColor;
+
 struct VS_IN
 {
     float3 vPosition : POSITION; 
@@ -456,45 +460,32 @@ PS_OUT PS_DESTINYSTONE(PS_IN In)                       // 맵 오브젝트용 �
         vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
         
     /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
-    vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
     if (IsFlag(M_NORMAL))
-        vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    float2 xy = vNormalDesc.xy * 2.f - 1.f;
-    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
-    
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
-    
-    float3 vToCamera = normalize(g_vCamPosition.xyz - In.vWorldPos.xyz);
-    
-    float fReflectPower = pow(saturate(1.f - dot(vNormal, vToCamera)), 4.f);
-    
-    float3 vReflectColor = float3(0.9f, 0.3f, 0.1f);
-    
-    float3 vGemColor = lerp(vMtrlDiffuse.rgb, vReflectColor, fReflectPower * 0.1f);
-    
-    float3 vFinalColor = saturate(vGemColor * 0.95f);
-    
-    float fAlpha = saturate(0.6f + fReflectPower * 0.3f);
-    
-    // Specular Test
+
     vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
     if (IsFlag(M_SPECULAR))
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    // Emissive Test
     vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
     if (IsFlag(M_EMISSIVE))
         vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    Out.vDiffuse = float4(vFinalColor, fAlpha);
-    Out.vDiffuse.r *= 1.2f;
+    if (vMtrlDiffuse.a <= 0.f)
+        vMtrlDiffuse = g_vGemColor;
+
+    Out.vDiffuse = vMtrlDiffuse * g_fEmissiveIntensity;
+    Out.vDiffuse.r *= g_fDiffuseRedPower;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
     Out.vSpecular.rgb = vMtrlSpecular.rgb;
-    Out.vSpecular.a = 0.f;
+    Out.vSpecular.a = 1.f;
 
     return Out;
 }
@@ -508,41 +499,32 @@ PS_OUT PS_DESTINYGEM(PS_IN In)                       // 맵 오브젝트용 픽�
         vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
         
     /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
-    vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
     if (IsFlag(M_NORMAL))
-        vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    float2 xy = vNormalDesc.xy * 2.f - 1.f;
-    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
-    
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
-    
-    float3 vToCamera = normalize(g_vCamPosition.xyz - In.vWorldPos.xyz);
-    
-    float fReflectPower = pow(saturate(1.f - dot(vNormal, vToCamera)), 4.f);
-    
-    float3 vReflectColor = float3(0.9f, 0.3f, 0.1f);
-    
-    float3 vGemColor = lerp(vMtrlDiffuse.rgb, vReflectColor, fReflectPower * 0.1f);
-    
-    float3 vFinalColor = saturate(vGemColor * 0.95f);
-    
-    float fAlpha = saturate(0.6f + fReflectPower * 0.3f);
-    
-    // Specular Test
+
     vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
     if (IsFlag(M_SPECULAR))
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    Out.vDiffuse = float4(vFinalColor, fAlpha);
-    Out.vDiffuse.r *= 1.2f;
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    if (vMtrlDiffuse.a <= 0.f)
+        vMtrlDiffuse = g_vGemColor;
+
+    Out.vDiffuse = vMtrlDiffuse * g_fEmissiveIntensity;
+    Out.vDiffuse.r *= g_fDiffuseRedPower;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
     Out.vSpecular.rgb = vMtrlSpecular.rgb;
-    Out.vSpecular.a = 0.f;
-    Out.vEmissive = vector(0.2f, 0.f, 0.f, 0.35f);
+    Out.vSpecular.a = 1.f;
     
     Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
     

@@ -627,9 +627,19 @@ void CClientInstance::BGM_Embars_Club_Game(_float fFadeTime)
     m_pBGM_Manager->Embars_Club_Game(fFadeTime);
 }
 
-void CClientInstance::BGM_Embars_Gacha(_float fFadeTime)
+void CClientInstance::Embars_Club_Shuffle_0(_float fFadeTime)
 {
-    m_pBGM_Manager->Embars_Gacha(fFadeTime);
+    m_pBGM_Manager->Embars_Club_Shuffle_0(fFadeTime);
+}
+
+void CClientInstance::Embars_Club_Shuffle_1(_float fFadeTime)
+{
+    m_pBGM_Manager->Embars_Club_Shuffle_1(fFadeTime);
+}
+
+void CClientInstance::Embars_Club_Shuffle_2(_float fFadeTime)
+{
+    m_pBGM_Manager->Embars_Club_Shuffle_2(fFadeTime);
 }
 
 void CClientInstance::BGM_Embars_1F(_float fFadeTime)

@@ -77,9 +77,15 @@ void CChildBody::Priority_Update(_float fTimeDelta)
     }
 }
 
-void CChildBody::Update(_float fTimeDelta)
+void CChildBody::Update(_float fTimeDelta, _bool isFrozen)
 {
     m_fFeelerTime += fTimeDelta;
+
+    if (isFrozen)
+    {
+        ClampToCharacter();
+        return;
+    }
 
     Apply_RootInertia(fTimeDelta);
     Type_Update(fTimeDelta);
@@ -88,7 +94,7 @@ void CChildBody::Update(_float fTimeDelta)
     ClampToCharacter();
 }
 
-void CChildBody::Late_Update(_float fAlpha)
+void CChildBody::Late_Update(_float fAlpha, _bool isFrozen)
 {
     float baseAlpha = 1.f;
 
@@ -97,18 +103,21 @@ void CChildBody::Late_Update(_float fAlpha)
     else if (m_eClothType == CLOTHTYPE::CAPE)
         baseAlpha = 1.0f;
 
-    ApplyToBones(fAlpha * baseAlpha);
+    ApplyToBones(fAlpha * baseAlpha, isFrozen);
 
     for (auto Child : m_ChildBodys)
     {
-        Child->Late_Update(fAlpha);
+        Child->Late_Update(fAlpha, isFrozen);
     }
 }
 
-void CChildBody::ApplyToBones(_float fAlpha)
+void CChildBody::ApplyToBones(_float fAlpha, _bool isFrozen)
 {
     if (!m_pBody || !m_pOwnerTransform)
         return;
+
+    if (isFrozen)
+        fAlpha = 0.f;
 
     const _int parentIndex = m_pBone->Get_ParentBoneIndex();
     if (parentIndex < 0)
@@ -160,9 +169,9 @@ void CChildBody::ApplyToBones(_float fAlpha)
     }
     if (m_eClothType == CLOTHTYPE::FEELER)
     {
-        baseSagPerDepth = 0.6f;  // 거의 안 처짐
+        baseSagPerDepth = 0.01f;  // 거의 안 처짐
         verticalUpScale = 0.7f;
-        maxHoriz = 0.3f;    // 옆으로도 많이 안 퍼지게
+        maxHoriz = 0.25f;    // 옆으로도 많이 안 퍼지게
     }
     else // CAPE
     {
@@ -186,8 +195,9 @@ void CChildBody::ApplyToBones(_float fAlpha)
     delta = horizontal + verticalClamped;
 
     // depth에 따라 영향도 조절 (점점 더 많이 흔들리게)
-    float depthFactor = 0.4f + 0.3f * (float)m_iDepth;
-    if (depthFactor > 1.f) depthFactor = 1.f;
+    float depth = (float)m_iDepth;
+    float depthFactor = 0.2f + 0.6f * (1.0f - expf(-0.5f * depth)); // 0.2~0.8
+    depthFactor = clamp(depthFactor, 0.2f, 0.8f);
 
     float finalAlpha = fAlpha * depthFactor;
 
@@ -244,11 +254,9 @@ void CChildBody::Cape_Update(_float fTimeDelta)
     // depth에 따라 영향도 조금 조절 (꼬리일수록 더 많이 펄럭)
     float depth = (float)m_iDepth;
 
-    // 너무 단순히 depth에 비례시키지 말고, 
-    // 최대값을 0.8 정도로 제한
-    float depthFactor = 0.4f + 0.15f * depth; // 0.4, 0.55, 0.7, 0.85...
-    if (depthFactor > 0.8f)
-        depthFactor = 0.8f;
+    // 0 뼈 = 0.3, 깊어질수록 0.7까지 점점 증가 (그리고 절대 1 안 넘어가게)
+    float depthFactor = 0.3f + 0.4f * (1.0f - expf(-0.5f * depth));
+    depthFactor = clamp(depthFactor, 0.3f, 0.7f);
 
     // 누적 force
     Vec3 totalForce = Vec3::sZero();
@@ -303,7 +311,10 @@ void CChildBody::Cape_Update(_float fTimeDelta)
 
     // === 4) 망토 속도 상한 ===
     Vec3 vel = m_pBodyInterface->GetLinearVelocity(m_BodyID);
-    float maxSpeed = 4.0f + 1.0f * (float)m_iDepth; // 깊을수록 조금 더 허용
+    //float maxSpeed = 4.0f + 1.0f * (float)m_iDepth; // 깊을수록 조금 더 허용
+    float maxSpeed = 3.0f;
+
+
     float len = vel.Length();
 
     if (len > maxSpeed && len > 1e-4f)
@@ -345,11 +356,10 @@ void CChildBody::Feeler_Update(_float fTimeDelta)
     float vU = rootVel.Dot(up);
 
     float depth = (float)m_iDepth;
-    float depthFactor = 0.4f + 0.1f * depth;   // 끝으로 갈수록 살짝 더 많이 움직이게
-    if (depthFactor > 0.9f) depthFactor = 0.9f;
+    float depthFactor = 0.3f + 0.4f * (1.0f - expf(-0.4f * depth)); // 0.3~0.7 근처
+    depthFactor = clamp(depthFactor, 0.3f, 0.7f);
 
-    // 관성 force (가속 대신 속도 기반 간단 버전)
-    float kInertia = 3.0f * depthFactor;
+    float kInertia = 2.0f * depthFactor;  // 기존 3.0f → 2.0f 정도로 전반적 감소
 
     Vec3 inertiaForce =
         (-vF * kInertia) * forward +   // 앞으로 달리면 뒤로 끌림
@@ -359,8 +369,8 @@ void CChildBody::Feeler_Update(_float fTimeDelta)
     // ===== 2) 살짝 wiggle 노이즈 =====
     float time = m_fFeelerTime; // 엔진 쪽에서 쓰는 전역 시간 함수 아무거나
 
-    float freq = 5.0f + depth * 0.8f;             // 끝일수록 더 잘 흔들
-    float amp = 0.4f + depth * 0.05f;           // 진폭
+    float freq = 5.0f + depth * 0.8f;
+    float amp = 0.2f + depth * 0.03f;  // 기존 0.4f + depth * 0.05f 에서 절반 정도로
 
     // rest 방향 기준으로 수직인 방향 하나 잡아서 wiggle
     Vec3 restLocal = Vec3(m_vRestLocalPos.x, m_vRestLocalPos.y, m_vRestLocalPos.z);
@@ -389,10 +399,8 @@ void CChildBody::Feeler_Update(_float fTimeDelta)
 
     // 속도 상한 (끝자락 늘어나는 것 방지)
     Vec3 vel = m_pBodyInterface->GetLinearVelocity(m_BodyID);
-    float baseMax = 6.0f;
-    float extra = 1.0f;
-    float maxSpeed = baseMax + extra * min(depth, 4.0f); // 깊어질수록 6~10m/s 정도
-
+    //float maxSpeed = 2.5f + 0.3f * min(depth, 4.0f); // 2.5 ~ 3.7
+    float maxSpeed = 3.0f;
     float len = vel.Length();
     if (len > maxSpeed && len > 1e-4f)
     {
@@ -481,32 +489,21 @@ void CChildBody::ClampToCharacter()
         XMVectorGetZ(restWorldPosV)
     );
 
-
     RVec3 cur = m_pBodyInterface->GetCenterOfMassPosition(m_BodyID);
     Vec3  diff = Vec3(cur - restWorldPos);
     float len = diff.Length();
 
-    float depth = (float)m_iDepth;
+    // --- bone 길이 기반 하드 반경 ---
+    float restLen = XMVectorGetX(XMVector3Length(restLocalPos));
+    // 한 segment 는 자기 rest 길이의 0.6배까지만 벗어날 수 있음 (수치는 취향대로)
+    float hardRadius = restLen * 0.6f;
+    if (hardRadius < 0.02f) hardRadius = 0.02f; // 너무 작은 뼈 보호용
 
-    // CAPE인 경우, 끝으로 갈수록 반대로 조금씩 타이트하게
-    float baseRadius = 0.28f;  // 전체 기본
-    float extraPerDepth = 0.02f;  // 중간 정도까지는 조금씩 증가
-
-    float maxRadius = baseRadius + extraPerDepth * min(depth, 3.0f); // depth 3까지만 증가
-
-    // 깊이가 4 이상이면 오히려 더 키우지 않고 유지 or 살짝 줄이기
-    if (depth >= 4.0f)
-        maxRadius -= 0.02f * (depth - 3.0f); // 너무 과하게 줄이진 말고 살살
-    if (maxRadius < 0.2f)
-        maxRadius = 0.2f;
-
-    if (len > maxRadius && len > 1e-4f)
+    if (len > hardRadius && len > 1e-4f)
     {
-        // 반경 안으로 끌어 넣기
-        diff *= (maxRadius / len);
+        diff *= (hardRadius / len);
         RVec3 clampedPos = restWorldPos + diff;
 
-        // 위치/회전 재설정 (회전은 유지)
         Quat rot = m_pBody->GetRotation();
         m_pBodyInterface->SetPositionAndRotation(
             m_BodyID,
@@ -515,12 +512,67 @@ void CChildBody::ClampToCharacter()
             EActivation::Activate
         );
 
-        // 속도도 좀 줄이자 (아예 0으로 해도 되고 비율 줄여도 됨)
+        // 폭주한 애는 속도도 확 줄이기
         Vec3 vel = m_pBodyInterface->GetLinearVelocity(m_BodyID);
-        vel *= 0.2f; // 20%만 남기기
+        vel *= 0.1f;
         m_pBodyInterface->SetLinearVelocity(m_BodyID, vel);
     }
 }
+
+
+void CChildBody::HardSnapToAnimationRecursive()
+{
+    if (!m_pBody || !m_pOwnerTransform)
+        return;
+
+    const _int parentIndex = m_pBone->Get_ParentBoneIndex();
+    if (parentIndex < 0)
+        return;
+
+    CBone* pParentBone = m_pModel->Find_Bone(parentIndex);
+    if (!pParentBone)
+        return;
+
+    _matrix parentCombined = pParentBone->Get_CombinedTransformationMatrix();
+    _matrix parentWorld = parentCombined * m_pOwnerTransform->Get_WorldMatrix();
+
+    XMVECTOR tRest = XMLoadFloat3(&m_vRestLocalPos);
+    XMVECTOR rRest = XMLoadFloat4(&m_vRestLocalRot);
+
+    XMMATRIX worldM = XMMatrixAffineTransformation(
+        XMVectorSet(1.f, 1.f, 1.f, 0.f),
+        XMVectorZero(),
+        rRest,
+        tRest
+    );
+
+    worldM = worldM * parentWorld;
+
+    // 월드 행렬 → pos / rot
+    _vector vS, vR, vT;
+    XMMatrixDecompose(&vS, &vR, &vT, worldM);
+
+    RVec3 pos(
+        XMVectorGetX(vT),
+        XMVectorGetY(vT),
+        XMVectorGetZ(vT)
+    );
+    Quat rot(
+        XMVectorGetX(vR),
+        XMVectorGetY(vR),
+        XMVectorGetZ(vR),
+        XMVectorGetW(vR)
+    );
+
+    m_pBodyInterface->SetPositionAndRotation(m_BodyID, pos, rot, EActivation::DontActivate);
+    m_pBodyInterface->SetLinearVelocity(m_BodyID, Vec3::sZero());
+    m_pBodyInterface->SetAngularVelocity(m_BodyID, Vec3::sZero());
+
+    // 자식들도 재귀적으로
+    for (auto Child : m_ChildBodys)
+        Child->HardSnapToAnimationRecursive();
+}
+
 
 HRESULT CChildBody::Ready_Child(CHILD_BODY_DESC* pDesc)
 {
@@ -611,14 +663,13 @@ HRESULT CChildBody::Ready_Body(CHILD_BODY_DESC* pDesc)
         // 루트 근처(0~2뎁스)는 조금 여유, 끝으로 갈수록 1.0에 가까워지도록 lerp
         float t = min(depth / 5.0f, 1.0f); // depth 5 이상이면 t=1
 
-        // 예: root: 0.95~1.03, tip: 0.99~1.01
-        float minBase = 0.95f;
-        float maxBase = 1.03f;
-        float minTip = 0.99f;
-        float maxTip = 1.01f;
+        float minBase = 0.98f;
+        float maxBase = 1.02f;
+        float minTip = 0.995f;
+        float maxTip = 1.005f;
 
-        float localMin = minBase + (minTip - minBase) * t;
-        float localMax = maxBase + (maxTip - maxBase) * t;
+        float localMin = Lerp(minBase, minTip, t);
+        float localMax = Lerp(maxBase, maxTip, t);
 
         settings.mMinDistance = restLen * localMin;
         settings.mMaxDistance = restLen * localMax;
@@ -645,9 +696,8 @@ void CChildBody::Limit_Velocity()
 
     // depth에 따라 조금씩 허용 (꼬리일수록 살짝 더 빠르게)
     float depth = (float)m_iDepth;
-    float baseMax = 2.0f;    // 루트 쪽
-    float extra = 1.0f;    // 뎁스 증가당 더 허용할 양
-    float maxSpeed = baseMax + extra * min(depth, 4.0f); // 대략 5~9m/s
+    //float maxSpeed = 2.5f + 0.3f * min(depth, 4.0f); // 2.5 ~ 3.7
+    float maxSpeed = 3.0f;
 
     float len = vel.Length();
     if (len > maxSpeed && len > 1e-4f)

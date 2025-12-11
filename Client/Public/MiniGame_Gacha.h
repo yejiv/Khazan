@@ -64,13 +64,13 @@ private:
     HRESULT                     Ready_Prototype();
     HRESULT                     Setting_Object();
 
+    void                        Update_Notice(_float fTimeDelta);
     void                        Setting_Suffle();
     void                        Update_Suffle(_float fTimeDelta);
-    void                        Update_Notice(_float fTimeDelta);
+    void                        Update_Selete(_float fTimeDelta);
     void                        Update_Selete_End0(_float fTimeDelta);
     void                        Update_Selete_End1(_float fTimeDelta);
     void                        Update_Selete_End2(_float fTimeDelta);
-    void                        Update_Selete(_float fTimeDelta);
 public:
     static CMiniGame_Gacha*     Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*        Clone(void* pArg) override;

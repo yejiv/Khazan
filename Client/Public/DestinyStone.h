@@ -48,6 +48,7 @@ private:
 
     void Event_Update(_float fTimeDelta);
     void Input_Interact_Event(_float fTimeDelta);
+    HRESULT Bind_Materials(_uint iMeshIndex) override;
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;

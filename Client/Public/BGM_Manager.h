@@ -58,7 +58,9 @@ public:
     void Embars_B1(_float fFadeTime = 1.f);
     void Embars_Club(_float fFadeTime = 1.f);
     void Embars_Club_Game(_float fFadeTime = 1.f);
-    void Embars_Gacha(_float fFadeTime = 1.f);
+    void Embars_Club_Shuffle_0(_float fFadeTime = 1.f);
+    void Embars_Club_Shuffle_1(_float fFadeTime = 1.f);
+    void Embars_Club_Shuffle_2(_float fFadeTime = 1.f);
     void Embars_1F(_float fFadeTime = 1.f);
     void Embars_Elamein(_float fFadeTime = 1.f);
 

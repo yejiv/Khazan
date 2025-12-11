@@ -31,6 +31,10 @@ HRESULT CFog::Initialize()
     m_Config.isUseSubColor = false;
     m_Config.fSubColorStartHeight = 1500.f;
     m_Config.vSubColor = _float4(1.f, 0.f, 1.f, 1.f);
+    
+    m_Config.fLightBleedStrength = 0.f;
+
+    m_isEnable = true;
 
     if (FAILED(Ready_NoiseTexture()))
         return E_FAIL;
@@ -129,6 +133,9 @@ HRESULT CFog::Bind_Fog_ShaderResources(CShader* pShader)
         return E_FAIL;
 
     if (FAILED(pShader->Bind_RawValue("g_vFogSubColor", &m_Config.vSubColor, sizeof(_float4))))
+        return E_FAIL;
+
+    if (FAILED(pShader->Bind_RawValue("g_fFogLightBleedStrength", &m_Config.fLightBleedStrength, sizeof(_float))))
         return E_FAIL;
 
 	return S_OK;
