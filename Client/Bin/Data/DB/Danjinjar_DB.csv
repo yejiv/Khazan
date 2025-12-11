@@ -61,3 +61,6 @@ ID,Talk,NextTalk,TextSpeed,Sound,deleytime 0이면 유지
 1001,같이가요!,0,15.5,vo_Npc_Talk.wav,1
 1002,뿅!,0,15.5,vo_Npc_Talk.wav,1
 1003,아악!,0,15.5,vo_Npc_Talk.wav,1
+1004,끼잉끼익,0,15.5,vo_Npc_Talk.wav,1
+1005,히잉,0,15.5,vo_Npc_Talk.wav,1
+1006,저는 여기서 가볼게요!,0,15.5,vo_Npc_Talk.wav,1

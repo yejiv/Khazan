@@ -72,13 +72,15 @@ public:
         | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST
         | FALLING | FALLING_ATTACK | PRE_LAND  | DODGING | STATUE_MODE
         | BRUTAL_BEGIN | BRUTAL_READY | BRUTAL_SUCCESS
-        | BLOCK_ATK_SKILL_GUARD  | DODGE_ENDING | LADDER_CLIMBING | LADDER_CLIMBING_ROTATION  ,
+        | BLOCK_ATK_SKILL_GUARD  | LADDER_CLIMBING | LADDER_CLIMBING_ROTATION  ,
 
     };
     enum PLAYER_CAMERA_DIR {
         PC_FRONT, PC_FRONT_RIGHT, PC_RIGHT, PC_BACK_RIGHT,
         PC_BACK, PC_BACK_LEFT, PC_LEFT, PC_FRONT_LEFT
     };
+
+    enum PLAYER_UPDATE_FX { FX_LACRIMA, FX_LACRIMA_HAND, PLAYER_UPDATE_FX_END };
 
 private:
     CKhazan_GSword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -153,7 +155,7 @@ private:
     _float4x4*                  m_pWeaponR_Matrix = { nullptr };
     _float4x4*                  m_pGSword_Matrix = { nullptr };
    // _float4x4					m_pGSword_WorldMatrix = {};
-   // _matrix						m_Offset_Matrix = {};
+    _matrix						m_Offset_Matrix = {};
     _bool						m_isEnableControl = { true };
     COLLISION_DESC				m_tPlayerCollisionDesc = {};
 
@@ -181,7 +183,7 @@ private:
 
     /* recovery */
     _float2                     m_fIntervalStaminaRecovery = { 0.f, 0.25f };
-    _float2                     m_fWaitStaminaRecovery = { 0.f, 1.f };
+    _float2                     m_fWaitStaminaRecovery = { 0.f, 1.58f };
 
     /* Ladder  Climb */
     _float4                     m_fLadderClimbPos= { 0.f,0.f,0.f,0.f }; 
@@ -193,8 +195,8 @@ private:
     /* Move Speed */
     _float				        m_fInjuredSpeed = { 1.15f };
     _float				        m_fWalkSpeed = { 1.7f };
-    _float				        m_fRunSpeed = { 4.8f };
-    _float				        m_fSprintSpeed = { 10.3f };
+    _float				        m_fRunSpeed = { 4.4f };
+    _float				        m_fSprintSpeed = { 7.2f };
 
     /*  Attack */
     const _float				m_fChargingStartIntervalTime = { 0.25f }; // 차징 시작 시간
@@ -209,6 +211,7 @@ private:
     /* SnowEffect SpawnTime*/
 private:
     _float                      m_EffectTimeDelta;
+    _uint                       m_FXIdx[PLAYER_UPDATE_FX_END];
 
 private:
     void			Update_Stats(_float fTimeDelta);

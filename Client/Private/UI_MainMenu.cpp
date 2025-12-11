@@ -399,6 +399,14 @@ void CUI_MainMenu::Next_Event()
 
 		CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("State"), &Desc);
 	}
+    else if (m_eNextEvent == MENULIST::OPTION)
+    {
+        m_eNextEvent = MENULIST::END;
+        m_eAnimState = UIANIMSTATE::OFF;
+        m_fAccTime = 1.f;
+
+        m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
+    }
 	else if (m_eNextEvent == MENULIST::TITLE)
 	{
         m_eNextEvent = MENULIST::END;

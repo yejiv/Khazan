@@ -166,29 +166,23 @@ void CChildBody::ApplyToBones(_float fAlpha, _bool isFrozen)
         restDir = XMVectorScale(restDir, 1.0f / restLen);
     }
 
-    //=========================================================
-    // FEELER : 통짜로 크게 휘면서 상하좌우 웨이브 + 길이 유지
-    //=========================================================
     if (m_eClothType == CLOTHTYPE::FEELER)
     {
         XMVECTOR up = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 
-        // 좌우축 (side) = up × restDir
         XMVECTOR sideAxis = XMVector3Cross(up, restDir);
         float sideLenSq = XMVectorGetX(XMVector3LengthSq(sideAxis));
         if (sideLenSq < 1e-6f)
             sideAxis = XMVector3Cross(restDir, XMVectorSet(1.f, 0.f, 0.f, 0.f));
         sideAxis = XMVector3Normalize(sideAxis);
 
-        // 상하축 : restDir 에 수직인 up 성분
         XMVECTOR upProj = XMVector3Dot(up, restDir) * restDir;
         XMVECTOR upAxis = up - upProj;
         float upLenSq = XMVectorGetX(XMVector3LengthSq(upAxis));
         if (upLenSq < 1e-6f)
-            upAxis = up; // 거의 평행하면 그냥 글로벌 up
+            upAxis = up;
         upAxis = XMVector3Normalize(upAxis);
 
-        // 시간 + depth 기반 웨이브
         float time = m_fFeelerTime;
         float freqMain = 2.5f;
         float phasePerDepth = 0.3f;
@@ -197,7 +191,7 @@ void CChildBody::ApplyToBones(_float fAlpha, _bool isFrozen)
         float waveSide = sinf(time * freqMain + phase);
         float waveUp = cosf(time * (freqMain * 0.8f) + phase * 1.3f);
 
-        float depthNorm = min(depth / 6.0f, 1.0f);      // 0~1
+        float depthNorm = min(depth / 6.0f, 1.0f);
         float baseAmp = 0.10f;
         float ampDepth = 0.04f;
         float amp = (baseAmp + ampDepth * depthNorm) * finalAlpha;
@@ -209,29 +203,21 @@ void CChildBody::ApplyToBones(_float fAlpha, _bool isFrozen)
             sideAxis * (waveSide * amp) +
             upAxis * (waveUp * amp * 0.8f);
 
-        // 약간 아래로 처지게
         float baseSagPerDepth = 0.015f;
         float sag = baseSagPerDepth * depth;
         XMVECTOR sagOffset = XMVectorSet(0.f, -sag, 0.f, 0.f);
 
-        // 물리 위치와 rest를 섞은 베이스 위치
         XMVECTOR basePos = XMVectorLerp(tRest, physLocalPos, 0.6f * finalAlpha);
-        // 완전 rest만 쓰고 싶으면: basePos = tRest;
 
         XMVECTOR finalPos = basePos + waveOffset + sagOffset;
 
-        // ==============================
-        // ★ 길이 유지 : 부모 기준 거리 고정
-        // ==============================
         float lenNow = XMVectorGetX(XMVector3Length(finalPos));
         if (lenNow > 1e-4f)
         {
-            // 거의 안 늘어나게 (여유 조금 주고 싶으면 1.02f 정도)
-            float targetLen = restLen * 1.02f; // 2%만 허용, 빡세게는 1.0f
+            float targetLen = restLen * 1.02f; 
             finalPos = XMVectorScale(finalPos, targetLen / lenNow);
         }
 
-        // 회전은 rest 기준
         XMVECTOR sOne = XMVectorSet(1.f, 1.f, 1.f, 0.f);
         XMMATRIX finalLocalM = XMMatrixAffineTransformation(
             sOne,
@@ -245,9 +231,6 @@ void CChildBody::ApplyToBones(_float fAlpha, _bool isFrozen)
         return;
     }
 
-    //=========================================================
-    // 나머지 타입 (SKIRT / CAPE) : 기존 로직 그대로
-    //=========================================================
     XMVECTOR delta = physLocalPos - tRest;
 
     XMVECTOR up2 = XMVectorSet(0.f, 1.f, 0.f, 0.f);

@@ -1,6 +1,9 @@
 #include "AS_Dr_Rampage_Dead.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 #include "Interaction_Item.h"
+#include "Amount.h"
+
 CAS_Dr_Rampage_Dead::CAS_Dr_Rampage_Dead()
 {
 }
@@ -9,6 +12,8 @@ void CAS_Dr_Rampage_Dead::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     if (m_pMonData == nullptr)
         m_pMonData = &static_cast<CDragonian_Rampage*>(pOwner)->Get_Data();
+    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, 1300);
+    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 3200);
 
     TARGET_DIR eDir = m_pMonData->pOwner->Get_DIR();
 

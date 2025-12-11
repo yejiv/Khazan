@@ -444,6 +444,9 @@ HRESULT CDragonian_Melee::Ready_AnimEvent()
     pModel->Register_Event("HardSmash_Move_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
     pModel->Register_Event("HardSmash_Move_5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
     pModel->Register_Event("HardSmash_Move_6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Move_Sound(); });
+
+    pModel->Register_Event("StandEnd_Sound", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_dragonianwarrior_hardsmash_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(0), 5.f); });
+
     return S_OK;
 }
 

@@ -85,8 +85,6 @@ void CKhazan_GS_Anim_Attack::Continue(_float fTimeDelta)
 void CKhazan_GS_Anim_Attack::Exit()
 {
     Clear_All();
-
-    cout << "Attack Exit " << endl;
 }
 
 _bool CKhazan_GS_Anim_Attack::Try_FastAttack()
@@ -584,7 +582,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
 
     m_isAttacking = true;
     m_isSkilling = true;
-    cout << " ========= [Try_SkillAttack]      m_isSkilling = true =============  " << endl;
+
     /* 콤보 리셋*/
     m_iCurrentCombo = 0;
     m_isFastCombo = false;
@@ -757,7 +755,6 @@ void CKhazan_GS_Anim_Attack::Clear_All()
         
         , false
     );
-    cout << " Skill  Clear_All " << endl;
 
 }
 
@@ -1061,8 +1058,6 @@ void CKhazan_GS_Anim_Attack::Update_Skill_Breathaking()
     /* 현재 애니메이션이 시작안했으면 리턴 */
     if (!isCurAnimStart)
         return;
-
-    cout << *m_pModel->Get_CurTrackPosition() << endl;
 
     /* 현재 애니메이션이 최소 보장 시간이 안지났으면 리턴  */
     if (isCurAnimStart && !isMinTime)
