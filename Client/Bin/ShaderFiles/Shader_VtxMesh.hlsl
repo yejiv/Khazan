@@ -63,6 +63,11 @@ float g_fEmissiveIntensity = 1.f;
 float g_fDiffuseRedPower;
 float4 g_vGemColor;
 
+// 블링크
+float g_fTimeDelta, g_fCycleSpeed, g_fRimEmissive;
+float g_fRimPower, g_fRimLightIntensity;
+float3 g_vRimColor;
+
 struct VS_IN
 {
     float3 vPosition : POSITION; 
@@ -684,7 +689,6 @@ PS_OUT PS_VIPER_WEAPON(PS_IN In)
     
     return Out;
 }
-
 PS_OUT PS_ILLUSION_WALL(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
 {
     PS_OUT Out = (PS_OUT) 0;
@@ -727,6 +731,58 @@ PS_OUT PS_ILLUSION_WALL(PS_IN In)                       // 맵 오브젝트용 �
     if (Out.vDiffuse.a <= 0.f)
         discard;
 
+    return Out;
+}
+
+PS_OUT PS_MAP_BLINK(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    if (vMtrlDiffuse.a <= 0.3f)
+        discard;
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+        vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float2 xy = vNormalDesc.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    // Specular Test
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    // Emissive Test
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    // Rim Light
+    vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+    float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+    fRim = pow(fRim, g_fRimPower);
+    
+    // Blink Cycle = cos = (-1 ~ 1) + 1 -> (0 ~ 2) * RimIntensity / 2 => 0 ~ 1
+    float fFinalIntensity = g_fRimLightIntensity / 2.f * (1.f + cos(g_fTimeDelta * g_fCycleSpeed));
+
+    float3 vRimColor = g_vRimColor * fRim * fFinalIntensity;
+    
+    Out.vDiffuse.rgb = vMtrlDiffuse.rgb + vRimColor * g_fRimEmissive; // Rim Emissive
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 0.f;
+    
     return Out;
 }
 
@@ -897,5 +953,16 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAPOBJECT();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_ILLUSION_WALL();
+    }
+    
+    pass MapPassBlink // 맵 오브젝트용 블링크 패스 ( 15번 ) ( 눈 X )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAP_BLINK();
     }
 }

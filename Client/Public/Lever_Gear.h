@@ -45,6 +45,10 @@ private:
     EventGateGear m_EventGate = {};
     _uint m_iEventID = { 0 };
 
+    // Blink Rim Light Shader
+    _float m_fBlinkTimeAcc = {};
+    _bool m_isEnableBlink = {};
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
 
@@ -52,6 +56,8 @@ private:
 
     void Animation_Update(_float fTimeDelta);
     void Animation_Change(_float fTimeDelta);
+
+    HRESULT Bind_Blink_ShaderResources();
 
 public:
     static CLever_Gear* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
