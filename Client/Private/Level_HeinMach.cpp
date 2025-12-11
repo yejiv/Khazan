@@ -428,6 +428,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight_static_connect"), 4);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"), 100);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("ITEM_FX"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("ITEM_RARE_FX"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("ITEM_UNIQUE_FX"), 5);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("stone_blust"), 1);
 
     // [GS] 
@@ -481,6 +483,12 @@ HRESULT CLevel_HeinMach::Ready_Layer_Item()
     desc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
 
     m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item"), &desc, 10);
+
+    CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item")));
+
+    pItem->Special_Item(TEXT("Record"), XMVectorSet(345.309f, 0.674f, 378.588f, 1.f));
+
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Item"), pItem);
 
     return S_OK;
 }

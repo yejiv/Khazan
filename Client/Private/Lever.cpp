@@ -90,11 +90,6 @@ void CLever::Update(_float fTimeDelta)
         Animation_Change(fTimeDelta);
 
     m_fBlinkTimeAcc += fTimeDelta;
-
-    // Test
-    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
-        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-            m_isEnableBlink = !m_isEnableBlink;
 }
 
 void CLever::Late_Update(_float fTimeDelta)
@@ -117,7 +112,7 @@ HRESULT CLever::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        if (true == m_isEnableBlink)
+        if (ANIM_STATE::IDLE1 == m_eAnimState)
         {
             if (FAILED(Bind_Blink_ShaderResources()))
                 return E_FAIL;
