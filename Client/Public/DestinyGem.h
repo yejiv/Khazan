@@ -47,12 +47,17 @@ private:
 
     _uint m_iNumGem = { 1 };
 
+    // Blink Rim Light Shader
+    _float m_fBlinkTimeAcc = {};
+    _bool m_isEnableBlink = {};
+
 private:
     HRESULT Ready_Components(void* pArg);
 
     HRESULT Bind_DissolveValues();
     HRESULT Bind_ShaderResources();
     HRESULT Bind_Materials(_uint iMeshIndex);
+    HRESULT Bind_Blink_ShaderResources();
 
 public:
     static CDestinyGem* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

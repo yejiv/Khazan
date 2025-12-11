@@ -40,6 +40,10 @@ private:
 
     _bool m_isInteracted = { false };
 
+    // Blink Rim Light Shader
+    _float m_fBlinkTimeAcc = {};
+    _bool m_isEnableBlink = {};
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_Collision(void* pArg);
@@ -49,6 +53,7 @@ private:
     void Event_Update(_float fTimeDelta);
     void Input_Interact_Event(_float fTimeDelta);
     HRESULT Bind_Materials(_uint iMeshIndex) override;
+    HRESULT Bind_Blink_ShaderResources();
 
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
