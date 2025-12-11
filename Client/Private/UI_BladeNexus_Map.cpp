@@ -454,6 +454,8 @@ void CUI_BladeNexus_Map::Move_Player()
 
     m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 
+    CClientInstance::GetInstance()->DeactivateCamera_InteractMove();
+
     if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH))
     {
         CKhazan_Spear* pKhazan = static_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Creature_Player"), 0));
