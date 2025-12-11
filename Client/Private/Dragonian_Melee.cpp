@@ -356,7 +356,8 @@ HRESULT CDragonian_Melee::Ready_Components()
     XMStoreFloat3(&SearchBodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
     XMStoreFloat4(&SearchBodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
     SearchBodyDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
-    SearchBodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_tSearchCollisionDesc.pGameObject = this;
+    SearchBodyDesc.pCollisionDesc = &m_tSearchCollisionDesc;
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_Body_Search"), (CComponent**)&m_pBodyComp, &SearchBodyDesc), E_FAIL);
 

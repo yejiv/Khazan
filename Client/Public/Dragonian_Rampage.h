@@ -146,7 +146,8 @@ private:
     _float4                         m_vClawR_3_End = {};
 
     class CTarget_BrutalAttack*     m_pBrutalAttack = { nullptr };
-
+    COLLISION_DESC				    m_tSearchCollisionDesc = {};
+    COLLISION_DESC				    m_tHitCollisionDesc = {};
 private:
     HRESULT                         Ready_Prototype();
 

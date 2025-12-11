@@ -130,7 +130,8 @@ private:
     _float4                         m_vSword_Start = {};
 
     class CTarget_BrutalAttack*     m_pBrutalAttack = {nullptr};
-
+    COLLISION_DESC				    m_tSearchCollisionDesc = {};
+    COLLISION_DESC				    m_tHitCollisionDesc = {};
 private :   //fx
     _uint                           m_iFXidx;
 
