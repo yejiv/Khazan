@@ -36,7 +36,7 @@ void CAS_Halberd_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
     }
     else if (m_eState == RELEASSE)
     {
-        m_pMonData->fDecreaseAlpha += fTimeDelta * 0.15f;
+        m_pMonData->fDecreaseAlpha += fTimeDelta * 0.7f;
 
         if (m_pMonData->fDecreaseAlpha >= 1.f)
         {

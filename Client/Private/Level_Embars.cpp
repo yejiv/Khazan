@@ -19,6 +19,7 @@
 #include "UI_Announce_MapName.h"
 #include "Dragonian_Melee.h"
 #include "Dragonian_Rampage.h"
+#include "Interaction_Item.h"
 
 CLevel_Embars::CLevel_Embars(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
@@ -229,6 +230,9 @@ HRESULT CLevel_Embars::Ready_Layer_Effect(const _wstring& strLayerTag)
 
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Gacha_Fail"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Gacha_Suceess"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("ITEM_FX"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("ITEM_RARE_FX"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("ITEM_UNIQUE_FX"), 5);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Item_normal_Gacha"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("item_rare_Gacha"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("item_unique_Gacha"), 1);
@@ -318,6 +322,12 @@ HRESULT CLevel_Embars::Ready_Layer_Item()
     desc.iLevelIndex = ENUM_CLASS(LEVEL::EMBARS);
 
     m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Item"), ENUM_CLASS(LEVEL::EMBARS), TEXT("Item"), &desc, 10);
+
+    CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Item")));
+
+    pItem->Special_Item(TEXT("Handwriting"), XMVectorSet(109.18f, -83.451f, 52.09f, 1.f));
+
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Item"), pItem);
 
     return S_OK;
 }
@@ -1228,7 +1238,23 @@ HRESULT CLevel_Embars::Ready_Lights()
     if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect1"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect2"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect3"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_Pet"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    LightDesc.vDiffuse = _float4(2.5f, 0.8f, 0.8f, 1.f);
+    LightDesc.vPosition = _float4(-67.325f, -90.f, -41.831f, 1.f);
+    LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 0.1f);
+    LightDesc.fRange = 17.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Mirroball"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
         return E_FAIL;
 
     LightDesc = {};

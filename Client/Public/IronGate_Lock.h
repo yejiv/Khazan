@@ -53,7 +53,6 @@ private:
 
     // Blink Rim Light Shader
     _float m_fBlinkTimeAcc = {};
-    _bool m_isEnableBlink = {};
 
 private:
     HRESULT Ready_Components(void* pArg);

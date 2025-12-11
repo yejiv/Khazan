@@ -52,6 +52,9 @@ void CBody_Dragonian_Rampage::Priority_Update(_float fTimeDelta)
 
 void CBody_Dragonian_Rampage::Update(_float fTimeDelta)
 {
+    if (!m_pData->isSearch)
+        return;
+
     if (m_iPreAnim != m_pData->iAnimIndex)
     {
         m_pModelCom->Set_Animation(m_pData->iAnimIndex);
@@ -95,6 +98,9 @@ void CBody_Dragonian_Rampage::Update(_float fTimeDelta)
 
 void CBody_Dragonian_Rampage::Late_Update(_float fTimeDelta)
 {
+    if (!m_pData->isSearch)
+        return;
+
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 }

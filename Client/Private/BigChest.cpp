@@ -209,16 +209,6 @@ void CBigChest::Input_Interact_Event(_float fTimeDelta)
     {
         isPressing = m_pGuide->IsPressing();
     }
-    else if (m_pGameInstance->Key_Down(DIK_LCONTROL))
-    {
-        EventInteractType InteractType = {};
-
-        InteractType.eState = EventInteractType::END;
-
-        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
-
-        return;
-    }
 
     if (true == isPressing)
     {

@@ -54,12 +54,15 @@ void CSequence_HeinMach_Field::Update(_float fTimeDelta)
 		m_isFieldName = true;
     }
 
-    if (m_fTime >= 16.f)
+    if (m_fTime > 14.3f && !m_isPlayerInput)
     {
-        CClientInstance::GetInstance()->BGM_HeinMach_Dawn();
-
-        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
         CClientInstance::GetInstance()->Set_PlayerInput(true);
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+        CClientInstance::GetInstance()->BGM_HeinMach_Dawn();
+    }
+
+    if (m_fTime >= 16.f)
+    {              
         m_State = STATE::End;
     }
         
