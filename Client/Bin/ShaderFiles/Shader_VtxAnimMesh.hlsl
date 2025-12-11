@@ -92,6 +92,9 @@ float g_PupilScale;                 //동공 크기
 // Player
 bool g_isEnableHealRimLight;
 
+// TombStone
+float g_fDiffuseBluePower;
+
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -1296,6 +1299,68 @@ PS_OUT PS_PLAYER(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_TOMBSTONE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_ROUGHNESS))
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    if (vMtrlDiffuse.b >= 0.4f)
+        vMtrlDiffuse *= g_fDiffuseBluePower;
+    
+    float fMask = vMtrlEmissive.b;
+    vMtrlDiffuse += vMtrlDiffuse * fMask * g_fEmissiveIntensity;
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular * 0.1f;
+    Out.vSpecular.a = 0.f;
+    //  Out.vEmissive = vMtrlEmissive;
+
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass        // 0 번
@@ -1640,5 +1705,17 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_PLAYER();
+    }
+
+    // 툼스톤 ( 29번 )
+    pass TombStone
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_TOMBSTONE();
     }
 }

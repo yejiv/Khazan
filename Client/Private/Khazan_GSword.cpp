@@ -402,7 +402,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
     );
     Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
     Desc.isRandomTexture = true;
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 
     /* Play Damaged Animation */
     switch (eHitreaction)

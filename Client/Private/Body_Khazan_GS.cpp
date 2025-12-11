@@ -1917,7 +1917,7 @@ void CBody_Khazan_GS::Spawn_EmissiveDecal(_bool isUseOffset)
         Desc.iTextureIndex = 2;
     }
 
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 }
 
 void CBody_Khazan_GS::Spawn_CrackDecal()
@@ -1938,7 +1938,7 @@ void CBody_Khazan_GS::Spawn_CrackDecal()
     Desc.isRandomTexture = false;
     Desc.iTextureIndex = 7;
 
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 }
 
 void CBody_Khazan_GS::Spawn_CircleBloodDecal()
@@ -1955,7 +1955,7 @@ void CBody_Khazan_GS::Spawn_CircleBloodDecal()
     Desc.isRandomTexture = false;
     Desc.iTextureIndex = 0;
 
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 }
 
 void CBody_Khazan_GS::Spawn_LinearBloodDecal()
@@ -1981,7 +1981,7 @@ void CBody_Khazan_GS::Spawn_LinearBloodDecal()
     Desc.isRandomTexture = false;
     Desc.iTextureIndex = 3;
 
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 }
 
 void CBody_Khazan_GS::Start_DefaultVignette()
