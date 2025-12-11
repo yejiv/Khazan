@@ -83,6 +83,11 @@ void CDestinyGem::Update(_float fTimeDelta)
     }
 
     Update_CombinedMatrix();
+
+    // Test
+    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
+        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+            m_isEnableBlink = !m_isEnableBlink;
 }
 
 void CDestinyGem::Late_Update(_float fTimeDelta)
@@ -114,7 +119,15 @@ HRESULT CDestinyGem::Render()
 
         Bind_DissolveValues();
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(13), E_FAIL);
+        if (true == m_isEnableBlink)
+        {
+            if (FAILED(Bind_Blink_ShaderResources()))
+                return E_FAIL;
+
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(17), E_FAIL);
+        }
+        else
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(13), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -188,6 +201,35 @@ HRESULT CDestinyGem::Bind_Materials(_uint iMeshIndex)
     //  m_iMtrlFlags &= ~M_SPECULAR;
 
     m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
+
+    return S_OK;
+}
+
+HRESULT CDestinyGem::Bind_Blink_ShaderResources()
+{
+    _float fRimPower = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRimIntensity = 1.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &fRimIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    // 반짝이는 림라이트 이미시브
+    _float fRimEmissive = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fTimeDelta", &m_fBlinkTimeAcc, sizeof(_float))))
+        return E_FAIL;
+
+    _float fCycleSpeed = 3.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fCycleSpeed", &fCycleSpeed, sizeof(_float))))
+        return E_FAIL;
+
+    _float3 vRimColor = _float3(1.f, 0.f, 0.f);
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3))))
+        return E_FAIL;
 
     return S_OK;
 }

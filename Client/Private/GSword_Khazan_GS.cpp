@@ -48,7 +48,6 @@ HRESULT CGSword_Khazan_GS::Initialize_Clone(void* pArg)
 
     /* 충돌 겹쳐지게*/
     m_isGhost = true;
-
     return S_OK;
 }
 
@@ -131,6 +130,28 @@ void CGSword_Khazan_GS::Late_Update(_float fTimeDelta)
 
 HRESULT CGSword_Khazan_GS::Render()
 {
+    if (m_pClientInstance->Is_CurrentGSword())
+    {
+        if (m_pClientInstance->Get_PlayerEquipment().iGSword == 4001) ////유성락
+        {
+
+        }
+        if (m_pClientInstance->Get_PlayerEquipment().iGSword == 4002)//연단된 집행의 대검
+        {
+
+        }
+    }
+    if (m_pClientInstance->Is_CurrentSpear())
+    {
+        if (m_pClientInstance->Get_PlayerEquipment().iSpear == 4011) //섬광일상
+        {
+
+        }
+        if (m_pClientInstance->Get_PlayerEquipment().iSpear == 4012) //연단된 징벌의 창
+        {
+
+        }
+    }
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
