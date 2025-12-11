@@ -31,7 +31,8 @@ public:
 
 public:
     _bool           Is_Interaction() const { return m_isInteraction; }
-    _bool           Is_Lachryma() const ;
+    _bool           Is_Lachryma() const;
+    _bool           Is_Heal() const ;
     
 
 private:

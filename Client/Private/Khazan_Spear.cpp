@@ -259,6 +259,22 @@ void CKhazan_Spear::Update(_float fTimeDelta)
         }
     }
     m_pGameInstance->ListenerPosSet(m_pTransformCom->Get_State(STATE::POSITION), m_pTransformCom->Get_State(STATE::LOOK), m_pTransformCom->Get_State(STATE::UP));
+
+    if (m_pAnimInteraction->Is_Lachryma())
+    {
+        m_pBody->Start_HealRimLight(8.f, _float2(5.f, 1.f), 1.5f);
+        m_pSpear->Start_HealRimLight(8.f, _float2(5.f, 1.f), 1.5f);
+    }
+    else if (m_pAnimInteraction->Is_Heal())
+    {
+        m_pBody->Start_HealRimLight(1.6f, _float2(0.5f, 0.2f), 1.f);
+        m_pSpear->Start_HealRimLight(1.6f, _float2(0.5f, 0.2f), 1.f);
+    }
+    else
+    {
+        m_pBody->Reset_HealRimLightFlag();
+        m_pSpear->Reset_HealRimLightFlag();
+    }
 }
 
 void CKhazan_Spear::Late_Update(_float fTimeDelta)

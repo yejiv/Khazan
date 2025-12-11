@@ -219,4 +219,13 @@ namespace Client
         CAMERA_POSE Start;
         CAMERA_POSE Target;
     };
+
+    typedef struct tagPlayerHealRimLightDesc
+    {
+        float	        fDuration;
+        float           fTimeAcc;
+        XMFLOAT2        vFadeTime;
+        float           fRimLightIntensity;
+        float           fTargetIntensity;
+    }PLAYER_HEAL_RIMLIGHT_DESC;
 }

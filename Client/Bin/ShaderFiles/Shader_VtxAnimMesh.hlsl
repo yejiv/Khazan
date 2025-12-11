@@ -89,6 +89,9 @@ float4 g_vPupilRing;                //홍채 외곽 강조
 float4 g_vShadingColor;             //조명 조정 및 빛 반사
 float g_PupilScale;                 //동공 크기
 
+// Player
+bool g_isEnableHealRimLight;
+
 struct VS_IN
 {
     float3 vPosition : POSITION;
@@ -1251,6 +1254,48 @@ PS_OUT PS_BLADENEXUS_CRISTAL(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_PLAYER(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 1.f;
+    //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+
+    // Heal Rim Light
+    if (g_isEnableHealRimLight)
+    {
+        vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+        float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+        fRim = pow(fRim, g_fRimPower);
+
+        float3 vRimColor = g_vRimColor * fRim * g_fRimLightIntensity;
+    
+        Out.vDiffuse = vMtrlDiffuse + float4(vRimColor, 1.f) * g_fRimEmissive;
+    }
+
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass        // 0 번
@@ -1572,7 +1617,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAP_ANIM();
     }
 
-        // 귀검 크리스탈 패스        ( 27번 )
+    // 귀검 크리스탈 패스        ( 27번 )
     pass BladeNexus_Cristal
     {
 
@@ -1583,5 +1628,17 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_BLADENEXUS_CRISTAL();
+    }
+
+    // 플레이어 패스 ( 28번 )
+    pass Player
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_PLAYER();
     }
 }
