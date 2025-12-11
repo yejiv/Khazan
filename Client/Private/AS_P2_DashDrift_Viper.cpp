@@ -26,6 +26,7 @@ void CAS_P2_DashDrift_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     m_fAttackRange = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
 
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_start_roar_01 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
 
     m_eState = DRIFTSTATE::START;
 }
@@ -54,6 +55,7 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
         {
             m_eState = DRIFTSTATE::FINISH;
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_end_atk_whoosh_01 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_roar_01 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
             pModel->Set_Animation(20);
         }
     }
