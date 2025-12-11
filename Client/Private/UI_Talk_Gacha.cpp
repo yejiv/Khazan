@@ -171,6 +171,7 @@ void CUI_Talk_Gacha::Update(_float fTimeDelta)
             m_isSucces = m_pGacha->isSucces();
             // 미니게임 끝난 위치
             CClientInstance::GetInstance()->Camera_ReturnToPreviousPose(0.5f);
+            Setting_Talk();
         }
     }
     if (!m_IsUpdate)
@@ -200,7 +201,6 @@ void CUI_Talk_Gacha::Update(_float fTimeDelta)
                 m_eType = TALK_TYPE::MINIGAME;
                 Update_Selete();
                 m_pGacha->Start_MiniGame((CMiniGame_Gacha::MINIGAME_LEVEL)m_iSelete);                
-                m_iSelete = 0;
             }
         }
         else if (m_iSelete == 3 && m_eType == TALK_TYPE::START)
@@ -473,9 +473,18 @@ void CUI_Talk_Gacha::Setting_Talk()
 
         if (m_isSucces)
         {
-            m_pText1->Set_Text(TEXT("성공하셨군요!!"));
-            m_pText2->Set_Text(TEXT("대단한 눈썰미네요"));
-            m_pText3->Set_Text(TEXT("보상을 드리겠습니다~"));
+            if (m_iSelete == 2)
+            {
+                m_pText1->Set_Text(TEXT("성공하셨군요!!"));
+                m_pText2->Set_Text(TEXT("대단한 눈썰미네요"));
+                m_pText3->Set_Text(TEXT("뒤에 당신의 새로운 친구가 기다리고 있네요"));
+            }
+            else
+            {
+                m_pText1->Set_Text(TEXT("성공하셨군요!!"));
+                m_pText2->Set_Text(TEXT("대단한 눈썰미네요"));
+                m_pText3->Set_Text(TEXT("보상을 드리겠습니다~"));
+            }
         }
         else
         {

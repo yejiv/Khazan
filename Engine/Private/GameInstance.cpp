@@ -554,6 +554,11 @@ void CGameInstance::Set_SpecularPower(_float2 vPower)
     m_pRenderer->Set_SpecularPower(vPower);
 }
 
+void CGameInstance::Set_SpecularAttenuation(_float fAttenuation)
+{
+    m_pRenderer->Set_SpecularAttenuation(fAttenuation);
+}
+
 void CGameInstance::Set_EnableRimLight(_bool isEnable)
 {
     m_pRenderer->Set_EnableRimLight(isEnable);
@@ -1576,6 +1581,16 @@ void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strProto
 void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag)
 {
     m_pEffect_Manager->Stop_Effect(iLayerLevelIndex, strPrototypeTag);
+}
+
+void CGameInstance::Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)
+{
+    m_pEffect_Manager->Stop_Effect_Force(iLayerLevelIndex, strPrototypeTag, ID);
+}
+
+void CGameInstance::Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag)
+{
+    m_pEffect_Manager->Stop_Effect_Force(iLayerLevelIndex, strPrototypeTag);
 }
 
 #pragma endregion

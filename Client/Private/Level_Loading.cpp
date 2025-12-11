@@ -92,12 +92,15 @@ void CLevel_Loading::Update(_float fTimeDelta)
 		{
             Ready_CleanImgUI();
 			m_pClientInstance->Clear_CameraManager(ENUM_CLASS(m_pClientInstance->Get_CurrLevel()));
+            m_pClientInstance->Clear_CurrentKey_BGM();
 #ifdef _DEBUG
 			m_pClientInstance->CameraTool_Clear();
 #endif
 			m_pClientInstance->Set_PrevLevel(m_pClientInstance->Get_CurrLevel());
 			m_pClientInstance->Set_CurrLevel(m_eNextLevelID);
 		}
+
+        m_pGameInstance->StopAll();
 
 		CLevel* pNewLevel = { nullptr };
 
@@ -128,7 +131,6 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			break;
 		}
 
-        m_pGameInstance->StopAll();
 		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(m_eNextLevelID), pNewLevel)))
 			return;
 	}

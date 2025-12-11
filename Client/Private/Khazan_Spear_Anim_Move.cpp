@@ -427,7 +427,22 @@ _bool CKhazan_Spear_Anim_Move::IsCurrentAnimationDodge()
     return false;
 }
 
+_uint CKhazan_Spear_Anim_Move::Get_DodgeDirection()
+{
+    _uint curAnimIndex = m_pModel->Get_CurAnimIndex();
 
+    if (curAnimIndex == m_pModel->Get_AnimIndexByName(s_strDodgeAnims[0])) return ENUM_CLASS(DIRECTION::F);
+    if (curAnimIndex == m_pModel->Get_AnimIndexByName(s_strDodgeAnims[1])) return ENUM_CLASS(DIRECTION::B);
+    if (curAnimIndex == m_pModel->Get_AnimIndexByName(s_strDodgeAnims[2])) return ENUM_CLASS(DIRECTION::L);
+    if (curAnimIndex == m_pModel->Get_AnimIndexByName(s_strDodgeAnims[3])) return ENUM_CLASS(DIRECTION::R);
+    if (curAnimIndex == m_pModel->Get_AnimIndexByName(s_strDodgeAnims[4])) return ENUM_CLASS(DIRECTION::L);
+    if (curAnimIndex == m_pModel->Get_AnimIndexByName(s_strDodgeAnims[5])) return ENUM_CLASS(DIRECTION::R);
+    if (curAnimIndex == m_pModel->Get_AnimIndexByName(s_strDodgeAnims[6])) return ENUM_CLASS(DIRECTION::L);
+    if (curAnimIndex == m_pModel->Get_AnimIndexByName(s_strDodgeAnims[7])) return ENUM_CLASS(DIRECTION::R);
+    
+    return ENUM_CLASS(DIRECTION::F);
+
+}
 
 _uint CKhazan_Spear_Anim_Move::GetLockOnWalkAnimation(DIRECTION_INFO eDir)
 {

@@ -102,28 +102,56 @@ HRESULT CBody_Pet_Danjinjar::Render()
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    _float fEdgeIntensity = 0.7f;
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
-        return E_FAIL;
+    // 카메라 위치 바인딩 (자체 림 라이트)
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float3)), E_FAIL);
 
-    _float fShadeIntensity = 0.2f;
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
-        return E_FAIL;
+    _float fEdgeIntensity = 0.5f;
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float)), E_FAIL);
+
+    _float fShadeIntensity = 0.5f;
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float)), E_FAIL);
+
+    _float fDiffusePower = 2.f;
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fDiffusePower", &fDiffusePower, sizeof(_float)), E_FAIL);
+
+    _float fRimPower = 1.f;
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float)), E_FAIL);
+
+    _float fRimIntensity = 0.5f;
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &fRimIntensity, sizeof(_float)), E_FAIL);
+
+    _float3 vRimColor = _float3(0.9f, 1.f, 0.8f);
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3)), E_FAIL);
+
+    _float fRimEmissive = 2.f;
+    CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float)), E_FAIL);
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         if (Skip_Mesh(i))
             continue;
 
-        m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-        m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
-        m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
-        m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
+        _uint iMtrlFlags = 0;
+
+        if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0)))
+            iMtrlFlags |= M_DIFFUSE;
+        if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0)))
+            iMtrlFlags |= M_NORMAL;
+        if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0)))
+            iMtrlFlags |= M_EMISSIVE;
+        if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0)))
+            iMtrlFlags |= M_SPECULAR;
+        if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalicTexture", i, aiTextureType_METALNESS, 0)))
+            iMtrlFlags |= M_METALIC;
+        if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", i, aiTextureType_SHININESS, 0)))
+            iMtrlFlags |= M_ROUGHNESS;
+
+        CHECK_FAILED(m_pShaderCom->Bind_RawValue("g_MtrlFlags", &iMtrlFlags, sizeof(_uint)), E_FAIL);
 
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(17);
+        m_pShaderCom->Begin(20);
 
         m_pModelCom->Render(i);
     }

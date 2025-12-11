@@ -112,17 +112,25 @@ HRESULT CPet_Danjinjar::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_AnimEvent(), E_FAIL);
     CHECK_FAILED(Ready_Components(), E_FAIL);
 
+    m_pGameInstance->Subscribe_Event<EVENT_PET_STATE>(ENUM_CLASS(EVENT_TYPE::PET), [&](const EVENT_PET_STATE& e) {State_Change(e.isStart); });
+    m_isActive = false;
     return S_OK;
 }
 
 void CPet_Danjinjar::Priority_Update(_float fTimeDelta)
 {
+    if (!m_isActive)
+        return;
+
     CContainerObject::Priority_Update(fTimeDelta);
     m_pTalk->Priority_Update(fTimeDelta);
 }
 
 void CPet_Danjinjar::Update(_float fTimeDelta)
 {
+    if (!m_isActive)
+        return;
+
     m_fTimeDelta = fTimeDelta;
 
     m_pController->Update(this, fTimeDelta);
@@ -130,12 +138,20 @@ void CPet_Danjinjar::Update(_float fTimeDelta)
 
     m_pTalk->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
     m_pTalk->Update(fTimeDelta);
+    
     //if (m_pTalk->isTalkingEnd())
     //    m_pTalk->Off_Panel();
+
+    _float4 vPosition{};
+    XMStoreFloat4(&vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+    m_pGameInstance->Set_LightPosition(TEXT("DanjinJar_Pet"), ENUM_CLASS(LEVEL::EMBARS), vPosition);
 }
 
 void CPet_Danjinjar::Late_Update(_float fTimeDelta)
 {
+    if (!m_isActive)
+        return;
+
     m_pTalk->Late_Update(fTimeDelta);
     CContainerObject::Late_Update(fTimeDelta);
 }
@@ -213,7 +229,7 @@ HRESULT CPet_Danjinjar::Ready_Components()
     m_tCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PET);
     tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
 
-    //ƒ∏Ω∂ Desc
+    //Ï∫°Ïäê Desc
     tCharVirDesc.fRadius = 1.2f;
     tCharVirDesc.fHeight = 0.4f;
 
@@ -258,6 +274,14 @@ HRESULT CPet_Danjinjar::Ready_MonData()
     m_Data.fEdgeColor = { 4.2f, 1.6f, 0.2f, 1.f };
 
     return S_OK;
+}
+
+void CPet_Danjinjar::State_Change(_bool isStart)
+{
+    if (isStart)
+        m_isActive = true;
+    else
+        m_isActive = false;
 }
 
 CPet_Danjinjar* CPet_Danjinjar::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)

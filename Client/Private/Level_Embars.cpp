@@ -75,8 +75,12 @@ HRESULT CLevel_Embars::Initialize()
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
     CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
+    CHECK_FAILED(Ready_Layer_Decal(), E_FAIL);
 
     CClientInstance::GetInstance()->Fade_In([this]() {Start_Event(); });
+
+    CClientInstance::GetInstance()->Set_Volume_BGM(0.45f);
+    CClientInstance::GetInstance()->BGM_Embars_Entry();
 
     if (!Wait_All_Futures())
         return E_FAIL;
@@ -223,6 +227,42 @@ HRESULT CLevel_Embars::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Sword_Wind"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Smoke_Small"), 10);
 
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Gacha_Fail"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Gacha_Suceess"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Item_normal_Gacha"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("item_rare_Gacha"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("item_unique_Gacha"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("item_blust"), 1);
+
+
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("FerociousMomentum0"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger0"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger1"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger_Smoke"), 50);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger_Trail"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Manifest_Strength_Land"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger_Smoke_Red"), 50);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger_Trail_V"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Giant_Hunt_Land"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Giant_Roar"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("DarkShadow_Land_1"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("DarkShadow_Land_2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Body_Wind"), 4);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("particle"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("particle2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Inner_Range_Ground"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Dawn_BloodTrail1"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Dawn_BloodTrail2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GS_StrongATK"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Ghost_Dark_Shadow_Land"), 1);
+
+    // [Player Ect]
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Guard"), 100);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("PerfectGaurd"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Lachryma"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Lachryma_Arm"), 3);
+
     return S_OK;
 }
 
@@ -237,13 +277,36 @@ HRESULT CLevel_Embars::Ready_Shader_Settings()
     m_pGameInstance->Set_ShadowDesc(ShadowDesc);
 
     // 초기 Fog
-    FOG_TRANSITION_DESC FogDesc{};
-    FogDesc.fDensity = 0.05f;
-    FogDesc.fBias = 0.8f;
-    FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
-    FogDesc.isUseHeight = false;
-    FogDesc.isUseNoise = false;
-    m_pGameInstance->Start_FogTransition(0.f, FogDesc);
+    //  FOG_TRANSITION_DESC FogDesc{};
+    //  FogDesc.fDensity = 0.05f;
+    //  FogDesc.fBias = 0.8f;
+    //  FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
+    //  FogDesc.isUseHeight = false;
+    //  FogDesc.isUseNoise = false;
+    //  m_pGameInstance->Start_FogTransition(0.f, FogDesc);
+
+    // 포그 라이트 블리드 1 설정
+    FOG_CONFIG FogConfig{};
+    FogConfig.eType = FOG_CONFIG::EXP;
+    FogConfig.fDensity = 0.05f;
+    FogConfig.fBias = 0.8f;
+    FogConfig.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
+    FogConfig.Noise.isEnable = false;
+    FogConfig.isUseHeight = false;
+    FogConfig.isUseSubColor = false;
+    FogConfig.fLightBleedStrength = 1.f;
+    m_pGameInstance->Set_FogConfig(FogConfig);
+
+    // 림 라이트 강도 줄이기
+    RIM_LIGHT_DESC RimDesc{};
+    RimDesc.fPower = 5.f;
+    RimDesc.isToonLight = false;
+    RimDesc.fToonThreshold = 1.f;
+    RimDesc.fIntensity = 0.15f;
+    m_pGameInstance->Set_RimLightDesc(RimDesc);
+
+    // 스페큘러 강도 줄이기
+    m_pGameInstance->Set_SpecularAttenuation(1.5f);
 
     return S_OK;
 }
@@ -1117,7 +1180,6 @@ HRESULT CLevel_Embars::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentL
 
     CloseHandle(hFile);
 
-
     LIGHT_DESC LightDesc1 = {};
     LightDesc1.eType = LIGHT_DESC::POINT;
     LightDesc1.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
@@ -1159,6 +1221,19 @@ HRESULT CLevel_Embars::Ready_Lights()
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, true)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_Pet"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, true)))
+        return E_FAIL;
+
+    LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 5.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("BladeNexus_ActivateLight"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
         return E_FAIL;
 
     return S_OK;
@@ -1433,6 +1508,16 @@ HRESULT CLevel_Embars::Ready_Map_Decal(const _wstring& strLayerTag, const _tchar
     return S_OK;
 }
 
+HRESULT CLevel_Embars::Ready_Layer_Decal()
+{
+    // Decal
+    if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal"),
+        ENUM_CLASS(LEVEL::EMBARS), TEXT("Pool_Decal"), nullptr, 100)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 HRESULT CLevel_Embars::Ready_Layer_Pet(const _wstring& strLayerTag)
 {
     CMonster::MONSTER_DESC MonsterDesc{};
@@ -1443,9 +1528,9 @@ HRESULT CLevel_Embars::Ready_Layer_Pet(const _wstring& strLayerTag)
     MonsterDesc.fSpeedPerSec = 3.f;
     MonsterDesc.fRotationPerSec = 180.f;
     XMStoreFloat4x4(&MonsterDesc.WorldMatrix, XMMatrixIdentity());
-    MonsterDesc.WorldMatrix.m[3][0] = 0.f;
-    MonsterDesc.WorldMatrix.m[3][1] = 0.f;
-    MonsterDesc.WorldMatrix.m[3][2] = 5.f;
+    MonsterDesc.WorldMatrix.m[3][0] = -58.26f;
+    MonsterDesc.WorldMatrix.m[3][1] = -92.f;
+    MonsterDesc.WorldMatrix.m[3][2] = -38.42f;
 
     MonsterDesc.strName = "Pet_Danjinjar";
     MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::EMBARS);

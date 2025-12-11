@@ -100,6 +100,7 @@ private:
     class CClientInstance*      m_pClientInstance = { nullptr };
 	class CTransform*           m_pParentTransform = { nullptr };   
     class CSpear_Khazan_Spear*  m_pSpear = { nullptr };
+    class CKhazan_SoundHelper*  m_pSoundHelper = { nullptr };
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
     CShader*            m_pShaderCom = { nullptr };
@@ -180,20 +181,28 @@ private:
     _bool               m_isEnableMotionTrail = {};
     _uint               m_iCurMotionTrailAnimIndex = {};
 
+    /* Sound */
+    vector<FMOD_CHANNEL*>       m_pChannel;
 
     COLLISION_DESC      m_tSearchCollisionDesc = {};
 
     mutex m_CollMonsterMutex;
+
+    _bool               m_bGuradFX[2];
+
+    _bool               m_isHitSound;
 
 private:
     void				Update_Collider(_float fTimeDelta);                     
     void                Check_Guarding(_float fTimeDelta);
     void                Update_GuardRotation(_float fTimeDelta);
     void                Start_GuardRotation(_float3 vContactPoint);
+    FMOD_CHANNEL**      Get_SoundChannel(_int iIndex);
 
 private:
     HRESULT				Ready_Components();
     HRESULT				Ready_AnimationEvent();
+    HRESULT				Ready_AnimationEvent_SFX();
     HRESULT				Ready_Collider();
     HRESULT				Bind_ShaderResources();
     HRESULT             Ready_Equipment();
@@ -216,6 +225,8 @@ private:
     void    Set_BaseTrail();
     void    Set_BlueTrail();
     void    Set_RedTrail();
+
+    void    Spawn_Guard_FX();
 
     //void	UpdateTrail();
 
