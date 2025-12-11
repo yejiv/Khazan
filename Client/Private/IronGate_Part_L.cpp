@@ -30,6 +30,8 @@ HRESULT CIronGate_Part_L::Initialize_Clone(void* pArg)
 
     m_pSocketMatrix = pDesc->pSocketMatrix;
 
+    m_pUnLock = pDesc->pUnLock;
+
     m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
 
     _float4 vPos = {};
@@ -59,11 +61,6 @@ void CIronGate_Part_L::Update(_float fTimeDelta)
     XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
 
     m_fBlinkTimeAcc += fTimeDelta;
-
-    // Test
-    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
-        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-            m_isEnableBlink = !m_isEnableBlink;
 }
 
 void CIronGate_Part_L::Late_Update(_float fTimeDelta)
@@ -81,7 +78,7 @@ HRESULT CIronGate_Part_L::Render()
     {
         Bind_Materials(i);
 
-        if (true == m_isEnableBlink)
+        if (false == *m_pUnLock)
         {
             if (FAILED(Bind_Blink_ShaderResources()))
                 return E_FAIL;

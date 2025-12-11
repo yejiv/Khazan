@@ -123,11 +123,6 @@ void CSlate_Switch::Update(_float fTimeDelta)
     m_pEffect->Update(fTimeDelta);
 
     m_fBlinkTimeAcc += fTimeDelta;
-
-    // Test
-    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
-        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-            m_isEnableBlink = !m_isEnableBlink;
 }
 
 void CSlate_Switch::Late_Update(_float fTimeDelta)
@@ -149,7 +144,7 @@ HRESULT CSlate_Switch::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        if (true == m_isEnableBlink)
+        if (ANIM_STATE::IDLE == m_eAnimState)
         {
             if (FAILED(Bind_Blink_ShaderResources()))
                 return E_FAIL;

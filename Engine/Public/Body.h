@@ -123,6 +123,9 @@ public:
 	void	Collision_Active(_bool isActive);
 
 public:
+    _bool   Get_Collision_Active();
+
+public:
 	virtual void	Set_PosRot(_vector vPos, _vector vRot);
     void           Set_Pos(_vector vPos);
 	BodyID           Get_BodyID() const { return m_BodyID; }
