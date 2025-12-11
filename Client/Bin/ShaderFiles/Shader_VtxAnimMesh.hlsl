@@ -1572,7 +1572,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAP_ANIM();
     }
 
-        // 귀검 크리스탈 패스        ( 27번 )
+    // 귀검 크리스탈 패스        ( 27번 )
     pass BladeNexus_Cristal
     {
 
