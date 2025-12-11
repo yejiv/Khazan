@@ -244,8 +244,10 @@ public:
     void BGM_Embars_Entry(_float fFadeTime = 1.f);
     void BGM_Embars_B1(_float fFadeTime = 1.f);
     void BGM_Embars_Club(_float fFadeTime = 1.f);
-    void BGM_Embars_Club_Game(_float fFadeTime = 1.f);
-    void BGM_Embars_Gacha(_float fFadeTime = 1.f);
+    void BGM_Embars_Club_Game(_float fFadeTime = 1.f);    
+    void Embars_Club_Shuffle_0(_float fFadeTime = 1.f);
+    void Embars_Club_Shuffle_1(_float fFadeTime = 1.f);
+    void Embars_Club_Shuffle_2(_float fFadeTime = 1.f);
     void BGM_Embars_1F(_float fFadeTime = 1.f);
     void BGM_Embars_Elamein(_float fFadeTime = 1.f);
 

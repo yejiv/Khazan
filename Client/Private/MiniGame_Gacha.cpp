@@ -15,6 +15,7 @@ void CMiniGame_Gacha::Start_MiniGame(MINIGAME_LEVEL eLevel)
         m_fSpeed = 2.f;
         m_fSpeedCount = 3.f;
         m_fAddSpeed = 0.5f;
+        CClientInstance::GetInstance()->Embars_Club_Shuffle_0();
     }
     else if (eLevel == MINIGAME_LEVEL::NORMAL)
     {
@@ -22,6 +23,7 @@ void CMiniGame_Gacha::Start_MiniGame(MINIGAME_LEVEL eLevel)
         m_fSpeed = 2.f;
         m_fSpeedCount = 3.f;
         m_fAddSpeed = 2.f;
+        CClientInstance::GetInstance()->Embars_Club_Shuffle_1();
     }
     else if (eLevel == MINIGAME_LEVEL::HARD)
     {
@@ -30,6 +32,7 @@ void CMiniGame_Gacha::Start_MiniGame(MINIGAME_LEVEL eLevel)
         m_fSpeedCount = 2.f;
         m_fAddSpeed = 1.5f;
         m_isHardCount++;
+        CClientInstance::GetInstance()->Embars_Club_Shuffle_2();
     }
     m_eState = SUCCES_NOTICE;
     m_iSpeedCount = 0;
@@ -181,7 +184,7 @@ void CMiniGame_Gacha::Setting_Suffle()
         m_eState = SELETE_NUM;
         m_iSeleteNum = 0;
         m_fGuidePosY = 1.5f;
-
+        CClientInstance::GetInstance()->BGM_Embars_B1();
         _float4 vLightPos{};
         XMStoreFloat4(&vLightPos, m_pBox[m_iSeleteNum]->Get_Position());
         m_pGameInstance->Set_LightPosition(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), vLightPos);

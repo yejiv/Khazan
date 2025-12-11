@@ -109,6 +109,7 @@ void CUI_BladeNexus_Map::Priority_Update(_float fTimeDelta)
 
     UI_Animation(fTimeDelta);
     m_pBackGround->Priority_Update(fTimeDelta);
+    __super::Priority_Update(fTimeDelta);
 }
 
 void CUI_BladeNexus_Map::Update(_float fTimeDelta)
@@ -449,22 +450,36 @@ void CUI_BladeNexus_Map::UI_Animation(_float fTimeDelta)
 
 void CUI_BladeNexus_Map::Move_Player()
 {
+    m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OffEvent() });
+
+    m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
+
+    if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH))
+    {
+        CKhazan_Spear* pKhazan = static_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Creature_Player"), 0));
+        if (pKhazan == nullptr)
+            MSG_BOX(TEXT("플레이어 없음"));
+        pKhazan->Set_Position(CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->vPos);
+    }
+    else if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::EMBARS))
+    {
+        CKhazan_Spear* pKhazan = static_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Creature_Player"), 0));
+        if (pKhazan == nullptr)
+            MSG_BOX(TEXT("플레이어 없음"));
+        pKhazan->Set_Position(CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->vPos);
+    }
+    else
+        return;
     CClientInstance::GetInstance()->Fade_Out();
-    CKhazan_Spear* pKhazan = static_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Creature_Player"), 0));
-    if (pKhazan == nullptr)
-        MSG_BOX(TEXT("플레이어 없음"));
-    pKhazan->Set_Position(CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->vPos);
-
-
-    CClientInstance::GetInstance()->Fade_In();
-
-    EVENT_ANNOUNCE_MAPNAME Desc = {};
-    Desc.fTime = 2.f;
-    Desc.iMapType = ENUM_CLASS(CUI_Announce_MapName::MAP_TYPE::DEFAULT);
-    Desc.fFadeOutTime = 1.0f;
-    Desc.isDissovle = true;
-    Desc.wstrName = CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->strName;
-    m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
+    CClientInstance::GetInstance()->Fade_In([this]() {
+        EVENT_ANNOUNCE_MAPNAME Desc = {};
+        Desc.fTime = 2.f;
+        Desc.iMapType = ENUM_CLASS(CUI_Announce_MapName::MAP_TYPE::DEFAULT);
+        Desc.fFadeOutTime = 1.0f;
+        Desc.isDissovle = true;
+        Desc.wstrName = CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->strName;
+        m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
+        });
 }
 
 CUI_BladeNexus_Map* CUI_BladeNexus_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)
