@@ -354,13 +354,14 @@ HRESULT CUI_Talk_Trader::Ready_Children()
 
 void CUI_Talk_Trader::Ready_Item()
 {
-    m_ItemIndex.push_back(5001);
-    m_ItemIndex.push_back(5002);
-    m_ItemIndex.push_back(5003);
-    m_ItemIndex.push_back(5004);
-    m_ItemIndex.push_back(5005);
-    m_ItemIndex.push_back(3001);
-    m_ItemIndex.push_back(3002);
+    m_ItemIndex.push_back(4001);
+    m_ItemIndex.push_back(5006);
+    m_ItemIndex.push_back(5007);
+    m_ItemIndex.push_back(5008);
+    m_ItemIndex.push_back(5009);
+    m_ItemIndex.push_back(5010);
+    m_ItemIndex.push_back(1003);
+    m_ItemIndex.push_back(1004);
 }
 
 void CUI_Talk_Trader::Update_Selete()

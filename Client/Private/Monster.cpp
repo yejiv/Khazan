@@ -104,7 +104,7 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
     Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
     Desc.isRandomTexture = true;
 
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"),m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Decal"), Desc);
 }
 
 void CMonster::Consume_Stamina(_float fAmout)

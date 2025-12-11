@@ -427,7 +427,7 @@ void CUI_Talk_Gacha::Setting_Talk()
         m_pList[2]->Set_Text(TEXT("어려움"));
         m_pList[3]->Set_Text(TEXT("대화를 마친다."));
 
-        //m_pGameInstance->PlaySoundOnce(TEXT("dialogue_sub_06_20640118_dan (Korean(KR)).wav"), 1.f, &m_pChannel);
+        m_pGameInstance->PlaySoundOnce(TEXT("dialogue_dj_amb_01.wav"), 1.f, &m_pChannel);
 
         m_pText1->Set_Text(TEXT("카잔님 다시 만나시는 군요"));
         m_pText2->Set_Text(TEXT("저랑 야바위 한판 하실래요?"));
@@ -460,6 +460,7 @@ void CUI_Talk_Gacha::Setting_Talk()
             m_pText3->Set_Text(TEXT("행운을 빌어요~"));
             break;
         }
+        m_pGameInstance->PlaySoundOnce(TEXT("dialogue_dj_fw_01.wav"), 1.f, &m_pChannel);
     }
     else if (m_eType == TALK_TYPE::SUCCES)
     {
@@ -537,6 +538,7 @@ void CUI_Talk_Gacha::UI_Animation(_float fTimeDelta)
 
         if (m_fAccTime <= 0.f)
         {
+            m_pGameInstance->PlaySoundOnce(TEXT("dialogue_dj_fw_02.wav"), 1.f, &m_pChannel);
             m_fAccTime = 0.f;
             m_eAnimState = UIANIMSTATE::END;
             m_IsUpdate = false;
