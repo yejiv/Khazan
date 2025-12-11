@@ -26,7 +26,7 @@ public:
 
 public:
     _float Get_Volume_BGM() { return m_fVolume_BGM; }
-    void Set_Volume_BGM(_float fVolume) { m_fVolume_BGM = fVolume; }
+    void Set_Volume_BGM(_float fVolume);
 
     void Mute_BGM();
     void UnMute_BGM();

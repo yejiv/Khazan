@@ -23,6 +23,13 @@ void CBGM_Manager::Update(_float fTimeDelta)
     }
 }
 
+void CBGM_Manager::Set_Volume_BGM(_float fVolume)
+{
+    m_fVolume_BGM = fVolume;
+
+    m_pGameInstance->SetVolumeByKey(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM);
+}
+
 void CBGM_Manager::Mute_BGM()
 {
     CHECK_TRUE(m_wstrCurrentKey_BGM.empty(), );
@@ -58,9 +65,7 @@ void CBGM_Manager::PlayBGM(const _tchar* pSoundKey, _float fFadeTime)
 
     Change_CurrentBGM(pSoundKey);
 
-    _float fVolume = true == m_isMute ? 0.f : m_fVolume_BGM;
-
-    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), fVolume, fFadeTime);
+    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM, fFadeTime);
 }
 
 void CBGM_Manager::ChangeBGM(const _tchar* pSoundKey, _float fFadeTime, _bool isWav)
@@ -83,9 +88,8 @@ void CBGM_Manager::ChangeBGM(const _tchar* pSoundKey, _float fFadeTime, _bool is
         Change_CurrentBGM(pSoundKey);
     else
         m_wstrCurrentKey_BGM = wstrNewKey;
-    _float fVolume = true == m_isMute ? 0.f : m_fVolume_BGM;
 
-    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), fVolume, fFadeTime);
+    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM, fFadeTime);
 }
 
 void CBGM_Manager::PlayBattleBGM(const _tchar* pSoundKey, _float fFadeTime)
@@ -104,9 +108,7 @@ void CBGM_Manager::PlayBattleBGM(const _tchar* pSoundKey, _float fFadeTime)
 
     m_wstrCurrentKey_BGM = wstrNewKey;
 
-    _float fVolume = m_isMute ? 0.f : m_fVolume_BGM;
-
-    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), fVolume, fFadeTime);
+    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM, fFadeTime);
 }
 
 void CBGM_Manager::EndBattleBGM(_float fFadeTime)
@@ -119,9 +121,7 @@ void CBGM_Manager::EndBattleBGM(_float fFadeTime)
     m_wstrCurrentKey_BGM = m_wstrStoreKey_BGM;
     m_wstrStoreKey_BGM.clear();
 
-    _float fVolume = m_isMute ? 0.f : m_fVolume_BGM;
-
-    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), fVolume, fFadeTime);
+    m_pGameInstance->PlaySound_FadeIn(m_wstrCurrentKey_BGM.c_str(), m_fVolume_BGM, fFadeTime);
 }
 
 void CBGM_Manager::HeinMach_Entry(_float fFadeTime)

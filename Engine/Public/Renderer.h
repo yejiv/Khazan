@@ -68,6 +68,7 @@ public:
 		m_OutlineConfig.fBias = Config.fBias;
 	}
     void Set_SpecularPower(_float2 vPower) { m_vSpecularPower = vPower; }
+    void Set_SpecularAttenuation(_float fAttenuation) { m_fSpecularAttenuation = fAttenuation; }
     RIM_LIGHT_DESC Get_RimLightDesc() { return m_RimLightDesc; }
     void Set_RimLightDesc(RIM_LIGHT_DESC Desc) { m_RimLightDesc = Desc; }
     void Set_EnableRimLight(_bool isEnable) { m_isEnableRimLight = isEnable; }
@@ -100,6 +101,7 @@ private:
 
     // Specular
     _float2                     m_vSpecularPower = { 32.f, 64.f };
+    _float                      m_fSpecularAttenuation = { 1.f };
 
     // Rim Light
     _bool                       m_isEnableRimLight = { true };

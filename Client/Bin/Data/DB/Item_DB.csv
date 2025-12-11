@@ -25,5 +25,11 @@ ID,name,type,Effect_ID,Level,grade,Drop,Box,gold,lachryma,max,texpass,Icon,Text
 5003,도적의 방한 장비 장갑,5,51,14,1,0,1,2750,550,1,2,T_item_Arm_WinterThief_UI.png,-
 5004,도적의 방한 장비 하의,5,61,14,1,0,1,2750,550,1,2,T_item_Leg_WinterThief_UI.png,-
 5005,도적의 방한 장비 각반,5,71,14,1,0,1,2750,550,1,2,T_item_Shoes_WinterThief_UI.png,-
+5006,영혼을 삼키는자 투구,5,32,14,2,0,1,5500,1100,1,2,T_item_Head_SplitSoul_UI.png,-
+5007,영혼을 삼키는자 상의,5,42,14,2,0,1,5500,1100,1,2,T_item_Torso_SplitSoul_UI.png,-
+5008,영혼을 삼키는자 장갑,5,52,14,2,0,1,5500,1100,1,2,T_Item_Arm_SplitSoul_UI.png,-
+5009,영혼을 삼키는자 하의,5,62,14,2,0,1,5500,1100,1,2,T_Item_Leg_SplitSoul_UI.png,-
+5010,영혼을 삼키는자 각반,5,72,14,2,0,1,5500,1100,1,2,T_Item_Shoes_SplitSoul_UI.png,-
+5011,즐거운 항아리,5,33,14,2,0,1,8500,3000,1,2,T_Item_Head_Danjin14_UI.png,
 6001,목걸이,6,81,14,1,0,1,1250,350,1,2,T_Item_Necklace_Vitality_UI.png,-
 6011,반지,6,91,14,1,0,1,1250,350,1,2,T_Item_Ring_Assassin_UI.png,-

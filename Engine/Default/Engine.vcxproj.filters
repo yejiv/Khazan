@@ -1308,11 +1308,11 @@
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Model_Instance_Compute.hlsl">
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Decal.hlsl">
-      <Filter>95.ShaderFiles</Filter>
-    </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_MotionTrail.hlsl">
       <Filter>95.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Decal.hlsl">
+      <Filter>01.Utility\98.Renderer</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

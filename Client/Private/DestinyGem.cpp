@@ -75,6 +75,18 @@ HRESULT CDestinyGem::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    _float fDiffuseRedPower = 10.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fDiffuseRedPower", &fDiffuseRedPower, sizeof(_float))))
+        return E_FAIL;
+
+    _float fEmissiveIntensity = 2.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float4 vGemColor = _float4(1.25f, 0.25f, 1.25f, 1.f);
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vGemColor", &vGemColor, sizeof(_float4))))
+        return E_FAIL;
+
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
@@ -151,8 +163,8 @@ HRESULT CDestinyGem::Bind_Materials(_uint iMeshIndex)
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
         m_iMtrlFlags |= M_SPECULAR;
 
-    m_iMtrlFlags &= ~M_EMISSIVE;
-    m_iMtrlFlags &= ~M_SPECULAR;
+    //  m_iMtrlFlags &= ~M_EMISSIVE;
+    //  m_iMtrlFlags &= ~M_SPECULAR;
 
     m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 

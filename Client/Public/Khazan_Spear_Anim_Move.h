@@ -57,6 +57,7 @@ public:
     _bool   IsTurning180() const { return m_isTurning180; }
     _bool	IsEndMoveAnimantionFinished() const { return m_isEndAnimationFinished; }
     _bool   IsCurrentAnimationDodge();
+    _uint   Get_DodgeDirection();
 
     /* Clear */
     void    Clear_Reserve() { m_isReserve = false; m_eReserveInfo = {}; }

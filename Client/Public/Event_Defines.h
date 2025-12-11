@@ -99,6 +99,7 @@ namespace Client {
 	struct EventTombStone {
 		XMFLOAT4 vPosition{};
 		XMFLOAT4 vPlayerPosition{};
+        XMFLOAT4 vPlayerTPPos{};
 		bool isTSOpened{ false };
 	};
 

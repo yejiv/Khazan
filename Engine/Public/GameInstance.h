@@ -95,6 +95,7 @@ public:
 	OUTLINE_CONFIG Get_OutlineConfig();
 	void Set_OutlineConfig(OUTLINE_CONFIG Config);
     void Set_SpecularPower(_float2 vPower);
+    void Set_SpecularAttenuation(_float fAttenuation);
     void Set_EnableRimLight(_bool isEnable);
     RIM_LIGHT_DESC Get_RimLightDesc();
     void Set_RimLightDesc(RIM_LIGHT_DESC Desc);
@@ -245,6 +246,8 @@ public:
     PhysicsSystem* Get_Jolt();
     BodyInterface* Get_BodyInterface();
     const BodyLockInterfaceLocking* Get_BodyLockInterface();
+
+    _bool IsObjectLayerPairValid(_uint iObjectLayer1, _uint iObjectLayer2);
 #ifdef _DEBUG
 	void Jolt_Test();
 

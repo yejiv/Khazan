@@ -554,6 +554,11 @@ void CGameInstance::Set_SpecularPower(_float2 vPower)
     m_pRenderer->Set_SpecularPower(vPower);
 }
 
+void CGameInstance::Set_SpecularAttenuation(_float fAttenuation)
+{
+    m_pRenderer->Set_SpecularAttenuation(fAttenuation);
+}
+
 void CGameInstance::Set_EnableRimLight(_bool isEnable)
 {
     m_pRenderer->Set_EnableRimLight(isEnable);
@@ -1059,6 +1064,11 @@ BodyInterface* CGameInstance::Get_BodyInterface()
 const BodyLockInterfaceLocking* CGameInstance::Get_BodyLockInterface()
 {
     return m_pJolt_Manager->Get_BodyLockInterface();
+}
+
+_bool CGameInstance::IsObjectLayerPairValid(_uint iObjectLayer1, _uint iObjectLayer2)
+{
+	return m_pJolt_Manager->IsObjectLayerPairValid(ObjectLayer(iObjectLayer1), ObjectLayer(iObjectLayer2));
 }
 
 #ifdef _DEBUG

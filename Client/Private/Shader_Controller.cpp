@@ -229,6 +229,9 @@ void CShader_Controller::Ready_Shader()
                             m_pGameInstance->Set_FogConfig(m_FogConfig);
                     }
 
+                    if (ImGui::SliderFloat("Fog Light Bleed Strength", &m_FogConfig.fLightBleedStrength, 0.f, 1.f, "%.2f"))
+                        m_pGameInstance->Set_FogConfig(m_FogConfig);
+
 					ImGui::Separator();
 					ImGui::Text("Fog Transition Lerp");
 
