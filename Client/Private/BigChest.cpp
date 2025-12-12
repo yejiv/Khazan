@@ -38,6 +38,8 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
     PROP_INTERACTIVE_DESC* pDesc = static_cast<PROP_INTERACTIVE_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
+    m_eLevel = pDesc->eLevel;
+
     BOX_ITEMS* pItemBox = static_cast<BOX_ITEMS*>(pDesc->pOtherDesc);
     CHECK_NULLPTR(pItemBox, E_FAIL);
 
@@ -56,7 +58,7 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
         });
 
     m_pModelCom->Register_Event("Open", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Open"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(m_eLevel), TEXT("Open"), m_pTransformCom->Get_State(STATE::POSITION));
         });
 
     return S_OK;
@@ -386,6 +388,8 @@ HRESULT CBigChest::Bind_Materials(_uint iMeshIndex)
         m_iMtrlFlags |= M_ROUGHNESS;
 
     m_iMtrlFlags &= ~M_EMISSIVE;
+    if (LEVEL::EMBARS == m_eLevel)
+        m_iMtrlFlags &= ~M_SPECULAR;
 
     m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 

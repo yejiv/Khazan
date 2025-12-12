@@ -297,6 +297,8 @@ void CTombStone::Animation_Update(_float fTimeDelta)
         // IDLE 상태
         if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_TombStone_On"), Get_Position(), nullptr, m_fInteract_Volume);
+
             m_pGuide->Update_Visible(false);
 
             m_fEmissiveIntensity = 1.5f;
