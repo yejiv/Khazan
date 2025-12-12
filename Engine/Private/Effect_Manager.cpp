@@ -326,14 +326,14 @@ void CEffect_Manager::Clear(_uint iLevelIndex)
     }
     m_pEffectPools[iLevelIndex].clear();
 
-    //for (auto Pair : m_pRunningEffects[iLevelIndex])
-    //{
-    //	//for (auto& effect : Pair.second)
-    //	//	Safe_Release(effect);
-    //	Pair.second.clear();
-    //}
-    //
-    //m_pRunningEffects[iLevelIndex].clear();
+    for (auto Pair : m_pRunningEffects[iLevelIndex])
+    {
+    	//for (auto& effect : Pair.second)
+    	//	Safe_Release(effect);
+    	Pair.second.clear();
+    }
+    
+    m_pRunningEffects[iLevelIndex].clear();
 
     //m_pRunningEffects_Test.clear();
 }

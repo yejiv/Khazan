@@ -137,21 +137,22 @@ private:
     class CTarget_LockOn* m_pLockOnUI = { nullptr };
 
     // LockOn 보정
-    _float m_fTopClampNearDist = 2.5f;   // 이 이하에서 강하게 개입
-    _float m_fTopClampFarDist = 6.0f;   // 이 이상이면 개입 해제
-    _float m_fTopViewClampDeg = -2.0f;  // 근접 시 허용하는 최소(가장 내려다보는) pitch(도). -2~-5 추천
-	
 	_float m_fTargetHalfFovDegrees = { 50.f };
     _float m_fTargetHalfFovCos = { 0.f };
     _float m_fTargetMaxDistance = { 20.f };
 
-    _float m_fLockPitchDownClampDeg = -35.f;
-    _float m_fLockPitchUpClampDeg = 10.f;
+    _float m_fLockBasePitch = XMConvertToRadians(-10.f); // 기본: 플레이어 뒤에서 살짝 위에서 내려다보기(튜닝)
 
-    // 적용 거리
-    _float m_fLockClampNearDist = 3.f;
-    _float m_fLockClampFarDist = 8.f;
+    _float m_fLockHeightAssistStart = 1.5f;
+    _float m_fLockHeightAssistFull = 6.0f;   // 또는 8.0f
+    _float m_fLockHeightAssistMaxDeg = 18.0f; // 12보다 확실히 체감됨
 
+    _float m_fLockYawSmoothBase = { 0.1f }; // 기본 yaw 스무딩(빠르게 따라감)
+    _float m_fLockYawSmoothLag = { 0.25f }; // 좌우 이동이 클 때 yaw 스무딩(늦게 따라옴)
+    _float m_fLockSideLagStart = { 0.25f }; // 이 이상부터 지연 가중(0~1, dot 기준)
+
+    _bool   m_isPrevLockPlayerPos = false;
+    _float4 m_vPrevLockPlayerPosWS = {};
 
     // 특정위치에서 강제 이동시 보간
     _bool m_isBlendBack = { false };

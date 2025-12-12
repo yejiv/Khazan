@@ -17,6 +17,7 @@ public:
 	void Update();
 
 public:
+    _float Get_Gloval_Volume() { return m_fGloval_Volume; }
     void Set_Gloval_Volume(_float fVolume) { m_fGloval_Volume = fVolume; }
     void ADD_Gloval_Volume(_float fVolume) { m_fGloval_Volume += fVolume;
     m_fGloval_Volume >= 1.f ? m_fGloval_Volume = 1.f : m_fGloval_Volume <= 0.f ? m_fGloval_Volume = 0.f : m_fGloval_Volume; }
