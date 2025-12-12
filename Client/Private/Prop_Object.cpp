@@ -75,6 +75,8 @@ void CProp_Object::Late_Update(_float fTimeDelta)
 
     if (false == (isCollider() && isBackGround()))
         m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+    if (true == isShadow())
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this);
 }
 
 HRESULT CProp_Object::Render()
@@ -130,18 +132,14 @@ HRESULT CProp_Object::Render_Shadow()
     if (FAILED(m_pShaderCom->Bind_Matrix("g_LightProjMatrix", m_pGameInstance->Get_ShadowLightMatrix(D3DTS::PROJ))))
         return E_FAIL;
 
-    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
-        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
-            return E_FAIL;
-
-        m_pShaderCom->Begin(2);
+        m_pShaderCom->Begin(3);
 
         m_pModelCom->Render(i);
     }
-
 
     return S_OK;
 }
