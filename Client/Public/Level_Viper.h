@@ -53,6 +53,7 @@ private:
 
     HRESULT Ready_Item();
     HRESULT Ready_Layer_Decal();
+    HRESULT Ready_SoundSetting();
 
     _bool Wait_All_Futures();
 

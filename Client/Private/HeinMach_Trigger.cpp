@@ -403,6 +403,13 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma endregion
         }
 #pragma endregion
+        else if (m_strTriggerKey == "Shadow_Restore")
+        {
+            // 그림자 보간 추가
+            m_pGameInstance->Start_ShadowTransition(3.f, 0.6f);
+
+            m_isDead = true;
+        }
         else if (m_strTriggerKey == "Talk_03")
         {
             m_pClientInstance->BGM_HeinMach_Entry();

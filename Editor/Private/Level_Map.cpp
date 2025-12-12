@@ -436,7 +436,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 		if (m_isMainWindow)
 		{
 			ImGui::Begin("MAIN WINDOW", &m_isMainWindow, ImGuiWindowFlags_AlwaysAutoResize);
-			ImGui::Text("INFORMAION");
+			ImGui::Text("INFORMATION");
 			if (ImGui::Button("ON/OFF##information"))
 				m_isInformation = !m_isInformation;
 
@@ -469,12 +469,17 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 					SEPARATOR;
 
-					ImGui::Text("PICKED POS");
-					ImGui::Text("X : %.3f", m_vPickedPos.x);
-                    ImGui::Text("Y : %.3f", m_vPickedPos.y); SAMELINE;
+                    _float3 vPickedPos = m_vPickedPos;
+
+                    ImGui::Text("PICKED POS");
+                    ImGui::Text("X : "); SAMELINE;
+                    ImGui::InputFloat("##x_pick_pos", &vPickedPos.x);
+                    ImGui::Text("Y : "); SAMELINE;
+                    ImGui::InputFloat("##y_pick_pos", &vPickedPos.y); SAMELINE;
                     if (ImGui::Button("COPY"))
                         m_fAddPositionY = m_vPickedPos.y;
-					ImGui::Text("Z : %.3f", m_vPickedPos.z);
+                    ImGui::Text("Z : "); SAMELINE;
+                    ImGui::InputFloat("##z_pick_pos", &vPickedPos.z);
 
 					SEPARATOR;
 

@@ -7,15 +7,6 @@ NS_BEGIN(Client)
 
 class CBGM_Manager final : public CBase
 {
-public:
-    enum class BGM_STATE
-    {
-        NONE,
-        HEINMACH_DAWN, HINEMACH_CAVE, HEINMACH_DAY, HEINMACH_BOSS,
-        EMBARS_1F, EMBARS_B1,
-        VIPER_ENTRY, VIPER_1PHASE, VIPER_2PHASE
-    };
-
 private:
     CBGM_Manager();
     virtual ~CBGM_Manager() = default;
@@ -31,13 +22,20 @@ public:
     void Mute_BGM();
     void UnMute_BGM();
 
+    _float Get_Volume_AMB() { return m_fVolume_AMB; }
+    void Set_Volume_AMB(_float fVolume);
+
+    void Mute_AMB();
+    void UnMute_AMB();
+
     void Clear_CurrentKey();
 
 public:
     void PlayBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f);
     void ChangeBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f, _bool isWav = true);
-    void PlayBattleBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f);
-    void EndBattleBGM(_float fFadeTime = 1.f);
+
+    void PlayAMB(const _tchar* pSoundKey, _float fFadeTime = 1.f);
+    void ChangeAMB(const _tchar* pSoundKey, _float fFadeTime = 1.f, _bool isWav = true);
 
 #pragma region 하인마흐 프리셋
 
@@ -83,6 +81,11 @@ public:
     void BGM_Resume(_bool isFade = false, _float fFadeTime = 1.f);
     void BGM_Pause(_bool isFade = false, _float fFadeTime = 1.f);
 
+    void AMB_Stop(_float fFadeTime = 1.f);
+
+    void AMB_Resume(_bool isFade = false, _float fFadeTime = 1.f);
+    void AMB_Pause(_bool isFade = false, _float fFadeTime = 1.f);
+
 private:
     class CGameInstance* m_pGameInstance = { nullptr };
 
@@ -92,12 +95,14 @@ private:
 
     _float m_fVolume_BGM = { 0.25f };
 
-    _bool m_isMute = { false };
+    _wstring m_wstrCurrentKey_AMB = {};
+    _wstring m_wstrStoreKey_AMB = {};
 
-    BGM_STATE m_eState = {};
+    _float m_fVolume_AMB = { 0.35f };
 
 private:
     void Change_CurrentBGM(const _tchar* pSoundKey);
+    void Change_CurrentAMB(const _tchar* pSoundKey);
 
 public:
     static CBGM_Manager* Create();

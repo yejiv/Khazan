@@ -80,8 +80,7 @@ HRESULT CLevel_Embars::Initialize()
 
     CClientInstance::GetInstance()->Fade_In([this]() {Start_Event(); });
 
-    CClientInstance::GetInstance()->Set_Volume_BGM(0.65f);
-    CClientInstance::GetInstance()->BGM_Embars_Entry();
+    CHECK_FAILED(Ready_SoundSetting(), E_FAIL);
 
     if (!Wait_All_Futures())
         return E_FAIL;
@@ -328,6 +327,19 @@ HRESULT CLevel_Embars::Ready_Layer_Item()
     pItem->Special_Item(TEXT("Handwriting"), XMVectorSet(109.18f, -83.451f, 52.09f, 1.f));
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Item"), pItem);
+
+    return S_OK;
+}
+
+HRESULT CLevel_Embars::Ready_SoundSetting()
+{
+    // 사운드 매니저 글로벌 볼륨
+    _float fGlobalVolume = m_pGameInstance->Get_Gloval_Volume();
+
+    // 글로벌 볼륨 세팅 후 환경음, BGM 사운드 세팅 및 재생
+    CClientInstance::GetInstance()->Set_Volume_BGM(0.65f);
+    CClientInstance::GetInstance()->Set_Volume_AMB(0.65f);
+    CClientInstance::GetInstance()->BGM_HeinMach_Entry();
 
     return S_OK;
 }
