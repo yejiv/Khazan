@@ -44,13 +44,13 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
     }
 
 
-    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
     {
 
         if (m_pGameInstance->Key_Down(DIK_B))
         {
             CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-            m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::GROGGY), pYetuga);
+            m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::JUMPATTACK), pYetuga);
         }
 
         if (m_pGameInstance->Key_Down(DIK_N))
@@ -86,8 +86,8 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
         else
             m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-        if (!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
-            m_pBT->Update();
+       /* if (!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
+            m_pBT->Update();*/
     }
 
 	

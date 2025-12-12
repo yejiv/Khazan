@@ -88,7 +88,7 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     else 
         Add_Status(BAREHAND);
 
-    m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
+    //m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
 
 
     if (FAILED(Ready_Components()))
@@ -116,13 +116,23 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
 
     /* 기본 셋팅  */
     m_eDir.Add_Flag(DIRECTION_INFO::NONE);
-    if (m_pClientInstance->Is_CurrentSpear()) m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand");
-    else if (m_pClientInstance->Is_CurrentGSword()) m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand");
-    else  m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
+    if (m_pClientInstance->Is_CurrentSpear())
+    {
+        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand");
+        Add_Status(SPEAR);
+    }
+    else if (m_pClientInstance->Is_CurrentGSword())
+    {
+        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand");
+        Add_Status(GSWORD);
+    }
+    else
+    {
+        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
+        Add_Status(BAREHAND);
+    }
 
     m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
-    //Add_Status(BAREHAND);
-    Add_Status(GSWORD);
 
     //m_iStopMoveIndexTable[0] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Walk_Stop_F_RF");
     m_iStopMoveIndexTable[0] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Walk_Stop_F_RF");
@@ -189,6 +199,14 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
         m_isGhost = false;
     }
 
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT,fTimeDelta) && m_pGameInstance->Key_Down(DIK_4) )
+    {
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_5))
+    {
+        Remove_Status(LADDER_CLIMBING_END);
+    }
 
 }
 
@@ -583,31 +601,7 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
     {
         Remove_Status(LADDER_CLIMBING_END | LADDER_SPRINT);
     }
-    if (m_pGameInstance->Key_Down(DIK_4))
-    {
-     m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));
-    }
-    if (m_pGameInstance->Key_Down(DIK_5))
-    {
-        Remove_Status(LADDER_CLIMBING_END);
-    }
-    if (m_pGameInstance->Key_Down(DIK_6))
-    {
-        m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-180.f));
-    }
-    if (m_pGameInstance->Key_Down(DIK_7))
-    {
-        m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(0.f));
-    }
-    if (m_pGameInstance->Key_Down(DIK_8))
-    {
-        m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(90.f));
-    }
-    if (m_pGameInstance->Key_Down(DIK_9))
-    {
-        m_isLadderRotationEvent = false;
 
-    }
 
     ///* Viper Grab 상태 최우선 체크 */
     //if (Has_Status(VIPER_GRAB)) {

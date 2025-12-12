@@ -353,7 +353,8 @@ _bool CKhazan_Spear_Anim_Attack::Try_SkillAttack(_uint iSkill)
         : m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_SpiralSpear");
     else  if (m_pClientInstance->Check_Skill(SPEARSKILL::ASSAULT) && iSkill & SPEARSKILL::ASSAULT)  m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_PureMind_SeismicKick");
     else  if (m_pClientInstance->Check_Skill(SPEARSKILL::MOMENT_SLASH) && iSkill & SPEARSKILL::MOMENT_SLASH)  m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName(" CA_P_Kazan_Spear_LowFlying_F");
-    else  if (m_pClientInstance->Check_Skill(SPEARSKILL::CRITICAL_STRIKE) && iSkill & SPEARSKILL::CRITICAL_STRIKE)  m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Crescent");
+    else  if (m_pClientInstance->Check_Skill(SPEARSKILL::CRITICAL_STRIKE) && iSkill & SPEARSKILL::CRITICAL_STRIKE) 
+        m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Crescent");
     else  if (m_pClientInstance->Check_Skill(SPEARSKILL::SHADOW_CLEAVE) && iSkill & SPEARSKILL::SHADOW_CLEAVE)  m_iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Tempest_MoonVeil");
     else
     {
