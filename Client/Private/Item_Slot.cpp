@@ -51,7 +51,6 @@ _bool CItem_Slot::Add_Item(_int iItemIndex)
             m_fMainValue = CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData.iEffect_ID)->iValue_1;
 
             Random_Effect_Setting(ItemData.iType);
-
         }
         return true;
     }
@@ -199,7 +198,24 @@ void CItem_Slot::Late_Update(_float fTimeDelta)
         }
         else if(!m_bIsEquip)
         {
-            Sale_Item();
+            const ITEM_DATA* pData = CClientInstance::GetInstance()->Get_Data<ITEM_DATA>(m_iItemIndex);
+            if (pData->iLachryma == -1 && pData->iGold == -1)
+            {
+                m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_WARNING>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_WARNING), { TEXT("판매 불가 아이템입니다.") });
+            }
+            else if(!m_bIsEquip)
+            {
+                CPopup_Item::POPUP_ITEM_DESC Desc;
+                Desc.isSale = true;
+                Desc.iItemIndex = m_iItemIndex;
+                Desc.Event = [this]() { Sale_Item(); };
+                CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("Popup_Item"), &Desc);
+
+            }
+            else
+            {
+                m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_WARNING>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_WARNING), { TEXT("장착중인 아이템은 판매가 불가합니다.") });
+            }
         }
     }
     if (m_iItemIndex > -1 && m_bIsSelete && m_pGameInstance->Key_Down(DIK_F, INPUT_TYPE::UI))

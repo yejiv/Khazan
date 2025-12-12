@@ -97,6 +97,7 @@ public:
     virtual void					Priority_Update(_float fTimeDelta) override;
     virtual void					Update(_float fTimeDelta) override;
     virtual void					Late_Update(_float fTimeDelta) override;
+    virtual HRESULT			        Render() override;
     virtual void				    Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) override;
 
 public:

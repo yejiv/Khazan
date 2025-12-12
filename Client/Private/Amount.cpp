@@ -41,6 +41,11 @@ void CAmount::On_Panel()
 	m_eAnimState = UIANIMSTATE::ON;
 	m_fAccTime = 0.5f;
 	m_IsUpdate = true;
+
+    m_iAmountGold = CClientInstance::GetInstance()->Get_ptrPlayerData().iGold;
+    m_iAmountLachryma = CClientInstance::GetInstance()->Get_ptrPlayerData().iLachryma;
+    m_iAmountStone = CClientInstance::GetInstance()->Get_ptrPlayerData().iStone;
+
 }
 
 void CAmount::Off_Panel()

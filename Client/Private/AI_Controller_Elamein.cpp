@@ -41,7 +41,7 @@ void CAI_Controller_Elamein::Update(CGameObject* pOwner, _float fTimeDelta)
 {
     if (!m_isActive)
         return;
-
+    
     if (*m_pMonData->pCulHp <= 0.f)
     {
         m_pFSM->Change_State(ENUM_CLASS(CElamein::MONSTATE::DEAD), pOwner);
@@ -180,6 +180,10 @@ PERCEPTIONCALLBACK CAI_Controller_Elamein::GetCallBackPerception(CGameObject* pO
 
                         if (m_pMonData->eHitType != HITREACTION::BRUTAL_ATTACK)
                             m_pMonData->eHitType = static_cast<HITREACTION>(m_pBB->Get_Value<_uint>(m_strMonstertag, "DamageType"));
+                        
+                        if(m_pMonData->eHitType == HITREACTION::BRUTAL_ATTACK)
+                            ++m_pMonData->iBrutalHit;
+
 
                     }
                 }

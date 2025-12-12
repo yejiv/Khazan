@@ -27,6 +27,7 @@ void CUI_State::On_Panel(UI_TYPE eType)
 {
 	if (m_IsUpdate)
 		return;
+    m_UpPlayer_Data.iLevel = 0;
 
 	m_eType = eType;
 	m_eType == UI_TYPE::DEFAULT ? m_pTitle->Set_Text(TEXT("상태")) : m_pTitle->Set_Text(TEXT("능력 강화"));
@@ -45,7 +46,7 @@ void CUI_State::On_Panel(UI_TYPE eType)
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)]->Setting_Type(m_eType, this);
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)]->Setting_Type(m_eType, this);
     Update_Data();
-
+    
 	_int iLacryma = *m_pLachryma;
 	_int iPreUpPoint = m_Player_Data.iLevel;
 	_int iUpPoint = 0;
@@ -64,6 +65,34 @@ void CUI_State::On_Panel(UI_TYPE eType)
 	m_eAnimState = UIANIMSTATE::ON;
 	m_fAccTime = 0.5f;
 	m_IsUpdate = true;
+
+    for (_int i = 0; i < ENUM_CLASS(STATE_LIST::END); ++i)
+    {
+        m_UpStateLevel[i] = 0;
+    }
+
+
+    m_UpPlayer_Data.iMaxHp = 0;
+    m_UpPlayer_Data.iMaxStamina = 0;
+    m_UpPlayer_Data.iAtk = 0;
+    m_UpPlayer_Data.iDef = 0;
+    m_UpPlayer_Data.fWeight = 0;
+    m_UpPlayer_Data.fMaxWeight = 0;
+    m_UpPlayer_Data.fAgile = 0;
+
+    m_UpPlayer_Data.fStaminaAttack = 0;
+    m_UpPlayer_Data.fStaminaRegen = 0;
+    m_UpPlayer_Data.fEvasion_StaminaDown = 0;
+    m_UpPlayer_Data.fDamage_StaminaDown = 0;
+    m_UpPlayer_Data.fGuard_StaminaDown = 0;
+
+    m_UpPlayer_Data.iFire = 0;
+    m_UpPlayer_Data.iWater = 0;
+    m_UpPlayer_Data.iLightning = 0;
+    m_UpPlayer_Data.iEarth = 0;
+    m_UpPlayer_Data.iChaos = 0;
+    m_UpPlayer_Data.iDisease = 0;
+    m_UpPlayer_Data.iPoison = 0;
 }
 
 
@@ -656,12 +685,6 @@ void CUI_State::Button_Bubble_Event(UI_STATE_BUBLLE* pDesc)
 	m_Player_Data.iLachryma = *m_pLachryma;
 	m_Player_Data.iUpLachryma = (300 + (m_Player_Data.iLevel - 1 + m_UpPlayer_Data.iLevel) * 280);
 
-	for (_int i = 0; i < ENUM_CLASS(STATE_LIST::END); ++i)
-	{
-		*m_CulStateLevel[i] += m_UpStateLevel[i];
-		m_UpStateLevel[i] = 0;
-	}
-
 	m_Player_Data.iMaxHp				+=		m_UpPlayer_Data.iMaxHp					;
 	m_Player_Data.iMaxStamina			+=		m_UpPlayer_Data.iMaxStamina				;
 	m_Player_Data.iAtk					+=		m_UpPlayer_Data.iAtk					;
@@ -683,6 +706,11 @@ void CUI_State::Button_Bubble_Event(UI_STATE_BUBLLE* pDesc)
 	m_Player_Data.iChaos				+=		m_UpPlayer_Data.iChaos					;
 	m_Player_Data.iDisease				+=		m_UpPlayer_Data.iDisease				;
 	m_Player_Data.iPoison				+=		m_UpPlayer_Data.iPoison					;
+    for (_int i = 0; i < ENUM_CLASS(STATE_LIST::END); ++i)
+    {
+        *m_CulStateLevel[i] += m_UpStateLevel[i];
+        m_UpStateLevel[i] = 0;
+    }
 
 	m_UpPlayer_Data.iMaxHp				= 0;
 	m_UpPlayer_Data.iMaxStamina			= 0;
