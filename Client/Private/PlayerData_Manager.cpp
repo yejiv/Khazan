@@ -42,13 +42,24 @@ HRESULT CPlayerData_Manager::Initialize()
     m_CachedEquipments[5004] = TEXT("Thief_Leg");
     m_CachedEquipments[5005] = TEXT("Thief_Shoes");
 
+    /* ShadowLandFlow Set */
+    m_CachedEquipments[5006] = TEXT("ShadowLandFlow_Hair");     //투구
+    m_CachedEquipments[5007] = TEXT("ShadowLandFlow_Torso");
+    m_CachedEquipments[5008] = TEXT("ShadowLandFlow_Arm");
+    m_CachedEquipments[5009] = TEXT("ShadowLandFlow_Leg");
+    m_CachedEquipments[5010] = TEXT("ShadowLandFlow_Shoes");
+
+    /* Disc */
+    m_CachedEquipments[5011] = TEXT("Danjin_Hair");   //단진 머리
+    
+
     /* 현재 장비 초기화  */
     m_ePlayerEquipment.iFace = 9000;
-    m_ePlayerEquipment.iHair = 21;
-    m_ePlayerEquipment.iTorso = 9002;
-    m_ePlayerEquipment.iArm = 9003;
-    m_ePlayerEquipment.iLeg = 9004;
-    m_ePlayerEquipment.iShoes = 9005;
+    m_ePlayerEquipment.iHair = 5001;
+    m_ePlayerEquipment.iTorso = 5002;
+    m_ePlayerEquipment.iArm = 5003;
+    m_ePlayerEquipment.iLeg = 5004;
+    m_ePlayerEquipment.iShoes = 5005;
     m_ePlayerEquipment.iSpear = 4011;
     m_ePlayerEquipment.iGSword = 4001;
     m_ePlayerEquipment.isSpear = true;

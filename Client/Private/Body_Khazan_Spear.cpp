@@ -959,6 +959,13 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
      { TEXT("Thief_Arm"), TEXT("Prototype_Component_Model_Khazan_Thief_Arm") },
      { TEXT("Thief_Leg"), TEXT("Prototype_Component_Model_Khazan_Thief_Leg") },
      { TEXT("Thief_Shoes"), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes") },
+
+     /* ShadowLandFlow Set */
+     { TEXT("ShadowLandFlow_Hair"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Hair") },
+     { TEXT("ShadowLandFlow_Torso"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Torso") },
+     { TEXT("ShadowLandFlow_Arm"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Arm") },
+     { TEXT("ShadowLandFlow_Leg"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Leg") },
+     { TEXT("ShadowLandFlow_Shoes"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes") },
     };
 
     // 모든 파츠 로드
@@ -1460,7 +1467,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent_SFX()
             strTempEventKey += "_" + ss.str();
 
             m_pModelCom->Register_Event(strTempEventKey, eTrigger, [this, eSoundType, fVolume, eChannelType]() {
-                m_pGameInstance->PlaySoundOnce( m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType),  10.f,  Get_SoundChannel(eChannelType) ); });
+                m_pGameInstance->PlaySoundOnce( m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume,  Get_SoundChannel(eChannelType) ); });
         }
     };
 
