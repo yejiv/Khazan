@@ -651,6 +651,11 @@ PS_OUT PS_IMP_WEAPON(PS_IN In)
 
     // Diffuse 어두운 문제로 임의값 곱해주기 3~5
     Out.vDiffuse *= g_fDiffusePower;
+
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
     
     return Out;
 }

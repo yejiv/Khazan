@@ -115,9 +115,6 @@ void CViper_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
     {
-
-        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
-
         if (m_strTriggerKey == "CutScene")
         {
             SEQ_REQ_PLAY_DESC tPlayDesc{};

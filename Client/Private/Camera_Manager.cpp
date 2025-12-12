@@ -576,6 +576,14 @@ void CCamera_Manager::Switch_CameraMode(CAMERATYPE eType)
 
 }
 
+void CCamera_Manager::MouseOnOff(_bool isOn)
+{
+    CCamera* pCamera = Get_ActiveCamera();
+    CCamera_Compre* pCameraCompre = dynamic_cast<CCamera_Compre*>(pCamera);
+    pCameraCompre->MouseOnOff(isOn);
+
+}
+
 CCamera_Manager* CCamera_Manager::Create(_uint iNumLevels)
 {
 	CCamera_Manager* pInstance = new CCamera_Manager();

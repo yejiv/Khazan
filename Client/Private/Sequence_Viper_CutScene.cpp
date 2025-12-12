@@ -11,6 +11,7 @@
 #include "Khazan_GSword.h"
 #include "AI_Controller_Viper.h"
 #include "SkipButton.h""
+#include "UI_HUD.h"
 
 CSequence_Viper_CutScene::CSequence_Viper_CutScene(CViper* pViper, CKhazan_GSword* pKhazan)
     : m_pGameInstance{ CGameInstance::GetInstance() }
@@ -25,9 +26,6 @@ CSequence_Viper_CutScene::CSequence_Viper_CutScene(CViper* pViper, CKhazan_GSwor
 HRESULT CSequence_Viper_CutScene::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 {
     m_pCamera = dynamic_cast<CCamera_Compre*>(m_pClientInstance->Get_ActiveCamera());    
-    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_1Phase_CutScene");
-    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_1Phase_CutScene2");
-    m_pClientInstance->Set_PlayerInput(false);
     return S_OK;
 }
 
@@ -44,6 +42,9 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         if (m_fTime > 0.f && !m_isFadeOut)
         {
             m_pClientInstance->Fade_Out();
+            static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+            m_pClientInstance->Set_PlayerInput(false);
+            m_pKhazan->Set_Idle();
             m_isFadeOut = true;
         }
 

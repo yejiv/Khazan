@@ -130,7 +130,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     m_strName = "Khazan";
     m_EffectTimeDelta = 0.f;
 
-    m_pCharVirCom->Set_Position(XMVectorSet(0.f, 10.f, 0.f, 1.f));
+    m_pCharVirCom->Teleport(XMVectorSet(0.f, 1.f, 0.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
 #pragma region 3D UI 테스트
     //CUIObject::UIOBJECT_DESC Desc;
 

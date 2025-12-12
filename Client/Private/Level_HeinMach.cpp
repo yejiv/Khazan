@@ -78,8 +78,6 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-    CClientInstance::GetInstance()->Fade_Out();
-
     CHECK_FAILED(Ready_SoundSetting(), E_FAIL);
 
     if (!Wait_All_Futures())
@@ -94,11 +92,25 @@ HRESULT CLevel_HeinMach::Initialize()
 
     m_pClientInstance->Set_PlayerInput(true);
 
+    CClientInstance::GetInstance()->Fade_In([this]() {
+        
+        m_pClientInstance->Camera_MouseOnOff(true);
+        });    
+
 	return S_OK;
 }
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
+    if (m_fFadeTime < 0.2f)
+    {
+        m_fFadeTime += fTimeDelta;
+        
+        if (m_fFadeTime >= 0.2f)
+            m_pGameInstance->Decal_OnOff(true);
+
+    }
+
     if (m_pGameInstance->Key_Down(DIK_F1, INPUT_TYPE::FORCE))
     {
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
@@ -129,20 +141,6 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
     //    
     //}
 
-
-
-   if (!m_isStart)
-   {
-        m_isStart = true;
-        CSequence_HeinMach_Start* pSequence = CSequence_HeinMach_Start::Create();
-
-        SEQ_REQ_PLAY_DESC tPlayDesc{};
-        tPlayDesc.tId.iSeq = 100000;
-        tPlayDesc.pAsset = L"HeinMach_Start";
-        tPlayDesc.fStartTime = 0.f;
-
-        m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
-   }
 
    /*if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
    {

@@ -3780,6 +3780,13 @@ std::string CKhazan_GSword::GetHitReactionString()
     }
 }
 
+void CKhazan_GSword::Set_Idle()
+{
+    CModel* pModel = m_pBody->Get_Model();
+
+    pModel->Set_Animation(pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand"));
+}
+
 #endif // _DEBUG
 
 

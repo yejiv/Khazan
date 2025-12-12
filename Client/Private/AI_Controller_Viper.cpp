@@ -1296,9 +1296,9 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                     pViper->Set_HP(100.f,100.f);
                     pViper->Set_Stamina(1200.f, 1200.f);
 
-                        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+                    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
 
-                        pViper->Set_HPUI(false);
+                    pViper->Set_HPUI(false);
 
                     return BTNODESTATE::SUCCESS;
                 }
