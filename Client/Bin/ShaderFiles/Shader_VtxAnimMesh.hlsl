@@ -475,18 +475,13 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
         vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
     }
     
-    //  Out.vDiffuse = vMtrlDiffuse * vMtrlSpecular * g_fEmissiveIntensity;
     vMtrlDiffuse.g = 0.f;
-    Out.vDiffuse = lerp(vMtrlDiffuse, vMtrlSpecular, g_fColorRatio) * g_fEmissiveIntensity;
-    //  Out.vDiffuse = vMtrlMetalic;
-    // Out.vDiffuse = vMtrlSpecular * 10.f;
-    
+    //  Out.vDiffuse = lerp(vMtrlDiffuse, vMtrlSpecular, g_fColorRatio) * g_fEmissiveIntensity;    
     Out.vNormal = vector(vMtrlNormal);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
-    //  Out.vEmissive = vMtrlEmissive;
-    
-    //  Out.vEmissive = vMtrlSpecular * 2.f;
+    // Test
+    Out.vEmissive = lerp(vMtrlDiffuse, vMtrlSpecular, g_fColorRatio) * g_fEmissiveIntensity;
 
     return Out;
 }
@@ -1248,11 +1243,12 @@ PS_OUT PS_BLADENEXUS_CRISTAL(PS_IN In)
         vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
     }
     
-    Out.vDiffuse = g_vCristalColor;
+    //  Out.vDiffuse = g_vCristalColor;
     Out.vNormal = float4(vMtrlNormal);
     Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
-
+    Out.vEmissive = g_vCristalColor;
+    
     return Out;
 }
 
@@ -1525,6 +1521,60 @@ PS_OUT PS_YETUGA_BODY(PS_IN In)
         
     float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
     float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+    
+    return Out;
+}
+
+PS_OUT PS_NPC(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.a = 1.f;
+
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMtrlMetalic.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMtrlMetalic.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
     Out.vDiffuse *= fEdgeMask;
     Out.vDiffuse *= fShadeMask;
     
@@ -1935,5 +1985,29 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_YETUGA_BODY();
+    }
+
+    // NPC 패스 ( 34번 )
+    pass Npc
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_NPC();
+    }
+
+    // NPC None Culling 패스 ( 35번 )
+    pass NpcCullNone
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_NPC();
     }
 }

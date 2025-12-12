@@ -120,6 +120,7 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     else if (m_pClientInstance->Is_CurrentGSword()) m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand");
     else  m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
 
+    m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Teleport_End");
     m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
     //Add_Status(BAREHAND);
     Add_Status(GSWORD);
@@ -158,7 +159,8 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
 
   
 
-    
+    /* Test*/
+
     if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_P))
     {
         //예튜가
@@ -178,7 +180,6 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
             m_pCharVirCom->Teleport(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
         
     }
-
     if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
     {
         m_isGhost = true;
@@ -188,7 +189,8 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
     {
         m_isGhost = false;
     }
-
+    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_T))
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Teleport_End"));
 
 }
 

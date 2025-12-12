@@ -146,6 +146,11 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
     m_bGuradFX[0] = false;
     m_bGuradFX[1] = false;
 
+    _vector vSpearPos = XMLoadFloat4x4(&m_pSpearPole_MatrixW).r[3];
+    _float4 vResultSpearPos{};
+    XMStoreFloat4(&vResultSpearPos, vSpearPos);
+    m_pGameInstance->Set_LightPosition(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), vResultSpearPos);
+
     // Heal RimLight
     if (m_isEnableHealRimLight)
     {
@@ -516,8 +521,50 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
                     return;
 
                 pMonster->On_JustGuardCallback(true);
+
+                // Vignette
+                VIGNETTE_CONFIG Config{};
+                Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
+                Config.vColor = _float3(0.f, 0.f, 0.f);
+                Config.fPower = 3.5f;
+                Config.fIntensity = 1.f;
+                Config.fMaxIntensity = 4.f;
+                m_pGameInstance->Start_VignetteAnimation(0.5f, Config);
+
+                // 핑크 보라 조명
+                LIGHT_TRANSITION_DESC LightDesc{};
+                LightDesc.fDuration = 0.5f;
+                LightDesc.vFadeTime = _float2(0.2f, 0.2f);
+                LightDesc.vDiffuse = _float4(0.5f, 0.f, 1.f, 1.f);
+                LightDesc.vAmbient = _float4(0.5f, 0.f, 1.f, 1.f);
+                LightDesc.vSpecular = LightDesc.vDiffuse;
+                LightDesc.isReturnToStart = true;
+                LightDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false); };
+                m_pGameInstance->Start_LightTransition(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+                // FOV 줌인아웃
+                FOVModifier tMod{};
+                tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+                tMod.fDuration = 0.25f;
+                tMod.fFrom = XMConvertToRadians(60.f);
+                tMod.fTo = XMConvertToRadians(50.f);
+                tMod.iPriority = 1.f;
+                tMod.Ease = EaseOutQuad;
+                m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
             }
+
             m_bGuradFX[1] = true;
+
+            // 그냥 노란 조명
+            LIGHT_TRANSITION_DESC LightDesc{};
+            LightDesc.fDuration = 0.5f;
+            LightDesc.vFadeTime = _float2(0.2f, 0.2f);
+            LightDesc.vDiffuse = _float4(1.f, 1.f, 0.8f, 1.f);
+            LightDesc.vAmbient = _float4(1.f, 1.f, 0.8f, 1.f);
+            LightDesc.vSpecular = LightDesc.vDiffuse;
+            LightDesc.isReturnToStart = true;
+            LightDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false); };
+            m_pGameInstance->Start_LightTransition(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
 
             /* 가드후 충돌되면 충돌된 지점 봐라보게*/
             Start_GuardRotation(vContactPoint);

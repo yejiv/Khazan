@@ -1103,6 +1103,16 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
     if (FAILED(m_pGameInstance->Add_Light(TEXT("BladeNexus_ActivateLight"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc, false)))
         return E_FAIL;
 
+    LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 3.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Player_GuardLight"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc, false)))
+        return E_FAIL;
+
 	return S_OK;
 }
 
