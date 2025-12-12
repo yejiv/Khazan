@@ -99,6 +99,7 @@ public:
     void Set_EnableRimLight(_bool isEnable);
     RIM_LIGHT_DESC Get_RimLightDesc();
     void Set_RimLightDesc(RIM_LIGHT_DESC Desc);
+    const RENDERGROUP& Get_CurrentRenderGroup();
 #pragma endregion
 
 #pragma region TIMER_MANAGER
