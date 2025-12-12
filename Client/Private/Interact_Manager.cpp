@@ -55,7 +55,7 @@ HRESULT CInteract_Manager::Initialize()
     EMBARSFirstDesc->iLevel = ENUM_CLASS(LEVEL::EMBARS);
     EMBARSFirstDesc->isUnLock = false;
     EMBARSFirstDesc->strName = TEXT("잊혀진 사원의 지하");
-    EMBARSFirstDesc->vPos = _float4(0.f, 0.f, 0.f, 1.f);
+    EMBARSFirstDesc->vPos = _float4(-10.740f, -92.358f, 7.475f, 1.f);
 
     Add_BladeNexus(KHAZAN_MAP::EMBARS, EMBARSFirstDesc);
 
@@ -64,7 +64,7 @@ HRESULT CInteract_Manager::Initialize()
     EMBARSSecondDesc->iLevel = ENUM_CLASS(LEVEL::EMBARS);
     EMBARSSecondDesc->isUnLock = false;
     EMBARSSecondDesc->strName = TEXT("잊혀진 사원의 깊은 곳");
-    EMBARSSecondDesc->vPos = _float4(0.f, 0.f, 0.f, 1.f);
+    EMBARSSecondDesc->vPos = _float4(31.510f, -95.757f, -7.852f, 1.f);
 
     Add_BladeNexus(KHAZAN_MAP::EMBARS, EMBARSSecondDesc);
 
@@ -73,7 +73,7 @@ HRESULT CInteract_Manager::Initialize()
     EMBARSThirdDesc->iLevel = ENUM_CLASS(LEVEL::EMBARS);
     EMBARSThirdDesc->isUnLock = false;
     EMBARSThirdDesc->strName = TEXT("잊혀진 사원의 심장");
-    EMBARSThirdDesc->vPos = _float4(0.f, 0.f, 0.f, 1.f);
+    EMBARSThirdDesc->vPos = _float4(0.137f, 0.067f, 38.178f, 1.f);
 
     Add_BladeNexus(KHAZAN_MAP::EMBARS, EMBARSThirdDesc);
 

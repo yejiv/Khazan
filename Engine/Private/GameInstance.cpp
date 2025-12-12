@@ -574,6 +574,11 @@ void CGameInstance::Set_RimLightDesc(RIM_LIGHT_DESC Desc)
     m_pRenderer->Set_RimLightDesc(Desc);
 }
 
+const RENDERGROUP& CGameInstance::Get_CurrentRenderGroup()
+{
+    return m_pRenderer->Get_CurrentRenderGroup();
+}
+
 #pragma endregion
 
 #pragma region TIMER_MANAGER
@@ -1699,6 +1704,11 @@ void CGameInstance::Set_EnableMotionBlur(_bool isEnable)
     m_pMotionBlur->Set_EnableMotionBlur(isEnable);
 }
 
+_float CGameInstance::Get_Gloval_Volume()
+{
+	return m_pSound_Manager->Get_Gloval_Volume();
+}
+
 void CGameInstance::Set_Gloval_Volume(_float fVolume)
 {
     m_pSound_Manager->Set_Gloval_Volume(fVolume);
@@ -1870,8 +1880,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pRenderer);
-	Safe_Release(m_pObject_Manager);
-    Safe_Release(m_pEffect_Manager);
+	Safe_Release(m_pObject_Manager);    
 	Safe_Release(m_pPrototype_Manager);	
 	Safe_Release(m_pLevel_Manager);
     Safe_Release(m_pPool_Manager);

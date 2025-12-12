@@ -130,28 +130,6 @@ void CGSword_Khazan_GS::Late_Update(_float fTimeDelta)
 
 HRESULT CGSword_Khazan_GS::Render()
 {
-    if (m_pClientInstance->Is_CurrentGSword())
-    {
-        if (m_pClientInstance->Get_PlayerEquipment().iGSword == 4001) ////유성락
-        {
-
-        }
-        if (m_pClientInstance->Get_PlayerEquipment().iGSword == 4002)//연단된 집행의 대검
-        {
-
-        }
-    }
-    if (m_pClientInstance->Is_CurrentSpear())
-    {
-        if (m_pClientInstance->Get_PlayerEquipment().iSpear == 4011) //섬광일상
-        {
-
-        }
-        if (m_pClientInstance->Get_PlayerEquipment().iSpear == 4012) //연단된 징벌의 창
-        {
-
-        }
-    }
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
@@ -198,7 +176,19 @@ HRESULT CGSword_Khazan_GS::Render()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(28);
+        if (m_pClientInstance->Is_CurrentGSword())
+        {
+            if (m_pClientInstance->Get_PlayerEquipment().iGSword == 4001) ////유성락
+            {
+                _float fDiffusePower = 4.f;
+                if (FAILED(m_pShaderCom->Bind_RawValue("g_fDiffusePower", &fDiffusePower, sizeof(_float))))
+                    return E_FAIL;
+
+                m_pShaderCom->Begin(31);
+            }
+            else if (m_pClientInstance->Get_PlayerEquipment().iGSword == 4002)//연단된 집행의 대검
+                m_pShaderCom->Begin(28);
+        }
 
         m_pModelCom->Render(i);
     }
