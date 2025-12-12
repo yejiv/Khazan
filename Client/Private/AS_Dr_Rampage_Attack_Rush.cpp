@@ -80,12 +80,12 @@ void CAS_Dr_Rampage_Attack_Rush::OnCollision(COLLISION_DESC* pDesc, _uint iColli
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
         if (m_isCombo)
         {
-            pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+            pTarget->Take_Damage(m_pGameInstance->Rand(m_pMonData->fAttackDamage * 0.8f, m_pMonData->fAttackDamage * 1.3f), HITREACTION::KNOCKBACK_STRONG, nullptr);
             pTarget->KnockBack(pOwner->Get_Look(), 15.5f, 40.f);
         }
         else
         {
-            pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+            pTarget->Take_Damage(m_pGameInstance->Rand(m_pMonData->fAttackDamage * 0.8f, m_pMonData->fAttackDamage * 1.3f), HITREACTION::KNOCKBACK_STRONG, nullptr);
             pTarget->KnockBack(pOwner->Get_Look(), 16.5f, 40.f);
         }
     }

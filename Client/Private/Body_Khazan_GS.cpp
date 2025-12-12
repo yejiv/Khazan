@@ -1780,7 +1780,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
             strTempEventKey += "_" + ss.str();
 
             m_pModelCom->Register_Event(strTempEventKey, eTrigger, [this, eSoundType, fVolume, eChannelType]() {
-                m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), 10.f, Get_SoundChannel(eChannelType)); });
+                m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume, Get_SoundChannel(eChannelType)); });
         }
     };
 

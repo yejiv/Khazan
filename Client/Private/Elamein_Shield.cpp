@@ -81,7 +81,6 @@ void CElamein_Shield::Update(_float fTimeDelta)
 
 void CElamein_Shield::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this),);
 }
 
 HRESULT CElamein_Shield::Render()

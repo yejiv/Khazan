@@ -8,6 +8,15 @@ HRESULT CSound_Manager::Initialize()
     FMOD_System_Create(&m_pSystem, FMOD_VERSION);
     FMOD_System_Init(m_pSystem, m_iMaxChannels, FMOD_INIT_NORMAL, nullptr);
     LoadSoundFile();
+    FMOD_System_GetMasterChannelGroup
+    (m_pSystem, &pMaster);
+
+    FMOD_System_CreateChannelGroup(m_pSystem, "2D", &m_pGroup2D);
+    FMOD_System_CreateChannelGroup(m_pSystem, "3D", &m_pGroup3D);
+
+    FMOD_ChannelGroup_AddGroup(pMaster, m_pGroup2D, false, nullptr);
+    FMOD_ChannelGroup_AddGroup(pMaster, m_pGroup3D, false, nullptr);
+
     return S_OK;
 }
 
@@ -38,6 +47,7 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, float fVolume, FMOD_C
         if (pCh)
         {
             FMOD_Channel_SetMode(pCh, FMOD_DEFAULT);
+            FMOD_Channel_SetChannelGroup(pCh, m_pGroup2D);
             FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
             if (ppOutChannel) *ppOutChannel = pCh;
         }
@@ -52,6 +62,7 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, float fVolume, FMOD_C
 
         FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, ppOutChannel);
         FMOD_Channel_SetMode(*ppOutChannel, FMOD_DEFAULT);
+        FMOD_Channel_SetChannelGroup(*ppOutChannel, m_pGroup2D);
         FMOD_Channel_SetVolume(*ppOutChannel, fVolume * m_fGloval_Volume);
 
     }
@@ -73,6 +84,7 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, _float3
 
             FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
             FMOD_VECTOR fmVel = { vVel.x, vVel.y, vVel.z };
+            FMOD_Channel_SetChannelGroup(pCh, m_pGroup3D);
             FMOD_Channel_Set3DMinMaxDistance(pCh, vDis.x, vDis.y);
             FMOD_Channel_Set3DAttributes(pCh, &fmPos, &fmVel);
             if (ppOutChannel) *ppOutChannel = pCh;
@@ -89,6 +101,7 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, _float3
         FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, ppOutChannel);
 
         FMOD_Channel_SetMode(*ppOutChannel, FMOD_3D | FMOD_3D_LINEARROLLOFF);
+        FMOD_Channel_SetChannelGroup(*ppOutChannel, m_pGroup3D);
         FMOD_Channel_SetVolume(*ppOutChannel, fVolume * m_fGloval_Volume);
 
         FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
@@ -111,6 +124,7 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, FMOD_CH
         if (pCh)
         {
             FMOD_Channel_SetMode(pCh, FMOD_3D | FMOD_3D_LINEARROLLOFF);
+            FMOD_Channel_SetChannelGroup(pCh, m_pGroup3D);
             FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
 
             FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
@@ -132,6 +146,7 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, FMOD_CH
         FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, ppOutChannel);
 
         FMOD_Channel_SetMode(*ppOutChannel, FMOD_3D | FMOD_3D_LINEARROLLOFF);
+        FMOD_Channel_SetChannelGroup(*ppOutChannel, m_pGroup3D);
         FMOD_Channel_SetVolume(*ppOutChannel, fVolume * m_fGloval_Volume);
 
         FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
@@ -150,7 +165,8 @@ void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, float fVolume, FMOD_C
     FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, &pCh);
     if (pCh)
     {
-        FMOD_Channel_SetMode(pCh, FMOD_LOOP_NORMAL);
+        FMOD_Channel_SetMode(pCh, FMOD_2D | FMOD_LOOP_NORMAL);
+        FMOD_Channel_SetChannelGroup(pCh, m_pGroup2D);
         FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
         if (ppOutChannel) *ppOutChannel = pCh;
     }
@@ -169,6 +185,7 @@ void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, _float3
     if (pCh)
     {
         FMOD_Channel_SetMode(pCh, FMOD_3D | FMOD_3D_LINEARROLLOFF | FMOD_LOOP_NORMAL);
+        FMOD_Channel_SetChannelGroup(pCh, m_pGroup3D);
         FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
 
         FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };

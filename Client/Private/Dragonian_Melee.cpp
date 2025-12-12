@@ -215,13 +215,21 @@ void CDragonian_Melee::Late_Update(_float fTimeDelta)
     CContainerObject::Late_Update(fTimeDelta);
 
     m_pMeshTrail->Late_Update(fTimeDelta);
+    if (!m_Data.isSearch)
+        return;
+
+    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
+}
+
+HRESULT CDragonian_Melee::Render()
+{
+    m_pBody->Render();
+    m_pWeapon->Render();
+    return S_OK;
 }
 
 void CDragonian_Melee::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
 {
-    if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
-        ++m_Data.iBrutalHit;
-
     switch (m_pGameInstance->Rand(1, 5))
     {
     case 1:
@@ -492,9 +500,9 @@ HRESULT CDragonian_Melee::Ready_MonData()
     m_Data.pCulStamina = &m_fCurrentStamina;
     m_Data.pMaxStamina = &m_fMaxStamina;
 
-    m_Data.fEdgeWidth = 0.1f;
-    m_Data.fEdgeColor = { 4.2f, 1.6f, 0.2f, 1.f };
-
+    m_Data.fEdgeWidth = 0.05f;
+    m_Data.fEdgeColor = { 1.3f, 0.75f, 0.f, 1.f };
+    m_Data.fAttackDamage = m_fAttack;
     return S_OK;
 }
 

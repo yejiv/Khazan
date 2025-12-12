@@ -131,6 +131,12 @@ _float CElamein::Get_TrackPotion()
 void CElamein::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
 {
     TARGET_DIR eDir = Get_DIR();
+    if (*m_Data.pCulStamina <= 0.f)
+    {
+        __super::Take_Damage(fDamage, eHitreaction, pGameObject);
+        Damage_Sound();
+        return;
+    }
 
     if (m_Data.eHitType != HITREACTION::BRUTAL_ATTACK)
     {
@@ -145,9 +151,6 @@ void CElamein::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject
     }
     if (!m_Data.isGuard)
     {
-        if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
-            ++m_Data.iBrutalHit;
-
         __super::Take_Damage(fDamage, eHitreaction, pGameObject);
         Damage_Sound();
     }
@@ -218,7 +221,7 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
     MeshDesc.vColor = _float4(1.705f, 1.705f, 1.705f, 1.f);
     m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
-    m_fRecoveryPerSec = 10.f;
+    m_fRecoveryPerSec = 100.f;
 
     return S_OK;
 }
@@ -228,6 +231,7 @@ void CElamein::Priority_Update(_float fTimeDelta)
     CContainerObject::Priority_Update(fTimeDelta);
 
     m_pMeshTrail->Priority_Update(fTimeDelta);
+
     m_isRequestRecoveryStamina = m_Data.isStamina_Regen;
     if (m_Data.isStamina_Regen)
     {
@@ -286,6 +290,19 @@ void CElamein::Late_Update(_float fTimeDelta)
     CContainerObject::Late_Update(fTimeDelta);
     
     m_pMeshTrail->Late_Update(fTimeDelta);
+
+    if (!m_Data.isSearch)
+        return;
+
+    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
+}
+
+HRESULT CElamein::Render()
+{
+    m_pBody->Render();
+    m_pShield->Render();
+    m_pSword->Render();
+    return S_OK;
 }
 
 void CElamein::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -654,8 +671,8 @@ HRESULT CElamein::Ready_MonData()
     m_Data.pCulStamina = &m_fCurrentStamina;
     m_Data.pMaxStamina = &m_fMaxStamina;
 
-    m_Data.fEdgeWidth = 0.2f;
-    m_Data.fEdgeColor = { 4.2f, 1.6f, 0.2f, 1.f };
+    m_Data.fEdgeWidth = 0.05f;
+    m_Data.fEdgeColor = { 1.3f, 0.75f, 0.f, 1.f };
     m_Data.fAttackDamage = m_fAttack;
     return S_OK;
 }

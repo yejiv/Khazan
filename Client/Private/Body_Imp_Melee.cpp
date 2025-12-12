@@ -72,7 +72,7 @@ HRESULT CBody_Imp_Melee::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_pLockOnBoneMatrix = m_pModelCom->Get_BoneMatrix("FX_Body_ExpGained");
-
+    m_pModelCom->Play_Animation(0);
     return S_OK;
 }
 

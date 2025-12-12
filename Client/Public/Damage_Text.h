@@ -37,6 +37,8 @@ private:
 	_float4						m_vWorldTranslation = {};
 
 	_float						m_fAccTime = {};
+    _bool                       m_isSetting = { false };
+    string                      m_strDamage = {};
 private:
 	void						Update_WolrdPos(_vector vPos);
 	void						Offset_Pos(_int iIndex, _int iMaxIndex);
