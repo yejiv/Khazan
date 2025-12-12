@@ -61,7 +61,7 @@ void CDestinyGem::Update(_float fTimeDelta)
         m_fTimeAcc += fTimeDelta;
     }
 
-    if (1.f <= m_fTimeAcc)
+    if (3.f <= m_fTimeAcc)
     {
         if (false == m_bBlustFX && 1.5f <= m_fTimeAcc)
         { 
