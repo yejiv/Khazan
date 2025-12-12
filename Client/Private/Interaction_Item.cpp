@@ -290,6 +290,7 @@ void CInteraction_Item::Item_Check()
 
             Safe_Release(m_pBodyCom);
             Remove_Component(TEXT("Com_Body"));
+            m_pBodyCom = nullptr;
 
             m_isShow = false;
         }

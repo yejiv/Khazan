@@ -72,6 +72,7 @@ public:
     RIM_LIGHT_DESC Get_RimLightDesc() { return m_RimLightDesc; }
     void Set_RimLightDesc(RIM_LIGHT_DESC Desc) { m_RimLightDesc = Desc; }
     void Set_EnableRimLight(_bool isEnable) { m_isEnableRimLight = isEnable; }
+    const RENDERGROUP& Get_CurrentRenderGroup() { return m_CurRenderGroup; }
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -81,6 +82,8 @@ private:
 	list<class CGameObject*>	m_RenderObjects[ENUM_CLASS(RENDERGROUP::END)];
     list<class CComponent*>		m_RenderComponents;
 	vector<class CShader*>		m_pThreadEffect = { nullptr };
+
+    RENDERGROUP                 m_CurRenderGroup = { RENDERGROUP::END };
 
 private:
 	class CShader*				m_pShader = { nullptr };

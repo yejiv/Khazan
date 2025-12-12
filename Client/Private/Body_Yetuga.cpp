@@ -169,10 +169,11 @@ void CBody_Yetuga::Update(_float fTimeDelta)
 
 void CBody_Yetuga::Late_Update(_float fTimeDelta)
 {
-
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
 
+    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::BLEND, this)))
+        return;
 }
 
 HRESULT CBody_Yetuga::Render()
@@ -180,7 +181,7 @@ HRESULT CBody_Yetuga::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableEdge", &m_isEnableEdge)))
         return E_FAIL;
@@ -203,9 +204,31 @@ HRESULT CBody_Yetuga::Render()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(0);
+        RENDERGROUP eRenderGroup = m_pGameInstance->Get_CurrentRenderGroup();
 
-        m_pModelCom->Render(i);
+        if (RENDERGROUP::DYNAMIC == eRenderGroup)
+        {
+            if (i != 0)
+            {
+                _float fDiffusePower = 2.5f;
+                if (FAILED(m_pShaderCom->Bind_RawValue("g_fDiffusePower", &fDiffusePower, sizeof(_float))))
+                    return E_FAIL;
+
+                m_pShaderCom->Begin(33);
+                m_pModelCom->Render(i);
+            }
+        }
+        else if (RENDERGROUP::BLEND == eRenderGroup)
+        {
+            if (i == 0)
+            {
+                if (FAILED(Bind_Ice_ShaderResources()))
+                    return E_FAIL;
+
+                m_pShaderCom->Begin(32);
+                m_pModelCom->Render(i);
+            }
+        }
     }
 
     return S_OK;
@@ -310,6 +333,34 @@ void CBody_Yetuga::Carculate_BakckMatrix(_float fTimeDelta)
     m_BackMatrix._42 = vOutPos.m128_f32[1];
     m_BackMatrix._43 = vOutPos.m128_f32[2];
     m_BackMatrix._44 = vOutPos.m128_f32[3];
+}
+
+HRESULT CBody_Yetuga::Bind_Ice_ShaderResources()
+{
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+
+    _float fAlpha = 0.5f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &fAlpha, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRimPower = 0.5f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRimIntensity = 1.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &fRimIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRimEmissive = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float))))
+        return E_FAIL;
+
+    _float3 vRimColor = _float3(0.15f, 0.2f, 0.4f);
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3))))
+        return E_FAIL;
+
+    return S_OK;
 }
 
 HRESULT CBody_Yetuga::Ready_Colliders()
