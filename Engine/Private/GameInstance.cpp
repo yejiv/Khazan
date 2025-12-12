@@ -574,6 +574,11 @@ void CGameInstance::Set_RimLightDesc(RIM_LIGHT_DESC Desc)
     m_pRenderer->Set_RimLightDesc(Desc);
 }
 
+const RENDERGROUP& CGameInstance::Get_CurrentRenderGroup()
+{
+    return m_pRenderer->Get_CurrentRenderGroup();
+}
+
 #pragma endregion
 
 #pragma region TIMER_MANAGER
@@ -1697,6 +1702,11 @@ void CGameInstance::Set_MotionBlurDesc(const MOTION_BLUR_DESC& Desc)
 void CGameInstance::Set_EnableMotionBlur(_bool isEnable)
 {
     m_pMotionBlur->Set_EnableMotionBlur(isEnable);
+}
+
+_float CGameInstance::Get_Gloval_Volume()
+{
+	return m_pSound_Manager->Get_Gloval_Volume();
 }
 
 void CGameInstance::Set_Gloval_Volume(_float fVolume)

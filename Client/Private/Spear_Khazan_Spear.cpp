@@ -180,7 +180,19 @@ HRESULT CSpear_Khazan_Spear::Render()
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(28);
+        if (m_pClientInstance->Is_CurrentSpear())
+        {
+            if (m_pClientInstance->Get_PlayerEquipment().iSpear == 4011) //섬광일상
+            {
+                _float fDiffusePower = 10.f;
+                if (FAILED(m_pShaderCom->Bind_RawValue("g_fDiffusePower", &fDiffusePower, sizeof(_float))))
+                    return E_FAIL;
+
+                m_pShaderCom->Begin(31);
+            }
+            else if (m_pClientInstance->Get_PlayerEquipment().iSpear == 4012) //연단된 징벌의 창
+                m_pShaderCom->Begin(28);
+        }
 
         m_pModelCom->Render(i);
     }

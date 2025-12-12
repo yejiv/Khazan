@@ -26,6 +26,8 @@ private:
     HRESULT Ready_Layer_Effect(const _wstring& strLayerTag);
     HRESULT Ready_Shader_Settings();
     HRESULT Ready_Layer_Item();
+    HRESULT Ready_SoundSetting();
+
 #pragma region 맵 관련
 
     HRESULT Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);

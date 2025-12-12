@@ -218,6 +218,20 @@ public:
     // BGM 음소거 해제
     void BGM_UnMute();
 
+    // 글로벌 볼륨 말고 AMB 로컬 볼륨 ( 고정 )
+    _float Get_Volume_AMB();
+    void Set_Volume_AMB(_float fVolume);
+
+    // AMB 음소거
+    void AMB_Mute();
+    // AMB 음소거 해제
+    void AMB_UnMute();
+
+    // BGM + AMB 음소거
+    void All_Mute();
+    // BGM + AMB 음소거 해제
+    void All_UnMute();
+
     // 레벨 전환시 BGM_Mgr에 있는 Curr BGM Key 초기화
     void Clear_CurrentKey_BGM();
 
@@ -226,10 +240,12 @@ public:
     void PlayBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f);
     // 기존 Key값을 교체하면서 크로스 페이드 하며 BGM 교체
     void ChangeBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f);
-    // 전투시 호출 할 사운드 키값
-    void PlayBattleBGM(const _tchar* pSoundKey, _float fFadeTime = 1.f);
-    // 전투 종료시 호출
-    void EndBattleBGM(_float fFadeTime = 1.f);
+
+    // SoundKey로 현재 진행중인게 있는지 검사 후 AMB 재생
+    void PlayAMB(const _tchar* pSoundKey, _float fFadeTime = 1.f);
+    // 기존 Key값을 교체하면서 크로스 페이드 하며 AMB 교체
+    void ChangeAMB(const _tchar* pSoundKey, _float fFadeTime = 1.f, _bool isWav = true);
+
 
 #pragma region 하인마흐 프리셋
 
@@ -277,6 +293,14 @@ public:
     void BGM_Resume(_bool isFade = false, _float fFadeTime = 1.f);
     // BGM 정지 ( isFade 가 true 면 FadeOut )
     void BGM_Pause(_bool isFade = false, _float fFadeTime = 1.f);
+
+    // AMB 정지
+    void AMB_Stop(_float fFadeTime = 1.f);
+
+    // AMB 재시작 ( isFade 가 true 면 FadeIn )
+    void AMB_Resume(_bool isFade = false, _float fFadeTime = 1.f);
+    // AMB 정지 ( isFade 가 true 면 FadeOut )
+    void AMB_Pause(_bool isFade = false, _float fFadeTime = 1.f);
 #pragma endregion
 
 #ifdef _DEBUG

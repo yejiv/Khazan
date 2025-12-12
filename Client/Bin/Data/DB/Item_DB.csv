@@ -16,25 +16,25 @@ ID,name,type,Effect_ID,Level,grade,Drop,Box,gold,lachryma,max,texpass,Icon,Text
 3005,마모된 파편,3,0,0,1,1,0,850,-1,9999,2,T_Item_Material_Worn02_UI.png,방어구를 제작할 때 재료로 사용된다
 3006,연성 안개,3,0,0,2,1,0,1500,-1,9999,2,T_Item_Material_Strength_UI.png,소모품을 제작할 때 재료로 사용된다
 3007,가공된 파편,3,0,0,2,1,0,1750,-1,9999,2,T_Item_Material_Process02_UI.png,방어구를 제작할 때 재료로 사용된다
-4001,유성락,4,21,14,3,0,1,7500,1200,1,2,T_Item_GSword_Meteor.png,-
-4002,연단된 집행의 대검,4,22,14,4,0,1,5500,700,1,2,T_Item_BC_GSword_Execution.png,-
+4001,유성락,4,21,14,5,0,1,7500,1200,1,2,T_Item_GSword_Meteor.png,-
+4002,연단된 집행의 대검,4,22,7,4,0,1,5500,700,1,2,T_Item_BC_GSword_Execution.png,-
 4011,섬광일살,4,11,14,5,0,1,7500,1200,1,2,T_Item_Spear_Flash.png,-
-4012,연단된 징벌의 창,4,12,14,4,0,1,5500,700,1,2,T_Item_BC_Spear_Punish.png,-
-5001,도적의 방한 장비 투구,5,31,14,1,0,1,2750,550,1,2,T_item_Head_WinterThief_UI.png,-
-5002,도적의 방한 장비 상의,5,41,14,1,0,1,2750,550,1,2,T_item_Torso_WinterThief_UI.png,-
-5003,도적의 방한 장비 장갑,5,51,14,1,0,1,2750,550,1,2,T_item_Arm_WinterThief_UI.png,-
-5004,도적의 방한 장비 하의,5,61,14,1,0,1,2750,550,1,2,T_item_Leg_WinterThief_UI.png,-
-5005,도적의 방한 장비 각반,5,71,14,1,0,1,2750,550,1,2,T_item_Shoes_WinterThief_UI.png,-
+4012,연단된 징벌의 창,4,12,7,4,0,1,5500,700,1,2,T_Item_BC_Spear_Punish.png,-
+5001,도적의 방한 장비 투구,5,31,7,1,0,1,2750,550,1,2,T_item_Head_WinterThief_UI.png,-
+5002,도적의 방한 장비 상의,5,41,7,1,0,1,2750,550,1,2,T_item_Torso_WinterThief_UI.png,-
+5003,도적의 방한 장비 장갑,5,51,7,1,0,1,2750,550,1,2,T_item_Arm_WinterThief_UI.png,-
+5004,도적의 방한 장비 하의,5,61,7,1,0,1,2750,550,1,2,T_item_Leg_WinterThief_UI.png,-
+5005,도적의 방한 장비 각반,5,71,7,1,0,1,2750,550,1,2,T_item_Shoes_WinterThief_UI.png,-
 5006,영혼을 삼키는자 투구,5,32,14,2,0,1,5500,1100,1,2,T_item_Head_SplitSoul_UI.png,-
 5007,영혼을 삼키는자 상의,5,42,14,2,0,1,5500,1100,1,2,T_item_Torso_SplitSoul_UI.png,-
 5008,영혼을 삼키는자 장갑,5,52,14,2,0,1,5500,1100,1,2,T_Item_Arm_SplitSoul_UI.png,-
 5009,영혼을 삼키는자 하의,5,62,14,2,0,1,5500,1100,1,2,T_Item_Leg_SplitSoul_UI.png,-
 5010,영혼을 삼키는자 각반,5,72,14,2,0,1,5500,1100,1,2,T_Item_Shoes_SplitSoul_UI.png,-
-5011,즐거운 항아리,5,33,14,2,0,1,8500,3000,1,2,T_Item_Head_Danjin14_UI.png,
-5101,방랑자의 투구,5,34,14,2,0,1,9000,1100,1,2,T_item_Head_Mystery_UI.png,
-5102,방랑자의 상의,5,43,14,2,0,1,9000,1100,1,2,T_item_Torso_Mystery_UI.png,
-5103,방랑자의 장갑,5,53,14,2,0,1,9000,1100,1,2,T_Item_Arm_Mystery_UI.png,
-5104,방랑자의 하의,5,63,14,2,0,1,9000,1100,1,2,T_Item_Leg_Mystery_UI.png,
-5105,방랑자의 각반,5,73,14,2,0,1,9000,1100,1,2,T_Item_Shoes_Mystery_UI.png,
+5011,즐거운 항아리,5,33,10,2,0,1,8500,3000,1,2,T_Item_Head_Danjin14_UI.png,
+5101,방랑자의 투구,5,34,2,0,0,1,9000,1100,1,2,T_item_Head_Mystery_UI.png,
+5102,방랑자의 상의,5,43,2,0,0,1,9000,1100,1,2,T_item_Torso_Mystery_UI.png,
+5103,방랑자의 장갑,5,53,2,0,0,1,9000,1100,1,2,T_Item_Arm_Mystery_UI.png,
+5104,방랑자의 하의,5,63,2,0,0,1,9000,1100,1,2,T_Item_Leg_Mystery_UI.png,
+5105,방랑자의 각반,5,73,2,0,0,1,9000,1100,1,2,T_Item_Shoes_Mystery_UI.png,
 6001,전략가의 목걸이,6,81,14,1,0,1,1250,350,1,2,T_Item_Necklace_Vitality_UI.png,-
 6011,전략가의 반지,6,91,14,1,0,1,1250,350,1,2,T_Item_Ring_Assassin_UI.png,-

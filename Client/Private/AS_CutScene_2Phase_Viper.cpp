@@ -145,6 +145,7 @@ void CAS_CutScene_2Phase_Viper::Change_CutSceneState(P2CUTSCENE_STATE eNextState
         CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2Cinematic_Walk", true);
         pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_CIN_Embars_BE_SFX_01 (SFX).wav"), 30.f, pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)));
         break;
     }      
     case Client::P2CUTSCENE_STATE::WALK:
@@ -154,6 +155,7 @@ void CAS_CutScene_2Phase_Viper::Change_CutSceneState(P2CUTSCENE_STATE eNextState
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2Cinematic_Walk", false);
         pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
         static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+        m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_CIN_Embars_BE_SFX_01 (SFX).wav"), 3.f);
         break;
     }
        
