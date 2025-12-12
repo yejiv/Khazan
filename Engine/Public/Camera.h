@@ -182,6 +182,12 @@ protected:
 	_float				m_fFOVSmooth = 20.f;   // 클수록 빠르게 따라감
 	_float				m_fFOVMin = XMConvertToRadians(20.f);
 	_float				m_fFOVMax = XMConvertToRadians(110.f);
+    _bool               m_isFOVReturning = false;
+    _float              m_fFOVReturnTime = { 0.f };
+    _float              m_fFOVReturnDuration = { 0.3f };
+    _float              m_fFOVReturnFrom = { 0.f };
+    _float              m_fLastFOVOutDuration = { 0.f };
+
 	
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;
