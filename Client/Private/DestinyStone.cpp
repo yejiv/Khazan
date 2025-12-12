@@ -82,6 +82,8 @@ void CDestinyStone::Priority_Update(_float fTimeDelta)
     {
         m_isDissolved = false;
 
+        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OffEvent() });
+
         m_pGameInstance->Set_LightEnable(m_wstrLightTag, ENUM_CLASS(LEVEL::HEINMACH), false);
     }
 
@@ -230,7 +232,7 @@ HRESULT CDestinyStone::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("흡수"), 1.5f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("흡수"), 0.75f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 
@@ -281,6 +283,12 @@ void CDestinyStone::Event_Update(_float fTimeDelta)
         InteractType.eInteractType = INTERACTIVE_TYPE::DESTINYSTONE;
         InteractType.isEvent = true;
 
+        EventDestinyStone DSEvent = {};
+
+        XMStoreFloat4(&DSEvent.vPosition, Get_Position());
+
+        InteractType.DSEvent = DSEvent;
+
         // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
@@ -309,11 +317,11 @@ void CDestinyStone::Input_Interact_Event(_float fTimeDelta)
 
         InteractType.eState = EventInteractType::BEGIN;
 
-        EventBladeNexus BNEvent = {};
+        EventDestinyStone DSEvent = {};
 
-        XMStoreFloat4(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&DSEvent.vPosition, Get_Position());
 
-        InteractType.BNEvent = BNEvent;
+        InteractType.DSEvent = DSEvent;
 
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
     }

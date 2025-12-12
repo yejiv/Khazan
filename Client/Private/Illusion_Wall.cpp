@@ -51,11 +51,16 @@ void CIllusion_Wall::Update(_float fTimeDelta)
         m_fDecreaseAlpha += fTimeDelta * 0.2f;
     }
 
-    if (false == m_isRemoveWall && 0.5f <= m_fDecreaseAlpha)
+    if (false == m_isRemoveWall && 0.35f <= m_fDecreaseAlpha)
     {
         SoundOnce(TEXT("IP_Statue_Done"), m_fInteract_Volume);
 
         m_isRemoveWall = true;
+    }
+
+    if (true == m_isWallActive && 0.5f <= m_fDecreaseAlpha)
+    {
+        m_isWallActive = false;
 
         m_pStaticCom->Collision_Active(false);
     }

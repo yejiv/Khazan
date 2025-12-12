@@ -2728,8 +2728,8 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         if (false == m_isInteractEventSetting)
         {
             m_isInteractEventSetting = true;
-            /*  UnArmed 애니메이션 재생  (조각상,사다리  안함)*/
-            if (!Has_Status(BLOCK_ATK_SKILL_GUARD) && INTERACTIVE_TYPE::DESTINYSTONE != m_EventInteract.eInteractType/* && INTERACTIVE_TYPE::CHECKPOINT != m_EventInteract.eInteractType*/)
+            /*  UnArmed 애니메이션 재생  (조각상때는 안함)*/
+            if (!Has_Status(BLOCK_ATK_SKILL_GUARD) && INTERACTIVE_TYPE::TOMBSTONE != m_EventInteract.eInteractType)
             {
                 cout << "@@@@@@@@@@@@@@  PARK !!!!!!!!!!!!!!!!!!! @@@@@@@@@@" << endl;
                 if (Has_Status(SPEAR))
