@@ -23,6 +23,8 @@
 #include "Interaction_Item.h"
 #pragma endregion
 
+#include "UI_HUD.h"
+
 CLevel_Viper::CLevel_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
 	, m_pClientInstance(CClientInstance::GetInstance())
@@ -79,6 +81,7 @@ HRESULT CLevel_Viper::Initialize()
     m_futures.clear();
 
     CClientInstance::GetInstance()->Fade_In();
+    static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
 
     CHECK_FAILED(Ready_SoundSetting(), E_FAIL);
 
@@ -195,6 +198,10 @@ HRESULT CLevel_Viper::Ready_Layer_Camera(const _wstring& strLayerTag)
 
     m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::PLAYER));
 
+
+    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_1Phase_CutScene");
+    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_1Phase_CutScene2");
+    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase18");
 
     return S_OK;
 }
