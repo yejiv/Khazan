@@ -302,24 +302,24 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 
             Start_SkyTransition(m_Sky_Desc, m_Cloud_Desc, 7.f);
 
+            // Split 65로 변경
+            SHADOW_DESC ShadowDesc{};
+            ShadowDesc.fSplit = 65.f;
+            ShadowDesc.vLightDir = { 1.f, -1.f, 1.f };
+            ShadowDesc.fBias = 0.001f;
+            ShadowDesc.fIntensity = 1.f;
+            m_pGameInstance->Set_ShadowDesc(ShadowDesc);
+
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.025f;
             Desc.fBias = 0.7f;
             Desc.vColor = _float4(0.631f, 0.522f, 0.471f, 1.f);
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
-            //  Desc.isUseHeight = true;
-            //  Desc.fBaseHeight = 3000.f;
-            //  Desc.isUseNoise = true;
-            //  Desc.vNoiseSpeed = _float2(0.01f, 0.f);
-            //  Desc.vNoiseScale = _float2(1.f, 1.f);
-            //  Desc.fNoiseStrength = 0.5f;
-            //  Desc.fNoiseContrast = 1.f;
-            //  Desc.iNoiseIndex = 8;
             m_pGameInstance->Start_FogTransition(15.f, Desc);
 
             // 그림자 보간 추가
-            m_pGameInstance->Start_ShadowTransition(15.f, 0.6f);
+            m_pGameInstance->Start_ShadowTransition(15.f, 0.9f);
 
 #pragma region 동굴 나갈때 플레이어 isInCave = false;
 
@@ -405,6 +405,14 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma endregion
         else if (m_strTriggerKey == "Shadow_Restore")
         {
+            // Split 35로 변경 -> 동굴 밖 두둥실 아래 트리거에서 그림자 원복 시 호출할 함수
+            SHADOW_DESC ShadowDesc{};
+            ShadowDesc.fSplit = 35.f;
+            ShadowDesc.vLightDir = { 1.f, -1.f, 1.f };
+            ShadowDesc.fBias = 0.001f;
+            ShadowDesc.fIntensity = 0.9f;
+            m_pGameInstance->Set_ShadowDesc(ShadowDesc);
+
             // 그림자 보간 추가
             m_pGameInstance->Start_ShadowTransition(3.f, 0.6f);
 

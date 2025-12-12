@@ -67,7 +67,8 @@ HRESULT CImp_Wand::Initialize_Clone(void* pArg)
 		return E_FAIL;
 
     m_pTransformCom->Rotation(XMConvertToRadians(-90.f),0.f,0.f);
-
+    m_pDissolve = pDesc->pDissolve;
+    m_pDecreaseAlpha = pDesc->pDecreaseAlpha;
 
 	return S_OK;
 }
@@ -96,7 +97,7 @@ HRESULT CImp_Wand::Render()
 {
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
-
+    CHECK_FAILED(Bind_Dissolve(), E_FAIL);
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     _float fEdgeIntensity = 0.5f;
@@ -147,6 +148,9 @@ HRESULT CImp_Wand::Ready_Components()
 		TEXT("Com_Model"), reinterpret_cast< CComponent** >( &m_pModelCom ), nullptr)) )
 		return E_FAIL;
 
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Monster_Dissolve"),
+        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveCom), nullptr), E_FAIL);
+
 	m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
 
 
@@ -165,6 +169,20 @@ HRESULT CImp_Wand::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+HRESULT CImp_Wand::Bind_Dissolve()
+{
+    CHECK_FAILED(m_pDissolveCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", 0), E_FAIL);
+
+    _float fEdgeWidth = { 0.1f };
+    _float4 fEdgeColor = _float4( 4.2f, 1.6f, 0.2f, 1.f );
+
+    m_pShaderCom->Bind_RawValue("g_fDecreaseAlpha", m_pDecreaseAlpha, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeWidth", &fEdgeWidth, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeColor", &fEdgeColor, sizeof(_float4));
+
+    return S_OK;
 }
 
 CImp_Wand* CImp_Wand::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -195,6 +213,7 @@ void CImp_Wand::Free()
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pOwnerTransform);
+    Safe_Release(m_pDissolveCom);
 
 	__super::Free();
 }

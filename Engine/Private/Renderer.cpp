@@ -85,8 +85,8 @@ HRESULT CRenderer::Initialize()
     //      return E_FAIL;
     //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Depth"), 1350.0f, 750.0f, 300.f, 300.f)))
     //      return E_FAIL;
-    //  if (FAILED(m_pGameInstance->Ready_Shadow_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
-    //      return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_Shadow_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
 #endif
 
     return S_OK;

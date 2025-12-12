@@ -31,7 +31,7 @@ void CAS_Dr_Rampage_Brutal::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
         if (m_eState == START)
         {
             m_fAccTime -= fTimeDelta;
-            if (m_pMonData->iBrutalHit >= 2 && m_fAccTime <= 0.f)
+            if (m_pMonData->iBrutalHit >= 2)
             {
                 m_pMonData->iAnimIndex = 29;
                 m_eState = END;
@@ -44,6 +44,7 @@ void CAS_Dr_Rampage_Brutal::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
                 m_pMonData->eHitType = HITREACTION::END;
                 m_pMonData->isStamina_Regen = true;
                 m_pMonData->iBrutalHit = 0;
+                *m_pMonData->pCulStamina = 0.f;
             }
         }
     }
@@ -65,6 +66,8 @@ void CAS_Dr_Rampage_Brutal::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
                 m_pMonData->eHitType = HITREACTION::END;
                 m_pMonData->isStamina_Regen = true;
                 m_pMonData->iBrutalHit = 0;
+                *m_pMonData->pCulStamina = 0.f;
+
             }
         }
     }

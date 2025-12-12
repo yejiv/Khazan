@@ -15,6 +15,7 @@ static const unsigned int M_METALIC = (1 << 4);
 static const unsigned int M_ROUGHNESS = (1 << 5);
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+matrix g_LightViewMatrix, g_LightProjMatrix;
 
 /*재질*/
 Texture2D g_DiffuseTexture;
@@ -142,7 +143,6 @@ struct VS_OUT_SHADOW
     float4 vProjPos : TEXCOORD0;
 };
 
-
 VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 {
     VS_OUT_SHADOW Out;
@@ -150,8 +150,8 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
     
     float4x4 matWV, matWVP;
     
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
+    matWV = mul(g_WorldMatrix, g_LightViewMatrix);
+    matWVP = mul(matWV, g_LightProjMatrix);
     
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP); // In.vPosition 은 float3 짜리이므로 w = 1.f 넣어서 행렬과 곱 가능하게
     Out.vProjPos = Out.vPosition;
@@ -236,20 +236,6 @@ struct PS_IN_SHADOW
     float4 vPosition : SV_POSITION;
     float4 vProjPos : TEXCOORD0;
 };
-
-struct PS_OUT_SHADOW
-{
-    float4 vLightDepth : SV_TARGET0;
-};
-
-PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN_SHADOW In)
-{
-    PS_OUT_SHADOW Out = (PS_OUT_SHADOW) 0;
-    
-    Out.vLightDepth = float4(In.vProjPos.w / g_fFar, 0.f, 0.f, 0.f);
-    
-    return Out;
-}
 
 PS_OUT PS_MAP(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
 {
@@ -483,7 +469,7 @@ PS_OUT PS_DESTINYSTONE(PS_IN In)                       // 맵 오브젝트용 �
     if (IsFlag(M_EMISSIVE))
         vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    if (vMtrlDiffuse.a <= 0.f)
+    if (vMtrlDiffuse.a <= 0.9f)
         vMtrlDiffuse = g_vGemColor;
 
     Out.vDiffuse = vMtrlDiffuse * g_fEmissiveIntensity;
@@ -525,7 +511,7 @@ PS_OUT PS_DESTINYGEM(PS_IN In)                       // 맵 오브젝트용 픽�
     if (IsFlag(M_EMISSIVE))
         vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    if (vMtrlDiffuse.a <= 0.f)
+    if (vMtrlDiffuse.a <= 0.9f)
         vMtrlDiffuse = g_vGemColor;
 
     Out.vDiffuse = vMtrlDiffuse * g_fEmissiveIntensity;
@@ -651,6 +637,11 @@ PS_OUT PS_IMP_WEAPON(PS_IN In)
 
     // Diffuse 어두운 문제로 임의값 곱해주기 3~5
     Out.vDiffuse *= g_fDiffusePower;
+
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
     
     return Out;
 }
@@ -799,10 +790,12 @@ PS_OUT PS_DESTINYSTONE_BLINK(PS_IN In)
     if (IsFlag(M_NORMAL))
         vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    float2 xy = vMtrlNormal.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+    
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
-
+    
     vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
     if (IsFlag(M_SPECULAR))
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
@@ -811,7 +804,7 @@ PS_OUT PS_DESTINYSTONE_BLINK(PS_IN In)
     if (IsFlag(M_EMISSIVE))
         vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    if (vMtrlDiffuse.a <= 0.f)
+    if (vMtrlDiffuse.a <= 0.9f)
         vMtrlDiffuse = g_vGemColor;
 
     Out.vDiffuse = vMtrlDiffuse * g_fEmissiveIntensity;
@@ -851,7 +844,9 @@ PS_OUT PS_DESTINYGEM_BLINK(PS_IN In)
     if (IsFlag(M_NORMAL))
         vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    float2 xy = vMtrlNormal.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+    
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
 
@@ -863,7 +858,7 @@ PS_OUT PS_DESTINYGEM_BLINK(PS_IN In)
     if (IsFlag(M_EMISSIVE))
         vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    if (vMtrlDiffuse.a <= 0.f)
+    if (vMtrlDiffuse.a <= 0.9f)
         vMtrlDiffuse = g_vGemColor;
 
     Out.vDiffuse = vMtrlDiffuse * g_fEmissiveIntensity;
@@ -932,7 +927,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_SOLIDFRAME();
     }
 
-    pass Shadow             // 그림자 ( 3번 )
+    pass Cascade             // 그림자 ( 3번 )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -940,7 +935,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN_SHADOW();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
+        PixelShader = NULL;
     }
 
     pass MapPass                        // 맵 오브젝트용 패스 ( 4번 ) ( 눈 X )

@@ -179,13 +179,6 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     _vector vPosition = XMLoadFloat4(&vPos);
     _vector vLook = XMVectorSet(m_CombinedWorldMatrix._31, m_CombinedWorldMatrix._32, m_CombinedWorldMatrix._33, 0.f);
 
-    //  _float fZ = XMVectorGetZ(vPosition);
-    //  fZ += 7.f;
-    //  _vector vForwardPos = XMVectorSetZ(vPosition, fZ);
-    //  _float fX = XMVectorGetX(vForwardPos);
-    //  fX += 3.f;
-    //  vForwardPos = XMVectorSetX(vForwardPos, fX);
-    
     _vector vForwardPos = vPosition + vLook * 2.f;
     _float4 vResultForwardPos{};
     XMStoreFloat4(&vResultForwardPos, vForwardPos);
@@ -196,7 +189,11 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     XMStoreFloat4(&vResultPos, vPosition);
 
     m_pGameInstance->Set_LightPosition(TEXT("Viper_Thunder"), ENUM_CLASS(LEVEL::VIPER), vResultPos);
-    //m_pGameInstance->Set_LightPosition(TEXT("Viper_Thunder_Ambient"), ENUM_CLASS(LEVEL::VIPER), vPos); 
+
+    _vector vGSwordPos = XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3];
+    _float4 vResultGSwordPos{};
+    XMStoreFloat4(&vResultGSwordPos, vGSwordPos);
+    m_pGameInstance->Set_LightPosition(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), vResultGSwordPos);
 
     if (m_bGuradFX[0] || m_bGuradFX[1])
         Spawn_Guard_FX();
@@ -259,6 +256,10 @@ void CBody_Khazan_GS::Late_Update(_float fTimeDelta)
 
 HRESULT CBody_Khazan_GS::Render()
 {
+
+    //if (*m_isLadderRotationEvent == true )
+      //  m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(0.f));
+
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
@@ -529,17 +530,58 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
                 /* 몬스터한테 저스트 가드 타이밍 건내주기  */
                 if (pDesc->pGameObject == nullptr) return;
 
-                m_bGuradFX[0] = true;
-
                 CWeaponObject* pMonster = dynamic_cast<CWeaponObject*>(pDesc->pGameObject);
 
                 if (pMonster == nullptr)
                     return;
 
+                m_bGuradFX[0] = true;
+
                 pMonster->On_JustGuardCallback(true);
 
-            } 
+                // Vignette
+                VIGNETTE_CONFIG Config{};
+                Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
+                Config.vColor = _float3(0.f, 0.f, 0.f);
+                Config.fPower = 3.5f;
+                Config.fIntensity = 1.f;
+                Config.fMaxIntensity = 4.f;
+                m_pGameInstance->Start_VignetteAnimation(0.5f, Config);
+
+                // 핑크 보라 조명
+                LIGHT_TRANSITION_DESC LightDesc{};
+                LightDesc.fDuration = 0.5f;
+                LightDesc.vFadeTime = _float2(0.2f, 0.2f);
+                LightDesc.vDiffuse = _float4(0.5f, 0.f, 1.f, 1.f);
+                LightDesc.vAmbient = _float4(0.5f, 0.f, 1.f, 1.f);
+                LightDesc.vSpecular = LightDesc.vDiffuse;
+                LightDesc.isReturnToStart = true;
+                LightDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false); };
+                m_pGameInstance->Start_LightTransition(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+            
+                // FOV 줌인아웃
+                FOVModifier tMod{};
+                tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+                tMod.fDuration = 0.25f;
+                tMod.fFrom = XMConvertToRadians(60.f);
+                tMod.fTo = XMConvertToRadians(50.f);
+                tMod.iPriority = 1.f;
+                tMod.Ease = EaseOutQuad;
+                m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+            }
+
             m_bGuradFX[1] = true;
+
+            // 그냥 노란 조명
+            LIGHT_TRANSITION_DESC LightDesc{};
+            LightDesc.fDuration = 0.5f;
+            LightDesc.vFadeTime = _float2(0.2f, 0.2f);
+            LightDesc.vDiffuse = _float4(1.f, 1.f, 0.8f, 1.f);
+            LightDesc.vAmbient = _float4(1.f, 1.f, 0.8f, 1.f);
+            LightDesc.vSpecular = LightDesc.vDiffuse;
+            LightDesc.isReturnToStart = true;
+            LightDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false); };
+            m_pGameInstance->Start_LightTransition(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
 
             /* 가드후 충돌되면 충돌된 지점 봐라보게*/
             Start_GuardRotation(vContactPoint);
@@ -1071,6 +1113,13 @@ HRESULT CBody_Khazan_GS::Ready_Components()
         { TEXT("Thief_Arm"), TEXT("Prototype_Component_Model_Khazan_Thief_Arm") },
         { TEXT("Thief_Leg"), TEXT("Prototype_Component_Model_Khazan_Thief_Leg") },
         { TEXT("Thief_Shoes"), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes") },
+
+        /* ShadowLandFlow Set */
+        { TEXT("ShadowLandFlow_Hair"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Hair") },
+        { TEXT("ShadowLandFlow_Torso"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Torso") },
+        { TEXT("ShadowLandFlow_Arm"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Arm") },
+        { TEXT("ShadowLandFlow_Leg"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Leg") },
+        { TEXT("ShadowLandFlow_Shoes"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes") },
     };
 
     // 모든 파츠 로드
@@ -1595,6 +1644,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
         Spawn_LinearBloodDecal();
         });
+    
+
+    m_pModelCom->Register_Event("GS_StrongAtk02_Charge_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("FerociousMomentum0"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+        Spawn_EmissiveDecal(true);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.f);
+        });
 
     // Trail
     m_pModelCom->Register_Event("WeakAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
@@ -1702,24 +1759,32 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
 
     // 닷지
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        if(Has_Status(CKhazan_GSword::GSWORD)) Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        else if (Has_Status(CKhazan_GSword::SPEAR)) Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
+        else  Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         m_isEnableAnimEvent = true;
         m_iCurAnimEventIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
+        if (Has_Status(CKhazan_GSword::GSWORD)) Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        else if (Has_Status(CKhazan_GSword::SPEAR)) Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
+        else  Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         m_isEnableAnimEvent = false;
         //Remove_Status(CKhazan_GSword::DODGE_ENDING);
         });
 
     // 닷지 어택
     m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        if (Has_Status(CKhazan_GSword::GSWORD)) Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        else if (Has_Status(CKhazan_GSword::SPEAR)) Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
+        else  Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         m_isEnableAnimEvent = true;
         m_iCurAnimEventIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
+        if (Has_Status(CKhazan_GSword::GSWORD)) Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        else if (Has_Status(CKhazan_GSword::SPEAR)) Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
+        else  Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         m_isEnableAnimEvent = false;
         });
 #pragma endregion
@@ -1780,7 +1845,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
             strTempEventKey += "_" + ss.str();
 
             m_pModelCom->Register_Event(strTempEventKey, eTrigger, [this, eSoundType, fVolume, eChannelType]() {
-                m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), 10.f, Get_SoundChannel(eChannelType)); });
+                m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume, Get_SoundChannel(eChannelType)); });
         }
     };
 

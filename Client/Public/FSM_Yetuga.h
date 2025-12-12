@@ -38,7 +38,7 @@ private:
 
 public:
     class CAS_CutScene_Yetuga* Get_CutScene_Yetuga();
-
+    class CAS_RightHand_5Hit_Yetuga* Get_RH_5Hit();
 
 public:
 	virtual HRESULT				Initialize();

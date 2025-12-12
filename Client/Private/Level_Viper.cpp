@@ -23,6 +23,8 @@
 #include "Interaction_Item.h"
 #pragma endregion
 
+#include "UI_HUD.h"
+
 CLevel_Viper::CLevel_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
 	, m_pClientInstance(CClientInstance::GetInstance())
@@ -78,7 +80,11 @@ HRESULT CLevel_Viper::Initialize()
 
     m_futures.clear();
 
-    CClientInstance::GetInstance()->Fade_In();
+    CClientInstance::GetInstance()->Fade_In([this]() {
+        m_pGameInstance->Decal_OnOff(true);
+        m_pClientInstance->Camera_MouseOnOff(true);
+        });
+    static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
 
     CHECK_FAILED(Ready_SoundSetting(), E_FAIL);
 
@@ -89,16 +95,6 @@ HRESULT CLevel_Viper::Initialize()
 
 void CLevel_Viper::Update(_float fTimeDelta)
 {
-	//if (GetKeyState(VK_RETURN) & 0x8000)
-	//{
-	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::HEINMACH))))
-	//		return;
-	//}
-	//if (GetKeyState(VK_RETURN) & 0x8000)
-	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
-	//		return;
-	//}
-
     if (m_pGameInstance->Key_Down(DIK_F1))
     {
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
@@ -195,6 +191,10 @@ HRESULT CLevel_Viper::Ready_Layer_Camera(const _wstring& strLayerTag)
 
     m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::VIPER), ENUM_CLASS(CAMERATYPE::PLAYER));
 
+
+    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_1Phase_CutScene");
+    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_1Phase_CutScene2");
+    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase18");
 
     return S_OK;
 }
@@ -799,6 +799,15 @@ HRESULT CLevel_Viper::Ready_Lights()
     LightDesc.vSpecular = LightDesc.vDiffuse;
     LightDesc.fRange = 100.f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Viper_Thunder_Ambient"), ENUM_CLASS(LEVEL::VIPER), LightDesc, false)))
+        return E_FAIL;
+
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 3.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Player_GuardLight"), ENUM_CLASS(LEVEL::VIPER), LightDesc, false)))
         return E_FAIL;
 
     return S_OK;

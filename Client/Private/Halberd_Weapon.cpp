@@ -72,7 +72,6 @@ void CHalberd_Weapon::Update(_float fTimeDelta)
 
 void CHalberd_Weapon::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this),);
 }
 
 HRESULT CHalberd_Weapon::Render()

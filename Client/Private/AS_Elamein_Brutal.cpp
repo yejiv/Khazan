@@ -32,19 +32,20 @@ void CAS_Elamein_Brutal::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
         if (m_eState == START)
         {
             m_fAccTime -= fTimeDelta;
-            if (m_pMonData->iBrutalHit >= 2 && m_fAccTime <= 0.f)
+            if (m_pMonData->iBrutalHit >= 2)
             {
                 m_pMonData->iAnimIndex = 7;
                 m_eState = END;
-                m_pMonData->eHitType = HITREACTION::END;
             }
         }
         else
         {
             if (m_pMonData->isAnimFinash)
             {
+                m_pMonData->eHitType = HITREACTION::END;
                 m_pMonData->isStamina_Regen = true;
                 m_pMonData->iBrutalHit = 0;
+                *m_pMonData->pCulStamina = 0.f;
             }
         }
     }
@@ -57,15 +58,16 @@ void CAS_Elamein_Brutal::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
             {
                 m_pMonData->iAnimIndex = 9;
                 m_eState = END;
-                m_pMonData->eHitType = HITREACTION::END;
             }
         }
         else
         {
             if (m_pMonData->isAnimFinash)
             {
+                m_pMonData->eHitType = HITREACTION::END;
                 m_pMonData->isStamina_Regen = true;
                 m_pMonData->iBrutalHit = 0;
+                *m_pMonData->pCulStamina = 0.f;
             }
         }
     }
