@@ -52,7 +52,7 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
     {
         if (m_fTime > 0.f && !m_isFadeOut1)
         {
-            m_pClientInstance->BGM_Viper_2PhaseCutScene(10.f);
+            //m_pClientInstance->BGM_Viper_2PhaseCutScene(10.f);
             m_pClientInstance->Fade_Out();
             m_isFadeOut1 = true;
         }
@@ -116,7 +116,6 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
         if (m_fTime > 12.f && !m_isViperHismaLook)
         {
             // 칼 처음 본 시점
-            m_pGameInstance->PlaySoundLoop(TEXT("Fire_Burning.mp3"), 0.3f);
             m_isViperHismaLook = true;
         }
 

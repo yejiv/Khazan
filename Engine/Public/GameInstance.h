@@ -99,6 +99,7 @@ public:
     void Set_EnableRimLight(_bool isEnable);
     RIM_LIGHT_DESC Get_RimLightDesc();
     void Set_RimLightDesc(RIM_LIGHT_DESC Desc);
+    const RENDERGROUP& Get_CurrentRenderGroup();
 #pragma endregion
 
 #pragma region TIMER_MANAGER
@@ -464,6 +465,7 @@ public:
 #pragma endregion
 
 #pragma region SOUND_MANAGER
+    _float                      Get_Gloval_Volume();
     void                        Set_Gloval_Volume(_float fVolume);
     void                        ADD_Gloval_Volume(_float fVolume);
 
