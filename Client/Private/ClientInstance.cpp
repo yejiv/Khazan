@@ -81,6 +81,10 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
 
 void CClientInstance::Update(_float fTimeDelta)
 {
+    if (fTimeDelta > 1.f)
+        return;
+
+
 	m_pUI_Manager->UIObjectToRenderer();
 
 #ifdef _DEBUG
@@ -375,6 +379,10 @@ void CClientInstance::Camera_ReturnToPreviousPose(_float fDuration)
 void CClientInstance::Camera_Force_AniEnd()
 {
     m_pCamera_Manager->Force_AniEnd();
+}
+void CClientInstance::Camera_MouseOnOff(_bool isOn)
+{
+    m_pCamera_Manager->MouseOnOff(isOn);
 }
 void CClientInstance::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
 {

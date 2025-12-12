@@ -78,6 +78,9 @@ void CProp_Static::Late_Update(_float fTimeDelta)
     */
     
     m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+
+    if (true == isShadow())
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::SHADOW, this);
 }
 
 HRESULT CProp_Static::Render()
@@ -97,6 +100,31 @@ HRESULT CProp_Static::Render()
         CHECK_FAILED_ASSERT(m_pShaderCom->Begin(ENUM_CLASS(m_eShaderPass)), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
+    }
+
+    return S_OK;
+}
+
+HRESULT CProp_Static::Render_Shadow()
+{
+    if (false == isShadow())
+        return S_OK;
+
+    CHECK_FAILED(m_pTransformCom->Bind_Shader_Resource(m_pShaderCom, "g_WorldMatrix"), E_FAIL);
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_LightViewMatrix", m_pGameInstance->Get_ShadowLightMatrix(D3DTS::VIEW))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Matrix("g_LightProjMatrix", m_pGameInstance->Get_ShadowLightMatrix(D3DTS::PROJ))))
+        return E_FAIL;
+
+    _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        m_pShaderCom->Begin(2);
+
+        m_pModelCom->Render(i);
     }
 
     return S_OK;

@@ -36,6 +36,7 @@ public:
 
 public:
     void                            HPUI_Dead();
+    void                            Dissolve_On();
 
 private:
     HRESULT							Ready_Components();
@@ -64,6 +65,9 @@ private:
 
     _float4                         m_vSwordStart{}, m_vSwordEnd{};
     COLLISION_DESC                  m_tImpMeleeColliderDesc = {};
+
+    _bool                           m_isDissolve = { false };
+    _float                          m_fDecreaseAlpha = {};
 
 public:
     static CImp_Melee*              Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

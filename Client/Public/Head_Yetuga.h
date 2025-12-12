@@ -67,6 +67,9 @@ private:
 	_float4x4				m_HeadMatrix = {};
 	_bool					m_isOnAttackCollision = { false };
 
+    COLLISION_DESC          m_tYetugaHeadCollisionDesc = {};
+
+
 public:
 	static CHead_Yetuga*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject*	Clone(void* pArg) override;

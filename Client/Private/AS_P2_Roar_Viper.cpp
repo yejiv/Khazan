@@ -37,7 +37,7 @@ void CAS_P2_Roar_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
         pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pViper);
         pBB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_RoarFinished", true);
-
+        pBB->Set_Value<_uint>(pViper->Get_Name(), "BerserkerIndex",0);
         pBB->Set_Value<_bool>(pViper->Get_Name(), "is_P2Loar", false);
 
         // 애니메이션 종료

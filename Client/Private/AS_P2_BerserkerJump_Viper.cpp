@@ -33,8 +33,8 @@ void CAS_P2_BerserkerJump_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         pModel->Set_Animation(46);
 
     m_eState = BSJUMPSTATE::SIDEJUMP;
-    m_iJumpCnt = pBB->Get_Value<_uint>(pViper->Get_Name(), "BerserkerJumpCount"); 
-   
+    //m_iJumpCnt = pBB->Get_Value<_uint>(pViper->Get_Name(), "BerserkerJumpCount"); 
+    m_iJumpCnt = 1;
     m_fMoveSpeed = 18.f;
 
 }
@@ -58,25 +58,33 @@ void CAS_P2_BerserkerJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
         }
     }
 
- 
 
     if (m_eState == BSJUMPSTATE::FRONTJUMP)
     {
-        pViper->Set_IsGhost(true);
         CTransform* pOwnerTransform = static_cast<CTransform*>(pViper->Get_Component(TEXT("Com_Transform")));
         CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
         CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
         _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
         _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-        pViper->Get_Controller()->AI_MoveTo(pViper, pTarget, 10.f, m_fMoveSpeed, fTimeDelta);
-
         _float fDist = pBB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
         
-        if (fDist < 10 + 0.1f /*|| pBB->Get_Value<_bool>(pViper->Get_Name(), "isP2_Dash_Abort")*/)
+        _float fMinSpeed = 6.f;
+        _float fMaxSpeed = 22.f;
+        _float fMinDist = 3.f;
+        _float fMaxDist = 25.f;
+
+        _float t = (fDist - fMinDist) / (fMaxDist - fMinDist);
+        t = clamp(t, 0.f, 1.f);
+        m_fMoveSpeed = fMinSpeed + (fMaxSpeed - fMinSpeed) * t;
+        pViper->Get_Controller()->AI_MoveTo(pViper, pTarget, 10.f, m_fMoveSpeed, fTimeDelta);
+
+
+
+        if (fDist < 10 + 0.1f)
         {
             m_eState = BSJUMPSTATE::ATTACK;
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_end_atk_whoosh_01 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_roar_02 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_end_atk_whoosh_01 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 3.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_roar_02 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 3.f);
 
             pModel->Set_Animation(20);
         }
@@ -113,6 +121,7 @@ void CAS_P2_BerserkerJump_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
     CViper* pViper = static_cast<CViper*>(pOwner);
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
     pBB->Set_Value<_bool>(pViper->Get_Name(), "SkipMontion", false);
+    pViper->Set_IsGhost(false);
 
 }
 
