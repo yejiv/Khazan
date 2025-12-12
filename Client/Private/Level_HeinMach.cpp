@@ -78,8 +78,6 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-    CClientInstance::GetInstance()->Fade_Out();
-
     CHECK_FAILED(Ready_SoundSetting(), E_FAIL);
 
     if (!Wait_All_Futures())
@@ -94,11 +92,25 @@ HRESULT CLevel_HeinMach::Initialize()
 
     m_pClientInstance->Set_PlayerInput(true);
 
+    CClientInstance::GetInstance()->Fade_In([this]() {
+        
+        m_pClientInstance->Camera_MouseOnOff(true);
+        });    
+
 	return S_OK;
 }
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
+    if (m_fFadeTime < 0.2f)
+    {
+        m_fFadeTime += fTimeDelta;
+        
+        if (m_fFadeTime >= 0.2f)
+            m_pGameInstance->Decal_OnOff(true);
+
+    }
+
     if (m_pGameInstance->Key_Down(DIK_F1, INPUT_TYPE::FORCE))
     {
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
@@ -129,20 +141,6 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
     //    
     //}
 
-
-
-   if (!m_isStart)
-   {
-        m_isStart = true;
-        CSequence_HeinMach_Start* pSequence = CSequence_HeinMach_Start::Create();
-
-        SEQ_REQ_PLAY_DESC tPlayDesc{};
-        tPlayDesc.tId.iSeq = 100000;
-        tPlayDesc.pAsset = L"HeinMach_Start";
-        tPlayDesc.fStartTime = 0.f;
-
-        m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
-   }
 
    /*if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
    {
@@ -311,6 +309,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), 10);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice"), 20);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice_Disappear"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), 30);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), 100);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Open"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Breath"), 100);
@@ -678,8 +678,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMaxHP = 2000.f;
+            MonsterDesc.fMaxStamina = 1000.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -696,8 +696,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMaxHP = 2000.f;
+            MonsterDesc.fMaxStamina = 200.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -714,8 +714,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMaxHP = 2000.f;
+            MonsterDesc.fMaxStamina = 200.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -731,9 +731,10 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         else if ("Halberd" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fAttack = 150.f;
+            MonsterDesc.fMaxHP = 4500.f;
+ //           MonsterDesc.fMaxStamina = 450.f;
+            MonsterDesc.fMaxStamina = 50.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;

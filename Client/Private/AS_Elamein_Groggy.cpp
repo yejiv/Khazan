@@ -14,7 +14,7 @@ void CAS_Elamein_Groggy::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     m_pMonData->iAnimIndex = 53;
     m_eState = START;
-    m_pMonData->fGloggyTime = 15.f;
+    m_pMonData->fGloggyTime = 10.f;
     m_pMonData->pOwner->BurutalUI_On(m_pMonData->fGloggyTime);
     m_pMonData->isGuard = false;
 }

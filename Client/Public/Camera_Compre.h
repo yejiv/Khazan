@@ -107,6 +107,12 @@ public:
 
 public:
     void Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos = _float3(0.f, 0.f, 0.f), _float3 vLookAt = _float3(0.f, 0.f, 0.f));
+
+public:
+    void InitStartPoseOnce();
+
+public:
+    void MouseOnOff(_bool isOn) { m_isMouseOn = isOn; }
 private:
     CBody* m_pBody = { nullptr };
 
@@ -248,6 +254,11 @@ private:
     // 스택형 화면 전환
     vector<CAMERA_POSE> m_PoseStack;
     POSE_BLEND_STATE    m_tPoseBlend;
+
+    // 시작 구도
+    _bool m_isInitPose = { false };
+
+    _bool m_isMouseOn = { false };
 
     mutex m_CollMonsterMutex;
 

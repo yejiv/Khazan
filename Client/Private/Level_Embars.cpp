@@ -85,9 +85,7 @@ HRESULT CLevel_Embars::Initialize()
     if (!Wait_All_Futures())
         return E_FAIL;
 
-    m_futures.clear();
-
-    CClientInstance::GetInstance()->Set_PlayerInput(true);
+    m_futures.clear();    
 
     m_iEventID = m_pGameInstance->Subscribe_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), [&](const EVENT_LEVEL_CHANGE& e)
         {
@@ -204,6 +202,7 @@ HRESULT CLevel_Embars::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust4"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust5"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust6"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust9"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Stamp"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("BlustSmall"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Fire"), 38);
@@ -213,6 +212,7 @@ HRESULT CLevel_Embars::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GhostKnight"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GhostKnight_static"), 4);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GhostKnight_static_connect"), 4);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Brazier"), 10);
 
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("DoorOpen"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("labber"), 1);
@@ -620,9 +620,9 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
         if ("Dragonian_Melee" == MonsterData.MonsterKey[i])
         {
             CDragonian_Melee::DRAGON_MELEE_MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 20.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 70.f;
+            MonsterDesc.fAttack = m_pGameInstance->Rand(190.f, 220.f);
+            MonsterDesc.fMaxHP = m_pGameInstance->Rand(2000.f, 2500.f);
+            MonsterDesc.fMaxStamina = m_pGameInstance->Rand(80.f, 140.f);
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -638,9 +638,9 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
         else if ("Dragonian_Claw" == MonsterData.MonsterKey[i])
         {
             CDragonian_Rampage::DRAGON_RAMPAGE_MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fAttack = m_pGameInstance->Rand(200.f, 240.f);
+            MonsterDesc.fMaxHP = m_pGameInstance->Rand(3500.f, 4000.f);
+            MonsterDesc.fMaxStamina = m_pGameInstance->Rand(100.f, 150.f);
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -658,9 +658,9 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
         else if ("Dragonian_Melee_Sleep" == MonsterData.MonsterKey[i])
         {
             CDragonian_Melee::DRAGON_MELEE_MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 20.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 70.f;
+            MonsterDesc.fAttack = m_pGameInstance->Rand(190.f, 220.f);
+            MonsterDesc.fMaxHP = m_pGameInstance->Rand(2000.f, 2500.f);
+            MonsterDesc.fMaxStamina = m_pGameInstance->Rand(80.f, 140.f);
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -676,9 +676,9 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
         else if ("Dragonian_Claw_Sleep" == MonsterData.MonsterKey[i])
         {
             CDragonian_Rampage::DRAGON_RAMPAGE_MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fAttack = m_pGameInstance->Rand(200.f, 240.f);
+            MonsterDesc.fMaxHP = m_pGameInstance->Rand(3500.f, 4000.f);
+            MonsterDesc.fMaxStamina = m_pGameInstance->Rand(100.f, 150.f);
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -695,9 +695,10 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
         else if ("Elamein" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 2000.f;
-            MonsterDesc.fMaxStamina = 300.f;
+            MonsterDesc.fAttack = 300.f;
+            MonsterDesc.fMaxHP = 12000.f;
+            MonsterDesc.fMaxStamina = 800.f;
+
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -1420,7 +1421,7 @@ HRESULT CLevel_Embars::Ready_BrazierLights(const _tchar* pDataFileName, LEVEL eC
         // 조명 등록
         m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
 
-        //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Brazier"), XMLoadFloat4(&LightDesc.vPosition));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Brazier"), XMLoadFloat4(&LightDesc.vPosition));
     }
 
     CloseHandle(hFile);
@@ -1631,6 +1632,9 @@ void CLevel_Embars::Start_Event()
     Desc.fFadeOutTime = 2.5f;
     Desc.isDissovle = true;
     m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
+
+    m_pClientInstance->Camera_MouseOnOff(true);
+    m_pGameInstance->Decal_OnOff(true);
 }
 
 CLevel_Embars* CLevel_Embars::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

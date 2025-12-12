@@ -57,6 +57,7 @@ _bool CKhazan_GS_Anim_Interaction::Try_TobStone(_bool isWeapon)
     else 
         m_pModel->Set_AnimationSet("Set_Tobstone");
 
+    m_pModel->AnimationSetIndexIncrease();
     return true;
 }
 
@@ -75,6 +76,7 @@ _bool CKhazan_GS_Anim_Interaction::Try_DamagedTS_Before(_bool isWeapon)
     else 
         m_pModel->Set_AnimationSet("Set_DamagedTS_Before");
 
+    m_pModel->AnimationSetIndexIncrease();
     return true;
 }
 
@@ -92,6 +94,8 @@ _bool CKhazan_GS_Anim_Interaction::Try_DamagedTS_After(_bool isWeapon)
     }
     else 
         m_pModel->Set_AnimationSet("Set_DamagedTS_After");
+
+    m_pModel->AnimationSetIndexIncrease();
 
     return true;
 }
@@ -176,8 +180,8 @@ _bool CKhazan_GS_Anim_Interaction::Try_Statue(_bool isUsedSet)
 
 _bool CKhazan_GS_Anim_Interaction::Try_IronGate(_bool isUsedSet)
 {
-    if (!m_pModel->Check_MinAnimationTime())
-        return false;
+    //if (!m_pModel->Check_MinAnimationTime())
+    //    return false;
 
     if (isUsedSet) {
         m_pModel->Set_AnimationSet("Set_OpenGateLock");
@@ -191,6 +195,23 @@ _bool CKhazan_GS_Anim_Interaction::Try_IronGate(_bool isUsedSet)
 
 _bool CKhazan_GS_Anim_Interaction::Try_UnLockGear(_bool isUsedSet)
 {
+
+    if (m_pModel->Get_CurAnimIndex() == m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand"))
+    {
+        if (isUsedSet) {
+            if (m_pClientInstance->Get_PlayerEquipment().isGSword)
+                m_pModel->Set_AnimationSet("Set_GSwordGearSwitch");
+            else
+                m_pModel->Set_AnimationSet("Set_SpearGearSwitch");
+
+            m_pModel->AnimationSetIndexIncrease();
+
+        }
+        else  m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_GearSwitch_001_Interation"));
+
+        return true;
+    }
+
     if (!m_pModel->Check_MinAnimationTime())
         return false;
 
@@ -210,8 +231,8 @@ _bool CKhazan_GS_Anim_Interaction::Try_UnLockGear(_bool isUsedSet)
 
 _bool CKhazan_GS_Anim_Interaction::Try_GiantGate(_bool isUsedSet)
 {
-    if (!m_pModel->Check_MinAnimationTime())
-        return false;
+    //if (!m_pModel->Check_MinAnimationTime())
+    //    return false;
 
     if (isUsedSet) {
         m_pModel->Set_AnimationSet("Set_OpenGiantGate");

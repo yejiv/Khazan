@@ -460,7 +460,7 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
             int a = 10;
 
         /* 공격 콜라이더 */
-        if (m_isSpearTipActive)
+        if (m_isSpearTipActive && pMyDesc->strName == TEXT("AttackCollisionDesc"))
         {
             CCreature* pMonster = static_cast<CCreature*>(pDesc->pGameObject);
             if (pMonster == nullptr  || pMonster->Get_CurrentHP() < 0.f)
@@ -485,18 +485,22 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
         }
 
         /*  탐지 */
-        CGameObject* pObj = pDesc->pGameObject;
-        if (!pObj|| pObj->Get_IsDead()) return;
-        lock_guard<mutex> lock(m_CollMonsterMutex);
-        if (pObj && (find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end()))
-            m_CollMonsters.push_back(pObj);
+        if (pMyDesc->strName == TEXT("Player_Search"))
+        {
+            CGameObject* pObj = pDesc->pGameObject;
+            if (!pObj || pObj->Get_IsDead()) return;
+            lock_guard<mutex> lock(m_CollMonsterMutex);
+            if (pObj && (find(m_CollMonsters.begin(), m_CollMonsters.end(), pObj) == m_CollMonsters.end()))
+                m_CollMonsters.push_back(pObj);
+        }
+  
 
     }
 
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK))
     {
         /* 방어 콜라이더  */
-        if (m_isSpearPoleActive)
+        if (m_isSpearPoleActive && pMyDesc->strName == TEXT("GuardCollisionDesc"))
         {
             _matrix mat = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
             *m_pParentStatus |= CKhazan_Spear::GUARD;
@@ -508,13 +512,13 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
      
                 /* 몬스터한테 저스트 가드 타이밍 건내주기  */
                 if (pDesc->pGameObject == nullptr) return;
-                
-                m_bGuradFX[0] = true;
-                
+
                 CWeaponObject* pMonster = dynamic_cast<CWeaponObject*>(pDesc->pGameObject);
 
                 if (pMonster == nullptr)
                     return;
+
+                m_bGuradFX[0] = true;
 
                 pMonster->On_JustGuardCallback(true);
 
@@ -1006,6 +1010,13 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
      { TEXT("Thief_Arm"), TEXT("Prototype_Component_Model_Khazan_Thief_Arm") },
      { TEXT("Thief_Leg"), TEXT("Prototype_Component_Model_Khazan_Thief_Leg") },
      { TEXT("Thief_Shoes"), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes") },
+
+     /* ShadowLandFlow Set */
+     { TEXT("ShadowLandFlow_Hair"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Hair") },
+     { TEXT("ShadowLandFlow_Torso"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Torso") },
+     { TEXT("ShadowLandFlow_Arm"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Arm") },
+     { TEXT("ShadowLandFlow_Leg"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Leg") },
+     { TEXT("ShadowLandFlow_Shoes"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes") },
     };
 
     // 모든 파츠 로드
@@ -1507,7 +1518,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent_SFX()
             strTempEventKey += "_" + ss.str();
 
             m_pModelCom->Register_Event(strTempEventKey, eTrigger, [this, eSoundType, fVolume, eChannelType]() {
-                m_pGameInstance->PlaySoundOnce( m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType),  10.f,  Get_SoundChannel(eChannelType) ); });
+                m_pGameInstance->PlaySoundOnce( m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume,  Get_SoundChannel(eChannelType) ); });
         }
     };
 
@@ -1607,8 +1618,10 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         TipBoxDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
         TipBoxDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
         TipBoxDesc.vShapeOffset = _float3(-0.8f, 0.f, 0.f);
-        m_tCollisionDesc.pGameObject = this;
-        TipBoxDesc.pCollisionDesc = &m_tCollisionDesc;
+        m_tAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
+        m_tAttackCollisionDesc.strName = TEXT("AttackCollisionDesc");
+        m_tAttackCollisionDesc.pGameObject = this;
+        TipBoxDesc.pCollisionDesc = &m_tAttackCollisionDesc;
 
         DAMAGEINFO DamageInfo = {};
         DamageInfo.fDamage = 50.f;
@@ -1635,8 +1648,10 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         BodyBoxDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
         BodyBoxDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
         BodyBoxDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-        m_tCollisionDesc.pGameObject = this;
-        BodyBoxDesc.pCollisionDesc = &m_tCollisionDesc;
+        m_tGuardCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
+        m_tGuardCollisionDesc.strName = TEXT("GuardCollisionDesc");
+        m_tGuardCollisionDesc.pGameObject = this;
+        BodyBoxDesc.pCollisionDesc = &m_tGuardCollisionDesc;
         BodyBoxDesc.bIsTrigger = true;
         if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
             TEXT("Com_Body2"), reinterpret_cast<CComponent**>(&m_pBodyCom_SpearPole), &BodyBoxDesc)))

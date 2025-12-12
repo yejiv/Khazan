@@ -112,7 +112,7 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
     Particle.vLifeTime.x += g_fTimeDelta;
 
     if (Particle.vLifeTime.x >= Particle.vLifeTime.y
-		|| (SpeedData.fSpeed.x < 0 && length(vMoveDir).x < 0.1f))
+		|| (SpeedData.fSpeed.x < 0 && length(vMoveDir).x < 0.5f))
     {
         Particle.vLifeTime.x = 0.f;
         Particle.vTranslation = g_InputData[iIndex].vInitTranslation;
@@ -174,8 +174,8 @@ void CS_UPDATE_GRAVITY(uint3 DTid : SV_DispatchThreadID)
         SpeedData.fGravity = 0.f;
         return;
     }
-    SpeedData.fGravity += g_fTimeDelta * 2.6f;
-    Particle.vTranslation.y -= 4.8f * SpeedData.fGravity * g_fTimeDelta;
+    SpeedData.fGravity += g_fTimeDelta * 2.3f;
+    Particle.vTranslation.y -= 3.8f * SpeedData.fGravity * g_fTimeDelta;
     g_OutputData[iIndex] = Particle;
     g_SpeedData[iIndex].fGravity = SpeedData.fGravity;
 }

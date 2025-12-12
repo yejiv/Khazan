@@ -32,8 +32,6 @@ public:
 	virtual INTERRUPTCONDITION	GetCallbackInterruptCondition(CGameObject* pOwner, const string& name);
 	virtual PERCEPTIONCALLBACK	GetCallBackPerception(class CGameObject* pOwner, const string& name);
 
-    //_bool                       m_isActiveController = { false };
-
 
 public:
 	static CAI_Controller_Yetuga*	Create(class CCreature* pOwner);

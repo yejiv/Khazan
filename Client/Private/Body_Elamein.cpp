@@ -50,6 +50,7 @@ HRESULT CBody_Elamein::Initialize_Clone(void* pArg)
     _float4x4 PreTransformMatrix;
     XMStoreFloat4x4(&PreTransformMatrix, XMMatrixScaling(0.00012f, 0.00012f, 0.00012f) * XMMatrixRotationY(XMConvertToRadians(180.0f)));
     m_pModelCom->Set_PreTransformMatrix(PreTransformMatrix);
+    m_pModelCom->Play_Animation(0);
     return S_OK;
 }
 
@@ -117,9 +118,6 @@ void CBody_Elamein::Late_Update(_float fTimeDelta)
     if (m_pData->iAnimIndex != 31 && m_pData->iAnimIndex != 35 && m_pData->iAnimIndex != 51 && m_pData->iAnimIndex != 95)
         m_pCapeBody->Late_Update(fTimeDelta);
 //#endif
-    
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
-        return;
 }
 
 HRESULT CBody_Elamein::Render()

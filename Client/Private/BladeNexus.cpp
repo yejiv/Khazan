@@ -261,7 +261,7 @@ HRESULT CBladeNexus::Ready_Interaction_Guide(void* pArg)
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("접촉"), 1.5f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("접촉"), 0.75f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 
@@ -546,6 +546,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         {
         case static_cast<_int>(BLADENEXUS_ID::HEINMACH_ENTER):
             static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(4012);
+            eUIType = CUI_BladeNexus::ONTYPE::DEFAULT;
             break;
         case static_cast<_int>(BLADENEXUS_ID::HEINMACH_YETUGA):
             eUIType = CUI_BladeNexus::ONTYPE::EMBARS;
@@ -597,7 +598,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         m_Event.None();
 
         // 첫 해금 후 접촉 -> 결속 으로 변경
-        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("결속"), 1.5f);
+        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("결속"), 0.75f);
     
         LIGHT_TRANSITION_DESC LightDesc{};
         LightDesc.fDuration = 1.f;

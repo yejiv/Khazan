@@ -256,6 +256,10 @@ void CBody_Khazan_GS::Late_Update(_float fTimeDelta)
 
 HRESULT CBody_Khazan_GS::Render()
 {
+
+    //if (*m_isLadderRotationEvent == true )
+      //  m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(0.f));
+
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
@@ -526,12 +530,12 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
                 /* 몬스터한테 저스트 가드 타이밍 건내주기  */
                 if (pDesc->pGameObject == nullptr) return;
 
-                m_bGuradFX[0] = true;
-
                 CWeaponObject* pMonster = dynamic_cast<CWeaponObject*>(pDesc->pGameObject);
 
                 if (pMonster == nullptr)
                     return;
+
+                m_bGuradFX[0] = true;
 
                 pMonster->On_JustGuardCallback(true);
 
@@ -1109,6 +1113,13 @@ HRESULT CBody_Khazan_GS::Ready_Components()
         { TEXT("Thief_Arm"), TEXT("Prototype_Component_Model_Khazan_Thief_Arm") },
         { TEXT("Thief_Leg"), TEXT("Prototype_Component_Model_Khazan_Thief_Leg") },
         { TEXT("Thief_Shoes"), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes") },
+
+        /* ShadowLandFlow Set */
+        { TEXT("ShadowLandFlow_Hair"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Hair") },
+        { TEXT("ShadowLandFlow_Torso"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Torso") },
+        { TEXT("ShadowLandFlow_Arm"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Arm") },
+        { TEXT("ShadowLandFlow_Leg"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Leg") },
+        { TEXT("ShadowLandFlow_Shoes"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes") },
     };
 
     // 모든 파츠 로드
@@ -1633,6 +1644,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
         Spawn_LinearBloodDecal();
         });
+    
+
+    m_pModelCom->Register_Event("GS_StrongAtk02_Charge_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("FerociousMomentum0"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+        Spawn_EmissiveDecal(true);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.f);
+        });
 
     // Trail
     m_pModelCom->Register_Event("WeakAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
@@ -1740,24 +1759,32 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
 
     // 닷지
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        if(Has_Status(CKhazan_GSword::GSWORD)) Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        else if (Has_Status(CKhazan_GSword::SPEAR)) Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
+        else  Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         m_isEnableAnimEvent = true;
         m_iCurAnimEventIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
+        if (Has_Status(CKhazan_GSword::GSWORD)) Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        else if (Has_Status(CKhazan_GSword::SPEAR)) Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
+        else  Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         m_isEnableAnimEvent = false;
         //Remove_Status(CKhazan_GSword::DODGE_ENDING);
         });
 
     // 닷지 어택
     m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        if (Has_Status(CKhazan_GSword::GSWORD)) Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        else if (Has_Status(CKhazan_GSword::SPEAR)) Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
+        else  Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         m_isEnableAnimEvent = true;
         m_iCurAnimEventIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
+        if (Has_Status(CKhazan_GSword::GSWORD)) Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        else if (Has_Status(CKhazan_GSword::SPEAR)) Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
+        else  Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         m_isEnableAnimEvent = false;
         });
 #pragma endregion
@@ -1818,7 +1845,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
             strTempEventKey += "_" + ss.str();
 
             m_pModelCom->Register_Event(strTempEventKey, eTrigger, [this, eSoundType, fVolume, eChannelType]() {
-                m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), 10.f, Get_SoundChannel(eChannelType)); });
+                m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume, Get_SoundChannel(eChannelType)); });
         }
     };
 

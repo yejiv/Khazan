@@ -61,49 +61,6 @@ HRESULT CMainApp::Initialize()
 
 void CMainApp::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
-	{
-		//m_pClientInstance->ActiveCamera_Shaking(1.5f, 1.f);
-
-		//m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.003f, 3.f);
-		//m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);
-		//FOVModifier tMod{};
-
-		// PRIORITY
-		//tMod.strID = TEXT("Hit");
-		//tMod.eMode = FOVModifier::FOV_MODE::PRIORITY;
-		//tMod.fDuration = 0.f;
-		//tMod.fFrom = 0.f;
-		//tMod.fTo = XMConvertToRadians(50.f);
-		//tMod.iPriority = 5.f;
-		//tMod.Ease = EaseOutQuad;
-
-		// ADD
-		//tMod.eMode = FOVModifier::FOV_MODE::ADD;
-		//tMod.fDuration = 5.f;
-		//tMod.fFrom = 0.f;
-		//tMod.fTo = XMConvertToRadians(80.f);
-		//tMod.iPriority = 5.f;
-		//tMod.Ease = EaseOutQuad;
-
-		// Multiply
-		//tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
-		//tMod.fDuration = 5.f;
-		//tMod.fFrom = XMConvertToRadians(60.f);
-		//tMod.fTo = XMConvertToRadians(80.f);
-		//tMod.iPriority = 5.f;
-		//tMod.Ease = EaseOutQuad;
-
-		//m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
-
-        //m_pClientInstance->Find_MapBladeNexus(KHAZAN_MAP::HEINMACH);
-	}
-	if (m_pGameInstance->Key_Down(DIK_RCONTROL))
-	{
-		//m_pClientInstance->ActiveCamera_KillFov(L"Hit");
-		//m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::ENEMY);
-	}
-
 	TIME_DELTA      tTimeDelta = {};
 
 	const _float fDt_World = m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::WORLD);
@@ -717,7 +674,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
 
 	// Prototype_Component_Texture_TestParticle
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Particle_Prototype"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/particle/particle%d.png"), 12)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/particle/particle%d.png"), 14)), E_FAIL);
 
 	// Prototype_Component_Texture_TestSpriteImage
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sprite_Effect"),

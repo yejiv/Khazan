@@ -418,6 +418,8 @@ public:
     void                        Decal_Clear();
     void                        MapDecal_Clear();
     void                        MapDecal_CleanUp();
+    
+    void                        Decal_OnOff(_bool isDecalOn);
 #pragma endregion
 
 #pragma region EFFECT_MANAGER

@@ -306,6 +306,7 @@ void CSpear_Khazan_Spear::Change_Weapon(EQUIPMENTTYPE type, const _wstring& strP
         *m_pParentStatus &= ~(/*CKhazan_Spear::PLAYER_STATUS::GSWORD |*/ CKhazan_Spear::PLAYER_STATUS::SPEAR);
     }
 
+    m_isEnble = true;
 }
 
 HRESULT CSpear_Khazan_Spear::Ready_Components()

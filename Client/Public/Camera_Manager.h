@@ -83,7 +83,7 @@ public:
 
 public:
     void Switch_CameraMode(CAMERATYPE eType);
-
+    void MouseOnOff(_bool isOn);
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };
 	_uint m_iNumLevels = {};

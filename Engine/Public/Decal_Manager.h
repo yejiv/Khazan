@@ -32,6 +32,9 @@ public:
     _uint                       Get_NumDecalTextures(DECALTYPE eType);
 
 public:
+    void                        Decal_OnOff(_bool isDecalOn) { m_isShow = isDecalOn; }
+
+public:
     void                        Decal_Clear();
 
 private:
@@ -50,6 +53,8 @@ private:
 	class CShader*				m_pShader = {};
 	class CVIBuffer_Cube*		m_pVIBuffer = {};
 	class CTexture*				m_pTexture[ENUM_CLASS(DECALTYPE::END)] = { nullptr };
+
+    _bool                       m_isShow = { false };
 
 private:
 	HRESULT						Ready_Components();

@@ -45,8 +45,8 @@ _bool CKhazan_GS_Anim_Ladder::Try_Start_Up_Ladder()
 
 _bool CKhazan_GS_Anim_Ladder::Try_Start_Down_Ladder(_uint iType)
 {
-    if (!m_pModel->Check_MinAnimationTime())
-        return false;
+    //if (!m_pModel->Check_MinAnimationTime())
+      //  return false;
 
 
     if (iType == 0) m_pModel->Set_AnimationSet("Set_ClimbDown_Start1");
@@ -76,8 +76,8 @@ _bool CKhazan_GS_Anim_Ladder::Force_End_Up_Ladder()
 
 _bool CKhazan_GS_Anim_Ladder::Force_End_Down_Ladder()
 {
-    m_pModel->Set_AnimationSet("Set_ClimbDown_End");
-
+   // m_pModel->Set_AnimationSet("Set_ClimbDown_End");
+    m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_ClimbDn_D_End_Start"));
     m_pModel->Set_AnimationBlend(true);
 
     return true;
