@@ -5,6 +5,7 @@
 #include "BlackBoard.h"
 #include "FSM_Yetuga.h"
 #include "Body_Yetuga.h"
+#include "Head_Yetuga.h"
 
 CAS_Rush_Yetuga::CAS_Rush_Yetuga()
 {
@@ -84,6 +85,13 @@ void CAS_Rush_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
     pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isCrahsedWall", false);
     m_isCrashed = false;
     m_isEnd = true;
+
+    pYetuga->Get_Body()->Set_AttackCollision_Back(false);
+    pYetuga->Get_Body()->Set_OnAttackCollision(false);
+    pYetuga->Get_Head()->Set_OnAttackCollision(false);
+    pYetuga->Set_IsGhost(false);
+
+
 }
 
 void CAS_Rush_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
@@ -102,6 +110,8 @@ void CAS_Rush_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, 
     }
         break;
     case Client::COLLISION_LAYER::PLAYER:
+
+        
         
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
         pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);

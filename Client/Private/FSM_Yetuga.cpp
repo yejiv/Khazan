@@ -31,6 +31,15 @@ CAS_CutScene_Yetuga* CFSM_Yetuga::Get_CutScene_Yetuga()
     return pCutScneState;
 }
 
+CAS_RightHand_5Hit_Yetuga* CFSM_Yetuga::Get_RH_5Hit()
+{
+    CAS_RightHand_5Hit_Yetuga* pComboState = static_cast<CAS_RightHand_5Hit_Yetuga*>(m_States[ENUM_CLASS(YETUGA_STATE::RIGHTHAND_5HIT)]);
+    if (nullptr == pComboState)
+        return nullptr;
+
+    return pComboState;
+}
+
 
 HRESULT CFSM_Yetuga::Initialize()
 {

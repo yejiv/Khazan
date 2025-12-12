@@ -141,6 +141,11 @@ void CProjectile_Boomarang::Reset()
 
 }
 
+void CProjectile_Boomarang::StopBoomarangSound()
+{
+    m_pGameInstance->StopByChannel(Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)));
+}
+
 
 HRESULT CProjectile_Boomarang::Ready_Components()
 {
@@ -170,8 +175,10 @@ HRESULT CProjectile_Boomarang::Ready_Colliders()
     XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_tBoomanrangCollisionDesc.pGameObject = this;
+    m_tBoomanrangCollisionDesc.strName = TEXT("BoomanrangCollision");
+    m_tBoomanrangCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    BodyDesc.pCollisionDesc = &m_tBoomanrangCollisionDesc;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_ImpRange_Boomarang"), reinterpret_cast<CComponent**>(&m_pBody), &BodyDesc)))

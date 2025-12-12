@@ -39,7 +39,7 @@ public:
 
 public:
     virtual void				        Reset() override;
-
+    void                                StopBoomarangSound();
 
 private:
     HRESULT						        Ready_Components();
@@ -47,6 +47,7 @@ private:
     HRESULT						        Bind_ShaderResources();
 
     void                                Enter_State(BOOMARANGSTATE eNextState);
+
 
 
 private:
@@ -71,6 +72,7 @@ private:
 
     BOOMARANGSTATE                      m_eState = { BOOMARANGSTATE::END };
 
+    COLLISION_DESC                      m_tBoomanrangCollisionDesc = {};
 
 public:
     static CProjectile_Boomarang*       Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

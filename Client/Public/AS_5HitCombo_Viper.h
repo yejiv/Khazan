@@ -19,6 +19,10 @@ public:
     virtual void OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
 
 public:
+
+
+
+public:
     static CAS_5HitCombo_Viper*     Create();
     virtual void                    Free() override;
 
