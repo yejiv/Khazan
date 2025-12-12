@@ -105,7 +105,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
 
     m_eDir.Add_Flag(DIRECTION_INFO::NONE);
 
-    m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
+    m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Injured_Stand");
     m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
     Add_Status(INJURED);
     Add_Status(BAREHAND);
@@ -992,7 +992,6 @@ void CKhazan_Spear::Move_Input(_float fTimeDelta)
         }
     }
 
-
     if (Has_State(CAT::M_MOVE))
     {
         Clear_SubState();
@@ -1578,17 +1577,34 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
         return;
     }
 
-
-    if (m_iCurMainState == m_iPrevMainState
-        && m_iCurSubState == m_iPrevSubState
-        && m_iCycle == m_iPrevCycle)
+    _bool isNothingState = m_iCurMainState == m_iPrevMainState && m_iCurSubState == m_iPrevSubState && m_iCycle == m_iPrevCycle;
+    _bool isIdleState = !Has_State(CAT::M_END - 2);
+    _bool isCurAnimFinished = m_pBody->Get_Model()->IsFinished();
+    /* Idle */
+    if ((isIdleState && Has_Status(LOCKON) && isNothingState) || (isIdleState && isCurAnimFinished))
     {
-        return;
+        if ((Has_Status(STAMINA_EXHAUSTION)))
+            return;
+
+        _uint iCurAnimIndex = m_pBody->Get_Model()->Get_CurAnimIndex();
+        if (m_pBody->Get_Model()->Check_MinAnimationTime() && iCurAnimIndex != 279 && iCurAnimIndex != 19)
+            m_pBody->Get_Model()->Set_Animation(Has_Status(SPEAR) ? m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand") : m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand"));
+
     }
- 
+
+    _bool isCurAnimFallEnd = m_pBody->Get_Model()->Get_CurAnimIndex() == m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Fall_End");
+
+    if (isCurAnimFallEnd)
+    {
+        if (!isCurAnimFinished)
+            return;
+    }
+    else if (isNothingState)
+        return;
+
 
     /* Move  */
-    if (((Has_Status(LOCKON) && m_eDir.iDirFlag != m_ePrevDir && m_eDir.iDirFlag > 0)) || Has_State(CAT::M_MOVE) && !Has_State(CAT::M_ATTACK | CAT::M_GUARD))
+    if (((Has_Status(LOCKON) && m_eDir.iDirFlag != m_ePrevDir && m_eDir.iDirFlag > 0)) || Has_State(CAT::M_MOVE) && !Has_State(CAT::M_ATTACK | CAT::M_GUARD) || !Has_SubState(MOV::MOVE_DODGE) ||(isCurAnimFallEnd && isCurAnimFinished))
     {
         CKhazan_Spear_Anim_Move::SPEAR_MOVE info;
         info.isEquipWeapon = Has_Status(WEA::SPEAR);
@@ -1598,23 +1614,42 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
         info.eDir = m_eDir;
 
         _bool test = m_pAnimMove->Try_ChangeAnimation(info);
-
-        //Remove_State(CAT::M_IDLE);
     }
 
-    /* Idle */
-    else if (!Has_State(CAT::M_END - 2))
-    {
-
-        _uint iCurAnimIndex = m_pBody->Get_Model()->Get_CurAnimIndex();
-        if (m_pBody->Get_Model()->Check_MinAnimationTime() && iCurAnimIndex != 279 && iCurAnimIndex != 19)
-            m_pBody->Get_Model()->Set_Animation(Has_Status(SPEAR) ? m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand") : m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand"));
-
-      //  cout << " === idle ====" << endl;
-        //Add_State(CAT::M_IDLE);
-    }
-    //else
-        //Remove_State(CAT::M_IDLE);
+    //if (m_iCurMainState == m_iPrevMainState
+    //    && m_iCurSubState == m_iPrevSubState
+    //    && m_iCycle == m_iPrevCycle)
+    //{
+    //    return;
+    //}
+    ///* Move  */
+    //if (((Has_Status(LOCKON) && m_eDir.iDirFlag != m_ePrevDir && m_eDir.iDirFlag > 0)) || Has_State(CAT::M_MOVE) && !Has_State(CAT::M_ATTACK | CAT::M_GUARD))
+    //{
+    //    CKhazan_Spear_Anim_Move::SPEAR_MOVE info;
+    //    info.isEquipWeapon = Has_Status(WEA::SPEAR);
+    //    info.isLockOn = Has_Status(LOCKON);
+    //    info.iSubState = m_iCurSubState;
+    //    info.iCycle = m_iCycle;
+    //    info.eDir = m_eDir;
+    //
+    //    _bool test = m_pAnimMove->Try_ChangeAnimation(info);
+    //
+    //    //Remove_State(CAT::M_IDLE);
+    //}
+    //
+    ///* Idle */
+    //else if (!Has_State(CAT::M_END - 2))
+    //{
+    //
+    //    _uint iCurAnimIndex = m_pBody->Get_Model()->Get_CurAnimIndex();
+    //    if (m_pBody->Get_Model()->Check_MinAnimationTime() && iCurAnimIndex != 279 && iCurAnimIndex != 19)
+    //        m_pBody->Get_Model()->Set_Animation(Has_Status(SPEAR) ? m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand") : m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand"));
+    //
+    //  //  cout << " === idle ====" << endl;
+    //    //Add_State(CAT::M_IDLE);
+    //}
+    ////else
+    //    //Remove_State(CAT::M_IDLE);
 
 }
 
@@ -2753,7 +2788,7 @@ void CKhazan_Spear::Subscribe_Events()
             {
                // m_pClientInstance->Set_PlayerInput(true);
                 m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed"));
-                m_pSpear->Set_Enble(true);
+                //m_pSpear->Set_Enble(true);
                 // m_pSpear->Equip();
                 static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
                 Add_Status(SPEAR);
@@ -2762,7 +2797,7 @@ void CKhazan_Spear::Subscribe_Events()
             else
             {
                 m_pBody->Get_Model()->AnimationSetIndexIncrease();
-                m_pSpear->Set_Enble(true);
+               // m_pSpear->Set_Enble(true);
                 // m_pSpear->Equip();
                 static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
                 Add_Status(SPEAR);

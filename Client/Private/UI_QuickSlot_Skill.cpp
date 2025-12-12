@@ -156,7 +156,7 @@ void CUI_QuickSlot_Skill::Skill_Equip(const EVENT_SKILL_SLOT& e)
 
         m_pIcon->Set_Texture(vUV, SkillDB.iTexPass);
         m_pIcon->Set_Color({ 0.929f, 0.741f, 0.376f,1.f });
-
+  
         m_iSkill = 1 << SkillDB.iIndex;
     }
     else
