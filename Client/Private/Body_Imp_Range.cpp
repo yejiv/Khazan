@@ -76,6 +76,8 @@ HRESULT CBody_Imp_Range::Initialize_Clone(void* pArg)
     m_pDissolve = pDesc->pDissolve;
     m_pDecreaseAlpha = pDesc->pDecreaseAlpha;
 
+    m_pModelCom->Play_Animation(0);
+
     return S_OK;
 }
 

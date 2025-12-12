@@ -15,6 +15,7 @@ static const unsigned int M_METALIC = (1 << 4);
 static const unsigned int M_ROUGHNESS = (1 << 5);
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+matrix g_LightViewMatrix, g_LightProjMatrix;
 
 /*재질*/
 Texture2D g_DiffuseTexture;
@@ -161,8 +162,8 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
     
     float4x4 matWV, matWVP;
     
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
+    matWV = mul(In.TransformMatrix, g_LightViewMatrix);
+    matWVP = mul(matWV, g_LightProjMatrix);
     
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP); // In.vPosition 은 float3 짜리이므로 w = 1.f 넣어서 행렬과 곱 가능하게
     Out.vProjPos = Out.vPosition;
@@ -496,7 +497,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN_SHADOW();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
+        PixelShader = NULL; // compile ps_5_0 PS_MAIN_SHADOW();
     }
 
     pass MapPass // 맵 오브젝트용 패스 ( 3번 ) ( 눈 X )

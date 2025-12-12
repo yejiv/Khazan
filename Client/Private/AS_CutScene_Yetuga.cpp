@@ -56,7 +56,7 @@ void CAS_CutScene_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
          pModel->Set_Animation(7);*/
         
     }
-
+    
 }
 
 void CAS_CutScene_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
@@ -111,6 +111,9 @@ void CAS_CutScene_Yetuga::Change_CutSceneState(CUTSCENE_STATE eNextState, CModel
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::LAND));
         _vector vGoalPos = XMVectorSet(520.f, -11.952f, 228.48f, 1.f);
         pYetuga->Yetuga_Land(vGoalPos, 20.f);
+
+        if (CUTSCENE_STATE::LAND == m_eState)
+            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), vGoalPos);
     }
         break;
     case Client::CUTSCENE_STATE::ROAR1:

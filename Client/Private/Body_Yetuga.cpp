@@ -3,6 +3,8 @@
 #include "BlackBoard.h"
 #include "Yetuga.h"
 #include "AI_Controller.h"
+#include "FSM_Yetuga.h"
+#include "AS_RightHand_5Hit_Yetuga.h"
 
 _float3 CBody_Yetuga::Get_BonePoint(const _char* BoneName)
 {
@@ -73,12 +75,12 @@ _matrix CBody_Yetuga::Get_BoneMatrix(const _char* pBoneName)
 }
 
 CBody_Yetuga::CBody_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CPartObject{pDevice,pContext}
+    :CWeaponObject{pDevice,pContext}
 {
 }
 
 CBody_Yetuga::CBody_Yetuga(const CBody_Yetuga& Prototype)
-    :CPartObject{ Prototype }
+    :CWeaponObject{ Prototype }
 {
 }
 
@@ -122,6 +124,13 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
 
     m_pLockOnBoneMatrix = m_pModelCom->Get_BoneMatrix("FX_Body_ExpGained");
 
+
+    if (FAILED(Ready_Callback()))
+        return E_FAIL;
+
+
+
+
     return S_OK;
 }
 
@@ -135,12 +144,9 @@ void CBody_Yetuga::Update(_float fTimeDelta)
 
     if (m_isOnAttackCollision)
     {
-        m_pLH_BodyCom->Collision_Active(true);
+         m_pLH_BodyCom->Collision_Active(true);
         m_pRH_BodyCom->Collision_Active(true);
         Carculate_Matrix(fTimeDelta);
-#ifdef _DEBUG
-        //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
-#endif
     }
     else
     {
@@ -156,9 +162,6 @@ void CBody_Yetuga::Update(_float fTimeDelta)
     else
     {
         m_pBack_BodyCom->Collision_Active(false);
-#ifdef _DEBUG
-        m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
-#endif
     }
 
 
@@ -427,14 +430,42 @@ HRESULT CBody_Yetuga::Ready_Colliders()
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollision_Desc.pGameObject = this;
-    BodyDesc.pCollisionDesc = &m_tCollision_Desc;
+    m_tBackCollision_Desc.pGameObject = this;
+    m_tBackCollision_Desc.strName = TEXT("YetugaBackColliderDesc");
+    m_tBackCollision_Desc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    BodyDesc.pCollisionDesc = &m_tBackCollision_Desc;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_Back"), reinterpret_cast<CComponent**>(&m_pBack_BodyCom), &BodyDesc)))
         return E_FAIL;
  
 
+
+    return S_OK;
+}
+
+HRESULT CBody_Yetuga::Ready_Callback()
+{
+    Set_JustGuardCallBack([this](_bool isJustGuard)
+        {
+            if (isJustGuard)
+            {
+                CFSM_Yetuga* pFSM = static_cast<CFSM_Yetuga*>(m_pOwner->Get_Controller()->Get_State_Machine());
+                if (nullptr == pFSM)
+                    return E_FAIL;
+
+                if (pFSM->Get_CurrentState()->Get_StateIndex() == ENUM_CLASS(YETUGA_STATE::RIGHTHAND_5HIT))
+                {
+                    CAS_RightHand_5Hit_Yetuga* pComboState = pFSM->Get_RH_5Hit();
+                    if (nullptr == pComboState)
+                        return E_FAIL;
+
+                    pComboState->On_JustGuard(m_pOwner);
+                }
+
+               
+            }
+        });
 
     return S_OK;
 }

@@ -51,11 +51,16 @@ void CIllusion_Wall::Update(_float fTimeDelta)
         m_fDecreaseAlpha += fTimeDelta * 0.2f;
     }
 
-    if (false == m_isRemoveWall && 0.5f <= m_fDecreaseAlpha)
+    if (false == m_isRemoveWall && 0.35f <= m_fDecreaseAlpha)
     {
         SoundOnce(TEXT("IP_Statue_Done"), m_fInteract_Volume);
 
         m_isRemoveWall = true;
+    }
+
+    if (true == m_isWallActive && 0.5f <= m_fDecreaseAlpha)
+    {
+        m_isWallActive = false;
 
         m_pStaticCom->Collision_Active(false);
     }
@@ -212,7 +217,7 @@ HRESULT CIllusion_Wall::Bind_DissolveValues()
 
 void CIllusion_Wall::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer != ENUM_CLASS(COLLISION_LAYER::PLAYER))
         return;
 
     if (false == m_isCollision && ENUM_CLASS(COLLISION_LAYER::MAP_INTERACT) == pMyDesc->iObjectLayer)
@@ -223,13 +228,13 @@ void CIllusion_Wall::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLa
 
 void CIllusion_Wall::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
         return;
 }
 
 void CIllusion_Wall::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
         return;
 }
 

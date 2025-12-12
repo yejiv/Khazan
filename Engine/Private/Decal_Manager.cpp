@@ -93,7 +93,6 @@ HRESULT CDecal_Manager::Render()
                 return E_FAIL;
         }
     }
-    
 
     return S_OK;
 }

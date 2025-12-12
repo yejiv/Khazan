@@ -47,11 +47,10 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
         _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
         _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
         pViper->Get_Controller()->AI_MoveTo(pViper,pTarget,10.f, m_fMoveSpeed,fTimeDelta);
-        //pOwnerTransform->AI_Chase(vTargetPos, fTimeDelta, m_fMoveSpeed, m_fAttackRange);
 
         _float fDist = pBB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
 
-        if (fDist < 10 +0.1f /*|| pBB->Get_Value<_bool>(pViper->Get_Name(),"isP2_Dash_Abort")*/)
+        if (fDist < 10 +0.1f)
         {
             m_eState = DRIFTSTATE::FINISH;
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_end_atk_whoosh_01 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
@@ -82,7 +81,7 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
             //pViper->Get_Transform()->LookAt(vTargetPos);
             pBB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_DashDriftFinished",true);
             pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2_Dash_Abort", false);
-            //pViper->Set_IsGhost(false);
+            pViper->Set_IsGhost(false);
         }
         break;
         }

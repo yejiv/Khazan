@@ -310,6 +310,9 @@ private:
 
     _uint                       m_iInteractTypeEventID = { };
     _uint                       m_iObjectInteractEventID = { };
+    _bool                       m_isInteractEventStart = { false };
+    _bool                       m_isLadderEndEvent = { false };
+    _bool                       m_isLadderRotationEvent = { false };
 
 
 private:

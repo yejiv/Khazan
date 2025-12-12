@@ -309,6 +309,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), 10);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice"), 20);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice_Disappear"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), 30);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), 100);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Open"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Breath"), 100);
@@ -676,8 +678,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMaxHP = 2000.f;
+            MonsterDesc.fMaxStamina = 1000.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -694,8 +696,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMaxHP = 2000.f;
+            MonsterDesc.fMaxStamina = 200.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -712,8 +714,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMaxHP = 2000.f;
+            MonsterDesc.fMaxStamina = 200.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -729,9 +731,10 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         else if ("Halberd" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fAttack = 150.f;
+            MonsterDesc.fMaxHP = 4500.f;
+ //           MonsterDesc.fMaxStamina = 450.f;
+            MonsterDesc.fMaxStamina = 50.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -1100,6 +1103,16 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
     LightDesc.vSpecular = LightDesc.vDiffuse;
     LightDesc.fRange = 9.f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("BladeNexus_ActivateLight"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc, false)))
+        return E_FAIL;
+
+    LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 3.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Player_GuardLight"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc, false)))
         return E_FAIL;
 
 	return S_OK;

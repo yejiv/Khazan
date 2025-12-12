@@ -14,7 +14,10 @@ void CAS_Dead_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CImp_Range* pImp = static_cast<CImp_Range*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
 
+
+    pImp->Cast_Failed();
     pModel->Set_Animation(28);
+
 }
 
 void CAS_Dead_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

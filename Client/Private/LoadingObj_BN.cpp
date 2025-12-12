@@ -76,7 +76,7 @@ HRESULT CLoadingObj_BN::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    _float fIntensity = 10.f;
+    _float fIntensity = 5.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fIntensity, sizeof(_float))))
         return E_FAIL;
 
@@ -101,7 +101,7 @@ HRESULT CLoadingObj_BN::Render()
 
         if (i == 1)
         {
-            _float4 vCristalColor = _float4(8.5f, 4.5f, 3.f, 1.f);
+            _float4 vCristalColor = _float4(3.5f, 1.f, 1.f, 1.f);
             if (FAILED(m_pShaderCom->Bind_RawValue("g_vCristalColor", &vCristalColor, sizeof(_float4))))
                 return E_FAIL;
 

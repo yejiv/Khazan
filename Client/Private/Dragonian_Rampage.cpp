@@ -210,13 +210,23 @@ void CDragonian_Rampage::Late_Update(_float fTimeDelta)
 
     for (auto& pMeshTrail : m_pMeshTrail)
         pMeshTrail->Late_Update(fTimeDelta);
+
+    if (!m_Data.isSearch)
+        return;
+
+    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
+}
+
+HRESULT CDragonian_Rampage::Render()
+{
+    m_pBody->Render();
+    m_pClaw_L->Render();
+    m_pClaw_R->Render();
+    return S_OK;
 }
 
 void CDragonian_Rampage::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
 {
-    if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
-        ++m_Data.iBrutalHit;
-
     switch (m_pGameInstance->Rand(1, 3))
     {
     case 1:
@@ -580,8 +590,9 @@ HRESULT CDragonian_Rampage::Ready_MonData()
     m_Data.pCulStamina = &m_fCurrentStamina;
     m_Data.pMaxStamina = &m_fMaxStamina;
 
-    m_Data.fEdgeWidth = 0.1f;
-    m_Data.fEdgeColor = { 4.2f, 1.6f, 0.2f, 1.f };
+    m_Data.fEdgeWidth = 0.05f;
+    m_Data.fEdgeColor = { 1.3f, 0.75f, 0.f, 1.f };
+    m_Data.fAttackDamage = m_fAttack;
     return S_OK;
 }
 

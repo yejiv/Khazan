@@ -62,8 +62,10 @@ HRESULT CStateMachine::Add_State(_uint iStateIndex, CAI_State* pState)
 
     if (nullptr != Find_State(iStateIndex))
         return E_FAIL;
-
+    
     m_States.emplace(iStateIndex, pState);
+    m_States[iStateIndex]->Set_StateIndex(iStateIndex);
+
     return S_OK;
 
 }

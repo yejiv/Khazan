@@ -143,7 +143,7 @@ HRESULT CGiantGate::Ready_Collision(void* pArg)
 {
 #pragma region 스태틱 몸체
     CBody::BODY_BOXSHAPE_DESC StaticBodyDesc{};
-    StaticBodyDesc.vExtent = _float3(1.f, 1.f, 1.f);
+    StaticBodyDesc.vExtent = _float3(6.f, 3.f, 0.2f);
     StaticBodyDesc.bIsTrigger = false;
     StaticBodyDesc.bStartActive = true;
     StaticBodyDesc.eMotion = EMotionType::Static;
@@ -229,6 +229,8 @@ void CGiantGate::Input_Interact_Event(_float fTimeDelta)
 
     if (true == isPressing)
     {
+        m_pStaticCom->Collision_Active(false);
+
         static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
         m_pGuide->Update_Visible(false);
 
@@ -268,7 +270,7 @@ void CGiantGate::Animation_Update(_float fTimeDelta)
         {
             m_isUnLock = true;
 
-            SoundOnce(TEXT("IP_Gate_Open_Start"), m_fInteract_Volume);
+            SoundOnce(TEXT("IP_GiantGate_Open_Start"), m_fInteract_Volume);
 
             // 조각상 상호작용 시
             EventInteractType InteractType = {};
@@ -280,8 +282,12 @@ void CGiantGate::Animation_Update(_float fTimeDelta)
 
             _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Position_Ch")) * m_pTransformCom->Get_WorldMatrix();
 
+            _vector vChPosition = OffSetMatrix.r[3];
+
+            vChPosition -= XMVector3Normalize(Get_Look()) * 0.5f;
+
             XMStoreFloat4(&GiantGateEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-            XMStoreFloat4(&GiantGateEvent.vPlayerPosition, OffSetMatrix.r[3]);
+            XMStoreFloat4(&GiantGateEvent.vPlayerPosition, vChPosition);
 
             InteractType.GiantGateEvent = GiantGateEvent;
 
