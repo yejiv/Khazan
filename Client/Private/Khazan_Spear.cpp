@@ -2783,8 +2783,8 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         {
             m_isInteractEventSetting = true;
 
-            /*  창 들고 있으면 UnArmed 애니메이션 재생 */ /* 귀석 타입일때는 재생 X */
-            if (Has_Status(SPEAR) && INTERACTIVE_TYPE::DESTINYSTONE != m_EventInteract.eInteractType)
+            /*  창 들고 있으면 UnArmed 애니메이션 재생 */
+            if (Has_Status(SPEAR))
                 m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
 
             XMStoreFloat4(&m_vStartPos_Event, m_pTransformCom->Get_State(STATE::POSITION));
@@ -2883,6 +2883,12 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         }
         case INTERACTIVE_TYPE::DESTINYSTONE:
         {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
+                isDone = true;
+            }
+
             break;
         }
         default:
@@ -2972,7 +2978,7 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         // 귀석이랑 상호 작용 시
         if (INTERACTIVE_TYPE::DESTINYSTONE == m_EventInteract.eInteractType)
         {
-            m_EventInteract.End_Event();
+            DestinyStone_Event(fTimeDelta);
         }
     }
 }
@@ -3114,6 +3120,16 @@ void CKhazan_Spear::TombStone_Event(_float fTimeDelta)
     {
         // 플레이어 툼스톤 LOOP 애니메이션?
     }
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::DestinyStone_Event(_float fTimeDelta)
+{
+    // 귀석 상호 작용 이벤트
+    EventDestinyStone DSEvent = m_EventInteract.DSEvent;
+
+    DSEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&DSEvent.vPosition));
 
     m_EventInteract.End_Event();
 }

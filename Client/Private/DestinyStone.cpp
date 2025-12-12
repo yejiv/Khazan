@@ -281,6 +281,12 @@ void CDestinyStone::Event_Update(_float fTimeDelta)
         InteractType.eInteractType = INTERACTIVE_TYPE::DESTINYSTONE;
         InteractType.isEvent = true;
 
+        EventDestinyStone DSEvent = {};
+
+        XMStoreFloat4(&DSEvent.vPosition, Get_Position());
+
+        InteractType.DSEvent = DSEvent;
+
         // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
@@ -309,11 +315,11 @@ void CDestinyStone::Input_Interact_Event(_float fTimeDelta)
 
         InteractType.eState = EventInteractType::BEGIN;
 
-        EventBladeNexus BNEvent = {};
+        EventDestinyStone DSEvent = {};
 
-        XMStoreFloat4(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&DSEvent.vPosition, Get_Position());
 
-        InteractType.BNEvent = BNEvent;
+        InteractType.DSEvent = DSEvent;
 
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
     }

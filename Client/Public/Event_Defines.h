@@ -87,6 +87,9 @@ namespace Client {
 		bool isBNOpened{ false };
 	};
 
+    struct EventDestinyStone {
+        XMFLOAT4 vPosition{};
+    };
 	
 	struct EventChest {
 		XMFLOAT4 vPosition{};
@@ -349,6 +352,7 @@ namespace Client {
         EventGiantGate GiantGateEvent{};
         EventNPC NPCEvent{};
         EventLadder LadderEvent{};
+        EventDestinyStone DSEvent{};
 
 		void End_Event() { isEvent = false; }
 

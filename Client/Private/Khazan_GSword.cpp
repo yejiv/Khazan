@@ -2684,8 +2684,8 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         if (false == m_isInteractEventSetting)
         {
             m_isInteractEventSetting = true;
-            /*  UnArmed 애니메이션 재생  (조각상 + 귀석때는 안함)*/
-            if (!Has_Status(BLOCK_ATK_SKILL_GUARD) && INTERACTIVE_TYPE::DESTINYSTONE != m_EventInteract.eInteractType && INTERACTIVE_TYPE::TOMBSTONE != m_EventInteract.eInteractType)
+            /*  UnArmed 애니메이션 재생  (조각상때는 안함)*/
+            if (!Has_Status(BLOCK_ATK_SKILL_GUARD) && INTERACTIVE_TYPE::TOMBSTONE != m_EventInteract.eInteractType)
             {
                 if (Has_Status(SPEAR))
                     m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
