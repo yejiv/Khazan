@@ -1699,6 +1699,11 @@ void CGameInstance::Set_EnableMotionBlur(_bool isEnable)
     m_pMotionBlur->Set_EnableMotionBlur(isEnable);
 }
 
+_float CGameInstance::Get_Gloval_Volume()
+{
+	return m_pSound_Manager->Get_Gloval_Volume();
+}
+
 void CGameInstance::Set_Gloval_Volume(_float fVolume)
 {
     m_pSound_Manager->Set_Gloval_Volume(fVolume);
