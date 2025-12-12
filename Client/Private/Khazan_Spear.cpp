@@ -422,9 +422,9 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         break;
 	case Client::HITREACTION::GRAB:
 
-		m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
-        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
-        Add_Status(YETUGA_GRAB);
+		//m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
+        //m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+        //Add_Status(YETUGA_GRAB);
 		break;
     case Client::HITREACTION::KNOCKBACK_WEAK:
         if (Has_State(CAT::M_SKILL))  break;
