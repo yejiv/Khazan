@@ -77,24 +77,6 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
 
     m_fCurTime += fTimeDelta;
 
-    /* [DEBUG] */
-    if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
-    {
-        m_pTransformCom->Go_Straight(fTimeDelta);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta))
-    {
-        m_pTransformCom->Go_Backward(fTimeDelta);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta))
-    {
-        m_pTransformCom->Go_Left(fTimeDelta);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta))
-    {
-        m_pTransformCom->Go_Right(fTimeDelta);
-    }
-
     for (size_t i = 0; i < m_eEventTracks.size(); ++i)
     {
         EFFECT_EVENT track = m_eEventTracks[i];

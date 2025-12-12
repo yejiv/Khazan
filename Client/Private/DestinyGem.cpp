@@ -40,18 +40,16 @@ HRESULT CDestinyGem::Initialize_Clone(void* pArg)
 
     m_bBlustFX = false; 
 
-    m_fEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("lantern")));
-    if (m_fEffect)
-    {
-        m_fEffect->ResetChildren();
-        m_fEffect->UpdatePosition(XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
-    }
+    m_fEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("stone")));
+    if (m_fEffect) 
+        m_fEffect->ResetChildren(); 
 
     return S_OK;
 }
 
 void CDestinyGem::Priority_Update(_float fTimeDelta)
 {
+    m_fEffect->Priority_Update(fTimeDelta);
 }
 
 void CDestinyGem::Update(_float fTimeDelta)
@@ -65,7 +63,7 @@ void CDestinyGem::Update(_float fTimeDelta)
 
     if (1.f <= m_fTimeAcc)
     {
-        if (false == m_bBlustFX)
+        if (false == m_bBlustFX && 1.5f <= m_fTimeAcc)
         { 
             m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("stone_blust"), XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
             m_fEffect->SetClose();
@@ -85,11 +83,21 @@ void CDestinyGem::Update(_float fTimeDelta)
     Update_CombinedMatrix();
 
     m_fBlinkTimeAcc += fTimeDelta;
+
+    // Test
+    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
+        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
+            m_isEnableBlink = !m_isEnableBlink;
+
+    m_fEffect->UpdatePosition(XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
+    m_fEffect->Update(fTimeDelta);
+
 }
 
 void CDestinyGem::Late_Update(_float fTimeDelta)
 {
     m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+    m_fEffect->Late_Update(fTimeDelta);
 }
 
 HRESULT CDestinyGem::Render()

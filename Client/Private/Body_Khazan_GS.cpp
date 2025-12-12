@@ -1644,6 +1644,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
         Spawn_LinearBloodDecal();
         });
+    
+
+    m_pModelCom->Register_Event("GS_StrongAtk02_Charge_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("FerociousMomentum0"), rot, m_pParentTransform->Get_State(STATE::POSITION));
+        Spawn_EmissiveDecal(true);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.f);
+        });
 
     // Trail
     m_pModelCom->Register_Event("WeakAtk01_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
