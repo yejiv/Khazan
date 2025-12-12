@@ -574,6 +574,11 @@ void CGameInstance::Set_RimLightDesc(RIM_LIGHT_DESC Desc)
     m_pRenderer->Set_RimLightDesc(Desc);
 }
 
+const RENDERGROUP& CGameInstance::Get_CurrentRenderGroup()
+{
+    return m_pRenderer->Get_CurrentRenderGroup();
+}
+
 #pragma endregion
 
 #pragma region TIMER_MANAGER

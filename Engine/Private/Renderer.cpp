@@ -266,6 +266,8 @@ HRESULT CRenderer::Draw()
 
 HRESULT CRenderer::Render_Priority()
 {
+    m_CurRenderGroup = RENDERGROUP::PRIORITY;
+
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"))))
         return E_FAIL;
 
@@ -287,6 +289,8 @@ HRESULT CRenderer::Render_Priority()
 
 HRESULT CRenderer::Render_Shadow()
 {
+    m_CurRenderGroup = RENDERGROUP::SHADOW;
+
     if (FAILED(SetUp_Viewport(g_iMaxWidth, g_iMaxHeight)))
         return E_FAIL;
 
@@ -317,6 +321,8 @@ HRESULT CRenderer::Render_Shadow()
 
 HRESULT CRenderer::Render_Static()
 {
+    m_CurRenderGroup = RENDERGROUP::STATIC;
+
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
         return E_FAIL;
 
@@ -393,6 +399,8 @@ HRESULT CRenderer::Render_Decal()
 
 HRESULT CRenderer::Render_Dynamic()
 {
+    m_CurRenderGroup = RENDERGROUP::DYNAMIC;
+
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"), false)))
         return E_FAIL;
 
@@ -436,6 +444,8 @@ HRESULT CRenderer::Render_DynamicVelocity()
 
 HRESULT CRenderer::Render_Outline()
 {
+    m_CurRenderGroup = RENDERGROUP::OUTLINE;
+
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Outline"))))
         return E_FAIL;
 
@@ -599,8 +609,7 @@ HRESULT CRenderer::Render_PostScene()
 
 HRESULT CRenderer::Render_NonLight()
 {
-    //  if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
-    //      return E_FAIL;
+    m_CurRenderGroup = RENDERGROUP::NONLIGHT;
 
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
@@ -623,9 +632,6 @@ HRESULT CRenderer::Render_NonLight()
 
 HRESULT CRenderer::Render_MotionTrail()
 {
-    //  if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
-    //      return E_FAIL;
-
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
 
@@ -647,6 +653,8 @@ HRESULT CRenderer::Render_MotionTrail()
 
 HRESULT CRenderer::Render_WeightBlend()
 {
+    m_CurRenderGroup = RENDERGROUP::WEIGHT_BLEND;
+
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_WeightBlend"))))
         return E_FAIL;
 
@@ -665,9 +673,6 @@ HRESULT CRenderer::Render_WeightBlend()
 
 
     // [2] AccColor, AccAlpha Resolve
-
-    //  if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
-    //      return E_FAIL;
 
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
@@ -690,8 +695,7 @@ HRESULT CRenderer::Render_WeightBlend()
 
 HRESULT CRenderer::Render_Blend()
 {
-    //  if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
-    //      return E_FAIL;
+    m_CurRenderGroup = RENDERGROUP::BLEND;
 
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
@@ -962,6 +966,8 @@ HRESULT CRenderer::Render_Distortion()
 
 HRESULT CRenderer::Render_UI()
 {
+    m_CurRenderGroup = RENDERGROUP::UI;
+
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::UI)])
     {
         if (nullptr != pRenderObject)
