@@ -689,7 +689,7 @@ PS_OUT PS_VIPER_WEAPON(PS_IN In)
     
     return Out;
 }
-PS_OUT PS_ILLUSION_WALL(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+PS_OUT PS_MAPOBJECT_DISSOLVE(PS_IN In)                       // 맵 오브젝트 디졸브 용 픽셀 쉐이더
 {
     PS_OUT Out = (PS_OUT) 0;
     
@@ -1052,7 +1052,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_DESTINYGEM();
     }
 
-    pass IllusionWallPass // 귀석 젬 패스 ( 14번 )
+    pass MapObjectDissolvePass // Static 맵 오브젝트 디졸브 패스 ( 14번 )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -1060,7 +1060,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAPOBJECT();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_ILLUSION_WALL();
+        PixelShader = compile ps_5_0 PS_MAPOBJECT_DISSOLVE();
     }
     
     pass MapPassBlink // 맵 오브젝트용 블링크 패스 ( 15번 ) ( 눈 X )

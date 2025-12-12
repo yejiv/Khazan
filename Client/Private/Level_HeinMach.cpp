@@ -40,19 +40,7 @@ CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_HeinMach::Initialize()
 {
-#pragma region 수정된 코드
-
-    //m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-
-        //return S_OK;
-        //}));
-
     CHECK_FAILED(Ready_Layer_Item(), E_FAIL);
-
-    m_pGameInstance->Add_FireTask([&]() {
-        CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
-        return S_OK;
-        });
 
     CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
@@ -92,8 +80,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CClientInstance::GetInstance()->Fade_Out();
 
-    CClientInstance::GetInstance()->Set_Volume_BGM(0.65f);
-    CClientInstance::GetInstance()->BGM_HeinMach_Entry();
+    CHECK_FAILED(Ready_SoundSetting(), E_FAIL);
 
     if (!Wait_All_Futures())
         return E_FAIL;
@@ -106,95 +93,6 @@ HRESULT CLevel_HeinMach::Initialize()
         });
 
     m_pClientInstance->Set_PlayerInput(true);
-#pragma endregion
-
-#pragma region 기존 코드
-
-    /*
-    CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
-	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		return S_OK;
-		}));
-
-	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
-		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-			return E_FAIL;
-		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-        CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-        if (FAILED(Ready_Layer_Decal()))
-            return E_FAIL;
-        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		return S_OK;
-		});
-
-    m_pGameInstance->Add_FireTask([this]() { 
-        CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL); 
-        return S_OK;
-        });
-	
-	m_pGameInstance->Add_FireTask([this]() {
-
-		CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-
-		CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-
-		CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		return S_OK;
-		});
-
-
-	m_pGameInstance->Add_FireTask([this]() {
-		for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
-		{
-			// 첫번째 서브 레벨 로드 주석 해제하면 여기서 스킵
-			if (HEINMACH_1ST_BLADENEXUS == i)
-				continue;
-
-			// 두번째 서브 레벨 로드 주석 해제하면 여기서 스킵
-			//if (HEINMACH_2ND_BLADENEXUS == i)
-			//	continue;
-
-			// 세번째 서브 레벨 로드 주석 해제하면 여기서 스킵
-			//if (HEINMACH_3RD_BLADENEXUS == i)
-			//	continue;
-
-			// 예투가 보스 맵 서브 레벨 로드 주석 해제하면 여기서 스킵
-			if (HEINMACH_YETUGA == i)
-				continue;
-			
-			CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-            CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		}		
-		return S_OK;
-		});
-
-    for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
-    {
-        //CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-        //CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-    }
-
-	m_pGameInstance->Add_FireTask([this]() mutable { 
-		CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
-		return S_OK;
-		});
-
-
-	CClientInstance::GetInstance()->Fade_Out();
-
-    if (!Wait_All_Futures())
-        return E_FAIL;
-
-	m_futures.clear();
-    */
-    //Ready_Layer_NorMonster(TEXT("Normal"));
-
-#pragma endregion
 
 	return S_OK;
 }
@@ -489,6 +387,19 @@ HRESULT CLevel_HeinMach::Ready_Layer_Item()
     pItem->Special_Item(TEXT("Record"), XMVectorSet(345.309f, 0.674f, 378.588f, 1.f));
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Item"), pItem);
+
+    return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_SoundSetting()
+{
+    // 사운드 매니저 글로벌 볼륨
+    _float fGlobalVolume = m_pGameInstance->Get_Gloval_Volume();
+
+    // 글로벌 볼륨 세팅 후 환경음, BGM 사운드 세팅 및 재생
+    CClientInstance::GetInstance()->Set_Volume_BGM(0.65f);
+    CClientInstance::GetInstance()->Set_Volume_AMB(0.65f);
+    CClientInstance::GetInstance()->BGM_HeinMach_Entry();
 
     return S_OK;
 }
@@ -978,8 +889,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
 
                 XMStoreFloat4x4(&FenceDesc.WorldMatrix, WorldMatrix);
 
-                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
-                    TEXT("Prototype_GameObject_Prop_Fence"), TIME_CHANNEL::MAP, &FenceDesc), E_FAIL);
+                // CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                //     TEXT("Prototype_GameObject_Prop_Fence"), TIME_CHANNEL::MAP, &FenceDesc), E_FAIL);
                 break;
             }
             case CProp_Destructible::MODEL_TYPE::POT:
@@ -990,8 +901,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
 
                 XMStoreFloat4x4(&PotDesc.WorldMatrix, WorldMatrix);
 
-                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
-                    TEXT("Prototype_GameObject_Prop_Pot"), TIME_CHANNEL::MAP, &PotDesc), E_FAIL);
+                // CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                //     TEXT("Prototype_GameObject_Prop_Pot"), TIME_CHANNEL::MAP, &PotDesc), E_FAIL);
                 break;
             }
             case CProp_Destructible::MODEL_TYPE::BARREL:
@@ -1002,8 +913,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
 
                 XMStoreFloat4x4(&BarrelDesc.WorldMatrix, WorldMatrix);
 
-                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
-                    TEXT("Prototype_GameObject_Prop_Barrel"), TIME_CHANNEL::MAP, &BarrelDesc), E_FAIL);
+                // CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                //     TEXT("Prototype_GameObject_Prop_Barrel"), TIME_CHANNEL::MAP, &BarrelDesc), E_FAIL);
                 break;
             }
             }

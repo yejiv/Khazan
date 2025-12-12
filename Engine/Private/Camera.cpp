@@ -1,6 +1,12 @@
 #include "Camera.h"
 #include "GameInstance.h"
 
+static inline float Smooth01(float t)
+{
+    t = std::clamp(t, 0.f, 1.f);
+    return t * t * (3.f - 2.f * t);
+}
+
 CCamera::CCamera(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject { pDevice, pContext }
 {
@@ -569,6 +575,7 @@ void CCamera::Shaking(_float fTimeDelta)
 
 void CCamera::Push_FOVModifier(const FOVModifier& tMod)
 {
+    m_isFOVReturning = false;
 	_int idx = FindModIndexByID(tMod.strID);
 	if (idx >= 0)
 	{
@@ -595,8 +602,12 @@ void CCamera::Push_FOVModifier(const FOVModifier& tMod)
 void CCamera::Kill_FOVModifier(const _wstring& strID)
 {
 	_int idx = FindModIndexByID(strID);
-	if (idx >= 0)
-		m_vFOVMods[idx].isAlive = false;
+    if (idx >= 0)
+    {
+        m_fLastFOVOutDuration = m_vFOVMods[idx].fOutDuration;
+        m_vFOVMods[idx].isAlive = false;
+    }
+		
 }
 
 void CCamera::Update_FOVChannel(_float fTimeDelta)
@@ -616,6 +627,7 @@ void CCamera::Update_FOVChannel(_float fTimeDelta)
 			if (Mod.eMode == FOVModifier::FOV_MODE::ADD ||
 				Mod.eMode == FOVModifier::FOV_MODE::MULTIPLY)
 			{
+                m_fLastFOVOutDuration = Mod.fOutDuration;
 				Mod.isAlive = false;
 			}
 		}
@@ -626,7 +638,7 @@ void CCamera::Update_FOVChannel(_float fTimeDelta)
 		remove_if(m_vFOVMods.begin(), m_vFOVMods.end(),
 			[](const FOVModifier& Mod)
 			{
-				return Mod.isAlive <= 0.f;
+                return Mod.isAlive == false;
 			}), m_vFOVMods.end());
 
 	// 합성 (Base * Multiply + Add) 우선순위 포함하여
@@ -670,8 +682,33 @@ void CCamera::Update_FOVChannel(_float fTimeDelta)
 		fTargetFov = pPri->fFrom + (pPri->fTo - pPri->fFrom) * fEaseRatio;
 	}
 
-	if (m_vFOVMods.empty())
-		fTargetFov = m_fBaseFOV;
+    if (m_vFOVMods.empty())
+    {
+        //fTargetFov = m_fBaseFOV;
+
+        if (!m_isFOVReturning)
+        {
+            m_isFOVReturning = true;
+            m_fFOVReturnTime = 0.f;
+            m_fFOVReturnFrom = m_fFovy;
+
+            m_fFOVReturnDuration = (m_fLastFOVOutDuration > 1e-4f) ? m_fLastFOVOutDuration : 0.001f;
+        }
+
+        m_fFOVReturnTime += fTimeDelta;
+        _float fRatio = m_fFOVReturnTime / m_fFOVReturnDuration;
+        _float fSmooth = Smooth01(fRatio);
+
+        fTargetFov = m_fFOVReturnFrom + (m_fBaseFOV - m_fFOVReturnFrom) * fSmooth;
+
+        if (fRatio >= 1.f)
+        {
+            m_isFOVReturning = false;
+            fTargetFov = m_fBaseFOV;
+        }
+    }
+    else
+        m_isFOVReturning = false;		
 
 	fTargetFov = max(m_fFOVMin, min(fTargetFov, m_fFOVMax));
 

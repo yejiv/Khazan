@@ -465,6 +465,7 @@ public:
 #pragma endregion
 
 #pragma region SOUND_MANAGER
+    _float                      Get_Gloval_Volume();
     void                        Set_Gloval_Volume(_float fVolume);
     void                        ADD_Gloval_Volume(_float fVolume);
 

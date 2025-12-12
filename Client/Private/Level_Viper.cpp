@@ -80,8 +80,7 @@ HRESULT CLevel_Viper::Initialize()
 
     CClientInstance::GetInstance()->Fade_In();
 
-    CClientInstance::GetInstance()->Set_Volume_BGM(0.65f);
-    CClientInstance::GetInstance()->BGM_Viper_Entry();
+    CHECK_FAILED(Ready_SoundSetting(), E_FAIL);
 
     //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_snow1"), XMVectorSet(0.f, 0.f, 0.f, 1.f));
     m_pClientInstance->Set_PlayerInput(true);
@@ -1144,6 +1143,19 @@ HRESULT CLevel_Viper::Ready_Layer_Decal()
     if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal"),
         ENUM_CLASS(LEVEL::VIPER), TEXT("Pool_Decal"), nullptr, 100)))
         return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CLevel_Viper::Ready_SoundSetting()
+{
+    // 사운드 매니저 글로벌 볼륨
+    _float fGlobalVolume = m_pGameInstance->Get_Gloval_Volume();
+
+    // 글로벌 볼륨 세팅 후 환경음, BGM 사운드 세팅 및 재생
+    CClientInstance::GetInstance()->Set_Volume_BGM(0.65f);
+    CClientInstance::GetInstance()->Set_Volume_AMB(0.65f);
+    CClientInstance::GetInstance()->BGM_HeinMach_Entry();
 
     return S_OK;
 }
