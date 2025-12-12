@@ -63,8 +63,13 @@ void CProjectile_Boomarang::Update(_float fTimeDelta)
         // Active 끄고
         m_isActive = false;
         m_pBody->Collision_Active(false);
-    }
+        if (!m_isClearSound)
+        {
+            m_isClearSound = true;
+            m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Cast_Spin (SFX).wav"), 1.f);
+        }
 
+    }
 
     if (m_isActive)
     {
@@ -124,7 +129,7 @@ void CProjectile_Boomarang::Reset()
     m_pBody->Collision_Active(true);
     m_isDamageForward = false;
     m_isDamageReturn = false;
-
+    m_isClearSound = false;
 
     m_fCurrentTime = 0.f;
     _vector vDir = XMVector3Normalize(XMLoadFloat3(&m_vSpawnDir));

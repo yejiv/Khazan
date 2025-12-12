@@ -49,10 +49,9 @@ private:
     void                                Enter_State(BOOMARANGSTATE eNextState);
 
 
-
 private:
     void                                BoomarangHitSFX();
-
+    
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
     virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
@@ -69,7 +68,7 @@ private:
 
     _bool                               m_isDamageForward = { false };
     _bool                               m_isDamageReturn = { false };
-
+    _bool                               m_isClearSound = { false };
     BOOMARANGSTATE                      m_eState = { BOOMARANGSTATE::END };
 
     COLLISION_DESC                      m_tBoomanrangCollisionDesc = {};
