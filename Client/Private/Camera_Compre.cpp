@@ -90,6 +90,12 @@ static inline void StoreFloat3(_float3& out, _vector v)
     XMStoreFloat3(&out, v);
 }
 
+static inline float Smoothstep01(float t)
+{
+    t = Clamp(t, 0.f, 1.f);
+    return t * t * (3.f - 2.f * t);
+}
+
 CCamera_Compre::CCamera_Compre(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CCamera{ pDevice, pContext }
 {
@@ -438,97 +444,109 @@ HRESULT CCamera_Compre::RayCast(_float fTimeDelta)
 
 HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
 {
-    if (!m_pObjMatrix || !m_pLockMonster) return S_OK;
+    if (!m_pObjMatrix || !m_pLockMonster || fTimeDelta <= 0.f)
+        return S_OK;
 
     const _float playerEyeOffsetY = 1.5f;
 
-    const _vector playerWorldPosition = XMVectorSet(
+    const _vector vPlayerPosWS = XMVectorSet(
         m_pObjMatrix->_41,
         m_pObjMatrix->_42 + playerEyeOffsetY,
         m_pObjMatrix->_43,
         1.f
     );
 
-    _vector playerToTargetVector = XMVectorSubtract(XMLoadFloat4(m_pLockOnPos), playerWorldPosition);
-    _float playerToTargetDistance = XMVectorGetX(XMVector3Length(playerToTargetVector));
+    const _vector vTargetPosWS = XMLoadFloat4(m_pLockOnPos); 
+    _vector vToTarget = XMVectorSubtract(vTargetPosWS, vPlayerPosWS);
 
-    if (playerToTargetDistance < 1e-4f)
+    const _float dist = XMVectorGetX(XMVector3Length(vToTarget));
+    if (dist < 1e-4f)
         return S_OK;
 
-    _float targetHeightDiff =
-        XMVectorGetY(XMLoadFloat4(m_pLockOnPos)) - XMVectorGetY(playerWorldPosition);
+    _vector vToTargetN = XMVectorScale(vToTarget, 1.0f / dist);
 
-    _vector directionNormalized = XMVectorScale(playerToTargetVector, 1.0f / playerToTargetDistance);
+    const _float targetHeightDiff = XMVectorGetY(vTargetPosWS) - XMVectorGetY(vPlayerPosWS);
 
-    _float normalizedX = XMVectorGetX(directionNormalized);
-    _float normalizedY = XMVectorGetY(directionNormalized);
-    _float normalizedZ = XMVectorGetZ(directionNormalized);
 
-    {
-        const _float rawY = XMVectorGetY(directionNormalized);
-        const _float yBiasFar = -0.3f;
+    const _float nx = XMVectorGetX(vToTargetN);
+    const _float nz = XMVectorGetZ(vToTargetN);
+    _float targetYaw = atan2f(nz, nx);
 
-        const _float clampNear = m_fLockClampNearDist;
-        const _float clampFar = m_fLockClampFarDist;
-        const _float kDist = 1.f - Saturate((playerToTargetDistance - clampNear) / (clampFar - clampNear));
 
-        const _float yBias = Lerp(0.0f, yBiasFar, 1.f - kDist);
-        normalizedY = rawY + yBias;
-    }
-
-    _float targetYaw = atan2f(normalizedZ, normalizedX);
-    _float targetPitch = asinf(Clamp(normalizedY, -1.f, 1.f));
+    float targetPitch = m_fLockBasePitch;
 
 
     {
-        const _float clampNear = m_fLockClampNearDist;
-        const _float clampFar = m_fLockClampFarDist;
-
-        const _float kDist = 1.f - Saturate((playerToTargetDistance - clampNear) / (clampFar - clampNear));
-
-        const _float pitchDownLimit = XMConvertToRadians(m_fLockPitchDownClampDeg);
-        const _float pitchUpLimitTight = XMConvertToRadians(m_fLockPitchUpClampDeg);
-        const _float pitchUpLimitHard = m_fPitchMax;
-
-        if (kDist > 0.f)
+        _float kH = 0.f;
+        if (targetHeightDiff > m_fLockHeightAssistStart)
         {
-            if (targetPitch < pitchDownLimit)
-            {
-                targetPitch = Lerp(targetPitch, pitchDownLimit, kDist);
-            }
+            const _float denom = max(0.001f, (m_fLockHeightAssistFull - m_fLockHeightAssistStart));
+            kH = (targetHeightDiff - m_fLockHeightAssistStart) / denom;
+            kH = Smoothstep01(kH);
         }
 
-        _float dynamicUpLimit = pitchUpLimitHard;
-
-        _float kHeight = 0.f;
-        if (targetHeightDiff > 0.f)
+        if (kH > 0.f)
         {
-            const _float refHeight = 2.0f; 
-            kHeight = Saturate(targetHeightDiff / refHeight);
-        }
+            const _float maxAssist = XMConvertToRadians(m_fLockHeightAssistMaxDeg);
 
-        _float kTight = Saturate(kDist * kHeight);
-
-        if (kTight > 0.f)
-        {
-            dynamicUpLimit = Lerp(pitchUpLimitHard, pitchUpLimitTight, kTight);
+            targetPitch += maxAssist * kH;
         }
-        else if (kDist > 0.f)
-        {
-            dynamicUpLimit = Lerp(pitchUpLimitHard, pitchUpLimitTight, kDist);
-        }
-
-        if (targetPitch > dynamicUpLimit)
-            targetPitch = dynamicUpLimit;
     }
+
 
     targetPitch = Clamp(targetPitch, m_fPitchMin, m_fPitchMax);
 
+    _float yawSmoothTime = m_fLockYawSmoothBase;
+
+    {
+        // prev 포지션 없으면 저장만
+        if (!m_isPrevLockPlayerPos)
+        {
+            XMStoreFloat4(&m_vPrevLockPlayerPosWS, vPlayerPosWS);
+            m_isPrevLockPlayerPos = true;
+        }
+        else
+        {
+            _vector vPrev = XMLoadFloat4(&m_vPrevLockPlayerPosWS);
+            _vector vVel = XMVectorSubtract(vPlayerPosWS, vPrev);
+            XMStoreFloat4(&m_vPrevLockPlayerPosWS, vPlayerPosWS);
+
+            const float speed = XMVectorGetX(XMVector3Length(vVel)) / max(1e-4f, fTimeDelta);
+
+            // 속도 너무 작으면(정지) 지연 거의 0
+            if (speed > 0.05f)
+            {
+                _vector vMoveDir = XMVector3Normalize(vVel);
+
+                // "현재 카메라 yaw 기준" 오른쪽 벡터
+                _vector vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+                _vector vCamForward = XMVectorSet(cosf(m_fYaw), 0.f, sinf(m_fYaw), 0.f);
+                _vector vCamRight = XMVector3Normalize(XMVector3Cross(vWorldUp, vCamForward));
+
+                _float side = XMVectorGetX(XMVector3Dot(vMoveDir, vCamRight)); // -1~1
+                _float sideAbs = fabsf(side);
+
+                // 측면 이동이 일정 이상이면 지연 가중
+                _float kSide = 0.f;
+                if (sideAbs > m_fLockSideLagStart)
+                {
+                    kSide = (sideAbs - m_fLockSideLagStart) / max(0.001f, (1.f - m_fLockSideLagStart));
+                    kSide = Smoothstep01(kSide);
+                }
+
+                yawSmoothTime = Lerp(m_fLockYawSmoothBase, m_fLockYawSmoothLag, kSide);
+            }
+        }
+    }
+
+    // -----------------------------
+    // 6) 스무딩 적용 (yaw는 상황에 따라 늦게, pitch는 고정+높이보정만)
+    // -----------------------------
     m_fYaw = SmoothDampAngle(
         m_fYaw,
         targetYaw,
         m_fSmoothingVelocityYaw,
-        0.08f,
+        yawSmoothTime,
         fTimeDelta
     );
 
@@ -536,7 +554,7 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
         m_fPitch,
         targetPitch,
         m_fSmoothingVelocityPitch,
-        0.08f,
+        0.08f,          // pitch는 일정(원하면 멤버화)
         fTimeDelta
     );
 
@@ -699,6 +717,7 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
             m_iLockOrder = 0;
             m_fSmoothingVelocityYaw = 0.f;
             m_fSmoothingVelocityPitch = 0.f;
+            m_isPrevLockPlayerPos = false;
             return;
         }
 
@@ -712,6 +731,7 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
             m_iLockOrder = 0;
             m_fSmoothingVelocityYaw = 0.f;
             m_fSmoothingVelocityPitch = 0.f;
+            m_isPrevLockPlayerPos = false;
             return;
         }
 
@@ -741,6 +761,7 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
                 m_iLockOrder = 0;
                 m_fSmoothingVelocityYaw = 0.f;
                 m_fSmoothingVelocityPitch = 0.f;
+                m_isPrevLockPlayerPos = false;
             }
         }
     }
@@ -769,11 +790,12 @@ CGameObject* CCamera_Compre::Pick_ClosetTarget()
     );
 
     vector<pair<_float, CGameObject*>> vCandidates;
-    vCandidates.reserve(m_CollMonsters.size());
 
     for (CGameObject* pObj : m_CollMonsters)
     {
-        if (!pObj || !pObj->Get_IsActive() || pObj->Get_IsDead())
+        CMonster* pMonster = dynamic_cast<CMonster*>(pObj);
+
+        if (!pObj || !pObj->Get_IsActive() || pObj->Get_IsDead() || pMonster->Get_CurrentHP() <= 0.f)
             continue;
 
         CTransform* pTransform = dynamic_cast<CTransform*>(

@@ -57,6 +57,7 @@ private:
 	HRESULT					Bind_ShaderResources();
 	void					Carculate_Matrix(_float fTimeDelta);
     void                    Carculate_BakckMatrix(_float fTimeDelta);
+    HRESULT                 Bind_Ice_ShaderResources();
 
 private:
 	HRESULT					Ready_Colliders();

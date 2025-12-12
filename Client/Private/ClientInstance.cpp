@@ -542,6 +542,38 @@ void CClientInstance::BGM_UnMute()
     m_pBGM_Manager->UnMute_BGM();
 }
 
+_float CClientInstance::Get_Volume_AMB()
+{
+    return m_pBGM_Manager->Get_Volume_AMB();
+}
+
+void CClientInstance::Set_Volume_AMB(_float fVolume)
+{
+    m_pBGM_Manager->Set_Volume_AMB(fVolume);
+}
+
+void CClientInstance::AMB_Mute()
+{
+    m_pBGM_Manager->Mute_AMB();
+}
+
+void CClientInstance::AMB_UnMute()
+{
+    m_pBGM_Manager->UnMute_AMB();
+}
+
+void CClientInstance::All_Mute()
+{
+    m_pBGM_Manager->Mute_BGM();
+    m_pBGM_Manager->Mute_AMB();
+}
+
+void CClientInstance::All_UnMute()
+{
+    m_pBGM_Manager->UnMute_BGM();
+    m_pBGM_Manager->UnMute_AMB();
+}
+
 void CClientInstance::Clear_CurrentKey_BGM()
 {
     m_pBGM_Manager->Clear_CurrentKey();
@@ -557,14 +589,14 @@ void CClientInstance::ChangeBGM(const _tchar* pSoundKey, _float fFadeTime)
     m_pBGM_Manager->ChangeBGM(pSoundKey, fFadeTime);
 }
 
-void CClientInstance::PlayBattleBGM(const _tchar* pSoundKey, _float fFadeTime)
+void CClientInstance::PlayAMB(const _tchar* pSoundKey, _float fFadeTime)
 {
-    m_pBGM_Manager->PlayBattleBGM(pSoundKey, fFadeTime);
+    m_pBGM_Manager->PlayAMB(pSoundKey, fFadeTime);
 }
 
-void CClientInstance::EndBattleBGM(_float fFadeTime)
+void CClientInstance::ChangeAMB(const _tchar* pSoundKey, _float fFadeTime, _bool isWav)
 {
-    m_pBGM_Manager->EndBattleBGM(fFadeTime);
+    m_pBGM_Manager->ChangeAMB(pSoundKey, fFadeTime);
 }
 
 void CClientInstance::BGM_HeinMach_Entry(_float fFadeTime)
@@ -695,6 +727,21 @@ void CClientInstance::BGM_Resume(_bool isFade, _float fFadeTime)
 void CClientInstance::BGM_Pause(_bool isFade, _float fFadeTime)
 {
     m_pBGM_Manager->BGM_Pause(isFade, fFadeTime);
+}
+
+void CClientInstance::AMB_Stop(_float fFadeTime)
+{
+    m_pBGM_Manager->AMB_Stop(fFadeTime);
+}
+
+void CClientInstance::AMB_Resume(_bool isFade, _float fFadeTime)
+{
+    m_pBGM_Manager->AMB_Resume(isFade, fFadeTime);
+}
+
+void CClientInstance::AMB_Pause(_bool isFade, _float fFadeTime)
+{
+    m_pBGM_Manager->AMB_Pause(isFade, fFadeTime);
 }
 
 #pragma endregion
