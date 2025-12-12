@@ -530,12 +530,12 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
                 /* 몬스터한테 저스트 가드 타이밍 건내주기  */
                 if (pDesc->pGameObject == nullptr) return;
 
-                m_bGuradFX[0] = true;
-
                 CWeaponObject* pMonster = dynamic_cast<CWeaponObject*>(pDesc->pGameObject);
 
                 if (pMonster == nullptr)
                     return;
+
+                m_bGuradFX[0] = true;
 
                 pMonster->On_JustGuardCallback(true);
 
@@ -1759,24 +1759,32 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
 
     // 닷지
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        if(Has_Status(CKhazan_GSword::GSWORD)) Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        else if (Has_Status(CKhazan_GSword::SPEAR)) Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
+        else  Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         m_isEnableAnimEvent = true;
         m_iCurAnimEventIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
+        if (Has_Status(CKhazan_GSword::GSWORD)) Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        else if (Has_Status(CKhazan_GSword::SPEAR)) Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
+        else  Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         m_isEnableAnimEvent = false;
         //Remove_Status(CKhazan_GSword::DODGE_ENDING);
         });
 
     // 닷지 어택
     m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        if (Has_Status(CKhazan_GSword::GSWORD)) Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        else if (Has_Status(CKhazan_GSword::SPEAR)) Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
+        else  Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         m_isEnableAnimEvent = true;
         m_iCurAnimEventIndex = m_pModelCom->Get_CurAnimIndex();
         });
     m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), false);
+        if (Has_Status(CKhazan_GSword::GSWORD)) Trigger_MotionTrail(TEXT("MT_Int05_RedGray"), true);
+        else if (Has_Status(CKhazan_GSword::SPEAR)) Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
+        else  Trigger_MotionTrail(TEXT("MT_Common_WhiteDefault"), true);
         m_isEnableAnimEvent = false;
         });
 #pragma endregion

@@ -512,13 +512,13 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
      
                 /* 몬스터한테 저스트 가드 타이밍 건내주기  */
                 if (pDesc->pGameObject == nullptr) return;
-                
-                m_bGuradFX[0] = true;
-                
+
                 CWeaponObject* pMonster = dynamic_cast<CWeaponObject*>(pDesc->pGameObject);
 
                 if (pMonster == nullptr)
                     return;
+
+                m_bGuradFX[0] = true;
 
                 pMonster->On_JustGuardCallback(true);
 
