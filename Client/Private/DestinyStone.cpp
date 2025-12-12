@@ -82,6 +82,8 @@ void CDestinyStone::Priority_Update(_float fTimeDelta)
     {
         m_isDissolved = false;
 
+        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OffEvent() });
+
         m_pGameInstance->Set_LightEnable(m_wstrLightTag, ENUM_CLASS(LEVEL::HEINMACH), false);
     }
 
