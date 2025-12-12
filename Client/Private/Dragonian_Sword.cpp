@@ -43,6 +43,9 @@ void CDragonian_Sword::Priority_Update(_float fTimeDelta)
 
 void CDragonian_Sword::Update(_float fTimeDelta)
 {
+    if (!m_pData->isSearch)
+        return;
+
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 
     for (uint32_t i = 0; i < 3; i++)
@@ -65,7 +68,6 @@ void CDragonian_Sword::Update(_float fTimeDelta)
 
 void CDragonian_Sword::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this),);
 }
 
 HRESULT CDragonian_Sword::Render()

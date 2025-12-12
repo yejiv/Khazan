@@ -30,6 +30,16 @@ HRESULT CProp::Initialize_Clone(void* pArg)
 
     m_Properties = pDesc->Properties;
 
+    switch (pDesc->eLevel)
+    {
+    case LEVEL::HEINMACH:
+        m_vSnowColor = _float3(1.3f, 1.3f, 1.3f);
+        break;
+    case LEVEL::VIPER:
+        m_vSnowColor = _float3(0.92f, 0.94f, 1.f);
+        break;
+    }
+
     return S_OK;
 }
 

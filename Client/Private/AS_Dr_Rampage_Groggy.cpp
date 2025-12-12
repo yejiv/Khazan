@@ -14,7 +14,7 @@ void CAS_Dr_Rampage_Groggy::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     m_pMonData->iAnimIndex = 37;
     m_eState = START;
-    m_pMonData->fGloggyTime = 5.f;
+    m_pMonData->fGloggyTime = 10.f;
     m_pMonData->pOwner->BurutalUI_On(m_pMonData->fGloggyTime);
 }
 
@@ -54,7 +54,6 @@ void CAS_Dr_Rampage_Groggy::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
     m_pMonData->pOwner->BurutalUI_Off();
     m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(m_pMonData->pOwner->Get_Name(), "isCanBrutalAttack", false);
-    m_pMonData->eHitType = HITREACTION::END;
 }
 
 CAS_Dr_Rampage_Groggy* CAS_Dr_Rampage_Groggy::Create()

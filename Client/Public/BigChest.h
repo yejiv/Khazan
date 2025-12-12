@@ -53,6 +53,8 @@ private:
 
     _uint m_iEventID = { 0 };
 
+    LEVEL m_eLevel = { LEVEL::END };
+
 private:
     COLLISION_DESC m_TriggerCollisionDesc;
 

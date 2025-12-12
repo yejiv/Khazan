@@ -310,6 +310,9 @@ private:
 
     _uint                       m_iInteractTypeEventID = { };
     _uint                       m_iObjectInteractEventID = { };
+    _bool                       m_isInteractEventStart = { false };
+    _bool                       m_isLadderEndEvent = { false };
+    _bool                       m_isLadderRotationEvent = { false };
 
 
 private:
@@ -347,6 +350,10 @@ private:
     std::string GetHitReactionString();
 
 #endif // _DEBUG
+
+public:
+    void Set_Idle(); // 강제 아이들 상태로 돌리기 위해 사용
+
 
 
 public:

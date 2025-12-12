@@ -170,6 +170,9 @@ PERCEPTIONCALLBACK CAI_Controller_Dragonian_Melee::GetCallBackPerception(CGameOb
 
                         if (m_pMonData->eHitType != HITREACTION::BRUTAL_ATTACK)
                             m_pMonData->eHitType = static_cast<HITREACTION>(m_pBB->Get_Value<_uint>(m_strMonstertag, "DamageType"));
+
+                        if (m_pMonData->eHitType == HITREACTION::BRUTAL_ATTACK)
+                            m_pMonData->iBrutalHit++;
                     }
                 }
             };

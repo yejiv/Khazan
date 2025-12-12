@@ -323,8 +323,9 @@ private:
 	void						Update_Interact_Event(_float fTimeDelta);  
     /*  하인마스 + 엠바스 */
 	void						BladeNexus_Event(_float fTimeDelta);    
-    void						Chest_Event(_float fTimeDelta);         
+    void						Chest_Event(_float fTimeDelta);
     void						TombStone_Event(_float fTimeDelta);     //폐기
+    void						DestinyStone_Event(_float fTimeDelta);      // 귀석 이벤트
 
     /* 앰바스 */
     void						Lever_Event(_float fTimeDelta);

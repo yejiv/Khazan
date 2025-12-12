@@ -859,7 +859,8 @@ void CModel::Update_PartLocalBones()
                     pBone->Get_TransformationMatrix(); // 파츠 로컬
 
                 // DirectX 스켈레톤 컨벤션: Combined = Local * ParentCombined
-                XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], localMatrix * ParentCombinedMatrix);
+                //XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], localMatrix * ParentCombinedMatrix);
+                XMStoreFloat4x4(&m_PartLocalBoneMatrices[i],  ParentCombinedMatrix);
             }
             else
             {
@@ -867,7 +868,7 @@ void CModel::Update_PartLocalBones()
                 // 여기선 파츠 루트면 자기 로컬(또는 identity)로 처리
                 const _matrix localMatrix = pBone->Get_TransformationMatrix();
                 XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], localMatrix);
-                // 필요하면 XMMatrixIdentity()로 바꿔도 됨 (디자인 선택)
+
             }
         }
     }

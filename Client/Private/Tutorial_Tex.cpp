@@ -44,7 +44,7 @@ void CTutorial_Tex::Setting_Tex(GUIDE_TYPE eType, _int iPage)
 		else
 		{
 			m_isMovie = true;
-			m_eMovieType = MOVIE_TYPE::DODGE_2;
+			m_eMovieType = MOVIE_TYPE::BRUTALATTACK;
 		}
 	}
 	else if (eType == GUIDE_TYPE::FALLATTACK)

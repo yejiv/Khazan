@@ -82,7 +82,21 @@ void CDestinyStone::Priority_Update(_float fTimeDelta)
     {
         m_isDissolved = false;
 
+        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OffEvent() });
+
         m_pGameInstance->Set_LightEnable(m_wstrLightTag, ENUM_CLASS(LEVEL::HEINMACH), false);
+
+        LIGHT_TRANSITION_DESC LightDesc{};
+        LightDesc.fDuration = 1.f;
+        LightDesc.vFadeTime = _float2(1.f, 0.f);
+        LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+        LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+        LightDesc.vSpecular = _float4(0.f, 0.f, 0.f, 0.f);
+        LightDesc.isReturnToStart = false;
+        LightDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(m_wstrLightTag, ENUM_CLASS(LEVEL::HEINMACH), false); };
+        m_pGameInstance->Start_LightTransition(m_wstrLightTag, ENUM_CLASS(LEVEL::HEINMACH), LightDesc);
+
+        //  m_pGameInstance->Set_LightEnable(m_wstrLightTag, ENUM_CLASS(LEVEL::HEINMACH), false);
     }
 
     __super::Priority_Update(fTimeDelta);
@@ -95,11 +109,6 @@ void CDestinyStone::Update(_float fTimeDelta)
     __super::Update(fTimeDelta);
 
     m_fBlinkTimeAcc += fTimeDelta;
-
-    // Test
-    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
-        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-            m_isEnableBlink = !m_isEnableBlink;
 }
 
 void CDestinyStone::Late_Update(_float fTimeDelta)
@@ -131,7 +140,7 @@ HRESULT CDestinyStone::Render()
     {
         Bind_Materials(i);
 
-        if (true == m_isEnableBlink)
+        if (false == m_isInteracted)
         {
             if (FAILED(Bind_Blink_ShaderResources()))
                 return E_FAIL;
@@ -230,7 +239,7 @@ HRESULT CDestinyStone::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("흡수"), 1.5f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("흡수"), 0.75f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 
@@ -281,6 +290,12 @@ void CDestinyStone::Event_Update(_float fTimeDelta)
         InteractType.eInteractType = INTERACTIVE_TYPE::DESTINYSTONE;
         InteractType.isEvent = true;
 
+        EventDestinyStone DSEvent = {};
+
+        XMStoreFloat4(&DSEvent.vPosition, Get_Position());
+
+        InteractType.DSEvent = DSEvent;
+
         // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
 
@@ -309,11 +324,11 @@ void CDestinyStone::Input_Interact_Event(_float fTimeDelta)
 
         InteractType.eState = EventInteractType::BEGIN;
 
-        EventBladeNexus BNEvent = {};
+        EventDestinyStone DSEvent = {};
 
-        XMStoreFloat4(&BNEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&DSEvent.vPosition, Get_Position());
 
-        InteractType.BNEvent = BNEvent;
+        InteractType.DSEvent = DSEvent;
 
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
     }
@@ -342,7 +357,7 @@ HRESULT CDestinyStone::Bind_Materials(_uint iMeshIndex)
 
 HRESULT CDestinyStone::Bind_Blink_ShaderResources()
 {
-    _float fRimPower = 5.f;
+    _float fRimPower = 3.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
         return E_FAIL;
 
@@ -362,7 +377,7 @@ HRESULT CDestinyStone::Bind_Blink_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fCycleSpeed", &fCycleSpeed, sizeof(_float))))
         return E_FAIL;
 
-    _float3 vRimColor = _float3(1.f, 0.f, 0.f);
+    _float3 vRimColor = _float3(1.f, 1.f, 1.f);
     if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3))))
         return E_FAIL;
 

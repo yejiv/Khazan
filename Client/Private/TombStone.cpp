@@ -188,10 +188,10 @@ HRESULT CTombStone::Ready_Interaction_Guide(void* pArg)
     switch (m_iTombStoneID)
     {
     case 0:
-        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("???"), 1.5f);
+        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("???"), 1.f);
         break;
     case 1:
-        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("나가기"), 1.5f);
+        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("나가기"), 1.f);
         break;
     }
 
@@ -297,6 +297,8 @@ void CTombStone::Animation_Update(_float fTimeDelta)
         // IDLE 상태
         if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_TombStone_On"), Get_Position(), nullptr, m_fInteract_Volume);
+
             m_pGuide->Update_Visible(false);
 
             m_fEmissiveIntensity = 1.5f;

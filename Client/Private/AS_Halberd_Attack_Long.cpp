@@ -113,7 +113,7 @@ void CAS_Halberd_Attack_Long::OnCollision(COLLISION_DESC* pDesc, _uint iCollisio
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+        pTarget->Take_Damage(m_pGameInstance->Rand(m_pMonData->fAttackDamage *0.8f, m_pMonData->fAttackDamage * 1.2f), HITREACTION::KNOCKBACK_NORMAL, nullptr);
         pTarget->KnockBack(pOwner->Get_Look(), 18.5f, 60.f);
         m_isTakeDamage = true;
     }

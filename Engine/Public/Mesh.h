@@ -55,7 +55,7 @@ private:
 	/* 고정 시킬 본 이름들 */
 	inline static const vector<_wstring> s_StaticBonePatterns = {
 		/* leg*/
-		//L"Cloth_",
+		L"Cloth_",
 		L"Point_",
 
 		/* hair*/

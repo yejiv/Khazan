@@ -114,7 +114,6 @@ HRESULT CPet_Danjinjar::Initialize_Clone(void* pArg)
 
     m_pGameInstance->Subscribe_Event<EVENT_PET_STATE>(ENUM_CLASS(EVENT_TYPE::PET), [&](const EVENT_PET_STATE& e) {State_Change(e.isStart); });
     m_isActive = false;
-
     return S_OK;
 }
 
@@ -140,8 +139,7 @@ void CPet_Danjinjar::Update(_float fTimeDelta)
     m_pTalk->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
     m_pTalk->Update(fTimeDelta);
     
-    m_pGameInstance->Set_LightEnable(TEXT("DanjinJar_Pet"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false);
-
+    
     _float4 vPosition{};
     XMStoreFloat4(&vPosition, m_pTransformCom->Get_State(STATE::POSITION));
     m_pGameInstance->Set_LightPosition(TEXT("DanjinJar_Pet"), ENUM_CLASS(LEVEL::EMBARS), vPosition);
@@ -162,6 +160,9 @@ void CPet_Danjinjar::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
 
 void CPet_Danjinjar::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
+    if (!m_isActive)
+        return;
+
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK))
     {
         m_pCharVirCom->Jump_Direction(Get_Look() * -1.f, 10.f, 30.f);

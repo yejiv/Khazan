@@ -77,7 +77,7 @@ void CAS_Elamein_Guard::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
         pTarget->KnockBack(pOwner->Get_Look(), 13.5f, 45.f);
-        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+        pTarget->Take_Damage(m_pGameInstance->Rand(m_pMonData->fAttackDamage * 0.8f, m_pMonData->fAttackDamage * 1.3f), HITREACTION::KNOCKBACK_STRONG, nullptr);
     }
 }
 

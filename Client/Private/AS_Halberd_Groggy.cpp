@@ -17,7 +17,7 @@ void CAS_Halberd_Groggy::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     m_pMonData->iAnimIndex = 35;
     m_eState = START;
-    m_pMonData->fGloggyTime = 5.f;
+    m_pMonData->fGloggyTime = 10.f;
     m_pMonData->pOwner->BurutalUI_On(m_pMonData->fGloggyTime);
 }
 

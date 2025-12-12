@@ -15,7 +15,7 @@ void CAS_Dr_Melee_Groggy::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     m_pMonData->iAnimIndex = 26;
     m_eState = START;
-    m_pMonData->fGloggyTime = 5.f;
+    m_pMonData->fGloggyTime = 10.f;
     m_pMonData->pOwner->BurutalUI_On(m_pMonData->fGloggyTime);
 }
 
