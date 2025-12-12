@@ -385,6 +385,7 @@ namespace Engine
         float fTime = 0.f; // 경과 시간
         float fDuration = 0.f; // 전체 재생 시간
         float iPriority = 0.f; // 우선순위
+        float fOutDuration = 0.3f;
         bool isAlive = true; // 종료되면 false이면서 삭제
 
         std::function<float(float)> Ease;
