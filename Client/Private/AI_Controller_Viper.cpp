@@ -83,7 +83,7 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
             CViper* pViper = static_cast<CViper*>(pOwner);
             pViper->Set_PhaseWeapon_Phase2();
             //pViper->Set_Weapon_Phase1();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_HANDUPPER), pViper);
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_BERSERKERJUMP), pViper);
         }
 
         if (m_pGameInstance->Key_Down(DIK_N))
@@ -120,7 +120,7 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
     {
         m_fAnimSpeed = 1.2f;
         m_fCurrentTime += fTimeDelta;
-        if (m_fCurrentTime >= 30.f)
+        if (m_fCurrentTime >= 40.f)
         {
             m_pBB->Set_Value<_bool>(m_strMonstertag, "is_P2Loar", true);
             m_pBB->Set_Value<_bool>(m_strMonstertag, "is_Berserker", false);
@@ -469,13 +469,13 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
                 _float fJumpRnage = BB->Get_Value<_float>(pViper->Get_Name(), "JumpAttackRange");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
 
-                if (iBersekerIndex == 0 || iBersekerIndex == 2)
+                if (iBersekerIndex == 0 || iBersekerIndex == 3)
                 {
                     if (fDist > fAttackRange + 10.f && fDist <= fJumpRnage)
                     {
-                        _float fChance = m_pGameInstance->Rand(0.f, 1.f);
+                        //_float fChance = m_pGameInstance->Rand(0.f, 1.f);
 
-                        if (fChance >= 0)
+                        //if (fChance >= 0)
                             BB->Set_Value<_uint>(pViper->Get_Name(), "BerserkerJumpCount", 1);
                         /* else
                              BB->Set_Value<_uint>(pViper->Get_Name(), "BerserkerJumpCount", 0);*/
@@ -581,7 +581,20 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
                 _float fDist = BB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
 
-                if (fDist != 0 && fDist <= fAttackRange)
+                _bool isBerserker = BB->Get_Value<_bool>(pViper->Get_Name(), "is_Berserker");
+
+                if (isBerserker)
+                {
+                    _uint iBersekerIndex = BB->Get_Value<_uint>(pViper->Get_Name(), "BerserkerIndex");
+                    if (iBersekerIndex == 2 && fDist <= fAttackRange)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+
+
+                else if (fDist != 0 && fDist <= fAttackRange)
                 {
                     DIRECTION_INFO Info = {};
                     Info.iDirFlag = BB->Get_Value<_uint>(pViper->Get_Name(), "TargetDirection");
@@ -591,6 +604,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
                     return false;
                 }
+
                 else
                     return false;
             };
@@ -1537,6 +1551,8 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SwingComboFinished"))
                 {
+                    _uint iBersekerIndex = BB->Get_Value<_uint>(pViper->Get_Name(), "BerserkerIndex");
+                    BB->Set_Value<_uint>(pViper->Get_Name(), "BerserkerIndex", iBersekerIndex + 1);
                     return BTNODESTATE::SUCCESS;
                 }
 
@@ -1780,6 +1796,9 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
                     return BTNODESTATE::FAILURE;
 
+                _bool isBerserker = BB->Get_Value<_bool>(pViper->Get_Name(), "is_Berserker");
+                if(isBerserker)
+                    return BTNODESTATE::FAILURE;
 
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_SlashDoubleFinished"))
                 {
@@ -1802,6 +1821,10 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
             {
 
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+                _bool isBerserker = BB->Get_Value<_bool>(pViper->Get_Name(), "is_Berserker");
+                if (isBerserker)
                     return BTNODESTATE::FAILURE;
 
 
@@ -1830,6 +1853,11 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                     return BTNODESTATE::FAILURE;
 
 
+                _bool isBerserker = BB->Get_Value<_bool>(pViper->Get_Name(), "is_Berserker");
+                if (isBerserker)
+                    return BTNODESTATE::FAILURE;
+
+
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "is_P2_HandSwing2HitFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -1852,6 +1880,10 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
             {
 
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggy"))
+                    return BTNODESTATE::FAILURE;
+
+                _bool isBerserker = BB->Get_Value<_bool>(pViper->Get_Name(), "is_Berserker");
+                if (isBerserker)
                     return BTNODESTATE::FAILURE;
 
 
@@ -1913,8 +1945,8 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                 _float fJumpAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "JumpAttackRange");
 
 
-                if (fDist < fJumpAttackRange)
-                    return BTNODESTATE::SUCCESS;
+                /*if (fDist < fJumpAttackRange)
+                    return BTNODESTATE::SUCCESS;*/
 
                 if (fDist < fAttackRange)
                     return BTNODESTATE::SUCCESS;
