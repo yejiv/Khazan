@@ -25,8 +25,7 @@ CSequence_Viper_CutScene::CSequence_Viper_CutScene(CViper* pViper, CKhazan_GSwor
 
 HRESULT CSequence_Viper_CutScene::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 {
-    m_pCamera = dynamic_cast<CCamera_Compre*>(m_pClientInstance->Get_ActiveCamera());
-    m_pClientInstance->Set_PlayerInput(false);
+    m_pCamera = dynamic_cast<CCamera_Compre*>(m_pClientInstance->Get_ActiveCamera());    
     return S_OK;
 }
 
@@ -44,6 +43,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         {
             m_pClientInstance->Fade_Out();
             static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+            m_pClientInstance->Set_PlayerInput(false);
+            m_pKhazan->Set_Idle();
             m_isFadeOut = true;
         }
 

@@ -39,57 +39,61 @@ void CDecal_Manager::Update(_float fTimeDelta)
 
 HRESULT CDecal_Manager::Render()
 {
-    // 데칼의 월드, 카메라 뷰 투영, 뷰 역행렬, 투영 역행렬 바인딩
-    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
-        return E_FAIL;
+    if (m_isShow)
+    {
+        // 데칼의 월드, 카메라 뷰 투영, 뷰 역행렬, 투영 역행렬 바인딩
+        if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
+            return E_FAIL;
+
+        if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+            return E_FAIL;
+
+        if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW))))
+            return E_FAIL;
+
+        if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
+            return E_FAIL;
+
+        // 디퓨즈, 뎁스, 노말
+        if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Diffuse"), m_pShader, "g_DiffuseTexture")))
+            return E_FAIL;
+
+        if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
+            return E_FAIL;
+
+        if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Normal"), m_pShader, "g_NormalTexture")))
+            return E_FAIL;
+
+        _uint           iNumViewports = { 1 };
+        D3D11_VIEWPORT  ViewportDesc{};
+        m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
+
+        // 스크린 사이즈
+        _float2 vScreenSize = _float2(ViewportDesc.Width, ViewportDesc.Height);
+        if (FAILED(m_pShader->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
+            return E_FAIL;
+
+        // 활성화된 데칼 개수만큼 순회, 해당 데칼의 월드, 뷰, 투영 바인딩
+        for (auto& pDecal : m_Decals)
+        {
+            //  if (pDecal->isCameraInDecalBox())
+            //      continue;
+
+            if (FAILED(pDecal->Bind_ShaderResources(m_pShader, m_pTexture, m_pVIBuffer)))
+                return E_FAIL;
+        }
+
+        // 맵 데칼 개수만큼 순회, 해당 데칼의 월드, 뷰, 투영 바인딩
+        for (auto& pStaticDecal : m_StaticDecals)
+        {
+            //  if (pStaticDecal->isCameraInDecalBox())
+            //      continue;
+
+            if (FAILED(pStaticDecal->Bind_ShaderResources(m_pShader, m_pTexture, m_pVIBuffer)))
+                return E_FAIL;
+        }
+    }
     
-    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
-        return E_FAIL;
-
-    // 디퓨즈, 뎁스, 노말
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Diffuse"), m_pShader, "g_DiffuseTexture")))
-        return E_FAIL;
-
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
-        return E_FAIL;
-
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Normal"), m_pShader, "g_NormalTexture")))
-        return E_FAIL;
-
-    _uint           iNumViewports = { 1 };
-    D3D11_VIEWPORT  ViewportDesc{};
-    m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
-
-    // 스크린 사이즈
-    _float2 vScreenSize = _float2(ViewportDesc.Width, ViewportDesc.Height);
-    if (FAILED(m_pShader->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
-        return E_FAIL;
-
-    // 활성화된 데칼 개수만큼 순회, 해당 데칼의 월드, 뷰, 투영 바인딩
-    for (auto& pDecal : m_Decals)
-    {
-        //  if (pDecal->isCameraInDecalBox())
-        //      continue;
-
-        if (FAILED(pDecal->Bind_ShaderResources(m_pShader, m_pTexture, m_pVIBuffer)))
-            return E_FAIL;
-    }
-
-    // 맵 데칼 개수만큼 순회, 해당 데칼의 월드, 뷰, 투영 바인딩
-    for (auto& pStaticDecal : m_StaticDecals)
-    {
-        //  if (pStaticDecal->isCameraInDecalBox())
-        //      continue;
-
-        if (FAILED(pStaticDecal->Bind_ShaderResources(m_pShader, m_pTexture, m_pVIBuffer)))
-            return E_FAIL;
-    }
 
     return S_OK;
 }

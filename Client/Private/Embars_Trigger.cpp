@@ -128,33 +128,6 @@ HRESULT CEmbars_Trigger::Ready_TriggerType(void* pArg)
         m_pKhazan = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Creature_Player")));
     }
 
-    /*
-    if (m_strTriggerKey == "CutScene")
-    {
-        m_pHeinMach_Field = CSequence_HeinMach_Field::Create(
-            dynamic_cast<CCamera_Compre*>(m_pClientInstance->Find_Camera(
-                ENUM_CLASS(LEVEL::HEINMACH),
-                CAMERATYPE::PLAYER))
-        );
-    }
-    else if (m_strTriggerKey == "Yetuga")
-    {
-        m_pHeinMach_Yetuga = CSequence_HeinMach_Yetuga::Create(
-            dynamic_cast<CCamera_Compre*>(m_pClientInstance->Find_Camera(ENUM_CLASS(LEVEL::HEINMACH), CAMERATYPE::PLAYER)),
-            dynamic_cast<CCreature*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")))
-        );
-
-        Load_SkyBoxBinaryFile(TEXT("HeinMach_Yetuga"));
-    }
-    */
-
-    /*
-    if (m_strTriggerKey == "Talk_03")
-    {
-        m_pHeinMach_Start_Chat = CSequence_HeinMach_Start_Chat::Create();
-    }
-    */
-
     return S_OK;
 }
 

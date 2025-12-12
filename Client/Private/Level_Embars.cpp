@@ -85,9 +85,7 @@ HRESULT CLevel_Embars::Initialize()
     if (!Wait_All_Futures())
         return E_FAIL;
 
-    m_futures.clear();
-
-    CClientInstance::GetInstance()->Set_PlayerInput(true);
+    m_futures.clear();    
 
     m_iEventID = m_pGameInstance->Subscribe_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), [&](const EVENT_LEVEL_CHANGE& e)
         {
@@ -1621,6 +1619,9 @@ void CLevel_Embars::Start_Event()
     Desc.fFadeOutTime = 2.5f;
     Desc.isDissovle = true;
     m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
+
+    m_pClientInstance->Camera_MouseOnOff(true);
+    m_pGameInstance->Decal_OnOff(true);
 }
 
 CLevel_Embars* CLevel_Embars::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

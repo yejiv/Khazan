@@ -80,7 +80,10 @@ HRESULT CLevel_Viper::Initialize()
 
     m_futures.clear();
 
-    CClientInstance::GetInstance()->Fade_In();
+    CClientInstance::GetInstance()->Fade_In([this]() {
+        m_pGameInstance->Decal_OnOff(true);
+        m_pClientInstance->Camera_MouseOnOff(true);
+        });
     static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
 
     CHECK_FAILED(Ready_SoundSetting(), E_FAIL);
@@ -92,16 +95,6 @@ HRESULT CLevel_Viper::Initialize()
 
 void CLevel_Viper::Update(_float fTimeDelta)
 {
-	//if (GetKeyState(VK_RETURN) & 0x8000)
-	//{
-	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::HEINMACH))))
-	//		return;
-	//}
-	//if (GetKeyState(VK_RETURN) & 0x8000)
-	//	if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
-	//		return;
-	//}
-
     if (m_pGameInstance->Key_Down(DIK_F1))
     {
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);

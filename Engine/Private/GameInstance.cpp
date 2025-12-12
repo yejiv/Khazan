@@ -1539,6 +1539,11 @@ void CGameInstance::MapDecal_CleanUp()
     m_pDecal_Manager->MapDecal_CleanUp();
 }
 
+void CGameInstance::Decal_OnOff(_bool isDecalOn)
+{
+    m_pDecal_Manager->Decal_OnOff(isDecalOn);
+}
+
 #pragma endregion
 
 #pragma region EFFECT_MANAGER
