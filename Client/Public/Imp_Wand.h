@@ -18,7 +18,8 @@ public:
 		CTransform* pOwnerTransform = { nullptr };
 		class CImp_Range* pOwner = { nullptr };
         const _float4x4* pSocketMatrix = { nullptr };
-
+        _bool* pDissolve = { nullptr };
+        _float* pDecreaseAlpha;
 	}WEAPON_DESC;
 
 public:
@@ -49,6 +50,7 @@ public:
 private:
 	HRESULT					Ready_Components();
 	HRESULT					Bind_ShaderResources();
+    HRESULT                 Bind_Dissolve();
 
 private:
 	class CImp_Range*		m_pOwner = { nullptr };
@@ -57,11 +59,15 @@ private:
 	CShader*				m_pShaderCom = { nullptr };
 	CModel*					m_pModelCom = { nullptr };
 	CTransform*				m_pOwnerTransform = { nullptr };
+    class CTexture* m_pDissolveCom = { nullptr };
+
 	_bool					m_isOnAttackCollision = { false };
     const _float4x4*        m_pSocketMatrix = { nullptr };
 
 private:
 	_float4					m_vLockOnPoint = {};
+    _bool*                  m_pDissolve = { nullptr };
+    _float*                 m_pDecreaseAlpha = { nullptr };
 
 
 
