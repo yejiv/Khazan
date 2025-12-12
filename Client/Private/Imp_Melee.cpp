@@ -91,6 +91,14 @@ void CImp_Melee::Update(_float fTimeDelta)
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
     m_pMeshTrail->Update(fTimeDelta);
+
+    if (m_isDissolve)
+        m_fDecreaseAlpha += fTimeDelta * 0.7f;
+
+    if (m_fDecreaseAlpha >= 1.f)
+    {
+        Creature_Release();
+    }
 }
 
 void CImp_Melee::Late_Update(_float fTimeDelta)
@@ -189,6 +197,8 @@ HRESULT CImp_Melee::Ready_PartObjects()
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pOwnerTransform = m_pTransformCom;
     BodyDesc.pOwner = this;
+    BodyDesc.pDissolve = &m_isDissolve;
+    BodyDesc.pDecreaseAlpha = &m_fDecreaseAlpha;
 
     if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Melee_Body"), &BodyDesc)))
         return E_FAIL;
@@ -206,6 +216,8 @@ HRESULT CImp_Melee::Ready_PartObjects()
     WeaponDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     WeaponDesc.pOwnerTransform = m_pTransformCom;
     WeaponDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Weapon_R");
+    WeaponDesc.pDissolve = &m_isDissolve;
+    WeaponDesc.pDecreaseAlpha = &m_fDecreaseAlpha;
 
 
     if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Melee_Sword"), &WeaponDesc)))
@@ -496,6 +508,11 @@ void CImp_Melee::SFX_SLEEP()
         m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Idle_01 (SFX)"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 20.f);
     else if (iSoundIndex == 2)
         m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Idle_01 (SFX)"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 20.f);
+}
+
+void CImp_Melee::Dissolve_On()
+{
+    m_isDissolve = true;
 }
 
 CImp_Melee* CImp_Melee::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

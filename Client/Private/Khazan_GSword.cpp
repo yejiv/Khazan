@@ -132,6 +132,7 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
         Add_Status(BAREHAND);
     }
 
+    m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Teleport_End");
     m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
 
     //m_iStopMoveIndexTable[0] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Walk_Stop_F_RF");
@@ -168,7 +169,8 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
 
   
 
-    
+    /* Test*/
+
     if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_P))
     {
         //예튜가
@@ -188,7 +190,6 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
             m_pCharVirCom->Teleport(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
         
     }
-
     if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
     {
         m_isGhost = true;
@@ -199,6 +200,9 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
         m_isGhost = false;
     }
 
+    if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_T))
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Teleport_End"));
+
     if (m_pGameInstance->Key_Pressing(DIK_LSHIFT,fTimeDelta) && m_pGameInstance->Key_Down(DIK_4) )
     {
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));
@@ -207,6 +211,7 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
     {
         Remove_Status(LADDER_CLIMBING_END);
     }
+
 
 }
 
@@ -2722,8 +2727,8 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         if (false == m_isInteractEventSetting)
         {
             m_isInteractEventSetting = true;
-            /*  UnArmed 애니메이션 재생  (조각상,사다리  안함)*/
-            if (!Has_Status(BLOCK_ATK_SKILL_GUARD) && INTERACTIVE_TYPE::DESTINYSTONE != m_EventInteract.eInteractType/* && INTERACTIVE_TYPE::CHECKPOINT != m_EventInteract.eInteractType*/)
+            /*  UnArmed 애니메이션 재생  (조각상때는 안함)*/
+            if (!Has_Status(BLOCK_ATK_SKILL_GUARD) && INTERACTIVE_TYPE::TOMBSTONE != m_EventInteract.eInteractType)
             {
                 cout << "@@@@@@@@@@@@@@  PARK !!!!!!!!!!!!!!!!!!! @@@@@@@@@@" << endl;
                 if (Has_Status(SPEAR))
@@ -3890,6 +3895,13 @@ std::string CKhazan_GSword::GetHitReactionString()
     case ENUM_CLASS(HITREACTION::GRAB): return "GRAB";
     default: return "UNKNOWN";
     }
+}
+
+void CKhazan_GSword::Set_Idle()
+{
+    CModel* pModel = m_pBody->Get_Model();
+
+    pModel->Set_Animation(pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand"));
 }
 
 #endif // _DEBUG

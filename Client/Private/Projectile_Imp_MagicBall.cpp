@@ -160,6 +160,11 @@ void CProjectile_Imp_MagicBall::Enter_State(PRJSTATE eNextState)
     }
 }
 
+void CProjectile_Imp_MagicBall::StopSound()
+{
+    m_pGameInstance->StopByChannel(Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)));
+}
+
 HRESULT CProjectile_Imp_MagicBall::Ready_Components()
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
@@ -187,8 +192,10 @@ HRESULT CProjectile_Imp_MagicBall::Ready_Colliders()
     XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_tMagicBallColliderDesc.pGameObject = this;
+    m_tMagicBallColliderDesc.strName = TEXT("MagicBallCollider");
+    m_tMagicBallColliderDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    BodyDesc.pCollisionDesc = &m_tMagicBallColliderDesc;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_ImpRange_MagicBall"), reinterpret_cast<CComponent**>(&m_pBody), &BodyDesc)))
@@ -229,8 +236,14 @@ void CProjectile_Imp_MagicBall::Collision_Stay(COLLISION_DESC* pDesc, _uint iOth
                 return;
             pTarget->Take_Damage(10.f,HITREACTION::KNOCKBACK_NORMAL,nullptr);
             
-
         }
+
+        else if (pDesc->strName == TEXT("GuardCollisionDesc"))
+        {
+            
+        }
+
+
     }
 }
 

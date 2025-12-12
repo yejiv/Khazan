@@ -30,6 +30,7 @@ void CCreature::KnockBack(_vector vDir, _float fPower, _float fLoss)
 
     if (m_strName == "Viper")
         return;
+
     m_isKnockBack = true;
     m_fKnockBackDir = vDir;
     m_fKnockBackPower = fPower;
@@ -73,7 +74,6 @@ void CCreature::Update(_float fTimeDelta)
 
     if (m_pCharVirCom != nullptr)
     {
-        //m_pCharVirCom->Sync_Update(m_pTransformCom);
         m_pCharVirCom->Update(fTimeDelta, m_pTransformCom, m_vGravity);
     }
 }
@@ -97,6 +97,8 @@ void CCreature::Creature_Release()
     m_isActive = false;
 }
 
+
+
 void CCreature::Compute_KnockBack(_float fTimeDelta)
 {
     if (!m_isKnockBack)
@@ -112,6 +114,10 @@ void CCreature::Compute_KnockBack(_float fTimeDelta)
     }
 
     _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+
+    if (m_strName == "Yetuga" || m_strName == "Viper")
+        m_fKnockBackPower * 0.5f;
 
     m_pTransformCom->Set_State(STATE::POSITION, vPos + m_fKnockBackDir * m_fKnockBackPower * fTimeDelta);
 

@@ -55,7 +55,7 @@ protected:
 	MAPOBJECT_PROPERTIES m_Properties = {};
 
 	_float m_fSnowAmount = { 1.f };
-	_float3 m_vSnowColor = { 1.3f, 1.3f, 1.f };
+	_float3 m_vSnowColor = { 1.3f, 1.3f, 1.3f };
 
 protected:
 	virtual HRESULT Bind_ShaderResources_ForSnowMap(_uint iMeshIndex);

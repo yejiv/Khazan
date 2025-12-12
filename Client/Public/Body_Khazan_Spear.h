@@ -190,6 +190,9 @@ private:
     vector<FMOD_CHANNEL*>       m_pChannel;
 
     COLLISION_DESC      m_tSearchCollisionDesc = {};
+    COLLISION_DESC      m_tAttackCollisionDesc = {};
+    COLLISION_DESC      m_tGuardCollisionDesc = {};
+
 
     mutex m_CollMonsterMutex;
 
@@ -246,6 +249,9 @@ private:
     inline void		Toggle_Status(_uint i) { *m_pParentStatus ^= i; }
     inline void		Remove_Status(_uint i) { *m_pParentStatus &= ~i; }
     inline _bool	Has_Status(_uint i) { return (*m_pParentStatus & i) != 0; }
+
+    
+
   
 public:
     static CBody_Khazan_Spear* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

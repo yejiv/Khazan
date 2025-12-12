@@ -73,6 +73,10 @@ HRESULT CBody_Imp_Melee::Initialize_Clone(void* pArg)
 
     m_pLockOnBoneMatrix = m_pModelCom->Get_BoneMatrix("FX_Body_ExpGained");
 
+    m_pDissolve = pDesc->pDissolve;
+    m_pDecreaseAlpha = pDesc->pDecreaseAlpha;
+
+    m_pModelCom->Play_Animation(0);
     return S_OK;
 }
 
@@ -95,6 +99,7 @@ HRESULT CBody_Imp_Melee::Render()
 {
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
+    CHECK_FAILED(Bind_Dissolve(), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -154,6 +159,9 @@ HRESULT CBody_Imp_Melee::Ready_Components()
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Monster_Dissolve"),
+        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveCom), nullptr), E_FAIL);
+
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
 
 
@@ -174,7 +182,19 @@ HRESULT CBody_Imp_Melee::Bind_ShaderResources()
     return S_OK;
 }
 
+HRESULT CBody_Imp_Melee::Bind_Dissolve()
+{
+    CHECK_FAILED(m_pDissolveCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", 0), E_FAIL);
 
+    _float fEdgeWidth = 0.05f;
+    _float4 fEdgeColor = _float4(1.3f, 0.75f, 0.f, 1.f);
+
+    m_pShaderCom->Bind_RawValue("g_fDecreaseAlpha", m_pDecreaseAlpha, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeWidth", &fEdgeWidth, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeColor", &fEdgeColor, sizeof(_float4));
+
+    return S_OK;
+}
 
 CBody_Imp_Melee* CBody_Imp_Melee::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
@@ -204,6 +224,7 @@ void CBody_Imp_Melee::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
+    Safe_Release(m_pDissolveCom);
 
     __super::Free();
 

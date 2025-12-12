@@ -123,16 +123,19 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
         CHECK_FAILED(Ready_Body(), E_FAIL);
 
     m_isActive = false;
+    
+    InitStartPoseOnce();
 
     return S_OK;
 }
 
 void CCamera_Compre::Priority_Update(_float fTimeDelta)
 {
-    if (m_fStartTime < 2.f)
+    if (!m_isInitPose)
     {
-        m_fStartTime += fTimeDelta;
-        m_pTransformCom->LookAt(XMLoadFloat4(&m_vAt));
+        m_isInitPose = true;
+        InitStartPoseOnce();        
+        
     }
     if (!m_isCollTime)
     {
@@ -145,6 +148,15 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
 
     if (!m_isActive)
         return;
+
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    {
+        m_isMouseOn = true;
+    }
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    {
+        m_isMouseOn = false;
+    }
 
     //======================================================================================================
 
@@ -891,7 +903,7 @@ _vector CCamera_Compre::Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vect
     );
 
     // 2) 마우스 회전 (락온 아닐 때)
-    if (!m_isLockOn)
+    if (!m_isLockOn && m_isMouseOn)
     {
         _int iMouseMoveX = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X);
         _int iMouseMoveY = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y);
@@ -1452,6 +1464,49 @@ void CCamera_Compre::Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos, _float3 vL
         // NPC 톡 종료 시: 바로 이전 포즈로 돌아가는 블렌드
         ReturnToPreviousPose(m_fNpcTalkBlendDuration);
     }
+}
+
+void CCamera_Compre::InitStartPoseOnce()
+{
+    if (!m_pObjMatrix || !m_pTransformCom)
+        return;
+
+    // 1) 플레이어 기준 yaw(정면) 구하기
+    _vector vCharLook = XMVector3Normalize(XMVectorSet(m_pObjMatrix->_31, 0.f, m_pObjMatrix->_33, 0.f));
+    float fCharYaw = atan2f(XMVectorGetZ(vCharLook), XMVectorGetX(vCharLook));
+
+    // 2) 원하는 시작 각도/거리
+    m_fYaw = WrapAngle(fCharYaw);                 // 뒤에서 시작
+    m_fPitch = Clamp(m_fLockBasePitch, m_fPitchMin, m_fPitchMax);  // 예: -10도
+    // m_fRadius 는 이미 원하는 값으로 세팅돼 있다고 가정
+
+    // 3) 스무딩/이전값들 초기화(첫 프레임 튐 방지)
+    m_fSmoothingVelocityYaw = 0.f;
+    m_fSmoothingVelocityPitch = 0.f;
+    m_isPrevLockPlayerPos = false;
+    m_isHasPrevTargetPos = false;
+
+    // 4) 실제 Transform을 오비트 결과로 스냅
+    _vector vTargetPosWS = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
+
+    _vector vDir = XMVectorSet(
+        cosf(m_fPitch) * cosf(m_fYaw),
+        sinf(m_fPitch),
+        cosf(m_fPitch) * sinf(m_fYaw),
+        0.f
+    );
+    vDir = XMVector3Normalize(vDir);
+
+    _vector vCamPos = XMVectorMultiplyAdd(XMVectorReplicate(-m_fRadius), vDir, vTargetPosWS);
+
+    _vector vR, vU, vL;
+    _vector vLook = XMVector3Normalize(vTargetPosWS - vCamPos);
+    BuildSafeBasis(vLook, vR, vU, vL);
+
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(vCamPos, 1.f));
+    m_pTransformCom->Set_State(STATE::RIGHT, vR);
+    m_pTransformCom->Set_State(STATE::UP, vU);
+    m_pTransformCom->Set_State(STATE::LOOK, vL);
 }
 
 void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)

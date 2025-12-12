@@ -33,6 +33,7 @@ void CAS_Dr_Melee_Brutal::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
             m_pMonData->eHitType = HITREACTION::END;
             m_pMonData->isStamina_Regen = true;
             m_pMonData->iBrutalHit = 0;
+            *m_pMonData->pCulStamina = 0.f;
         }
     }
 }

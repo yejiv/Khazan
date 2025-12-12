@@ -130,7 +130,7 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     m_strName = "Khazan";
     m_EffectTimeDelta = 0.f;
 
-    m_pCharVirCom->Set_Position(XMVectorSet(0.f, 10.f, 0.f, 1.f));
+    m_pCharVirCom->Teleport(XMVectorSet(0.f, 1.f, 0.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
 #pragma region 3D UI 테스트
     //CUIObject::UIOBJECT_DESC Desc;
 
@@ -385,24 +385,44 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     }
 
     /*  Decal */
-    _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
-    _float fOffset = 2.f;
-    _float fPosX = XMVectorGetX(vDecalPos);
-    _float fPosZ = XMVectorGetZ(vDecalPos);
-    vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
-    vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
     DECAL_DESC Desc{};
     Desc.fLifeTime = 8.f;
     Desc.vFadeTime = _float2(0.2f, 0.2f);
-    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
+    //  Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
+    
+    // LINEAR일 때
+    //  Desc.eType = DECALTYPE::LINEAR;
+    //  _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+    //  _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
+    //  vPosition += (vLook * -1.5f);
+    //  XMStoreFloat3(&Desc.vPosition, vPosition);
+    //  _float fRadianY = atan2f(XMVectorGetX(vLook), XMVectorGetZ(vLook));
+    //  _float fDegreeY = XMConvertToDegrees(fRadianY);
+    //  Desc.vAngle = _float3(0.f, fDegreeY, 0.f);
+    //  Desc.vScale = _float3(2.f, 1.f, 4.f);
+    //  Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+    //  Desc.isRandomTexture = true;
+
+    // CIRCLE일 때
+    Desc.eType = DECALTYPE::CIRCLE;
+    _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
     XMStoreFloat3(&Desc.vPosition, vDecalPos);
     Desc.vScale = _float3(
         m_pGameInstance->Rand(3.f, 5.f),
-        2.f,
+        1.f, 
         m_pGameInstance->Rand(3.f, 5.f)
     );
     Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
     Desc.isRandomTexture = true;
+
+    // CURVE일 때
+    //  Desc.eType = DECALTYPE::CURVE;
+    //  _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
+    //  XMStoreFloat3(&Desc.vPosition, vDecalPos);
+    //  Desc.vScale = _float3(2.f, 1.f, 5.f);
+    //  Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+    //  Desc.isRandomTexture = true;
+
     m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 
     switch (eHitreaction)
@@ -422,9 +442,9 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         break;
 	case Client::HITREACTION::GRAB:
 
-		m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
-        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
-        Add_Status(YETUGA_GRAB);
+		//m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
+        //m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+        //Add_Status(YETUGA_GRAB);
 		break;
     case Client::HITREACTION::KNOCKBACK_WEAK:
         if (Has_State(CAT::M_SKILL))  break;
@@ -2818,8 +2838,8 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         {
             m_isInteractEventSetting = true;
 
-            /*  창 들고 있으면 UnArmed 애니메이션 재생 */ /* 귀석 타입일때는 재생 X */
-            if (Has_Status(SPEAR) && INTERACTIVE_TYPE::DESTINYSTONE != m_EventInteract.eInteractType)
+            /*  창 들고 있으면 UnArmed 애니메이션 재생 */
+            if (Has_Status(SPEAR))
                 m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_UnArmed"));
 
             XMStoreFloat4(&m_vStartPos_Event, m_pTransformCom->Get_State(STATE::POSITION));
@@ -2918,6 +2938,12 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         }
         case INTERACTIVE_TYPE::DESTINYSTONE:
         {
+            isDone = false;
+
+            if (m_pBody->Get_Model()->IsFinished()) {
+                isDone = true;
+            }
+
             break;
         }
         default:
@@ -3007,7 +3033,7 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
         // 귀석이랑 상호 작용 시
         if (INTERACTIVE_TYPE::DESTINYSTONE == m_EventInteract.eInteractType)
         {
-            m_EventInteract.End_Event();
+            DestinyStone_Event(fTimeDelta);
         }
     }
 }
@@ -3149,6 +3175,16 @@ void CKhazan_Spear::TombStone_Event(_float fTimeDelta)
     {
         // 플레이어 툼스톤 LOOP 애니메이션?
     }
+
+    m_EventInteract.End_Event();
+}
+void CKhazan_Spear::DestinyStone_Event(_float fTimeDelta)
+{
+    // 귀석 상호 작용 이벤트
+    EventDestinyStone DSEvent = m_EventInteract.DSEvent;
+
+    DSEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
+    m_pTransformCom->LookAt(XMLoadFloat4(&DSEvent.vPosition));
 
     m_EventInteract.End_Event();
 }

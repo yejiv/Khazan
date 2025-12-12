@@ -73,6 +73,11 @@ private:
 	int          m_iMaxChannels = 64;
 	map<wstring, FMOD_SOUND*> m_mapSound;
     _float       m_fGloval_Volume;
+    
+    //채널 그룹
+    FMOD_CHANNELGROUP* m_pGroup2D = nullptr;
+    FMOD_CHANNELGROUP* m_pGroup3D = nullptr;
+    FMOD_CHANNELGROUP* pMaster = nullptr;
 };
 
 NS_END

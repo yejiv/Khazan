@@ -180,7 +180,7 @@ HRESULT CGSword_Khazan_GS::Render()
         {
             if (m_pClientInstance->Get_PlayerEquipment().iGSword == 4001) ////유성락
             {
-                _float fDiffusePower = 4.f;
+                _float fDiffusePower = 3.f;
                 if (FAILED(m_pShaderCom->Bind_RawValue("g_fDiffusePower", &fDiffusePower, sizeof(_float))))
                     return E_FAIL;
 

@@ -40,10 +40,9 @@ HRESULT CHead_Yetuga::Initialize_Clone(void* pArg)
 
     if (FAILED(Ready_Colliders()))
         return E_FAIL;
-;
-
     m_isOnAttackCollision = false;
     m_pHeadBodyCom->Collision_Active(false);
+
 
     return S_OK;
 }
@@ -182,8 +181,11 @@ HRESULT CHead_Yetuga::Ready_Colliders()
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
     BodyDesc.vShapeOffset = _float3(2.f, 2.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_tYetugaHeadCollisionDesc.pGameObject = this;
+    m_tYetugaHeadCollisionDesc.strName = TEXT("YetugaCollisionDesc");
+    m_tYetugaHeadCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+
+    BodyDesc.pCollisionDesc = &m_tYetugaHeadCollisionDesc;
     BodyDesc.bIsTrigger = true;
     BodyDesc.isCollideKinematicVsNonDynamic = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),

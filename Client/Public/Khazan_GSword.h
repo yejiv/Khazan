@@ -351,6 +351,10 @@ private:
 
 #endif // _DEBUG
 
+public:
+    void Set_Idle(); // 강제 아이들 상태로 돌리기 위해 사용
+
+
 
 public:
     static CKhazan_GSword* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

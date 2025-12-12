@@ -330,11 +330,6 @@ void CViper::Update(_float fTimeDelta)
         }
     }
 
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
-    {
-        m_isGhost = true;
-    }
-
     m_pController->Update(this, fTimeDelta);
 
     if (m_fCurrentHP >= 0.f)
@@ -843,7 +838,6 @@ HRESULT CViper::Ready_AnimEvent()
 
 
 #pragma endregion
-
 
 #pragma region QUICK2HIT
    
@@ -1842,7 +1836,6 @@ HRESULT CViper::Ready_AnimEvent()
             // 무기 공격 콜라이더 OFF
             m_isLookAt = false;
             m_fTurnSpeed = 30.f;
-            m_isGhost = true;
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName,"isFakeAttac_Movement1",true);
 
         });
@@ -1852,7 +1845,6 @@ HRESULT CViper::Ready_AnimEvent()
             // 무기 공격 콜라이더 OFF
             m_isLookAt = false;
             m_fTurnSpeed = 8.f;
-            //m_isGhost = false;
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isFakeAttac_Movement1", false);
 
         });
@@ -2202,7 +2194,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("P2_JumpAttack_Attack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-
+            m_isGhost = false;
             // 오른손 무기 콜라이더ON
             m_pP2Weapon->Set_OnAttackCollision(true);
 
@@ -2334,7 +2326,6 @@ HRESULT CViper::Ready_AnimEvent()
 
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName,"isP2_Dash_Abort", true);
 
-
         });
 
 
@@ -2347,8 +2338,8 @@ HRESULT CViper::Ready_AnimEvent()
     pP2Model->Register_Event("P2_DashDriftAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
         {
             m_isLookAt = false;
-            m_isGhost = false;
-            //m_pPahse2Body->Set_OnAttackCollision(false);
+            //m_isGhost = false;
+            m_pPahse2Body->Set_OnAttackCollision(false);
 
         });
 
@@ -2509,7 +2500,6 @@ HRESULT CViper::Ready_AnimEvent()
 
 #pragma endregion
 
-
 #pragma region P2_AROUND
     pP2Model->Register_Event("P2_SwingRound_Attack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
         {
@@ -2570,8 +2560,6 @@ HRESULT CViper::Ready_AnimEvent()
 
 
 #pragma endregion
-
-
 
     return S_OK;
 
