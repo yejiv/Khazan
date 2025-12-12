@@ -14,6 +14,7 @@
 #include "Obelisk.h"
 #include "SkySphere.h"
 #include "CloudSphere.h"
+#include "UI_HUD.h"
 
 CSequence_Viper_SecondPhase::CSequence_Viper_SecondPhase(CViper* pViper, CKhazan_GSword* pKhazan)
     : m_pGameInstance{ CGameInstance::GetInstance() }
@@ -28,10 +29,6 @@ CSequence_Viper_SecondPhase::CSequence_Viper_SecondPhase(CViper* pViper, CKhazan
 HRESULT CSequence_Viper_SecondPhase::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 {
     m_pCamera = dynamic_cast<CCamera_Compre*>(m_pClientInstance->Get_ActiveCamera());
-    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_SecondPhase18");
-
-    CCharacterVirtual* pCharVir = dynamic_cast<CCharacterVirtual*>(m_pKhazan->Get_Component(TEXT("Com_CharacterVirtual")));
-    pCharVir->Teleport(XMVectorSet(0.f, 0.f, 0.f, 1.f), m_pKhazan->Get_Transform()->Get_Rotation_Quat(), m_pKhazan->Get_Transform());    
 
     return S_OK;
 }
@@ -59,6 +56,9 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
 
         if (m_fTime > 1.f && !m_isCameraSet1)
         {
+            static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+            CCharacterVirtual* pCharVir = dynamic_cast<CCharacterVirtual*>(m_pKhazan->Get_Component(TEXT("Com_CharacterVirtual")));
+            pCharVir->Teleport(XMVectorSet(0.f, 0.f, 0.f, 1.f), m_pKhazan->Get_Transform()->Get_Rotation_Quat(), m_pKhazan->Get_Transform());
             //m_pViper->Set_PhaseWeapon_Cinematic();
             m_pViper->Get_Viper_FSM()->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), m_pViper);
             m_pCamera->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-31.105f, -27.715f, 177.425f, 1.f));
@@ -426,6 +426,9 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_CutSceneFinished();
             m_pClientInstance->Set_PlayerInput(true);
             m_isEnd = true;
+
+            static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+            m_pViper->Set_HPUI(false);
 
             m_pClientInstance->BGM_Viper_2Phase(1.f);
         }

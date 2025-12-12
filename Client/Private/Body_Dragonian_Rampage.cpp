@@ -98,11 +98,6 @@ void CBody_Dragonian_Rampage::Update(_float fTimeDelta)
 
 void CBody_Dragonian_Rampage::Late_Update(_float fTimeDelta)
 {
-    if (!m_pData->isSearch)
-        return;
-
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
-        return;
 }
 
 HRESULT CBody_Dragonian_Rampage::Render()

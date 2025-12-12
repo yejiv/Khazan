@@ -61,7 +61,7 @@ void CDestinyGem::Update(_float fTimeDelta)
         m_fTimeAcc += fTimeDelta;
     }
 
-    if (1.f <= m_fTimeAcc)
+    if (3.f <= m_fTimeAcc)
     {
         if (false == m_bBlustFX && 1.5f <= m_fTimeAcc)
         { 
@@ -81,6 +81,8 @@ void CDestinyGem::Update(_float fTimeDelta)
     }
 
     Update_CombinedMatrix();
+
+    m_fBlinkTimeAcc += fTimeDelta;
 
     // Test
     if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
@@ -104,7 +106,7 @@ HRESULT CDestinyGem::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    _float fDiffuseRedPower = 5.f;
+    _float fDiffuseRedPower = 1.25f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fDiffuseRedPower", &fDiffuseRedPower, sizeof(_float))))
         return E_FAIL;
 
@@ -112,7 +114,7 @@ HRESULT CDestinyGem::Render()
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
         return E_FAIL;
 
-    _float4 vGemColor = _float4(1.25f, 0.25f, 0.25f, 1.f);
+    _float4 vGemColor = _float4(1.f, 0.f, 0.f, 1.f);
     if (FAILED(m_pShaderCom->Bind_RawValue("g_vGemColor", &vGemColor, sizeof(_float4))))
         return E_FAIL;
 
@@ -210,7 +212,7 @@ HRESULT CDestinyGem::Bind_Materials(_uint iMeshIndex)
 
 HRESULT CDestinyGem::Bind_Blink_ShaderResources()
 {
-    _float fRimPower = 5.f;
+    _float fRimPower = 3.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
         return E_FAIL;
 
@@ -219,7 +221,7 @@ HRESULT CDestinyGem::Bind_Blink_ShaderResources()
         return E_FAIL;
 
     // 반짝이는 림라이트 이미시브
-    _float fRimEmissive = 5.f;
+    _float fRimEmissive = 3.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float))))
         return E_FAIL;
 
@@ -230,7 +232,7 @@ HRESULT CDestinyGem::Bind_Blink_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fCycleSpeed", &fCycleSpeed, sizeof(_float))))
         return E_FAIL;
 
-    _float3 vRimColor = _float3(1.f, 0.f, 0.f);
+    _float3 vRimColor = _float3(1.f, 1.f, 1.f);
     if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3))))
         return E_FAIL;
 

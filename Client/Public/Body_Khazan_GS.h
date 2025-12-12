@@ -69,6 +69,7 @@ public:
 
 public:
     void                Set_IsGuarding(_bool* pIsGuarding) { m_pIsGuarding = pIsGuarding; }
+    void                Set_IsLadderRotationEvent (_bool* pIs) { m_isLadderRotationEvent = pIs;}
     void                Set_GSword(class CGSword_Khazan_GS* pGS);
     void                Set_OutlineConfig(OUTLINE_CONFIG Config){ m_OutlineConfig.vColor = Config.vColor; m_OutlineConfig.fSize = Config.fSize; }
     void		        Set_matGSword(_float4x4* mat) { m_pGSword_Matrix = mat; }
@@ -148,7 +149,7 @@ private:
     _bool*                      m_pIsGuarding = { nullptr }; //가드중인지 체크4
     _bool                       m_isNotifyAttacking = { false };    //어택중에 콜라이더 onoff 알림 
     _bool                       m_isBrutalSuccess = { false };
-
+    _bool*                      m_isLadderRotationEvent = { nullptr };
 
      /* 뼈 위치 */
     _float4x4*                  m_pMatGSwordBody = { nullptr }; // 칼 중앙 로컬행렬

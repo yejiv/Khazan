@@ -82,30 +82,30 @@ void CAS_Dr_Rampage_Attack_Default::OnCollision(COLLISION_DESC* pDesc, _uint iCo
             if (m_pMonData->iAnimIndex == 14)
             {
                 pTarget->KnockBack(pOwner->Get_Look(), 10.f, 50.f);
-                pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+                pTarget->Take_Damage(m_pGameInstance->Rand(m_pMonData->fAttackDamage * 0.8f, m_pMonData->fAttackDamage * 1.3f), HITREACTION::KNOCKBACK_STRONG, nullptr);
             }
             else if (m_pMonData->iAnimIndex == 15)
             {
                 pTarget->KnockBack(pOwner->Get_Look(), 10.5f, 50.f);
-                pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+                pTarget->Take_Damage(m_pGameInstance->Rand(m_pMonData->fAttackDamage * 0.8f, m_pMonData->fAttackDamage * 1.3f), HITREACTION::KNOCKBACK_STRONG, nullptr);
             }
             else if (m_pMonData->iAnimIndex == 16)
             {
                 pTarget->KnockBack(pOwner->Get_Look(), 19.5f, 35.f);
-                pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+                pTarget->Take_Damage(m_pGameInstance->Rand(m_pMonData->fAttackDamage * 0.8f, m_pMonData->fAttackDamage * 1.3f), HITREACTION::KNOCKBACK_STRONG, nullptr);
             }
 
         }
         else   if (m_iAttackIndex == ATTACK1)
         {
             pTarget->KnockBack(pOwner->Get_Look(), 12.5f, 40.f);
-            pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+            pTarget->Take_Damage(m_pGameInstance->Rand(m_pMonData->fAttackDamage * 0.8f, m_pMonData->fAttackDamage * 1.3f), HITREACTION::KNOCKBACK_NORMAL, nullptr);
 
         }
         else
         {
             pTarget->KnockBack(pOwner->Get_Look(), 15.5f, 40.f);
-            pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+            pTarget->Take_Damage(m_pGameInstance->Rand(m_pMonData->fAttackDamage * 0.8f, m_pMonData->fAttackDamage * 1.3f), HITREACTION::KNOCKBACK_STRONG, nullptr);
         }
     }
 }

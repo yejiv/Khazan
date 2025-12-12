@@ -81,11 +81,11 @@ public:
     /* 정보 */
     _uint				Get_NumMeshes() const { return m_iNumMeshes; }
     _uint				Get_BoneIndex(const _char* pBoneName);
-    _float4x4* Get_BoneMatrix(const _char* pBoneName);
-    _float4x4* Get_BoneMatrix(_int iBoneIndex);
-    _float4x4* Get_LocalBoneMatrix(const _char* pBoneName);
-    _float4x4* Get_LocalBoneMatrix(_int iBoneIndex);
-    _float4x4* Get_ContainNameBoneMatrix(const _char* pBoneName);
+    _float4x4*          Get_BoneMatrix(const _char* pBoneName);
+    _float4x4*          Get_BoneMatrix(_int iBoneIndex);
+    _float4x4*          Get_LocalBoneMatrix(const _char* pBoneName);
+    _float4x4*          Get_LocalBoneMatrix(_int iBoneIndex);
+    _float4x4*          Get_ContainNameBoneMatrix(const _char* pBoneName);
     _int				Get_CurAnimIndex() { return m_iCurrentAnimIndex; }
     _int				Get_AnimIndexByName(const string& strName);
     string				Get_CurAnimName() { return m_AnimationsSetup[m_iCurrentAnimIndex].strName; }
@@ -122,6 +122,7 @@ public:
     void            AnimationLoop(_bool isLoop);
     void            Set_AnimBlendTime(_uint iAnimIndex, _float fBlendTime);
     void            QuitAnimationSet() { Remove_State(ANIMSET_PLAYING | ANIMSET_NEXT); } // 애니메이션세트 끝내기
+    _bool           IsCurSetAnimation() { return Has_State(ANIMSET_PLAYING); }
 
     /* rootBone Combined  */
     void			Update_BoneCombinedMatrices();

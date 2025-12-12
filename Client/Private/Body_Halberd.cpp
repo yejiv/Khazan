@@ -49,7 +49,7 @@ HRESULT CBody_Halberd::Initialize_Clone(void* pArg)
     m_pModelCom->Set_PreTransformMatrix(PreTransformMatrix);
 
     m_pModelCom->Set_OwnerTransform(&m_CombinedWorldMatrix);
-
+    m_pModelCom->Play_Animation(0);
     return S_OK;
 }
 
@@ -111,8 +111,6 @@ void CBody_Halberd::Late_Update(_float fTimeDelta)
         return;
 
     m_pCapeBody->Late_Update(fTimeDelta);
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
-        return;
 }
 
 HRESULT CBody_Halberd::Render()

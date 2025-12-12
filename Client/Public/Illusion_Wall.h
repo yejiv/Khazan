@@ -44,6 +44,7 @@ private:
     _float m_fDecreaseAlpha = { 0.f };
 
     _bool m_isRemoveWall = { false };
+    _bool m_isWallActive = { true };
 
 private:
     virtual HRESULT Ready_Components(void* pArg) override;

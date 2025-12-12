@@ -12,6 +12,8 @@ private:
 
 public:
 	class CBody_Yetuga*				Get_Body() const { return m_pBody; }
+    class CHead_Yetuga*             Get_Head() const { return m_pHead; }
+
 	virtual _float4*				Get_LockOnPosition();
     void                            Yetuga_Jump(_fvector vGoalPos, _float fHeight, _float fSpeed );
     void                            Yetuga_Land(_fvector vGoalPosition, _float fSpeed);
@@ -93,7 +95,7 @@ private:
     _uint                           m_iBreathCount;
     _float                          m_iBreathRotation;
 
-
+    COLLISION_DESC                  m_tYetugaChaVir = {};
 private:
     _bool   m_isLanding = false;
 
@@ -105,8 +107,6 @@ private:
     _float  m_fGravity = -10.f;
 
     vector<const _tchar*>            m_IceBreathSounds;
-
-
 
 
 public:

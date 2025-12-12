@@ -97,6 +97,14 @@ void CImp_Range::Update(_float fTimeDelta)
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
 
+    if (m_isDissolve)
+        m_fDecreaseAlpha += fTimeDelta * 0.7f;
+
+    if (m_fDecreaseAlpha >= 1.f)
+    {
+        Creature_Release();
+    }
+
 }
 
 void CImp_Range::Late_Update(_float fTimeDelta)
@@ -181,6 +189,8 @@ HRESULT CImp_Range::Ready_PartObjects()
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pOwnerTransform = m_pTransformCom;
     BodyDesc.pOwner = this;
+    BodyDesc.pDissolve = &m_isDissolve;
+    BodyDesc.pDecreaseAlpha = &m_fDecreaseAlpha;
 
     if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Range_Body"), &BodyDesc)))
         return E_FAIL;
@@ -198,6 +208,8 @@ HRESULT CImp_Range::Ready_PartObjects()
     WeaponDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     WeaponDesc.pOwnerTransform = m_pTransformCom;
     WeaponDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Weapon_R");
+    WeaponDesc.pDissolve = &m_isDissolve;
+    WeaponDesc.pDecreaseAlpha = &m_fDecreaseAlpha;
 
     if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Range_Wand"), &WeaponDesc)))
         return E_FAIL;
@@ -450,7 +462,8 @@ void CImp_Range::SFX_SLEEP()
 
 void CImp_Range::Cast_MagicBall(_uint iIndex)
 {
-   
+    m_isCastMagicBall = true;
+
     _float4x4 TempMatrix = m_pWeapon->Get_CombinedMatrix();
     _matrix matWorld = XMLoadFloat4x4(&TempMatrix);
     _vector vOffset = {};
@@ -505,6 +518,8 @@ void CImp_Range::Shoot_MagicBall(_uint iIndex)
     if (m_MagicBalls[iIndex] == nullptr)
         return;
 
+    m_isCastMagicBall = false;
+
     CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
     _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
 
@@ -551,6 +566,8 @@ void CImp_Range::Shoot_MagicBall(_uint iIndex)
 
 void CImp_Range::Cast_Boomarang()
 {
+    m_isCastBoomarange = true;
+
     _float4 vTempSpawnPoint = *m_pBody->Get_BonePointEX("Weapon_L");
     CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Imp_Boomarang"));
     if (nullptr == pGameObject)
@@ -584,10 +601,31 @@ void CImp_Range::Cast_Boomarang()
 
 void CImp_Range::Cast_Failed()
 {
-    if(nullptr != m_pBoomarang)
-        m_pBoomarang->Set_IsDead(true);
 
-    m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Fail (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 5.f);
+    if (m_isCastBoomarange && nullptr != m_pBoomarang)
+    {
+        m_pBoomarang->Set_IsActive(false);
+        m_pBoomarang->Set_IsDead(true);
+        m_pBoomarang->StopBoomarangSound();
+
+    }
+    else if(m_isCastMagicBall)
+    {
+        for (auto& pMagicBall : m_MagicBalls)
+        {
+            if (nullptr != pMagicBall)
+            {
+                pMagicBall->Set_IsDead(true);
+                pMagicBall->Set_IsActive(false);
+                pMagicBall->StopSound();
+
+            }
+
+        }
+    }
+  
+
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Fail (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 1.5f);
 }
 
 void CImp_Range::Hold_Boomarang()
@@ -614,6 +652,8 @@ void CImp_Range::Shoot_Boomarang()
     if (m_pBoomarang == nullptr)
         return;
 
+    m_isCastBoomarange = false;
+
     CTransform* pTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
     _vector vTargetLoc = pTransform->Get_State(STATE::POSITION);
     _float4 vTempSpawnPoint = *m_pBody->Get_BonePointEX("Weapon_L");
@@ -637,6 +677,11 @@ void CImp_Range::HPUI_Dead()
 {
     m_pUI_HP->Update_Visible(false);
     m_pUI_HP->Set_IsDead(true);
+}
+
+void CImp_Range::Dissolve_On()
+{
+    m_isDissolve = true;
 }
 
 CImp_Range* CImp_Range::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
