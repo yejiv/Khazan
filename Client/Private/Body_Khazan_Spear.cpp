@@ -53,6 +53,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     m_iCurState = *m_pParentState;
     m_pGuardRotationTarget = pDesc->pGuardRotationTarget;
     m_pParentTransform = pDesc->pParentTransform;
+    m_pParentIsCanStaminaRecovery = pDesc->pParentIsCanStaminaRecovery;
     Safe_AddRef(m_pParentTransform);
 
     if (FAILED(__super::Initialize_Clone(pArg)))
@@ -539,7 +540,7 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
                 LightDesc.vAmbient = _float4(0.5f, 0.f, 1.f, 1.f);
                 LightDesc.vSpecular = LightDesc.vDiffuse;
                 LightDesc.isReturnToStart = true;
-                LightDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false); };
+                //LightDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false); };
                 m_pGameInstance->Start_LightTransition(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
 
                 // FOV 줌인아웃
@@ -563,7 +564,7 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
             LightDesc.vAmbient = _float4(1.f, 1.f, 0.8f, 1.f);
             LightDesc.vSpecular = LightDesc.vDiffuse;
             LightDesc.isReturnToStart = true;
-            LightDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false); };
+            //LightDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false); };
             m_pGameInstance->Start_LightTransition(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
 
             /* 가드후 충돌되면 충돌된 지점 봐라보게*/
@@ -571,7 +572,11 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 
             /* 사운드 */
             m_isHitSound = true;
-            
+
+            /* 스태미나 감소 */
+            /* 스태미나 감소 */
+            m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina * 0.3f;
+            *m_pParentIsCanStaminaRecovery = false;
         }
     }
 
@@ -815,10 +820,11 @@ void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
 
     _vector vOutQuat2, vOutPos2;
     const XMMATRIX matWorld_SpearPole = m_SpearOffset_Matrix *  XMLoadFloat4x4(m_pSpearPole_Matrix) * matParent;
-    m_pBodyCom_SpearPole->Sync_Update(matWorld_SpearPole);
-    m_pBodyCom_SpearPole->Update(fTimeDelta, matWorld_SpearPole, vOutQuat2, vOutPos2);
     XMStoreFloat4x4(&m_pSpearPole_MatrixW, matWorld_SpearPole);
-    XMStoreFloat3(reinterpret_cast<_float3*>(&m_pSpearPole_MatrixW._41), vOutPos2);
+
+    m_pBodyCom_SpearPole->Sync_Update(matParent);
+    //m_pBodyCom_SpearPole->Update(fTimeDelta, matWorld_SpearPole, vOutQuat2, vOutPos2);
+    //XMStoreFloat3(reinterpret_cast<_float3*>(&m_pSpearPole_MatrixW._41), vOutPos2);
 
 
     m_pBodyCom_Search->Sync_Update(matParent);
@@ -1606,7 +1612,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
 {
     CBody::BODY_BOXSHAPE_DESC TipBoxDesc{};
     {
-        TipBoxDesc.vExtent = _float3(1.6f, 1.f, 1.f);
+        TipBoxDesc.vExtent = _float3(1.8f, 0.7f, 0.7f);
         TipBoxDesc.eMotion = EMotionType::Kinematic;
         TipBoxDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         TipBoxDesc.eShapeType = SHAPE::BOX;
@@ -1617,7 +1623,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pSpearTip1_MatrixW));
         TipBoxDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
         TipBoxDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
-        TipBoxDesc.vShapeOffset = _float3(-0.8f, 0.f, 0.f);
+        TipBoxDesc.vShapeOffset = _float3(-1.2f, 0.f, 0.f);
         m_tAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
         m_tAttackCollisionDesc.strName = TEXT("AttackCollisionDesc");
         m_tAttackCollisionDesc.pGameObject = this;
@@ -1636,7 +1642,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
     }
     CBody::BODY_BOXSHAPE_DESC BodyBoxDesc{};
     {
-        BodyBoxDesc.vExtent = _float3(0.4f, 1.8f, 0.4f);
+        BodyBoxDesc.vExtent = _float3(0.4f, 1.1f, 0.4f);
         BodyBoxDesc.eMotion = EMotionType::Kinematic;
         BodyBoxDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         BodyBoxDesc.eShapeType = SHAPE::BOX;
@@ -1647,7 +1653,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pSpearPole_MatrixW));
         BodyBoxDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
         BodyBoxDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
-        BodyBoxDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        BodyBoxDesc.vShapeOffset = _float3(0.f, 0.55f, 0.f);
         m_tGuardCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
         m_tGuardCollisionDesc.strName = TEXT("GuardCollisionDesc");
         m_tGuardCollisionDesc.pGameObject = this;

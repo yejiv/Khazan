@@ -49,15 +49,49 @@ void CAS_RightHand_5Hit_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollis
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
+        CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
         if (nullptr == pTarget)
             return;
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
         if (nullptr == pOwnerTransform)
             return;
-        _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-        pTarget->KnockBack(vLook, 15.f, 50.f);
-        pTarget->Take_Damage(10.f,HITREACTION::KNOCKBACK_NORMAL);
+
+        CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+        _uint iAttackCnt = pBB->Get_Value<_uint>(pYetuga->Get_Name(), "AttackCount");
+
+        if (iAttackCnt == 1)
+        {
+            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vLook, 15.f, 60.f);
+        }
+        else if (iAttackCnt == 2)
+        {
+            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vLook, 15.f, 60.f);
+        }
+
+        if (iAttackCnt == 3)
+        {
+            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vLook, 20.f, 60.f);
+        }
+        else if (iAttackCnt == 4)
+        {
+            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vLook, 20.f, 60.f);
+        }
+        else if (iAttackCnt == 5)
+        {
+            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vLook, 30.f, 60.f);
+        }
+
     }
 }
 

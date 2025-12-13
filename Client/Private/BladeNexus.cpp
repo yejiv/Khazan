@@ -567,7 +567,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         m_eAnimState = ANIM_STATE::BEFORE_LOOP;
         m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_LOOP);
         m_pModelCom->Set_AnimationLoop(true);
-
+        m_pGameInstance->Emit_Event< EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), { });
         EventInteractType InteractType = {};
 
         InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
@@ -636,7 +636,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         m_eAnimState = ANIM_STATE::AFTER_LOOP;
         m_pModelCom->Set_Animation(ANIM_STATE::AFTER_LOOP);
         m_pModelCom->Set_AnimationLoop(true);
-
+        m_pGameInstance->Emit_Event< EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), { });
         EventInteractType InteractType = {};
 
         InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;

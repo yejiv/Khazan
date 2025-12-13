@@ -72,7 +72,7 @@ namespace Client
     enum class EQUIPMENTTYPE { NONE, SPEAR, GSWORD, HEAD, TORSO, ARM, LEG, SHOES, FACE, END };
 
 
-    enum class MONSFX { NONE, REALIZE, MOVE, ATVO, SWISH, HITVO, DEAD, EFFECT1,EFFECT2,EFFECT3 ,END };
+    enum class MONSFX { NONE, REALIZE, MOVE, ATVO, SWISH, HITVO, DEAD, EFFECT1, EFFECT2, EFFECT3, EFFECT4, END };
 
     typedef struct tagDamageInfo 
     {

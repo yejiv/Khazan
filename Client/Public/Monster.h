@@ -83,6 +83,7 @@ protected:
 	class CGameObject*				m_pTarget = { nullptr };
 
 protected:
+    _float4x4                       m_OriginMat = {};
 	unordered_map<string, _float>	m_CoolDowns;
 	_float							m_fCoolTimeAcc = {};
 	_float4*						m_vLockOnPosition = {};
@@ -99,7 +100,7 @@ protected:
 
     _bool                           m_isDeadFlag = { false };
 
-    _float2                         m_vDecalSize = {};
+    _float2                         m_vDecalSize[ENUM_CLASS(DECALTYPE::END)] = {};
 
     _float                          m_fDissolveTime = {};
     _bool                           m_isDissolve = {};

@@ -59,11 +59,8 @@ protected:
 	_float					m_fDamage = {};
 	_float3					m_vSpawnPoint = {};
 	_float3					m_vSpawnDir = {};
-
 	_bool					m_isVisible = { false };
-
 	_float4x4				m_OriginMatrix = {};
-
 	PRJSTATE				m_eState = { PRJSTATE::END };
 
 

@@ -42,7 +42,8 @@ HRESULT CGSword_Khazan_GS::Initialize_Clone(void* pArg)
 
     m_pClientInstance->Set_ChangePlayerWeaponEquipmentCallBack([this](EQUIPMENTTYPE type, const _wstring& strPartName) {Change_Weapon(type, strPartName); });
 
-    m_matOffset = XMMatrixRotationY(XMConvertToRadians(180.0f)) * XMMatrixRotationX(XMConvertToRadians(-90.0f));
+    m_matGSwordOffset = XMMatrixRotationY(XMConvertToRadians(180.0f)) * XMMatrixRotationX(XMConvertToRadians(-90.0f));
+    m_matSpearOffset = XMMatrixRotationX(XMConvertToRadians(-90.0f));
     m_pModelCom->Set_RootBone(0);
     m_pModelCom->Set_Transform(&m_CombinedWorldMatrix);
 
@@ -71,7 +72,7 @@ void CGSword_Khazan_GS::Update(_float fTimeDelta)
 
     m_pModelCom->Update_BoneCombinedMatrices();
 
-   XMStoreFloat4x4(&m_CombinedWorldMatrix, m_matOffset * matWeapon * XMLoadFloat4x4(m_pParentMatrix) );
+    XMStoreFloat4x4(&m_CombinedWorldMatrix, (m_pClientInstance->Is_CurrentGSword() ? m_matGSwordOffset : m_matSpearOffset) * matWeapon * XMLoadFloat4x4(m_pParentMatrix));
 
    m_pMotionTrailCom->Update(fTimeDelta);
    if (m_isActiveMotionTrail) 
@@ -187,6 +188,19 @@ HRESULT CGSword_Khazan_GS::Render()
                 m_pShaderCom->Begin(31);
             }
             else if (m_pClientInstance->Get_PlayerEquipment().iGSword == 4002)//연단된 집행의 대검
+                m_pShaderCom->Begin(28);
+        }
+        else if(m_pClientInstance->Is_CurrentSpear())
+        {
+            if (m_pClientInstance->Get_PlayerEquipment().iSpear == 4011) //섬광일상
+            {
+                _float fDiffusePower = 10.f;
+                if (FAILED(m_pShaderCom->Bind_RawValue("g_fDiffusePower", &fDiffusePower, sizeof(_float))))
+                    return E_FAIL;
+
+                m_pShaderCom->Begin(31);
+            }
+            else if (m_pClientInstance->Get_PlayerEquipment().iSpear == 4012) //연단된 징벌의 창
                 m_pShaderCom->Begin(28);
         }
 
