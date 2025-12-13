@@ -40,7 +40,7 @@ HRESULT CElamein_Shield::Initialize_Clone(void* pArg)
     m_pModelCom->Set_Animation(0.f);
     m_pModelCom->Play_Animation(0);
 
-
+    Set_JustGuardCallBack([this](_bool isJustGuard) { *m_pData->pCulStamina -= *m_pData->pMaxStamina * 0.1f; });
     return S_OK;
 }
 

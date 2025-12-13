@@ -46,6 +46,22 @@ void CUI_Announce_Symbol::Set_SubTexScalling(_bool isScaling)
 
 }
 
+void CUI_Announce_Symbol::Set_Elite(_bool isElite)
+{
+    m_isElite = isElite;
+    if (m_isElite)
+    {
+        m_pMainText->Set_TexPass(2);
+        m_pSubText->Set_TexPass(3);
+    }
+    else
+    {
+        m_pMainText->Set_TexPass(0);
+        m_pSubText->Set_TexPass(1);
+
+    }
+}
+
 HRESULT CUI_Announce_Symbol::Initialize_Prototype()
 {
     return S_OK;
@@ -98,7 +114,8 @@ void CUI_Announce_Symbol::Late_Update(_float fTimeDelta)
         m_pSubText->Set_Color({ 1.f, 1.f, 1.f,m_fSetTexAlpha });
     }
     m_pSubText->Tex_Scaling(m_fScalingSize, 1.f);
-    CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
+    if(!m_isElite)
+        CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
     __super::Late_Update(fTimeDelta);
 }
 

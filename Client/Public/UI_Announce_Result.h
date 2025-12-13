@@ -33,6 +33,7 @@ private:
 
     _float                          m_fAcctime = {};
     _float                          m_fDelaytime = {};
+    _bool                           m_isElite = { false };
 private:
 	HRESULT							Ready_Prototype();
     HRESULT							Ready_Children();

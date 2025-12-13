@@ -81,7 +81,18 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
         _vector vDamagePos = XMLoadFloat4(m_vLockOnPosition);
 
         //pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , static_cast<_uint>(fDamage), { 0.f, 10.f });
-        pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , fDamage, { 0.f, 10.f });
+        //DIRECTION_INFO Info{};
+        //Info.iDirFlag = (_uint)m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "TargetDirection");
+        
+        TARGET_DIR eDir = Check_Dir(m_pTransformCom->Get_WorldMatrix(), m_pTarget->Get_Transform()->Get_State(STATE::POSITION));
+
+        if(eHitreaction == HITREACTION::BRUTAL_ATTACK)
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::SPECIAL, vDamagePos, fDamage, { 0.f, 10.f });
+        else if(eDir == TARGET_DIR::B || eDir == TARGET_DIR::BR || eDir == TARGET_DIR::BL)
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::BACK, vDamagePos, fDamage, { 0.f, 10.f });
+        else
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , fDamage, { 0.f, 10.f });
+        
         m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
     }
 

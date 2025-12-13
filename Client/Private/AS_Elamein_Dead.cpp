@@ -34,6 +34,8 @@ void CAS_Elamein_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
         {
             m_eState = RELEASSE;
             m_pMonData->pOwner->Hp_Dead();
+            m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_RESULT>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_RESULT), { true });
+
         }
     }
     else if (m_eState == RELEASSE)
