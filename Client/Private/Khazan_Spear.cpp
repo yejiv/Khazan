@@ -388,40 +388,53 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     DECAL_DESC Desc{};
     Desc.fLifeTime = 8.f;
     Desc.vFadeTime = _float2(0.2f, 0.2f);
-    //  Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
-    
-    // LINEAR일 때
-    //  Desc.eType = DECALTYPE::LINEAR;
-    //  _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
-    //  _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
-    //  vPosition += (vLook * -1.5f);
-    //  XMStoreFloat3(&Desc.vPosition, vPosition);
-    //  _float fRadianY = atan2f(XMVectorGetX(vLook), XMVectorGetZ(vLook));
-    //  _float fDegreeY = XMConvertToDegrees(fRadianY);
-    //  Desc.vAngle = _float3(0.f, fDegreeY, 0.f);
-    //  Desc.vScale = _float3(2.f, 1.f, 4.f);
-    //  Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
-    //  Desc.isRandomTexture = true;
-
-    // CIRCLE일 때
-    Desc.eType = DECALTYPE::CIRCLE;
-    _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
-    XMStoreFloat3(&Desc.vPosition, vDecalPos);
-    Desc.vScale = _float3(
-        m_pGameInstance->Rand(3.f, 5.f),
-        1.f, 
-        m_pGameInstance->Rand(3.f, 5.f)
-    );
+    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
     Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
     Desc.isRandomTexture = true;
+    _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
+    
+    _float fRadianY{}, fDegreeY{};
 
-    // CURVE일 때
-    //  Desc.eType = DECALTYPE::CURVE;
-    //  _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
-    //  XMStoreFloat3(&Desc.vPosition, vDecalPos);
-    //  Desc.vScale = _float3(2.f, 1.f, 5.f);
-    //  Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
-    //  Desc.isRandomTexture = true;
+    switch (Desc.eType)
+    {
+    case DECALTYPE::LINEAR:
+        Desc.eType = DECALTYPE::LINEAR;
+        _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+        _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
+        vPosition += (vLook * -1.5f);
+        XMStoreFloat3(&Desc.vPosition, vPosition);
+        fRadianY = atan2f(XMVectorGetX(vLook), XMVectorGetZ(vLook));
+        fDegreeY = XMConvertToDegrees(fRadianY);
+        Desc.vAngle = _float3(0.f, fDegreeY, 0.f);
+        Desc.vScale = _float3(2.f, 1.f, 4.f);
+        break;
+
+    case DECALTYPE::CIRCLE:
+        Desc.eType = DECALTYPE::CIRCLE;
+        XMStoreFloat3(&Desc.vPosition, vDecalPos);
+        Desc.vScale = _float3(
+            m_pGameInstance->Rand(3.f, 5.f),
+            1.f,
+            m_pGameInstance->Rand(3.f, 5.f)
+        );
+        Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+        Desc.isRandomTexture = true;
+        break;
+
+    case DECALTYPE::CURVE:
+        Desc.eType = DECALTYPE::CURVE;
+        _float fOffset = 1.25f;
+        _float fPosX = XMVectorGetX(vDecalPos);
+        _float fPosZ = XMVectorGetZ(vDecalPos);
+        vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
+        vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
+        XMStoreFloat3(&Desc.vPosition, vDecalPos);
+        Desc.vAngle = _float3(0.f, m_pGameInstance->Rand(0.f, 360.f), 0.f);
+        Desc.vScale = _float3(2.f, 1.f, 4.f);
+        Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+        Desc.isRandomTexture = true;
+        break;
+    }
 
     m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 
