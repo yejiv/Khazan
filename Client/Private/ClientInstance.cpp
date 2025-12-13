@@ -196,6 +196,10 @@ PLAYER_DATA* CClientInstance::Get_pInitailizePlayerData()
 {
     return m_pPlayer_Manager->Get_pInitailizePlayerData();
 }
+void CClientInstance::Initialize_PlayerData()
+{
+    m_pPlayer_Manager->Initialize_PlayerData();
+}
 PLAYER_DATA& CClientInstance::Get_ptrPlayerData()
 {
     return m_pPlayer_Manager->Get_ptrPlayerData();
