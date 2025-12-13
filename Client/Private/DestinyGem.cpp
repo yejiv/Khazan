@@ -35,6 +35,7 @@ HRESULT CDestinyGem::Initialize_Clone(void* pArg)
 
     m_pConsumed = pDesc->pConsumed;
     m_pDissolved = pDesc->pDissolved;
+    m_pStartDissolve = pDesc->pStartDissolve;
 
     m_iNumGem *= static_cast<_uint>(m_pGameInstance->Rand(2.f, 5.f));
 
@@ -73,10 +74,29 @@ void CDestinyGem::Update(_float fTimeDelta)
         m_fDecreaseAlpha += fTimeDelta * 0.2f;
     }
 
+    if (3.6f <= m_fTimeAcc)
+    {
+        if (false == m_isOnce)
+        {
+            m_isOnce = true;
+
+            *m_pStartDissolve = true;
+        }
+    }
+
+    if (0.6f <= m_fDecreaseAlpha)
+    {
+        if (false == m_isGiveGem)
+        {
+            m_isGiveGem = true;
+
+            static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::STONE, m_iNumGem);
+        }
+    }
+
     if (1.f <= m_fDecreaseAlpha)
     {
         *m_pDissolved = true;
-        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::STONE, m_iNumGem);
         Set_IsDead(true);
     }
 
