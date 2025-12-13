@@ -1376,15 +1376,15 @@ HRESULT CLevel_HeinMach::Ready_ShaderSettings()
 {
     // Vignette
     VIGNETTE_CONFIG Config{};
-    Config.vColor = _float3(0.2f, 0.f, 0.f);
-    Config.fPower = 4.f;
-    Config.fMinIntensity = 4.f;
+    Config.vColor = _float3(0.25f, 0.f, 0.f);
+    Config.fPower = 3.5f;
+    Config.fMinIntensity = 5.f;
     Config.fMaxIntensity = 10.f;
     Config.fDuration = 1.5f;
     Config.vFadeTime = _float2(0.75f, 0.75f);
     Config.isUseNoise = true;
     Config.iTextureIndex = 1;
-    Config.fContrast = 2.f;
+    Config.fContrast = 1.f;
     m_pGameInstance->Set_VignetteConfig(Config);
 
     // 프리즈너 비네트 활성화
