@@ -1612,7 +1612,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
 {
     CBody::BODY_BOXSHAPE_DESC TipBoxDesc{};
     {
-        TipBoxDesc.vExtent = _float3(1.8f, 0.7f, 0.7f);
+        TipBoxDesc.vExtent = _float3(2.2f, 0.8f, 0.8f);
         TipBoxDesc.eMotion = EMotionType::Kinematic;
         TipBoxDesc.eQuality = EMotionQuality::Discrete; // 기본 모드
         TipBoxDesc.eShapeType = SHAPE::BOX;
@@ -1623,7 +1623,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_pSpearTip1_MatrixW));
         TipBoxDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
         TipBoxDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
-        TipBoxDesc.vShapeOffset = _float3(-1.2f, 0.f, 0.f);
+        TipBoxDesc.vShapeOffset = _float3(-1.1f, 0.f, 0.f);
         m_tAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
         m_tAttackCollisionDesc.strName = TEXT("AttackCollisionDesc");
         m_tAttackCollisionDesc.pGameObject = this;
