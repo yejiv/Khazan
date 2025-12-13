@@ -58,9 +58,8 @@ void CProjectile_Boomarang::Update(_float fTimeDelta)
 
     if (m_fCurrentTime >= m_fLifeTime)
     {
-        // 풀로 돌아가고
+        m_pBody->Set_Pos(XMVectorSet(0.f, 0.f, 0.f, 1.f));
         m_isDead = true;
-        // Active 끄고
         m_isActive = false;
         m_pBody->Collision_Active(false);
         StopBoomarangSound();

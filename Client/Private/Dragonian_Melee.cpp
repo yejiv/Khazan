@@ -46,8 +46,7 @@ void CDragonian_Melee::Hp_Visivle(_bool isVisivle)
 
 void CDragonian_Melee::Hp_Dead()
 {
-    m_pUI_HP->Set_IsDead(true);
-    m_pUI_HP = nullptr;
+    m_pUI_HP->Update_Visible(false);
 }
 
 void CDragonian_Melee::LookAt_Lerp(_float fTimeDelta)
@@ -105,6 +104,12 @@ void CDragonian_Melee::BurutalUI_Off()
     m_pBrutalAttack = nullptr;
 }
 
+void CDragonian_Melee::Creature_Release()
+{
+    m_isGhost = true;
+    m_isActive = false;
+}
+
 HRESULT CDragonian_Melee::Initialize_Prototype(_int iLevel)
 {
 
@@ -143,6 +148,7 @@ HRESULT CDragonian_Melee::Initialize_Clone(void* pArg)
     m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
     m_fRecoveryPerSec = 10.f;
+    m_pGameInstance->Subscribe_Event<EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), [&](const EVENT_RESPOWN& e) {ReSpown(); });
 
     return S_OK;
 }
@@ -576,6 +582,24 @@ void CDragonian_Melee::Move_Sound()
     case 5:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_05 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
     default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_walk_06 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
     }
+}
+
+void CDragonian_Melee::ReSpown()
+{
+    //살아 있는 객체는 초기화 시키지 않는다는 함수
+    if (!m_isGhost)
+        return;
+    m_Data.isSleep = true;
+    *m_Data.pCulHp = *m_Data.pMaxHp;
+    *m_Data.pCulStamina = *m_Data.pMaxStamina;
+    m_Data.fDecreaseAlpha = 0.f;
+    m_isGhost = false;
+    m_isActive = true;
+    m_pTransformCom->Set_WorldMatrix_4x4(m_OriginMat);
+    m_pController->Get_BlackBoard()->Set_Value(m_strName, "isDetected", false);
+
+    m_Data.eHitType = HITREACTION::END;
+    m_Data.iBrutalHit = 0;
 }
 
 CDragonian_Melee* CDragonian_Melee::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)

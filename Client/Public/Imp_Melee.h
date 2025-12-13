@@ -17,8 +17,8 @@ private:
 
 public:
     virtual _float4* Get_LockOnPosition();
-    class   CBody_Imp_Melee* Get_Body() { return m_pBody; }
-
+    class   CBody_Imp_Melee*    Get_Body() { return m_pBody; }
+    class   CImp_Sword*         Get_Sword() { return m_pWeapon; }
 
 public:
     virtual HRESULT					Initialize_Prototype() override;
