@@ -114,6 +114,7 @@ private:
 
     CBody*              m_pBodyCom_SpearTip1 = { nullptr };
     CBody*              m_pBodyCom_SpearPole = { nullptr };
+    CBody*              m_pBodyCom_BodyAttack = { nullptr };
     CBody*              m_pBodyCom_Search = { nullptr };
 
     _float4x4*          m_pSpearFX_Matrix = { nullptr };
@@ -128,7 +129,7 @@ private:
 
 
     _bool				m_isFinishedAnimation = { false };
-    _uint				m_iCurSetAnimIndex = { 0 };
+    _uint				m_iCurAnimIndex = { 0 };
     _bool               m_isSpearFullExtension = { false }; //창을 완전히 뻗는 타이밍부터 true 
     _bool*              m_pIsGuarding = { nullptr }; //가드중인지 체크
 
@@ -150,6 +151,7 @@ private:
 
     _bool               m_isSpearTipActive = { true };
     _bool               m_isSpearPoleActive = { true };
+    _bool               m_isBodyAttackActive = { true };
 
     /* 가드 */
     _bool               m_isJustGuardOnce = { false };
@@ -194,6 +196,7 @@ private:
 
     COLLISION_DESC      m_tSearchCollisionDesc = {};
     COLLISION_DESC      m_tAttackCollisionDesc = {};
+    COLLISION_DESC      m_tBodyAttackCollisionDesc = {};
     COLLISION_DESC      m_tGuardCollisionDesc = {};
 
 

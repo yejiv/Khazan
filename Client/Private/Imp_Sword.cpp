@@ -32,12 +32,12 @@ _matrix CImp_Sword::Get_BoneMatrix(const _char* pBoneName)
 }
 
 CImp_Sword::CImp_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CPartObject{ pDevice,pContext }
+    :CWeaponObject{ pDevice,pContext }
 {
 }
 
 CImp_Sword::CImp_Sword(const CImp_Sword& Prototype)
-    :CPartObject{ Prototype }
+    :CWeaponObject{ Prototype }
 {
 }
 

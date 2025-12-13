@@ -259,13 +259,15 @@ namespace Engine
 
     typedef struct tagVignetteConfig
     {
-        enum ANIMMODE { SMOOTH_SMOOTH, SMOOTH_INTANT, INTANT_SMOOTH, NONE };
-
-        ANIMMODE	eMode;
-        XMFLOAT3	vColor;
-        float		fPower;
-        float		fIntensity;
-        float		fMaxIntensity;
+        XMFLOAT3	    vColor;
+        float		    fPower;
+        float		    fMinIntensity;
+        float		    fMaxIntensity;
+        float           fDuration;
+        XMFLOAT2        vFadeTime;
+        bool            isUseNoise;
+        unsigned int    iTextureIndex;
+        float           fContrast;
     }VIGNETTE_CONFIG;
 
     typedef struct tagDecalEmissiveDesc

@@ -31,8 +31,13 @@ private:
 
     _bool						m_isBrutalAttackSuccess = { false };
     _bool                       m_isCheckBrutalCnt = { false };
+    _bool                       m_isBlockAnimSet = { false };
 
     GROGGY						m_eState = { GROGGY::START };
+
+
+    _float                      m_fBrutalAttackDelayTime = {};
+    _float                      m_fBrutalAcc = {};
 
 private:
 	class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };

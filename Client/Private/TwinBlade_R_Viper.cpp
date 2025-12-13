@@ -48,6 +48,8 @@ HRESULT CTwinBlade_R_Viper::Initialize_Clone(void* pArg)
     _matrix tempMat = XMMatrixRotationZ(XMConvertToRadians(90.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f)) * XMMatrixRotationX(XMConvertToRadians(90.0f));
     XMStoreFloat4x4(&m_matOffset, tempMat);
 
+    m_pModelCom->Set_Transform(&m_CombinedWorldMatrix);
+
     return S_OK;
 }
 
@@ -118,7 +120,7 @@ void CTwinBlade_R_Viper::Update(_float fTimeDelta)
         m_pModelCom->Update_BoneCombinedMatrices();
 
         XMStoreFloat4x4(&m_CombinedWorldMatrix, XMLoadFloat4x4(&m_matOffset) * OffsetMatrix * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
-
+        m_pMotionTrailCom->Update(fTimeDelta);
 
         m_pBodyComp->Collision_Active(m_isOnAttackCollision);
         if (m_isOnAttackCollision)
@@ -160,6 +162,19 @@ void CTwinBlade_R_Viper::Update(_float fTimeDelta)
     // 2Phase Light Setting Test
     _float4 vPos = _float4(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, m_CombinedWorldMatrix._44);
     m_pGameInstance->Set_LightPosition(TEXT("Viper_TwinBlade_R"), ENUM_CLASS(LEVEL::VIPER), vPos);
+
+    MOTIONTRAIL_CONFIG Config{};
+    Config.vLifeTime = { 0.f, 0.3f };
+    Config.vStartColor = { 1.f, 0.8f, 0.6f };
+    Config.vTargetColor = { 0.6f, 0.6f, 0.6f };
+    Config.fRimPower = 2.f;
+    Config.fRimIntensity = 1.f;
+    Config.fEmissiveIntensity = 3.f;
+    Config.isIndividualColor = false;
+    Config.fColorUpdateSpeed = 2500.f;
+    Config.fInterval = 0.15f;
+    Config.iMaxFrames = 10;
+    m_pMotionTrailCom->Set_Config(Config);
 }
 
 void CTwinBlade_R_Viper::Late_Update(_float fTimeDelta)
@@ -195,6 +210,9 @@ HRESULT CTwinBlade_R_Viper::Render()
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0);
+
+        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+            return E_FAIL;
 
         if (i == 1)
         {
@@ -234,6 +252,11 @@ void CTwinBlade_R_Viper::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjec
 {
 }
 
+void CTwinBlade_R_Viper::Set_EnableMotionTrail(_bool isEnable)
+{
+    m_pMotionTrailCom->Set_Enable(isEnable);
+}
+
 HRESULT CTwinBlade_R_Viper::Ready_Components()
 {
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
@@ -244,7 +267,24 @@ HRESULT CTwinBlade_R_Viper::Ready_Components()
         TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr)))
         return E_FAIL;
 
-    m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
+    //  m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
+
+    CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
+    MTDesc.pOwnerMasterModel = m_pModelCom;
+    MTDesc.HasPartModels = false;
+    MTDesc.Config.vLifeTime = { 0.f, 0.3f };
+    MTDesc.Config.vStartColor = { 1.f, 0.8f, 0.6f };
+    MTDesc.Config.vTargetColor = { 0.6f, 0.6f, 0.6f };
+    MTDesc.Config.fRimPower = 2.f;
+    MTDesc.Config.fRimIntensity = 1.f;
+    MTDesc.Config.fEmissiveIntensity = 3.f;
+    MTDesc.Config.isIndividualColor = false;
+    MTDesc.Config.fColorUpdateSpeed = 2500.f;
+    MTDesc.Config.fInterval = 0.2f;
+    MTDesc.Config.iMaxFrames = 10;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
+        TEXT("Com_MotionTrail"), reinterpret_cast<CComponent**>(&m_pMotionTrailCom), &MTDesc)))
+        return E_FAIL;
 
     return S_OK;
 }
@@ -328,6 +368,7 @@ void CTwinBlade_R_Viper::Free()
 {
     __super::Free();
 
+    Safe_Release(m_pMotionTrailCom);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);

@@ -549,6 +549,8 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         case static_cast<_int>(BLADENEXUS_ID::HEINMACH_ENTER):
             static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(4012);
             eUIType = CUI_BladeNexus::ONTYPE::DEFAULT;
+            // 비네트 끄기
+            m_pGameInstance->Set_EnableVignette(false);
             break;
         case static_cast<_int>(BLADENEXUS_ID::HEINMACH_YETUGA):
             eUIType = CUI_BladeNexus::ONTYPE::EMBARS;

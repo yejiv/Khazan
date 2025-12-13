@@ -1581,6 +1581,29 @@ PS_OUT PS_NPC(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_NPC_EYE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+        
+    float pupilScale = 0.18 * g_PupilScale; // 0.75 들어감
+    float irisScale = 0.34;
+    
+    float dist = distance(In.vTexcoord, float2(0.5, 0.5));
+    float4 color = g_vEyeWhiteColor;
+    color = lerp(color, g_vPupilCircle * 5.f, smoothstep(irisScale, irisScale - 0.05, dist));
+    
+    float ring = smoothstep(pupilScale + 0.02, pupilScale, dist);
+    color = lerp(color, g_vPupilRing, ring);
+    
+    color = lerp(color, g_vPupilLens, smoothstep(pupilScale, pupilScale - 0.03, dist));
+    
+    color.rgb *= g_vShadingColor.rgb;
+    
+    Out.vDiffuse = float4(color.xyz, 1.f);
+    
+    return Out;
+}
+
 technique11 DefaultTechnique
 {
     pass DefaultPass        // 0 번
@@ -2009,5 +2032,17 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_NPC();
+    }
+
+    // NPC Eye 패스 ( 36번 )
+    pass NpcEyePass
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_NPC_EYE();
     }
 }

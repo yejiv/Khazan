@@ -419,8 +419,10 @@ void CBody_Khazan_GS::Render_Part(CModel* pModel)
 {
     if (nullptr == pModel)
         return;
-
-    pModel->Update_PartLocalBones_Once();
+    
+    
+    _bool isExclusivePartBones = m_pClientInstance->Get_PlayerEquipment().iLeg != 5009;
+    pModel->Update_PartLocalBones_Once(isExclusivePartBones);
     //pModel->Update_PartLocalBones();       
 
     _uint iNumMeshes = pModel->Get_NumMeshes();
@@ -491,7 +493,8 @@ void CBody_Khazan_GS::Render_Part_MotionVector(CModel* pModel)
     if (nullptr == pModel)
         return;
 
-    pModel->Update_PartLocalBones_Once();
+    _bool isExclusivePartBones = m_pClientInstance->Get_PlayerEquipment().iLeg != 5009;
+    pModel->Update_PartLocalBones_Once(isExclusivePartBones);
     //pModel->Update_PartLocalBones();
 
     _uint iNumMeshes = pModel->Get_NumMeshes();
@@ -541,12 +544,13 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
 
                 // Vignette
                 VIGNETTE_CONFIG Config{};
-                Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
                 Config.vColor = _float3(0.f, 0.f, 0.f);
                 Config.fPower = 3.5f;
-                Config.fIntensity = 1.f;
+                Config.fMinIntensity = 0.f;
                 Config.fMaxIntensity = 4.f;
-                m_pGameInstance->Start_VignetteAnimation(0.5f, Config);
+                Config.fDuration = 0.5f;
+                Config.vFadeTime = _float2(0.25f, 0.25f);
+                m_pGameInstance->Start_VignetteAnimation(Config);
 
                 // 핑크 보라 조명
                 LIGHT_TRANSITION_DESC LightDesc{};
@@ -2199,12 +2203,13 @@ void CBody_Khazan_GS::Start_DefaultVignette()
 {
     // Vignette
     VIGNETTE_CONFIG Config{};
-    Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
     Config.vColor = _float3(0.f, 0.f, 0.f);
     Config.fPower = 3.5f;
-    Config.fIntensity = 1.f;
+    Config.fMinIntensity = 0.f;
     Config.fMaxIntensity = 4.f;
-    m_pGameInstance->Start_VignetteAnimation(2.f, Config);
+    Config.fDuration = 2.f;
+    Config.vFadeTime = _float2(1.f, 1.f);
+    m_pGameInstance->Start_VignetteAnimation(Config);
 }
 
 void CBody_Khazan_GS::Start_DefaultRadialBlur()

@@ -40,17 +40,15 @@ private:
     HRESULT						        Ready_Colliders();
 	HRESULT								Bind_ShaderResources();
 
-    HRESULT                             Render_Model(_uint iIndex);
-
 
 
 private:
     CBody*                              m_pBody = { nullptr };
     _bool						        m_isPicked = { false };
 
-private:
-    CModel*                             m_pAnimModelCom = { nullptr };
-    CShader*                            m_pAnimShaderCom = { nullptr };
+//private:
+//    CModel*                             m_pAnimModelCom = { nullptr };
+//    CShader*                            m_pAnimShaderCom = { nullptr };
 
 
 

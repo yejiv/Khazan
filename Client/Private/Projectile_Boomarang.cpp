@@ -262,7 +262,7 @@ void CProjectile_Boomarang::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherOb
         {
             if (!m_isDamageForward)
             {
-                pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+                pTarget->Take_Damage(180.f, HITREACTION::KNOCKBACK_NORMAL, nullptr);
                 BoomarangHitSFX();
                 m_isDamageForward = true;
 
@@ -272,7 +272,7 @@ void CProjectile_Boomarang::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherOb
         {
             if (!m_isDamageReturn)
             {
-                pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+                pTarget->Take_Damage(180.f, HITREACTION::KNOCKBACK_NORMAL, nullptr);
                 BoomarangHitSFX();
                 m_isDamageReturn = true;
             }
