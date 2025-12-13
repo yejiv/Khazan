@@ -103,12 +103,13 @@ void CBody_Elamein::Update(_float fTimeDelta)
 
     m_pClothBody->Sync_Update(ClothWorld);
     m_pClothBody->Update(fTimeDelta, ClothWorld, vQuat, vPos);
-
-    if (m_pData->iAnimIndex != 31 && m_pData->iAnimIndex != 35 && m_pData->iAnimIndex != 51 && m_pData->iAnimIndex != 95)
-    {
-        m_pCapeBody->Priority_Update(fTimeDelta);
-        m_pCapeBody->Update(fTimeDelta);
-    }     
+    m_pCapeBody->Priority_Update(fTimeDelta);
+    m_pCapeBody->Update(fTimeDelta);
+    //if (m_pData->iAnimIndex != 31 && m_pData->iAnimIndex != 35 && m_pData->iAnimIndex != 51 && m_pData->iAnimIndex != 95)
+    //{
+    //    m_pCapeBody->Priority_Update(fTimeDelta);
+    //    m_pCapeBody->Update(fTimeDelta);
+    //}     
 //#endif
 }
 
@@ -117,8 +118,10 @@ void CBody_Elamein::Late_Update(_float fTimeDelta)
     if (!m_pData->isSearch)
         return;
 //#ifdef NDEBUG
-    if (m_pData->iAnimIndex != 31 && m_pData->iAnimIndex != 35 && m_pData->iAnimIndex != 51 && m_pData->iAnimIndex != 95)
-        m_pCapeBody->Late_Update(fTimeDelta);
+    m_pCapeBody->Late_Update(fTimeDelta);
+
+    //if (m_pData->iAnimIndex != 31 && m_pData->iAnimIndex != 35 && m_pData->iAnimIndex != 51 && m_pData->iAnimIndex != 95)
+    //    m_pCapeBody->Late_Update(fTimeDelta);
 //#endif
 }
 
