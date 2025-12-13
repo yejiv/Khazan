@@ -33,7 +33,7 @@ void CAS_IceBreath_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CBlackBoard* BB = pYetuga->Get_Controller()->Get_BlackBoard();
 
 
-    m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath1_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath1_01 (SFX).wav"), 3.f);
 
 }
 
@@ -51,7 +51,7 @@ void CAS_IceBreath_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _flo
         {
             BB->Set_Value<_bool>(pYetuga->Get_Name(), "isReadyiceBreath", false);
             pModel->Set_Animation(49);
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath1_shot_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath1_shot_01 (SFX).wav"), 1.f);
 
             m_eState = PHASE::ROOP;
         }

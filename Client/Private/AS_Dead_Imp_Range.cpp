@@ -4,6 +4,8 @@
 #include "Body_Imp_Range.h"
 #include "BlackBoard.h"
 #include "AI_Controller.h"
+#include "Interaction_Item.h"
+
 
 CAS_Dead_Imp_Range::CAS_Dead_Imp_Range()
 {
@@ -17,6 +19,11 @@ void CAS_Dead_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     pImp->Cast_Failed();
     pModel->Set_Animation(28);
+
+    CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Item")));
+    pItem->RandNormal_Item(pOwner->Get_Transform()->Get_State(STATE::POSITION));
+    m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Item"), pItem);
+
 
 }
 

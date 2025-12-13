@@ -63,12 +63,7 @@ void CProjectile_Boomarang::Update(_float fTimeDelta)
         // Active 끄고
         m_isActive = false;
         m_pBody->Collision_Active(false);
-        if (!m_isClearSound)
-        {
-            m_isClearSound = true;
-            m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Cast_Spin (SFX).wav"), 1.f);
-        }
-
+        StopBoomarangSound();
     }
 
     if (m_isActive)
@@ -217,7 +212,7 @@ void CProjectile_Boomarang::Enter_State(BOOMARANGSTATE eNextState)
     switch (m_eState)
     {
     case Client::BOOMARANGSTATE::LOOP:
-        m_pGameInstance->PlaySoundLoop(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Cast_Spin (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 5.f);
+        //m_pGameInstance->PlaySoundLoop(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Cast_Spin (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 5.f);
         break;
     case Client::BOOMARANGSTATE::CRASHED:
 
