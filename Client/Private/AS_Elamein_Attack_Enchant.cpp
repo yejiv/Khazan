@@ -59,6 +59,7 @@ void CAS_Elamein_Attack_Enchant::Update(CStateMachine* pFSM, CGameObject* pOwner
 void CAS_Elamein_Attack_Enchant::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
     m_pMonData->fSpecial_AttackCool = 30.f;
+    m_pMonData->eAttackState = CElamein::ATTACKSTATE::END;
     m_pMonData->pOwner->Reset_Charge();
 }
 

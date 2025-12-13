@@ -29,6 +29,9 @@
 #include "Interaction_Item.h"
 //TEST
 #include "UI_Inven.h"
+
+#include "Destructible_Stone.h"
+#include "Chunk.h"
 #pragma endregion
 
 CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -80,6 +83,8 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_SoundSetting(), E_FAIL);
 
+    CHECK_FAILED(Ready_ShaderSettings(), E_FAIL);
+
     if (!Wait_All_Futures())
         return E_FAIL;
 
@@ -109,6 +114,17 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         if (m_fFadeTime >= 0.2f)
             m_pGameInstance->Decal_OnOff(true);
 
+    }
+
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+    {
+        CDestructible_Stone::STONE_DESC Desc;
+        Desc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
+        Desc.vPos = XMVectorSet(0.f, 1.f, 0.f, 1.f);
+
+        if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Chunk"),
+            ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Destructible_Stone"), TIME_CHANNEL::ENEMY, &Desc)))
+            return;
     }
 
     if (m_pGameInstance->Key_Down(DIK_F1, INPUT_TYPE::FORCE))
@@ -247,9 +263,9 @@ HRESULT CLevel_HeinMach::Ready_Layer_Player(const _wstring& strLayerTag)
 	//    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER, &Desc)))
 	//    return E_FAIL;
 
-      if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-          ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER, &Desc)))
-          return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER, &Desc)))
+        return E_FAIL;
 
 	return S_OK;
 }
@@ -733,7 +749,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 150.f;
             MonsterDesc.fMaxHP = 4500.f;
-            MonsterDesc.fMaxStamina = 350.f;
+            MonsterDesc.fMaxStamina = 550.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -1366,6 +1382,27 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_DEST(const _wstring& strLayerTag,
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Barrel"), TIME_CHANNEL::WORLD, &BarrelDesc)))
         return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_ShaderSettings()
+{
+    // Vignette
+    VIGNETTE_CONFIG Config{};
+    Config.vColor = _float3(0.25f, 0.f, 0.f);
+    Config.fPower = 3.5f;
+    Config.fMinIntensity = 5.f;
+    Config.fMaxIntensity = 10.f;
+    Config.fDuration = 1.5f;
+    Config.vFadeTime = _float2(0.75f, 0.75f);
+    Config.isUseNoise = true;
+    Config.iTextureIndex = 1;
+    Config.fContrast = 1.f;
+    m_pGameInstance->Set_VignetteConfig(Config);
+
+    // 프리즈너 비네트 활성화
+    m_pGameInstance->Set_EnableVignette(true, 4.f);
 
     return S_OK;
 }

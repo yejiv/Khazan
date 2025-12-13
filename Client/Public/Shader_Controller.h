@@ -62,7 +62,8 @@ private:
 
     // Vignette
     VIGNETTE_CONFIG			m_VignetteConfig = {};
-    _float                  m_fVignetteAnimDuration = {};
+    _float                  m_fVignetteIntensity = {};
+    _bool                   m_isVignetteReturnOff = {};
 
 	// Cartoon Rendering
 	_float					m_fToonShadeLevel = { 3.f };

@@ -19,7 +19,7 @@ public:
 	void Exit() override;
 
 public:
-	_bool	Try_Guard();
+	_bool	Try_Guard(_float fAddDesceaseTime);
 	_bool	Try_SuccessGuard(_uint iHitDir);
 	_bool	Try_WalkGuard(_uint iMoveDir);
 	_bool	Try_JustGuard(_uint	m_iHitDir);

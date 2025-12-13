@@ -309,10 +309,12 @@
     <ClInclude Include="..\public\Body_Pet_Danjinjar.h" />
     <ClInclude Include="..\Public\Body_Phase2_Viper.h" />
     <ClInclude Include="..\Public\Body_Viper.h" />
+    <ClInclude Include="..\Public\Chunk.h" />
     <ClInclude Include="..\Public\Core_Viper.h" />
     <ClInclude Include="..\Public\DanjinJar.h" />
     <ClInclude Include="..\Public\DestinyGem.h" />
     <ClInclude Include="..\Public\DestinyStone.h" />
+    <ClInclude Include="..\Public\Destructible_Stone.h" />
     <ClInclude Include="..\public\Dragonian_Claw_L.h" />
     <ClInclude Include="..\public\Dragonian_Claw_R.h" />
     <ClInclude Include="..\public\Dragonian_Sword.h" />
@@ -722,10 +724,12 @@
     <ClCompile Include="..\private\Body_Pet_Danjinjar.cpp" />
     <ClCompile Include="..\Private\Body_Phase2_Viper.cpp" />
     <ClCompile Include="..\Private\Body_Viper.cpp" />
+    <ClCompile Include="..\Private\Chunk.cpp" />
     <ClCompile Include="..\Private\Core_Viper.cpp" />
     <ClCompile Include="..\Private\DanjinJar.cpp" />
     <ClCompile Include="..\Private\DestinyGem.cpp" />
     <ClCompile Include="..\Private\DestinyStone.cpp" />
+    <ClCompile Include="..\Private\Destructible_Stone.cpp" />
     <ClCompile Include="..\private\Dragonian_Claw_L.cpp" />
     <ClCompile Include="..\private\Dragonian_Claw_R.cpp" />
     <ClCompile Include="..\private\Dragonian_Sword.cpp" />

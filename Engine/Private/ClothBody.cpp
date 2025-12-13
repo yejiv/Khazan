@@ -62,7 +62,7 @@ void CClothBody::Priority_Update(_float fTimeDelta)
 
     for (auto Root : m_RootBodys)
     {
-        Root->Priority_Update(fTimeDelta);
+        Root->Priority_Update(m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::WORLD));
     }
 }
 
@@ -84,7 +84,7 @@ void CClothBody::Update(_float fTimeDelta)
 
     for (auto Root : m_RootBodys)
     {
-        Root->Update(fTimeDelta);
+        Root->Update(m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::WORLD));
     }
 }
 
@@ -106,7 +106,7 @@ void CClothBody::Late_Update(_float fTimeDelta)
 
     for (auto Root : m_RootBodys)
     {
-        Root->Late_Update(fTimeDelta);
+        Root->Late_Update(m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::WORLD));
     }
 }
 

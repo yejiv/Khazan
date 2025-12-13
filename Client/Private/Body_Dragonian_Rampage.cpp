@@ -43,6 +43,8 @@ HRESULT CBody_Dragonian_Rampage::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_pModelCom->Set_OwnerTransform(&m_CombinedWorldMatrix);
+    Set_JustGuardCallBack([this](_bool isJustGuard) { *m_pData->pCulStamina -= *m_pData->pMaxStamina * 0.1f; });
+
     return S_OK;
 }
 
