@@ -112,6 +112,7 @@ void CBody_Khazan_Spear::Priority_Update(_float fTimeDelta)
         m_isHitSound = false;
     }
 
+
 }
 
 void CBody_Khazan_Spear::Update(_float fTimeDelta)
@@ -186,6 +187,10 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
 
         m_HealRimLightDesc.fRimLightIntensity = m_HealRimLightDesc.fTargetIntensity * fIntensityRatio;
     }
+
+    /*  어택콜라이더 on -> 다른 애니메이션 들어오면 끄기 */
+    if(m_isSpearTipActive && m_iCurAnimIndex != m_pModelCom->Get_CurAnimIndex())
+        m_isSpearTipActive =false;
 }
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -371,7 +376,8 @@ void CBody_Khazan_Spear::Render_Part(CModel* pModel)
     if (nullptr == pModel)
         return;
 
-    pModel->Update_PartLocalBones_Once();
+    _bool isExclusivePartBones = m_pClientInstance->Get_PlayerEquipment().iLeg != 5009;
+    pModel->Update_PartLocalBones_Once(isExclusivePartBones);
     //pModel->Update_PartLocalBones();
 
     _uint iNumMeshes = pModel->Get_NumMeshes();
@@ -433,7 +439,8 @@ void CBody_Khazan_Spear::Render_Part_MotionVector(CModel* pModel)
     if (nullptr == pModel)
         return;
 
-    pModel->Update_PartLocalBones_Once();
+    _bool isExclusivePartBones = m_pClientInstance->Get_PlayerEquipment().iLeg != 5009;
+    pModel->Update_PartLocalBones_Once(isExclusivePartBones);
     //pModel->Update_PartLocalBones();
 
     _uint iNumMeshes = pModel->Get_NumMeshes();
@@ -457,9 +464,6 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
-        if (m_CollMonsters.size() >= 2)
-            int a = 10;
-
         /* 공격 콜라이더 */
         if (m_isSpearTipActive && pMyDesc->strName == TEXT("AttackCollisionDesc"))
         {
@@ -479,11 +483,32 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
                         - m_pParentTransform->Get_State(STATE::POSITION))
                     , 15.f, 50.f);
 
-            pMonster->Consume_Stamina(20.f);
+            pMonster->Consume_Stamina(50.f);
             m_isCollision = true;
             CTransform* MonsterTransform = dynamic_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")));  
             XMStoreFloat4(&m_fCollisionPos, MonsterTransform->Get_State(STATE::POSITION));
         }
+
+        /* 바디 공격 콜라이더  */
+        if (m_isBodyAttackActive && pMyDesc->strName == TEXT("Player_BodyAttack"))
+        {
+            CCreature* pMonster = static_cast<CCreature*>(pDesc->pGameObject);
+            if (pMonster == nullptr || pMonster->Get_CurrentHP() < 0.f)
+                return;
+
+            pMonster->Take_Damage(m_pPlayerData->fBonusDamage, static_cast<HITREACTION>(*m_pHitReaction), this);
+
+            pMonster->KnockBack(
+                XMVector4Normalize(static_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")))->Get_State(STATE::POSITION)
+                    - m_pParentTransform->Get_State(STATE::POSITION))
+                , 10.f, 35.f);
+
+            pMonster->Consume_Stamina(50.f);
+            m_isCollision = true;
+            CTransform* MonsterTransform = dynamic_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")));
+            XMStoreFloat4(&m_fCollisionPos, MonsterTransform->Get_State(STATE::POSITION));
+        }
+
 
         /*  탐지 */
         if (pMyDesc->strName == TEXT("Player_Search"))
@@ -674,6 +699,16 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
 
 _bool CBody_Khazan_Spear::Check_BrutalAttack(_float fTimeDelta)
 {
+    /* 컨테이너 체크  */
+    lock_guard<mutex> lock(m_CollMonsterMutex);
+    for (auto it = m_CollMonsters.begin(); it != m_CollMonsters.end(); )
+    {
+        if (*it == m_pBrutalmonster && m_pBrutalmonster->Get_IsDead())
+            it = m_CollMonsters.erase(it);
+        else
+            ++it;
+    }
+
     /* 범위 내에 브루탈 가능 개체가 없으면  */
     if (!Has_Status(CKhazan_Spear::BRUTAL_BEGIN)) {
         return false;
@@ -823,12 +858,10 @@ void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
     XMStoreFloat4x4(&m_pSpearPole_MatrixW, matWorld_SpearPole);
 
     m_pBodyCom_SpearPole->Sync_Update(matParent);
-    //m_pBodyCom_SpearPole->Update(fTimeDelta, matWorld_SpearPole, vOutQuat2, vOutPos2);
-    //XMStoreFloat3(reinterpret_cast<_float3*>(&m_pSpearPole_MatrixW._41), vOutPos2);
-
 
     m_pBodyCom_Search->Sync_Update(matParent);
 
+    m_pBodyCom_BodyAttack->Sync_Update(matParent);
 
 }
 
@@ -1664,35 +1697,54 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
             return E_FAIL; 
     }
 
+    CBody::BODY_SPHERESHAPE_DESC BodyAttackDesc{};
+    {
+        BodyAttackDesc.fRadius = 0.5f;
+        BodyAttackDesc.bIsTrigger = true;
+        BodyAttackDesc.bStartActive = true;
+        BodyAttackDesc.eMotion = EMotionType::Kinematic;
+        BodyAttackDesc.eQuality = EMotionQuality::Discrete;
+        BodyAttackDesc.eShapeType = SHAPE::SPHERE;
+        BodyAttackDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
+
+        XMStoreFloat3(&BodyAttackDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&BodyAttackDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+        BodyAttackDesc.vShapeOffset = _float3(0.f, 0.f, 0.35f);
+        m_tBodyAttackCollisionDesc.pGameObject = this;
+        m_tBodyAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
+        m_tBodyAttackCollisionDesc.strName = TEXT("Player_BodyAttack");
+        BodyAttackDesc.pCollisionDesc = &m_tBodyAttackCollisionDesc;
+
+        if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+            TEXT("Com_Body4"), reinterpret_cast<CComponent**>(&m_pBodyCom_BodyAttack), &BodyAttackDesc)))
+            return E_FAIL;
+    }
+
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
-    BodyDesc.fRadius = 3.f;
-    BodyDesc.bIsTrigger = true;
-    BodyDesc.bStartActive = true;
-    BodyDesc.eMotion = EMotionType::Kinematic;
-    BodyDesc.eQuality = EMotionQuality::Discrete;
-    BodyDesc.eShapeType = SHAPE::SPHERE;
-    //BodyDesc.fFriction = 0.f;
-    //BodyDesc.fMass = 0.0f;
-    //BodyDesc.fRestitution = 0.0f;
-    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_SEARCH);
-    // BodyDesc.fGravity = 0.f;
+    {
+        BodyDesc.fRadius = 3.f;
+        BodyDesc.bIsTrigger = true;
+        BodyDesc.bStartActive = true;
+        BodyDesc.eMotion = EMotionType::Kinematic;
+        BodyDesc.eQuality = EMotionQuality::Discrete;
+        BodyDesc.eShapeType = SHAPE::SPHERE;
+        BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_SEARCH);
 
-    XMStoreFloat3(&BodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
-    XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
-    BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tSearchCollisionDesc.pGameObject = this;
-    m_tSearchCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_SEARCH);
-    m_tSearchCollisionDesc.strName = TEXT("Player_Search");
-    //pCollDesc.pInfo = ?? // 작성하기
-    BodyDesc.pCollisionDesc = &m_tSearchCollisionDesc;
+        XMStoreFloat3(&BodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+        XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+        BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
+        m_tSearchCollisionDesc.pGameObject = this;
+        m_tSearchCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_SEARCH);
+        m_tSearchCollisionDesc.strName = TEXT("Player_Search");
+        //pCollDesc.pInfo = ?? // 작성하기
+        BodyDesc.pCollisionDesc = &m_tSearchCollisionDesc;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-        TEXT("Com_Body3"), reinterpret_cast<CComponent**>(&m_pBodyCom_Search), &BodyDesc)))
-        return E_FAIL;
+        if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+            TEXT("Com_Body3"), reinterpret_cast<CComponent**>(&m_pBodyCom_Search), &BodyDesc)))
+            return E_FAIL;
+    }
 
-    //m_pBodyCom_SpearTip1->Collision_Active(false);
-    //m_pBodyCom_SpearPole->Collision_Active(false);
-    
+
     return S_OK;
 }
 
@@ -2120,7 +2172,7 @@ void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
         m_isNotifyAttacking = true;
         m_isSpearTipActive = true;
         m_isSpearFullExtension = false;
-        m_iCurSetAnimIndex = m_pModelCom->Get_CurAnimIndex();
+        m_iCurAnimIndex = m_pModelCom->Get_CurAnimIndex();
         m_pBodyCom_SpearTip1->Collision_Active(true);
        
     }
@@ -2169,6 +2221,7 @@ void CBody_Khazan_Spear::Free()
     Safe_Release(m_pBodyCom_Search);
     Safe_Release(m_pBodyCom_SpearPole);
     Safe_Release(m_pBodyCom_SpearTip1);
+    Safe_Release(m_pBodyCom_BodyAttack);
 
     if (m_pBrutalAttack)
         Safe_Release(m_pBrutalAttack);

@@ -222,10 +222,10 @@ void CKhazan_Spear::Update(_float fTimeDelta)
 
         Update_Stats(fTimeDelta);
 
-        if (Has_Status(DODGE_ENDING)) {
+       if (Has_Status(DODGE_ENDING)) {
             if (!m_pAnimMove->IsCurrentAnimationDodge()) {
                 Remove_Status(DODGE_ENDING);
-                m_isGhost = false;
+               // m_isGhost = false;
             }
         }
     }
@@ -372,7 +372,7 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
             return;
         else {
             Remove_Status(DODGE_ENDING);
-            m_isGhost = false;
+            //m_isGhost = false;
         }
     }
 
@@ -450,9 +450,9 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         break;
 	case Client::HITREACTION::GRAB:
 
-		//m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
-        //m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
-        //Add_Status(YETUGA_GRAB);
+		m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
+        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+        Add_Status(YETUGA_GRAB);
 		break;
     case Client::HITREACTION::KNOCKBACK_WEAK:
         if (Has_State(CAT::M_SKILL))  break;
@@ -1451,10 +1451,17 @@ _bool CKhazan_Spear::Guard_Input(_float fTimeDelta)
         return true;
     }
 
-    if (/*!Has_State(CAT::M_GUARD) &&*/ m_pGameInstance->Key_Down(DIK_LSHIFT))
+    if (!Has_State(CAT::M_GUARD) && m_pGameInstance->Key_Pressing(DIK_LSHIFT,fTimeDelta))
     {
+
+        _float fAddDesceaseTime = 0.f;
+        if (Has_State(CAT::M_ATTACK)) fAddDesceaseTime = 3.f;
+        if (Has_State(CAT::M_ATTACK)) fAddDesceaseTime = 5.f;
+        if (Has_State(CAT::M_DAMAGED)) fAddDesceaseTime = 11.f;
+        if(Has_Status(DODGE_ENDING)) fAddDesceaseTime = 4.f;
+
         /* 그냥 가드 */
-        if (m_pAnimGuard->Try_Guard())
+        if (m_pAnimGuard->Try_Guard(fAddDesceaseTime))
         {
             Clear_Step3();
             Add_State(CAT::M_GUARD);
@@ -1489,7 +1496,7 @@ _bool CKhazan_Spear::Guard_Input(_float fTimeDelta)
     {
         //Remove_State(CAT::M_MOVE );
         //Remove_SubState(MOV::MOVE_WALK);
-        m_pAnimGuard->Try_Guard();  // 정지 가드로 전환
+        m_pAnimGuard->Try_Guard(0.f);  // 정지 가드로 전환
         return true;
     }
 
@@ -1553,7 +1560,7 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
         /* 닷지 : 스태미나 소모*/
         if (m_pPlayerData->fCulStamina != 0.f && !Has_Status(DODGE_ENDING))
         {
-            m_isGhost = true;
+            //m_isGhost = true;
             Add_Status(DODGE_ENDING);
             CKhazan_Spear_Anim_Move::SPEAR_MOVE info;
             info.isEquipWeapon = Has_Status(WEA::SPEAR);
@@ -1638,6 +1645,8 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
     else if (isNothingState)
         return;
 
+    if (Has_State(CAT::M_ATTACK | CAT::M_SKILL))
+        return;
 
     /* Move  */
     if (((Has_Status(LOCKON) && m_eDir.iDirFlag != m_ePrevDir && m_eDir.iDirFlag > 0)) || Has_State(CAT::M_MOVE) && !Has_State(CAT::M_ATTACK | CAT::M_GUARD) || !Has_SubState(MOV::MOVE_DODGE) ||(isCurAnimFallEnd && isCurAnimFinished))
@@ -2833,6 +2842,10 @@ void CKhazan_Spear::Subscribe_Events()
             }
             else
             {
+                if (Has_Status(INJURED)) {
+                    m_pClientInstance->Change_PlayerEquipment(EQUIPMENTTYPE::FACE, 10); //기본 얼굴 
+                }
+
                 m_pBody->Get_Model()->AnimationSetIndexIncrease();
                // m_pSpear->Set_Enble(true);
                 // m_pSpear->Equip();
@@ -3095,6 +3108,7 @@ void CKhazan_Spear::BladeNexus_Event(_float fTimeDelta)
             if (m_pAnimInteraction->Try_DamagedTS_After(Has_Status(SPEAR) && !Has_Status(INJURED)))
             {
 				if (Has_Status(SPEAR)) m_pBody->Get_Model()->AnimationSetIndexIncrease();
+
                 Clear_State();
                 Clear_SubState();
                 Clear_CycleState();
@@ -3880,7 +3894,7 @@ void CKhazan_Spear::Debug_Widget_Guard()
     {
         if (!Has_State(CAT::M_GUARD))
         {
-            m_pAnimGuard->Try_Guard();
+            m_pAnimGuard->Try_Guard(0.f);
             Add_State(CAT::M_GUARD);
         }
     }
@@ -3892,7 +3906,7 @@ void CKhazan_Spear::Debug_Widget_Guard()
             m_pAnimGuard->Play_FinishGuard();
             Remove_State(CAT::M_GUARD);
         }
-    }
+    }       
 }
 
 std::string CKhazan_Spear::GetDirectionString(DIRECTION_INFO dir)
