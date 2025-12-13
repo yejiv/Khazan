@@ -46,6 +46,19 @@ CAS_CutScene_Yetuga* CYetuga::Get_Yetuga_CutSceneState()
     return pCutSceneState;
 }
 
+void CYetuga::KnockBack(_vector vDir, _float fPower, _float fLoss)
+{
+    
+    m_isKnockBack = true;
+    m_fKnockBackDir = vDir;
+    m_fKnockBackPower = fPower * 0.5f;
+    m_fKnockBackLoss = fLoss;
+
+    if (Get_IsGroggy() || m_isSuperArmmor)
+        m_isKnockBack = false;
+
+}
+
 
 HRESULT CYetuga::Initialize_Prototype()
 {
@@ -1382,6 +1395,8 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
     pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Breath_Loop(); 
 
+    Set_SuperArmor(true);
+
     ++ m_iBreathCount ;
     m_iBreathRotation += 0.8f;
 
@@ -1446,12 +1461,16 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
         { 
+            Set_SuperArmor(false);
             CBlackBoard* pBB = m_pController->Get_BlackBoard();
 
             DIRECTION_INFO Info = {};
             Info.iDirFlag = pBB->Get_Value<_uint>(m_strName, "TargetDirection");
-            if (Info.Check_Flag(DIRECTION_INFO::F))
+            if (Info.Check_Flag(DIRECTION_INFO::F) || Info.Check_Flag(DIRECTION_INFO::L) || Info.Check_Flag(DIRECTION_INFO::R))
             {
+                if (Info.Check_Flag(DIRECTION_INFO::B))
+                    return;
+
                 _float fDist = pBB->Get_Value<_float>(m_strName, "TargetDist");
                 if (fDist <= 410.f)
                 {
@@ -2133,26 +2152,26 @@ HRESULT CYetuga::Ready_SFX()
     pModel->Register_Event("SFX_BackMove1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 8.f);
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 8.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_01 (SFX).wav"), 1.f);
         });
     pModel->Register_Event("SFX_BackMove2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 8.f);
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_02 (SFX).wavs"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 8.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_02 (SFX).wavs"), 1.f);
         });
 
     pModel->Register_Event("SFX_Dodge", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
 
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 8.f);
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 8.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_03 (SFX).wav"), 1.f);
         });
 
     pModel->Register_Event("SFX_BackMove2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move2_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 8.f);
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_icebreath_back_jump_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 8.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move2_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_icebreath_back_jump_01 (SFX).wav"), 1.f);
         });
 
 #pragma endregion

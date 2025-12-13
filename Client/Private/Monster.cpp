@@ -62,6 +62,10 @@ _bool CMonster::Get_IsGroggy()
     return isGroggy;
 }
 
+void CMonster::Set_SuperArmor(_bool isToggle)
+{
+    m_isSuperArmmor = isToggle;
+}
 
 
 void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject* pGameObject)

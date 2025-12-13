@@ -27,13 +27,12 @@ void CAS_Groggy_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 	m_eState = GROGGY::START;
 	pModel->Set_Animation(89);
-    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_gro_strong_start_02 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 50.f);
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_gro_strong_start_02 (SFX).wav"), 1.f);
 
 
     pYetuga->Get_Body()->Set_AttackCollision_Back(false);
     pYetuga->Get_Body()->Set_OnAttackCollision(false);
     pYetuga->Get_Head()->Set_OnAttackCollision(false);
-
 
 }
 
@@ -55,8 +54,7 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
 			m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
 			m_pBrutalAttack->Setting_BrutalAttack(m_vBonePosition, m_fGroggyTime);
-            m_pGameInstance->PlaySoundLoop(TEXT("Mon_vo_yetuga_gro_strong_loop_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 20.f);
-
+            m_pGameInstance->PlaySoundLoop(TEXT("Mon_vo_yetuga_gro_strong_loop_01 (SFX).wav"), 1.f);
 		}
 		break;
 
@@ -94,6 +92,7 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
            if (HITREACTION::BRUTAL_ATTACK == eHitreaction)
             {
+               m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_vo_yetuga_gro_strong_loop_01 (SFX).wav"), 1.f);
                 m_pBrutalAttack->Off_BrutalAttack();
                 m_isBrutalAttackSuccess = false;
                 pModel->Set_Animation(68);
@@ -132,7 +131,9 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
         if (pModel->Play_Animation(fTimeDelta))
         {
-            //Mon_vo_yetuga_stamina_recover_roar_01 (SFX).wav
+            //
+            m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_vo_yetuga_stamina_recover_roar_01 (SFX).wav"), 1.f);
+
             m_eState = GROGGY::END;              
             pModel->Set_Animation(93);   
             pYetuga->Set_RequestRecoveryStamina(true);
@@ -159,7 +160,7 @@ void CAS_Groggy_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     pYetuga->Set_IsGhost(false);
-
+    m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_vo_yetuga_stamina_recover_roar_01 (SFX).wav"), 1.f);
     m_iBrutalCnt = 0;
     m_isCheckBrutalCnt = false;
 }
