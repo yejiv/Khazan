@@ -315,7 +315,7 @@ private:
     _float4                     m_vStartPos_Event = {};
     _float                      m_fLerpTime_Event = { 0.f };
     _bool                       m_isInteractEventSetting = { false };
-
+    _bool                       m_isInteractDestinyStone = { false };
     _uint                       m_iInteractTypeEventID = { };
     _uint                       m_iObjectInteractEventID = { };
 
