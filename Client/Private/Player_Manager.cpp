@@ -58,7 +58,7 @@ HRESULT CPlayer_Manager::Initialize()
     BindSkillToButton(CTRL_LB, CPlayerData_Manager::WARCRY);    /* 거대한 포효 */ 
     BindSkillToButton(CTRL_RB, CPlayerData_Manager::INNER_FURY);    /* 내재된 분노 */
 
-    //m_pClientInstance->UsedSpear();
+    m_pClientInstance->UsedSpear();
 
 	return S_OK;
 }

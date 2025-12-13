@@ -179,6 +179,7 @@ private:
     /* recovery */
     _float2                     m_fIntervalStaminaRecovery = { 0.f, 0.25f };
     _float2                     m_fWaitStaminaRecovery = { 0.f, 1.f };
+    _bool                       m_isCanStaminaRecovery = { false };
 
     /* 180 turn */
     //_float2                     m_f180TurnTime = { 0.f, 0.f };      // x: 경과시간, y: 회전 소요시간

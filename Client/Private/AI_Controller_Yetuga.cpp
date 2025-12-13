@@ -50,7 +50,7 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
         if (m_pGameInstance->Key_Down(DIK_B))
         {
             CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-            m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::JUMPATTACK), pYetuga);
+            m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::JUMPGRAB), pYetuga);
         }
 
         if (m_pGameInstance->Key_Down(DIK_N))

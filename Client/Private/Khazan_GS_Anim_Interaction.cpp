@@ -244,6 +244,16 @@ _bool CKhazan_GS_Anim_Interaction::Try_GiantGate(_bool isUsedSet)
     return true;
 }
 
+_bool CKhazan_GS_Anim_Interaction::Try_Teleport()
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_Teleport_End"));
+
+    return true;
+}
+
 _bool CKhazan_GS_Anim_Interaction::Is_Lachryma() const
 {
     return m_iLachrymaAnimIndex == m_pModel->Get_CurAnimIndex();
