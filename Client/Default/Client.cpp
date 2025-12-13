@@ -1,4 +1,4 @@
-﻿// Client.cpp : 애플리케이션에 대한 진입점을 정의합니다.
+// Client.cpp : 애플리케이션에 대한 진입점을 정의합니다.
 //
 #include "framework.h"
 #include "Client.h"
@@ -202,10 +202,27 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	// 예외처리 최소화로 임시로 작성한 코드입니다. ( 디버그모드에서만 에디터 사용 ) ( 릴리즈에서는 클라이언트 게임 진행 )
+#ifndef _DEBUG
+	switch ( message )
+	{
+	case WM_SYSKEYDOWN:
+	case WM_SYSKEYUP:
+		return 0;
+
+	case WM_SYSCHAR:
+		return 0;
+
+	case WM_MENUCHAR:
+		// 메뉴가 없음을 명시적으로 알림 (비프 차단)
+		return MAKELRESULT(0, MNC_CLOSE);
+	}
+#endif
+
 #ifdef _DEBUG
     CGameInstance* pGameInstance = CGameInstance::GetInstance();
     if (pGameInstance->HandleWndProc(hWnd, message, wParam, lParam))
-        return true;
+        return S_OK;
 #endif
 
     switch (message)

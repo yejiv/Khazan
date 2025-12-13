@@ -34,12 +34,11 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
     if (m_pGameInstance->Key_Down(DIK_Z))
     {
 
-        //CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-        //CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        ///*pYetuga->Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG, pTarget);
-        //m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::DEAD), pYetuga);*/
-
-        ////pViper->Consume_Stamina(10.f);
+        CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+        CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+        pYetuga->Take_Damage(100.f, HITREACTION::KNOCKBACK_STRONG, pTarget);
+        //m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::DEAD), pYetuga);
+        //pViper->Consume_Stamina(10.f);
 
     }
 
@@ -50,7 +49,9 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
         if (m_pGameInstance->Key_Down(DIK_B))
         {
             CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
-            m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::JUMPGRAB), pYetuga);
+
+            m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::THROWBALL), pYetuga);
+
         }
 
         if (m_pGameInstance->Key_Down(DIK_N))

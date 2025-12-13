@@ -225,7 +225,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
         m_p2PhaseTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
     CLineTrail::LINE_TRAIL_DESC LineDesc{};
-    LineDesc.fOffset = 0.5f;
+    LineDesc.fOffset = 0.25f;
     LineDesc.fLifeTime = 2.f;
     LineDesc.iDivisionCount = 5.f;
     LineDesc.iTextureIdx = 6;
@@ -301,31 +301,24 @@ void CViper::Priority_Update(_float fTimeDelta)
 
 void CViper::Update(_float fTimeDelta)
 {
-    // Test
-    //  if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-    //  {
-    //      CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
-    //      //  Viper_2PhaseBerserker_ShaderSettings();
-    //      Spawn_BloodDecal();
-    //  }
-
-    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
-    {
-        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-        {
-            Spawn_EmissiveCrackDecal(m_pTransformCom->Get_State(STATE::POSITION));
-            CClientInstance::GetInstance()->ActiveCamera_Shaking(1.f, 1.f);
-            //  Viper_2PhaseBerserker_ShaderSettings();
-        }
-    }
-
     if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
     {
         if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
         {
             //  CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
             //  Viper_2PhaseBerserkerEnd_ShaderSettings();
-            Start_Thunder(0.6f, 6);
+            //  Start_Thunder(0.6f, 6);
+            m_pPahse2Body->Set_EnableMotionTrail(true);
+            m_pP2Weapon->Set_EnableMotionTrail(true);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_EQUALS))
+        {
+            //  CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+            //  Viper_2PhaseBerserkerEnd_ShaderSettings();
+            //  Start_Thunder(0.6f, 6);
+            m_pPahse2Body->Set_EnableMotionTrail(false);
+            m_pP2Weapon->Set_EnableMotionTrail(false);
         }
     }
 
@@ -3427,44 +3420,88 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     // 버서커 모드
     // 번!!!!개!!!!!
-    pModel->Register_Event("DashDrift_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashDrift_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        if (m_isBerserker) 
+        { 
+            Start_Thunder(0.3f, 3); 
+            m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_01 (SFX).wav"), 50.f);
+            m_pPahse2Body->Set_EnableMotionTrail(true);
+            m_pP2Weapon->Set_EnableMotionTrail(true);
+        } 
+        });
     pModel->Register_Event("DashDrift_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("DashDrift_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("DashDrift_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("DashDrift_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("DashDrift_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
 
-    pModel->Register_Event("DashDriftEnd_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashDriftEnd_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) { Start_Thunder(0.3f, 3); m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_02 (SFX).wav"), 50.f); } });
     pModel->Register_Event("DashDriftEnd_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("DashDriftEnd_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("DashDriftEnd_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("DashDriftEnd_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashDriftEnd_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        if (m_isBerserker)
+        {
+            Start_Thunder(0.3f, 3);
+            m_pPahse2Body->Set_EnableMotionTrail(false);
+            m_pP2Weapon->Set_EnableMotionTrail(false);
+        }
+        });
 
-    pModel->Register_Event("DashUpper_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("DashUpper_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        if (m_isBerserker) 
+        {
+            Start_Thunder(0.2f, 2); 
+            m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_03 (SFX).wav"), 50.f);
+            m_pPahse2Body->Set_EnableMotionTrail(true);
+            m_pP2Weapon->Set_EnableMotionTrail(true);
+        } 
+        });
     pModel->Register_Event("DashUpper_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("DashUpper_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("DashUpper_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("DashUpper_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("DashUpper_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("DashUpper_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        if (m_isBerserker)
+        {
+            Start_Thunder(0.3f, 3);
+            m_pPahse2Body->Set_EnableMotionTrail(false);
+            m_pP2Weapon->Set_EnableMotionTrail(false);
+        }
+        });
     pModel->Register_Event("DashUpper_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("DashUpper_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("DashUpper_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("DashUpper_Thunder9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("DashUpper_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
 
-    pModel->Register_Event("JumpAttack_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("JumpAttack_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) { Start_Thunder(0.3f, 3); m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_04 (SFX).wav"), 50.f); } });
     pModel->Register_Event("JumpAttack_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("JumpAttack_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
-    pModel->Register_Event("JumpAttack_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("JumpAttack_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        if (m_isBerserker)
+        {
+            Start_Thunder(0.2f, 2);
+            m_pPahse2Body->Set_EnableMotionTrail(true);
+            m_pP2Weapon->Set_EnableMotionTrail(true);
+        }
+        });
     pModel->Register_Event("JumpAttack_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("JumpAttack_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("JumpAttack_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("JumpAttack_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("JumpAttack_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("JumpAttack_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        if (m_isBerserker)
+        {
+            Start_Thunder(0.3f, 3);
+            m_pPahse2Body->Set_EnableMotionTrail(false);
+            m_pP2Weapon->Set_EnableMotionTrail(false);
+        }
+        });
     pModel->Register_Event("JumpAttack_Thunder9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("JumpAttack_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
 
-    pModel->Register_Event("SwingCombo_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) { Start_Thunder(0.2f, 2); m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_05 (SFX).wav"), 50.f); } });
     pModel->Register_Event("SwingCombo_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("SwingCombo_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("SwingCombo_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
@@ -3472,7 +3509,26 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("SwingCombo_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("SwingCombo_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("SwingCombo_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
-    pModel->Register_Event("SwingCombo_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        if (m_isBerserker)
+        {
+            Start_Thunder(0.2f, 2);
+            m_pPahse2Body->Set_EnableMotionTrail(false);
+            m_pP2Weapon->Set_EnableMotionTrail(false);
+        }
+        });
+    pModel->Register_Event("SwingCombo_Thunder9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        if (m_isBerserker)
+        {
+            Start_Thunder(0.2f, 2);
+            m_pPahse2Body->Set_EnableMotionTrail(true);
+            m_pP2Weapon->Set_EnableMotionTrail(true);
+        }
+        });
+    pModel->Register_Event("SwingCombo_Thunder11", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder12", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder13", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
 
     // Sound
     //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_01 (SFX).wav"), 1.f);

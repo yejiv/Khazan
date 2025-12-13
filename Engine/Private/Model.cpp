@@ -640,14 +640,14 @@ void CModel::Set_AnimationLoop(_bool isLoop)
         Add_State(ANIM_LOOP);
 }
 
-_bool CModel::Check_MinAnimationTime()
+_bool CModel::Check_MinAnimationTime(_float fAddDesceaseTime)
 {
  
-    if (m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime < 1.f )
+    if (m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime < 1.f + fAddDesceaseTime)
         return true;
     //if (m_fCurrentTrackPosition >= m_Animations[m_iCurrentAnimIndex]->Get_Duration())
     //    return false;
-    return m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime <= m_fCurrentTrackPosition;
+    return m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime - fAddDesceaseTime <= m_fCurrentTrackPosition;
 }
 
 _bool CModel::Check_CanDodgeTime()
@@ -858,9 +858,11 @@ void CModel::Update_PartLocalBones()
                 const _matrix localMatrix =
                     pBone->Get_TransformationMatrix(); // 파츠 로컬
 
-                // DirectX 스켈레톤 컨벤션: Combined = Local * ParentCombined
-                //XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], localMatrix * ParentCombinedMatrix);
-                XMStoreFloat4x4(&m_PartLocalBoneMatrices[i],  ParentCombinedMatrix);
+                // 스켈레톤 컨벤션: Combined = Local * ParentCombined
+                if(m_isUsedExclusivePartBones)
+                    XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], localMatrix * ParentCombinedMatrix);
+                else
+                    XMStoreFloat4x4(&m_PartLocalBoneMatrices[i],  ParentCombinedMatrix);
             }
             else
             {
@@ -875,11 +877,11 @@ void CModel::Update_PartLocalBones()
 
 }
 
-void CModel::Update_PartLocalBones_Once()
+void CModel::Update_PartLocalBones_Once(_bool isUsedExclusivePartBones)
 {
     if (m_isPartLocalBonesUpdated)
         return;
-
+    m_isUsedExclusivePartBones = isUsedExclusivePartBones;
     Update_PartLocalBones();
     m_isPartLocalBonesUpdated = true;
 }
@@ -1144,7 +1146,7 @@ void CModel::Check_WaitForComplete()
 void CModel::Setup_Events()
 {
     if (!m_AnimationsSetup[m_iCurrentAnimIndex].isEvent) {
-        m_CurrentEvents.clear();
+                   m_CurrentEvents.clear();
         m_PrevFrameInRange.clear();
         Remove_State(EVENT);
         return;

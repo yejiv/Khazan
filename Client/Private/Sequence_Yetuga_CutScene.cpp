@@ -91,12 +91,13 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
 
             // Vignette
             VIGNETTE_CONFIG Config{};
-            Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
             Config.vColor = _float3(0.f, 0.f, 0.f);
             Config.fPower = 3.5f;
-            Config.fIntensity = 1.f;
+            Config.fMinIntensity = 0.f;
             Config.fMaxIntensity = 4.f;
-            m_pGameInstance->Start_VignetteAnimation(2.f, Config);
+            Config.fDuration = 2.f;
+            Config.vFadeTime = _float2(1.f, 1.f);
+            m_pGameInstance->Start_VignetteAnimation(Config);
 
             m_isYetugaLand = true;
         }

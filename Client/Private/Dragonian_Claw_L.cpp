@@ -32,6 +32,7 @@ HRESULT CDragonian_Claw_L::Initialize_Clone(void* pArg)
     m_pTransformCom->Rotation(XMConvertToRadians(0.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
     CHECK_FAILED(Ready_Components(), E_FAIL);
     CHECK_FAILED(Ready_Collision(), E_FAIL);
+    Set_JustGuardCallBack([this](_bool isJustGuard) { *m_pData->pCulStamina -= *m_pData->pMaxStamina * 0.1f; });
 
 
     return S_OK;

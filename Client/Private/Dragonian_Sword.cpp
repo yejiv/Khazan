@@ -33,6 +33,7 @@ HRESULT CDragonian_Sword::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Collision(), E_FAIL);
 
     m_pTransformCom->Rotation(XMConvertToRadians(-270.f), XMConvertToRadians(-90.f), XMConvertToRadians(90.f));
+    Set_JustGuardCallBack([this](_bool isJustGuard) { *m_pData->pCulStamina -= *m_pData->pMaxStamina * 0.2f; });
 
     return S_OK;
 }

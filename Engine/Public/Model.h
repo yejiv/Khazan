@@ -115,7 +115,7 @@ public:
     void			Set_Animation(_uint iIndex);
     void			Set_AnimationSet(const string& strKey);
     void			Set_AnimationLoop(_bool isLoop);
-    _bool			Check_MinAnimationTime();
+    _bool			Check_MinAnimationTime(_float fAddDesceaseTime = 0.f);
     _bool           Check_CanDodgeTime();
     void            AnimationSetIndexIncrease(); //애니메이션세트 강제로 다음으로 넘기기
     void            Set_AnimationBlend(_bool isBlend) { m_isBlendEnable = isBlend; }      // 애니메이션 보간할건지 여부
@@ -142,6 +142,7 @@ public:
     void            Build_PartToMasterMap();
     void			Update_PartLocalBones();
     void            Reset_PartLocalBonesFlag() { m_isPartLocalBonesUpdated = false; }
+    void            Update_PartLocalBones_Once(_bool isUsedExclusivePartBones);  // 프레임당 1회만 실행
     void            Update_PartLocalBones_Once();  // 프레임당 1회만 실행
 
 public: 
@@ -227,6 +228,7 @@ private:
     _bool								m_isMaterSkeleton = { false };
     _bool								m_isSharedSkeleton = { false };
     _bool                               m_isPartLocalBonesUpdated = { false };
+    _bool                               m_isUsedExclusivePartBones = { false }; //파츠 전용 본 사용 할건지 말건지 (망토같은)
 
 	/* const val */
 	const _float					    m_fBaseRootMotionBlendTime = { 0.15f };   /* 만약 블랜딩 시간이 안써져있으면 사용할 기본 블랜딩 시간 */

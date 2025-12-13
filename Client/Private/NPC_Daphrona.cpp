@@ -39,6 +39,8 @@ HRESULT CNPC_Daphrona::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_3D_Talk_UI(pArg), E_FAIL);
 
+    CHECK_FAILED(Ready_OwnLight(pArg), E_FAIL);
+
     m_eAnimState = ANIM_STATE::IDLE;
     m_pModelCom->Set_Animation(m_eAnimState);
     m_pModelCom->Set_AnimationLoop(true);
@@ -105,12 +107,12 @@ HRESULT CNPC_Daphrona::Render()
         if (4 == i)
         {
             _float4 vEyeWhiteColor = { 1.f, 1.f, 1.f, 1.f };   // 눈 흰자 (EyeWhiteColor0)
-            _float4 vPupilCircle = { 0.572917f, 0.39509f, 0.203438f, 1.f };    // 홍채 외곽 (Pupil_Circle0)
-            _float4 vPupilLens = { 0.338542f, 0.30079f, 0.216127f, 1.f };    // 홍채 내부 (Pupil_Lens0)
-            _float4 vPupilRing = { 0.166667f, 0.120266f, 0.103471f, 1.f };   // 홍채 테두리 (Pupil_Ring0)
-            _float4 vShadingColor = { 0.958333f, 0.658788f, 0.26454f, 1.f };    // 조명/명암 색 (ShadingColor0)
+            _float4 vPupilCircle = { 1.f, 1.f, 1.f, 1.f };    // 홍채 외곽 (Pupil_Circle0)
+            _float4 vPupilLens = { 1.f, 1.f, 1.f, 1.f };    // 홍채 내부 (Pupil_Lens0)
+            _float4 vPupilRing = { 1.f, 1.f, 1.f, 1.f };   // 홍채 테두리 (Pupil_Ring0)
+            _float4 vShadingColor = { 1.f, 1.f, 1.f, 1.f };    // 조명/명암 색 (ShadingColor0)
 
-            _float  fPupilScale = 0.9f;                                       // PupilScale
+            _float  fPupilScale = 0.8f;                                       // PupilScale
 
             m_pShaderCom->Bind_RawValue("g_vEyeWhiteColor", &vEyeWhiteColor, sizeof(_float4));
             m_pShaderCom->Bind_RawValue("g_vPupilCircle", &vPupilCircle, sizeof(_float4));
@@ -118,8 +120,8 @@ HRESULT CNPC_Daphrona::Render()
             m_pShaderCom->Bind_RawValue("g_vPupilRing", &vPupilRing, sizeof(_float4));
             m_pShaderCom->Bind_RawValue("g_vShadingColor", &vShadingColor, sizeof(_float4));
             m_pShaderCom->Bind_RawValue("g_PupilScale", &fPupilScale, sizeof(_float));
-
-            m_pShaderCom->Begin(23);
+    
+            m_pShaderCom->Begin(36);
         }
         else
         {
@@ -241,6 +243,26 @@ HRESULT CNPC_Daphrona::Ready_3D_Talk_UI(void* pArg)
 
 HRESULT CNPC_Daphrona::Ready_DefaultSetting(void* pArg)
 {
+    return S_OK;
+}
+
+HRESULT CNPC_Daphrona::Ready_OwnLight(void* pArg)
+{
+    LIGHT_DESC LightDesc = {};
+
+    LightDesc.eType = LIGHT_DESC::TYPE::POINT;
+
+    LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+    LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
+    XMStoreFloat4(&LightDesc.vPosition, Get_Position() + Get_Look() * 1.3f);
+    LightDesc.vPosition.y += 2.f;
+
+    LightDesc.fRange = 4.5f;
+    m_wstrLightTag = TEXT("Daphrona_OwnLight");
+
+    m_pGameInstance->Add_Light(m_wstrLightTag, ENUM_CLASS(LEVEL::EMBARS), LightDesc, true);
+
     return S_OK;
 }
 

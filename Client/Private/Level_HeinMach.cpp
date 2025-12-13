@@ -83,6 +83,8 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_SoundSetting(), E_FAIL);
 
+    CHECK_FAILED(Ready_ShaderSettings(), E_FAIL);
+
     if (!Wait_All_Futures())
         return E_FAIL;
 
@@ -706,7 +708,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
-        if ("ImpRange" == MonsterData.MonsterKey[i])
+        else if ("ImpRange" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 100.f;
@@ -747,7 +749,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 150.f;
             MonsterDesc.fMaxHP = 4500.f;
-            MonsterDesc.fMaxStamina = 350.f;
+            MonsterDesc.fMaxStamina = 550.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -1380,6 +1382,27 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_DEST(const _wstring& strLayerTag,
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Barrel"), TIME_CHANNEL::WORLD, &BarrelDesc)))
         return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_ShaderSettings()
+{
+    // Vignette
+    VIGNETTE_CONFIG Config{};
+    Config.vColor = _float3(0.25f, 0.f, 0.f);
+    Config.fPower = 3.5f;
+    Config.fMinIntensity = 5.f;
+    Config.fMaxIntensity = 10.f;
+    Config.fDuration = 1.5f;
+    Config.vFadeTime = _float2(0.75f, 0.75f);
+    Config.isUseNoise = true;
+    Config.iTextureIndex = 1;
+    Config.fContrast = 1.f;
+    m_pGameInstance->Set_VignetteConfig(Config);
+
+    // 프리즈너 비네트 활성화
+    m_pGameInstance->Set_EnableVignette(true, 4.f);
 
     return S_OK;
 }

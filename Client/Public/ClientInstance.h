@@ -85,6 +85,7 @@ public:
 
 #pragma region Player_Manager
     PLAYER_DATA*                Get_pInitailizePlayerData();
+    void                        Initialize_PlayerData();
     PLAYER_DATA&                Get_ptrPlayerData();
 	const PLAYER_DATA&			Get_PlayerData();
 	void						Add_SkillExp(_float fExp);
