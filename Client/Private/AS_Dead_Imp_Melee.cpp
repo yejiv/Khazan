@@ -4,6 +4,7 @@
 #include "Body_Imp_Melee.h"
 #include "BlackBoard.h"
 #include "AI_Controller.h"
+#include "Interaction_Item.h"
 
 CAS_Dead_Imp_Melee::CAS_Dead_Imp_Melee()
 {
@@ -15,7 +16,6 @@ void CAS_Dead_Imp_Melee::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
 
     pModel->Set_Animation(10);
-
 }
 
 void CAS_Dead_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
