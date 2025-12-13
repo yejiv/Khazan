@@ -316,7 +316,7 @@ void CClientInstance::Camera_Start_FOVHoldZoom(
     m_pCamera_Manager->Start_FOVHoldZoom(strID, fZoomFOV, fInDuration, iPriority);
 }
 
-// È¦µå ÇØÁ¦ ¡æ ÁÜ ¾Æ¿ô
+// í™€ë“œ í•´ì œ â†’ ì¤Œ ì•„ì›ƒ
 void CClientInstance::Camera_Release_FOVHoldZoom(
     const _wstring& strID,
     _float fOutDuration

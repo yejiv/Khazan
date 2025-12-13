@@ -29,6 +29,9 @@
 #include "Interaction_Item.h"
 //TEST
 #include "UI_Inven.h"
+
+#include "Destructible_Stone.h"
+#include "Chunk.h"
 #pragma endregion
 
 CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -109,6 +112,17 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
         if (m_fFadeTime >= 0.2f)
             m_pGameInstance->Decal_OnOff(true);
 
+    }
+
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+    {
+        CDestructible_Stone::STONE_DESC Desc;
+        Desc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
+        Desc.vPos = XMVectorSet(0.f, 1.f, 0.f, 1.f);
+
+        if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Chunk"),
+            ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Destructible_Stone"), TIME_CHANNEL::ENEMY, &Desc)))
+            return;
     }
 
     if (m_pGameInstance->Key_Down(DIK_F1, INPUT_TYPE::FORCE))
@@ -247,9 +261,9 @@ HRESULT CLevel_HeinMach::Ready_Layer_Player(const _wstring& strLayerTag)
 	//    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER, &Desc)))
 	//    return E_FAIL;
 
-      if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-          ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER, &Desc)))
-          return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER, &Desc)))
+        return E_FAIL;
 
 	return S_OK;
 }
