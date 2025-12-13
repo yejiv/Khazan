@@ -102,6 +102,9 @@ void CPlayerData_Manager::Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEqu
     case Client::EQUIPMENTTYPE::SHOES:
         m_ePlayerEquipment.iShoes = iEquipmentIndex;
         break;
+    case Client::EQUIPMENTTYPE::FACE:
+        m_ePlayerEquipment.iFace = iEquipmentIndex;
+        break;
     default:
         break;
     }
@@ -139,6 +142,9 @@ void CPlayerData_Manager::Set_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipm
         break;
     case Client::EQUIPMENTTYPE::SHOES:
         m_ePlayerEquipment.iShoes = iEquipmentIndex;
+        break;
+    case Client::EQUIPMENTTYPE::FACE:
+        m_ePlayerEquipment.iFace = iEquipmentIndex;
         break;
     default:
         break;
