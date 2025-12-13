@@ -199,7 +199,7 @@ HRESULT CDecal_Manager::Ready_Components()
         TEXT("FT_Decal_Blood_A_000.png"),
         TEXT("FT_Decal_Blood_A_001.png"),
         TEXT("FT_Decal_Blood_A_002.png"),
-        TEXT("FT_Decal_Blood_A_003.png"),
+        //  TEXT("FT_Decal_Blood_A_003.png"),
         TEXT("FT_Decal_Blood_Linear_000.png"),
         TEXT("FT_Decal_Dirt_000.png"),
         TEXT("FT_Decal_Dirt_001.png"),

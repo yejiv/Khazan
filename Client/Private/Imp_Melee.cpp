@@ -8,6 +8,7 @@
 #include "Amount.h"
 #include "GameInstance.h"
 #include "MeshTrail.h"
+#include "Interaction_Item.h"
 
 CImp_Melee::CImp_Melee(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice,pContext }
@@ -62,7 +63,8 @@ void CImp_Melee::Priority_Update(_float fTimeDelta)
     if (m_fCurrentHP <= 0.f && !m_isDeadFlag)
     {
         CClientInstance::GetInstance()->Add_SkillExp(10.f);
-        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 100);
+        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 1200);
+        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, 800);
         m_isDeadFlag = true;
     }
 
@@ -95,10 +97,15 @@ void CImp_Melee::Update(_float fTimeDelta)
     if (m_isDissolve)
         m_fDecreaseAlpha += fTimeDelta * 0.7f;
 
-    if (m_fDecreaseAlpha >= 1.f)
+    if (m_fDecreaseAlpha >= 1.f && !m_isDissolveEnd)
     {
         Creature_Release();
+        CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Item")));
+        pItem->RandNormal_Item(m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Item"), pItem);
+        m_isDissolveEnd = true;
     }
+
 }
 
 void CImp_Melee::Late_Update(_float fTimeDelta)

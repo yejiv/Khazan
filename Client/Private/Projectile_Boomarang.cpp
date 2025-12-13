@@ -63,8 +63,8 @@ void CProjectile_Boomarang::Update(_float fTimeDelta)
         // Active 끄고
         m_isActive = false;
         m_pBody->Collision_Active(false);
+        StopBoomarangSound();
     }
-
 
     if (m_isActive)
     {
@@ -124,7 +124,7 @@ void CProjectile_Boomarang::Reset()
     m_pBody->Collision_Active(true);
     m_isDamageForward = false;
     m_isDamageReturn = false;
-
+    m_isClearSound = false;
 
     m_fCurrentTime = 0.f;
     _vector vDir = XMVector3Normalize(XMLoadFloat3(&m_vSpawnDir));
@@ -212,7 +212,7 @@ void CProjectile_Boomarang::Enter_State(BOOMARANGSTATE eNextState)
     switch (m_eState)
     {
     case Client::BOOMARANGSTATE::LOOP:
-        m_pGameInstance->PlaySoundLoop(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Cast_Spin (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 5.f);
+        //m_pGameInstance->PlaySoundLoop(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Cast_Spin (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 5.f);
         break;
     case Client::BOOMARANGSTATE::CRASHED:
 

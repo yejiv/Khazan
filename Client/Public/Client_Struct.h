@@ -156,6 +156,7 @@ namespace Client
 
 	typedef struct tag_Player_Data
 	{
+        _int    iSouleCount = {};               //회복되는 소울
         _float  fMaxHp = {};                    //최대 체력
         _float  fCulHp = {};                    //현재 체력
         _float  fMaxStamina = {};               //최대 스태미나
