@@ -115,6 +115,7 @@ void CUI_Announce_Result::Late_Update(_float fTimeDelta)
 {
     if (m_eAnimState == UIANIMSTATE::END)
         return;
+
     __super::Late_Update(fTimeDelta);
 }
 
@@ -126,7 +127,7 @@ HRESULT CUI_Announce_Result::Render()
 HRESULT CUI_Announce_Result::Ready_Prototype()
 {
     CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_Tex_Annouce_Result_Text"),
-        CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Announce/T_Hud_Result_%d.png"), 2)), E_FAIL);
+        CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Announce/T_Hud_Result_%d.png"), 4)), E_FAIL);
 
     CHECK_FAILED(m_pGameInstance->Add_Prototype(m_iLevel, TEXT("Prototype_Component_Tex_Annouce_Icon"),
         CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Announce/T_Hud_Deco_Symbol_01.png"), 1)), E_FAIL);
@@ -193,6 +194,7 @@ HRESULT CUI_Announce_Result::Ready_Children()
 
 void CUI_Announce_Result::Start_Anim(const EVENT_ANNOUNCE_RESULT& e)
 {
+    m_isElite = e.isElite;
     m_eAnimState = UIANIMSTATE::START;
     m_fAcctime = 0.f;
     m_fAlpha = 1.f;
@@ -200,7 +202,7 @@ void CUI_Announce_Result::Start_Anim(const EVENT_ANNOUNCE_RESULT& e)
     m_pSymbol->Set_Dissovle(false);
 
     m_pSymbol->Set_SubTexScalling(false);
-
+    m_pSymbol->Set_Elite(m_isElite);
     m_pGameInstance->PlaySoundOnce(TEXT("UI_mission_complete (SFX).wav"));
 }
 

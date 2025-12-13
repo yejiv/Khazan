@@ -288,8 +288,12 @@ void CUI_QuickSlot_Item::Input_KeyState()
         {
             if (iInputIndex == 0)
             {
-                m_pGameInstance->StopByKey(TEXT("UI_item_consume_assassinportion_01 (SFX).wav"));
-                m_pGameInstance->PlaySoundOnce(TEXT("UI_item_consume_assassinportion_01 (SFX).wav"));
+                if (*m_iItemCount > 0 && CClientInstance::GetInstance()->Get_PlayerData().fCulHp < CClientInstance::GetInstance()->Get_PlayerData().fMaxHp)
+                {
+                    --*m_iItemCount;
+                    m_pGameInstance->StopByKey(TEXT("UI_item_consume_assassinportion_01 (SFX).wav"));
+                    m_pGameInstance->PlaySoundOnce(TEXT("UI_item_consume_assassinportion_01 (SFX).wav"));
+                }
             }
             else if(m_iItemIndex >= 1001 && m_iItemIndex <= 1004)
             {

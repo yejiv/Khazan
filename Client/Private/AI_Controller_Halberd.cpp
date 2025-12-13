@@ -172,6 +172,8 @@ PERCEPTIONCALLBACK CAI_Controller_Halberd::GetCallBackPerception(CGameObject* pO
                         if (m_pMonData->eHitType != HITREACTION::BRUTAL_ATTACK)
                             m_pMonData->eHitType = static_cast<HITREACTION>(m_pBB->Get_Value<_uint>(m_strMonstertag, "DamageType"));
 
+                        if (m_pMonData->eHitType == HITREACTION::BRUTAL_ATTACK)
+                            m_pMonData->iBrutalHit++;
                     }
                 }
             };
