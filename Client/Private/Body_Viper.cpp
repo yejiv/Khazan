@@ -5,6 +5,7 @@
 #include "AI_Controller.h"
 #include "Body.h"
 #include "ClothBody.h"
+#include "AS_CutScene_Start_Viper.h"
 
 _float3 CBody_Viper::Get_BonePoint(const _char* BoneName)
 {
@@ -150,6 +151,10 @@ void CBody_Viper::Update(_float fTimeDelta)
 
     if (true == m_isBlinkRimLight)
         m_vRimColor = _float3(1.f, 0.6f, 0.4f);
+
+    // Radial Blur 센터 설정
+    if (m_pOwner->Get_Viper_CutSceneState()->Get_State() == CUTSCENE_STATE::STAND)
+        m_pGameInstance->Set_RadialBlurCenter(Get_BoneMatrix("Bone_tongue_04").r[3]);
 }
 
 void CBody_Viper::Late_Update(_float fTimeDelta)

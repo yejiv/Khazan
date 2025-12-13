@@ -72,6 +72,7 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
                 m_BNPop = e;
             });
 
+        m_pStaticCom->Collision_Active(false);
         m_pTriggerCom->Collision_Active(false);
     }
     else
@@ -94,6 +95,7 @@ void CBladeNexus::Priority_Update(_float fTimeDelta)
 
             m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_NextLevelID(), TEXT("GhostKnight_static"), m_pTransformCom->Get_State(STATE::POSITION));
 
+            m_pStaticCom->Collision_Active(true);
             m_pTriggerCom->Collision_Active(true);
         }
     }
@@ -556,13 +558,16 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
             break;
         }
 
+        if (static_cast<_int>(BLADENEXUS_ID::HEINMACH_ENTER) == m_iBladeNexus_ID)
+            m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_TALK>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_TALK), EVENT_ANNOUNCE_TALK{ 10 });
+
         static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(eUIType, m_szPlaceName);
 
         // 처음 상호 작용 후 애니메이션 루프로 전환 및 이벤트 발생
         m_eAnimState = ANIM_STATE::BEFORE_LOOP;
         m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_LOOP);
         m_pModelCom->Set_AnimationLoop(true);
-
+        m_pGameInstance->Emit_Event< EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), { });
         EventInteractType InteractType = {};
 
         InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
@@ -631,7 +636,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         m_eAnimState = ANIM_STATE::AFTER_LOOP;
         m_pModelCom->Set_Animation(ANIM_STATE::AFTER_LOOP);
         m_pModelCom->Set_AnimationLoop(true);
-
+        m_pGameInstance->Emit_Event< EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), { });
         EventInteractType InteractType = {};
 
         InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;

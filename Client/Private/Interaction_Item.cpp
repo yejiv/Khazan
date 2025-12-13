@@ -97,8 +97,20 @@ void CInteraction_Item::Ready_Item(_uint iItemIndex, _vector vPos)
 void CInteraction_Item::RandNormal_Item(_vector vPos)
 {
     _int iRand = m_pGameInstance->Rand(0, 10);
-    m_iItemIndex = m_NormalItem[iRand].iItemIndex;
-    m_iItemGrade = m_NormalItem[iRand].iGrade;
+    _int iIItemindex = {};
+    if (iRand >= 5)
+    {
+        // 0 ~ 10
+        iIItemindex = m_pGameInstance->Rand(0, 10);
+    }
+    else 
+    {
+        // 11 ~ 17
+        iIItemindex = m_pGameInstance->Rand(11, 17);
+    }
+
+    m_iItemIndex = m_NormalItem[iIItemindex].iItemIndex;
+    m_iItemGrade = m_NormalItem[iIItemindex].iGrade;
     m_iItemType = NORMAL;
     
     m_pTransformCom->Set_State(STATE::POSITION, vPos);

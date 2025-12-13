@@ -380,7 +380,9 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
     if (pDamage != nullptr)
     {
-        pDamage->Render_Damage(  CDamage_Text::DAMAGE_TYPE::PLAYER ,m_pTransformCom->Get_State(STATE::POSITION), fDamage, { 0.f, 5.f });
+        _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+        vPos.m128_f32[1] += 1.4f;
+        pDamage->Render_Damage(  CDamage_Text::DAMAGE_TYPE::PLAYER , vPos, fDamage, { 0.f, 5.f });
         m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
     }
 
@@ -388,40 +390,46 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     DECAL_DESC Desc{};
     Desc.fLifeTime = 8.f;
     Desc.vFadeTime = _float2(0.2f, 0.2f);
-    //  Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
-    
-    // LINEAR일 때
-    //  Desc.eType = DECALTYPE::LINEAR;
-    //  _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
-    //  _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
-    //  vPosition += (vLook * -1.5f);
-    //  XMStoreFloat3(&Desc.vPosition, vPosition);
-    //  _float fRadianY = atan2f(XMVectorGetX(vLook), XMVectorGetZ(vLook));
-    //  _float fDegreeY = XMConvertToDegrees(fRadianY);
-    //  Desc.vAngle = _float3(0.f, fDegreeY, 0.f);
-    //  Desc.vScale = _float3(2.f, 1.f, 4.f);
-    //  Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
-    //  Desc.isRandomTexture = true;
 
-    // CIRCLE일 때
-    Desc.eType = DECALTYPE::CIRCLE;
     _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
-    XMStoreFloat3(&Desc.vPosition, vDecalPos);
-    Desc.vScale = _float3(
-        m_pGameInstance->Rand(3.f, 5.f),
-        1.f, 
-        m_pGameInstance->Rand(3.f, 5.f)
-    );
-    Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
-    Desc.isRandomTexture = true;
-
-    // CURVE일 때
-    //  Desc.eType = DECALTYPE::CURVE;
-    //  _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
-    //  XMStoreFloat3(&Desc.vPosition, vDecalPos);
-    //  Desc.vScale = _float3(2.f, 1.f, 5.f);
-    //  Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
-    //  Desc.isRandomTexture = true;
+    _float fRadianY{}, fDegreeY{};
+    
+    switch (Desc.eType)
+    {
+    case DECALTYPE::LINEAR:
+        Desc.eType = DECALTYPE::LINEAR;
+        _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+        _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
+        vPosition += (vLook * -1.5f);
+        XMStoreFloat3(&Desc.vPosition, vPosition);
+        fRadianY = atan2f(XMVectorGetX(vLook), XMVectorGetZ(vLook));
+        fDegreeY = XMConvertToDegrees(fRadianY);
+        Desc.vAngle = _float3(0.f, fDegreeY, 0.f);
+        Desc.vScale = _float3(2.f, 1.f, 4.f);
+        break;
+    case DECALTYPE::CIRCLE:
+        Desc.eType = DECALTYPE::CIRCLE;
+        XMStoreFloat3(&Desc.vPosition, vDecalPos);
+        Desc.vScale = _float3(
+            m_pGameInstance->Rand(3.f, 5.f),
+            1.f,
+            m_pGameInstance->Rand(3.f, 5.f)
+        );
+        Desc.isRandomTexture = true;
+        break;
+    case DECALTYPE::CURVE:
+        Desc.eType = DECALTYPE::CURVE;
+        _float fOffset = 1.25f;
+        _float fPosX = XMVectorGetX(vDecalPos);
+        _float fPosZ = XMVectorGetZ(vDecalPos);
+        vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
+        vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
+        XMStoreFloat3(&Desc.vPosition, vDecalPos);
+        Desc.vAngle = _float3(0.f, m_pGameInstance->Rand(0.f, 360.f), 0.f);
+        Desc.vScale = _float3(2.f, 1.f, 4.f);
+        Desc.isRandomTexture = true;
+        break;
+    }
 
     m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 
