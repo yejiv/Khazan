@@ -98,7 +98,6 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
 
 
 
-
     return S_OK;
 }
 

@@ -40,8 +40,8 @@ void CAS_P2_SwingRound_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _
         pBB->Set_Value<_bool>(pViper->Get_Name(), "is_Berserker", true);
 
         // 버서커 시작 셰이더 세팅, 카메라 쉐이킹
-        CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
-        Set_ViperBerserkerStart_ShaderSettings();
+        //  CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+        //  Set_ViperBerserkerStart_ShaderSettings();
     }
 }
 

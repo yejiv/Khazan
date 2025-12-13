@@ -26,11 +26,10 @@ public:
     
 public:
     void                                Start_CutSceneAnimation() { m_fTimeHelper = 1.f; }
-
+    CUTSCENE_STATE                      Get_State() { return m_eState; }
 
 private:
     void                                Change_CutSceneState(CUTSCENE_STATE eNextState, class CModel* pModel, class CViper* pViper);
-
 
 private:
     CUTSCENE_STATE                      m_eState = { CUTSCENE_STATE::END };

@@ -242,7 +242,6 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
 {
     MONSTER_DESC* pDesc = static_cast<MONSTER_DESC*>(pArg);
 
-    m_vDecalSize = { 3.f,5.f };
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
@@ -255,8 +254,12 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
     if (nullptr == m_pTarget)
         return E_FAIL;
 
-
     Safe_AddRef(m_pTarget);
+
+    // Default Decal Size Setting
+    //  m_vDecalSize[ENUM_CLASS(DECALTYPE::LINEAR)] = { 0.f, 0.f };
+    //  m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)] = { 0.f, 0.f };
+    //  m_vDecalSize[ENUM_CLASS(DECALTYPE::CURVE)] = { 0.f, 0.f };
 
     return S_OK;
 }

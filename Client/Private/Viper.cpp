@@ -3117,6 +3117,9 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pTransformCom->Get_State(STATE::POSITION));
         // 이미시브 데칼 스폰
         Spawn_EmissiveCrackDecal(m_pTransformCom->Get_State(STATE::POSITION));
+        // 암전 쉐이킹
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+        Viper_2PhaseBerserker_ShaderSettings();
         });
     
     pModel->Register_Event("JumpAtk_Roar_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -3471,6 +3474,18 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("SwingCombo_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("SwingCombo_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("SwingCombo_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+
+    // Sound
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_04 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_05 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_04 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_05 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
 
     // ======================================== [ Cinematic ] ========================================
 
