@@ -747,7 +747,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 150.f;
             MonsterDesc.fMaxHP = 4500.f;
-            MonsterDesc.fMaxStamina = 350.f;
+            MonsterDesc.fMaxStamina = 550.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;

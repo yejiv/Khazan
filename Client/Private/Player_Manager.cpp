@@ -11,8 +11,8 @@ HRESULT CPlayer_Manager::Initialize()
 {
     m_Data.iSouleCount = 3;
 
-    m_Data.fMaxHp = { 10000.f };
-    m_Data.fCulHp = { 10000.f };
+    m_Data.fMaxHp = { 1000.f };
+    m_Data.fCulHp = { 1000.f };
     m_Data.fMaxStamina = { 1000.f };
     m_Data.fCulStamina = { 1000.f };
     m_Data.fStaminaRegen = { 200.f };
@@ -65,6 +65,7 @@ HRESULT CPlayer_Manager::Initialize()
 
 PLAYER_DATA* CPlayer_Manager::Get_pInitailizePlayerData()
 {
+    m_Data.iSouleCount = 3;
     m_Data.fCulHp = m_Data.fMaxHp;
     m_Data.fCulStamina = m_Data.fMaxStamina;
     m_Data.fCulDoggedness = static_cast<_float>(m_Data.iMaxDoggednessCount);
