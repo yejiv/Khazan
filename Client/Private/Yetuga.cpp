@@ -96,8 +96,9 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
 
     m_fRecoveryPerSec = 5.f;
 
-
-
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::LINEAR)] = { 4.f, 6.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)] = { 5.f, 7.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CURVE)] = { 4.f, 6.f };
 
     return S_OK;
 }

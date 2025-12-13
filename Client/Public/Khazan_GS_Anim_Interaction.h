@@ -33,6 +33,7 @@ public:
     _bool            Try_IronGate(_bool isUsedSet);
     _bool            Try_UnLockGear(_bool isUsedSet);
     _bool            Try_GiantGate(_bool isUsedSet);
+    _bool            Try_Teleport();
 
 public:
     _bool           Is_Interaction() const { return m_isInteraction; }

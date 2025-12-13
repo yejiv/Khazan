@@ -64,7 +64,7 @@ HRESULT CInteract_Manager::Initialize()
     EMBARSSecondDesc->iLevel = ENUM_CLASS(LEVEL::EMBARS);
     EMBARSSecondDesc->isUnLock = false;
     EMBARSSecondDesc->strName = TEXT("잊혀진 사원의 깊은 곳");
-    EMBARSSecondDesc->vPos = _float4(31.510f, -95.757f, -7.852f, 1.f);
+    EMBARSSecondDesc->vPos = _float4(40.382f, -95.704f, 54.391, 1.f);
 
     Add_BladeNexus(KHAZAN_MAP::EMBARS, EMBARSSecondDesc);
 

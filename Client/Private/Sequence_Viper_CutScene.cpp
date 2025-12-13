@@ -150,8 +150,6 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
             Desc.iNoiseIndex = 17;
             m_pGameInstance->Start_Distortion(Desc);
 
-
-
             RADIAL_BLUR_DESC RadialDesc{};
             RadialDesc.vCenterUV = _float2(0.5f, 0.5f);
             RadialDesc.fSampleRadius = 0.05f;
