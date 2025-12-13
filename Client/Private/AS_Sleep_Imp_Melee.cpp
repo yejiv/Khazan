@@ -14,7 +14,7 @@ void CAS_Sleep_Imp_Melee::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
-    pModel->Set_Animation(25);
+    pModel->Set_Animation(28);
 
     m_eState = IMP_SlEEP_STATE::SLEEP;
     m_isChanged = false;
@@ -34,7 +34,7 @@ void CAS_Sleep_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
             if (!m_isChanged)
             {
                 m_isChanged = true;
-                pModel->Set_Animation(23);
+                pModel->Set_Animation(27);
                 m_eState = IMP_SlEEP_STATE::WAKEUP;
             }
         }

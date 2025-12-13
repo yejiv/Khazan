@@ -79,6 +79,9 @@ _uint CAS_Hit_Imp_Range::Make_AnimIndex(HITREACTION eHitreaction, HIT_DIR eHitDi
         {21,22,23,24},
         // PARRY
         {21,21,21,21},
+        {0,0,0,0},
+        {0,0,0,0},
+        {21,22,23,24},
     };
 
     return table[ENUM_CLASS(eHitreaction)][ENUM_CLASS(eHitDir)];

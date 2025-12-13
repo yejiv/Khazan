@@ -51,6 +51,8 @@ HRESULT CBody_Elamein::Initialize_Clone(void* pArg)
     XMStoreFloat4x4(&PreTransformMatrix, XMMatrixScaling(0.00012f, 0.00012f, 0.00012f) * XMMatrixRotationY(XMConvertToRadians(180.0f)));
     m_pModelCom->Set_PreTransformMatrix(PreTransformMatrix);
     m_pModelCom->Play_Animation(0);
+
+    Set_JustGuardCallBack([this](_bool isJustGuard) { *m_pData->pCulStamina -= *m_pData->pMaxStamina * 0.1f; });
     return S_OK;
 }
 

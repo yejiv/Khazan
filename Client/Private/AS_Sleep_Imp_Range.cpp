@@ -62,6 +62,14 @@ void CAS_Sleep_Imp_Range::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 
 }
 
+void CAS_Sleep_Imp_Range::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    if (pDesc->strName == TEXT("AttackCollisionDesc"))
+    {
+
+    }
+}
+
 CAS_Sleep_Imp_Range* CAS_Sleep_Imp_Range::Create()
 {
     return new CAS_Sleep_Imp_Range();

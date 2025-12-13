@@ -183,7 +183,7 @@ HRESULT CImp_Sword::Ready_Components()
 HRESULT CImp_Sword::Ready_Collision()
 {
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
-    BodyDesc.fRadius = 0.05f;
+    BodyDesc.fRadius = 0.5f;
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::SPHERE;
@@ -201,7 +201,7 @@ HRESULT CImp_Sword::Ready_Collision()
     BodyDesc.vPos = _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]);
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
-    BodyDesc.vShapeOffset = _float3(0.f, 0.75f, 0.f);
+    BodyDesc.vShapeOffset = _float3(0.f, 0.35f, 0.f);
     
 
     m_tCollisionDesc.pGameObject = this;
