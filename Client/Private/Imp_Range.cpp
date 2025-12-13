@@ -9,6 +9,7 @@
 #include "Mon_HP.h"
 #include "ClientInstance.h"
 #include "Amount.h"
+#include "Interaction_Item.h"
 
 CImp_Range::CImp_Range(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{pDevice,pContext}
@@ -103,9 +104,13 @@ void CImp_Range::Update(_float fTimeDelta)
     if (m_isDissolve)
         m_fDecreaseAlpha += fTimeDelta * 0.7f;
 
-    if (m_fDecreaseAlpha >= 1.f)
+    if (m_fDecreaseAlpha >= 1.f && !m_isDissolveEnd)
     {
         Creature_Release();
+        CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Item")));
+        pItem->RandNormal_Item(m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Item"), pItem);
+        m_isDissolveEnd = true;
     }
 
 }

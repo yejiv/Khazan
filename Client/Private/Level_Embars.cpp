@@ -697,8 +697,8 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 300.f;
             MonsterDesc.fMaxHP = 12000.f;
-            MonsterDesc.fMaxStamina = 800.f;
-
+            MonsterDesc.fMaxStamina = 1200.f;
+                                                                                            
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;

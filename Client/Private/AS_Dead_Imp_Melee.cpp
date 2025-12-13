@@ -16,12 +16,6 @@ void CAS_Dead_Imp_Melee::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
 
     pModel->Set_Animation(10);
-
-    CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Item")));
-    pItem->RandNormal_Item(pOwner->Get_Transform()->Get_State(STATE::POSITION));
-    m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Item"), pItem);
-
-
 }
 
 void CAS_Dead_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

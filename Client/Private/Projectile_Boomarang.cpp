@@ -66,7 +66,6 @@ void CProjectile_Boomarang::Update(_float fTimeDelta)
         StopBoomarangSound();
     }
 
-
     if (m_isActive)
     {
 
@@ -125,7 +124,7 @@ void CProjectile_Boomarang::Reset()
     m_pBody->Collision_Active(true);
     m_isDamageForward = false;
     m_isDamageReturn = false;
-
+    m_isClearSound = false;
 
     m_fCurrentTime = 0.f;
     _vector vDir = XMVector3Normalize(XMLoadFloat3(&m_vSpawnDir));
