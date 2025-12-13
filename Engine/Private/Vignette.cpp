@@ -14,8 +14,7 @@ HRESULT CVignette::Initialize()
 {
     m_Config.vColor = _float3(0.f, 0.f, 0.f);
     m_Config.fPower = 4.f;
-    m_Config.fIntensity = 1.f;
-
+    m_Config.fMinIntensity = 0.f;
     m_Config.fMaxIntensity = 5.f;
 
     m_Config.isUseNoise = false;
@@ -30,48 +29,46 @@ HRESULT CVignette::Initialize()
 
 void CVignette::Update(_float fTimeDelta)
 {
-    if (false == m_isEnable)
+    if (false == m_isTransition)
         return;
 
-    // 시간 누적
     m_fTimeAcc += fTimeDelta;
 
-    // 누적 시간이 Duration을 넘어갔을 경우 비활성화, Intensity 0 초기화
-    if (m_fDuration <= m_fTimeAcc)
+    if (m_Config.fDuration <= m_fTimeAcc)
     {
-        m_isEnable = false;
+        m_fCurrentIntensity = m_Config.fMaxIntensity;
+        m_isTransition = false;
+        if (true == m_isReturnOff)
+        {
+            m_isEnable = false;
+            m_isReturnOff = false;
+        }
         m_fTimeAcc = 0.f;
-        m_Config.fIntensity = 0.f;
     }
+
+    _float fIntensityRatio = 0.f;
+
+    // Fade In
+    if (m_fTimeAcc < m_Config.vFadeTime.x)
+    {
+        fIntensityRatio = m_fTimeAcc / m_Config.vFadeTime.x;		// 페이드 인 총 시간
+        fIntensityRatio = min(1.f, fIntensityRatio);
+    }
+    else if (m_fTimeAcc >= m_Config.vFadeTime.x && m_fTimeAcc <= m_Config.vFadeTime.y)
+    {
+        fIntensityRatio = 1.f;
+    }
+    // Fade Out
     else
     {
-        _float fRatio = m_fTimeAcc / m_fDuration;
-        _float fProgress = 0.f;
-
-        switch (m_Config.eMode)
-        {
-        case VIGNETTE_CONFIG::ANIMMODE::SMOOTH_SMOOTH:
-            fProgress = sin(fRatio * PI);
-            break;
-        case VIGNETTE_CONFIG::ANIMMODE::SMOOTH_INTANT:
-            fProgress = fRatio;
-            break;
-        case VIGNETTE_CONFIG::ANIMMODE::INTANT_SMOOTH:
-            fProgress = 1.f - fRatio;
-            break;
-        case VIGNETTE_CONFIG::ANIMMODE::NONE:
-            fProgress = m_Config.fMaxIntensity;
-            break;
-        }
-        
-        m_Config.fIntensity = m_Config.fMaxIntensity * fProgress;
+        _float fFadeDuration = m_Config.fDuration - m_Config.vFadeTime.y;	// 페이드 아웃 총 시간
+        _float fFadeTimeAcc = m_fTimeAcc - m_Config.vFadeTime.y;			// 페이드 아웃 시작 후 누적 시간
+        _float fRatio = (fFadeTimeAcc / fFadeDuration);					    // 페이드 아웃 비율
+        fIntensityRatio = 1.f - fRatio;
+        fIntensityRatio = max(0.f, fIntensityRatio);						// 비율 0 -> 불투명, 비율 1 -> 투명
     }
 
-    // 아닐 경우 Ratio = 누적 시간 / 지속 시간
-    // SS -> 0 -> 1 -> 0 -> sin(t * PI)
-    // SI -> 0 -> 1 -> t
-    // IS -> 1 -> 0 -> 1 - t
-    // Intensity = Max Intensity * Progress
+    m_fCurrentIntensity = Lerp(m_Config.fMinIntensity, m_Config.fMaxIntensity, fIntensityRatio);
 }
 
 HRESULT CVignette::Bind_Vignette_ShaderResources(CShader* pShader)
@@ -79,7 +76,7 @@ HRESULT CVignette::Bind_Vignette_ShaderResources(CShader* pShader)
     if (FAILED(pShader->Bind_RawValue("g_fVignettePower", &m_Config.fPower, sizeof(_float))))
         return E_FAIL;
 
-    if (FAILED(pShader->Bind_RawValue("g_fVignetteIntensity", &m_Config.fIntensity, sizeof(_float))))
+    if (FAILED(pShader->Bind_RawValue("g_fVignetteIntensity", &m_fCurrentIntensity, sizeof(_float))))
         return E_FAIL;
 
     if (FAILED(pShader->Bind_RawValue("g_vVignetteColor", &m_Config.vColor, sizeof(_float3))))
@@ -100,11 +97,13 @@ HRESULT CVignette::Bind_Vignette_ShaderResources(CShader* pShader)
     return S_OK;
 }
 
-void CVignette::Start_VignetteAnimation(_float fDuration, const VIGNETTE_CONFIG& Config)
+void CVignette::Start_VignetteAnimation(const VIGNETTE_CONFIG& Config, _bool isReturnOff)
 {
+    m_isReturnOff = isReturnOff;
+    m_isTransition = true;
     m_isEnable = true;
-    m_fDuration = fDuration;
     m_Config = Config;
+    m_Config.vFadeTime.y = m_Config.fDuration - m_Config.vFadeTime.y;
 }
 
 HRESULT CVignette::Ready_NoiseTexture()

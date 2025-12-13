@@ -217,6 +217,12 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
         Remove_Status(LADDER_CLIMBING_END);
     }
 
+    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_0))
+    {
+        if (m_pAnimInteraction->Try_Teleport())
+            Teleport_SFX();
+
+    }
 
 }
 
@@ -478,14 +484,15 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
 
     m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 
-    // Vignette
+    // 피격 Vignette
     VIGNETTE_CONFIG Config{};
-    Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
     Config.vColor = _float3(0.5f, 0.f, 0.f);
     Config.fPower = 3.5f;
-    Config.fIntensity = 1.f;
+    Config.fMinIntensity = 0.f;
     Config.fMaxIntensity = 2.f;
-    m_pGameInstance->Start_VignetteAnimation(0.5f, Config);
+    Config.fDuration = 0.5f;
+    Config.vFadeTime = _float2(0.25f, 0.25f);
+    m_pGameInstance->Start_VignetteAnimation(Config);
 
     /* Play Damaged Animation */
     switch (eHitreaction)
@@ -2249,6 +2256,11 @@ void CKhazan_GSword::Update_Die(_float fTimeDelta)
 
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
     }
+}
+
+void CKhazan_GSword::Teleport_SFX()
+{
+
 }
 
 void CKhazan_GSword::Clear_Injured()

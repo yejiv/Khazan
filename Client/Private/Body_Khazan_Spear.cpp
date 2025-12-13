@@ -525,12 +525,13 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 
                 // Vignette
                 VIGNETTE_CONFIG Config{};
-                Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
                 Config.vColor = _float3(0.f, 0.f, 0.f);
                 Config.fPower = 3.5f;
-                Config.fIntensity = 1.f;
+                Config.fMinIntensity = 0.f;
                 Config.fMaxIntensity = 4.f;
-                m_pGameInstance->Start_VignetteAnimation(0.5f, Config);
+                Config.fDuration = 0.5f;
+                Config.vFadeTime = _float2(0.25f, 0.25f);
+                m_pGameInstance->Start_VignetteAnimation(Config);
 
                 // 핑크 보라 조명
                 LIGHT_TRANSITION_DESC LightDesc{};
@@ -1319,13 +1320,13 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         // Vignette
 
         VIGNETTE_CONFIG Config{};
-
-        Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
         Config.vColor = _float3(0.f, 0.f, 0.f);
         Config.fPower = 3.5f;
-        Config.fIntensity = 1.f;
+        Config.fMinIntensity = 0.f;
         Config.fMaxIntensity = 4.f;
-        m_pGameInstance->Start_VignetteAnimation(1.f, Config);
+        Config.fDuration = 1.f;
+        Config.vFadeTime = _float2(0.5f, 0.5f);
+        m_pGameInstance->Start_VignetteAnimation(Config);
 
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.5f, 0.2f, 0.5f);
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.5f, 0.2f, 0.5f);
@@ -1501,6 +1502,22 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_pClientInstance->Set_PlayerInput(false);
         });
 #pragma endregion
+
+    // 프리즈너
+    m_pModelCom->Register_Event("Injure_VignetteAnimation", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        // Vignette
+        VIGNETTE_CONFIG Config{};
+        Config.vColor = _float3(0.2f, 0.f, 0.f);
+        Config.fPower = 4.f;
+        Config.fMinIntensity = 4.f;
+        Config.fMaxIntensity = 10.f;
+        Config.fDuration = 1.5f;
+        Config.vFadeTime = _float2(0.75f, 0.75f);
+        Config.isUseNoise = true;
+        Config.iTextureIndex = 1;
+        Config.fContrast = 2.f;
+        m_pGameInstance->Start_VignetteAnimation(Config, false);
+        });
 
     //m_pModelCom->Register_Event("LanternOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {*m_isEquipLantern = true; });
     //m_pModelCom->Register_Event("LanternOff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { *m_isEquipLantern = false;  });
@@ -1847,12 +1864,13 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust1(_fvector pos)
 
     // Vignette
     VIGNETTE_CONFIG Config{};
-    Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
     Config.vColor = _float3(0.f, 0.f, 0.f);
     Config.fPower = 3.5f;
-    Config.fIntensity = 1.f;
+    Config.fMinIntensity = 0.f;
     Config.fMaxIntensity = 4.f;
-    m_pGameInstance->Start_VignetteAnimation(2.f, Config);
+    Config.fDuration = 2.f;
+    Config.vFadeTime = _float2(1.f, 1.f);
+    m_pGameInstance->Start_VignetteAnimation(Config);
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust2(_fvector pos)
@@ -1883,14 +1901,14 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust3(_fvector pos)
     m_pGameInstance->Start_Distortion(Desc);
 
     // Vignette
-
     VIGNETTE_CONFIG Config{};
-    Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
     Config.vColor = _float3(0.f, 0.f, 0.f);
     Config.fPower = 3.5f;
-    Config.fIntensity = 1.f;
+    Config.fMinIntensity = 0.f;
     Config.fMaxIntensity = 4.f;
-    m_pGameInstance->Start_VignetteAnimation(1.f, Config);
+    Config.fDuration = 1.f;
+    Config.vFadeTime = _float2(0.5f, 0.5f);
+    m_pGameInstance->Start_VignetteAnimation(Config);
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust4(_fvector pos)
@@ -1930,12 +1948,13 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust6(_fvector pos)
 
     // Vignette
     VIGNETTE_CONFIG Config{};
-    Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
     Config.vColor = _float3(0.f, 0.f, 0.f);
-    Config.fPower = 3.5f;       //범위
-    Config.fIntensity = 1.f;    //현재 색상 강도
-    Config.fMaxIntensity = 2.f; //최대 색상 강도
-    m_pGameInstance->Start_VignetteAnimation(2.f, Config);
+    Config.fPower = 3.5f;
+    Config.fMinIntensity = 0.f;
+    Config.fMaxIntensity = 2.f;
+    Config.fDuration = 2.f;
+    Config.vFadeTime = _float2(1.f, 1.f);
+    m_pGameInstance->Start_VignetteAnimation(Config);
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_BlustSmall(_fvector pos)

@@ -537,7 +537,10 @@ PS_OUT_BACKBUFFER PS_COMBINED(PS_IN In)
         
         if (g_isUseVignetteNoise)
         {
-            float fNoise = g_NoiseTexture.Sample(DefaultSampler, In.vTexcoord * 2.f).r;
+            float2 vNoiseTexcoord = { 0.f, 0.f };
+            vNoiseTexcoord.x += In.vTexcoord.x * 2.5f;
+            vNoiseTexcoord.y += In.vTexcoord.y * 2.f;
+            float fNoise = g_NoiseTexture.Sample(DefaultSampler, vNoiseTexcoord).r;
             fNoise = saturate(pow(fNoise, g_fVignetteContrast));
             fVignetteFactor *= fNoise;
         }

@@ -46,12 +46,13 @@ void CElamein::Start_DefaultRadialBlur()
 void CElamein::Start_DefaultVignette()      
 {
     VIGNETTE_CONFIG Config{};
-    Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
     Config.vColor = _float3(0.4f, 0.f, 0.66f);
     Config.fPower = 3.5f;
-    Config.fIntensity = 1.f; 
+    Config.fMinIntensity = 0.f; 
     Config.fMaxIntensity = 2.5f;
-    m_pGameInstance->Start_VignetteAnimation(1.32f, Config);  //시간(매개변수1)
+    Config.fDuration = 1.32f;
+    Config.vFadeTime = _float2(0.66f, 0.66f);
+    m_pGameInstance->Start_VignetteAnimation(Config);
 }
 
 void CElamein::LockOnLerp(_float fTimeDetla, _float fSpeed)
