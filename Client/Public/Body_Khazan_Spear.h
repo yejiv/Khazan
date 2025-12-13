@@ -94,10 +94,11 @@ public:
     _uint                       Get_NumTrailTextures();
     ID3D11ShaderResourceView*   Get_TrailTexture(_uint iIndex);
 
+    _bool                       Is_SpearFullExtension() const { return m_isSpearFullExtension; }
+    _bool                       Get_IsAttackCollisionActive() { return m_isSpearTipActive; }
+    void                        AllAttackCollisionActive_Off();
 
-    _bool       Is_SpearFullExtension() const { return m_isSpearFullExtension; }
-    _bool       Get_IsAttackCollisionActive() { return m_isSpearTipActive; }
-    void        AllAttackCollisionActive_Off();
+    void                        Set_AllPlaySound(_bool isPlaySound) { m_isPlaySound = isPlaySound; }
 
 private:
     class CClientInstance*      m_pClientInstance = { nullptr };
@@ -198,7 +199,7 @@ private:
     COLLISION_DESC      m_tAttackCollisionDesc = {};
     COLLISION_DESC      m_tBodyAttackCollisionDesc = {};
     COLLISION_DESC      m_tGuardCollisionDesc = {};
-
+    _bool               m_isPlaySound = { true };
 
     mutex m_CollMonsterMutex;
 

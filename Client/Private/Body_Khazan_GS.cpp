@@ -1855,7 +1855,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
             strTempEventKey += "_" + ss.str();
 
             m_pModelCom->Register_Event(strTempEventKey, eTrigger, [this, eSoundType, fVolume, eChannelType]() {
-                m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume, Get_SoundChannel(eChannelType)); });
+              if(m_isPlaySound) m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume, Get_SoundChannel(eChannelType)); });
         }
     };
 
@@ -1865,19 +1865,21 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
     //Register_EventGroup("SFX_Idle_Rattle", 3, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::IDLE_RATTLE, 10.f, SOUND_CHANNEL::MOVE);
 
     /* Move */
-    Register_EventGroup("SFX_Move_Injure_R", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_L, 0.2f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Injure_L", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_R, 0.2f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Walk", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_WALK, 0.15f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Run", 12, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RUN, 0.25f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Injure_R", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_L, 0.35f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Injure_L", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_R, 0.35f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Walk", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_WALK, 0.35f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Run", 12, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RUN, 0.4f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Sprint_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_START, 0.6f, SOUND_CHANNEL::VOICE);
-    Register_EventGroup("SFX_Move_Sprint", 16, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT, 0.35f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Sprint_Stop", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_STOP, 0.35f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Sprint_Rattle", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_RATTLE, 0.35f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Sprint", 16, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT, 0.45f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Sprint_Stop", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_STOP, 0.5f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Sprint_Rattle", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_RATTLE, 0.45f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Dodge_Front", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_DODGE_FRONT, 0.45f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Dodge_Rear", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_DODGE_REAR, 0.45f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Dodge_Side", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_DODGE_SIDE, 0.45f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Fall", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_FALL, 0.7f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Randing", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RANDING, 1.f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Climb", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RANDING, 0.5f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Climb_End", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RANDING, 0.5f, SOUND_CHANNEL::MOVE);
 
     /* Attack */
     Register_EventGroup("SFX_Attack_Gs_Weak1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK1, 0.8f, SOUND_CHANNEL::WEAPON);

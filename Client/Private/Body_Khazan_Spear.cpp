@@ -117,6 +117,8 @@ void CBody_Khazan_Spear::Priority_Update(_float fTimeDelta)
 
 void CBody_Khazan_Spear::Update(_float fTimeDelta)
 {
+
+
     m_isFinishedAnimation = m_pModelCom->Play_Animation(m_isNotifyAttacking ? fTimeDelta * 1.2f : fTimeDelta);
 
     Update_CombinedMatrix();
@@ -1533,6 +1535,8 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 #pragma region Collider  
     m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Event_AttackTiming(true); });
     m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Event_AttackTiming(false);  });
+    m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_isBodyAttackActive = true;  m_isNotifyAttacking = true;  m_pBodyCom_BodyAttack->Collision_Active(true); });
+    m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { m_isBodyAttackActive = false;  m_pBodyCom_BodyAttack->Collision_Active(false); });
     m_pModelCom->Register_Event("SpearOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pSpear->Set_Equipped(true);
         m_pClientInstance->Set_PlayerInput(true); });
@@ -1580,7 +1584,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent_SFX()
             strTempEventKey += "_" + ss.str();
 
             m_pModelCom->Register_Event(strTempEventKey, eTrigger, [this, eSoundType, fVolume, eChannelType]() {
-                m_pGameInstance->PlaySoundOnce( m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume,  Get_SoundChannel(eChannelType) ); });
+              if(m_isPlaySound) m_pGameInstance->PlaySoundOnce( m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume,  Get_SoundChannel(eChannelType) ); });
         }
     };
 
@@ -1732,7 +1736,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
 
         XMStoreFloat3(&BodyAttackDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
         XMStoreFloat4(&BodyAttackDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
-        BodyAttackDesc.vShapeOffset = _float3(0.f, 0.f, 0.35f);
+        BodyAttackDesc.vShapeOffset = _float3(0.f, 0.5f, 1.f);
         m_tBodyAttackCollisionDesc.pGameObject = this;
         m_tBodyAttackCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK);
         m_tBodyAttackCollisionDesc.strName = TEXT("Player_BodyAttack");
@@ -1767,6 +1771,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
             return E_FAIL;
     }
 
+    m_pBodyCom_BodyAttack->Collision_Active(false);
 
     return S_OK;
 }
@@ -2206,7 +2211,7 @@ void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
         m_isNotifyAttacking = false;
         m_isSpearTipActive = false;
         m_isSpearFullExtension = true;
-        //m_pBodyCom_SpearTip1->Collision_Active(false);
+        m_pBodyCom_SpearTip1->Collision_Active(false);
     }
 
 }

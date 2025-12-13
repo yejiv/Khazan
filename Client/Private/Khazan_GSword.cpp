@@ -1463,7 +1463,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
 
 
     /*  브루탈 공격.*/
-    if (Has_Status(BRUTAL_READY) && m_pGameInstance->Key_Down(DIK_F))
+    if (Has_Status(BRUTAL_READY) && m_pGameInstance->Key_Down(DIK_T))
     {
         if (m_pAnimAttack->Try_GrappleAttack())
         {
