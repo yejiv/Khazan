@@ -416,7 +416,6 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
             1.f,
             m_pGameInstance->Rand(3.f, 5.f)
         );
-        Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
         Desc.isRandomTexture = true;
         break;
     case DECALTYPE::CURVE:
@@ -429,7 +428,6 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         XMStoreFloat3(&Desc.vPosition, vDecalPos);
         Desc.vAngle = _float3(0.f, m_pGameInstance->Rand(0.f, 360.f), 0.f);
         Desc.vScale = _float3(2.f, 1.f, 4.f);
-        Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
         Desc.isRandomTexture = true;
         break;
     }

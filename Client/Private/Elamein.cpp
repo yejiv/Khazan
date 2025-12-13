@@ -223,6 +223,10 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
 
     m_fRecoveryPerSec = 100.f;
 
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::LINEAR)] = { 3.f, 5.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)] = { 4.f, 6.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CURVE)] = { 3.f, 5.f };
+
     return S_OK;
 }
 

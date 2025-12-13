@@ -218,15 +218,11 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     MeshDesc.vColor = _float4(2.353f, 1.961f, 1.569f, 1.f);
     MeshDesc.vSubColor = _float4(0.f, 0.f, 0.f, 7.843f);
 
-
-    
     for (_uint i = 0; i < ENUM_CLASS(TWINBLADE::END); ++i)
         m_p1PhaseTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
-    
-    
+
     for (_uint i = 0; i < ENUM_CLASS(TWINBLADE_R::END); ++i)
         m_p2PhaseTrail[i] = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
-    
 
     CLineTrail::LINE_TRAIL_DESC LineDesc{};
     LineDesc.fOffset = 0.5f;
@@ -241,6 +237,9 @@ HRESULT CViper::Initialize_Clone(void* pArg)
 
     //Set_JustGuardCallBack();
 
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::LINEAR)] = { 4.f, 6.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)] = { 5.f, 7.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CURVE)] = { 4.f, 6.f };
 
     return S_OK;
 }
@@ -3476,16 +3475,16 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("SwingCombo_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
 
     // Sound
-    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
-    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
-    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
-    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_04 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
-    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_05 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
-    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
-    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
-    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
-    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_04 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
-    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_05 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT4)), 30.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_01 (SFX).wav"), 1.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_02 (SFX).wav"), 1.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_03 (SFX).wav"), 1.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_04 (SFX).wav"), 1.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_05 (SFX).wav"), 1.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_01 (SFX).wav"), 1.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_02 (SFX).wav"), 1.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_03 (SFX).wav"), 1.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_04 (SFX).wav"), 1.f);
+    //  m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_05 (SFX).wav"), 1.f);
 
     // ======================================== [ Cinematic ] ========================================
 
