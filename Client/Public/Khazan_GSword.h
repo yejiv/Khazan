@@ -184,6 +184,7 @@ private:
     /* recovery */
     _float2                     m_fIntervalStaminaRecovery = { 0.f, 0.25f };
     _float2                     m_fWaitStaminaRecovery = { 0.f, 1.58f };
+    _bool                       m_isCanStaminaRecovery = { false };
 
     /* Ladder  Climb */
     _float4                     m_fLadderClimbPos= { 0.f,0.f,0.f,0.f }; 

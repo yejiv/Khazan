@@ -120,18 +120,17 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
         fRadianY = atan2f(XMVectorGetX(vLook), XMVectorGetZ(vLook));
         fDegreeY = XMConvertToDegrees(fRadianY);
         Desc.vAngle = _float3(0.f, fDegreeY, 0.f);
-        Desc.vScale = _float3(2.f, 1.f, 4.f);
+        Desc.vScale = _float3(m_vDecalSize[ENUM_CLASS(DECALTYPE::LINEAR)].x, 1.f, m_vDecalSize[ENUM_CLASS(DECALTYPE::LINEAR)].y);
         break;
 
     case DECALTYPE::CIRCLE:
         Desc.eType = DECALTYPE::CIRCLE;
         XMStoreFloat3(&Desc.vPosition, vDecalPos);
         Desc.vScale = _float3(
-            m_pGameInstance->Rand(3.f, 5.f),
+            m_pGameInstance->Rand(m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)].x, m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)].y),
             1.f,
-            m_pGameInstance->Rand(3.f, 5.f)
+            m_pGameInstance->Rand(m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)].x, m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)].y)
         );
-        Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
         Desc.isRandomTexture = true;
         break;
 
@@ -144,8 +143,7 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
         vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
         XMStoreFloat3(&Desc.vPosition, vDecalPos);
         Desc.vAngle = _float3(0.f, m_pGameInstance->Rand(0.f, 360.f), 0.f);
-        Desc.vScale = _float3(2.f, 1.f, 4.f);
-        Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+        Desc.vScale = _float3(m_vDecalSize[ENUM_CLASS(DECALTYPE::CURVE)].x, 1.f, m_vDecalSize[ENUM_CLASS(DECALTYPE::CURVE)].y);
         Desc.isRandomTexture = true;
         break;
     }
@@ -242,10 +240,9 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
 {
     MONSTER_DESC* pDesc = static_cast<MONSTER_DESC*>(pArg);
 
-    m_vDecalSize = { 3.f,5.f };
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
-
+    m_OriginMat = pDesc->WorldMatrix;
     m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
 
     // 이름
@@ -255,8 +252,12 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
     if (nullptr == m_pTarget)
         return E_FAIL;
 
-
     Safe_AddRef(m_pTarget);
+
+    // Default Decal Size Setting
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::LINEAR)] = { 2.f, 4.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)] = { 3.f, 5.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CURVE)] = { 2.f, 4.f };
 
     return S_OK;
 }

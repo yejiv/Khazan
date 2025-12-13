@@ -134,14 +134,14 @@ void CUI_BladeNexus::Late_Update(_float fTimeDelta)
 		isKeyInput = true;
 
 		if (m_iSeleteIndex < 0)
-			m_iSeleteIndex = ENUM_CLASS(MENULIST::END) - 1;
+			m_iSeleteIndex = m_iListeType- 1;
 	}
 	else if (m_pGameInstance->Key_Down(DIK_S, INPUT_TYPE::UI))
 	{
 		m_iSeleteIndex += 1;
 		isKeyInput = true;
 
-		if (m_iSeleteIndex >= ENUM_CLASS(MENULIST::END))
+		if (m_iSeleteIndex >= m_iListeType )
 			m_iSeleteIndex = 0;
 	}
 

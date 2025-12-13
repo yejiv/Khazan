@@ -678,7 +678,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 2000.f;
+            MonsterDesc.fMaxHP = 18000.f;
             MonsterDesc.fMaxStamina = 1000.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
@@ -696,7 +696,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 100.f;
-            MonsterDesc.fMaxHP = 1600.f;
+            MonsterDesc.fMaxHP = 1200.f;
             MonsterDesc.fMaxStamina = 500.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
@@ -714,7 +714,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 100.f;
-            MonsterDesc.fMaxHP = 1600.f;
+            MonsterDesc.fMaxHP = 1200.f;
             MonsterDesc.fMaxStamina = 500.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
@@ -732,7 +732,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 150.f;
-            MonsterDesc.fMaxHP = 5500.f;
+            MonsterDesc.fMaxHP = 4500.f;
             MonsterDesc.fMaxStamina = 350.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;

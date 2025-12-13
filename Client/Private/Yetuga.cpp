@@ -96,8 +96,9 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
 
     m_fRecoveryPerSec = 5.f;
 
-
-
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::LINEAR)] = { 4.f, 6.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)] = { 5.f, 7.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CURVE)] = { 4.f, 6.f };
 
     return S_OK;
 }
@@ -423,7 +424,7 @@ void CYetuga::Pick_Rock()
 
     _vector vLH = XMLoadFloat3(&vLHTemp);
     _vector vRH = XMLoadFloat3(&vRHTemp);
-    _vector vCenterOffset = XMVectorSet(0.f, -0.7f, 0.f, 0.f);
+    _vector vCenterOffset = XMVectorSet(0.f, -1.f, 0.f, 0.f);
     _vector vSpawnTemp = (vLH + vRH) * 0.5f + vCenterOffset;
     _float3 vSpawnPoint = {};
 
@@ -1440,9 +1441,43 @@ HRESULT CYetuga::Ready_AnimEvent()
     });
 
     //pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Breath_Start(); }); 
+   
 
-    /*pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Breath_Start(); });
-    pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Breath_Loop(); });*/
+
+    pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        { 
+            CBlackBoard* pBB = m_pController->Get_BlackBoard();
+
+            DIRECTION_INFO Info = {};
+            Info.iDirFlag = pBB->Get_Value<_uint>(m_strName, "TargetDirection");
+            if (Info.Check_Flag(DIRECTION_INFO::F))
+            {
+                _float fDist = pBB->Get_Value<_float>(m_strName, "TargetDist");
+                if (fDist <= 410.f)
+                {
+                    CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+                    _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+                    _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+                    _float fDist = pBB->Get_Value<_float>(m_strName, "TargetDist");
+
+                    _float fMinSpeed = 40.f;
+                    _float fMaxSpeed = 20.f;
+                    _float fMinDist = 50.f;
+                    _float fMaxDist = 410.f;
+
+                    _float t = (fDist - fMinDist) / (fMaxDist - fMinDist);
+                    t = clamp(t, 0.f, 1.f);
+                    _float fSpeed = fMinSpeed + (fMaxSpeed - fMinSpeed) * t;
+                    CClientInstance::GetInstance()->ActiveCamera_Shaking(3.f, 0.5f);
+                    CCreature* pDamagedTarget = static_cast<CCreature*>(m_pTarget);
+                    _vector vDir = XMVector3Normalize(vTargetPos - vPosition);
+                    pDamagedTarget->KnockBack(vDir, fSpeed, 60.f);
+                    pDamagedTarget->Take_Damage(150.f, HITREACTION::KNOCKBACK_STRONG);
+                }
+
+            }
+        });
+    //pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Breath_Loop(); });
     //pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Breath_Start(); });
 #pragma endregion
 
@@ -2290,19 +2325,6 @@ HRESULT CYetuga::Ready_SFX()
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath2_01 (SFX).wav"), 1.f);
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isIceCreate", false);
 
-            CBlackBoard* pBB = m_pController->Get_BlackBoard();
-
-            DIRECTION_INFO Info = {};
-            Info.iDirFlag = pBB->Get_Value<_uint>(m_strName, "TargetDirection");
-            if (Info.Check_Flag(DIRECTION_INFO::F))
-            {
-                _float fDist = pBB->Get_Value<_float>(m_strName, "TargetDist");
-                if (fDist <= 100.f)
-                {
-                    int a = 10;
-                }
-
-            }
            
         });
     pModel->Register_Event("SFX_IceBreathVO_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()

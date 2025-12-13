@@ -172,8 +172,20 @@ void CJar_7th::Animation_Update(_float fTimeDelta)
         AnimChange(ANIM_STATE::FLIPPING_ACTIVE, false, true);
         break;
     case STEP6:
+    {
         AnimChange(ANIM_STATE::DEACTIVE, false, true);
+
+        LIGHT_TRANSITION_DESC LightDesc{};
+        LightDesc.fDuration = 4.f;
+        LightDesc.vFadeTime = _float2(4.f, 0.f);
+        LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+        LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+        LightDesc.vSpecular = _float4(0.f, 0.f, 0.f, 0.f);
+        LightDesc.isReturnToStart = false;
+        LightDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(TEXT("DanjinJar_7"), ENUM_CLASS(LEVEL::EMBARS), false); };
+        m_pGameInstance->Start_LightTransition(TEXT("DanjinJar_7"), ENUM_CLASS(LEVEL::EMBARS), LightDesc);
         break;
+    }
     case STEP7:
         AnimChange(ANIM_STATE::SHADOWBOXING_ACTIVE, false, true);
         break;

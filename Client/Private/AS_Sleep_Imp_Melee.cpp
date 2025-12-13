@@ -38,6 +38,19 @@ void CAS_Sleep_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
                 m_eState = IMP_SlEEP_STATE::WAKEUP;
             }
         }
+
+        else
+        {
+            HITREACTION eHitreaction = static_cast<HITREACTION>(pBB->Get_Value<_uint>(pImp->Get_Name(), "DamageType"));
+            if (eHitreaction != HITREACTION::NONE)
+            {
+                m_eState = IMP_SlEEP_STATE::END;
+                m_isChanged = false;
+                pBB->Set_Value<_bool>(pImp->Get_Name(), "isSleepFinished", true);
+                pFSM->Change_State(ENUM_CLASS(IMPMELEE_STATE::HIT), pImp);
+            }
+        }
+
         break;
 
     case IMP_SlEEP_STATE::WAKEUP:
@@ -62,6 +75,7 @@ void CAS_Sleep_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
 void CAS_Sleep_Imp_Melee::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+
 }
 
 CAS_Sleep_Imp_Melee* CAS_Sleep_Imp_Melee::Create()
