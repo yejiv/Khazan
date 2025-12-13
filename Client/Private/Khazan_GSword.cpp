@@ -81,16 +81,16 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     /* 플레이어 셋팅  */
     m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();  //플레이어 데이터 연결
 
-    if (m_pClientInstance->Is_CurrentSpear())
-        Add_Status(SPEAR);
-    else if (m_pClientInstance->Is_CurrentGSword()) 
-        Add_Status(GSWORD);
-    else 
-        Add_Status(BAREHAND);
+    //if (m_pClientInstance->Is_CurrentSpear())
+    //    Add_Status(SPEAR);
+    //else if (m_pClientInstance->Is_CurrentGSword()) 
+    //    Add_Status(GSWORD);
+    //else 
+    //    Add_Status(BAREHAND);
 
 
-    //m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
-
+    m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
+    Add_Status(GSWORD);
 
     if (FAILED(Ready_Components()))
         return E_FAIL;
@@ -120,21 +120,21 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
 
     /* 기본 셋팅  */
     m_eDir.Add_Flag(DIRECTION_INFO::NONE);
-    if (m_pClientInstance->Is_CurrentSpear())
-    {
-        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand");
-        Add_Status(SPEAR);
-    }
-    else if (m_pClientInstance->Is_CurrentGSword())
-    {
-       // m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand");
-        Add_Status(GSWORD);
-    }
-    else
-    {
-        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
-        Add_Status(BAREHAND);
-    }
+    //if (m_pClientInstance->Is_CurrentSpear())
+    //{
+    //    //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand");
+    //    Add_Status(SPEAR);
+    //}
+    //else if (m_pClientInstance->Is_CurrentGSword())
+    //{
+    //   // m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand");
+    //    Add_Status(GSWORD);
+    //}
+    //else
+    //{
+    //    //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
+    //    Add_Status(BAREHAND);
+    //}
 
     m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Teleport_End");
     m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);

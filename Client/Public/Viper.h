@@ -88,12 +88,16 @@ private:
 
 
 private:
+    _float                          Clamp_TargetDistance();
+    _vector                         Decompose_Rotation(_matrix W, _vector localRot = { 0.f, 0.f, 0.f, 0.f }, _vector offset = { 0.f, 0.f, 0.f, 1.f });
+
+
+private:
     void							Pick_ViperRock();
     void							Hold_ViperRock();
     void							Throw_ViperRock();
      
 private:
-    _vector                         Decompose_Rotation(_matrix W, _vector localRot = { 0.f, 0.f, 0.f, 0.f }, _vector offset = { 0.f, 0.f, 0.f, 1.f });
     void                            FX_1PhaseTrail();
     void                            FX_2PhaseHandTrail();
     void                            FX_2PhaseSwordTrail();
