@@ -4,6 +4,8 @@
 #include "Body_Imp_Range.h"
 #include "BlackBoard.h"
 #include "AI_Controller.h"
+#include "Interaction_Item.h"
+
 
 CAS_Dead_Imp_Range::CAS_Dead_Imp_Range()
 {

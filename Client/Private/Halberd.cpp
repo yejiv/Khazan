@@ -255,7 +255,6 @@ void CHalberd::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject
 {
     if (m_Data.eHitType == HITREACTION::BRUTAL_ATTACK)
     {
-        ++m_Data.iBrutalHit;
         switch (m_pGameInstance->Rand(1, 3))
         {
         case 1:

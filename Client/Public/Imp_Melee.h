@@ -67,6 +67,7 @@ private:
     COLLISION_DESC                  m_tImpMeleeColliderDesc = {};
 
     _bool                           m_isDissolve = { false };
+    _bool                           m_isDissolveEnd = { false };
     _float                          m_fDecreaseAlpha = {};
 
 public:

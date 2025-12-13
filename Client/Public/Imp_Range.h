@@ -75,6 +75,7 @@ private:
     COLLISION_DESC                  m_tImp_RangeColliderDesc = {};
 
     _bool                           m_isDissolve = { false };
+    _bool                           m_isDissolveEnd = { false };
     _float                          m_fDecreaseAlpha = {};
 public:
     static CImp_Range*              Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

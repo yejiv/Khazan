@@ -19,6 +19,7 @@ private:
 public:
     void                            Set_Dissovle(_bool isDissovel);
     void                            Set_SubTexScalling(_bool isScaling);
+    void                            Set_Elite(_bool isElite);
 public:
     virtual HRESULT					Initialize_Prototype();
     virtual HRESULT					Initialize_Clone(void* pArg) override;
@@ -43,6 +44,7 @@ private:
     class CUI_Default_Tex*          m_pMainText = { nullptr };
     class CUI_Default_Tex*          m_pSubText = { nullptr };
 
+    _bool                           m_isElite = { false };
 private:
     HRESULT							Ready_Component();
     HRESULT                         Ready_Children();

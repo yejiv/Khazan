@@ -41,6 +41,7 @@ void CAS_Halberd_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
             m_pMonData->iAnimIndex = 33;
             m_pMonData->pOwner->BurutalUI_Off();
             m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isCanBrutalAttack", false);
+            m_pMonData->eHitType = HITREACTION::END;
         }
     }
     else
@@ -48,7 +49,6 @@ void CAS_Halberd_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
         if (m_pMonData->isAnimFinash)
         {
             m_pMonData->isStamina_Regen = true;
-            m_pMonData->eHitType = HITREACTION::END;
         }
     }
 }
