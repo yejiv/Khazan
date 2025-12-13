@@ -60,6 +60,8 @@ private:
 
     HRESULT Ready_Layer_MapObject_DEST(const _wstring& strLayerTag, const _tchar* pDataFilename, LEVEL eCurrentLevel);
 
+    HRESULT Ready_ShaderSettings();
+
     _bool Wait_All_Futures();
 
 private:

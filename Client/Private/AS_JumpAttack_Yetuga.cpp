@@ -47,7 +47,6 @@ void CAS_JumpAttack_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
     {
         pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isJumpAttackFinished", true);
         pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::IDLE), pOwner);
-
     }
 }
 
@@ -62,12 +61,11 @@ void CAS_JumpAttack_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionL
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+        pTarget->Take_Damage(180.f, HITREACTION::KNOCKBACK_NORMAL);
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
         if (nullptr == pOwnerTransform)
             return;
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-        //pTarget->KnockBack(vLook, 10.f, 50.f);
         pTarget->KnockBack(vLook, 20.f, 60.f);
 
     }

@@ -1146,7 +1146,7 @@ void CModel::Check_WaitForComplete()
 void CModel::Setup_Events()
 {
     if (!m_AnimationsSetup[m_iCurrentAnimIndex].isEvent) {
-        m_CurrentEvents.clear();
+                   m_CurrentEvents.clear();
         m_PrevFrameInRange.clear();
         Remove_State(EVENT);
         return;

@@ -250,6 +250,9 @@ private:
     /* state update */
     void            Update_Die(_float fTimeDelta);
 
+    /*  teleport*/
+    void            Teleport_SFX();
+
     /* others,, */
     void            Check_IsInAir(_float fTimeDelta);
     void            Check_Statue();

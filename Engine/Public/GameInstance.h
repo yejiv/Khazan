@@ -391,10 +391,10 @@ public:
 
 #pragma region VIGNETTE
 	HRESULT						Bind_Vignette_ShaderResources(class CShader* pShader);
-	void						Set_EnableVignette(_bool isEnable);
+	void						Set_EnableVignette(_bool isEnable, _float fIntensity = 0.f);
 	VIGNETTE_CONFIG				Get_VignetteConfig();
-	void						Set_VignetteConfig(VIGNETTE_CONFIG Config);
-	void						Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG Config);
+	void						Set_VignetteConfig(const VIGNETTE_CONFIG& Config);
+	void						Start_VignetteAnimation(const VIGNETTE_CONFIG& Config, _bool isReturnOff = true);
 #pragma endregion
 
 #pragma region SEQUENCE_MANAGER

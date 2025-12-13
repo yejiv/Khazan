@@ -71,7 +71,7 @@ float g_fFogLightBleedStrength;
 float g_fOutlineAlpha, g_fOutlineBias;
 
 // ===== Vignette =====
-float g_fVignettePower, g_fVignetteIntensity;
+float g_fVignettePower, g_fVignetteIntensity, g_fVignetteContrast;
 float3 g_vVignetteColor;
 
 // ===== Distortion =====
@@ -103,6 +103,7 @@ bool g_isUseSubColor;
 bool g_isUseHeightFog;
 bool g_isEnableOutline;
 bool g_isEnableVignette;
+bool g_isUseVignetteNoise;
 bool g_isEnableRadialBlur;
 bool g_isEnableMotionBlur;
 bool g_isEnableLUT;

@@ -6,6 +6,7 @@
 #include "FSM_Yetuga.h"
 #include "Body_Yetuga.h"
 #include "Head_Yetuga.h"
+#include "ClientInstance.h"
 
 CAS_Rush_Yetuga::CAS_Rush_Yetuga()
 {
@@ -52,7 +53,7 @@ void CAS_Rush_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
             {
                 pModel->Set_Animation(37);
                 m_isEnd = true;
-                m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_charge_tackle_end_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_charge_tackle_end_01 (SFX).wav"), 1.f);
 
             }
         }
@@ -63,7 +64,7 @@ void CAS_Rush_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
     {
         pModel->Set_Animation(38);
         m_isCrashed = true;
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_charge_tackle_stun_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_charge_tackle_stun_01 (SFX).wav"), 1.f);
 
     }
 
@@ -111,19 +112,29 @@ void CAS_Rush_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, 
         break;
     case Client::COLLISION_LAYER::PLAYER:
 
-        
-        
+        if (m_isCrashed)
+            return;
+
+        CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
-        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        if (nullptr == pTarget)
+            return;
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pYetuga->Get_Component(TEXT("Com_Transform")));
         if (nullptr == pOwnerTransform)
             return;
 
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
         pTarget->KnockBack(vLook, 20.f, 60.f);
+        PLAYER_DATA* pTargetData = &CClientInstance::GetInstance()->Get_ptrPlayerData();
+        _float fMaxStamina = pTargetData->fMaxStamina;
+        pTargetData->fCulStamina -= fMaxStamina * 0.5f;
 
-        CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+        if (pTargetData->fCulStamina <= 0.f)
+            pTargetData->fCulStamina = 0.f;
+
+        pTarget->Take_Damage(120.f, HITREACTION::KNOCKBACK_WEAK);
         pYetuga->Get_Body()->Set_AttackCollision_Back(false);
+
 
         break;
     }

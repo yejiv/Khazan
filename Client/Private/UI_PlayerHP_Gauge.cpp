@@ -43,6 +43,7 @@ void CUI_PlayerHP_Gauge::Priority_Update(_float fTimeDelta)
 
 void CUI_PlayerHP_Gauge::Update(_float fTimeDelta)
 {
+  
     m_fMaxValue = *m_pMaxHp;
     m_fCurrentValue = *m_pCulHp;
 
@@ -53,17 +54,15 @@ void CUI_PlayerHP_Gauge::Update(_float fTimeDelta)
 
 	Update_Deley(fTimeDelta);
 
-	_float2 vPos = {};
-	vPos.x = m_vWorldPos.x - (m_vLocalSize.x * 0.5f) + (m_vLocalSize.x * m_fProgress_Value);
-	vPos.y = m_vWorldPos.y;
-
-	m_pUITip->Update_Pos(vPos);
-
     _float fAddValue = *m_pMaxHp - m_fDefaultValue;
     _float fSize = Clamp(fAddValue / m_fDefaultValue);
 
     m_pTransformCom->Scale(_float3{ m_vLocalSize.x * (1.f + fSize), m_vLocalSize.y, 1.f });
+	_float2 vPos = {};
+	vPos.x = m_vWorldPos.x - ((m_vLocalSize.x * (1.f + fSize)) * 0.5f) + (m_vLocalSize.x * (1.f + fSize) * m_fProgress_Value);
+	vPos.y = m_vWorldPos.y;
 
+	m_pUITip->Update_Pos(vPos);
 }
 
 void CUI_PlayerHP_Gauge::Late_Update(_float fTimeDelta)
@@ -144,7 +143,7 @@ HRESULT CUI_PlayerHP_Gauge::Ready_Component()
 HRESULT CUI_PlayerHP_Gauge::Ready_Children()
 {
 	CUIObject::UIOBJECT_DESC Desc;
-	Desc.fDepth = m_fDepth - 1;
+	Desc.fDepth = m_fDepth - 0.01f;
 	Desc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
 	Desc.szName = "Tip";
 	Desc.vLocalPos = _float2{ 0.f, 0.f };

@@ -6,6 +6,7 @@ NS_BEGIN(Engine)
 class CShader;
 class CModel;
 class CBody;
+class CMotionTrail;
 NS_END
 
 NS_BEGIN(Client)
@@ -48,6 +49,8 @@ public:
     virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
+public:
+    void                    Set_EnableMotionTrail(_bool isEnable);
 
 private:
     HRESULT					Ready_Components();
@@ -61,6 +64,7 @@ private:
     CShader*                m_pShaderCom = { nullptr };
     CModel*                 m_pModelCom = { nullptr };
     CTransform*             m_pOwnerTransform = { nullptr };
+    CMotionTrail*           m_pMotionTrailCom = { nullptr };
 
     _bool					m_isOnAttackCollision = { false };
     CBody*                  m_pBodyComp = { nullptr };

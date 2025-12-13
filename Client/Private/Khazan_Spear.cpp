@@ -183,7 +183,6 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 
 void CKhazan_Spear::Update(_float fTimeDelta)
 {
-
     if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_P))
     {
 
@@ -432,6 +431,16 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     }
 
     m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
+
+    // 피격 Vignette
+    VIGNETTE_CONFIG Config{};
+    Config.vColor = _float3(0.5f, 0.f, 0.f);
+    Config.fPower = 3.5f;
+    Config.fMinIntensity = 0.f;
+    Config.fMaxIntensity = 2.f;
+    Config.fDuration = 0.5f;
+    Config.vFadeTime = _float2(0.25f, 0.25f);
+    m_pGameInstance->Start_VignetteAnimation(Config);
 
     switch (eHitreaction)
     {

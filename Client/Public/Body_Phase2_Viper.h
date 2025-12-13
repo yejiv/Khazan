@@ -7,6 +7,7 @@ class CShader;
 class CModel;
 class CBody;
 class CClothBody;
+class CMotionTrail;
 NS_END
 
 
@@ -50,6 +51,8 @@ public:
     virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
+public:
+    void                    Set_EnableMotionTrail(_bool isEnable);
 
 private:
     HRESULT					Ready_Components();
@@ -68,6 +71,7 @@ private:
     CModel*                 m_pModelCom = { nullptr };
     CTransform*             m_pOwnerTransform = { nullptr };
     CBody*                  m_pLeftHandBody = { nullptr };
+    CMotionTrail*           m_pMotionTrailCom = { nullptr };
 
 private:
     _float3					m_vThrowPoint = {};
