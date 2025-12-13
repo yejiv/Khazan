@@ -56,12 +56,14 @@ _bool CMonster::Get_IsGroggy()
 {
      _bool isGroggy = m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isCanBrutalAttack");
 
-     if (isGroggy)
-         int a = 10;
 
     return isGroggy;
 }
 
+void CMonster::Set_SuperArmor(_bool isToggle)
+{
+    m_isSuperArmmor = isToggle;
+}
 
 
 void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject* pGameObject)

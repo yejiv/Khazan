@@ -23,13 +23,6 @@ FMOD_CHANNEL** CCreature::Get_SoundChannel(_int iIndex)
 
 void CCreature::KnockBack(_vector vDir, _float fPower, _float fLoss)
 {
-   // m_pCharVirCom->Set_VelocityPower(vDir,fPower,fLoss);
-
-    if (m_strName == "Yetuga")
-        return;
-
-    if (m_strName == "Viper")
-        return;
 
     m_isKnockBack = true;
     m_fKnockBackDir = vDir;

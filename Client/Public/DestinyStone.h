@@ -40,6 +40,7 @@ private:
     EventObject m_Event = {};
 
     _bool m_isInteracted = { false };
+    _bool m_isStartDissolve = { false };
     _bool m_isDissolved = { false };
 
     _wstring m_wstrLightTag = {};

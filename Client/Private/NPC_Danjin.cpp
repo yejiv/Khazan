@@ -41,6 +41,8 @@ HRESULT CNPC_Danjin::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_3D_Talk_UI(pArg), E_FAIL);
 
+    CHECK_FAILED(Ready_OwnLight(pArg), E_FAIL);
+
     m_eAnimState = ANIM_STATE::IDLE;
     m_pModelCom->Set_Animation(m_eAnimState);
     m_pModelCom->Set_AnimationLoop(true);
@@ -223,6 +225,26 @@ HRESULT CNPC_Danjin::Ready_3D_Talk_UI(void* pArg)
 
 HRESULT CNPC_Danjin::Ready_DefaultSetting(void* pArg)
 {
+    return S_OK;
+}
+
+HRESULT CNPC_Danjin::Ready_OwnLight(void* pArg)
+{
+    LIGHT_DESC LightDesc = {};
+
+    LightDesc.eType = LIGHT_DESC::TYPE::POINT;
+
+    LightDesc.vDiffuse = _float4(0.7f, 0.7f, 0.7f, 1.f);
+    LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+    LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
+    XMStoreFloat4(&LightDesc.vPosition, Get_Position() + Get_Look() * 1.3f);
+    LightDesc.vPosition.y += 2.f;
+
+    LightDesc.fRange = 4.5f;
+    m_wstrLightTag = TEXT("Danjin_OwnLight");
+
+    m_pGameInstance->Add_Light(m_wstrLightTag, ENUM_CLASS(LEVEL::HEINMACH), LightDesc, true);
+
     return S_OK;
 }
 

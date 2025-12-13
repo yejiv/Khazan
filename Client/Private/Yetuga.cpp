@@ -46,6 +46,19 @@ CAS_CutScene_Yetuga* CYetuga::Get_Yetuga_CutSceneState()
     return pCutSceneState;
 }
 
+void CYetuga::KnockBack(_vector vDir, _float fPower, _float fLoss)
+{
+    
+    m_isKnockBack = true;
+    m_fKnockBackDir = vDir;
+    m_fKnockBackPower = fPower * 0.5f;
+    m_fKnockBackLoss = fLoss;
+
+    if (Get_IsGroggy() || m_isSuperArmmor)
+        m_isKnockBack = false;
+
+}
+
 
 HRESULT CYetuga::Initialize_Prototype()
 {
@@ -145,8 +158,11 @@ void CYetuga::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
     
-    if (m_fCurrentHP > 0.f || this->Get_IsGroggy())
+    if (m_fCurrentHP > 0.f)
     {
+        if (this->Get_IsGroggy())
+            return;
+
         if (m_isLookAt)
         {
             CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
@@ -803,12 +819,16 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
         m_fTurnSpeed = 40.f;
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         m_pBody->Set_OnAttackCollision(true);
         m_isLookAt = true;
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 0.5f);
         });
     pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
         m_pBody->Set_OnAttackCollision(false);
+
+
         m_isLookAt = false; });
 
     pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
@@ -823,6 +843,8 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         m_isLookAt = true; });
     pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
         m_pBody->Set_OnAttackCollision(false);
@@ -1212,10 +1234,22 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 #pragma region JumpGrab
 
+    pModel->Register_Event("Grab_Collider", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pBody->Set_OnAttackCollision(true);
+
+        });
+
+    pModel->Register_Event("Grab_Collider", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pBody->Set_OnAttackCollision(false);
+
+        });
+
     pModel->Register_Event("Jump_Grab_Jump", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
-            m_pBody->Set_OnAttackCollision(true);
+            //m_pBody->Set_OnAttackCollision(true);
 
             // Radial Blur
             RADIAL_BLUR_DESC Desc{};
@@ -1242,7 +1276,6 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isGhost = true;
-            m_pBody->Set_OnAttackCollision(false);
 
         });
 
@@ -1277,6 +1310,11 @@ HRESULT CYetuga::Ready_AnimEvent()
             //  Desc.fSpeed = 2.f;
             //  Desc.iNoiseIndex = 14;
             //  m_pGameInstance->Start_Distortion(Desc);
+
+            CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
+            pTarget->Take_Damage(600.f, HITREACTION::KNOCKBACK_NORMAL);
+
+
         });
 
     //Grab_After
@@ -1382,6 +1420,8 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
     pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Breath_Loop(); 
 
+    Set_SuperArmor(true);
+
     ++ m_iBreathCount ;
     m_iBreathRotation += 0.8f;
 
@@ -1446,12 +1486,16 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
         { 
+            Set_SuperArmor(false);
             CBlackBoard* pBB = m_pController->Get_BlackBoard();
 
             DIRECTION_INFO Info = {};
             Info.iDirFlag = pBB->Get_Value<_uint>(m_strName, "TargetDirection");
-            if (Info.Check_Flag(DIRECTION_INFO::F))
+            if (Info.Check_Flag(DIRECTION_INFO::F) || Info.Check_Flag(DIRECTION_INFO::L) || Info.Check_Flag(DIRECTION_INFO::R))
             {
+                if (Info.Check_Flag(DIRECTION_INFO::B))
+                    return;
+
                 _float fDist = pBB->Get_Value<_float>(m_strName, "TargetDist");
                 if (fDist <= 410.f)
                 {
@@ -2133,26 +2177,26 @@ HRESULT CYetuga::Ready_SFX()
     pModel->Register_Event("SFX_BackMove1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 8.f);
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 8.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_01 (SFX).wav"), 1.f);
         });
     pModel->Register_Event("SFX_BackMove2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 8.f);
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_02 (SFX).wavs"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 8.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_02 (SFX).wavs"), 1.f);
         });
 
     pModel->Register_Event("SFX_Dodge", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
 
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 8.f);
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 8.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_03 (SFX).wav"), 1.f);
         });
 
     pModel->Register_Event("SFX_BackMove2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move2_foley_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 8.f);
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_icebreath_back_jump_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 8.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move2_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_icebreath_back_jump_01 (SFX).wav"), 1.f);
         });
 
 #pragma endregion

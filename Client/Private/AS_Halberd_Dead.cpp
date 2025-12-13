@@ -13,7 +13,8 @@ void CAS_Halberd_Dead::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     if (m_pMonData == nullptr)
         m_pMonData = &static_cast<CHalberd*>(pOwner)->Get_Data();
     static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, 1600);
-    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 1600);
+    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 3000);
+    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::STONE, 4);
 
     TARGET_DIR eDir = m_pMonData->pOwner->Get_DIR();
 

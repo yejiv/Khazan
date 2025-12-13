@@ -18,6 +18,7 @@ public:
     {
         _bool* pConsumed{ nullptr };
         _bool* pDissolved{ nullptr };
+        _bool* pStartDissolve{ nullptr };
 
         LEVEL eLevel{ LEVEL::END };
 
@@ -43,6 +44,10 @@ private:
 
     _bool* m_pConsumed = { nullptr };
     _bool* m_pDissolved = { nullptr };
+    _bool* m_pStartDissolve = { nullptr };
+
+    _bool m_isOnce = { false };
+    _bool m_isGiveGem = { false };
 
     _float m_fTimeAcc = { 0.f };
     _float m_fDecreaseAlpha = { 0.f };

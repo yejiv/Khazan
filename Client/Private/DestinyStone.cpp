@@ -78,11 +78,16 @@ void CDestinyStone::Priority_Update(_float fTimeDelta)
         m_Event.None();
     }
 
+    if (true == m_isStartDissolve)
+    {
+        m_isStartDissolve = false;
+
+        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OffEvent() });
+    }
+
     if (true == m_isDissolved)
     {
         m_isDissolved = false;
-
-        m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OffEvent() });
 
         m_pGameInstance->Set_LightEnable(m_wstrLightTag, ENUM_CLASS(LEVEL::HEINMACH), false);
 
@@ -262,6 +267,7 @@ HRESULT CDestinyStone::Ready_PartObjects(void* pArg)
     DestinyGemDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     DestinyGemDesc.pConsumed = &m_isInteracted;
     DestinyGemDesc.pDissolved = &m_isDissolved;
+    DestinyGemDesc.pStartDissolve = &m_isStartDissolve;
 
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Gem"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_DestinyStone_Gem"), &DestinyGemDesc), E_FAIL);
