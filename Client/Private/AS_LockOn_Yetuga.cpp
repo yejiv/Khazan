@@ -42,6 +42,10 @@ void CAS_LockOn_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         pModel->Set_Animation(5); // 오른쪽
         m_eLockOnDir = LOCKONDIR::LOCKON_RIGHT;
     }
+    else
+    {
+        pModel->Set_Animation(10);
+    }
 
 }
 
@@ -54,7 +58,7 @@ void CAS_LockOn_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
     CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pYetuga->Get_Name(), "Target");
     CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
 
-    pOwnerTransform->LookAt_Lerp(pTargetTransform->Get_State(STATE::POSITION),fTimeDelta,0.8f);
+    pOwnerTransform->LookAt_Lerp(pTargetTransform->Get_State(STATE::POSITION),fTimeDelta, 3.f);
 
     _vector vDir = XMVector3Normalize(pTargetTransform->Get_State(STATE::POSITION) - pOwnerTransform->Get_State(STATE::POSITION));
     vDir.m128_f32[1] = 0.f;

@@ -706,7 +706,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
-/*        if ("ImpRange" == MonsterData.MonsterKey[i])
+        else if ("ImpRange" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 100.f;
@@ -724,7 +724,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
-        else*/ if ("ImpMelee" == MonsterData.MonsterKey[i])
+        else if ("ImpMelee" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 100.f;
