@@ -16,6 +16,8 @@ void CAS_Elamein_Dodge::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_pMonData->iAnimIndex = 31;
         m_eState = DODGE;
 
+        m_pMonData->pOwner->Start_DefaultRadialBlur();
+        m_pMonData->pOwner->Start_DefaultVignette();
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 1.f, 0.003f, 2.1f);
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 1.f, 0.003f, 2.1f);
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 1.f, 0.003f, 2.1f);
@@ -24,6 +26,8 @@ void CAS_Elamein_Dodge::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     }
     else
     {
+        m_pMonData->pOwner->Start_DefaultRadialBlur();
+        m_pMonData->pOwner->Start_DefaultVignette();
         m_pMonData->iAnimIndex = 35;
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.8f, 0.003f, 2.5f);
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.8f, 0.003f, 2.5f);

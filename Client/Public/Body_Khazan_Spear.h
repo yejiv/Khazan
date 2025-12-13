@@ -24,6 +24,7 @@ public:
         //_bool* pIsGuarding = { nullptr };
         _float4* pGuardRotationTarget = { nullptr };
         class CTransform* pParentTransform = { nullptr };
+        _bool* pParentIsCanStaminaRecovery = { nullptr };
 
     }BODY_KHAZAN_SPEAR_DESC;
 
@@ -130,6 +131,8 @@ private:
     _uint				m_iCurSetAnimIndex = { 0 };
     _bool               m_isSpearFullExtension = { false }; //창을 완전히 뻗는 타이밍부터 true 
     _bool*              m_pIsGuarding = { nullptr }; //가드중인지 체크
+
+    _bool*              m_pParentIsCanStaminaRecovery = { nullptr };
 
     /* 뼈 위치 */
     _float4x4*          m_pSpearTip1_Matrix = { nullptr };

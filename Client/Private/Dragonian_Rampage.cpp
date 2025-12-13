@@ -51,8 +51,7 @@ void CDragonian_Rampage::Hp_Visivle(_bool isVisivle)
 
 void CDragonian_Rampage::Hp_Dead()
 {
-    m_pUI_HP->Set_IsDead(true);
-    m_pUI_HP = nullptr;
+    m_pUI_HP->Update_Visible(false);
 }
 
 _bool CDragonian_Rampage::Check_Ranage(string strKey)
@@ -92,7 +91,7 @@ void CDragonian_Rampage::BurutalUI_On(_float fTime)
     m_pBrutalAttack = nullptr;
     m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
     m_pBrutalAttack->Setting_BrutalAttack(m_vLockOnPosition, fTime);
-    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_UI"), m_pBrutalAttack);
 }
 
 void CDragonian_Rampage::BurutalUI_Off()
@@ -107,8 +106,8 @@ void CDragonian_Rampage::BurutalUI_Off()
 void CDragonian_Rampage::Creature_Release()
 {
     m_pHitBodyCom->Collision_Active(false);
-
-    __super::Creature_Release();
+    m_isGhost = true;
+    m_isActive = false;
 }
 
 HRESULT CDragonian_Rampage::Initialize_Prototype(_int iLevel)
@@ -151,6 +150,7 @@ HRESULT CDragonian_Rampage::Initialize_Clone(void* pArg)
     }
 
     m_fRecoveryPerSec = 10.f;
+    m_pGameInstance->Subscribe_Event<EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), [&](const EVENT_RESPOWN& e) {ReSpown(); });
 
     m_vDecalSize[ENUM_CLASS(DECALTYPE::LINEAR)] = { 3.f, 5.f };
     m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)] = { 4.f, 6.f };
@@ -735,6 +735,24 @@ void CDragonian_Rampage::Run_Sound()
     case 5:           m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_run_dirt_05 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
     default:          m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_dragonian_foley_run_dirt_06 (SFX).wav"), Get_Position(), Get_SoundChannel(3), 3.f);             break;
     }
+}
+
+void CDragonian_Rampage::ReSpown()
+{
+    if (!m_isGhost)
+        return;
+    m_Data.isSleep = true;
+    *m_Data.pCulHp = *m_Data.pMaxHp;
+    *m_Data.pCulStamina = *m_Data.pMaxStamina;
+    m_Data.fDecreaseAlpha = 0.f;
+
+    m_isGhost = false;
+    m_isActive = true;
+    m_pTransformCom->Set_WorldMatrix_4x4(m_OriginMat);
+    m_pController->Get_BlackBoard()->Set_Value(m_strName, "isDetected", false);
+    m_pHitBodyCom->Collision_Active(true);
+    m_Data.eHitType = HITREACTION::END;
+    m_Data.iBrutalHit = 0;
 }
 
 CDragonian_Rampage* CDragonian_Rampage::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)

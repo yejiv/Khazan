@@ -242,7 +242,7 @@ HRESULT CMonster::Initialize_Clone(void* pArg)
 
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
-
+    m_OriginMat = pDesc->WorldMatrix;
     m_pTransformCom->Set_WorldMatrix_4x4(pDesc->WorldMatrix);
 
     // 이름

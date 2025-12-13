@@ -380,7 +380,9 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
     if (pDamage != nullptr)
     {
-        pDamage->Render_Damage(  CDamage_Text::DAMAGE_TYPE::PLAYER ,m_pTransformCom->Get_State(STATE::POSITION), fDamage, { 0.f, 5.f });
+        _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+        vPos.m128_f32[1] += 1.4f;
+        pDamage->Render_Damage(  CDamage_Text::DAMAGE_TYPE::PLAYER , vPos, fDamage, { 0.f, 5.f });
         m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
     }
 
@@ -388,9 +390,6 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     DECAL_DESC Desc{};
     Desc.fLifeTime = 8.f;
     Desc.vFadeTime = _float2(0.2f, 0.2f);
-    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));   
-    Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
-    Desc.isRandomTexture = true;
 
     _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
     _float fRadianY{}, fDegreeY{};
@@ -431,7 +430,6 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         Desc.isRandomTexture = true;
         break;
     }
-
 
     m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 
@@ -545,12 +543,22 @@ void CKhazan_Spear::Update_Stats(_float fTimeDelta)
 
         return;
     }
+    //바디에서 가드 사용 시 초기화
+    if (!m_isCanStaminaRecovery)
+    {
+        m_fWaitStaminaRecovery.x = 0.f;
+        Remove_Status(STAMINA_RECOVERY);
+        m_isCanStaminaRecovery = true;
+    }
+
+    if (Has_State(CAT::M_ATTACK | CAT::M_SKILL) || Has_SubState(MOV::MOVE_SPRINT))
+        return;
 
     /* idle, run, walk, 현재 스태미나가 닳아 있는 상태일 때*/
-    if (!Has_States() 
+    if ((!Has_States() 
         || (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_RUN | MOV::MOVE_WALK))
         || (Has_State(CAT::M_GUARD) && !Has_SubState(MOV::MOVE_SPRINT))
-        || !Has_Status(DODGE_ENDING)
+        || !Has_Status(DODGE_ENDING))
         && m_pPlayerData->fCulStamina < m_pPlayerData->fMaxStamina)
     {
         if (!Has_Status(STAMINA_RECOVERY))
@@ -565,15 +573,10 @@ void CKhazan_Spear::Update_Stats(_float fTimeDelta)
         }
         else
         {
-            m_fIntervalStaminaRecovery.x += fTimeDelta;
+            m_pPlayerData->fCulStamina += m_pPlayerData->fStaminaRegen  * 3.f * fTimeDelta;
+            if (m_pPlayerData->fCulStamina > m_pPlayerData->fMaxStamina)
+                m_pPlayerData->fCulStamina = m_pPlayerData->fMaxStamina;
 
-            if (m_fIntervalStaminaRecovery.x >= m_fIntervalStaminaRecovery.y)
-            {
-                m_fIntervalStaminaRecovery.x = 0.f;
-                m_pPlayerData->fCulStamina += m_pPlayerData->fStaminaRegen;
-                if (m_pPlayerData->fCulStamina > m_pPlayerData->fMaxStamina)
-                    m_pPlayerData->fCulStamina = m_pPlayerData->fMaxStamina;
-            }
         }
     }
     else if (Has_Status(STAMINA_RECOVERY))
@@ -2696,6 +2699,7 @@ HRESULT CKhazan_Spear::Ready_PartObjects()
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pGuardRotationTarget = &m_vGuardRotationTarget;
     BodyDesc.pParentTransform = m_pTransformCom;
+    BodyDesc.pParentIsCanStaminaRecovery = &m_isCanStaminaRecovery;
     if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Body_Khazan_Spear"), &BodyDesc)))
         return E_FAIL;
     m_pBody = static_cast<CBody_Khazan_Spear*>(Find_PartObject(TEXT("Part_Body")));
@@ -3192,6 +3196,9 @@ void CKhazan_Spear::DestinyStone_Event(_float fTimeDelta)
 {
     // 귀석 상호 작용 이벤트
     EventDestinyStone DSEvent = m_EventInteract.DSEvent;
+
+    if(m_pAnimInteraction->Try_TobStone(true))
+        m_pBody->Get_Model()->AnimationSetIndexIncrease();
 
     DSEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&DSEvent.vPosition));

@@ -26,6 +26,34 @@ CElamein::CElamein(const CElamein& Prototype)
 {
 }
 
+void CElamein::Start_DefaultRadialBlur()
+{
+    RADIAL_BLUR_DESC RBDesc{};
+    RBDesc.vCenterUV = _float2(0.5f, 0.5f);
+    RBDesc.fSampleRadius = 0.05f;
+    RBDesc.vMaskRadius = _float2(0.f, 0.3f);
+    RBDesc.fExponent = 1.f;
+    RBDesc.iNumSamples = 16;
+    RBDesc.fAttenuation = 0.1f;
+
+    //이거 3개만 건드리셈 - 이단비
+    RBDesc.fStrength = 0.5f;       // Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨 1로 갈수록 진해짐
+    RBDesc.fDuration = 2.f;        // 시간
+    RBDesc.vFadeTime = _float2(0.25f, 0.5f);    //페이드 인, 아웃 시간
+    m_pGameInstance->Start_RadialBlur(RBDesc);
+}
+
+void CElamein::Start_DefaultVignette()      
+{
+    VIGNETTE_CONFIG Config{};
+    Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
+    Config.vColor = _float3(0.4f, 0.f, 0.66f);
+    Config.fPower = 3.5f;
+    Config.fIntensity = 1.f; 
+    Config.fMaxIntensity = 2.5f;
+    m_pGameInstance->Start_VignetteAnimation(1.32f, Config);  //시간(매개변수1)
+}
+
 void CElamein::LockOnLerp(_float fTimeDetla, _float fSpeed)
 {
     m_pTransformCom->LookAt_Lerp(m_pTarget->Get_Position(), fTimeDetla, fSpeed);
@@ -41,7 +69,7 @@ void CElamein::BurutalUI_On(_float fTime)
     m_pBrutalAttack = nullptr;
     m_pBrutalAttack = static_cast<CTarget_BrutalAttack*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_BrutalAttack")));
     m_pBrutalAttack->Setting_BrutalAttack(m_vLockOnPosition, fTime);
-    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pBrutalAttack);
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_UI"), m_pBrutalAttack);
 }
 
 void CElamein::BurutalUI_Off()
@@ -75,8 +103,7 @@ void CElamein::Hp_Visivle(_bool isVisivle)
 
 void CElamein::Hp_Dead()
 {
-    m_pUI_HP->Set_IsDead(true);
-    m_pUI_HP = nullptr;
+    m_pUI_HP->Update_Visible(false);
 }
 
 _bool CElamein::Check_Ranage(string strKey)
@@ -185,8 +212,8 @@ void CElamein::Creature_Release()
 {
     m_isHit = false;
     m_pHitBodyCom->Collision_Active(m_isHit);
-
-    __super::Creature_Release();
+    m_isGhost = true;
+    m_isActive = false;
 }
 
 HRESULT CElamein::Initialize_Prototype(_int iLevel)
@@ -222,6 +249,7 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
     m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
     m_fRecoveryPerSec = 100.f;
+    m_pGameInstance->Subscribe_Event<EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), [&](const EVENT_RESPOWN& e) {ReSpown(); });
 
     m_vDecalSize[ENUM_CLASS(DECALTYPE::LINEAR)] = { 3.f, 5.f };
     m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)] = { 4.f, 6.f };
@@ -800,6 +828,26 @@ void CElamein::Damage_Sound()
         m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_dmgstrong_05 (Korean(KR)).wav"), Get_Position(), Get_SoundChannel(0));
         break;
     }
+}
+
+void CElamein::ReSpown()
+{
+    if (!m_isGhost)
+        return;
+    m_Data.isSleep = true;
+    *m_Data.pCulHp = *m_Data.pMaxHp;
+    *m_Data.pCulStamina = *m_Data.pMaxStamina;
+    m_Data.fDecreaseAlpha = 0.f;
+
+    m_isHit = true;
+    m_pHitBodyCom->Collision_Active(m_isHit);
+    m_isGhost = false;
+    m_isActive = true;
+    m_pTransformCom->Set_WorldMatrix_4x4(m_OriginMat);
+    m_pController->Get_BlackBoard()->Set_Value(m_strName, "isDetected", false);
+
+    m_Data.eHitType = HITREACTION::END;
+    m_Data.iBrutalHit = 0;
 }
 
 void CElamein::Rush()

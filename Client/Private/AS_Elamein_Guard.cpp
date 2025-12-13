@@ -35,7 +35,8 @@ void CAS_Elamein_Guard::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         {
             m_pMonData->iAnimIndex = 51;
             m_eState = COUNT;
-
+            m_pMonData->pOwner->Start_DefaultRadialBlur();
+            m_pMonData->pOwner->Start_DefaultVignette();
             m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.2f, 0.003f, 2.5f);
             m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.2f, 0.003f, 2.5f);
             m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.2f, 0.003f, 2.5f);
