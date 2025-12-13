@@ -150,7 +150,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pDistortion)
 		return E_FAIL;
 
-	m_pVignette = CVignette::Create();
+	m_pVignette = CVignette::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pVignette)
 		return E_FAIL;
 
@@ -1434,9 +1434,9 @@ HRESULT CGameInstance::Bind_Vignette_ShaderResources(CShader* pShader)
 	return m_pVignette->Bind_Vignette_ShaderResources(pShader);
 }
 
-void CGameInstance::Set_EnableVignette(_bool isEnable)
+void CGameInstance::Set_EnableVignette(_bool isEnable, _float fIntensity)
 {
-	m_pVignette->Set_EnableVignette(isEnable);
+	m_pVignette->Set_EnableVignette(isEnable, fIntensity);
 }
 
 VIGNETTE_CONFIG CGameInstance::Get_VignetteConfig()
@@ -1444,13 +1444,13 @@ VIGNETTE_CONFIG CGameInstance::Get_VignetteConfig()
 	return m_pVignette->Get_VignetteConfig();
 }
 
-void CGameInstance::Set_VignetteConfig(VIGNETTE_CONFIG Config)
+void CGameInstance::Set_VignetteConfig(const VIGNETTE_CONFIG& Config)
 {
 	m_pVignette->Set_VignetteConfig(Config);
 }
-void CGameInstance::Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG Config)
+void CGameInstance::Start_VignetteAnimation(const VIGNETTE_CONFIG& Config, _bool isReturnOff)
 {
-	m_pVignette->Start_VignetteAnimation(fDuration, Config);
+	m_pVignette->Start_VignetteAnimation(Config, isReturnOff);
 }
 #pragma endregion
 
