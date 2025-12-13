@@ -195,15 +195,15 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
             m_pCharVirCom->Teleport(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
         
     }
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
-    {
-        m_isGhost = true;
-    }
+    //if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
+    //{
+    //    m_isGhost = true;
+    //}
 
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
-    {
-        m_isGhost = false;
-    }
+    //if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    //{
+    //    m_isGhost = false;
+    //}
 
     if (m_pGameInstance->Key_Pressing(DIK_LCONTROL, fTimeDelta) && m_pGameInstance->Key_Down(DIK_T))
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Teleport_End"));
@@ -275,7 +275,7 @@ void CKhazan_GSword::Update(_float fTimeDelta)
         if (Has_Status(DODGE_ENDING)) {
             if (!m_pAnimMove->IsCurrentAnimationDodge()) {
                 Remove_Status(DODGE_ENDING);
-                m_isGhost = false;
+              //  m_isGhost = false;
             }
         }
     }
@@ -416,7 +416,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
             return;
         else {
             Remove_Status(DODGE_ENDING);
-            m_isGhost = false;
+          //  m_isGhost = false;
         }
     }
 
@@ -1590,10 +1590,16 @@ _bool CKhazan_GSword::Guard_Input(_float fTimeDelta)
         return true;
     }
 
-    if (/*!Has_State(CAT::M_GUARD) &&*/ m_pGameInstance->Key_Down(DIK_LSHIFT))
+    if (!Has_State(CAT::M_GUARD) && m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta))
     {
+        _float fAddDesceaseTime = 0.f;
+        if (Has_State(CAT::M_ATTACK)) fAddDesceaseTime = 3.f;
+        if (Has_State(CAT::M_ATTACK)) fAddDesceaseTime = 5.f;
+        if (Has_State(CAT::M_DAMAGED)) fAddDesceaseTime = 11.f;
+        if (Has_Status(DODGE_ENDING)) fAddDesceaseTime = 4.f;
+
         /* 그냥 가드 */
-        if (m_pAnimGuard->Try_Guard())
+        if (m_pAnimGuard->Try_Guard(fAddDesceaseTime))
         {
             Clear_Step3();
             Add_State(CAT::M_GUARD);
@@ -1628,7 +1634,7 @@ _bool CKhazan_GSword::Guard_Input(_float fTimeDelta)
     {
         //Remove_State(CAT::M_MOVE );
         //Remove_SubState(MOV::MOVE_WALK);
-        m_pAnimGuard->Try_Guard();  // 정지 가드로 전환
+        m_pAnimGuard->Try_Guard(0.f);  // 정지 가드로 전환
         return true;
     }
 
@@ -1744,7 +1750,7 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
         /* 닷지 : 스태미나 소모*/
         if (m_pPlayerData->fCulStamina != 0.f && !Has_Status(DODGE_ENDING))
         {
-            m_isGhost = true;
+            //m_isGhost = true;
             Add_Status(DODGE_ENDING);
             CKhazan_GS_Anim_Move::GS_MOVEINFO info;
 
@@ -3920,7 +3926,7 @@ void CKhazan_GSword::Debug_Widget_Guard()
     {
         if (!Has_State(CAT::M_GUARD))
         {
-            m_pAnimGuard->Try_Guard();
+            m_pAnimGuard->Try_Guard(0.f);
             Add_State(CAT::M_GUARD);
         }
     }

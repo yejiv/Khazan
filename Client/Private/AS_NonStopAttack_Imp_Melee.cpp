@@ -16,6 +16,9 @@ void CAS_NonStopAttack_Imp_Melee::Enter(CStateMachine* pFSM, CGameObject* pOwner
     CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(29);
+    CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
+    pBB->Set_Value<_uint>(pImp->Get_Name(), "AttackCount", 0);
+
 }
 
 void CAS_NonStopAttack_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -41,7 +44,26 @@ void CAS_NonStopAttack_Imp_Melee::OnCollision(COLLISION_DESC* pDesc, _uint iColl
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(10,HITREACTION::KNOCKBACK_WEAK,nullptr);
+        CImp_Melee* pImp = static_cast<CImp_Melee*>(pOwner);
+        CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
+        _uint iAttackCnt = pBB->Get_Value<_uint>(pImp->Get_Name(), "AttackCount");
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+
+        if (nullptr == pOwnerTransform)
+            return;
+
+        if (iAttackCnt == 1)
+        {
+            pTarget->Take_Damage(60.f, HITREACTION::KNOCKBACK_WEAK);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vLook, 15.f, 60.f);
+        }
+        else if (iAttackCnt == 2)
+        {
+            pTarget->Take_Damage(100.f, HITREACTION::KNOCKBACK_WEAK);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vLook, 15.f, 60.f);
+        }
     }
 }
 

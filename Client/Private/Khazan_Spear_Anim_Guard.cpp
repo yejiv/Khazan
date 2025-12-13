@@ -66,12 +66,13 @@ void CKhazan_Spear_Anim_Guard::Exit()
 	m_iMoveDir = 0;
 }
 
-_bool CKhazan_Spear_Anim_Guard::Try_Guard()
+_bool CKhazan_Spear_Anim_Guard::Try_Guard(_float fAddDesceaseTime)
 {
     if (m_isJustGuarding)
         return false;
 
-	if (!m_pModel->Check_MinAnimationTime()/* || !m_pModel->IsFinished()*/)
+
+	if (!m_pModel->Check_MinAnimationTime(fAddDesceaseTime))
 		return false;
 
     /*  걷는 가드 -> 제자리 가드*/

@@ -59,12 +59,15 @@ private:
 private:
     COLLISION_DESC m_TriggerCollisionDesc;
 
+    _wstring m_wstrLightTag = {};
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_Collision(void* pArg);
     HRESULT Ready_Interaction_Guide(void* pArg);
     HRESULT Ready_3D_Talk_UI(void* pArg);
     HRESULT Ready_DefaultSetting(void* pArg);
+    HRESULT Ready_OwnLight(void* pArg);
     virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
 
     void Input_Interact_Event(_float fTimeDelta);

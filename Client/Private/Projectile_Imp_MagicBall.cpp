@@ -237,7 +237,7 @@ void CProjectile_Imp_MagicBall::Collision_Stay(COLLISION_DESC* pDesc, _uint iOth
             CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
             if (nullptr == pTarget)
                 return;
-            pTarget->Take_Damage(10.f,HITREACTION::KNOCKBACK_NORMAL,nullptr);
+            pTarget->Take_Damage(100.f,HITREACTION::KNOCKBACK_NORMAL,nullptr);
             
         }
 
