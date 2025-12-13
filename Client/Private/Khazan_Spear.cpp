@@ -1619,6 +1619,9 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
         if ((Has_Status(STAMINA_EXHAUSTION)))
             return;
 
+        if (m_isInteractDestinyStone)
+            return;
+
         _uint iCurAnimIndex = m_pBody->Get_Model()->Get_CurAnimIndex();
         if (m_pBody->Get_Model()->Check_MinAnimationTime() && iCurAnimIndex != 279 && iCurAnimIndex != 19)
             m_pBody->Get_Model()->Set_Animation(Has_Status(SPEAR) ? m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand") : m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand"));
@@ -3050,6 +3053,14 @@ void CKhazan_Spear::Update_Interact_Event(_float fTimeDelta)
             DestinyStone_Event(fTimeDelta);
         }
     }
+    if (m_isInteractDestinyStone)
+    {
+        if (m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Armed")))
+        {
+            m_isInteractDestinyStone = false;
+        }
+    }
+
 }
 
 void CKhazan_Spear::BladeNexus_Event(_float fTimeDelta)
@@ -3197,8 +3208,10 @@ void CKhazan_Spear::DestinyStone_Event(_float fTimeDelta)
     // 귀석 상호 작용 이벤트
     EventDestinyStone DSEvent = m_EventInteract.DSEvent;
 
-    if(m_pAnimInteraction->Try_TobStone(true))
+    if (m_pAnimInteraction->Try_TobStone(true)) {
         m_pBody->Get_Model()->AnimationSetIndexIncrease();
+        m_isInteractDestinyStone = true;
+    }
 
     DSEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&DSEvent.vPosition));
