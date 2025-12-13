@@ -6,7 +6,7 @@ NS_BEGIN(Engine)
 class CVignette final : public CBase
 {
 private:
-	CVignette();
+	CVignette(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual ~CVignette() = default;
 
 public:
@@ -21,6 +21,9 @@ public:
 	void						Start_VignetteAnimation(_float fDuration, const VIGNETTE_CONFIG& Config);
 
 private:
+    HRESULT                     Ready_NoiseTexture();
+
+private:
 	VIGNETTE_CONFIG				m_Config = {};
 
 	_bool						m_isEnable = {};
@@ -29,8 +32,13 @@ private:
 	_float						m_fTimeAcc = {};
 	_float						m_fDuration = {};
 
+    // Noise
+    ID3D11Device*               m_pDevice = { nullptr };
+    ID3D11DeviceContext*        m_pContext = { nullptr };
+    class CTexture*             m_pNoiseTextureCom = { nullptr };
+
 public:
-	static CVignette*			Create();
+	static CVignette*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void				Free() override;
 };
 

@@ -357,13 +357,24 @@ HRESULT CLevel_Shader::Initialize()
 				// 최대 강도
                 ImGui::SliderFloat("Vignette Max Intensity", &m_VignetteConfig.fMaxIntensity, 0.f, 10.f, "%.2f");
 				
+                // 노이즈 사용 여부
+                ImGui::Checkbox("Use Vignette Noise", &m_VignetteConfig.isUseNoise);
+
+                // 텍스처 인덱스
+                ImGui::SliderInt("Vignette Texture Index", reinterpret_cast<_int*>(&m_VignetteConfig.iTextureIndex), 0, 3);
+
+                // 대비
+                ImGui::SliderFloat("Vignette Contrast", &m_VignetteConfig.fContrast, 0.f, 10.f, "%.2f");
+
 				// 듀레이션
 				ImGui::SliderFloat("Vignette Duration", &m_fVignetteAnimDuration, 0.f, 5.f, "%.2f");
 
 				// 스타트 버튼
 				if (ImGui::Button("Start Vignette"))
 					m_pGameInstance->Start_VignetteAnimation(m_fVignetteAnimDuration, m_VignetteConfig);
-			}
+                
+                ImGui::Separator();
+            }
 
             if (ImGui::Checkbox("LUT", &m_isEnableLUT))
                 m_pGameInstance->Set_EnableLUT(m_isEnableLUT);

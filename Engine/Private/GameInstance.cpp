@@ -150,7 +150,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pDistortion)
 		return E_FAIL;
 
-	m_pVignette = CVignette::Create();
+	m_pVignette = CVignette::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pVignette)
 		return E_FAIL;
 

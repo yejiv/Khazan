@@ -1,8 +1,13 @@
 #include "Vignette.h"
 #include "Shader.h"
+#include "Texture.h"
 
-CVignette::CVignette()
+CVignette::CVignette(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+    : m_pDevice{ pDevice }
+    , m_pContext{ pContext }
 {
+    Safe_AddRef(m_pDevice);
+    Safe_AddRef(m_pContext);
 }
 
 HRESULT CVignette::Initialize()
@@ -12,6 +17,13 @@ HRESULT CVignette::Initialize()
     m_Config.fIntensity = 1.f;
 
     m_Config.fMaxIntensity = 5.f;
+
+    m_Config.isUseNoise = false;
+    m_Config.iTextureIndex = 0;
+    m_Config.fContrast = 1.f;
+
+    if (FAILED(Ready_NoiseTexture()))
+        return E_FAIL;
 
     return S_OK;
 }
@@ -76,6 +88,15 @@ HRESULT CVignette::Bind_Vignette_ShaderResources(CShader* pShader)
     if (FAILED(pShader->Bind_Bool("g_isEnableVignette", &m_isEnable)))
         return E_FAIL;
 
+    if (FAILED(pShader->Bind_Bool("g_isUseVignetteNoise", &m_Config.isUseNoise)))
+        return E_FAIL;
+
+    if (FAILED(pShader->Bind_RawValue("g_fVignetteContrast", &m_Config.fContrast, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pNoiseTextureCom->Bind_Shader_Resource(pShader, "g_NoiseTexture", m_Config.iTextureIndex)))
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -86,9 +107,27 @@ void CVignette::Start_VignetteAnimation(_float fDuration, const VIGNETTE_CONFIG&
     m_Config = Config;
 }
 
-CVignette* CVignette::Create()
+HRESULT CVignette::Ready_NoiseTexture()
 {
-    CVignette* pInstance = new CVignette();
+    vector<const _tchar*> TextureTags;
+    TextureTags =
+    {
+        TEXT("VFT_S_Tile_03A.png"),
+        TEXT("VFT_S_Tile_03B.png"),
+        TEXT("VFT_S_Tile_06B.png"),
+        TEXT("VFT_Noise_27.png"),
+    };
+
+    m_pNoiseTextureCom = CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Shader/Noise/"), TextureTags);
+    if (nullptr == m_pNoiseTextureCom)
+        return E_FAIL;
+
+    return S_OK;
+}
+
+CVignette* CVignette::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+{
+    CVignette* pInstance = new CVignette(pDevice, pContext);
 
     if (FAILED(pInstance->Initialize()))
     {
@@ -102,4 +141,8 @@ CVignette* CVignette::Create()
 void CVignette::Free()
 {
     __super::Free();
+
+    Safe_Release(m_pNoiseTextureCom);
+    Safe_Release(m_pContext);
+    Safe_Release(m_pDevice);
 }

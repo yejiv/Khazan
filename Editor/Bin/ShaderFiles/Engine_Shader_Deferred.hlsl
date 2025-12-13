@@ -533,9 +533,18 @@ PS_OUT_BACKBUFFER PS_COMBINED(PS_IN In)
     if (g_isEnableVignette)
     {
         float fDistance = length(In.vTexcoord - 0.5f);
-        float fVignetteFactor = 1.f - pow(fDistance, g_fVignettePower) * g_fVignetteIntensity;
+        float fVignetteFactor = pow(fDistance, g_fVignettePower);
+        
+        if (g_isUseVignetteNoise)
+        {
+            float fNoise = g_NoiseTexture.Sample(DefaultSampler, In.vTexcoord * 2.f).r;
+            fNoise = saturate(pow(fNoise, g_fVignetteContrast));
+            fVignetteFactor *= fNoise;
+        }
 
-        vFinalColor.rgb = lerp(g_vVignetteColor, vFinalColor.rgb, fVignetteFactor);
+        fVignetteFactor *= g_fVignetteIntensity;
+        
+        vFinalColor.rgb = lerp(g_vVignetteColor, vFinalColor.rgb, saturate(1.f - fVignetteFactor));
         vFinalColor.a = vPostSceneDesc.a;
     }
     

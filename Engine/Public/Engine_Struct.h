@@ -261,11 +261,14 @@ namespace Engine
     {
         enum ANIMMODE { SMOOTH_SMOOTH, SMOOTH_INTANT, INTANT_SMOOTH, NONE };
 
-        ANIMMODE	eMode;
-        XMFLOAT3	vColor;
-        float		fPower;
-        float		fIntensity;
-        float		fMaxIntensity;
+        ANIMMODE	    eMode;
+        XMFLOAT3	    vColor;
+        float		    fPower;
+        float		    fIntensity;
+        float		    fMaxIntensity;
+        bool            isUseNoise;
+        unsigned int    iTextureIndex;
+        float           fContrast;
     }VIGNETTE_CONFIG;
 
     typedef struct tagDecalEmissiveDesc
