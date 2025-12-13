@@ -1411,6 +1411,12 @@ HRESULT CYetuga::Ready_AnimEvent()
         CClientInstance::GetInstance()->ActiveCamera_Shaking(3.5f, 1.5f);
         });
 
+    pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        // 여기에 하시면됩니다.
+        });
+
+
+
 #pragma endregion
 
 #pragma region IceBreath
