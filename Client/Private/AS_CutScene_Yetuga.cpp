@@ -117,11 +117,11 @@ void CAS_CutScene_Yetuga::Change_CutSceneState(CUTSCENE_STATE eNextState, CModel
     }
         break;
     case Client::CUTSCENE_STATE::ROAR1:
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_roar_f2_foley_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_roar_f2_foley_01 (SFX).wav"), 1.f);
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::ROAR1));
         break;
     case Client::CUTSCENE_STATE::ROAR2:
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_roar_f_foley_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_roar_f_foley_01 (SFX).wav"), 1.f);
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::ROAR2));
         break;
 

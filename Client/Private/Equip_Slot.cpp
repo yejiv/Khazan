@@ -313,7 +313,7 @@ HRESULT CEquip_Slot::Ready_Children()
         EVENT_HUD_QUICKSLOT EventDesc = {};
         EventDesc.isEquip = true;
         EventDesc.iIndex = 0;
-        EventDesc.iItemCount = &m_iSouleCount;
+        EventDesc.iItemCount = &CClientInstance::GetInstance()->Get_ptrPlayerData().iSouleCount;
         m_pGameInstance->Emit_Event<EVENT_HUD_QUICKSLOT>(ENUM_CLASS(EVENT_TYPE::UI_QUICK_SLOT), EventDesc);
     }
     return S_OK;

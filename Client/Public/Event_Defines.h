@@ -406,7 +406,7 @@ namespace Client {
         _int  iTalkIndex;
     };
 
-    struct EVENT_ANNOUNCE_RESULT { };
+    struct EVENT_ANNOUNCE_RESULT { _bool isElite = false; };
 
     struct EVENT_ANNOUNCE_WARNING {
         _wstring strText;

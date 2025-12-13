@@ -81,29 +81,74 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
         _vector vDamagePos = XMLoadFloat4(m_vLockOnPosition);
 
         //pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , static_cast<_uint>(fDamage), { 0.f, 10.f });
-        pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , fDamage, { 0.f, 10.f });
+        //DIRECTION_INFO Info{};
+        //Info.iDirFlag = (_uint)m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "TargetDirection");
+        
+        TARGET_DIR eDir = Check_Dir(m_pTransformCom->Get_WorldMatrix(), m_pTarget->Get_Transform()->Get_State(STATE::POSITION));
+
+        if(eHitreaction == HITREACTION::BRUTAL_ATTACK)
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::SPECIAL, vDamagePos, fDamage, { 0.f, 10.f });
+        else if(eDir == TARGET_DIR::B || eDir == TARGET_DIR::BR || eDir == TARGET_DIR::BL)
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::BACK, vDamagePos, fDamage, { 0.f, 10.f });
+        else
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::DEFAULT, vDamagePos , fDamage, { 0.f, 10.f });
+        
         m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
     }
 
     _float fValidTime = 3.f;
     m_pController->AI_ApplyDamage(pGameObject,fDamage,ENUM_CLASS(eHitreaction),fValidTime);
 
-    //데칼 스폰
-    _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
-    _float fOffset = 2.f;
-    _float fPosX = XMVectorGetX(vDecalPos);
-    _float fPosZ = XMVectorGetZ(vDecalPos);
-    vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
-    vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
-    
     DECAL_DESC Desc{};
     Desc.fLifeTime = 8.f;
     Desc.vFadeTime = _float2(0.2f, 0.2f);
     Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
-    XMStoreFloat3(&Desc.vPosition, vDecalPos);
-    Desc.vScale = _float3(m_pGameInstance->Rand(m_vDecalSize.x, m_vDecalSize.y), 2.f, m_pGameInstance->Rand(m_vDecalSize.x, m_vDecalSize.y));
     Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
     Desc.isRandomTexture = true;
+    _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
+
+    _float fRadianY{}, fDegreeY{};
+
+    switch (Desc.eType)
+    {
+    case DECALTYPE::LINEAR:
+        Desc.eType = DECALTYPE::LINEAR;
+        _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+        _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
+        vPosition += (vLook * -1.5f);
+        XMStoreFloat3(&Desc.vPosition, vPosition);
+        fRadianY = atan2f(XMVectorGetX(vLook), XMVectorGetZ(vLook));
+        fDegreeY = XMConvertToDegrees(fRadianY);
+        Desc.vAngle = _float3(0.f, fDegreeY, 0.f);
+        Desc.vScale = _float3(2.f, 1.f, 4.f);
+        break;
+
+    case DECALTYPE::CIRCLE:
+        Desc.eType = DECALTYPE::CIRCLE;
+        XMStoreFloat3(&Desc.vPosition, vDecalPos);
+        Desc.vScale = _float3(
+            m_pGameInstance->Rand(3.f, 5.f),
+            1.f,
+            m_pGameInstance->Rand(3.f, 5.f)
+        );
+        Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+        Desc.isRandomTexture = true;
+        break;
+
+    case DECALTYPE::CURVE:
+        Desc.eType = DECALTYPE::CURVE;
+        _float fOffset = 1.25f;
+        _float fPosX = XMVectorGetX(vDecalPos);
+        _float fPosZ = XMVectorGetZ(vDecalPos);
+        vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
+        vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
+        XMStoreFloat3(&Desc.vPosition, vDecalPos);
+        Desc.vAngle = _float3(0.f, m_pGameInstance->Rand(0.f, 360.f), 0.f);
+        Desc.vScale = _float3(2.f, 1.f, 4.f);
+        Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+        Desc.isRandomTexture = true;
+        break;
+    }
 
     m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 }

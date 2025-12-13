@@ -37,7 +37,7 @@ HRESULT CElamein_Sword::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Collision(), E_FAIL);
 
-
+    Set_JustGuardCallBack([this](_bool isJustGuard) { *m_pData->pCulStamina -= *m_pData->pMaxStamina * 0.1f;});
     return S_OK;
 }
 
