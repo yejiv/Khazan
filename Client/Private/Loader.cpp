@@ -546,13 +546,38 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/TrailParticle"))))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("TrailParticle_R"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/TrailParticle_R"))))
+        return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Spear_FallAtk_Land"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear_FallAtk_Land"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Teleport"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spawn2"))))
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("brutal_hand"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/brutal_hand"))))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("brutalParticle"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/brutalParticle_L"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("blust_brutal"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blust_brutal"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("blust_brutal_GS"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blust_brutal_GS"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Brutal_Spark_GS"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Brutal_Spark_GS"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("GrappleTrail"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GrappleTrail"))))
+        return E_FAIL;
+
     return S_OK;
 }
 

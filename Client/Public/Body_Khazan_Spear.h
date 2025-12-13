@@ -206,7 +206,7 @@ private:
    
     _bool               m_isHitSound;
     _float              m_TrailParticleTime;
-    _bool               m_bTrailParticle;
+    _uint               m_iTrailType;
 private:
     void				Update_Collider(_float fTimeDelta);                     
     void                Check_Guarding(_float fTimeDelta);

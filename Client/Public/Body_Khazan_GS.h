@@ -227,6 +227,8 @@ private :
     _uint                       m_iFXIdx_BodyWind;
     _uint                       m_iFXIdx_Trail;
     _bool                       m_bGuradFX[2];
+    _uint                       m_iTrailType;
+    _float                      m_TrailParticleTime;
 
 private:
     _bool            Update_Dead(_float fTimeDelta);
@@ -291,6 +293,7 @@ private:
     void Set_BaseTrail();
     void Set_BrightTrail();
     void Spawn_Guard_FX();
+    _vector BodyCenter();
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
