@@ -59,12 +59,13 @@ void CProjectile_Imp_MagicBall::Update(_float fTimeDelta)
 
     if (m_fCurrentTime >= m_fLifeTime)
     {
+        m_pBody->Set_Pos(XMVectorSet(0.f, 0.f, 0.f, 1.f));
+
         m_pBody->Collision_Active(false);
-        // 풀로 돌아가고
-        m_isDead = true;
-        // Active 끄고
         m_isActive = false;
         m_isCrashed = true;
+        m_isDead = true;
+
     }
 
     if (m_isActive)
@@ -156,6 +157,8 @@ void CProjectile_Imp_MagicBall::Enter_State(PRJSTATE eNextState)
     }
     case Client::CProjectile::END:
         m_isDead = true;
+        m_pBody->Collision_Active(false);
+        m_pBody->Set_Pos(XMVectorSet(0.f, 0.f, 0.f, 1.f));
         break;
     }
 }

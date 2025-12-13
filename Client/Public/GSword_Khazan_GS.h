@@ -30,7 +30,7 @@ private:
 
 public:
 	_float4x4*  Get_BoneMatrix(const _char* pBoneName);
-	const _matrix& Get_OffestMatrix() const { return m_matOffset; }
+	//const _matrix& Get_OffestMatrix() const { return m_matOffset; }
     void		Set_matWeaponR(_float4x4* mat) { m_pWeaponR_Matrix = mat; }
     void		Set_GSwordBackPack(_float4x4* mat) { m_GSwordBackPack_Matrix = mat; }
     void		Set_SpearBackPack(_float4x4* mat) { m_pSpearBackPack_Matrix = mat; }
@@ -80,7 +80,8 @@ private:
     _float4x4*                  m_GSwordBackPack_Matrix = { nullptr };
     _float4x4*                  m_pSpearBackPack_Matrix = { nullptr };
 
-	_matrix						m_matOffset;
+    _matrix						m_matGSwordOffset;
+    _matrix						m_matSpearOffset;
     _bool                       m_isEnble = { true };
     _bool                       m_isEquip = { true };
     

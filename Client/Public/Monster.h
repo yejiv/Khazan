@@ -100,7 +100,7 @@ protected:
 
     _bool                           m_isDeadFlag = { false };
 
-    _float2                         m_vDecalSize = {};
+    _float2                         m_vDecalSize[ENUM_CLASS(DECALTYPE::END)] = {};
 
     _float                          m_fDissolveTime = {};
     _bool                           m_isDissolve = {};

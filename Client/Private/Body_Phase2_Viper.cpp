@@ -157,7 +157,8 @@ void CBody_Phase2_Viper::Update(_float fTimeDelta)
     }
 
     // Radial Blur 센터 설정
-    m_pGameInstance->Set_RadialBlurCenter(Get_BoneMatrix("Bone_tongue_04").r[3]);
+    if (m_pOwner->Get_Phase2_Viper_CutSceneState()->Get_State() == P2CUTSCENE_STATE::WALK)
+        m_pGameInstance->Set_RadialBlurCenter(Get_BoneMatrix("Bone_tongue_04").r[3]);
 }
 
 void CBody_Phase2_Viper::Late_Update(_float fTimeDelta)

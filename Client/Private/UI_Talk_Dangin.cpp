@@ -387,7 +387,7 @@ HRESULT CUI_Talk_Dangin::Ready_Children()
 void CUI_Talk_Dangin::Ready_Item()
 {
     m_ItemIndex.push_back(1101);
-    m_ItemIndex.push_back(5001);
+    //m_ItemIndex.push_back(5001);
     m_ItemIndex.push_back(5002);
     m_ItemIndex.push_back(5003);
     m_ItemIndex.push_back(5004);

@@ -151,6 +151,11 @@ HRESULT CDragonian_Rampage::Initialize_Clone(void* pArg)
 
     m_fRecoveryPerSec = 10.f;
     m_pGameInstance->Subscribe_Event<EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), [&](const EVENT_RESPOWN& e) {ReSpown(); });
+
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::LINEAR)] = { 3.f, 5.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)] = { 4.f, 6.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CURVE)] = { 3.f, 5.f };
+
     return S_OK;
 }
 

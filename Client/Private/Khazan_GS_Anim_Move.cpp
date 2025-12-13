@@ -68,9 +68,9 @@ void CKhazan_GS_Anim_Move::Initialize()
          120.f };
 
     m_iStopAnimIndex[0] = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Sprint_Stop_F");
-    m_iStopAnimIndex[1] = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_LockOn_Sprint_Stop_F");
+    m_iStopAnimIndex[1] = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Sprint_Stop_F");//CA_P_Kazan_GSword_LockOn_Sprint_Stop_F
     m_iStopAnimIndex[2] = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Sprint_Stop_F");
-    m_iStopAnimIndex[3] = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_LockOn_Sprint_Stop_F");
+    m_iStopAnimIndex[3] = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Sprint_Stop_F");//CA_P_Kazan_GSword_LockOn_Sprint_Stop_F
 
 }
 
@@ -204,7 +204,7 @@ _bool CKhazan_GS_Anim_Move::Try_ChangeAnimation(GS_MOVEINFO moveInfo)
         else  if (moveInfo.iCycle & CYC::CYCLE_END)
         {
             if (isLockOn)
-                iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_LockOn_Sprint_Stop_F");
+                iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Sprint_Stop_F");//CA_P_Kazan_GSword_LockOn_Sprint_Stop_F
             else
                 iSelectedAnimationIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Sprint_Stop_F");
             m_isStopAnimationFinished = true;

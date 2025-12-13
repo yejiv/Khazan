@@ -48,9 +48,6 @@ void CProjectile_Rock_Yetuga::Update(_float fTimeDelta)
     {
         m_pBody->Sync_Update(m_pTransformCom);
         m_pBody->Update(fTimeDelta, m_pTransformCom);
-#ifdef _DEBUG
-        //  m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
-#endif
     }
     else
     {
@@ -83,7 +80,6 @@ HRESULT CProjectile_Rock_Yetuga::Render()
 			return E_FAIL;
 
 		m_pShaderCom->Begin(0);
-
 		m_pModelCom->Render(i);
 	}
 	return S_OK;
@@ -138,6 +134,32 @@ void CProjectile_Rock_Yetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOther
 
 }
 
+void CProjectile_Rock_Yetuga::Enter_State(PRJSTATE eNextState)
+{
+    if (m_eState == eNextState)
+        return;
+
+    m_eState = eNextState;
+
+    switch (m_eState)
+    {
+    case Client::CProjectile::IDLE:
+
+        break;
+    case Client::CProjectile::LOOP:
+
+        break;
+    case Client::CProjectile::CRASHED:
+
+        break;
+    case Client::CProjectile::END:
+        break;
+    }
+
+
+
+}
+
 HRESULT CProjectile_Rock_Yetuga::Ready_Components()
 {
 	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
@@ -147,6 +169,16 @@ HRESULT CProjectile_Rock_Yetuga::Ready_Components()
 	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Yetuga_Rock"),
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
 		return E_FAIL;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
+        TEXT("Com_AnimShader"), reinterpret_cast<CComponent**>(&m_pAnimShaderCom), nullptr)))
+        return E_FAIL;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Yetuga_Stone"),
+        TEXT("Com_AnimModel"), reinterpret_cast<CComponent**>(&m_pAnimModelCom), nullptr)))
+        return E_FAIL;
 
 
 	return S_OK;
@@ -193,6 +225,12 @@ HRESULT CProjectile_Rock_Yetuga::Bind_ShaderResources()
 	return S_OK;
 }
 
+HRESULT CProjectile_Rock_Yetuga::Render_Model(_uint iIndex)
+{
+
+    return S_OK;
+}
+
 CProjectile_Rock_Yetuga* CProjectile_Rock_Yetuga::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CProjectile_Rock_Yetuga* pInstance = new CProjectile_Rock_Yetuga(pDevice, pContext);
@@ -222,4 +260,6 @@ void CProjectile_Rock_Yetuga::Free()
 	__super::Free();
 
     Safe_Release(m_pBody);
+    Safe_Release(m_pAnimModelCom);
+    Safe_Release(m_pAnimShaderCom);
 }

@@ -88,11 +88,14 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     else 
         Add_Status(BAREHAND);
 
+
     //m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
 
 
     if (FAILED(Ready_Components()))
         return E_FAIL;
+
+
 
     if (FAILED(Ready_PartObjects()))
         return E_FAIL;
@@ -114,26 +117,28 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     Debug_Widget();
 #endif // _DEBUG
 
+
     /* 기본 셋팅  */
     m_eDir.Add_Flag(DIRECTION_INFO::NONE);
     if (m_pClientInstance->Is_CurrentSpear())
     {
-        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand");
+        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand");
         Add_Status(SPEAR);
     }
     else if (m_pClientInstance->Is_CurrentGSword())
     {
-        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand");
+       // m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand");
         Add_Status(GSWORD);
     }
     else
     {
-        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
+        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
         Add_Status(BAREHAND);
     }
 
     m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Teleport_End");
     m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+
 
     //m_iStopMoveIndexTable[0] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Walk_Stop_F_RF");
     m_iStopMoveIndexTable[0] = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Walk_Stop_F_RF");
@@ -413,7 +418,9 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
     CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
     if (pDamage != nullptr)
     {
-        pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::PLAYER, m_pTransformCom->Get_State(STATE::POSITION), fDamage, { 0.f, 5.f });
+        _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+        vPos.m128_f32[1] += 1.4f;
+        pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::PLAYER, vPos, fDamage, { 0.f, 5.f });
         m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
     }
 
@@ -566,7 +573,7 @@ void CKhazan_GSword::Update_Stats(_float fTimeDelta)
 {
 
     /*  스태미나 다 떨어짐 */
-    if (m_pPlayerData->fCulStamina < 0.1f && !m_pAnimAttack->Is_Attacking() && ! m_pAnimAttack->Is_Skilling())
+    if (m_pPlayerData->fCulStamina < 0.1f && !m_pAnimAttack->Is_Attacking() && !m_pAnimAttack->Is_Skilling())
     {
         m_pPlayerData->fCulStamina = 0.f;
         if (!Has_Status(STAMINA_EXHAUSTION)) {
@@ -586,11 +593,22 @@ void CKhazan_GSword::Update_Stats(_float fTimeDelta)
         return;
     }
 
+    //바디에서 가드 사용 시 초기화
+    if (!m_isCanStaminaRecovery)
+    {
+        m_fWaitStaminaRecovery.x = 0.f;
+        Remove_Status(STAMINA_RECOVERY);
+        m_isCanStaminaRecovery = true;
+    }
+
+    if (Has_State(CAT::M_ATTACK | CAT::M_SKILL) || Has_SubState(MOV::MOVE_SPRINT))
+        return;
+
     /* idle, run, walk, guard 현재 스태미나가 닳아 있는 상태일 때 회복하기 */
-    if (!Has_States() 
-        || (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_RUN | MOV::MOVE_WALK)) 
+    if ((!Has_States()
+        || (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_RUN | MOV::MOVE_WALK))
         || (Has_State(CAT::M_GUARD) && !Has_SubState(MOV::MOVE_SPRINT))
-        || !Has_Status(DODGE_ENDING)
+        || !Has_Status(DODGE_ENDING))
         && m_pPlayerData->fCulStamina < m_pPlayerData->fMaxStamina)
     {
         if (!Has_Status(STAMINA_RECOVERY))
@@ -605,15 +623,9 @@ void CKhazan_GSword::Update_Stats(_float fTimeDelta)
         }
         else
         {
-            m_fIntervalStaminaRecovery.x += fTimeDelta;
-
-            if (m_fIntervalStaminaRecovery.x >= m_fIntervalStaminaRecovery.y)
-            {
-                m_fIntervalStaminaRecovery.x = 0.f;
-                m_pPlayerData->fCulStamina += m_pPlayerData->fStaminaRegen;
-                if (m_pPlayerData->fCulStamina > m_pPlayerData->fMaxStamina)
-                    m_pPlayerData->fCulStamina = m_pPlayerData->fMaxStamina;
-            }
+            m_pPlayerData->fCulStamina += m_pPlayerData->fStaminaRegen * 3.f * fTimeDelta;
+            if (m_pPlayerData->fCulStamina > m_pPlayerData->fMaxStamina)
+                m_pPlayerData->fCulStamina = m_pPlayerData->fMaxStamina;
         }
     }
     else if (Has_Status(STAMINA_RECOVERY))
@@ -621,6 +633,7 @@ void CKhazan_GSword::Update_Stats(_float fTimeDelta)
         m_fWaitStaminaRecovery.x = 0.f;
         Remove_Status(STAMINA_RECOVERY);
     }
+
 
 }
 
@@ -1799,7 +1812,6 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
         if (m_isLadderEndEvent)
             return;
 
-        cout << " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ " << endl;
         _uint iGSwordStand = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand");
         _uint iSpearStand = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand");
         _uint iBareHandStand = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
@@ -2241,6 +2253,7 @@ void CKhazan_GSword::Clear_Injured()
 
 void CKhazan_GSword::EnterStatuePuzzle()
 {
+    Clear_Step2();
     m_pClientInstance->Set_PlayerInput(false);
 
     if (Has_Status(SPEAR))
@@ -2262,8 +2275,9 @@ void CKhazan_GSword::ExitStatuePuzzle()
     if (Has_Status(GSWORD))
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));  
 
-
+  Clear_Step2();
     m_pClientInstance->Set_PlayerInput(false);
+  
 
 }
 
@@ -2606,6 +2620,7 @@ HRESULT CKhazan_GSword::Ready_PartObjects()
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pGuardRotationTarget = &m_vGuardRotationTarget;
     BodyDesc.pParentTransform = m_pTransformCom;
+    BodyDesc.pParentIsCanStaminaRecovery = &m_isCanStaminaRecovery;
     if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Body_Khazan_GS"), &BodyDesc)))
         return E_FAIL;
     m_pBody = static_cast<CBody_Khazan_GS*>(Find_PartObject(TEXT("Part_Body")));
