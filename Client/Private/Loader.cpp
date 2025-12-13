@@ -85,6 +85,9 @@
 
 #include "Effect_Prefab.h"
 
+#include "Destructible_Stone.h"
+#include "Chunk.h"
+
 //static mutex g_GpuGate;
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -850,53 +853,30 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 
 #pragma region 파괴 가능 오브젝트 : 모델
 
-    /* Prototype_Component_Model_Fence_Chunk */
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fence_Chunk_1"),
-    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk1/Fence_Chunk1.dat", false)), E_FAIL);
+    /* Prototype_Component_Model_Stone_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_1"),
+    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk1/Stone_Chunk1.dat", false)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fence_Chunk_2"),
-    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk2/Fence_Chunk2.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_2"),
+    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk2/Stone_Chunk2.dat", false)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fence_Chunk_3"),
-    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk3/Fence_Chunk3.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_3"),
+    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk3/Stone_Chunk3.dat", false)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fence_Chunk_4"),
-    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk4/Fence_Chunk4.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_4"),
+    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk4/Stone_Chunk4.dat", false)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fence_Chunk_5"),
-    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk5/Fence_Chunk5.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_5"),
+    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk5/Stone_Chunk5.dat", false)), E_FAIL);
 
-    /* Prototype_Component_Model_Pot_Chunk */
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Pot_Chunk_1"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk1/Pot_Chunk1.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_6"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk6/Stone_Chunk6.dat", false)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Pot_Chunk_2"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk2/Pot_Chunk2.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_7"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk7/Stone_Chunk7.dat", false)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Pot_Chunk_3"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk3/Pot_Chunk3.dat", false)), E_FAIL);
-
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Pot_Chunk_4"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk4/Pot_Chunk4.dat", false)), E_FAIL);
-
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Pot_Chunk_5"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk5/Pot_Chunk5.dat", false)), E_FAIL);
-
-    /* Prototype_Component_Model_Barrel_Chunk */
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Barrel_Chunk_1"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk1/Barrel_Chunk1.dat", false)), E_FAIL);
-
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Barrel_Chunk_2"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk2/Barrel_Chunk2.dat", false)), E_FAIL);
-
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Barrel_Chunk_3"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk3/Barrel_Chunk3.dat", false)), E_FAIL);
-
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Barrel_Chunk_4"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk4/Barrel_Chunk4.dat", false)), E_FAIL);
-
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Barrel_Chunk_5"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk5/Barrel_Chunk5.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_8"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk8/Stone_Chunk8.dat", false)), E_FAIL);
 
 #pragma endregion
 
@@ -1084,6 +1064,14 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
     /* Prototype_GameObject_Prop_Barrel */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Barrel"),
         CBarrel::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Chunk"),
+        CChunk::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Destructible_Stone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Destructible_Stone"),
+        CDestructible_Stone::Create(m_pDevice, m_pContext)), E_FAIL);
 
 #pragma endregion
 
