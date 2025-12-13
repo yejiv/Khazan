@@ -90,8 +90,8 @@ public:
 
     void                            BurutalUI_On(_float fTime);
     void                            BurutalUI_Off();
-public:
     virtual void                    Creature_Release() override;
+public:
     virtual HRESULT					Initialize_Prototype(_int iLevel);
     virtual HRESULT					Initialize_Clone(void* pArg) override;
     virtual void					Priority_Update(_float fTimeDelta) override;
@@ -171,6 +171,8 @@ private:
 
     void                            Move_Sound();
     void                            Run_Sound();
+
+    void                            ReSpown();
 public:
     static CDragonian_Rampage*      Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;
