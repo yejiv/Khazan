@@ -26,6 +26,7 @@ void CAS_Dead_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_pGameInstance->Emit_Event<EventPopBN>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), { true });
     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_roar_die_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 50.f);
 
+    CClientInstance::GetInstance()->BGM_HeinMach_Day(4.f);
 }
 
 void CAS_Dead_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)

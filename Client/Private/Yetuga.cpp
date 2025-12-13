@@ -158,8 +158,11 @@ void CYetuga::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
     
-    if (m_fCurrentHP > 0.f || this->Get_IsGroggy())
+    if (m_fCurrentHP > 0.f)
     {
+        if (this->Get_IsGroggy())
+            return;
+
         if (m_isLookAt)
         {
             CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
@@ -1231,10 +1234,22 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 #pragma region JumpGrab
 
+    pModel->Register_Event("Grab_Collider", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pBody->Set_OnAttackCollision(true);
+
+        });
+
+    pModel->Register_Event("Grab_Collider", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pBody->Set_OnAttackCollision(false);
+
+        });
+
     pModel->Register_Event("Jump_Grab_Jump", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
-            m_pBody->Set_OnAttackCollision(true);
+            //m_pBody->Set_OnAttackCollision(true);
 
             // Radial Blur
             RADIAL_BLUR_DESC Desc{};
@@ -1261,7 +1276,6 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isGhost = true;
-            m_pBody->Set_OnAttackCollision(false);
 
         });
 

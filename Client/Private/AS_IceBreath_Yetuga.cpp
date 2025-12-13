@@ -107,6 +107,8 @@ void CAS_IceBreath_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
         if (pChannel && *pChannel)
             m_pGameInstance->StopByChannel(pChannel);
     }
+
+    m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice"));
 }
 
 CAS_IceBreath_Yetuga* CAS_IceBreath_Yetuga::Create()
