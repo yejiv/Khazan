@@ -1369,7 +1369,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Trail"), rot, m_pParentTransform->Get_State(STATE::POSITION));
         }); 
 
-    //강공 차지
+    //강공 차지ww
     m_pModelCom->Register_Event("GS_StrongAtk01_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust10"), m_pParentTransform->Get_State(STATE::POSITION)); //흰색
 

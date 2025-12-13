@@ -517,6 +517,42 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/lantern"))))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Spear_Crescent_Land"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear_Crescent_Land"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Spear_BloodWind"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear_BloodWind"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust11"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blust11"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust12"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blust12"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Sphere_Blood"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Sphere_Blood"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("JumpSpear"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/JumpSpear"))))
+        return E_FAIL;
+
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("TrailParticle"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/TrailParticle"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Spear_FallAtk_Land"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear_FallAtk_Land"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Teleport"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spawn2"))))
+        return E_FAIL;
     return S_OK;
 }
 

@@ -203,9 +203,10 @@ private:
     mutex m_CollMonsterMutex;
 
     _bool               m_bGuradFX[2];
-
+   
     _bool               m_isHitSound;
-
+    _float              m_TrailParticleTime;
+    _bool               m_bTrailParticle;
 private:
     void				Update_Collider(_float fTimeDelta);                     
     void                Check_Guarding(_float fTimeDelta);
@@ -227,7 +228,9 @@ private:
 private:
     void	FX_Trail();
     void	UpdateSpearWind(_bool isEnableRadialBlur);
+    void	UpdateSpearRedWind(_bool isEnableRadialBlur);
     void	SpawnSpearWind();
+    void	SpawnSpearRedWind();
     void	FX_StrongAtk_Charge_Blust1(_fvector pos);
     void	FX_StrongAtk_Charge_Blust2(_fvector pos);
     void	FX_StrongAtk_Charge_Blust3(_fvector pos);
@@ -241,7 +244,10 @@ private:
     void    Set_RedTrail();
 
     void    Spawn_Guard_FX();
+    _vector BodyCenter();
 
+private:
+    _vector Decompose_Rotation(_matrix W, _vector localRot = { 0.f, 0.f, 0.f, 0.f }, _vector offset = { 0.f, 0.f, 0.f, 1.f });
     //void	UpdateTrail();
 
 private:
