@@ -291,6 +291,14 @@ void CHalberd::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject
     __super::Take_Damage(fDamage, eHitreaction, pGameObject);
 }
 
+void CHalberd::KnockBack(_vector vDir, _float fPower, _float fLoss)
+{
+    m_isKnockBack = true;
+    m_fKnockBackDir = vDir;
+    m_fKnockBackPower = fPower * 0.8f;
+    m_fKnockBackLoss = fLoss;
+}
+
 void CHalberd::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);

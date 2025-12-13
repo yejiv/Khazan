@@ -549,6 +549,8 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         case static_cast<_int>(BLADENEXUS_ID::HEINMACH_ENTER):
             static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(4012);
             eUIType = CUI_BladeNexus::ONTYPE::DEFAULT;
+            // 비네트 끄기
+            m_pGameInstance->Set_EnableVignette(false);
             break;
         case static_cast<_int>(BLADENEXUS_ID::HEINMACH_YETUGA):
             eUIType = CUI_BladeNexus::ONTYPE::EMBARS;
@@ -568,6 +570,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_LOOP);
         m_pModelCom->Set_AnimationLoop(true);
         m_pGameInstance->Emit_Event< EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), { });
+        CClientInstance::GetInstance()->Initialize_PlayerData();
         EventInteractType InteractType = {};
 
         InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
@@ -637,6 +640,7 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         m_pModelCom->Set_Animation(ANIM_STATE::AFTER_LOOP);
         m_pModelCom->Set_AnimationLoop(true);
         m_pGameInstance->Emit_Event< EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), { });
+        CClientInstance::GetInstance()->Initialize_PlayerData();
         EventInteractType InteractType = {};
 
         InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;

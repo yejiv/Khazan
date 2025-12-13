@@ -18,9 +18,8 @@ public:
     void                            Yetuga_Jump(_fvector vGoalPos, _float fHeight, _float fSpeed );
     void                            Yetuga_Land(_fvector vGoalPosition, _float fSpeed);
     class CAS_CutScene_Yetuga*      Get_Yetuga_CutSceneState();
-
     vector<const _tchar*>           Get_IceBreathSound() { return m_IceBreathSounds; }
-
+    virtual void				    KnockBack(_vector vDir, _float fPower, _float fLoss) override;
 
 public:
 	virtual HRESULT					Initialize_Prototype() override;
@@ -82,7 +81,6 @@ private:
 	class CProjectile_Yetuga*		m_pHoldStone = { nullptr };
 	class CProjectile_Rock_Yetuga*	m_pHoldRock = { nullptr };
 	class CProjectile_Breath_Yetuga* m_pBreath = { nullptr };
-
 
 	_bool							m_isLookAt = { false };
 	_float							m_fTurnSpeed = { 3.f };

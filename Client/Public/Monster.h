@@ -58,6 +58,7 @@ public:
     void						CheckMinDistanceWithPlayer(_float MinDist, _float fAnimRatio);
     _bool                       Get_isSleep();
     _bool                       Get_IsGroggy();
+    void                        Set_SuperArmor(_bool isToggle);
 
 public:
 	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction,CGameObject* pGameObject = nullptr) override;
@@ -104,6 +105,7 @@ protected:
 
     _float                          m_fDissolveTime = {};
     _bool                           m_isDissolve = {};
+    _bool                           m_isSuperArmmor = { false };
 //private:
 //	HRESULT Ready_Components();
 

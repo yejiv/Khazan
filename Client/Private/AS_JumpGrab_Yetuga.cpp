@@ -85,7 +85,6 @@ void CAS_JumpGrab_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLay
         CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
         CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(0, HITREACTION::GRAB, nullptr);
         pBB->Set_Value<_bool>("Yetuga", "isGrabbed", true);
 
     }

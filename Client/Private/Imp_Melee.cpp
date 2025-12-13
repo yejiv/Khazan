@@ -251,9 +251,13 @@ HRESULT CImp_Melee::Ready_AnimEvent()
 #pragma region NonStopAttack
 
     pModel->Register_Event("NontStopAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         m_isLookAt = true;
         m_fTurnSpeed = 10.f;
         m_pWeapon->Set_OnAttackCollision(true);
+        
         });
 
     pModel->Register_Event("NontStopAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -262,6 +266,9 @@ HRESULT CImp_Melee::Ready_AnimEvent()
         });
 
     pModel->Register_Event("NontStopAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         m_isLookAt = true;
         m_fTurnSpeed = 30.f;
         m_pWeapon->Set_OnAttackCollision(true);
@@ -277,17 +284,22 @@ HRESULT CImp_Melee::Ready_AnimEvent()
 #pragma region ChainAttack
 
     pModel->Register_Event("ChainAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         m_isLookAt = true;
         m_fTurnSpeed = 20.f;
         m_pWeapon->Set_OnAttackCollision(true);
         });
 
     pModel->Register_Event("ChainAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+
         m_isLookAt = false;
         m_pWeapon->Set_OnAttackCollision(false);
         });
 
     pModel->Register_Event("ChainAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         m_isLookAt = true;
         m_fTurnSpeed = 20.f;
         m_pWeapon->Set_OnAttackCollision(true);
@@ -299,6 +311,8 @@ HRESULT CImp_Melee::Ready_AnimEvent()
         });
 
     pModel->Register_Event("ChainAttack3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         m_isLookAt = true;
         m_fTurnSpeed = 30.f;
         m_pWeapon->Set_OnAttackCollision(true);

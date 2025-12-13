@@ -1531,6 +1531,15 @@
     <Filter Include="03.MiniGame\Gacha\Mirrorball">
       <UniqueIdentifier>{5585f41e-a3c8-4b35-baf5-740ee79aad50}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\Destructible">
+      <UniqueIdentifier>{0cf5ba16-ca5b-4ccc-894b-f8eef582bbfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Destructible\Stone">
+      <UniqueIdentifier>{3fcced6d-d961-4fe5-9592-54f24389d043}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Destructible\Chunk">
+      <UniqueIdentifier>{a7345738-b87e-4aee-b800-c9ba0d9c1af1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2958,6 +2967,12 @@
     <ClInclude Include="..\public\Minigame_Mirrorball.h">
       <Filter>03.MiniGame\Gacha\Mirrorball</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Destructible_Stone.h">
+      <Filter>02.GameObject\Destructible\Stone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Chunk.h">
+      <Filter>02.GameObject\Destructible\Chunk</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4364,6 +4379,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Minigame_Mirrorball.cpp">
       <Filter>03.MiniGame\Gacha\Mirrorball</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Destructible_Stone.cpp">
+      <Filter>02.GameObject\Destructible\Stone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Chunk.cpp">
+      <Filter>02.GameObject\Destructible\Chunk</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

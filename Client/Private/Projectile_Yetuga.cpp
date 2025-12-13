@@ -1,5 +1,6 @@
 #include "Projectile_Yetuga.h"
 #include "GameInstance.h"
+#include "Creature.h"
 
 CProjectile_Yetuga::CProjectile_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CProjectile{pDevice,pContext}
@@ -219,7 +220,12 @@ void CProjectile_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjec
 		{
 			Enter_State(PRJSTATE::CRASHED);
 			m_isCrashed = true;
-			
+
+            if (COLLISION_LAYER::PLAYER == eType)
+            {
+                CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+                pTarget->Take_Damage(60.f,HITREACTION::KNOCKBACK_NORMAL);
+            }
 		}
 	}
 }
