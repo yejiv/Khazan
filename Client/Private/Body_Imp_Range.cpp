@@ -72,6 +72,8 @@ HRESULT CBody_Imp_Range::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     m_pLockOnBoneMatrix = m_pModelCom->Get_BoneMatrix("FX_Body_ExpGained");
+    m_pDissolve = pDesc->pDissolve;
+    m_pDecreaseAlpha = pDesc->pDecreaseAlpha;
 
     return S_OK;
 }
@@ -95,7 +97,7 @@ HRESULT CBody_Imp_Range::Render()
 {
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
-
+    CHECK_FAILED(Bind_Dissolve(), E_FAIL);
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     _float fEdgeIntensity = 0.5f;
@@ -156,11 +158,11 @@ HRESULT CBody_Imp_Range::Ready_Components()
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 
-    m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
-
-
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Monster_Dissolve"),
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveCom), nullptr), E_FAIL);
+
+    m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
+
 
     return S_OK;
 }
@@ -179,7 +181,19 @@ HRESULT CBody_Imp_Range::Bind_ShaderResources()
     return S_OK;
 }
 
+HRESULT CBody_Imp_Range::Bind_Dissolve()
+{
+    CHECK_FAILED(m_pDissolveCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", 0), E_FAIL);
 
+    _float fEdgeWidth = { 0.1f };
+    _float4 fEdgeColor = _float4(4.2f, 1.6f, 0.2f, 1.f);
+
+    m_pShaderCom->Bind_RawValue("g_fDecreaseAlpha", m_pDecreaseAlpha, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeWidth", &fEdgeWidth, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeColor", &fEdgeColor, sizeof(_float4));
+
+    return S_OK;
+}
 
 CBody_Imp_Range* CBody_Imp_Range::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
