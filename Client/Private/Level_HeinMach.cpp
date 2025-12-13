@@ -47,19 +47,19 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
-    m_futures.push_back(m_pGameInstance->Add_Task([this]() {
+    //m_futures.push_back(m_pGameInstance->Add_Task([this]() {
 
-        CHECK_FAILED(Ready_Layer_Decal(), E_FAIL);
+    //    CHECK_FAILED(Ready_Layer_Decal(), E_FAIL);
 
-        CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+    //    CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-        CHECK_FAILED(Ready_FireLights(TEXT("HeinMach_Point"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+    //    CHECK_FAILED(Ready_FireLights(TEXT("HeinMach_Point"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-        CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+    //    CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-        return S_OK;
+    //    return S_OK;
 
-        }));
+    //    }));
 
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
 
@@ -706,7 +706,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Yetuga"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
-        if ("ImpRange" == MonsterData.MonsterKey[i])
+/*        if ("ImpRange" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 100.f;
@@ -724,7 +724,7 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
-        else if ("ImpMelee" == MonsterData.MonsterKey[i])
+        else*/ if ("ImpMelee" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 100.f;

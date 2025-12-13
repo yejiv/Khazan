@@ -620,7 +620,7 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
         if ("Dragonian_Melee" == MonsterData.MonsterKey[i])
         {
             CDragonian_Melee::DRAGON_MELEE_MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = m_pGameInstance->Rand(190.f, 220.f);
+            MonsterDesc.fAttack = m_pGameInstance->Rand(50.f, 100.f);
             MonsterDesc.fMaxHP = m_pGameInstance->Rand(2000.f, 2500.f);
             MonsterDesc.fMaxStamina = m_pGameInstance->Rand(80.f, 140.f);
             MonsterDesc.fMoveSpeed = 10.f;
@@ -638,7 +638,7 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
         else if ("Dragonian_Claw" == MonsterData.MonsterKey[i])
         {
             CDragonian_Rampage::DRAGON_RAMPAGE_MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = m_pGameInstance->Rand(200.f, 240.f);
+            MonsterDesc.fAttack = m_pGameInstance->Rand(80.f, 120.f);
             MonsterDesc.fMaxHP = m_pGameInstance->Rand(3500.f, 4000.f);
             MonsterDesc.fMaxStamina = m_pGameInstance->Rand(100.f, 150.f);
             MonsterDesc.fMoveSpeed = 10.f;
@@ -658,7 +658,7 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
         else if ("Dragonian_Melee_Sleep" == MonsterData.MonsterKey[i])
         {
             CDragonian_Melee::DRAGON_MELEE_MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = m_pGameInstance->Rand(190.f, 220.f);
+            MonsterDesc.fAttack = m_pGameInstance->Rand(50.f, 100.f);
             MonsterDesc.fMaxHP = m_pGameInstance->Rand(2000.f, 2500.f);
             MonsterDesc.fMaxStamina = m_pGameInstance->Rand(80.f, 140.f);
             MonsterDesc.fMoveSpeed = 10.f;
@@ -676,7 +676,7 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
         else if ("Dragonian_Claw_Sleep" == MonsterData.MonsterKey[i])
         {
             CDragonian_Rampage::DRAGON_RAMPAGE_MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = m_pGameInstance->Rand(200.f, 240.f);
+            MonsterDesc.fAttack = m_pGameInstance->Rand(80.f, 120.f);
             MonsterDesc.fMaxHP = m_pGameInstance->Rand(3500.f, 4000.f);
             MonsterDesc.fMaxStamina = m_pGameInstance->Rand(100.f, 150.f);
             MonsterDesc.fMoveSpeed = 10.f;
@@ -695,7 +695,7 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
         else if ("Elamein" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 300.f;
+            MonsterDesc.fAttack = 100.f;
             MonsterDesc.fMaxHP = 12000.f;
             MonsterDesc.fMaxStamina = 1200.f;
                                                                                             
