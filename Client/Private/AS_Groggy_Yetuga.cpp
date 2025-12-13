@@ -75,7 +75,6 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
         if (m_fCurrentTime >= m_fGroggyTime)
         {
-            //pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isCanBrutalAttack", false);
             m_eState = GROGGY::RECOVERY;
             pModel->Set_Animation(91);
             m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_vo_yetuga_gro_strong_loop_01 (SFX).wav"), 1.f);
@@ -115,12 +114,6 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
     
     case GROGGY::BRUTALATTACK:
     {
-        /*if (m_iBrutalCnt >= 2 && !m_isCheckBrutalCnt)
-        {
-            m_isCheckBrutalCnt = true;
-            pModel->Set_Animation(69);
-        }*/
-
         if (m_fBrutalAttackDelayTime <= m_fBrutalAcc && !m_isBlockAnimSet)
         {
             m_isBlockAnimSet = true;
@@ -180,7 +173,6 @@ void CAS_Groggy_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     pYetuga->Set_IsGhost(false);
     m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_vo_yetuga_stamina_recover_roar_01 (SFX).wav"), 1.f);
-    m_iBrutalCnt = 0;
     m_isCheckBrutalCnt = false;
 }
 
@@ -197,14 +189,8 @@ void CAS_Groggy_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer
 
         if (eHitreaction == HITREACTION::BRUTAL_ATTACK)
         {
-            //m_iBrutalCnt++;
             m_isCheckBrutalCnt = true;
-            
         }
-        
-
-        /*if (m_iBrutalCnt >= 2)
-            m_iBrutalCnt = 2;*/
 
     }
 

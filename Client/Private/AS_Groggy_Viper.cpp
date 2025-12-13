@@ -20,11 +20,12 @@ void CAS_Groggy_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     CViper* pViper = static_cast<CViper*>(pOwner);
 
-
     if (CViper::PHASE::PHASE1 == pViper->Get_Phase())
     {
         CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
         pModel->Set_Animation(33);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_gro_start_01 (SFX).wav"), 1.f);
+
     }
 
     else if (CViper::PHASE::PHASE2 == pViper->Get_Phase())
@@ -34,13 +35,19 @@ void CAS_Groggy_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     }
 
     m_eState = GROGGY::START;
-
     m_vBonePosition = pViper->Get_LockOnPosition();
+
+    m_fBrutalAttackDelayTime = 0.4f;
+
 }
 
 void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
     CViper* pViper = static_cast<CViper*>(pOwner);
+
+    if (m_isCheckBrutalCnt)
+        m_fBrutalAcc += fTimeDelta;
+
 
     if (CViper::PHASE::PHASE1 == pViper->Get_Phase())
     {
@@ -60,6 +67,8 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
 
                 m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_UI"), m_pBrutalAttack);
                 m_pBrutalAttack->Setting_BrutalAttack(m_vBonePosition, m_fGroggyTime);
+                m_pGameInstance->PlaySoundLoop(TEXT("Mon_vo_viper_part_gro_loop_04 (SFX).wav"), 1.f);
+
             }
             break;
 
@@ -76,17 +85,17 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
                 m_eState = GROGGY::RECOVERY;
                 pBB->Set_Value<_bool>(pViper->Get_Name(), "isCanBrutalAttack", false);
                 pModel->Set_Animation(31);
+                m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_vo_viper_part_gro_loop_04 (SFX).wav"), 1.f);
+
 
                 if (m_isBrutalAttackSuccess)
                 {
-                    HITREACTION eHitreaction =
-                        static_cast<HITREACTION>(pBB->Get_Value<_uint>(pViper->Get_Name(), "DamageType"));
+                    HITREACTION eHitreaction = static_cast<HITREACTION>(pBB->Get_Value<_uint>(pViper->Get_Name(), "DamageType"));
 
                     if (HITREACTION::GROGGY == eHitreaction)
                     {
 
                         m_pBrutalAttack->Off_BrutalAttack();
-                        Safe_Release(m_pBrutalAttack);
                         m_isBrutalAttackSuccess = false;
                     }
                 }
@@ -100,8 +109,9 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
                 if (HITREACTION::BRUTAL_ATTACK == eHitreaction)
                 {
                     m_pBrutalAttack->Off_BrutalAttack();
+                    m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_vo_viper_part_gro_loop_04 (SFX).wav"), 1.f);
                     m_isBrutalAttackSuccess = false;
-                    pModel->Set_Animation(24);
+                    pModel->Set_Animation(23);
                     pViper->Set_RequestRecoveryStamina(true);
                     pBB->Set_Value<_bool>(pViper->Get_Name(), "isCanBrutalAttack", false);
                     m_eState = GROGGY::BRUTALATTACK;
@@ -114,13 +124,34 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
 
         case GROGGY::BRUTALATTACK:
         {
+
+            if (m_fBrutalAttackDelayTime <= m_fBrutalAcc && !m_isBlockAnimState)
+            {
+                m_isBlockAnimState = true;
+                pModel->Set_Animation(24);
+            }
+
             if (pModel->Play_Animation(fTimeDelta))
             {
+                if (m_isBlockAnimState)
+                {
+                    pModel->Set_Animation(31);
+                    m_isBlockAnimState = false;
+                    m_fBrutalAcc = 0.f;
+                    m_isCheckBrutalCnt = false;
+                    m_eState = GROGGY::RECOVERY;
+                }
+
+            }
+
+         /*   if (pModel->Play_Animation(fTimeDelta))
+            {
+               
                 CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
                 pBB->Set_Value<_bool>(pViper->Get_Name(), "isCanBrutalAttack", false);
                 pModel->Set_Animation(31);
                 m_eState = GROGGY::RECOVERY;
-            }
+            }*/
         }
             break;
 
@@ -131,6 +162,8 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
                 m_eState = GROGGY::END;
                 pModel->Set_Animation(42);
                 pViper->Set_RequestRecoveryStamina(true);
+                CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+                pBB->Set_Value<_bool>(pViper->Get_Name(), "isSuperArmor", true);
             }
             break;
 
@@ -141,6 +174,9 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
             {
                 pViper->Set_RequestRecoveryStamina(false);
                 CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+                pBB->Set_Value<_bool>(pViper->Get_Name(), "isCanBrutalAttack", false);
+
+                pViper->Set_RequestRecoveryStamina(false);
                 pBB->Set_Value<_bool>(pViper->Get_Name(), "isGroggyFinished", true);
             }
             break;
@@ -237,10 +273,28 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
 
 void CAS_Groggy_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    
+    m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_vo_viper_part_gro_loop_04 (SFX).wav"), 1.f);
     m_pBrutalAttack->Off_BrutalAttack();
     m_pBrutalAttack->Set_IsDead(true);
     m_isBrutalAttackSuccess = false;
+    m_isCheckBrutalCnt = false;
+
+}
+
+void CAS_Groggy_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    CViper* pViper = static_cast<CViper*>(pOwner);
+    COLLISION_LAYER eCollisionLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+
+    if (eCollisionLayer == COLLISION_LAYER::PLAYER_ATTACK /*&& pDesc->strName == TEXT("AttackCollisionDesc")*/)
+    {
+        CBlackBoard* pBB = static_cast<CBlackBoard*>(pViper->Get_Controller()->Get_BlackBoard());
+        HITREACTION eHitreaction = static_cast<HITREACTION>(pBB->Get_Value<_uint>(pViper->Get_Name(), "DamageType"));
+
+        if (eHitreaction == HITREACTION::BRUTAL_ATTACK)
+            m_isCheckBrutalCnt = true;
+        
+    }
 }
 
 CAS_Groggy_Viper* CAS_Groggy_Viper::Create()
@@ -252,6 +306,7 @@ void CAS_Groggy_Viper::Free()
 {
     __super::Free();
 
-    Safe_Release(m_pBrutalAttack);
+    if (m_pBrutalAttack)
+        m_pBrutalAttack->Set_IsDead(true);
 
 }

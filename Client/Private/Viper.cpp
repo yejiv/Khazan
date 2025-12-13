@@ -85,6 +85,17 @@ void CViper::Reset_Viper_Gravity()
     m_vGravity = XMVectorSet(0.f, g_fGravity, 0.f, 0.f);
 }
 
+void CViper::KnockBack(_vector vDir, _float fPower, _float fLoss)
+{
+    m_isKnockBack = true;
+    m_fKnockBackDir = vDir;
+    m_fKnockBackPower = fPower * 0.5f;
+    m_fKnockBackLoss = fLoss;
+
+    if (Get_IsGroggy() || m_isSuperArmmor)
+        m_isKnockBack = false;
+}
+
 CAS_CutScene_Start_Viper* CViper::Get_Viper_CutSceneState()
 {
     CFSM_Viper* pFSM = static_cast<CFSM_Viper*>(m_pController->Get_State_Machine());
@@ -327,6 +338,10 @@ void CViper::Update(_float fTimeDelta)
 
     if (m_fCurrentHP >= 0.f)
     {
+
+        if (this->Get_IsGroggy())
+            return;
+
         if (m_isLookAt)
         {
             if (PHASE::PHASE1 == m_ePhase)
@@ -477,61 +492,68 @@ HRESULT CViper::Render()
 
 void CViper::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    //COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
 
-    //if (COLLISION_LAYER::PLAYER_ATTACK == eLayer)
-    //{
-    //    _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
-    //    _vector vHitDir = XMLoadFloat3(&vContactPoint) - vPosition;
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
 
-    //    _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
-    //    _float fDot = XMVectorGetX(XMVector3Dot(vLook, vHitDir));
-    //    _vector vUp = XMVector3Cross(vLook, vHitDir);
-    //    _float vUpY = XMVectorGetY(vUp);
-    //    DIRECTION_INFO DirInfo{};
+    if (COLLISION_LAYER::PLAYER_ATTACK == eLayer)
+    {
+        _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+        _vector vHitDir = XMLoadFloat3(&vContactPoint) - vPosition;
 
-    //    if (fDot >= 0.f)
-    //    {
-    //        DirInfo.Add_Flag(DirInfo.F);
-    //    }
-    //    else if (fDot < 0.f)
-    //    {
-    //        DirInfo.Add_Flag(DirInfo.B);
-    //    }
+        _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
+        _float fDot = XMVectorGetX(XMVector3Dot(vLook, vHitDir));
+        _vector vUp = XMVector3Cross(vLook, vHitDir);
+        _float vUpY = XMVectorGetY(vUp);
+        DIRECTION_INFO DirInfo{};
+
+        if (fDot >= 0.f)
+        {
+            DirInfo.Add_Flag(DirInfo.F);
+        }
+        else if (fDot < 0.f)
+        {
+            DirInfo.Add_Flag(DirInfo.B);
+        }
 
 
-    //    else if (vUpY >= 0.f)
-    //    {
-    //        DirInfo.Add_Flag(DirInfo.R);
-    //    }
-    //    else
-    //    {
-    //        DirInfo.Add_Flag(DirInfo.L);
+        else if (vUpY >= 0.f)
+        {
+            DirInfo.Add_Flag(DirInfo.R);
+        }
+        else
+        {
+            DirInfo.Add_Flag(DirInfo.L);
 
-    //    }
+        }
 
-    //    // Decal Spawn
-    //    _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
-    //    _float fOffset = 2.f;
-    //    _float fPosX = XMVectorGetX(vDecalPos);
-    //    _float fPosZ = XMVectorGetZ(vDecalPos);
-    //    vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
-    //    vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
-    //    DECAL_DESC Desc{};
-    //    Desc.fLifeTime = 8.f;
-    //    Desc.vFadeTime = _float2(0.2f, 0.2f);
-    //    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
-    //    XMStoreFloat3(&Desc.vPosition, vDecalPos);
-    //    Desc.vScale = _float3(
-    //        m_pGameInstance->Rand(4.f, 8.f),
-    //        2.f,
-    //        m_pGameInstance->Rand(4.f, 8.f)
-    //    );
-    //    Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
-    //    Desc.iRandomTexture = true;      
-    //
-    //    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
-    //}
+        _uint iIndex = m_pController->Get_State_Machine()->Get_CurrentState()->Get_StateIndex();
+        if (iIndex == ENUM_CLASS(VIPER_STATE_P1::GROGGY) || iIndex == ENUM_CLASS(VIPER_STATE_P1::HIT))
+            m_pController->Get_State_Machine()->OnCollision(pDesc, iOtherObjectLayer, this);
+
+
+        //    // Decal Spawn
+        //    _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
+        //    _float fOffset = 2.f;
+        //    _float fPosX = XMVectorGetX(vDecalPos);
+        //    _float fPosZ = XMVectorGetZ(vDecalPos);
+        //    vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
+        //    vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
+        //    DECAL_DESC Desc{};
+        //    Desc.fLifeTime = 8.f;
+        //    Desc.vFadeTime = _float2(0.2f, 0.2f);
+        //    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
+        //    XMStoreFloat3(&Desc.vPosition, vDecalPos);
+        //    Desc.vScale = _float3(
+        //        m_pGameInstance->Rand(4.f, 8.f),
+        //        2.f,
+        //        m_pGameInstance->Rand(4.f, 8.f)
+        //    );
+        //    Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+        //    Desc.iRandomTexture = true;      
+        //
+        //    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+        //}
+    }
 }
 
 void CViper::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
