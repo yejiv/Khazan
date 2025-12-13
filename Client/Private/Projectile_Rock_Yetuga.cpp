@@ -186,8 +186,7 @@ void CProjectile_Rock_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOthe
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
         
         // 데미지 주고
-        //pTarget->Take_Damage();
-        // 넉백주고
+        pTarget->Take_Damage(350.f,HITREACTION::KNOCKBACK_STRONG);
         Enter_State(PRJSTATE::CRASHED);
         
     }

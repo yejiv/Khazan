@@ -816,12 +816,16 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
         m_fTurnSpeed = 40.f;
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         m_pBody->Set_OnAttackCollision(true);
         m_isLookAt = true;
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 0.5f);
         });
     pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
         m_pBody->Set_OnAttackCollision(false);
+
+
         m_isLookAt = false; });
 
     pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
@@ -836,6 +840,8 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         m_isLookAt = true; });
     pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
         m_pBody->Set_OnAttackCollision(false);
@@ -1290,6 +1296,11 @@ HRESULT CYetuga::Ready_AnimEvent()
             //  Desc.fSpeed = 2.f;
             //  Desc.iNoiseIndex = 14;
             //  m_pGameInstance->Start_Distortion(Desc);
+
+            CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
+            pTarget->Take_Damage(600.f, HITREACTION::KNOCKBACK_NORMAL);
+
+
         });
 
     //Grab_After

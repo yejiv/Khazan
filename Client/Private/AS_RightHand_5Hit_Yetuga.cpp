@@ -62,32 +62,32 @@ void CAS_RightHand_5Hit_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollis
 
         if (iAttackCnt == 1)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+            pTarget->Take_Damage(150.f, HITREACTION::KNOCKBACK_WEAK);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-            pTarget->KnockBack(vLook, 15.f, 60.f);
+            pTarget->KnockBack(vLook, 10.f, 60.f);
         }
         else if (iAttackCnt == 2)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+            pTarget->Take_Damage(154.f, HITREACTION::KNOCKBACK_WEAK);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 15.f, 60.f);
         }
 
         if (iAttackCnt == 3)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+            pTarget->Take_Damage(260.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 20.f, 60.f);
         }
         else if (iAttackCnt == 4)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+            pTarget->Take_Damage(245.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 20.f, 60.f);
         }
         else if (iAttackCnt == 5)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG);
+            pTarget->Take_Damage(300.f, HITREACTION::KNOCKBACK_STRONG);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 30.f, 60.f);
         }
