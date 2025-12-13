@@ -25,6 +25,7 @@ namespace Client {
         BLADENEXUS_POP,
         OBELISK_DESTRUCT,
         PET,
+        RESPOWN,
 		END };
 
 	// Structs
@@ -426,4 +427,6 @@ namespace Client {
     struct EVENT_PET_STATE {
         _bool isStart;
     };
+
+    struct EVENT_RESPOWN {};
 }

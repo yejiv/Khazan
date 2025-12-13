@@ -83,6 +83,7 @@ protected:
 	class CGameObject*				m_pTarget = { nullptr };
 
 protected:
+    _float4x4                       m_OriginMat = {};
 	unordered_map<string, _float>	m_CoolDowns;
 	_float							m_fCoolTimeAcc = {};
 	_float4*						m_vLockOnPosition = {};
