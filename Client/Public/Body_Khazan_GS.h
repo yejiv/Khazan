@@ -23,6 +23,7 @@ public:
         _float4* pGuardRotationTarget = { nullptr };
         class CTransform* pParentTransform = { nullptr };
 
+        _bool*   pParentIsCanStaminaRecovery = { nullptr };
     }BODY_KHAZAN_GS_DESC;
 
 private:
@@ -135,6 +136,8 @@ private:
     _bool                       m_isCollBodyAttack_Active = { true };
     _bool                       m_isCollGuard_Active = { true };
 
+    _bool*                       m_pParentIsCanStaminaRecovery = { nullptr };
+
     _float4x4*                  m_pGSword_Matrix = { nullptr };
 
     _uint*                      m_pParentState = { nullptr };
@@ -213,6 +216,8 @@ private:
 
     /* Sound */
     vector<FMOD_CHANNEL*>       m_pChannel;
+
+  
 
     /*  mutex */
     mutex                       m_CollMonsterMutex;
