@@ -104,6 +104,7 @@ HRESULT CBody_Phase2_Viper::Initialize_Clone(void* pArg)
     _float4x4 TempMatrix = {};
     XMStoreFloat4x4(&TempMatrix, PreTransformMatrix);
     m_pModelCom->Set_PreTransformMatrix(TempMatrix);
+    m_pModelCom->Set_Transform(&m_CombinedWorldMatrix);
 
     return S_OK;
 }
@@ -115,8 +116,6 @@ void CBody_Phase2_Viper::Priority_Update(_float fTimeDelta)
 
 void CBody_Phase2_Viper::Update(_float fTimeDelta)
 {
-
-
     if (CViper::PHASE::PHASE2 == m_pOwner->Get_Phase())
     {
         if (m_isOnAttackCollision)
@@ -159,6 +158,21 @@ void CBody_Phase2_Viper::Update(_float fTimeDelta)
     // Radial Blur 센터 설정
     if (m_pOwner->Get_Phase2_Viper_CutSceneState()->Get_State() == P2CUTSCENE_STATE::WALK)
         m_pGameInstance->Set_RadialBlurCenter(Get_BoneMatrix("Bone_tongue_04").r[3]);
+
+    MOTIONTRAIL_CONFIG Config{};
+    Config.vLifeTime = { 0.f, 0.3f };
+    Config.vStartColor = { 1.f, 0.8f, 0.6f };
+    Config.vTargetColor = { 0.6f, 0.6f, 0.6f };
+    Config.fRimPower = 2.f;
+    Config.fRimIntensity = 1.f;
+    Config.fEmissiveIntensity = 3.f;
+    Config.isIndividualColor = false;
+    Config.fColorUpdateSpeed = 2500.f;
+    Config.fInterval = 0.15f;
+    Config.iMaxFrames = 10;
+    m_pMotionTrailCom->Set_Config(Config);
+
+    m_pMotionTrailCom->Update(fTimeDelta);
 }
 
 void CBody_Phase2_Viper::Late_Update(_float fTimeDelta)
@@ -242,6 +256,10 @@ void CBody_Phase2_Viper::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjec
 
 }
 
+void CBody_Phase2_Viper::Set_EnableMotionTrail(_bool isEnable)
+{
+    m_pMotionTrailCom->Set_Enable(isEnable);
+}
 
 HRESULT CBody_Phase2_Viper::Ready_Components()
 {
@@ -304,11 +322,25 @@ HRESULT CBody_Phase2_Viper::Ready_Components()
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_ClothBody"), (CComponent**)&m_pClothBody, &BodyDesc), E_FAIL);
 
+    CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
+    MTDesc.pOwnerMasterModel = m_pModelCom;
+    MTDesc.HasPartModels = false;
+    MTDesc.Config.vLifeTime = { 0.f, 0.3f };
+    MTDesc.Config.vStartColor = { 1.f, 0.8f, 0.6f };
+    MTDesc.Config.vTargetColor = { 0.6f, 0.6f, 0.6f };
+    MTDesc.Config.fRimPower = 2.f;
+    MTDesc.Config.fRimIntensity = 1.f;
+    MTDesc.Config.fEmissiveIntensity = 3.f;
+    MTDesc.Config.isIndividualColor = false;
+    MTDesc.Config.fColorUpdateSpeed = 2500.f;
+    MTDesc.Config.fInterval = 0.2f;
+    MTDesc.Config.iMaxFrames = 10;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
+        TEXT("Com_MotionTrail"), reinterpret_cast<CComponent**>(&m_pMotionTrailCom), &MTDesc)))
+        return E_FAIL;
+
     return S_OK;
-
 }
-
-
 
 HRESULT CBody_Phase2_Viper::Bind_ShaderResources()
 {
@@ -400,6 +432,7 @@ CGameObject* CBody_Phase2_Viper::Clone(void* pArg)
 
 void CBody_Phase2_Viper::Free()
 {
+    Safe_Release(m_pMotionTrailCom);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
