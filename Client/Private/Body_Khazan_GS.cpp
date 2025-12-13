@@ -539,7 +539,7 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
 
                 pMonster->On_JustGuardCallback(true);
 
-                // Vignette
+                // 피격 Vignette
                 VIGNETTE_CONFIG Config{};
                 Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
                 Config.vColor = _float3(0.f, 0.f, 0.f);

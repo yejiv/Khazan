@@ -433,6 +433,15 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
 
     m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 
+    // 피격 Vignette
+    VIGNETTE_CONFIG Config{};
+    Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
+    Config.vColor = _float3(0.f, 0.f, 0.f);
+    Config.fPower = 3.5f;
+    Config.fIntensity = 1.f;
+    Config.fMaxIntensity = 4.f;
+    m_pGameInstance->Start_VignetteAnimation(0.5f, Config);
+
     switch (eHitreaction)
     {
     case Client::HITREACTION::NONE:
