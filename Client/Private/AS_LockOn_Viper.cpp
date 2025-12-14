@@ -41,7 +41,11 @@ void CAS_LockOn_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_eLockOnDir = LOCKONDIR::LOCKON_RIGHT;
     }
 
-
+    else
+    {
+        _uint iAnimIndex = m_pGameInstance->Rand(0, 1);
+        pModel->Set_Animation(iAnimIndex);
+    }
 
 }
 
