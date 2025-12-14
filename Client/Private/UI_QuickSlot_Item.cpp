@@ -4,6 +4,8 @@
 
 #include "UI_Atlas_Icon.h"
 #include "UI_TextBox.h"
+
+#include "Amount.h"
 CUI_QuickSlot_Item::CUI_QuickSlot_Item(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice, pContext }
 {
@@ -307,10 +309,29 @@ void CUI_QuickSlot_Item::Input_KeyState()
                     Update_State();
                     m_bIsItemZero = true;
                 }
+                switch (m_iItemIndex)
+                {
+                case 1001:
+                    CClientInstance::GetInstance()->Get_ptrPlayerData().fCulHp += 300.f;
+                    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, 400);
+                    break;
+                case 1002:
+                    CClientInstance::GetInstance()->Get_ptrPlayerData().fCulHp += 700.f;
+                    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, 10000);
+                    break;
+                case 1003:
+                    CClientInstance::GetInstance()->Get_ptrPlayerData().fCulDoggedness += CClientInstance::GetInstance()->Get_ptrPlayerData().iMaxDoggednessCount * 0.3;
+                    break;
+                case 1004:
+                    CClientInstance::GetInstance()->Get_ptrPlayerData().fCulDoggedness += CClientInstance::GetInstance()->Get_ptrPlayerData().iMaxDoggednessCount * 0.5;                    break;
+                    break;
+                }
                 if (m_iItemIndex == 1001 || m_iItemIndex == 1002)
                 {
                     m_pGameInstance->StopByKey(TEXT("UI_item_tearsummons_01 (SFX).wav"));
                     m_pGameInstance->PlaySoundOnce(TEXT("UI_item_tearsummons_01 (SFX).wav"));
+
+                    
                 }
                 else
                 {
