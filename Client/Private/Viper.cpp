@@ -1146,11 +1146,12 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("P1_Landing", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-          /*  CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            m_pCharVirCom->Start_Dive(vTargetPos,80.f);*/
-
             m_pCharVirCom->Start_Dive(vTargetPos,80.f);
+
+            _vector pos = m_pWeapon->Get_LeftSwordTip();
+            pos = XMVectorSetY(pos, XMVectorGetY(pos) + 1.5f);
             m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pWeapon->Get_LeftSwordTip());
             cout << "----------------------- P1_Landing::ENTER ----------------------" << endl;
         });
@@ -3305,21 +3306,21 @@ HRESULT CViper::Ready_AnimEffectEvent()
         //pos = XMVectorSetY(pos, XMVectorGetY(pos) + 1.5f);
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), pos);
         });
-
+    
     pModel->Register_Event("RockThrow_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_V"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("RockThrow_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
-
+    
     pModel->Register_Event("DASwrd_Atk1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_Up"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-
+    
     pModel->Register_Event("DASwrd_Atk2_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pP2Weapon->Get_BladeTipPos()); 
         });
