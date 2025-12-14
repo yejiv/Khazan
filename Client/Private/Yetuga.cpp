@@ -1277,7 +1277,9 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isGhost = true;
-
+            
+            CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
+            pTarget->Take_Damage(0.f, HITREACTION::GRAB);
         });
 
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
@@ -1313,7 +1315,7 @@ HRESULT CYetuga::Ready_AnimEvent()
             //  m_pGameInstance->Start_Distortion(Desc);
 
             CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
-            pTarget->Take_Damage(600.f, HITREACTION::KNOCKBACK_NORMAL);
+            pTarget->Take_Damage(300.f, HITREACTION::GRAB_FINISHED);
 
 
         });
@@ -1323,8 +1325,8 @@ HRESULT CYetuga::Ready_AnimEvent()
         {
             // 타겟 풀어주기
             m_isGhost = false;
-            CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
-            pTarget->Take_Damage(5.f,HITREACTION::GRAB_FINISHED,nullptr);
+            //CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
+            //pTarget->Take_Damage(5.f,HITREACTION::GRAB_FINISHED,nullptr);
             
         });
 
