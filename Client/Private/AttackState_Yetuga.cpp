@@ -64,13 +64,13 @@ void CAttackState_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLay
 
         if (iAttackCnt == 1)
         {
-            pTarget->Take_Damage(120.f, HITREACTION::KNOCKBACK_WEAK);
+            pTarget->Take_Damage(60.f, HITREACTION::KNOCKBACK_WEAK);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 15.f, 60.f);
         }
         else if (iAttackCnt == 2)
         {
-            pTarget->Take_Damage(184.f, HITREACTION::KNOCKBACK_NORMAL);
+            pTarget->Take_Damage(90.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 15.f, 60.f);
         }

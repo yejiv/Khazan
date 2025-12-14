@@ -48,6 +48,8 @@ void CAS_P2_Roar_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 void CAS_P2_Roar_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
     // 스테이트 바뀔떄 
+    CViper* pViper = static_cast<CViper*>(pOwner);
+    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream_hight"), pViper->Get_FxRotIdx());
 }
 
 void CAS_P2_Roar_Viper::Set_ViperBerserkerEnd_ShaderSettings()

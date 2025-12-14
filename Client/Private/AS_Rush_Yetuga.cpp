@@ -124,7 +124,7 @@ void CAS_Rush_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, 
             return;
 
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-        pTarget->KnockBack(vLook, 20.f, 60.f);
+        pTarget->KnockBack(vLook, 25.f, 60.f);
         PLAYER_DATA* pTargetData = &CClientInstance::GetInstance()->Get_ptrPlayerData();
         _float fMaxStamina = pTargetData->fMaxStamina;
         pTargetData->fCulStamina -= fMaxStamina * 0.5f;
@@ -132,7 +132,7 @@ void CAS_Rush_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, 
         if (pTargetData->fCulStamina <= 0.f)
             pTargetData->fCulStamina = 0.f;
 
-        pTarget->Take_Damage(120.f, HITREACTION::KNOCKBACK_WEAK);
+        pTarget->Take_Damage(87.f, HITREACTION::KNOCKBACK_NORMAL);
         pYetuga->Get_Body()->Set_AttackCollision_Back(false);
 
 
