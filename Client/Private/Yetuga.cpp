@@ -1430,7 +1430,7 @@ HRESULT CYetuga::Ready_AnimEvent()
         CDestructible_Stone* pStone = m_pYetugaStones.back();
         m_pYetugaStones.pop_back();
         pStone->Set_Pos(m_pHoldRock->Get_Transform()->Get_State(STATE::POSITION));
-        m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Stone"), m_pYetugaStones.back(), TIME_CHANNEL::ENEMY);        
+        m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Stone"), pStone, TIME_CHANNEL::ENEMY);
         });
 
 
