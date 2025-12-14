@@ -121,6 +121,7 @@ _bool CKhazan_GS_Anim_Attack::Try_FastAttack()
 
         m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
         m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage;
+        m_pPlayerData->fCulDoggedness += 0.2f;
     }
     else if (m_iCurrentCombo == 1) {
         if (m_pPlayerData->fCulStamina <= 0.f)
@@ -132,6 +133,7 @@ _bool CKhazan_GS_Anim_Attack::Try_FastAttack()
 
         m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina ;
         m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 1.4f;
+        m_pPlayerData->fCulDoggedness += 0.2f;
     }
     else if (m_iCurrentCombo == 2) {
         if (m_pPlayerData->fCulStamina <= 0.f)
@@ -143,6 +145,7 @@ _bool CKhazan_GS_Anim_Attack::Try_FastAttack()
 
         m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina ;
         m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 2.f;
+        m_pPlayerData->fCulDoggedness += 0.2f;
     }
 
     m_pPlayerData->fCulStamina = m_pPlayerData->fCulStamina < 0.f ? 0.f : m_pPlayerData->fCulStamina;
@@ -223,6 +226,7 @@ void CKhazan_GS_Anim_Attack::Execute_ChargedFastAttack()
 
     m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina * 2.f);
     m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * (2.5f + m_iLastFastComboIndex * 0.4f);
+    m_pPlayerData->fCulDoggedness += 0.2f;
 }
 
 _bool CKhazan_GS_Anim_Attack::Try_StrongAttack()
@@ -247,6 +251,7 @@ _bool CKhazan_GS_Anim_Attack::Try_StrongAttack()
 
     m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina * 1.4f);
     m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 1.5f;
+    m_pPlayerData->fCulDoggedness += 0.2f;
 
     return true;
 }
@@ -325,6 +330,7 @@ void CKhazan_GS_Anim_Attack::Execute_ChargedStrongAttack()
 
     m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina * 2.f);
     m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 3.f;
+    m_pPlayerData->fCulDoggedness += 0.2f;
 
 }
 
@@ -362,6 +368,7 @@ void CKhazan_GS_Anim_Attack::Execute_SprintAttack()
 
     m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina );
     m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 1.5f;
+    m_pPlayerData->fCulDoggedness += 0.2f;
 }
 
 _bool CKhazan_GS_Anim_Attack::Try_DodgeAttack(_uint iDir)
@@ -405,6 +412,7 @@ void CKhazan_GS_Anim_Attack::Execute_DodgeAttack()
 
     m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina );
     m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 1.5f;
+    m_pPlayerData->fCulDoggedness += 0.2f;
 }
 
 _bool CKhazan_GS_Anim_Attack::Try_GrappleAttack()
@@ -426,6 +434,7 @@ _bool CKhazan_GS_Anim_Attack::Try_GrappleAttack()
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
     m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 6.f;
+    m_pPlayerData->fCulDoggedness += 0.2f;
 
     return true;
 }
@@ -438,6 +447,7 @@ void CKhazan_GS_Anim_Attack::Execute_GappleAttack()
     m_pModel->Set_Animation(m_iSelectedAnimationIndex);
 
     m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 9.99f;
+    m_pPlayerData->fCulDoggedness += 0.2f;
 }
 
 _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
@@ -467,6 +477,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
 
         m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina);
         m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 1.8f;
+        m_pPlayerData->fCulDoggedness += 0.4f;
 
     }
     /* 숨통 끊기 :  태동 */
@@ -482,6 +493,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
 
         m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina * 1.5f);
         m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 2.3f;
+        m_pPlayerData->fCulDoggedness += 0.4f;
     }
 
     /* 숨통끊기 : 선혈 */
@@ -497,6 +509,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
 
         m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina * 2.4f);
         m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 3.f;
+        m_pPlayerData->fCulDoggedness += 0.4f;
     }
 
 
@@ -545,6 +558,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
         m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina * 1.5f);
         m_pPlayerData->fCulDoggedness -= 1.f;
         m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 2.f;
+
     }
 
     /* 거대한 포효 */
@@ -562,7 +576,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
         m_pPlayerData->fCulStamina = max(0.f, m_pPlayerData->fCulStamina - m_pPlayerData->fUsedStamina * 1.5f);
         m_pPlayerData->fCulDoggedness -= 1.f;
         m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage * 1.5f;
-    }
+        }
 
     /* 내재된 분노  */
     else if (checkSkill(GS_SKILL::INNER_FURY))

@@ -102,6 +102,8 @@ private:
 
 	void								Inven_Key_Input();
 	void								Selete_Slot();
+
+    void                                Setting_Item();
 public:
 	static CUI_Inven*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

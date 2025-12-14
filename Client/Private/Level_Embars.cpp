@@ -359,7 +359,7 @@ HRESULT CLevel_Embars::Ready_SoundSetting()
     // 글로벌 볼륨 세팅 후 환경음, BGM 사운드 세팅 및 재생
     CClientInstance::GetInstance()->Set_Volume_BGM(0.65f);
     CClientInstance::GetInstance()->Set_Volume_AMB(0.65f);
-    CClientInstance::GetInstance()->BGM_HeinMach_Entry();
+    CClientInstance::GetInstance()->BGM_Embars_Entry();
 
     return S_OK;
 }

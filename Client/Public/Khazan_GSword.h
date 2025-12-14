@@ -144,6 +144,7 @@ private:
     DIR							m_eDir = {};		//플레이어의 로컬 방향  dir(애니메이션 선택용)
     _uint						m_ePrevDir = {};
     _uint                       m_eHitReaction = {}; //몬스터한테 가할 넉백이나 저스트가드 내용 담기 
+    _uint                       m_iHealIndex = {  };
 
     _uint						m_iCurAnimIndex = {};
     _uint						m_iReserveAnimIndex = {};
