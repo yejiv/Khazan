@@ -18,7 +18,7 @@ void CAS_Dead_Imp_Melee::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
 
     pModel->Set_Animation(10);
-
+    CClientInstance::GetInstance()->Add_SkillExp(80.f);
     pImp->Get_Sword()->Set_OnAttackCollision(false);
 }
 
@@ -37,7 +37,7 @@ void CAS_Dead_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
 
     if (pModel->IsFinished())
     {
-        CClientInstance::GetInstance()->Add_SkillExp(80.f);
+
         pImp->Dissolve_On();
     }
 }

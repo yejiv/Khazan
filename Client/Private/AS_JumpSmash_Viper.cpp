@@ -4,7 +4,7 @@
 #include "BlackBoard.h"
 #include "AI_Controller.h"
 #include "GameInstance.h"
-
+#include "TwinBlade_Viper.h"
 
 CAS_JumpSmash_Viper::CAS_JumpSmash_Viper()
 {
@@ -43,6 +43,7 @@ void CAS_JumpSmash_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLay
 
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
+        CViper* pViper =  static_cast<CViper*>(pOwner);
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
         pTarget->Take_Damage(40.f, HITREACTION::KNOCKBACK_STRONG);
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
@@ -50,7 +51,13 @@ void CAS_JumpSmash_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLay
             return;
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
         pTarget->KnockBack(vLook, 30.f, 60.f);
+
     }
+    else if (COLLISION_LAYER::MAP_STATIC == eLayer)
+    {
+
+    }
+
 }
 
 CAS_JumpSmash_Viper* CAS_JumpSmash_Viper::Create()
