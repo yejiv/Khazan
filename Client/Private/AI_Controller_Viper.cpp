@@ -243,7 +243,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
     			HITREACTION eHitRection = static_cast<HITREACTION>(BB->Get_Value<_uint>(pViper->Get_Name(), "DamageType"));
     			_float fCurrentStamina = pViper->Get_CurrentStamina();
     		
-    			if (fCurrentStamina <= 0.1f)
+    			if (fCurrentStamina <= 0.1f || BB->Get_Value<_bool>(pViper->Get_Name(), "isJustGuard"))
     			{
     				eHitRection = HITREACTION::GROGGY;
     				return true;
@@ -1389,6 +1389,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
                 if (BB->Get_Value<_bool>(pViper->Get_Name(), "isP2_LockOn_Finished"))
                 {
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isJustGuard", false);
                     return BTNODESTATE::SUCCESS;
                 }
 

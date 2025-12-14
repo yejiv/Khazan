@@ -86,6 +86,7 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimEvent()))
         return E_FAIL;
 
+    m_IceBreathSounds.resize(10);
 
     m_IceBreathSounds =
     {
@@ -1288,7 +1289,9 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isGhost = true;
-
+            
+            CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
+            pTarget->Take_Damage(0.f, HITREACTION::GRAB);
         });
 
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
@@ -1324,7 +1327,7 @@ HRESULT CYetuga::Ready_AnimEvent()
             //  m_pGameInstance->Start_Distortion(Desc);
 
             CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
-            pTarget->Take_Damage(600.f, HITREACTION::KNOCKBACK_NORMAL);
+            pTarget->Take_Damage(300.f, HITREACTION::GRAB_FINISHED);
 
 
         });
@@ -1334,8 +1337,8 @@ HRESULT CYetuga::Ready_AnimEvent()
         {
             // 타겟 풀어주기
             m_isGhost = false;
-            CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
-            pTarget->Take_Damage(5.f,HITREACTION::GRAB_FINISHED,nullptr);
+            //CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
+            //pTarget->Take_Damage(5.f,HITREACTION::GRAB_FINISHED,nullptr);
             
         });
 
@@ -1427,7 +1430,7 @@ HRESULT CYetuga::Ready_AnimEvent()
         CDestructible_Stone* pStone = m_pYetugaStones.back();
         m_pYetugaStones.pop_back();
         pStone->Set_Pos(m_pHoldRock->Get_Transform()->Get_State(STATE::POSITION));
-        m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Stone"), m_pYetugaStones.back(), TIME_CHANNEL::ENEMY);        
+        m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Stone"), pStone, TIME_CHANNEL::ENEMY);
         });
 
 

@@ -729,8 +729,10 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
     lock_guard<mutex> lock(m_CollMonsterMutex);
     for (CGameObject* monster : m_CollMonsters)
     {
-        if (!monster || monster->Get_IsDead())
-            return;
+        CMonster* pCreatureMoster = static_cast<CMonster*>(monster);
+
+        if (!monster || !monster->Get_IsActive() || monster->Get_IsDead() || pCreatureMoster->Get_CurrentHP() <= 0.f)
+            continue;
         
         _vector vMonsterPos = monster->Get_Position();
 
@@ -741,8 +743,6 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
         /* 일정 범위에 다가가면  */
         if (fDistSq < 15.f * 15.f)
         {
-            CMonster* pCreatureMoster = static_cast<CMonster*>(monster);
-
             /* 후방 */
             if (!pCreatureMoster->Get_isSleep()) {
                 _float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(monster->Get_Look()), XMVector3Normalize(vDiff)));
@@ -781,6 +781,16 @@ void CBody_Khazan_GS::Search_BrutalTarget(_float fTimeDelta)
 
 _bool CBody_Khazan_GS::Check_BrutalAttack(_float fTimeDelta)
 {
+    /* 컨테이너 체크  */
+    lock_guard<mutex> lock(m_CollMonsterMutex);
+    for (auto it = m_CollMonsters.begin(); it != m_CollMonsters.end(); )
+    {
+        CMonster* pCreatureMoster = static_cast<CMonster*>(m_pBrutalmonster);
+        if (*it == m_pBrutalmonster && (m_pBrutalmonster->Get_IsDead() || m_pBrutalmonster->Get_IsActive() || pCreatureMoster->Get_CurrentHP() <= 0.f))
+            it = m_CollMonsters.erase(it);
+        else
+            ++it;
+    }
 
     /* 범위 내에 브루탈 가능 개체가 없으면  */
     if (!Has_Status(CKhazan_GSword::BRUTAL_BEGIN)) {
@@ -1397,6 +1407,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(70.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1497,6 +1508,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(70.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         }); 
@@ -1513,6 +1525,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(75.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 1.f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1530,6 +1543,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(40.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1595,6 +1609,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(75.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1611,6 +1626,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(45.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1753,6 +1769,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(70.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1864,6 +1881,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;
         if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
             m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp; }); //라크리마
+
     m_pModelCom->Register_Event("HEAL2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
         m_pPlayerData->fCulHp += m_pPlayerData->fHealItemRegen;
         if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
