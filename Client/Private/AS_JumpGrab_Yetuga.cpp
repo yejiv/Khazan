@@ -5,6 +5,7 @@
 #include "BlackBoard.h"
 #include "FSM_Yetuga.h"
 #include "Body_Yetuga.h"
+#include "ClientInstance.h"
 
 CAS_JumpGrab_Yetuga::CAS_JumpGrab_Yetuga()
 {
@@ -52,6 +53,7 @@ void CAS_JumpGrab_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     if (isGrabbed && !m_isGrabbed)
     {
         pModel->Set_Animation(58);
+        CClientInstance::GetInstance()->Set_PlayerInput(false);
         m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_rush_grab_success_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 3.f);
         m_isGrabbed = true;
     }
