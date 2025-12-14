@@ -859,13 +859,14 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("Quick2Hit_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
-            
+            m_fTurnSpeed = 30.f;
             m_pWeapon->Set_OnAttackCollision(true);
         });
 
     pModel->Register_Event("Quick2Hit_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pWeapon->Set_OnAttackCollision(false);
 
         });
@@ -874,12 +875,14 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("Quick2Hit_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
+            m_fTurnSpeed = 30.f;
             m_pWeapon->Set_OnAttackCollision(true);
         });
 
     pModel->Register_Event("Quick2Hit_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pWeapon->Set_OnAttackCollision(false);
 
         });
@@ -892,12 +895,14 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("Slow2Hit_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
+            m_fTurnSpeed = 30.f;
             m_pWeapon->Set_OnAttackCollision(true);
         });
 
     pModel->Register_Event("Slow2Hit_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pWeapon->Set_OnAttackCollision(false);
 
         });
@@ -906,12 +911,14 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("Slow2Hit_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
+            m_fTurnSpeed = 30.f;
             m_pWeapon->Set_OnAttackCollision(true);
         });
 
     pModel->Register_Event("Slow2Hit_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pWeapon->Set_OnAttackCollision(false);
 
         });
@@ -926,11 +933,15 @@ HRESULT CViper::Ready_AnimEvent()
         {
             m_isLookAt = true;
             m_pWeapon->Set_OnAttackCollision(true);
+            m_fTurnSpeed = 30.f;
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         });
 
     pModel->Register_Event("P1_Slow3Hit_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pWeapon->Set_OnAttackCollision(false);
 
         });
@@ -940,11 +951,15 @@ HRESULT CViper::Ready_AnimEvent()
         {
             m_isLookAt = true;
             m_pWeapon->Set_OnAttackCollision(true);
+            m_fTurnSpeed = 30.f;
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         });
 
     pModel->Register_Event("P1_Slow3Hit_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pWeapon->Set_OnAttackCollision(false);
 
         });
@@ -953,11 +968,15 @@ HRESULT CViper::Ready_AnimEvent()
         {
             m_isLookAt = true;
             m_pWeapon->Set_OnAttackCollision(true);
+            m_fTurnSpeed = 30.f;
+            _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         });
 
     pModel->Register_Event("P1_Slow3Hit_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pWeapon->Set_OnAttackCollision(false);
 
         });
@@ -970,6 +989,7 @@ HRESULT CViper::Ready_AnimEvent()
         {
             m_isLookAt = true;
             m_pWeapon->Set_OnAttackCollision_R(true);
+            m_fTurnSpeed = 30.f;
             _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
             m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         });
@@ -977,6 +997,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("P1_Sting_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pWeapon->Set_OnAttackCollision(false);
 
         });
@@ -985,6 +1006,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("P1_Sting_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
+            m_fTurnSpeed = 30.f;
             m_pWeapon->Set_OnAttackCollision_R(true);
 
             _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
@@ -995,6 +1017,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("P1_Sting_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pWeapon->Set_OnAttackCollision(false);
 
 
@@ -1004,6 +1027,7 @@ HRESULT CViper::Ready_AnimEvent()
         {
             m_isLookAt = true;
             m_pWeapon->Set_OnAttackCollision(true);
+            m_fTurnSpeed = 30.f;
             _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
             m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
 
@@ -1012,6 +1036,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("P1_StingSlash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pWeapon->Set_OnAttackCollision(false);
 
         });
@@ -1058,6 +1083,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("P1_TurnAttack0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
+            m_fTurnSpeed = 30.f;
             m_pWeapon->Set_OnAttackCollision_R(true);
 
             _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
@@ -1067,6 +1093,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("P1_TurnAttack0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
+            m_fTurnSpeed = 8.f;
             m_isLookAt = false;
             m_pWeapon->Set_OnAttackCollision(false);
 
@@ -1078,6 +1105,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("TrunAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
+            m_fTurnSpeed = 30.f;
             m_pWeapon->Set_OnAttackCollision_R(true);
 
             _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
@@ -1089,6 +1117,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("TrunAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pWeapon->Set_OnAttackCollision(false);
 
         });
@@ -1182,6 +1211,8 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("Devour_Attack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
+            m_isLookAt = true;
+            m_fTurnSpeed = 10.f;
             m_pWeapon->Set_OnAttackCollision(true);
 
         });
@@ -1234,6 +1265,8 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("Devour_Impurse", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
 
+            m_fTurnSpeed = 8.f;
+            m_isLookAt = false;
             CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 0.5f);
 
             CTransform* pTargetTransform = m_pTarget->Get_Transform();
@@ -1254,19 +1287,14 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("P1_SpinStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_isLookAt = true;
+
 
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_SpinStart", true);
         });
 
     pModel->Register_Event("P1_SpinStart", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_isLookAt = false;
-            m_fTurnSpeed = 8.f;
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "P1_SpinStart", false);
-
-
-           
         });
 
 
@@ -1364,6 +1392,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("P1_ComboReady_Attack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
+            m_fTurnSpeed = 30.f;
             m_pWeapon->Set_OnAttackCollision(true);
             _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
             m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
@@ -1463,6 +1492,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("5Hit_Slash_5", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pWeapon->Set_OnAttackCollision(false);
         });
 
@@ -3456,7 +3486,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         if (m_isBerserker) 
         { 
             Start_Thunder(0.3f, 3); 
-            m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_01 (SFX).wav"), 50.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_01 (SFX).wav"), 1.5f);
             m_pPahse2Body->Set_EnableMotionTrail(true);
             m_pP2Weapon->Set_EnableMotionTrail(true);
         } 
@@ -3467,7 +3497,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("DashDrift_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("DashDrift_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
 
-    pModel->Register_Event("DashDriftEnd_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) { Start_Thunder(0.3f, 3); m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_02 (SFX).wav"), 50.f); } });
+    pModel->Register_Event("DashDriftEnd_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) { Start_Thunder(0.3f, 3); m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_02 (SFX).wav"), 1.5f); } });
     pModel->Register_Event("DashDriftEnd_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("DashDriftEnd_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("DashDriftEnd_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
@@ -3484,7 +3514,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         if (m_isBerserker) 
         {
             Start_Thunder(0.2f, 2); 
-            m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_03 (SFX).wav"), 50.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_03 (SFX).wav"), 1.5f);
             m_pPahse2Body->Set_EnableMotionTrail(true);
             m_pP2Weapon->Set_EnableMotionTrail(true);
         } 
@@ -3507,7 +3537,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("DashUpper_Thunder9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("DashUpper_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
 
-    pModel->Register_Event("JumpAttack_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) { Start_Thunder(0.3f, 3); m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_04 (SFX).wav"), 50.f); } });
+    pModel->Register_Event("JumpAttack_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) { Start_Thunder(0.3f, 3); m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_04 (SFX).wav"), 1.5f); } });
     pModel->Register_Event("JumpAttack_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("JumpAttack_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("JumpAttack_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
@@ -3533,7 +3563,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("JumpAttack_Thunder9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("JumpAttack_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
 
-    pModel->Register_Event("SwingCombo_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) { Start_Thunder(0.2f, 2); m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_05 (SFX).wav"), 50.f); } });
+    pModel->Register_Event("SwingCombo_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) { Start_Thunder(0.2f, 2); m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_05 (SFX).wav"), 1.5f); } });
     pModel->Register_Event("SwingCombo_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("SwingCombo_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("SwingCombo_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });

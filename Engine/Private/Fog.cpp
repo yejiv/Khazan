@@ -58,13 +58,19 @@ void CFog::Update(_float fTimeDelta)
 	{
 		fRatio = 1.f;
 
+        m_Config.vColor = m_TargetFog.vColor;
+        m_Config.fDensity = m_TargetFog.fDensity;
+        m_Config.fBias = m_TargetFog.fBias;
+
+        m_isTransition = false;
+
         if (nullptr != m_Callback)
         {
             m_Callback();
             m_Callback = nullptr;
         }
 
-		m_isTransition = false;
+        return;
 	}
 
     m_Config.fDensity = Lerp(m_StartFog.fDensity, m_TargetFog.fDensity, fRatio);
