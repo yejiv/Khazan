@@ -89,8 +89,8 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
         Add_Status(BAREHAND);
 
 
-    m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
-    Add_Status(GSWORD);
+    //m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
+    //Add_Status(GSWORD);
 
     if (FAILED(Ready_Components()))
         return E_FAIL;
@@ -120,21 +120,21 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
 
     /* 기본 셋팅  */
     m_eDir.Add_Flag(DIRECTION_INFO::NONE);
-    //if (m_pClientInstance->Is_CurrentSpear())
-    //{
-    //    //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand");
-    //    Add_Status(SPEAR);
-    //}
-    //else if (m_pClientInstance->Is_CurrentGSword())
-    //{
-    //   // m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand");
-    //    Add_Status(GSWORD);
-    //}
-    //else
-    //{
-    //    //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
-    //    Add_Status(BAREHAND);
-    //}
+    if (m_pClientInstance->Is_CurrentSpear())
+    {
+        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand");
+        Add_Status(SPEAR);
+    }
+    else if (m_pClientInstance->Is_CurrentGSword())
+    {
+       // m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand");
+        Add_Status(GSWORD);
+    }
+    else
+    {
+        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
+        Add_Status(BAREHAND);
+    }
 
     m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Teleport_End");
     m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
@@ -176,25 +176,25 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
 
     /* Test*/
 
-    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_P))
-    {
-        //예튜가
-        if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH))
-        {
-            m_pCharVirCom->Teleport(XMVectorSet(511.f, -11.9f, 260.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
-            m_pTransformCom->LookAt(XMVectorSet(520.47f, -11.48f, 227.18f, 0.f));
-        }
+    //if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_P))
+    //{
+    //    //예튜가
+    //    if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH))
+    //    {
+    //        m_pCharVirCom->Teleport(XMVectorSet(511.f, -11.9f, 260.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+    //        m_pTransformCom->LookAt(XMVectorSet(520.47f, -11.48f, 227.18f, 0.f));
+    //    }
 
-        //사다리 전
-        if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::EMBARS))
-            m_pCharVirCom->Teleport(XMVectorSet(43.f, -81.f, -47.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+    //    //사다리 전
+    //    if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::EMBARS))
+    //        m_pCharVirCom->Teleport(XMVectorSet(43.f, -81.f, -47.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
 
 
-        // 바이퍼
-        if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::VIPER))
-            m_pCharVirCom->Teleport(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
-        
-    }
+    //    // 바이퍼
+    //    if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::VIPER))
+    //        m_pCharVirCom->Teleport(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+    //    
+    //}
     //if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
     //{
     //    m_isGhost = true;

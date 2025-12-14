@@ -312,6 +312,9 @@ void CUI_QuickSlot_Item::Input_KeyState(_int iIndex)
 
     _int iInputIndex = iIndex;
 
+    if (m_iIndex != iInputIndex)
+        return;
+
     if (m_iItemCount != nullptr)
     {
         _bool isAticv = false;
