@@ -1312,7 +1312,7 @@
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Decal.hlsl">
-      <Filter>01.Utility\98.Renderer</Filter>
+      <Filter>95.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

@@ -1342,8 +1342,50 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     m_pModelCom->Register_Event("FastBlust3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Spear_Spike(); });
 
     m_pModelCom->Register_Event("FallATK_Land", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_FallAtk_Land"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]); });
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_FallAtk_Land"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
+        CClientInstance::GetInstance()->ActiveCamera_Shaking(1.25f, 0.5f);
+        });
 
+    //brutal
+    m_pModelCom->Register_Event("Brutal_FX0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
+        //Decompose_Rotation(mat_arm, XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90));
+        _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
+        EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), world, world.r[3]);
+        BrutalAtk_ScreenEffect0();
+        });
+    m_pModelCom->Register_Event("Brutal_FX0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
+        _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear, world, world.r[3]);
+        });
+    m_pModelCom->Register_Event("Brutal_FX0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutalParticle"), m_pParentTransform->Get_WorldMatrix(), XMLoadFloat4x4(&m_pSpearPole_MatrixW).r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("blust_brutal"), XMLoadFloat4x4(&m_pSpearPole_MatrixW).r[3]);
+        });
+
+    m_pModelCom->Register_Event("Brutal_FX1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("blust_brutal"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
+        });
+
+    m_pModelCom->Register_Event("Brutal_FX1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust12"), m_pParentTransform->Get_WorldMatrix().r[3]);
+        });
+
+    // 0 : 팔 휘감는 거 시작 엔터, 끝나는 거 엑시트 터지는 파티클
+    // 1 : 창에서 터지는 게 엔터 몸에서 터지는게 엑시트
+
+    m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_RedTrail(); });
+    m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
+
+    m_pModelCom->Register_Event("Brutal_Trail1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("Brutal_Trail1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        Set_RedTrail(); 
+        BrutalAtk_ScreenEffect1();
+        });
+    m_pModelCom->Register_Event("Brutal_Trail1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
 
 #pragma endregion
 
@@ -2239,6 +2281,65 @@ _vector CBody_Khazan_Spear::BodyCenter()
     _vector pos = m_pParentTransform->Get_WorldMatrix().r[3];
     pos = XMVectorSetY(pos, XMVectorGetY(pos) + 1.25f);
     return pos;
+}
+
+void CBody_Khazan_Spear::BrutalAtk_ScreenEffect0()
+{
+    // 레디얼 블러 짧게
+    RADIAL_BLUR_DESC RBDesc{};
+    RBDesc.vCenterUV = _float2(0.5f, 0.5f);
+    RBDesc.fSampleRadius = 0.05f;
+    RBDesc.vMaskRadius = _float2(0.f, 0.3f);
+    RBDesc.fExponent = 1.f;
+    RBDesc.iNumSamples = 16;
+    RBDesc.fAttenuation = 0.1f;
+    RBDesc.fStrength = 0.7f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
+    RBDesc.fDuration = 2.f;
+    RBDesc.vFadeTime = _float2(1.5f, 0.5f);
+    m_pGameInstance->Start_RadialBlur(RBDesc);
+
+    // Fov 좁게
+    FOVModifier tMod{};
+    tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+    tMod.fDuration = 1.f;
+    tMod.fFrom = XMConvertToRadians(60.f);
+    tMod.fTo = XMConvertToRadians(50.f);
+    tMod.iPriority = 1.f;
+    tMod.Ease = EaseOutQuad;
+    m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+}
+
+void CBody_Khazan_Spear::BrutalAtk_ScreenEffect1()
+{
+    RADIAL_BLUR_DESC RBDesc{};
+    RBDesc.vCenterUV = _float2(0.5f, 0.5f);
+    RBDesc.fSampleRadius = 0.05f;
+    RBDesc.vMaskRadius = _float2(0.f, 0.3f);
+    RBDesc.fExponent = 1.f;
+    RBDesc.iNumSamples = 16;
+    RBDesc.fAttenuation = 0.1f;
+    RBDesc.fStrength = 1.f;
+    RBDesc.fDuration = 0.75f;
+    RBDesc.vFadeTime = _float2(0.35f, 0.35f);
+    m_pGameInstance->Start_RadialBlur(RBDesc);
+
+    FOVModifier tMod{};
+    tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+    tMod.fDuration = 0.375f;
+    tMod.fFrom = XMConvertToRadians(60.f);
+    tMod.fTo = XMConvertToRadians(70.f);
+    tMod.iPriority = 1.f;
+    tMod.Ease = EaseOutQuad;
+    m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+
+    VIGNETTE_CONFIG Config{};
+    Config.vColor = _float3(0.f, 0.f, 0.f);
+    Config.fPower = 3.5f;
+    Config.fMinIntensity = 0.f;
+    Config.fMaxIntensity = 4.f;
+    Config.fDuration = 0.75f;
+    Config.vFadeTime = _float2(0.35f, 0.35f);
+    m_pGameInstance->Start_VignetteAnimation(Config);
 }
 
 _vector CBody_Khazan_Spear::Decompose_Rotation(_matrix W, _vector localRot, _vector offset)

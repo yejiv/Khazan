@@ -39,14 +39,14 @@ void CLight::Update(_float fTimeDelta)
 
         m_fBlinkPeriod = 0.f;
         
+        m_isTransition = false;
+
         if (nullptr != m_Callback)
         {
             m_Callback();
             m_Callback = nullptr;
         }
 
-        m_isTransition = false;
-        
         return;
     }
 
