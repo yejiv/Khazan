@@ -236,9 +236,10 @@ void CSkill_Slot::Update(_float fTimeDelta)
                             Desc.iSkillIndex = m_iSkillIndex;
                             CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkillSlot_Quick"),&Desc);
                         }
-                        if (m_pSkilData->iType == 0)
+                        if (m_pSkilData->iType == 0 && m_pSkilData->iIndex < 99)
+                        {
                             CClientInstance::GetInstance()->Unlock_Skill(1 << m_pSkilData->iIndex);
-                    
+                        }
                     }
                 }
             }
@@ -259,7 +260,7 @@ void CSkill_Slot::Update(_float fTimeDelta)
 
                     m_pGameInstance->Emit_Event< EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), { false, m_iSkillIndex });
 
-                    if (m_pSkilData->iType == 0)
+                    if (m_pSkilData->iType == 0 && m_pSkilData->iIndex < 99)
                     {
                         CClientInstance::GetInstance()->Lock_Skill(1 << m_pSkilData->iIndex);
                         static_cast<CSkill_QuickSlot*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("SkillSlot_Quick")))->Equip_Check(m_iSkillIndex);
