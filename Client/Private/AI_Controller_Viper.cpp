@@ -29,7 +29,6 @@ HRESULT CAI_Controller_Viper::Initialize(CCreature* pOwner)
     if (nullptr == m_pFSM)
         return E_FAIL;
 
-
     m_fAnimSpeed = 1.f;
 
     return S_OK;
@@ -271,7 +270,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
                 {
                     return true;
                 }
-
+                
                 return false;
             };
     }
@@ -1208,7 +1207,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
                 _float fAttackRange = BB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
 
                 _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "isP1_Slow2HitFinished");
-                if (fDist != 0 && fDist <= fAttackRange + 10.f)
+                if (fDist != 0 && fDist <= fAttackRange)
                 {
                     return true;
                 }
@@ -1227,7 +1226,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
 
 
                 _bool isAttackFinished = BB->Get_Value<_bool>(pViper->Get_Name(), "P1_Quick2HitFinished");
-                if (fDist != 0 && fDist <= fAttackRanage + 5.f)
+                if (fDist != 0 && fDist <= fAttackRanage)
                 {
                     return true;
                 }
@@ -1339,6 +1338,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
 
     			if (BB->Get_Value<_bool>(pViper->Get_Name(), "isGroggyFinished"))
     			{
+                    BB->Set_Value<_bool>(pViper->Get_Name(), "isJustGuard", false);
     				return BTNODESTATE::SUCCESS;
     			}
 
@@ -1356,7 +1356,7 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
     {
         return [pViper](CBlackBoard* BB) -> BTNODESTATE
             {
-                
+               
                 if (true == BB->Get_Value<_bool>(pViper->Get_Name(), "isHitFinished"))
                 {
                     BB->Set_Value(pViper->Get_Name(), "DamageInterrupt", false);
@@ -1982,6 +1982,9 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
                 }
 
                 BB->Set_Value(pViper->Get_Name(), "isSuperArmor", true);
+
+                BB->Set_Value<_bool>(pViper->Get_Name(), "isSuperArmor", true);
+
 
                 pViper->Get_Controller()->Get_State_Machine()->
                     Change_State(ENUM_CLASS(VIPER_STATE_P1::STINGGRAB), pViper);
@@ -3118,7 +3121,11 @@ INTERRUPTCONDITION CAI_Controller_Viper::GetCallbackInterruptCondition(CGameObje
                 {
                     _bool isSuperArmor = BB->Get_Value<_bool>(pViper->Get_Name(), "isSuperArmor");
                     if (isSuperArmor)
+                    {
+                        BB->Set_Value<_bool>(pViper->Get_Name(), "DamageInterrupt", false);
+                        BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                         return false;
+                    }
 
                     return true;
 
