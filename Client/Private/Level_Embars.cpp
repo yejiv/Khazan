@@ -331,6 +331,9 @@ HRESULT CLevel_Embars::Ready_Shader_Settings()
     // 스페큘러 강도 줄이기
     m_pGameInstance->Set_SpecularAttenuation(1.5f);
 
+    // MainLight Backup
+    m_pGameInstance->Backup_LightDesc(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()));
+
     return S_OK;
 }
 
