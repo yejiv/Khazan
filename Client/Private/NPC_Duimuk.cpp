@@ -412,7 +412,7 @@ void CNPC_Duimuk::Animation_Update(_float fTimeDelta)
     }
     else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
     {
-        if (ANIM_STATE::TALK_IDLE == m_eAnimState)
+        if (ANIM_STATE::TALK_START == m_eAnimState || ANIM_STATE::TALK_IDLE == m_eAnimState)
         {
             m_eAnimState = ANIM_STATE::TALK_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
