@@ -1473,7 +1473,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
 
 
     /*  브루탈 공격.*/
-    if (Has_Status(BRUTAL_READY) && m_pGameInstance->Key_Down(DIK_F))
+    if (Has_Status(BRUTAL_READY) && m_pGameInstance->Key_Down(DIK_T))
     {
         if (m_pAnimAttack->Try_GrappleAttack())
         {
@@ -2789,13 +2789,11 @@ void CKhazan_GSword::Subscribe_Events()
             }
             else if(INTERACTIVE_TYPE::CHECKPOINT == m_EventInteract.eInteractType)
             {
-                cout << "@@@@@@@@@@@@@@  INTERACTIVE_TYPE::CHECKPOINT   @@@@@@@@@@" << endl;
                 m_pBody->Get_Model()->AnimationSetIndexIncrease();
                 static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
             }
             else
             {
-                cout << "@@@@@@@@@@@@@@  INTERACTIVE_TYPE::CHECKPOINT   @@@@@@@@@@" << endl;
                 static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
             }
         }  });
@@ -3068,6 +3066,8 @@ void CKhazan_GSword::BladeNexus_Event(_float fTimeDelta)
                 Clear_SubState();
                 Clear_CycleState();
                 //m_isInteractEventStart = true;
+
+                m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
             }
         }
         // 이미 해금된 귀검
@@ -3082,6 +3082,8 @@ void CKhazan_GSword::BladeNexus_Event(_float fTimeDelta)
                 Clear_SubState();
                 Clear_CycleState();
                // m_isInteractEventStart = true;
+
+                m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
             }
         }
 
