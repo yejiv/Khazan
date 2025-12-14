@@ -69,6 +69,7 @@ void CUI_PlayerHP_Gauge::Late_Update(_float fTimeDelta)
 {
 	CClientInstance::GetInstance()->Add_UIRender(UI_RENDER_TYPE::DEFAULT, this);
 	if(m_fProgress_Value < 1.f && m_fProgress_Value > 0.05f)
+
 		m_pUITip->Late_Update(fTimeDelta);
 }
 
