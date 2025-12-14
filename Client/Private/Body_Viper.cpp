@@ -368,7 +368,8 @@ void CBody_Viper::Carculate_Matrix(_float fTimeDelta)
     //m_LeftHandMatrix._44 = vOutPos.m128_f32[3];
 
 
-} 
+}
+
 
 HRESULT CBody_Viper::Ready_Colliders()
 {

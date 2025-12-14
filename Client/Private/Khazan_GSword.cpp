@@ -22,7 +22,7 @@
 #include "Damage_Text.h"
 
 
-#pragma region 이벤트 - 인벤토리
+#pragma region ?씠踰ㅽ듃 - ?씤踰ㅽ넗由?
 #include "UI_Inven.h"
 #include <Monster.h>
 #include <Target_BrutalAttack.h>
@@ -78,8 +78,8 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(&desc)))
         return E_FAIL;
 
-    /* 플레이어 셋팅  */
-    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();  //플레이어 데이터 연결
+    /* ?뵆?젅?씠?뼱 ?뀑?똿  */
+    m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();  //?뵆?젅?씠?뼱 ?뜲?씠?꽣 ?뿰寃?
 
     if (m_pClientInstance->Is_CurrentSpear())
         Add_Status(SPEAR);
@@ -109,7 +109,7 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
         return E_FAIL;
 
 
-#pragma region 상호 작용 맵 오브젝트 이벤트
+#pragma region ?긽?샇 ?옉?슜 留? ?삤釉뚯젥?듃 ?씠踰ㅽ듃
     Subscribe_Events();
 #pragma endregion
 
@@ -118,7 +118,7 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
 #endif // _DEBUG
 
 
-    /* 기본 셋팅  */
+    /* 湲곕낯 ?뀑?똿  */
     m_eDir.Add_Flag(DIRECTION_INFO::NONE);
     if (m_pClientInstance->Is_CurrentSpear())
     {
@@ -178,19 +178,19 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
 
     //if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_P))
     //{
-    //    //예튜가
+    //    //?삁?뒠媛?
     //    if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH))
     //    {
     //        m_pCharVirCom->Teleport(XMVectorSet(511.f, -11.9f, 260.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
     //        m_pTransformCom->LookAt(XMVectorSet(520.47f, -11.48f, 227.18f, 0.f));
     //    }
 
-    //    //사다리 전
+    //    //?궗?떎由? ?쟾
     //    if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::EMBARS))
     //        m_pCharVirCom->Teleport(XMVectorSet(43.f, -81.f, -47.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
 
 
-    //    // 바이퍼
+    //    // 諛붿씠?띁
     //    if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::VIPER))
     //        m_pCharVirCom->Teleport(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
     //    
@@ -295,7 +295,7 @@ void CKhazan_GSword::Update(_float fTimeDelta)
         }
     }
 
-#pragma region 상호 작용 맵 오브젝트 이벤트
+#pragma region ?긽?샇 ?옉?슜 留? ?삤釉뚯젥?듃 ?씠踰ㅽ듃
     Event_Interact_Object(fTimeDelta);
 #pragma endregion
 
@@ -374,7 +374,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         return;
     if (eHitreaction != HITREACTION::GRAB)
     {
-        /* Just Guard 우선 처리*/
+        /* Just Guard ?슦?꽑 泥섎━*/
         if (Has_Status(JUST_GUARD))
         {
             Clear_Step3();
@@ -384,7 +384,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         }
 
 
-        /* 가드 중 강한넉백공격이 오면 성공모션 취하기 */
+        /* 媛??뱶 以? 媛뺥븳?꼮諛깃났寃⑹씠 ?삤硫? ?꽦怨듬え?뀡 痍⑦븯湲? */
         if (m_pAnimGuard->Is_Guarding())
         {
             if (eHitreaction == HITREACTION::KNOCKBACK_STRONG) {
@@ -398,13 +398,13 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
 
     m_pPlayerData->fCulHp -= fDamage;
 
-    /* 플레이어 죽었을 때 세팅하는 법  */
+    /* ?뵆?젅?씠?뼱 二쎌뿀?쓣 ?븣 ?꽭?똿?븯?뒗 踰?  */
     if ( m_pPlayerData->fCulHp <= 0.f)
     {
-        /* 입력 막기 */
+        /* ?엯?젰 留됯린 */
         m_pClientInstance->Set_PlayerInput(false);
 
-        /* 상태 초기화 */
+        /* ?긽?깭 珥덇린?솕 */
         //Clear_CycleState();
         //Clear_SubState();
         //Clear_State();
@@ -413,7 +413,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         //m_iStatus = 0;
         Clear_Step0();
 
-        /* 상태 DIE로 재정비 */
+        /* ?긽?깭 DIE濡? ?옱?젙鍮? */
         if (Has_Status(BAREHAND)) m_iStatus = BAREHAND;
         else if (Has_Status(SPEAR)) m_iStatus = SPEAR;
         else if (Has_Status(GSWORD)) m_iStatus = GSWORD;
@@ -502,7 +502,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
 
         m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
 
-        // 피격 Vignette
+        // ?뵾寃? Vignette
         VIGNETTE_CONFIG Config{};
         Config.vColor = _float3(0.5f, 0.f, 0.f);
         Config.fPower = 3.5f;
@@ -531,11 +531,10 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         break;
     case Client::HITREACTION::GRAB:
 
-        if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
-        if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
-        if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
-        Clear_Step1();
-
+        //if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
+        //if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
+        //if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
+        //Clear_Step1();
         m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Burrow_Predation_Kazan_DamageHold");
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
         m_pCharVirCom->Begin_Ladder();
@@ -622,7 +621,7 @@ void CKhazan_GSword::Set_Position(_float4 vPos)
 void CKhazan_GSword::Update_Stats(_float fTimeDelta)
 {
 
-    /*  스태미나 다 떨어짐 */
+    /*  ?뒪?깭誘몃굹 ?떎 ?뼥?뼱吏? */
     if (m_pPlayerData->fCulStamina < 0.1f && !m_pAnimAttack->Is_Attacking() && !m_pAnimAttack->Is_Skilling())
     {
         m_pPlayerData->fCulStamina = 0.f;
@@ -630,20 +629,20 @@ void CKhazan_GSword::Update_Stats(_float fTimeDelta)
             Add_Status(STAMINA_EXHAUSTION);
             Clear_Step1();
             m_pBody->Get_Model()->Set_AnimationSet("Set_StaminaExhaustion");
-            m_pClientInstance->Set_PlayerInput(false);     //입력 막기 
+            m_pClientInstance->Set_PlayerInput(false);     //?엯?젰 留됯린 
         }
 
         if (Has_Status(STAMINA_EXHAUSTION) && (m_pBody->Get_Model()->IsFinished()/* || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_StaminaExhaustion")*/))
         {
             Remove_Status(STAMINA_EXHAUSTION);
-            m_pPlayerData->fCulStamina += m_pPlayerData->fStaminaRegen;      //스태미나 약간 회복 
-            m_pClientInstance->Set_PlayerInput(true);       //입력 풀기
+            m_pPlayerData->fCulStamina += m_pPlayerData->fStaminaRegen;      //?뒪?깭誘몃굹 ?빟媛? ?쉶蹂? 
+            m_pClientInstance->Set_PlayerInput(true);       //?엯?젰 ???湲?
         }
 
         return;
     }
 
-    //바디에서 가드 사용 시 초기화
+    //諛붾뵒?뿉?꽌 媛??뱶 ?궗?슜 ?떆 珥덇린?솕
     if (!m_isCanStaminaRecovery)
     {
         m_fWaitStaminaRecovery.x = 0.f;
@@ -654,7 +653,7 @@ void CKhazan_GSword::Update_Stats(_float fTimeDelta)
     if (Has_State(CAT::M_ATTACK | CAT::M_SKILL) || Has_SubState(MOV::MOVE_SPRINT))
         return;
 
-    /* idle, run, walk, guard 현재 스태미나가 닳아 있는 상태일 때 회복하기 */
+    /* idle, run, walk, guard ?쁽?옱 ?뒪?깭誘몃굹媛? ?떝?븘 ?엳?뒗 ?긽?깭?씪 ?븣 ?쉶蹂듯븯湲? */
     if ((!Has_States()
         || (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_RUN | MOV::MOVE_WALK))
         || (Has_State(CAT::M_GUARD) && !Has_SubState(MOV::MOVE_SPRINT))
@@ -692,7 +691,7 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
     if (Has_State(CAT::M_DIE))
         return;
 
-   /* Ladder Climb 상태 최우선 체크 */
+   /* Ladder Climb ?긽?깭 理쒖슦?꽑 泥댄겕 */
     if (Has_Status(LADDER_CLIMBING))
     {
         LadderClimb_Input(fTimeDelta);
@@ -704,72 +703,72 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
     }
 
 
-    /* Viper Grab 상태 최우선 체크 */
+    /* Viper Grab ?긽?깭 理쒖슦?꽑 泥댄겕 */
     if (m_isGrab||m_isGrabFinish) {
         if (!ChangeGrabAnimation(fTimeDelta))
             return;
     }
 
-    /* Fall 상태 최우선 체크 */
+    /* Fall ?긽?깭 理쒖슦?꽑 泥댄겕 */
     if (Fall_Input(fTimeDelta))
         return;
 
-    /* 이전 상태 저장*/
+    /* ?씠?쟾 ?긽?깭 ????옣*/
     m_iPrevMainState = m_iCurMainState;
     m_iPrevSubState = m_iCurSubState;
     m_ePrevDir = m_eDir.iDirFlag;
     m_iPrevCycle = m_iCycle;
  
-    /* 대미지 상태 우선 체크 */
+    /* ???誘몄?? ?긽?깭 ?슦?꽑 泥댄겕 */
     _bool IsDamaged = m_pAnimDamaged->Is_Damaged();
     _bool IsGuarding = m_pAnimGuard->Is_Guarding();
 
-    // 가드 중이면 대미지 무시
+    // 媛??뱶 以묒씠硫? ???誘몄?? 臾댁떆
     if (IsGuarding && IsDamaged)
     {
-        // 가드 성공 처리는 여기서
+        // 媛??뱶 ?꽦怨? 泥섎━?뒗 ?뿬湲곗꽌
         m_pAnimDamaged->Clear_Damaged();
         IsDamaged = false;
     }
 
-    // 가드중이 아니고  대미지 상태가 끝났을 때만 상태 제거
+    // 媛??뱶以묒씠 ?븘?땲怨?  ???誘몄?? ?긽?깭媛? ?걹?궗?쓣 ?븣留? ?긽?깭 ?젣嫄?
     if (!IsGuarding && !IsDamaged && (m_iPrevMainState & CAT::M_DAMAGED))
     {
         Clear_Step0();
         Remove_State(CAT::M_DAMAGED);
     }
 
-    // 가드중이 아니고  대미지 받는 중이면 입력 및 다른 모든 처리 차단
+    // 媛??뱶以묒씠 ?븘?땲怨?  ???誘몄?? 諛쏅뒗 以묒씠硫? ?엯?젰 諛? ?떎瑜? 紐⑤뱺 泥섎━ 李⑤떒
     if (!IsGuarding && IsDamaged)
     {
-        // 대미지 로직만 실행
+        // ???誘몄?? 濡쒖쭅留? ?떎?뻾
         if (Has_State(CAT::M_DAMAGED))
         {
             _bool isEnter = (m_iCurMainState != m_iPrevMainState);
             if (isEnter) m_pAnimDamaged->Enter();
             m_pAnimDamaged->Continue(fTimeDelta);
         }
-        return;  // 대미지 중에는 다른 모든 처리 차단
+        return;  // ???誘몄?? 以묒뿉?뒗 ?떎瑜? 紐⑤뱺 泥섎━ 李⑤떒
     }
 
-    /* 닷지만 따로 체크 */
+    /* ?떣吏?留? ?뵲濡? 泥댄겕 */
     if (Has_Status(DODGING) && m_pBody->Get_Model()->Check_MinAnimationTime())
     {
         Remove_Status(DODGING);
     }
 
-    /* 키 입력 */
+    /* ?궎 ?엯?젰 */
     if (m_pClientInstance->Get_PlayerInput())
     {
 
-        /* 락온상태 체크  */
+        /* ?씫?삩?긽?깭 泥댄겕  */
         Update_LockOn();
 
-        /* 방향 결정 */
+        /* 諛⑺뼢 寃곗젙 */
         Check_KeyInput_Direction(fTimeDelta);
 
         Interaction_Input(fTimeDelta);
-        /* 공격이나 가드를 막아야하는 상호작용 처리  */
+        /* 怨듦꺽?씠?굹 媛??뱶瑜? 留됱븘?빞?븯?뒗 ?긽?샇?옉?슜 泥섎━  */
         if (!Has_Status(BLOCK_ATK_SKILL_GUARD))
         {
             Guard_Input(fTimeDelta);
@@ -777,7 +776,7 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
             Attack_Input(fTimeDelta);
         }
 
-        // 공격 중일 때는 Move_Input을 완전히 차단
+        // 怨듦꺽 以묒씪 ?븣?뒗 Move_Input?쓣 ?셿?쟾?엳 李⑤떒
         if (!Has_State(CAT::M_ATTACK | CAT::M_GUARD | CAT::M_SKILL) && !m_pAnimAttack->Is_Attacking() && m_pAnimAttack)
             Move_Input(fTimeDelta);
 
@@ -794,20 +793,20 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
 
     }
 
-    /*  상태 전환 여부*/
+    /*  ?긽?깭 ?쟾?솚 ?뿬遺?*/
     _bool isEnter = (m_iCurMainState != m_iPrevMainState) || (m_iCurSubState != m_iPrevSubState);
     _bool isContinue = (m_iCurMainState == m_iPrevMainState) && (m_iCurSubState == m_iPrevSubState);
 
-    /* 공격 상태가 아닐 때 공격 콜리더 끄기  */
+    /* 怨듦꺽 ?긽?깭媛? ?븘?땺 ?븣 怨듦꺽 肄쒕━?뜑 ?걚湲?  */
     if (!m_pAnimAttack->Is_Attacking() && !m_pAnimFall->Is_FallAttacking())
         m_pBody->AllAttackCollisionActive_Off();
 
 
-    /* (move , idle 애니메이션 재생 시도 */
+    /* (move , idle ?븷?땲硫붿씠?뀡 ?옱?깮 ?떆?룄 */
     if (!Has_State(CAT::M_FALL | CAT::M_DAMAGED) && !m_pAnimDamaged->Is_Damaged())
         Change_MoveIdle(fTimeDelta);
 
-    /* 실제 이동값 주기 */
+    /* ?떎?젣 ?씠?룞媛? 二쇨린 */
     if (Has_State(CAT::M_MOVE | CAT::M_GUARD)
          && !Has_State(CAT::M_ATTACK | CAT::M_SKILL | CAT::M_DAMAGED | CAT::M_INTERACT)
          && !Has_SubState(MOV::MOVE_DODGE) 
@@ -818,11 +817,11 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
         Apply_PlayerMovement(fTimeDelta);
     }
 
-    /* Exit 실행 */
+    /* Exit ?떎?뻾 */
     if (isEnter)
         ExecuteAnimationExit();
 
-    /* 상태별 로직 실행 */
+    /* ?긽?깭蹂? 濡쒖쭅 ?떎?뻾 */
     if (Has_State(CAT::M_DIE)) {
         Update_Die(fTimeDelta);
     }
@@ -935,10 +934,10 @@ _bool CKhazan_GSword::Fall_Input(_float fTimeDelta)
 {
     if (Has_Status(FALLING | PRE_LAND | FALLING_ATTACK))
     {
-        // 낙하 시작
+        // ?굺?븯 ?떆?옉
         if (Has_Status(FALLING) && !Has_Status(PRE_LAND))
         {
-            // 낙하공격 입력 체크 (낙하 중에만)
+            // ?굺?븯怨듦꺽 ?엯?젰 泥댄겕 (?굺?븯 以묒뿉留?)
             if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB) &&
                 !Has_Status(FALLING_ATTACK))
             {
@@ -946,14 +945,14 @@ _bool CKhazan_GSword::Fall_Input(_float fTimeDelta)
                 Add_Status(FALLING_ATTACK);
                 Remove_Status(FALLING);
             }
-            // 일반 낙하 애니메이션
+            // ?씪諛? ?굺?븯 ?븷?땲硫붿씠?뀡
             else if (!m_pAnimFall->Is_Falling() && !m_pAnimFall->Is_FallAttacking())
             {
                 m_pAnimFall->Force_StartFall();
                 Add_State(CAT::M_FALL);
             }
         }
-        // 착지 직전
+        // 李⑹?? 吏곸쟾
         else if (Has_Status(PRE_LAND))
         {
             if (Has_Status(FALLING_ATTACK))
@@ -966,10 +965,10 @@ _bool CKhazan_GSword::Fall_Input(_float fTimeDelta)
             }
         }
 
-        // 낙하/착지 애니메이션 계속 실행
+        // ?굺?븯/李⑹?? ?븷?땲硫붿씠?뀡 怨꾩냽 ?떎?뻾
         m_pAnimFall->Continue(fTimeDelta);
 
-        // 착지 애니메이션 완료 체크
+        // 李⑹?? ?븷?땲硫붿씠?뀡 ?셿猷? 泥댄겕
         if (Has_Status(PRE_LAND) && m_pBody->Get_Model()->Check_MinAnimationTime())
         {
             Remove_Status(FALLING | FALLING_ATTACK | PRE_LAND);
@@ -977,7 +976,7 @@ _bool CKhazan_GSword::Fall_Input(_float fTimeDelta)
             m_pAnimFall->Exit();
         }
 
-        // 낙하 중에는 다른 입력 차단
+        // ?굺?븯 以묒뿉?뒗 ?떎瑜? ?엯?젰 李⑤떒
         return true;
     }
     return false;
@@ -985,7 +984,7 @@ _bool CKhazan_GSword::Fall_Input(_float fTimeDelta)
 
 void CKhazan_GSword::Move_Input(_float fTimeDelta)
 {
-    /*  공격중 닷지는 예외 처리 (공격중 빠른 타이밍에 닷지할 수 있도록) */
+    /*  怨듦꺽以? ?떣吏??뒗 ?삁?쇅 泥섎━ (怨듦꺽以? 鍮좊Ⅸ ????씠諛띿뿉 ?떣吏??븷 ?닔 ?엳?룄濡?) */
     if (m_pGameInstance->Key_Down(DIK_SPACE) &&/* m_pBody->Is_SpearFullExtension() &&*/ Has_State(CAT::M_ATTACK | CAT::M_SKILL))  // zzzz
     {
         Remove_State(CAT::M_ATTACK | CAT::M_SKILL);
@@ -996,10 +995,10 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
         Add_Status(DODGING);
     }
 
-    // 공격/가드 중일 때는 완전히 리턴
+    // 怨듦꺽/媛??뱶 以묒씪 ?븣?뒗 ?셿?쟾?엳 由ы꽩
     if (m_pAnimAttack->Is_Attacking() || m_pAnimGuard->Is_Guarding())
     {
-        // 공격 중일 때는 Move 상태도 제거
+        // 怨듦꺽 以묒씪 ?븣?뒗 Move ?긽?깭?룄 ?젣嫄?
         if (Has_State(CAT::M_MOVE))
         {
             Remove_State(CAT::M_MOVE);
@@ -1012,24 +1011,24 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
     _bool isPrevMove = Has_State(CAT::M_MOVE);
     _bool isPrevDodge = Has_SubState(MOV::MOVE_DODGE);
 
-    //Dodge 종료 체크
+    //Dodge 醫낅즺 泥댄겕
     if (isPrevDodge)
     {
         Remove_SubState(MOV::MOVE_DODGE);
         Remove_Status(CHARGING_SPRINT);
 
-        //// 닷지 상태 유지 - 애니메이션이 진행 중이면 DODGING 상태 추가
+        //// ?떣吏? ?긽?깭 ?쑀吏? - ?븷?땲硫붿씠?뀡?씠 吏꾪뻾 以묒씠硫? DODGING ?긽?깭 異붽??
         //if (!m_pAnimMove->IsStopMoveAnimantionFinished())
         //{
-        //    Add_Status(DODGING);  // 닷지 중 상태 플래그 설정
+        //    Add_Status(DODGING);  // ?떣吏? 以? ?긽?깭 ?뵆?옒洹? ?꽕?젙
         //}
 
-        // Dodge 애니메이션이 끝났는지 확인
+        // Dodge ?븷?땲硫붿씠?뀡?씠 ?걹?궗?뒗吏? ?솗?씤
         if (m_pAnimMove->IsStopMoveAnimantionFinished()&& !m_pAnimMove->IsDodge()&& !Has_Status(DODGE_ENDING))
         {
             //Remove_SubState(MOV::MOVE_DODGE);
            // Remove_Status(CHARGING_SPRINT);
-            // 방향키만 눌려있으면 즉시 Run으로 전환
+            // 諛⑺뼢?궎留? ?닃?젮?엳?쑝硫? 利됱떆 Run?쑝濡? ?쟾?솚
             if (!m_pGameInstance->Key_Pressing(DIK_SPACE, fTimeDelta) && m_eDir.iDirFlag > 0)
             {
                 Add_State(CAT::M_MOVE);
@@ -1049,11 +1048,11 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
 
                 m_pAnimMove->Try_ChangeAnimation(info);
             }
-            return;  //Dodge 종료 처리 후 바로 리턴
+            return;  //Dodge 醫낅즺 泥섎━ ?썑 諛붾줈 由ы꽩
         }
         else
         {
-            //Dodge 애니메이션 재생 중이면 입력 무시, 상태는 유지
+            //Dodge ?븷?땲硫붿씠?뀡 ?옱?깮 以묒씠硫? ?엯?젰 臾댁떆, ?긽?깭?뒗 ?쑀吏?
             return;
         }
     }
@@ -1072,7 +1071,7 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
     }
 
 
-    /* 방향이 들어오면 Move On */
+    /* 諛⑺뼢?씠 ?뱾?뼱?삤硫? Move On */
     if (m_eDir.iDirFlag) {
         Add_State(CAT::M_MOVE);
         if (isPrevMove)    Add_CycleState(CYC::CYCLE_LOOP);
@@ -1093,14 +1092,14 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
         /*  Sprint , Dodge */
         if (m_pGameInstance->Key_Down(DIK_SPACE))
         {
-            ///* 닷지 중복 방지*/
+            ///* ?떣吏? 以묐났 諛⑹??*/
             if (m_pAnimMove->IsDodge())
                 return;
 
             m_fSprintTime = 0.f;
             Add_Status(CHARGING_SPRINT | DODGING );
             Add_SubState(MOV::MOVE_DODGE);               
-            /* 백 닷지라면 */
+            /* 諛? ?떣吏??씪硫? */
             if (m_eDir.Check_Flag(DIR::B))
             {
                 Add_CycleState(CYC::CYCLE_END);
@@ -1109,7 +1108,7 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
             isSpaceHandled = true;
 
         }
-        /* 스페이스 떼고 방향키를 누르고 있다는 예약이 걸려있을 때 다시 스페이스를 누를 경우*/
+        /* ?뒪?럹?씠?뒪 ?뼹怨? 諛⑺뼢?궎瑜? ?늻瑜닿퀬 ?엳?떎?뒗 ?삁?빟?씠 嫄몃젮?엳?쓣 ?븣 ?떎?떆 ?뒪?럹?씠?뒪瑜? ?늻瑜? 寃쎌슦*/
         else if (Has_State(SPRINT_AGAIN_REQUEST) && m_pGameInstance->Key_Pressing(DIK_SPACE, fTimeDelta))
         {
             Add_SubState(MOV::MOVE_SPRINT);
@@ -1122,28 +1121,28 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
             if (Has_Status(CHARGING_SPRINT))
             {
 
-                // Dodge 애니메이션 진행도 체크
+                // Dodge ?븷?땲硫붿씠?뀡 吏꾪뻾?룄 泥댄겕
                 _float trackPos = *m_pBody->Get_Model()->Get_CurTrackPosition();
                 _float duration = m_pBody->Get_Model()->Get_CurDuration();
                 if (m_pBody->Get_Model()->Check_MinAnimationTime() || (trackPos / duration) >= 0.3f)
                 {
                     Add_SubState(MOV::MOVE_SPRINT);
-                    Remove_Status(CHARGING_SPRINT);  // Sprint 전환 완료
+                    Remove_Status(CHARGING_SPRINT);  // Sprint ?쟾?솚 ?셿猷?
                 }
                 else
                 {
-                    Add_SubState(MOV::MOVE_DODGE);  // 아직 Dodge 유지
+                    Add_SubState(MOV::MOVE_DODGE);  // ?븘吏? Dodge ?쑀吏?
                     isSpaceHandled = true;
                 }
             }
             else
             {
-                // 이미 Sprint 상태 - 유지
+                // ?씠誘? Sprint ?긽?깭 - ?쑀吏?
                 Add_SubState(MOV::MOVE_SPRINT);
                 isSpaceHandled = true;
             }
         }
-        // Space를 뗌
+        // Space瑜? ?뿄
         else if (m_pGameInstance->Key_Up(DIK_SPACE))
         {
             m_fSprintTime = 0.f;
@@ -1155,7 +1154,7 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
                 Add_SubState(MOV::MOVE_RUN);
                 Add_Status(SPRINT_AGAIN_REQUEST);
             }
-            // Sprint 종료 신호 (다음 프레임에 END 애니메이션 재생)
+            // Sprint 醫낅즺 ?떊?샇 (?떎?쓬 ?봽?젅?엫?뿉 END ?븷?땲硫붿씠?뀡 ?옱?깮)
             if (Has_SubState(MOV::MOVE_SPRINT))
             {
                 Add_CycleState(CYC::CYCLE_END);
@@ -1176,10 +1175,10 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
     }
     else
     {
-        // 뒤로 회피
+        // ?뮘濡? ?쉶?뵾
         if (m_pGameInstance->Key_Down(DIK_SPACE))
         {
-            /* 닷지 중복 방지*/
+            /* ?떣吏? 以묐났 諛⑹??*/
             if (isPrevDodge)
                 return;
 
@@ -1187,14 +1186,14 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
             Add_SubState(MOV::MOVE_DODGE);
             Add_CycleState(CYC::CYCLE_END);
             m_eDir.Clear_Flag();
-            m_eDir.Add_Flag(DIR::B);  // 뒤로 회피
+            m_eDir.Add_Flag(DIR::B);  // ?뮘濡? ?쉶?뵾
             m_fSprintTime = 0.f;
             Add_Status(BACK_DODGE );
             Remove_Status(SPRINT_AGAIN_REQUEST | CHARGING_SPRINT);
         }
         else
         {
-            // 이동하지 않을 때는 SubState 초기화
+            // ?씠?룞?븯吏? ?븡?쓣 ?븣?뒗 SubState 珥덇린?솕
             Clear_SubState();
             m_fSprintTime = 0.f;
             Remove_Status(CHARGING_SPRINT);
@@ -1205,15 +1204,15 @@ void CKhazan_GSword::Move_Input(_float fTimeDelta)
 
 _bool CKhazan_GSword::Skill_Input(_float fTimeDelta)
 {
-    // 스킬이 끝났는지 체크
+    // ?뒪?궗?씠 ?걹?궗?뒗吏? 泥댄겕
     if (Has_State(CAT::M_SKILL) && m_pAnimAttack && !m_pAnimAttack->Is_Skilling())
     {
-       // m_pClientInstance->Set_UsedSkill(m_iCurSkillIndex, false); //내부에서 해결 
+       // m_pClientInstance->Set_UsedSkill(m_iCurSkillIndex, false); //?궡遺??뿉?꽌 ?빐寃? 
         Clear_Step1();
         return false;
     }
 
-    ///* 투지, 스태미나  스탯 확인 - attack 안에서 검사 */
+    ///* ?닾吏?, ?뒪?깭誘몃굹  ?뒪?꺈 ?솗?씤 - attack ?븞?뿉?꽌 寃??궗 */
 
     if (m_pGameInstance->Key_Down(DIK_Q))
     {
@@ -1321,13 +1320,13 @@ _bool CKhazan_GSword::Skill_Input(_float fTimeDelta)
 _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
 {
 
-    /* 스태미나 확인 */
+    /* ?뒪?깭誘몃굹 ?솗?씤 */
     if (m_pPlayerData->fCulStamina <= 0.1f) {
         //Clear_Step0();
         return false;
     }
 
-    /* 야매 부르탈 */
+    /* ?빞留? 遺?瑜댄깉 */
     if (m_pGameInstance->Key_Down(DIK_Y))
     {
         Add_Status(BRUTAL_BEGIN | BRUTAL_READY);
@@ -1343,7 +1342,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
     }
 
 
-    /* 강한 공격 1타  + 차징 + 스킬: 숨통끊기들 판별 */
+    /* 媛뺥븳 怨듦꺽 1???  + 李⑥쭠 + ?뒪?궗: ?닲?넻?걡湲곕뱾 ?뙋蹂? */
     if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
     {
         m_fChargingStrongAttackTime = 0.f;
@@ -1359,11 +1358,11 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
             if (m_fChargingStrongAttackTime >= m_fChargingStartIntervalTime)
             {
 
-                /* 예약중인 공격 대기가 있으면 true */
+                /* ?삁?빟以묒씤 怨듦꺽 ???湲곌?? ?엳?쑝硫? true */
                 if (Has_State(CAT::M_ATTACK) && m_pAnimAttack->Is_Reserve())
                     return true;
 
-                /* 스킬 : 숨통끊기 : 선혈 */
+                /* ?뒪?궗 : ?닲?넻?걡湲? : ?꽑?삁 */
                 if (m_pAnimAttack->Is_PossibleBreathtaking_BloodShed())
                 {
                     _bool isTryAttack = false; 
@@ -1388,17 +1387,17 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
                 }
 
      
-                // 공격이 끝났는지 체크
+                // 怨듦꺽?씠 ?걹?궗?뒗吏? 泥댄겕
                 if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Is_Attacking())
                 {
                     Clear_Step0();
                     return false;
                 }
-                /* 콤보 공격 중인지 체크  */
+                /* 肄ㅻ낫 怨듦꺽 以묒씤吏? 泥댄겕  */
                 if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Can_NextCombo() && !Has_Status(CHARGING_FAST_ATTACK))
                     return false;
 
-                /* 강한 차징 공격 */
+                /* 媛뺥븳 李⑥쭠 怨듦꺽 */
                 if (m_pAnimAttack->Try_ChageStrongAttack()) {
                     Remove_State(CAT::M_MOVE);
                     AllClear_CycleState();
@@ -1421,22 +1420,22 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
         _bool wasCharging = Has_Status(CHARGING_STRONG_ATTACK);
         Remove_Status(CHARGING_STRONG_ATTACK);
 
-        // 차징 안했으면 일반 강공격
+        // 李⑥쭠 ?븞?뻽?쑝硫? ?씪諛? 媛뺢났寃?
         if (!wasCharging && m_fChargingFastAttackTime < m_fChargingStartIntervalTime)
         {
 
-            /* 예약중인 공격 대기가 있으면 true */
+            /* ?삁?빟以묒씤 怨듦꺽 ???湲곌?? ?엳?쑝硫? true */
             if (Has_State(CAT::M_ATTACK) && m_pAnimAttack->Is_Reserve())
                 return true;
 
             _bool isTryAttack = false;
-            /* 스킬 : 숨통끊기 */
+            /* ?뒪?궗 : ?닲?넻?걡湲? */
             if (m_pAnimAttack->Is_PossibleBreathtaking())
             {
                 if (m_pAnimAttack->Try_SkillAttack(GS_SKILL::BREATHTAKING)) isTryAttack = true;
                 else if (m_pAnimAttack->Reserve_SkillAttack(GS_SKILL::BREATHTAKING)) isTryAttack = true;
             }
-            /* 스킬 : 숨통끊기 : 태동 */
+            /* ?뒪?궗 : ?닲?넻?걡湲? : ?깭?룞 */
             if (m_pAnimAttack->Is_PossibleBreathtaking_Embryonic())
             {
                 if (m_pAnimAttack->Try_SkillAttack(GS_SKILL::BREATHTAKING_EMBRYONIC)) isTryAttack = true;
@@ -1456,17 +1455,17 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
                 return true;
             }
 
-            // 공격이 끝났는지 체크
+            // 怨듦꺽?씠 ?걹?궗?뒗吏? 泥댄겕
             if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Is_Attacking())
             {
                 Clear_Step0();
                 return false;
             }
-            /* 콤보 공격 중인지 체크  */
+            /* 肄ㅻ낫 怨듦꺽 以묒씤吏? 泥댄겕  */
             if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Can_NextCombo() && !Has_Status(CHARGING_FAST_ATTACK))
                 return false;
 
-            /* 일반 강공격  */
+            /* ?씪諛? 媛뺢났寃?  */
             if (!Has_Status(CHARGING_STRONG_ATTACK) && m_pAnimAttack->Try_StrongAttack())
             {
 
@@ -1484,7 +1483,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
         }
         else if (wasCharging)
         {
-            // 공격 상태 해제
+            // 怨듦꺽 ?긽?깭 ?빐?젣
             if (m_pAnimAttack)
             {
                 m_pAnimAttack->Exit();
@@ -1495,23 +1494,23 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
     }
 
 
-    /* 예약중인 공격 대기가 있으면 true */
+    /* ?삁?빟以묒씤 怨듦꺽 ???湲곌?? ?엳?쑝硫? true */
     if (Has_State(CAT::M_ATTACK) && m_pAnimAttack->Is_Reserve())
         return true;
-    // 공격이 끝났는지 체크
+    // 怨듦꺽?씠 ?걹?궗?뒗吏? 泥댄겕
     if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Is_Attacking())
     {
         Clear_Step0();
         return false;
     }
-    /* 콤보 공격 중인지 체크  */
+    /* 肄ㅻ낫 怨듦꺽 以묒씤吏? 泥댄겕  */
     if (Has_State(CAT::M_ATTACK) && m_pAnimAttack && !m_pAnimAttack->Can_NextCombo() && !Has_Status(CHARGING_FAST_ATTACK))
         return false;
 
 
 
 
-    /*  브루탈 공격.*/
+    /*  釉뚮（?깉 怨듦꺽.*/
     if (Has_Status(BRUTAL_READY) && m_pGameInstance->Key_Down(DIK_T))
     {
         if (m_pAnimAttack->Try_GrappleAttack())
@@ -1525,7 +1524,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
     }
 
 
-    /* dodge 공격 */
+    /* dodge 怨듦꺽 */
    // if ((m_iPrevMainState & CAT::M_MOVE) && (m_iPrevSubState & MOV::MOVE_DODGE) && (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB)))
     if (Has_Status(DODGING) && (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB)))
     {
@@ -1544,7 +1543,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
         }
     }
 
-    /* Sprint 공격  - 애니메이션 자체가 이상함. 한 프레임 순간에 순간이동함 - 사용 xxx */
+    /* Sprint 怨듦꺽  - ?븷?땲硫붿씠?뀡 ?옄泥닿?? ?씠?긽?븿. ?븳 ?봽?젅?엫 ?닚媛꾩뿉 ?닚媛꾩씠?룞?븿 - ?궗?슜 xxx */
     //if ((m_iPrevMainState & CAT::M_MOVE) && (m_iPrevSubState & MOV::MOVE_SPRINT) && (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB) || m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB)))
     //{
     //    if (m_pAnimAttack->Try_SprintAttack())
@@ -1557,7 +1556,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
     //    }
     //}
 
-    /* 빠른 공격 3연타 + 차징 */
+    /* 鍮좊Ⅸ 怨듦꺽 3?뿰??? + 李⑥쭠 */
     if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB))
     {
         m_fChargingFastAttackTime = 0.f;
@@ -1572,7 +1571,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
 
             if (m_fChargingFastAttackTime >= m_fChargingStartIntervalTime)
             {
-                /* 빠른 차징 공격 */
+                /* 鍮좊Ⅸ 李⑥쭠 怨듦꺽 */
                 if (m_pAnimAttack->Try_ChageFastAttack()) {
                     Remove_State(CAT::M_MOVE);
                     AllClear_CycleState();
@@ -1595,7 +1594,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
         _bool wasCharging = Has_Status(CHARGING_FAST_ATTACK);
         Remove_Status(CHARGING_FAST_ATTACK);
 
-        // 차징 안했으면 일반 공격
+        // 李⑥쭠 ?븞?뻽?쑝硫? ?씪諛? 怨듦꺽
         if (!wasCharging && m_fChargingFastAttackTime < m_fChargingStartIntervalTime)
         {
             if (m_pAnimAttack->Try_FastAttack())
@@ -1614,7 +1613,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
         }
         else if (wasCharging)
         {
-            // 공격 상태 해제
+            // 怨듦꺽 ?긽?깭 ?빐?젣
             if (m_pAnimAttack)
             {
                 m_pAnimAttack->Exit();
@@ -1630,7 +1629,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
 _bool CKhazan_GSword::Guard_Input(_float fTimeDelta)
 {
 
-    /* 가드 종료*/
+    /* 媛??뱶 醫낅즺*/
     if (/*Has_State(CAT::M_GUARD) && */m_pGameInstance->Key_Up(DIK_LSHIFT))
     {
         m_pAnimGuard->Play_FinishGuard();
@@ -1647,7 +1646,7 @@ _bool CKhazan_GSword::Guard_Input(_float fTimeDelta)
         if (Has_State(CAT::M_DAMAGED)) fAddDesceaseTime = 11.f;
         if (Has_Status(DODGE_ENDING)) fAddDesceaseTime = 4.f;
 
-        /* 그냥 가드 */
+        /* 洹몃깷 媛??뱶 */
         if (m_pAnimGuard->Try_Guard(fAddDesceaseTime))
         {
             Clear_Step3();
@@ -1657,8 +1656,8 @@ _bool CKhazan_GSword::Guard_Input(_float fTimeDelta)
 
     }
 
-    //   /* 가드 성공  */
-       //else if (Has_State(CAT::M_GUARD)&&) //todo 조건 주기
+    //   /* 媛??뱶 ?꽦怨?  */
+       //else if (Has_State(CAT::M_GUARD)&&) //todo 議곌굔 二쇨린
        //{
        //	if (m_pAnimGuard->Try_SuccessGuard(HITDIR))
        //	{
@@ -1666,10 +1665,10 @@ _bool CKhazan_GSword::Guard_Input(_float fTimeDelta)
        //	}
        //}
 
-       /* 가드중 이동 - 방향 입력이 있을 때 */
+       /* 媛??뱶以? ?씠?룞 - 諛⑺뼢 ?엯?젰?씠 ?엳?쓣 ?븣 */
     if (Has_State(CAT::M_GUARD) && m_eDir.iDirFlag > 0)
     {
-        // 방향이 바뀌었거나, 워킹가드가 아닐 때
+        // 諛⑺뼢?씠 諛붾?뚯뿀嫄곕굹, ?썙?궧媛??뱶媛? ?븘?땺 ?븣
         if (!m_pAnimGuard->Is_WalkGuarding() || m_eDir.iDirFlag != m_ePrevDir)
         {
             if (m_pAnimGuard->Try_WalkGuard(m_eDir.iDirFlag))
@@ -1678,12 +1677,12 @@ _bool CKhazan_GSword::Guard_Input(_float fTimeDelta)
             }
         }
     }
-    /* 워킹가드중에 방향키 떼면  */
+    /* ?썙?궧媛??뱶以묒뿉 諛⑺뼢?궎 ?뼹硫?  */
     else if (Has_State(CAT::M_GUARD) && m_eDir.iDirFlag == 0 && m_pAnimGuard->Is_WalkGuarding())
     {
         //Remove_State(CAT::M_MOVE );
         //Remove_SubState(MOV::MOVE_WALK);
-        m_pAnimGuard->Try_Guard(0.f);  // 정지 가드로 전환
+        m_pAnimGuard->Try_Guard(0.f);  // ?젙吏? 媛??뱶濡? ?쟾?솚
         return true;
     }
 
@@ -1698,7 +1697,7 @@ _bool CKhazan_GSword::Interaction_Input(_float fTimeDelta)
     _matrix mat_arm = XMLoadFloat4x4(m_pBody->Get_BoneMatrix("Muscle_L_ForeTwist1"));
     _matrix mat_hand = XMLoadFloat4x4(m_pBody->Get_BoneMatrix("FX_L_Hand_02"));
 
-    //라크리마 
+    //?씪?겕由щ쭏 
     if (m_pGameInstance->Key_Down(DIK_1))
     {
         if (m_pPlayerData->fCulHp < m_pPlayerData->fMaxHp)
@@ -1710,7 +1709,7 @@ _bool CKhazan_GSword::Interaction_Input(_float fTimeDelta)
             }
     }
 
-    //랜턴
+    //?옖?꽩
     if (m_pGameInstance->Key_Down(DIK_2)) {
         _bool isEquip = !m_pLantern->Get_Equipped();
         if (m_pAnimInteraction->Try_Lantern(isEquip))
@@ -1764,7 +1763,7 @@ _bool CKhazan_GSword::Interaction_Input(_float fTimeDelta)
 
 _bool CKhazan_GSword::LadderClimb_Input(_float fTimeDelta)
 {
-    /* 사다리 타기 끝나고 무기 꺼낼때 까지 */
+    /* ?궗?떎由? ???湲? ?걹?굹怨? 臾닿린 爰쇰궪?븣 源뚯?? */
     if (Has_Status(LADDER_CLIMBING_END))
     {
         if (m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed")) && m_pBody->Get_Model()->Check_MinAnimationTime()) {
@@ -1774,7 +1773,7 @@ _bool CKhazan_GSword::LadderClimb_Input(_float fTimeDelta)
         return true;
     }
 
-    /* 사다리 타기 시작시  회전시키기  */
+    /* ?궗?떎由? ???湲? ?떆?옉?떆  ?쉶?쟾?떆?궎湲?  */
     if (Has_Status(LADDER_CLIMBING_ROTATION) && m_pAnimLadder->Is_Climbing()) {
         m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
         Remove_Status(LADDER_CLIMBING_ROTATION);
@@ -1821,14 +1820,14 @@ _bool CKhazan_GSword::LadderClimb_Input(_float fTimeDelta)
 
 void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
 {
-    // 낙하 중에는 애니메이션 변경 금지
+    // ?굺?븯 以묒뿉?뒗 ?븷?땲硫붿씠?뀡 蹂?寃? 湲덉??
     if (Has_Status(FALLING | FALLING_ATTACK | PRE_LAND))
         return;
 
-    /* 닷지하기 */
+    /* ?떣吏??븯湲? */
     if (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_DODGE)&& !m_pAnimMove->IsDodge() )
     {
-        /* 닷지 : 스태미나 소모*/
+        /* ?떣吏? : ?뒪?깭誘몃굹 ?냼紐?*/
         if (m_pPlayerData->fCulStamina != 0.f && !Has_Status(DODGE_ENDING))
         {
             //m_isGhost = true;
@@ -1855,20 +1854,20 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
         }
     }
 
-    // 공격 중일 때는 Move 애니메이션 변경 금지
+    // 怨듦꺽 以묒씪 ?븣?뒗 Move ?븷?땲硫붿씠?뀡 蹂?寃? 湲덉??
     if (Has_State(CAT::M_ATTACK) && m_pAnimAttack->Is_Attacking())
         return;
 
-    // Guard 중일 때도 체크
+    // Guard 以묒씪 ?븣?룄 泥댄겕
     if (Has_State(CAT::M_GUARD) && m_pAnimGuard->Is_Guarding())
         return;
 
-    /*  락온 체크 + 백 닷지 + 닷지가 아니면 */
+    /*  ?씫?삩 泥댄겕 + 諛? ?떣吏? + ?떣吏?媛? ?븘?땲硫? */
     if (Has_Status(LOCKON) && !Has_Status(BACK_DODGE) && !Has_SubState(MOV::MOVE_DODGE)) {
         m_eDir = Calculate_LockOnDirection(fTimeDelt);
     }
 
-    /* 이동중 스페이스바 누르는것 때문에 다시 요청하기  */
+    /* ?씠?룞以? ?뒪?럹?씠?뒪諛? ?늻瑜대뒗寃? ?븣臾몄뿉 ?떎?떆 ?슂泥??븯湲?  */
     if (Has_Status(SPRINT_AGAIN_REQUEST))
     {
         CKhazan_GS_Anim_Move::GS_MOVEINFO info;
@@ -1885,7 +1884,7 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
         Remove_Status(SPRINT_AGAIN_REQUEST);
     }
 
-    /* 락온상태에서 닷지중일 때는 방향 변경 건너뚜ㅣ기*/
+    /* ?씫?삩?긽?깭?뿉?꽌 ?떣吏?以묒씪 ?븣?뒗 諛⑺뼢 蹂?寃? 嫄대꼫?슌?뀭湲?*/
     if (Has_Status(LOCKON) && m_eDir.iDirFlag != m_ePrevDir && !Has_SubState(MOV::MOVE_DODGE))
     {
 
@@ -2002,25 +2001,25 @@ void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
     //if (m_pAnimMove->IsDodge() || m_pAnimAttack->Is_Attacking() || !m_pAnimMove->IsMoving())
     //    return;
 
-    // 낙하 중에는 이동 금지
+    // ?굺?븯 以묒뿉?뒗 ?씠?룞 湲덉??
     if (Has_Status(FALLING | FALLING_ATTACK | PRE_LAND))
         return;
 
-    // 공격 중일 때는 이동하지 않음
+    // 怨듦꺽 以묒씪 ?븣?뒗 ?씠?룞?븯吏? ?븡?쓬
     if (m_pAnimAttack->Is_Attacking()) {
-        //스프린트 체크 강화
+        //?뒪?봽由고듃 泥댄겕 媛뺥솕
         if (Has_SubState(ATT::ATK_SPRINTATK))
             return;
 
-        //애니메이션 최소보장시간
+        //?븷?땲硫붿씠?뀡 理쒖냼蹂댁옣?떆媛?
         if (!m_pBody->Get_Model()->Check_MinAnimationTime())
             return;
     }
-    /* 닷지 일때 이동하지 않음*/
+    /* ?떣吏? ?씪?븣 ?씠?룞?븯吏? ?븡?쓬*/
     if (Has_State(CAT::M_MOVE) && Has_SubState(MOV::MOVE_DODGE))
         return;
 
-    /* stop 애니메이션도 이동 x  */
+    /* stop ?븷?땲硫붿씠?뀡?룄 ?씠?룞 x  */
     for (size_t i = 0; i < 10; i++)
         if (m_iStopMoveIndexTable[i] == m_pBody->Get_Model()->Get_CurAnimIndex()) {
             Remove_State(CAT::M_MOVE);
@@ -2034,7 +2033,7 @@ void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
 
     _vector vPlayerPosition = m_pTransformCom->Get_State(STATE::POSITION);
 
-    /* 속도 설정 */
+    /* ?냽?룄 ?꽕?젙 */
     _float fSpeed = 0.f;
     if (m_pAnimGuard->Is_WalkGuarding())fSpeed = m_fWalkSpeed;
     else if (Has_SubState(MOV::MOVE_SPRINT)) fSpeed = m_fSprintSpeed;
@@ -2042,11 +2041,11 @@ void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
     else if (Has_SubState(MOV::MOVE_RUN)) fSpeed = m_fRunSpeed;
     else if (Has_SubState(MOV::MOVE_INJURED)) fSpeed = m_fInjuredSpeed;
 
-    /*  카메라 기준 이동 방향 벡터 계산  */
+    /*  移대찓?씪 湲곗?? ?씠?룞 諛⑺뼢 踰≫꽣 怨꾩궛  */
     _vector vMoveDirection = XMVectorSet(0.f, 0.f, 0.f, 0.f);
     _bool isMoving = false;
 
-    // m_eWorldDir 사용 (카메라 기준 입력)
+    // m_eWorldDir ?궗?슜 (移대찓?씪 湲곗?? ?엯?젰)
     if (m_eWorldDir.Check_Flag(DIR::F))
     {
         vMoveDirection += vLook;
@@ -2068,7 +2067,7 @@ void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
         isMoving = true;
     }
 
-    /*  이동 적용*/
+    /*  ?씠?룞 ?쟻?슜*/
     if (isMoving)
     {
         vMoveDirection = XMVector3Normalize(vMoveDirection);
@@ -2076,10 +2075,10 @@ void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
         m_pTransformCom->Set_State(STATE::POSITION, vPlayerPosition);
     }
 
-    // 뒤 방향 닷지인지 체크 (B, BR, BL 모두 포함)
+    // ?뮘 諛⑺뼢 ?떣吏??씤吏? 泥댄겕 (B, BR, BL 紐⑤몢 ?룷?븿)
     _bool isBackwardDodge = Has_Status(BACK_DODGE) || (m_eDir.Check_Flag(DIR::B) && Has_SubState(MOV::MOVE_DODGE));
 
-    // 회전 처리
+    // ?쉶?쟾 泥섎━
     if (!isBackwardDodge) {
         if (!Has_SubState(MOV::MOVE_SPRINT) && Has_Status(LOCKON) && m_pCamera && m_pCamera->Get_IsLockOn())
         {
@@ -2087,16 +2086,16 @@ void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
         }
         else
         {
-            /* 락온이 아니면 평상시대로 */
+            /* ?씫?삩?씠 ?븘?땲硫? ?룊?긽?떆???濡? */
             if (Has_State(CAT::M_MOVE) && isMoving)
             {
                 _vector vPlayerLook = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
-                // 타겟 룩 = 이동 방향 (카메라 기준!!!)
+                // ???寃? 猷? = ?씠?룞 諛⑺뼢 (移대찓?씪 湲곗??!!!)
                 _vector vTargetLook = vMoveDirection;
 
                 _float fDotProduct = XMVectorGetX(XMVector3Dot(vPlayerLook, vTargetLook));
 
-                // 회전 시작 조건 (약 5도 이상 차이)
+                // ?쉶?쟾 ?떆?옉 議곌굔 (?빟 5?룄 ?씠?긽 李⑥씠)
                 if (!Has_Status(ROTATION) && fDotProduct < 0.996f)
                 {
                     Add_Status(ROTATION);
@@ -2111,7 +2110,7 @@ void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
 
                     if (t >= 1.0f)
                     {
-                        // 회전 완료
+                        // ?쉶?쟾 ?셿猷?
                         _float yaw = atan2f(XMVectorGetX(vTargetLook), XMVectorGetZ(vTargetLook));
                         _vector q = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), yaw);
                         m_pTransformCom->Set_Quaternion(q);
@@ -2119,7 +2118,7 @@ void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
                     }
                     else
                     {
-                        // 회전 중 - Slerp 보간
+                        // ?쉶?쟾 以? - Slerp 蹂닿컙
                         _vector vInterpolated = XMVector3Normalize(XMVectorLerp(m_vRotateStart, vTargetLook, t));
                         _float yaw = atan2f(XMVectorGetX(vInterpolated), XMVectorGetZ(vInterpolated));
                         _vector q = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), yaw);
@@ -2128,7 +2127,7 @@ void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
                 }
                 else
                 {
-                    // 각도 차이가 작을 때 즉시 회전
+                    // 媛곷룄 李⑥씠媛? ?옉?쓣 ?븣 利됱떆 ?쉶?쟾
                     _float yaw = atan2f(XMVectorGetX(vTargetLook), XMVectorGetZ(vTargetLook));
                     _vector q = XMQuaternionRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), yaw);
                     m_pTransformCom->Set_Quaternion(q);
@@ -2142,7 +2141,7 @@ void CKhazan_GSword::Apply_PlayerMovement(_float fTimeDelta)
 
 void CKhazan_GSword::Check_KeyInput_Direction(_float fTimeDelta)
 {
-    // 카메라 방향 계산
+    // 移대찓?씪 諛⑺뼢 怨꾩궛
     _float4x4 CamWorldMatrix = *m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW);
     _vector vCamLook = XMLoadFloat3((_float3*)&CamWorldMatrix._31);
     vCamLook = XMVector3Normalize(XMVectorSetW(vCamLook, 0.f));
@@ -2165,13 +2164,13 @@ void CKhazan_GSword::Check_KeyInput_Direction(_float fTimeDelta)
     else if (angle >= -5.f * XM_PI / 8.f && angle < -3.f * XM_PI / 8.f)   playerCamDir = PC_LEFT;
     else if (angle >= -3.f * XM_PI / 8.f && angle < -XM_PI / 8.f)         playerCamDir = PC_FRONT_LEFT;
 
-    // 키 입력
+    // ?궎 ?엯?젰
     _bool isW = m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta);
     _bool isS = m_pGameInstance->Key_Pressing(DIK_S, fTimeDelta);
     _bool isA = m_pGameInstance->Key_Pressing(DIK_A, fTimeDelta);
     _bool isD = m_pGameInstance->Key_Pressing(DIK_D, fTimeDelta);
 
-    // 카메라 기준 월드 방향 (이동/회전용)
+    // 移대찓?씪 湲곗?? ?썡?뱶 諛⑺뼢 (?씠?룞/?쉶?쟾?슜)
     m_eWorldDir.Clear_Flag();
     if (isW && !isS && !isA && !isD)      m_eWorldDir.Add_Flag(DIR::F);
     else if (!isW && isS && !isA && !isD) m_eWorldDir.Add_Flag(DIR::B);
@@ -2182,7 +2181,7 @@ void CKhazan_GSword::Check_KeyInput_Direction(_float fTimeDelta)
     else if (!isW && isS && isA && !isD)  m_eWorldDir.Add_Flag(DIR::B | DIR::L);
     else if (!isW && isS && !isA && isD)  m_eWorldDir.Add_Flag(DIR::B | DIR::R);
 
-    // 플레이어 로컬 방향 (애니메이션 선택용)
+    // ?뵆?젅?씠?뼱 濡쒖뺄 諛⑺뼢 (?븷?땲硫붿씠?뀡 ?꽑?깮?슜)
     m_eDir.Clear_Flag();
     if (m_eWorldDir.Check_Flag(DIR::F | DIR::B | DIR::L | DIR::R))
     {
@@ -2198,7 +2197,7 @@ DIRECTION_INFO CKhazan_GSword::Calculate_LockOnDirection(_float fTimeDelta)
     if (!m_pCamera || !m_pCamera->Get_IsLockOn())
         return lockOnDir;
 
-    // 락온 타겟 위치 가져오기
+    // ?씫?삩 ???寃? ?쐞移? 媛??졇?삤湲?
     _float4* pLockOnPos = m_pCamera->Get_LockOnPosition();
     if (!pLockOnPos)
         return lockOnDir;
@@ -2206,24 +2205,24 @@ DIRECTION_INFO CKhazan_GSword::Calculate_LockOnDirection(_float fTimeDelta)
     _vector vTargetPos = XMLoadFloat4(pLockOnPos);
     _vector vPlayerPos = m_pTransformCom->Get_State(STATE::POSITION);
 
-    // 플레이어에서 타겟으로의 방향 (플레이어의 forward)
+    // ?뵆?젅?씠?뼱?뿉?꽌 ???寃잛쑝濡쒖쓽 諛⑺뼢 (?뵆?젅?씠?뼱?쓽 forward)
     _vector vToTarget = XMVector3Normalize(vTargetPos - vPlayerPos);
-    vToTarget = XMVectorSetY(vToTarget, 0.f); // Y축 제거
+    vToTarget = XMVectorSetY(vToTarget, 0.f); // Y異? ?젣嫄?
 
-    // 플레이어의 현재 Look 방향
+    // ?뵆?젅?씠?뼱?쓽 ?쁽?옱 Look 諛⑺뼢
     _vector vPlayerLook = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
     vPlayerLook = XMVectorSetY(vPlayerLook, 0.f);
 
-    // 플레이어의 Right 방향
+    // ?뵆?젅?씠?뼱?쓽 Right 諛⑺뼢
     _vector vPlayerRight = XMVector3Normalize(m_pTransformCom->Get_State(STATE::RIGHT));
 
-    // 카메라 기준 이동 방향 계산
+    // 移대찓?씪 湲곗?? ?씠?룞 諛⑺뼢 怨꾩궛
     _float4x4 CamWorldMatrix = *m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW);
     _vector vCamLook = XMLoadFloat3((_float3*)&CamWorldMatrix._31);
     _vector vCamRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vCamLook));
     _vector vCamForward = XMVector3Normalize(XMVector3Cross(vCamRight, XMVectorSet(0.f, 1.f, 0.f, 0.f)));
 
-    // 입력 방향을 월드 공간에서의 이동 벡터로 변환
+    // ?엯?젰 諛⑺뼢?쓣 ?썡?뱶 怨듦컙?뿉?꽌?쓽 ?씠?룞 踰≫꽣濡? 蹂??솚
     _vector vMoveDir = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 
     _bool isW = m_pGameInstance->Key_Pressing(DIK_W, fTimeDelta);
@@ -2241,12 +2240,12 @@ DIRECTION_INFO CKhazan_GSword::Calculate_LockOnDirection(_float fTimeDelta)
 
     vMoveDir = XMVector3Normalize(vMoveDir);
 
-    // 이동 방향을 타겟 기준 좌표계로 변환
-    // Forward = 타겟 방향, Right = 타겟의 오른쪽
+    // ?씠?룞 諛⑺뼢?쓣 ???寃? 湲곗?? 醫뚰몴怨꾨줈 蹂??솚
+    // Forward = ???寃? 諛⑺뼢, Right = ???寃잛쓽 ?삤瑜몄そ
     _float fDotForward = XMVectorGetX(XMVector3Dot(vMoveDir, vToTarget));
     _float fDotRight = XMVectorGetX(XMVector3Dot(vMoveDir, XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vToTarget)));
 
-    // 8방향 결정 (45도씩 구분)
+    // 8諛⑺뼢 寃곗젙 (45?룄?뵫 援щ텇)
     _float angle = atan2f(fDotRight, fDotForward);
 
     if (angle >= -XM_PI / 8.f && angle < XM_PI / 8.f)
@@ -2271,7 +2270,7 @@ DIRECTION_INFO CKhazan_GSword::Calculate_LockOnDirection(_float fTimeDelta)
 
 void CKhazan_GSword::LockOn_Rotation(_float fTimeDelta)
 {
-    // 락온 상태에서는 항상 타겟을 바라보게
+    // ?씫?삩 ?긽?깭?뿉?꽌?뒗 ?빆?긽 ???寃잛쓣 諛붾씪蹂닿쾶
     _float4* pLockOnPos = m_pCamera->Get_LockOnPosition();
     if (pLockOnPos)
     {
@@ -2282,7 +2281,7 @@ void CKhazan_GSword::LockOn_Rotation(_float fTimeDelta)
         vToTarget = XMVectorSetY(vToTarget, 0.f);
         vToTarget = XMVector3Normalize(vToTarget);
 
-        // 부드러운 회전
+        // 遺??뱶?윭?슫 ?쉶?쟾
         _vector vCurrentLook = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
         _vector vNewLook = XMVector3Normalize(XMVectorLerp(vCurrentLook, vToTarget, 8.f * fTimeDelta));
 
@@ -2318,7 +2317,7 @@ void CKhazan_GSword::Guard_Rotation(_float fTimeDelta)
         XMVectorLerp(m_vGuardRotationStart, m_vGuardRotationEnd, fRatio)
     );
 
-    // 회전 완료 체크
+    // ?쉶?쟾 ?셿猷? 泥댄겕
     if (fRatio >= 1.0f)
     {
         vCurrentLook = m_vGuardRotationEnd;
@@ -2331,7 +2330,7 @@ void CKhazan_GSword::Guard_Rotation(_float fTimeDelta)
 }
 void CKhazan_GSword::Update_LockOn()
 {
-    // 카메라의 락온 상태와 동기화
+    // 移대찓?씪?쓽 ?씫?삩 ?긽?깭??? ?룞湲고솕
     if (m_pCamera)
     {
         _bool   isLockOn = m_pCamera->Get_IsLockOn();
@@ -2351,7 +2350,7 @@ void CKhazan_GSword::Update_Die(_float fTimeDelta)
 {
     if (m_pBody->Get_Model()->Get_CurAnimIndex() == m_iCurAnimIndex && m_pBody->Get_Model()->IsFinished())
     {
-        /* 한번만 들어감.  */
+        /* ?븳踰덈쭔 ?뱾?뼱媛?.  */
         m_iCurAnimIndex = Has_Status(GSWORD)
             ? m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F")
             : m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DownDie_F");
@@ -2407,44 +2406,44 @@ void CKhazan_GSword::ExitStatuePuzzle()
 
 void CKhazan_GSword::Get_HitReaction(_float3 vContactPoint)
 {
-    // 1. 캐릭터의 위치 구하기
+    // 1. 罹먮┃?꽣?쓽 ?쐞移? 援ы븯湲?
     _vector vCharacterPos = m_pTransformCom->Get_State(STATE::POSITION);
 
-    // 2. 캐릭터 -> 접촉점 방향 벡터 계산
+    // 2. 罹먮┃?꽣 -> ?젒珥됱젏 諛⑺뼢 踰≫꽣 怨꾩궛
     _vector vHitDir = XMLoadFloat3(&vContactPoint) - vCharacterPos;
 
-    // 3. 높이 차이 계산 (Y축)
+    // 3. ?넂?씠 李⑥씠 怨꾩궛 (Y異?)
     _float fHeightDiff = XMVectorGetY(vHitDir);
 
-    // 4. XZ 평면 방향 계산
+    // 4. XZ ?룊硫? 諛⑺뼢 怨꾩궛
     _vector vHitDirXZ = XMVectorSetY(vHitDir, 0.f);
 
     _float fLengthSq = XMVectorGetX(XMVector3LengthSq(vHitDirXZ));
-    if (fLengthSq < 0.0001f) // 거의 0인 경우
+    if (fLengthSq < 0.0001f) // 嫄곗쓽 0?씤 寃쎌슦
     {
-        // 기본값: 캐릭터의 정면 방향을 사용
+        // 湲곕낯媛?: 罹먮┃?꽣?쓽 ?젙硫? 諛⑺뼢?쓣 ?궗?슜
         vHitDirXZ = m_pTransformCom->Get_State(STATE::LOOK);
         vHitDirXZ = XMVectorSetY(vHitDirXZ, 0.f);
     }
 
     vHitDirXZ = XMVector3Normalize(vHitDirXZ);
 
-    // 5. 캐릭터의 Forward와 Right 벡터 구하기
+    // 5. 罹먮┃?꽣?쓽 Forward??? Right 踰≫꽣 援ы븯湲?
     _vector vCharacterForward = m_pTransformCom->Get_State(STATE::LOOK);
     vCharacterForward = XMVector3Normalize(vCharacterForward);
 
     _vector vCharacterRight = m_pTransformCom->Get_State(STATE::RIGHT);
     vCharacterRight = XMVector3Normalize(vCharacterRight);
 
-    // 6. 내적으로 방향 계산
+    // 6. ?궡?쟻?쑝濡? 諛⑺뼢 怨꾩궛
     _float fDotForward = XMVectorGetX(XMVector3Dot(vCharacterForward, vHitDirXZ));
     _float fDotRight = XMVectorGetX(XMVector3Dot(vCharacterRight, vHitDirXZ));
 
-    // 7. 각도 계산
+    // 7. 媛곷룄 怨꾩궛
     _float fAngle = atan2f(fDotRight, fDotForward);
     fAngle = XMConvertToDegrees(fAngle);
 
-    // 8. 높이 판단
+    // 8. ?넂?씠 ?뙋?떒
     _float fHeightThreshold = 0.5f;
     bool bIsUp = (fHeightDiff > fHeightThreshold);
 
@@ -2522,13 +2521,13 @@ void CKhazan_GSword::Check_IsInAir(_float fTimeDelta)
         &outNormal
     ))
     {
-        /* 지면에 도달 - 착지 */
+        /* 吏?硫댁뿉 ?룄?떖 - 李⑹?? */
         if (fFraction <= 0.2f)
         {
-            // 낙하 중이었다면 착지 완료
+            // ?굺?븯 以묒씠?뿀?떎硫? 李⑹?? ?셿猷?
             if (Has_Status(FALLING | FALLING_ATTACK | PRE_LAND))
             {
-                // PRE_LAND 상태가 아니면 바로 PRE_LAND로 전환
+                // PRE_LAND ?긽?깭媛? ?븘?땲硫? 諛붾줈 PRE_LAND濡? ?쟾?솚
                 if (!Has_Status(PRE_LAND))
                 {
                     Remove_Status(FALLING);
@@ -2537,13 +2536,13 @@ void CKhazan_GSword::Check_IsInAir(_float fTimeDelta)
                 }
             }
         }
-        /* 착지 직전 - 착지 애니메이션 준비 */
+        /* 李⑹?? 吏곸쟾 - 李⑹?? ?븷?땲硫붿씠?뀡 以?鍮? */
         else if ((Has_Status(FALLING) || Has_Status(FALLING_ATTACK)) && !Has_Status(PRE_LAND) && fFraction <= 0.4f)
         {
             Add_Status(PRE_LAND);
            // cout << " === PRE_LAND !!! ===" << endl;
         }
-        /* 공중 - 낙하 시작 */
+        /* 怨듭쨷 - ?굺?븯 ?떆?옉 */
         else if (!Has_Status(FALLING | FALLING_ATTACK | PRE_LAND) && fFraction > 0.2f)
         {
             Add_Status(FALLING);
@@ -2774,7 +2773,7 @@ HRESULT CKhazan_GSword::Ready_PartObjects()
     m_pLantern = static_cast<CLantern_Khazan_GS*>(Find_PartObject(TEXT("Part_Lantern")));
                        
                  
-    /* 넘겨주기  */         
+    /* ?꽆寃⑥＜湲?  */         
     m_pGSword->Set_GSwordBackPack(m_GSwordBackPack_Matrix);
     m_pGSword->Set_SpearBackPack(m_SpearBackPack_Matrix);
     m_pGSword->Set_matWeaponR(m_pWeaponR_Matrix);
@@ -2826,10 +2825,10 @@ HRESULT CKhazan_GSword::Ready_Collision()
 
 _uint CKhazan_GSword::ConvertCameraToPlayerDir(PLAYER_CAMERA_DIR playerCamDir)
 {
-    // 8방향 변환 테이블
-    // [플레이어가 카메라 기준으로 보는 방향][입력 방향] = 플레이어 기준 방향
+    // 8諛⑺뼢 蹂??솚 ?뀒?씠釉?
+    // [?뵆?젅?씠?뼱媛? 移대찓?씪 湲곗???쑝濡? 蹂대뒗 諛⑺뼢][?엯?젰 諛⑺뼢] = ?뵆?젅?씠?뼱 湲곗?? 諛⑺뼢
     static const _uint conversionTable[8][8] = {
-        // 카메라 입력:    F,  R,  B,  L,  FR, BR, BL, FL
+        // 移대찓?씪 ?엯?젰:    F,  R,  B,  L,  FR, BR, BL, FL
         {DIR::F, DIR::R, DIR::B, DIR::L, (DIR::F | DIR::R), (DIR::B | DIR::R), (DIR::B | DIR::L), (DIR::F | DIR::L)},               /* PC_FRONT */
         {(DIR::F | DIR::L), DIR::F, (DIR::F | DIR::R), DIR::L, DIR::F, (DIR::F | DIR::R), (DIR::B | DIR::R), (DIR::B | DIR::L)},    /* PC_FRONT_RIGHT */
         {DIR::L, DIR::F, DIR::R, DIR::B, (DIR::F | DIR::L), (DIR::F | DIR::R), (DIR::B | DIR::R), (DIR::B | DIR::L)},               /* PC_RIGHT */
@@ -2839,7 +2838,7 @@ _uint CKhazan_GSword::ConvertCameraToPlayerDir(PLAYER_CAMERA_DIR playerCamDir)
         {DIR::R, DIR::B, DIR::L, DIR::F, (DIR::B | DIR::R), (DIR::B | DIR::L), (DIR::F | DIR::L), (DIR::F | DIR::R)},               /* PC_LEFT */
         {(DIR::F | DIR::R), (DIR::B | DIR::R), DIR::B, DIR::F, (DIR::B | DIR::R), DIR::B, (DIR::B | DIR::L), (DIR::F | DIR::L)}     /* PC_FRONT_LEFT */
     };
-    // 입력 방향을 인덱스로 변환
+    // ?엯?젰 諛⑺뼢?쓣 ?씤?뜳?뒪濡? 蹂??솚
     int inputIdx = 0;
 
     if (m_eWorldDir.AllCheck_Flag((DIR::F | DIR::R))) inputIdx = 4;
@@ -2855,11 +2854,11 @@ _uint CKhazan_GSword::ConvertCameraToPlayerDir(PLAYER_CAMERA_DIR playerCamDir)
     return conversionTable[playerCamDir][inputIdx];
 }
 
-#pragma region 상호 작용 맵 오브젝트 이벤트
+#pragma region ?긽?샇 ?옉?슜 留? ?삤釉뚯젥?듃 ?씠踰ㅽ듃
 void CKhazan_GSword::Subscribe_Events()
 {
 
-#pragma region 상호 작용 맵 오브젝트 이벤트
+#pragma region ?긽?샇 ?옉?슜 留? ?삤釉뚯젥?듃 ?씠踰ㅽ듃
     m_iInteractTypeEventID = m_pGameInstance->Subscribe_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), [&](const EventInteractType& e) { m_EventInteract = e; });
 
     m_iObjectInteractEventID = m_pGameInstance->Subscribe_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), [&](const EventObject& e) {
@@ -2891,13 +2890,13 @@ void CKhazan_GSword::Subscribe_Events()
 
 void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
 {
-    // 상호 작용 오브젝트 쪽에서 BEGIN STATE 내보내면 플레이어에서 행동 후, 행동 완료 시 이벤트 발생으로 상호 작용 오브젝트 동작
+    // ?긽?샇 ?옉?슜 ?삤釉뚯젥?듃 履쎌뿉?꽌 BEGIN STATE ?궡蹂대궡硫? ?뵆?젅?씠?뼱?뿉?꽌 ?뻾?룞 ?썑, ?뻾?룞 ?셿猷? ?떆 ?씠踰ㅽ듃 諛쒖깮?쑝濡? ?긽?샇 ?옉?슜 ?삤釉뚯젥?듃 ?룞?옉
     if (EventInteractType::EVENT_STATE::BEGIN == m_EventInteract.eState)
     {
         if (false == m_isInteractEventSetting)
         {
             m_isInteractEventSetting = true;
-            /*  UnArmed 애니메이션 재생  (조각상때는 안함)*/
+            /*  UnArmed ?븷?땲硫붿씠?뀡 ?옱?깮  (議곌컖?긽?븣?뒗 ?븞?븿)*/
             if (!Has_Status(BLOCK_ATK_SKILL_GUARD) && INTERACTIVE_TYPE::TOMBSTONE != m_EventInteract.eInteractType)
             {
                 cout << "@@@@@@@@@@@@@@  PARK !!!!!!!!!!!!!!!!!!! @@@@@@@@@@" << endl;
@@ -2910,7 +2909,7 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
             m_fLerpTime_Event = 0.f;
 
         }
-        // 플레이어 이동, LOOK 보간?? | 완료하면 이벤트 반대로 던져주기
+        // ?뵆?젅?씠?뼱 ?씠?룞, LOOK 蹂닿컙?? | ?셿猷뚰븯硫? ?씠踰ㅽ듃 諛섎??濡? ?뜕?졇二쇨린
         _bool isDone = { true };
 
         switch (m_EventInteract.eInteractType)
@@ -2918,7 +2917,7 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
         case INTERACTIVE_TYPE::CHEST:
         {
             isDone = false;
-            if (m_pBody->Get_Model()->IsFinished())  isDone = true;   /* 현재 재생되는 애니메이션이 UnArmed이고 끝났으면 true로 */
+            if (m_pBody->Get_Model()->IsFinished())  isDone = true;   /* ?쁽?옱 ?옱?깮?릺?뒗 ?븷?땲硫붿씠?뀡?씠 UnArmed?씠怨? ?걹?궗?쑝硫? true濡? */
             break;
         }
         case INTERACTIVE_TYPE::CHECKPOINT:
@@ -3001,94 +3000,94 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
             break;
         }
 
-        /* 플레이어가 오브젝트한테 "나 이제 준비됐어"를 보낸다. */
-        if (isDone)               // 특정 조건 완성하면 이벤트 발생
+        /* ?뵆?젅?씠?뼱媛? ?삤釉뚯젥?듃?븳?뀒 "?굹 ?씠?젣 以?鍮꾨릱?뼱"瑜? 蹂대궦?떎. */
+        if (isDone)               // ?듅?젙 議곌굔 ?셿?꽦?븯硫? ?씠踰ㅽ듃 諛쒖깮
         {
-            // 이벤트에 필요한 세팅을 다음에 또 발생시 변경 가능하게 false로 변경
+            // ?씠踰ㅽ듃?뿉 ?븘?슂?븳 ?꽭?똿?쓣 ?떎?쓬?뿉 ?삉 諛쒖깮?떆 蹂?寃? 媛??뒫?븯寃? false濡? 蹂?寃?
             m_isInteractEventSetting = false;
 
-            // 상호작용 활성화시 맵 오브젝트한테 EVENT_STATE를 ON 으로 던져준다
+            // ?긽?샇?옉?슜 ?솢?꽦?솕?떆 留? ?삤釉뚯젥?듃?븳?뀒 EVENT_STATE瑜? ON ?쑝濡? ?뜕?졇以??떎
             _float4 vPosition = {};
             XMStoreFloat4(&vPosition, m_pTransformCom->Get_State(STATE::POSITION));
             m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OnEvent_Player(vPosition) });
-            // 내 상태를 STATE::NONE 으로 변경해준다.
+            // ?궡 ?긽?깭瑜? STATE::NONE ?쑝濡? 蹂?寃쏀빐以??떎.
             m_EventInteract.eState = EventInteractType::EVENT_STATE::NONE;
         }
     }
 
-    // 상호 작용 오브젝트 쪽에서 END STATE 내보낼 시
+    // ?긽?샇 ?옉?슜 ?삤釉뚯젥?듃 履쎌뿉?꽌 END STATE ?궡蹂대궪 ?떆
     if (EventInteractType::EVENT_STATE::END == m_EventInteract.eState)
     {
-        if (true)               // 특정 조건 완성하면 이벤트 발생
+        if (true)               // ?듅?젙 議곌굔 ?셿?꽦?븯硫? ?씠踰ㅽ듃 諛쒖깮
         {
-            // 상호작용 비활성화시 맵 오브젝트한테 EVENT_STATE를 OFF 로 던져준다
+            // ?긽?샇?옉?슜 鍮꾪솢?꽦?솕?떆 留? ?삤釉뚯젥?듃?븳?뀒 EVENT_STATE瑜? OFF 濡? ?뜕?졇以??떎
             m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OffEvent() });
-            // 내 상태를 STATE::NONE 으로 변경해준다.
+            // ?궡 ?긽?깭瑜? STATE::NONE ?쑝濡? 蹂?寃쏀빐以??떎.
             m_EventInteract.eState = EventInteractType::EVENT_STATE::NONE;
         }
     }
 
-    // 이벤트가 발생 했을 때
+    // ?씠踰ㅽ듃媛? 諛쒖깮 ?뻽?쓣 ?븣
     if (true == m_EventInteract.isEvent)
     {
-        // 귀검일때
+        // 洹?寃??씪?븣
         if (INTERACTIVE_TYPE::CHECKPOINT == m_EventInteract.eInteractType)
         {
             BladeNexus_Event(fTimeDelta);
         }
-        // 상자일때 ( 나중에 창고, 파밍 상자 나눌 예정 )
+        // ?긽?옄?씪?븣 ( ?굹以묒뿉 李쎄퀬, ?뙆諛? ?긽?옄 ?굹?닃 ?삁?젙 )
         if (INTERACTIVE_TYPE::CHEST == m_EventInteract.eInteractType)
         {
             Chest_Event(fTimeDelta);
         }
-        // 비밀방 엠바스 툼스톤일때
+        // 鍮꾨??諛? ?뿞諛붿뒪 ?댘?뒪?넠?씪?븣
         if (INTERACTIVE_TYPE::TOMBSTONE == m_EventInteract.eInteractType)
         {
             TombStone_Event(fTimeDelta);
         }
-        // 엠바스 레버일 때
+        // ?뿞諛붿뒪 ?젅踰꾩씪 ?븣
         if (INTERACTIVE_TYPE::LEVER == m_EventInteract.eInteractType)
         {
             Lever_Event(fTimeDelta);
         }
-        // 조각상 기믹일때
+        // 議곌컖?긽 湲곕?뱀씪?븣
         if (INTERACTIVE_TYPE::STATUE == m_EventInteract.eInteractType)
         {
             Statue_Event(fTimeDelta);
         }
-        // 엠바스 위쪽 잠겨있는 철문을 열때
+        // ?뿞諛붿뒪 ?쐞履? ?옞寃⑥엳?뒗 泥좊Ц?쓣 ?뿴?븣
         if (INTERACTIVE_TYPE::IRONGATE == m_EventInteract.eInteractType)
         {
             IronGate_Event(fTimeDelta);
         }
-        // 엘리베이터 가동 위한 잠금 장치 가동 시  수직 레버
+        // ?뿕由щ쿋?씠?꽣 媛??룞 ?쐞?븳 ?옞湲? ?옣移? 媛??룞 ?떆  ?닔吏? ?젅踰?
         if (INTERACTIVE_TYPE::UNLOCKGEAR == m_EventInteract.eInteractType)
         {
             UnLockGear_Event(fTimeDelta);
         }
-        // 엘리베이터 가동 위한 잠금 장치 가동 시
+        // ?뿕由щ쿋?씠?꽣 媛??룞 ?쐞?븳 ?옞湲? ?옣移? 媛??룞 ?떆
         if (INTERACTIVE_TYPE::GIANTGATE == m_EventInteract.eInteractType)
         {
             GiantGate_Event(fTimeDelta);
         }
-        // NPC 랑 상호 작용 시
+        // NPC ?옉 ?긽?샇 ?옉?슜 ?떆
         if (true == m_EventInteract.isNPC())
         {
             NPC_Event(fTimeDelta);
         }
-        // 사다리랑 상호 작용 시
+        // ?궗?떎由щ옉 ?긽?샇 ?옉?슜 ?떆
         if (INTERACTIVE_TYPE::LADDER == m_EventInteract.eInteractType)
         {
             Ladder_Event(fTimeDelta);
         }
-        // 귀석이랑 상호 작용 시
+        // 洹??꽍?씠?옉 ?긽?샇 ?옉?슜 ?떆
         if (INTERACTIVE_TYPE::DESTINYSTONE == m_EventInteract.eInteractType)
         {
             m_EventInteract.End_Event();
         }
     }
 
-    /* 수직 레버 동기화 시 */
+    /* ?닔吏? ?젅踰? ?룞湲고솕 ?떆 */
     if (m_isInteractEventStart)
     {
         _uint iCurUnArmedAnimIndex{};
@@ -3102,7 +3101,7 @@ void CKhazan_GSword::Event_Interact_Object(_float fTimeDelta)
 
     }
 
-    /* 사다리 끝남 */
+    /* ?궗?떎由? ?걹?궓 */
     if (m_isLadderEndEvent)
     {
         if (!m_isLadderRotationEvent && m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_ClimbDn_D_End_Start")) && m_pBody->Get_Model()->Check_MinAnimationTime())
@@ -3137,14 +3136,14 @@ void CKhazan_GSword::BladeNexus_Event(_float fTimeDelta)
 {
     EventBladeNexus BNEvent = m_EventInteract.BNEvent;
 
-    // 귀검에 접촉 후 상호 작용 ( 귀검 가동 )
+    // 洹?寃??뿉 ?젒珥? ?썑 ?긽?샇 ?옉?슜 ( 洹?寃? 媛??룞 )
     if (false == BNEvent.isBNOpened)
     {
 
-        // 귀검 첫 해금 시
+        // 洹?寃? 泥? ?빐湲? ?떆
         if (true == BNEvent.isUnLock)
         {
-            // 첫 해금 플레이어    애니메이션 재생 
+            // 泥? ?빐湲? ?뵆?젅?씠?뼱    ?븷?땲硫붿씠?뀡 ?옱?깮 
             if (m_pAnimInteraction->Try_DamagedTS_Before(Has_Status(GSWORD | SPEAR)))
             {
                 //if (Has_Status(GSWORD | SPEAR))
@@ -3157,10 +3156,10 @@ void CKhazan_GSword::BladeNexus_Event(_float fTimeDelta)
                 m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
             }
         }
-        // 이미 해금된 귀검
+        // ?씠誘? ?빐湲덈맂 洹?寃?
         else if (false == BNEvent.isUnLock)
         {
-            // 해금된 귀검 플레이어 애니메이션 재생
+            // ?빐湲덈맂 洹?寃? ?뵆?젅?씠?뼱 ?븷?땲硫붿씠?뀡 ?옱?깮
             if (m_pAnimInteraction->Try_DamagedTS_After(Has_Status(GSWORD | SPEAR)))
             {
                // if (Has_Status(GSWORD | SPEAR))
@@ -3174,23 +3173,23 @@ void CKhazan_GSword::BladeNexus_Event(_float fTimeDelta)
             }
         }
 
-        // 플레이어 Look -> 귀검 ( 기우는거 보정하려고 이렇게 코드 넣어놨습니다. )
+        // ?뵆?젅?씠?뼱 Look -> 洹?寃? ( 湲곗슦?뒗嫄? 蹂댁젙?븯?젮怨? ?씠?젃寃? 肄붾뱶 ?꽔?뼱?넧?뒿?땲?떎. )
         BNEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         m_pTransformCom->LookAt(XMLoadFloat4(&BNEvent.vPosition));
         m_pClientInstance->Start_ForceOrbit(CAMERA_FORCE_DIR::FRONT);
     }
-    // 귀검 가동 끝나고 UI 팝업 ( 귀검 UI 창 활성화 ) ( 플레이어는 LOOP 애니메이션 )
+    // 洹?寃? 媛??룞 ?걹?굹怨? UI ?뙘?뾽 ( 洹?寃? UI 李? ?솢?꽦?솕 ) ( ?뵆?젅?씠?뼱?뒗 LOOP ?븷?땲硫붿씠?뀡 )
     else if (true == BNEvent.isBNOpened)
     {
-        // 귀검 첫 해금 시
+        // 洹?寃? 泥? ?빐湲? ?떆
         if (true == BNEvent.isUnLock)
         {
-            // 첫 해금 플레이어 귀검 LOOP Animation?
+            // 泥? ?빐湲? ?뵆?젅?씠?뼱 洹?寃? LOOP Animation?
         }
-        // 이미 해금된 귀검
+        // ?씠誘? ?빐湲덈맂 洹?寃?
         else if (false == BNEvent.isUnLock)
         {
-            // 해금 된 플레이어 귀검 LOOP Animation?
+            // ?빐湲? ?맂 ?뵆?젅?씠?뼱 洹?寃? LOOP Animation?
         }
     }
 
@@ -3201,10 +3200,10 @@ void CKhazan_GSword::Chest_Event(_float fTimeDelta)
 {
     EventChest ChestEvent = m_EventInteract.ChestEvent;
 
-    // 상자에 접촉 후 상호 작용 ( 닫힌 상태 )
+    // ?긽?옄?뿉 ?젒珥? ?썑 ?긽?샇 ?옉?슜 ( ?떕?엺 ?긽?깭 )
     if (false == ChestEvent.isChestOpened)
     {
-        /* 애니메이션 재생 */
+        /* ?븷?땲硫붿씠?뀡 ?옱?깮 */
         if (m_pAnimInteraction->Try_BoxOpen(Has_Status(GSWORD | SPEAR)))
         {
             //m_pBody->Get_Model()->AnimationSetIndexIncrease();
@@ -3214,14 +3213,14 @@ void CKhazan_GSword::Chest_Event(_float fTimeDelta)
         }
 
         ChestEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-        // 플레이어 Look -> 상자, Position 상자 본 위치로 이동 ( 기우는거 보정 )
+        // ?뵆?젅?씠?뼱 Look -> ?긽?옄, Position ?긽?옄 蹂? ?쐞移섎줈 ?씠?룞 ( 湲곗슦?뒗嫄? 蹂댁젙 )
         m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&ChestEvent.vPlayerPosition));
         ChestEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         m_pTransformCom->LookAt(XMLoadFloat4(&ChestEvent.vPosition));
 
         m_EventInteract.End_Event();
     }
-    // 상자 열리는 애니메이션 종료되면 ( 열린 상태 )
+    // ?긽?옄 ?뿴由щ뒗 ?븷?땲硫붿씠?뀡 醫낅즺?릺硫? ( ?뿴由? ?긽?깭 )
     else if (true == ChestEvent.isChestOpened)
     {
         m_fEventTimeAcc += fTimeDelta;
@@ -3260,16 +3259,16 @@ void CKhazan_GSword::TombStone_Event(_float fTimeDelta)
 {
     EventTombStone TSEvent = m_EventInteract.TSEvent;
 
-    // 툼스톤에 접촉 후 상호 작용 ( 툼스톤 가동 )
+    // ?댘?뒪?넠?뿉 ?젒珥? ?썑 ?긽?샇 ?옉?슜 ( ?댘?뒪?넠 媛??룞 )
     if (false == TSEvent.isTSOpened)
     {
         TSEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-        // 플레이어 Look -> 툼스톤 ( 기우는거 보정하려고 이렇게 코드 넣어놨습니다. )
+        // ?뵆?젅?씠?뼱 Look -> ?댘?뒪?넠 ( 湲곗슦?뒗嫄? 蹂댁젙?븯?젮怨? ?씠?젃寃? 肄붾뱶 ?꽔?뼱?넧?뒿?땲?떎. )
         m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&TSEvent.vPlayerPosition));
         TSEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         m_pTransformCom->LookAt(XMLoadFloat4(&TSEvent.vPosition));
     }
-    // 툼스톤 가동 끝나고 가동 LOOP 진입
+    // ?댘?뒪?넠 媛??룞 ?걹?굹怨? 媛??룞 LOOP 吏꾩엯
     else if (true == TSEvent.isTSOpened)
     {
         m_pCharVirCom->Teleport(XMLoadFloat4(&TSEvent.vPlayerTPPos), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
@@ -3281,10 +3280,10 @@ void CKhazan_GSword::Lever_Event(_float fTimeDelta)
 {
     EventLever LeverEvent = m_EventInteract.LeverEvent;
 
-    // 레버가 Active 로 전환 중일 때
+    // ?젅踰꾧?? Active 濡? ?쟾?솚 以묒씪 ?븣
     if (EventLever::ACTIVE == LeverEvent.eState)
     {
-        /* 애니메이션 재생 */
+        /* ?븷?땲硫붿씠?뀡 ?옱?깮 */
         if (m_pAnimInteraction->Try_Lever(Has_Status(GSWORD | SPEAR)))
         {
             //m_pBody->Get_Model()->AnimationSetIndexIncrease();
@@ -3295,18 +3294,18 @@ void CKhazan_GSword::Lever_Event(_float fTimeDelta)
         }
 
         LeverEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-        // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+        // ?뵆?젅?씠?뼱 Look -> ?젅踰?, Position ?젅踰? 蹂? ?쐞移섎줈 ?씠?룞 ( 湲곗슦?뒗嫄? 蹂댁젙 )
         m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&LeverEvent.vPlayerPosition));
         LeverEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         m_pTransformCom->LookAt(XMLoadFloat4(&LeverEvent.vPosition));
     }
-    // 레버가 DeActive 로 전환 중일 때
+    // ?젅踰꾧?? DeActive 濡? ?쟾?솚 以묒씪 ?븣
     else if (EventLever::DEACTIVE == LeverEvent.eState)
     {
-        // 플레이어가 레버를 DeActive 시키는 애니메이션 재생
+        // ?뵆?젅?씠?뼱媛? ?젅踰꾨?? DeActive ?떆?궎?뒗 ?븷?땲硫붿씠?뀡 ?옱?깮
 
         LeverEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-        // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+        // ?뵆?젅?씠?뼱 Look -> ?젅踰?, Position ?젅踰? 蹂? ?쐞移섎줈 ?씠?룞 ( 湲곗슦?뒗嫄? 蹂댁젙 )
         m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&LeverEvent.vPlayerPosition));
         LeverEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
         m_pTransformCom->LookAt(XMLoadFloat4(&LeverEvent.vPosition));
@@ -3318,7 +3317,7 @@ void CKhazan_GSword::Statue_Event(_float fTimeDelta)
 {
     EventStatue StatueEvent = m_EventInteract.StatueEvent;
 
-    /* 애니메이션 재생 */
+    /* ?븷?땲硫붿씠?뀡 ?옱?깮 */
     if (m_pAnimInteraction->Try_Statue(false))
     {
         Clear_State();
@@ -3328,7 +3327,7 @@ void CKhazan_GSword::Statue_Event(_float fTimeDelta)
 
 
     StatueEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    // ?뵆?젅?씠?뼱 Look -> ?젅踰?, Position ?젅踰? 蹂? ?쐞移섎줈 ?씠?룞 ( 湲곗슦?뒗嫄? 蹂댁젙 )
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&StatueEvent.vPlayerPosition));
     StatueEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&StatueEvent.vPosition));
@@ -3339,7 +3338,7 @@ void CKhazan_GSword::IronGate_Event(_float fTimeDelta)
 {
     EventIronGate IronGateEvent = m_EventInteract.IronGateEvent;
 
-    /* 애니메이션 재생 */
+    /* ?븷?땲硫붿씠?뀡 ?옱?깮 */
     if (m_pAnimInteraction->Try_IronGate(Has_Status(GSWORD | SPEAR)))
     {
        // m_pBody->Get_Model()->AnimationSetIndexIncrease();
@@ -3350,7 +3349,7 @@ void CKhazan_GSword::IronGate_Event(_float fTimeDelta)
 
 
     IronGateEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    // ?뵆?젅?씠?뼱 Look -> ?젅踰?, Position ?젅踰? 蹂? ?쐞移섎줈 ?씠?룞 ( 湲곗슦?뒗嫄? 蹂댁젙 )
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&IronGateEvent.vPlayerPosition));
     IronGateEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&IronGateEvent.vPosition));
@@ -3361,7 +3360,7 @@ void CKhazan_GSword::UnLockGear_Event(_float fTimeDelta)
 {
     EventUnLockGear ULGearEvent = m_EventInteract.UnLockGearEvent;
 
-    /* 애니메이션 재생 */
+    /* ?븷?땲硫붿씠?뀡 ?옱?깮 */
     if (m_pAnimInteraction->Try_UnLockGear(Has_Status(GSWORD | SPEAR)))
     {
         //m_pBody->Get_Model()->AnimationSetIndexIncrease();
@@ -3373,7 +3372,7 @@ void CKhazan_GSword::UnLockGear_Event(_float fTimeDelta)
 
 
     ULGearEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    // ?뵆?젅?씠?뼱 Look -> ?젅踰?, Position ?젅踰? 蹂? ?쐞移섎줈 ?씠?룞 ( 湲곗슦?뒗嫄? 蹂댁젙 )
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&ULGearEvent.vPlayerPosition));
     ULGearEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&ULGearEvent.vPosition));
@@ -3384,7 +3383,7 @@ void CKhazan_GSword::GiantGate_Event(_float fTimeDelta)
 {
     EventGiantGate GateEvent = m_EventInteract.GiantGateEvent;
 
-    /* 애니메이션 재생 */
+    /* ?븷?땲硫붿씠?뀡 ?옱?깮 */
     if (m_pAnimInteraction->Try_GiantGate(Has_Status(GSWORD | SPEAR)))
     {
         //m_pBody->Get_Model()->AnimationSetIndexIncrease();
@@ -3396,7 +3395,7 @@ void CKhazan_GSword::GiantGate_Event(_float fTimeDelta)
 
 
     GateEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    // ?뵆?젅?씠?뼱 Look -> ?젅踰?, Position ?젅踰? 蹂? ?쐞移섎줈 ?씠?룞 ( 湲곗슦?뒗嫄? 蹂댁젙 )
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&GateEvent.vPlayerPosition));
     GateEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&GateEvent.vPosition));
@@ -3413,7 +3412,7 @@ void CKhazan_GSword::NPC_Event(_float fTimeDelta)
         m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Armed"));
 
     NPCEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
-    // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
+    // ?뵆?젅?씠?뼱 Look -> ?젅踰?, Position ?젅踰? 蹂? ?쐞移섎줈 ?씠?룞 ( 湲곗슦?뒗嫄? 蹂댁젙 )
     m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&NPCEvent.vPlayerPosition));
     NPCEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1];
     m_pTransformCom->LookAt(XMLoadFloat4(&NPCEvent.vPosition));
@@ -3484,18 +3483,18 @@ void CKhazan_GSword::Ladder_Event(_float fTimeDelta)
         break;
     }
     default:
-        MSG_BOX(TEXT("읭 사다리 이런거 없는디"));
+        MSG_BOX(TEXT("?씘 ?궗?떎由? ?씠?윴嫄? ?뾾?뒗?뵒"));
         break;
     }
 
     if (true == LadderEvent.isStartAction())
     {
-        LadderEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 0.1f ; //플레이어가 이동할 위치 y 
+        LadderEvent.vPlayerPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 0.1f ; //?뵆?젅?씠?뼱媛? ?씠?룞?븷 ?쐞移? y 
 
-        // 플레이어 Look -> 레버, Position 레버 본 위치로 이동 ( 기우는거 보정 )
-        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&LadderEvent.vPlayerPosition));  //순간이동
-        LadderEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1]; // 레더 위치 
-        m_pTransformCom->LookAt(XMLoadFloat4(&LadderEvent.vPosition)); //꼬라보기 
+        // ?뵆?젅?씠?뼱 Look -> ?젅踰?, Position ?젅踰? 蹂? ?쐞移섎줈 ?씠?룞 ( 湲곗슦?뒗嫄? 蹂댁젙 )
+        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&LadderEvent.vPlayerPosition));  //?닚媛꾩씠?룞
+        LadderEvent.vPosition.y = m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1]; // ?젅?뜑 ?쐞移? 
+        m_pTransformCom->LookAt(XMLoadFloat4(&LadderEvent.vPosition)); //瑗щ씪蹂닿린 
     }
 
     m_EventInteract.End_Event();
@@ -3504,7 +3503,7 @@ void CKhazan_GSword::Lerp_Position_ByInteractEvent(_float4 vTargetPos, _float4 v
 {
     _float4 vPos = vTargetPos;
 
-    // y값 보정
+    // y媛? 蹂댁젙
     vPos.y = vStartPos.y;
 
     m_fLerpTime_Event += fTimeDelta;
@@ -4006,7 +4005,7 @@ void CKhazan_GSword::Debug_Widget_Guard()
     ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Body Collision States");
     ImGui::Separator();
 
-    // 여기서 Body의 정보를 가져올 수 있다면 표시
+    // ?뿬湲곗꽌 Body?쓽 ?젙蹂대?? 媛??졇?삱 ?닔 ?엳?떎硫? ?몴?떆
     ImGui::Text("Note: Add Get functions to Body for collision states");
 
     ImGui::Separator();
@@ -4222,19 +4221,19 @@ void CKhazan_GSword::Free()
 //
 //    Update_LockOn();
 //
-//    // 입력 → Command 생성
+//    // ?엯?젰 ?넂 Command ?깮?꽦
 //    Process_Input(fTimeDelta);
 //
-//    // 생선된 commands로 어떤 애니메이션을 재생할지 정하기 
+//    // ?깮?꽑?맂 commands濡? ?뼱?뼡 ?븷?땲硫붿씠?뀡?쓣 ?옱?깮?븷吏? ?젙?븯湲? 
 //    Update_State(fTimeDelta);
 //
-//    // 애니메이션 실행 및 상태별 로직 실행시키기 (최소 보장 시간으로 위에서 정한 애니메이션 무시하기 )
+//    // ?븷?땲硫붿씠?뀡 ?떎?뻾 諛? ?긽?깭蹂? 濡쒖쭅 ?떎?뻾?떆?궎湲? (理쒖냼 蹂댁옣 ?떆媛꾩쑝濡? ?쐞?뿉?꽌 ?젙?븳 ?븷?땲硫붿씠?뀡 臾댁떆?븯湲? )
 //    Update_Animation(fTimeDelta);
 //
-//    // 이동/회전 적용
+//    // ?씠?룞/?쉶?쟾 ?쟻?슜
 //    Update_Movement(fTimeDelta);
 //
-//    // 전투 로직( hp / stamina / status 관리 / 넉백..?  )
+//    // ?쟾?닾 濡쒖쭅( hp / stamina / status 愿?由? / ?꼮諛?..?  )
 //    Update_Combat(fTimeDelta);
 //
 //
@@ -4303,7 +4302,7 @@ void CKhazan_GSword::Free()
 //
 //void CKhazan_GSword::Update_Animation(_float fTimeDelta)
 //{
-//    /* 선별된 커맨드 넘겨주기  */
+//    /* ?꽑蹂꾨맂 而ㅻ㎤?뱶 ?꽆寃⑥＜湲?  */
 //    m_pAnimController->Set_Command(m_pStateMachine->Get_SelectedCommand());
 //    m_pAnimController->Update(fTimeDelta);
 //}
@@ -4319,7 +4318,7 @@ void CKhazan_GSword::Free()
 //
 //void CKhazan_GSword::Update_LockOn()
 //{
-//    // 카메라의 락온 상태와 동기화
+//    // 移대찓?씪?쓽 ?씫?삩 ?긽?깭??? ?룞湲고솕
 //    if (m_pCamera)
 //        m_isLockOn = m_pCamera->Get_IsLockOn();
 //}
