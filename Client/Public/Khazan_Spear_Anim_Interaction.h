@@ -28,6 +28,8 @@ public:
     _bool            Try_BoxOpen(_bool isUsedSet);
     _bool            Try_Lachryma();
     _bool            Try_Heal();
+    _bool            Try_Teleport();
+
 
 public:
     _bool           Is_Interaction() const { return m_isInteraction; }

@@ -905,6 +905,43 @@ void CModel::Capture_CurrentFrameMatrices(vector<_float4x4>& OutBoneMatrices, _f
             else
                 *pOutWorldMatrix = *m_pTransformMatrix;
         }
+
+
+          // 디버그
+        //if (nullptr != pOutWorldMatrix)
+        //{
+        //    if (nullptr != m_pOwnerTransform)
+        //    {
+        //        OutputDebugStringA("[Capture] Using m_pOwnerTransform\n");
+        //        *pOutWorldMatrix = *m_pOwnerTransform->Get_WorldMatrixPtr();
+        //    }
+        //    else if (nullptr != m_pTransformMatrix)
+        //    {
+        //        OutputDebugStringA("[Capture] Using m_pTransformMatrix\n");
+        //        *pOutWorldMatrix = *m_pTransformMatrix;
+        //    }
+        //    else if (nullptr != m_pOwnerTransformMatrix)
+        //    {
+        //        OutputDebugStringA("[Capture] Using m_pOwnerTransformMatrix\n");
+        //        *pOutWorldMatrix = *m_pOwnerTransformMatrix;
+        //    }
+        //    else
+        //    {
+        //        OutputDebugStringA("[Capture] WARNING: No world matrix source!\n");
+        //        XMStoreFloat4x4(pOutWorldMatrix, XMMatrixIdentity());
+        //    }
+
+        //    // 스케일 확인
+        //    _vector vScale, vRot, vTrans;
+        //    XMMatrixDecompose(&vScale, &vRot, &vTrans, XMLoadFloat4x4(pOutWorldMatrix));
+
+        //    XMFLOAT3 scale;
+        //    XMStoreFloat3(&scale, vScale);
+
+        //    char buf[256];
+        //    sprintf_s(buf, "[Capture] Scale: (%.6f, %.6f, %.6f)\n", scale.x, scale.y, scale.z);
+        //    OutputDebugStringA(buf);
+        //}
     }
 }
 
