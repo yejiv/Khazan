@@ -341,7 +341,7 @@ HRESULT CGSword_Khazan_GS::Ready_Components()
 
     CPlayerData_Manager::PLAYER_EQUIPMENT equipment = m_pClientInstance->Get_PlayerEquipment();
     if (equipment.isSpear)
-        m_pModelCom = equipment.iSpear == 4011 ? m_pModelCom_Punish_Spear : m_pModelCom_Flash_Spear;
+        m_pModelCom = equipment.iSpear == 4011 ?  m_pModelCom_Flash_Spear : m_pModelCom_Punish_Spear;
     if (equipment.isGSword)
         m_pModelCom = equipment.iGSword == 4001 ? m_pModelCom_Meteor_GSword : m_pModelCom_Execution_GSword;
     Safe_AddRef(m_pModelCom);

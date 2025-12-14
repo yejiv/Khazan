@@ -107,6 +107,7 @@ public:
     void	Set_Camera(class CCamera_Compre* pCamera);
     void    Set_Position(_float4 vPos);
 
+    class CBody_Khazan_GS* Get_Khazan_Body() { return m_pBody; }
 
     void            EnterStatuePuzzle(); //조각상 돌리기 모드 on
     void            ExitStatuePuzzle(); //조각상 돌리기 모드 off

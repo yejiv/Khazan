@@ -67,7 +67,12 @@ void CLever_Gear::Update(_float fTimeDelta)
 {
     Animation_Update(fTimeDelta);
 
-    if (true == m_pModelCom->Play_Animation(fTimeDelta))
+    _float fTimeAcc = fTimeDelta;
+
+    if (ANIM_STATE::ACTIVATION1 == m_eAnimState)
+        fTimeAcc *= 2.2f;
+
+    if (true == m_pModelCom->Play_Animation(fTimeAcc))
         Animation_Change(fTimeDelta);
 
     m_fBlinkTimeAcc += fTimeDelta;

@@ -112,7 +112,7 @@ HRESULT CPet_Danjinjar::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_AnimEvent(), E_FAIL);
     CHECK_FAILED(Ready_Components(), E_FAIL);
 
-    m_pGameInstance->Subscribe_Event<EVENT_PET_STATE>(ENUM_CLASS(EVENT_TYPE::PET), [&](const EVENT_PET_STATE& e) {State_Change(e.isStart); });
+    m_iEventId = m_pGameInstance->Subscribe_Event<EVENT_PET_STATE>(ENUM_CLASS(EVENT_TYPE::PET), [&](const EVENT_PET_STATE& e) {State_Change(e.isStart); });
     m_isActive = false;
     return S_OK;
 }
@@ -320,4 +320,5 @@ void CPet_Danjinjar::Free()
     Safe_Release(m_pBody);
     Safe_Release(m_pBlackBoard);
     Safe_Release(m_pTalk);
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::PET), m_iEventId);
 }
