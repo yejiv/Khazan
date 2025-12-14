@@ -38,7 +38,7 @@ public:
     void                            Set_CutSceneLook(_float3 vLook) { m_vCutSceneLook = vLook; }
     void                            Viper_Land(_fvector vGoalPosition, _float fSpeed);
     void                            Reset_Viper_Gravity();
-    
+    virtual void				    KnockBack(_vector vDir, _float fPower, _float fLoss) override;
 
 
 

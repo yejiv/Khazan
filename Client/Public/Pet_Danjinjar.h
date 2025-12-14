@@ -71,6 +71,7 @@ private:
     MONDATA                         m_Data = {};
 
     _float                          m_fTimeDelta = {};
+    _int                            m_iEventId = {};
 
 private:
     HRESULT                         Ready_Prototype();

@@ -264,7 +264,7 @@ _bool CKhazan_Spear_Anim_Attack::Try_FastAttack()
         m_isFastCombo = true;
 
         m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina;
-        m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage*1000.f;
+        m_pPlayerData->fBonusDamage = m_pPlayerData->fDamage;
     }
     else if (m_iCurrentCombo == 1) {
         if (m_pPlayerData->fCulStamina == 0.f)

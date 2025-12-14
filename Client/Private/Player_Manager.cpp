@@ -45,18 +45,18 @@ HRESULT CPlayer_Manager::Initialize()
     m_UsedGSwordSkill.assign(GetBitPosition(CPlayerData_Manager::GSWORD_END), false);
 
     /* 임시  */
-    m_pClientInstance->UsedSpear();
-    BindSkillToButton(Q, CPlayerData_Manager::FULL_MOON);
-    BindSkillToButton(E, CPlayerData_Manager::SPIRAL_THRUST);
-    BindSkillToButton(R, CPlayerData_Manager::SHADOW_CLEAVE);
+    //m_pClientInstance->UsedSpear();
+    //BindSkillToButton(Q, CPlayerData_Manager::FULL_MOON);
+    //BindSkillToButton(E, CPlayerData_Manager::SPIRAL_THRUST);
+    //BindSkillToButton(R, CPlayerData_Manager::SHADOW_CLEAVE);
 
-    /* 임시 */
-    m_pClientInstance->UsedGSword();
-    BindSkillToButton(Q, CPlayerData_Manager::GIANTHUNT);   /* 거인 사냥 */
-    BindSkillToButton(E, CPlayerData_Manager::PHANTOM_SHADOWOFDARKNESS);    /* 귀신 : 어둠의 그림자*/
-    BindSkillToButton(R, CPlayerData_Manager::BREAK_THROUGH);   /* 정면 돌파 */
-    BindSkillToButton(CTRL_LB, CPlayerData_Manager::WARCRY);    /* 거대한 포효 */ 
-    BindSkillToButton(CTRL_RB, CPlayerData_Manager::INNER_FURY);    /* 내재된 분노 */
+    ///* 임시 */
+    //m_pClientInstance->UsedGSword();
+    //BindSkillToButton(Q, CPlayerData_Manager::GIANTHUNT);   /* 거인 사냥 */
+    //BindSkillToButton(E, CPlayerData_Manager::PHANTOM_SHADOWOFDARKNESS);    /* 귀신 : 어둠의 그림자*/
+    //BindSkillToButton(R, CPlayerData_Manager::BREAK_THROUGH);   /* 정면 돌파 */
+    //BindSkillToButton(CTRL_LB, CPlayerData_Manager::WARCRY);    /* 거대한 포효 */ 
+    //BindSkillToButton(CTRL_RB, CPlayerData_Manager::INNER_FURY);    /* 내재된 분노 */
 
     m_pClientInstance->UsedSpear();
 

@@ -449,7 +449,7 @@ _bool CKhazan_GS_Anim_Attack::Try_SkillAttack(_uint iSkill)
         return false;
 
     /* 임시 */
-    m_pPlayerData->fCulDoggedness = 100.f;
+   // m_pPlayerData->fCulDoggedness = 100.f;
    // m_pPlayerData->fCulStamina = 10000.f;
 
     auto checkSkill = [&](const _uint whatSkill) {return  m_pClientInstance->Check_Skill(whatSkill) && (iSkill & whatSkill); };
