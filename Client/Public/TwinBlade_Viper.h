@@ -1,6 +1,6 @@
 #pragma once
 #include "Client_Defines.h"
-#include "PartObject.h"
+#include "WeaponObject.h"
 
 NS_BEGIN(Engine)
 class CShader;
@@ -10,7 +10,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CTwinBlade_Viper final : public CPartObject
+class CTwinBlade_Viper final : public CWeaponObject
 {
 public:
     typedef struct tagWeaponDesc : public PARTOBJECT_DESC
@@ -21,7 +21,6 @@ public:
 
     }WEAPON_DESC;
 
-//m_vRightTipPos
 public:
     _float4*                Get_BonePointEX(const _char* pBoneName);
     _matrix					Get_BoneMatrix(const _char* pBoneName);
@@ -40,7 +39,6 @@ public:
 
 
     _float4                 Get_GrabPos() const { return m_vGrabPos; }
-
     _matrix                 Get_CombinedMatrixEX() const { return XMLoadFloat4x4(&m_CombinedWorldMatrix); }
 
 private:
@@ -67,6 +65,7 @@ private:
     HRESULT                 Ready_Collision();
     HRESULT					Bind_ShaderResources();
     HRESULT                 Ready_Effect();
+    HRESULT                 Ready_Callback();
 
 private:
     class CViper*           m_pOwner = { nullptr };

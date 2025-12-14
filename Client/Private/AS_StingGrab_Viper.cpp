@@ -76,6 +76,9 @@ void CAS_StingGrab_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
     pBB->Set_Value<_bool>(pViper->Get_Name(), "isGrabbed", false);
     m_isGrabbed = false;
+
+    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Grap"), pViper->Get_FxRotIdx());
+
 }
 
 void CAS_StingGrab_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)

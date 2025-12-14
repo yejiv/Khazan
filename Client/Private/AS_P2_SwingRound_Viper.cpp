@@ -47,7 +47,8 @@ void CAS_P2_SwingRound_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _
 
 void CAS_P2_SwingRound_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-   
+    CViper* pViper = static_cast<CViper*>(pOwner);
+    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Grap"), pViper->Get_FxRotIdx());
 }
 
 void CAS_P2_SwingRound_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)

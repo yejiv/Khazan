@@ -463,7 +463,7 @@ HRESULT CBody_Yetuga::Ready_Callback()
                     pComboState->On_JustGuard(m_pOwner);
                 }
 
-               
+                static_cast<CMonster*>(m_pOwner)->Consume_Stamina(m_pOwner->Get_MaxStamina() * 0.05f);
             }
         });
 

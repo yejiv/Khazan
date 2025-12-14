@@ -80,6 +80,12 @@ void CAS_Devour_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CClientInstance::GetInstance()->Set_PlayerInput(true);
 
+    CViper* pViper = static_cast<CViper*>(pOwner);
+
+    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), pViper->Get_FxRotIdx());
+    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Rot_Start"), pViper->Get_FxRotIdx());
+    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Rot_Loop"), pViper->Get_FxRotIdx());
+
 }
 
 void CAS_Devour_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
