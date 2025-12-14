@@ -108,10 +108,6 @@ void CCreature::Compute_KnockBack(_float fTimeDelta)
 
     _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
 
-
-    if (m_strName == "Yetuga" || m_strName == "Viper")
-        m_fKnockBackPower * 0.5f;
-
     m_pTransformCom->Set_State(STATE::POSITION, vPos + m_fKnockBackDir * m_fKnockBackPower * fTimeDelta);
 
 }
