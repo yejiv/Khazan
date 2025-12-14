@@ -21,7 +21,7 @@ void CAS_P2_SwingRound_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
     pModel->Set_Animation(49);
-    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_round_start_01 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_round_start_01 (SFX).wav"), 1.f);
     pBB->Set_Value<_uint>(pViper->Get_Name(), "BerserkerIndex", 0);
 
 }

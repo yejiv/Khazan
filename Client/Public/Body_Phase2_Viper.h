@@ -1,6 +1,6 @@
 #pragma once
 #include "Client_Defines.h"
-#include "PartObject.h"
+#include "WeaponObject.h"
 
 NS_BEGIN(Engine)
 class CShader;
@@ -13,7 +13,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CBody_Phase2_Viper final : public CPartObject
+class CBody_Phase2_Viper final : public CWeaponObject
 {
 public:
     typedef struct tagBodyDesc : public PARTOBJECT_DESC
@@ -57,6 +57,8 @@ public:
 private:
     HRESULT					Ready_Components();
     HRESULT					Bind_ShaderResources();
+    HRESULT                 Ready_Callback();
+
     void					Carculate_Matrix(_float fTimeDelta);
     //void                    Carculate_BakckMatrix(_float fTimeDelta);
 
