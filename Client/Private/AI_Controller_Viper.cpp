@@ -3121,7 +3121,11 @@ INTERRUPTCONDITION CAI_Controller_Viper::GetCallbackInterruptCondition(CGameObje
                 {
                     _bool isSuperArmor = BB->Get_Value<_bool>(pViper->Get_Name(), "isSuperArmor");
                     if (isSuperArmor)
+                    {
+                        BB->Set_Value<_bool>(pViper->Get_Name(), "DamageInterrupt", false);
+                        BB->Set_Value<_uint>(pViper->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
                         return false;
+                    }
 
                     return true;
 
