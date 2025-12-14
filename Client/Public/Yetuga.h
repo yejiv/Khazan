@@ -18,8 +18,11 @@ public:
     void                            Yetuga_Jump(_fvector vGoalPos, _float fHeight, _float fSpeed);
     void                            Yetuga_Land(_fvector vGoalPosition, _float fSpeed);
     class CAS_CutScene_Yetuga* Get_Yetuga_CutSceneState();
+
+    void                            Set_BrutalKnockBack(_bool isToggle) { m_isBrutalKnockback = isToggle; }
     vector<const _tchar*>           Get_IceBreathSound() { return m_IceBreathSounds; }
     virtual void				    KnockBack(_vector vDir, _float fPower, _float fLoss) override;
+    
 
 public:
     virtual HRESULT					Initialize_Prototype() override;
@@ -97,7 +100,10 @@ private:
 
     deque<class CDestructible_Stone*> m_pYetugaStones = {};
 private:
-    _bool   m_isLanding = false;
+    _bool                           m_isLanding = false;
+    _bool                           m_isBrutalKnockback = { false };
+
+
 
     _float3 m_vLandingStartPos;
     _float3 m_vLandingTargetPos;

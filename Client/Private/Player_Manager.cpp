@@ -11,8 +11,8 @@ HRESULT CPlayer_Manager::Initialize()
 {
     m_Data.iSouleCount = 3;
 
-    m_Data.fMaxHp = { 10000000.f };
-    m_Data.fCulHp = { 10000000.f };
+    m_Data.fMaxHp = { 1000.f };
+    m_Data.fCulHp = { 1000.f };
     m_Data.fMaxStamina = { 1000.f };
     m_Data.fCulStamina = { 1000.f };
     m_Data.fStaminaRegen = { 200.f };
