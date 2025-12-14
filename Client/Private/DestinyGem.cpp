@@ -104,11 +104,6 @@ void CDestinyGem::Update(_float fTimeDelta)
 
     m_fBlinkTimeAcc += fTimeDelta;
 
-    // Test
-    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
-        if (m_pGameInstance->Key_Down(DIK_BACKSPACE))
-            m_isEnableBlink = !m_isEnableBlink;
-
     m_fEffect->UpdatePosition(XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
     m_fEffect->Update(fTimeDelta);
 

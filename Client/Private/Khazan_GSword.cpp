@@ -237,6 +237,16 @@ void CKhazan_GSword::Update(_float fTimeDelta)
     //    m_pTransformCom->Set_State(STATE::POSITION, vpos);
     //    //m_pCharVirCom->Set_Gravity(g_fGravity);
     //    //m_vGravity = XMVectorSet(0.f, 0.F, 0.f, 0.f);
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_M))
+    {
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_Grapple_Atk_01"));
+
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_N))
+    {
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_Grapple_Atk_02"));
+
+    }
 
     if (m_isEnableControl)
     {
