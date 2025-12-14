@@ -39,7 +39,7 @@ void CSequence_Embars_Puzzle_Second::Update(_float fTimeDelta)
     {
         if (m_fTime >= 3.0f && !m_isElevatorFadeOut)
         {
-            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Creature_Player")));
             pPlayer->Get_Khazan_Body()->Set_AllPlaySound(false);
             m_pClientInstance->Fade_Out();
             m_isElevatorFadeOut = true;
@@ -76,7 +76,7 @@ void CSequence_Embars_Puzzle_Second::Update(_float fTimeDelta)
             m_pClientInstance->Fade_In();
             static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
             m_pClientInstance->Set_PlayerInput(true);
-            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Creature_Player")));
             pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_isEnd = true;
         }
@@ -110,7 +110,7 @@ void CSequence_Embars_Puzzle_Second::Update(_float fTimeDelta)
 
         if (m_fSkipTime > 3.f && !m_isEnd)
         {
-            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Creature_Player")));
             pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_isEnd = true;
         }

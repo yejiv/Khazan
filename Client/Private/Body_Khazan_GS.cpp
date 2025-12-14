@@ -1137,7 +1137,7 @@ HRESULT CBody_Khazan_GS::Ready_Components()
         { TEXT("ShadowLandFlow_Shoes"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes") },
 
         /* Event Clothes*/
-        { TEXT("Danjin_Hair"), TEXT("Prototype_Component_Model_Khazan_Danjin_Hair") },
+        { TEXT("Danjin_Hair"), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair") },
     };
 
     // 모든 파츠 로드
