@@ -250,6 +250,9 @@ private:
     void    Spawn_Guard_FX();
     _vector BodyCenter();
 
+    void    BrutalAtk_ScreenEffect0();
+    void    BrutalAtk_ScreenEffect1();
+
 private:
     _vector Decompose_Rotation(_matrix W, _vector localRot = { 0.f, 0.f, 0.f, 0.f }, _vector offset = { 0.f, 0.f, 0.f, 1.f });
     //void	UpdateTrail();
