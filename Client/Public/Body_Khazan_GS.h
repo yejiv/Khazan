@@ -79,9 +79,10 @@ public:
    // _bool               Is_SpearFullExtension() const { return m_isSpearFullExtension; }
 
 public:
-    void                Search_BrutalTarget(_float fTimeDelta); //부르탈 타겟 찾기 
-    _bool               Check_BrutalAttack(_float fTimeDelta);  //부르탈 체크
-    void                AllAttackCollisionActive_Off();         //어택 콜리젼 다 끄기 
+    void                        Search_BrutalTarget(_float fTimeDelta); //부르탈 타겟 찾기 
+    _bool                       Check_BrutalAttack(_float fTimeDelta);  //부르탈 체크
+    void                        AllAttackCollisionActive_Off();         //어택 콜리젼 다 끄기 
+    void                        Set_AllPlaySound(_bool isPlaySound) { m_isPlaySound = isPlaySound; }
 
     /* Shader */
     void                        Set_EnableEdge(_bool isEnable) { m_isEnableEdge = isEnable; }
@@ -216,7 +217,7 @@ private:
 
     /* Sound */
     vector<FMOD_CHANNEL*>       m_pChannel;
-
+    _bool                       m_isPlaySound = { true };
   
 
     /*  mutex */
@@ -227,6 +228,8 @@ private :
     _uint                       m_iFXIdx_BodyWind;
     _uint                       m_iFXIdx_Trail;
     _bool                       m_bGuradFX[2];
+    _uint                       m_iTrailType;
+    _float                      m_TrailParticleTime;
 
 private:
     _bool            Update_Dead(_float fTimeDelta);
@@ -291,6 +294,7 @@ private:
     void Set_BaseTrail();
     void Set_BrightTrail();
     void Spawn_Guard_FX();
+    _vector BodyCenter();
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -60,6 +60,10 @@ private:
 
     _int m_iEventID = {};
 
+    _float m_fAnimTimeAcc = {};
+
+    _bool m_isEffectOn = { false };
+
     EVENT_TYPE m_eEventType = { EVENT_TYPE::END };
 
     EventGateGear m_EventGate = {};

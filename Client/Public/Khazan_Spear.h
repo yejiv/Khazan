@@ -105,6 +105,8 @@ public:
     void	Set_Camera(class CCamera_Compre* pCamera);
     void    Set_Position(_float4 vPos);
 
+    class CBody_Khazan_Spear* Get_Khazan_Body() { return m_pBody; }
+    
 private:
 	class CBody_Khazan_Spear*			    m_pBody = { nullptr };
     class CSpear_Khazan_Spear*              m_pSpear = { nullptr };
@@ -163,6 +165,12 @@ private:
 	//_float						m_fDodgeTime = { 0.f };
 	uint						m_iStopMoveIndexTable[9];	/* 스탑 애니메이션일 때 움직임 x  */
 
+	/* Move Speed */
+    _float				        m_fInjuredSpeed = { 1.15f };
+    _float				        m_fWalkSpeed = { 1.7f };
+    _float				        m_fRunSpeed = { 4.4f };
+    _float				        m_fSprintSpeed = { 7.2f };
+
 	/* Attack  */
 	_float						m_fChargingStrongTime = { 0.f };
     _uint                       m_iCurSkillIndex = {};
@@ -182,26 +190,11 @@ private:
     _float2                     m_fWaitStaminaRecovery = { 0.f, 1.f };
     _bool                       m_isCanStaminaRecovery = { false };
 
-    /* 180 turn */
-    //_float2                     m_f180TurnTime = { 0.f, 0.f };      // x: 경과시간, y: 회전 소요시간
-    //_vector                     m_v180TurnStartRot = {};            // 시작 회전
-    //_vector                     m_v180TurnEndRot = {};              // 목표 회전
-    //_uint                       m_iPrev180TurnSubState = {};
-    //_float                      m_fTurn180CooldownTime = {};
-
-    /* Monster Search */
-    //vector< CGameObject*>       m_CollMonsters;
-    //_float2                     m_fOptimizationSearchTime = { 0.f,0.3f };
-    //CGameObject*                m_pBrutalmonster = { nullptr };
+    /*  Grab*/
+     _float                     m_fGrabDownTime = { 0.f };
 
 	/* ====== const ======*/
 	const	_float				m_fMinSprintTime = { 0.15f };
-
-	/* Move Speed */
-    _float				        m_fInjuredSpeed = { 1.15f };
-    _float				        m_fWalkSpeed = { 1.7f };
-    _float				        m_fRunSpeed = { 4.4f };
-    _float				        m_fSprintSpeed = { 7.2f };
 
 	/*  Attack */
 	const _float				m_fChargingStrongIntervalTime = { 0.25f };
@@ -211,6 +204,9 @@ private:
     /* Fall */
     const _float                m_fRayLength = { 8.f };
     const _float2                m_fRayZOffset = { 0.f, 0.5f };
+
+    /*  Grab*/
+    const _float                m_fGrabDownIntervalTime = { 1.65f };
 
 /* SnowEffect SpawnTime*/
 private:
@@ -235,7 +231,7 @@ private:
     /* Animation  */
 	void			Change_MoveIdle(_float fTimeDelta);
 	void			ExecuteAnimationExit();
-    _bool           ChangeGrabAnimation();
+    _bool           ChangeGrabAnimation(_float fTimeDelta);
 
     /* Rotation, Direction */
 	void			Apply_PlayerMovement(_float fTimeDelta);

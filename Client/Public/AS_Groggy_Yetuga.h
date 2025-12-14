@@ -26,8 +26,7 @@ private:
 	_float						m_fGroggyTime = {};
 
 	_float4*					m_vBonePosition = {};
-	
-    _uint                       m_iBrutalCnt = {};
+
 
     _bool						m_isBrutalAttackSuccess = { false };
     _bool                       m_isCheckBrutalCnt = { false };

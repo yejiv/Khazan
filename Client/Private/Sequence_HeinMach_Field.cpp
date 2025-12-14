@@ -4,6 +4,8 @@
 #include "GameInstance.h"
 #include "ClientInstance.h"
 #include "UI_HUD.h"
+#include "Khazan_Spear.h"
+#include "Body_Khazan_Spear.h"
 
 CSequence_HeinMach_Field::CSequence_HeinMach_Field(CCamera_Compre* pCamera)
     : m_pCamera_Compre { pCamera }
@@ -34,7 +36,8 @@ void CSequence_HeinMach_Field::Update(_float fTimeDelta)
     {
         static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
         m_pCamera_Compre->Set_Animation(TEXT("HeinMach"));
-
+        CKhazan_Spear* pPlayer = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")));
+        pPlayer->Get_Khazan_Body()->Set_AllPlaySound(false);
         m_isCameraStart = true;
     }
 
@@ -69,6 +72,8 @@ void CSequence_HeinMach_Field::Update(_float fTimeDelta)
 
     if (m_fTime >= 16.f)
     {              
+        CKhazan_Spear* pPlayer = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")));
+        pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
         m_State = STATE::End;
     }
         

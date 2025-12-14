@@ -189,6 +189,16 @@ void CKhazan_Spear::Update(_float fTimeDelta)
         m_pCharVirCom->Teleport(XMVectorSet(120.f, 8.f, 116.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
 
     }
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_M))
+    {
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_GrappleAtk01"));
+       
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_N))
+    {
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_GrappleAtk02"));
+
+    }
 
     if (m_isEnableControl)
     {
@@ -462,6 +472,7 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
 		m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
         Add_Status(YETUGA_GRAB);
+        m_fGrabDownTime = { 0.f };
 		break;
     case Client::HITREACTION::KNOCKBACK_WEAK:
         if (Has_State(CAT::M_SKILL))  break;
@@ -602,7 +613,7 @@ void CKhazan_Spear::Update_State(_float fTimeDelta)
         return;
 
     if (Has_Status(YETUGA_GRAB)) {
-        if (!ChangeGrabAnimation())
+        if (!ChangeGrabAnimation(fTimeDelta))
             return;
     }
     /* 이전 상태 저장*/
@@ -1261,7 +1272,7 @@ _bool CKhazan_Spear::Attack_Input(_float fTimeDelta)
 
 
     /*  브루탈 공격.*/
-    if ( Has_Status(BRUTAL_READY) && m_pGameInstance->Key_Down(DIK_F))
+    if ( Has_Status(BRUTAL_READY) && m_pGameInstance->Key_Down(DIK_T))
     {
         if (m_pAnimAttack->Try_GrappleAttack())
         {
@@ -1330,24 +1341,27 @@ _bool CKhazan_Spear::Attack_Input(_float fTimeDelta)
     /* 스킬 : 강습  (빠른 공격 2단계까지만 가능)*/
     else if (Has_Status(READY_ASSAULT)
         && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB)
-        && 0 < m_pAnimAttack->Get_CurrentCombo()
-        && m_pAnimAttack->Get_CurrentCombo() < 2
+        && 0 <= m_pAnimAttack->Get_CurrentCombo()
+        && m_pAnimAttack->Get_CurrentCombo() <= 2
         && m_pAnimAttack->Is_FastCombo())
     {
-        Clear_Step0();
-        Add_State(CAT::M_ATTACK);
-        Add_SubState(SKI::ASSAULT);
+
         cout << "READY_ASSAULT" << endl;
 
         if (m_pAnimAttack->Try_SkillAttack(SKI::ASSAULT))
         {
             m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
+            Clear_Step0();
+            Add_State(CAT::M_ATTACK);
+            Add_SubState(SKI::ASSAULT);
+            cout << "Attack  ASSAULT" << endl;
             return true;
         }
         else
         {
             m_pAnimAttack->Reserve_SkillAttack(SKI::ASSAULT);
             m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
+            cout << "Reserve  ASSAULT" << endl;
             return true;
         }
 
@@ -1412,6 +1426,33 @@ _bool CKhazan_Spear::Attack_Input(_float fTimeDelta)
     }
     else if (!Has_Status(CHARGING_STRONG_ATTACK) && m_pGameInstance->Mouse_Up(MOUSEKEYSTATE::RB))
     {
+        /* 강습 스킬 한 번 더 체크*/
+        if ( 0 <= m_pAnimAttack->Get_CurrentCombo()
+            && m_pAnimAttack->Get_CurrentCombo() <= 2
+            && m_pAnimAttack->Is_FastCombo())
+        {
+
+            cout << "2222 READY_ASSAULT" << endl;
+
+            if (m_pAnimAttack->Try_SkillAttack(SKI::ASSAULT))
+            {
+                m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
+                Clear_Step0();
+                Add_State(CAT::M_ATTACK);
+                Add_SubState(SKI::ASSAULT);
+                cout << "22222 Attack  ASSAULT" << endl;
+                return true;
+            }
+            else
+            {
+                m_pAnimAttack->Reserve_SkillAttack(SKI::ASSAULT);
+                m_eHitReaction = ENUM_CLASS(HITREACTION::KNOCKBACK_STRONG);
+                cout << "22222 Reserve  ASSAULT" << endl;
+                return true;
+            }
+
+        }
+
 
         _bool wasCharging = Has_Status(CHARGING_STRONG_ATTACK);
         Remove_Status(CHARGING_STRONG_ATTACK);
@@ -1729,13 +1770,27 @@ void CKhazan_Spear::ExecuteAnimationExit()
 
 }
 
-_bool CKhazan_Spear::ChangeGrabAnimation()
+_bool CKhazan_Spear::ChangeGrabAnimation(_float fTimeDelta)
 {
-    if (m_pBody->Get_Model()->IsAnimationStart(m_iCurAnimIndex) &&  m_pBody->Get_Model()->Check_MinAnimationTime())
+    if (m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F")) )
+    {
+        m_fGrabDownTime += fTimeDelta;
+        if (m_fGrabDownIntervalTime >= m_fGrabDownTime)
+            return false;
+        else
+        {
+            m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Getup_F");
+            m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+
+            Remove_Status(YETUGA_GRAB);
+            return true;
+        }
+    }
+
+    if (m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab")) && m_pBody->Get_Model()->Check_MinAnimationTime())
     {
         m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F");
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
-        Remove_Status(YETUGA_GRAB);
         return true;
     }
 
@@ -2861,6 +2916,8 @@ void CKhazan_Spear::Subscribe_Events()
                 static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
                 Add_Status(SPEAR);
                 Remove_Status(BAREHAND | INJURED);
+
+          
             }
         }  });
 
@@ -3108,6 +3165,7 @@ void CKhazan_Spear::BladeNexus_Event(_float fTimeDelta)
                 Clear_SubState();
                 Clear_CycleState();
 
+                m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
             }
         }
         // 이미 해금된 귀검
@@ -3121,6 +3179,8 @@ void CKhazan_Spear::BladeNexus_Event(_float fTimeDelta)
                 Clear_State();
                 Clear_SubState();
                 Clear_CycleState();
+
+                m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
             }
         }
 

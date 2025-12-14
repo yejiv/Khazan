@@ -9,6 +9,8 @@
 #include "AI_Controller_Yetuga.h"
 #include "SkipButton.h"
 #include "UI_HUD.h"
+#include "Khazan_Spear.h"
+#include "Body_Khazan_Spear.h"
 
 CSequence_Yetuga_CutScene::CSequence_Yetuga_CutScene(CYetuga* pYetuga)
     : m_pClientInstance{ CClientInstance::GetInstance() }
@@ -56,6 +58,8 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
 
         if (!m_isCameraAnimation && m_fTime > 0.5f)
         {
+            CKhazan_Spear* pPlayer = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(false);
             m_pClientInstance->Camera_Set_Animation(TEXT("Yetuga_CutScene"));
             m_pClientInstance->Fade_In();
             m_isCameraAnimation = true;
@@ -195,6 +199,8 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
             dynamic_cast<CAI_Controller_Yetuga*>(m_pYetuga->Get_Controller())->Set_ControllerActivate(true);
             static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
             m_pClientInstance->Set_PlayerInput(true);
+            CKhazan_Spear* pPlayer = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_isEnd = true;
         }
     }
@@ -232,6 +238,8 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
             dynamic_cast<CAI_Controller_Yetuga*>(m_pYetuga->Get_Controller())->Set_ControllerActivate(true);
             static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
             m_pClientInstance->Set_PlayerInput(true);
+            CKhazan_Spear* pPlayer = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_isEnd = true;
         }
         
