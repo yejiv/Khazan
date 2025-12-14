@@ -14,6 +14,7 @@ void CAS_Dr_Rampage_Dead::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_pMonData = &static_cast<CDragonian_Rampage*>(pOwner)->Get_Data();
     static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, 1300);
     static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 3200);
+    CClientInstance::GetInstance()->Add_SkillExp(25.f);
 
     TARGET_DIR eDir = m_pMonData->pOwner->Get_DIR();
 

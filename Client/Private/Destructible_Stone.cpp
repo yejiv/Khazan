@@ -158,6 +158,16 @@ HRESULT CDestructible_Stone::Render()
     return S_OK;
 }
 
+void CDestructible_Stone::Set_Pos(_vector vPos)
+{
+    m_pTransformCom->Set_State(STATE::POSITION, vPos);
+
+    for (auto Chunk : m_Chunks)
+    {
+        Chunk->Set_Pos(vPos);
+    }
+}
+
 
 void CDestructible_Stone::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {    
