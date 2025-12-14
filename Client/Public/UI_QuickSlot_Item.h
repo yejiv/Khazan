@@ -44,6 +44,7 @@ private:
 	void								Add_Item(EVENT_HUD_QUICKSLOT pItem);
 
 	void								Input_KeyState();
+    void								Input_KeyState(_int iIndex);
 public:
 	static CUI_QuickSlot_Item*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;
