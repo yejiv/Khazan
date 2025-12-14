@@ -81,12 +81,12 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     /* 플레이어 셋팅  */
     m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();  //플레이어 데이터 연결
 
-    //if (m_pClientInstance->Is_CurrentSpear())
-    //    Add_Status(SPEAR);
-    //else if (m_pClientInstance->Is_CurrentGSword()) 
-    //    Add_Status(GSWORD);
-    //else 
-    //    Add_Status(BAREHAND);
+    if (m_pClientInstance->Is_CurrentSpear())
+        Add_Status(SPEAR);
+    else if (m_pClientInstance->Is_CurrentGSword()) 
+        Add_Status(GSWORD);
+    else 
+        Add_Status(BAREHAND);
 
 
     //m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
