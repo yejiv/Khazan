@@ -55,6 +55,9 @@ void CYetuga::KnockBack(_vector vDir, _float fPower, _float fLoss)
     m_fKnockBackPower = fPower * 0.5f;
     m_fKnockBackLoss = fLoss;
 
+    if (m_isBrutalKnockback)
+        return;
+
     if (Get_IsGroggy() || m_isSuperArmmor)
         m_isKnockBack = false;
 
