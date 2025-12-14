@@ -35,7 +35,7 @@ void CAS_Dead_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
 
     if (pModel->Play_Animation(fTimeDelta))
-    {  
+    {
         CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
         pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isDeadFinished", true);
         CBossHp::BOSSMON_UPDATE_DESC Desc;
