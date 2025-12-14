@@ -8,7 +8,7 @@
 
 CAS_IceBreath_Yetuga::CAS_IceBreath_Yetuga()
 {
-
+    m_IceBreathChannels.resize(10.f);
 }
 
 void CAS_IceBreath_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
