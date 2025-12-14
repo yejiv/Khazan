@@ -310,25 +310,7 @@ void CUI_QuickSlot_Item::Input_KeyState(_int iIndex)
     if (m_iState == ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM))
         return;
 
-    _int iInputIndex = { -1 };
-
-    if (m_pGameInstance->Key_Down(DIK_1))
-        iInputIndex = 0;
-    if (m_pGameInstance->Key_Down(DIK_2))
-        iInputIndex = 1;
-    if (m_pGameInstance->Key_Down(DIK_3))
-        iInputIndex = 2;
-    if (m_pGameInstance->Key_Down(DIK_4))
-        iInputIndex = 3;
-    if (m_pGameInstance->Key_Down(DIK_5))
-        iInputIndex = 4;
-    if (m_pGameInstance->Key_Down(DIK_6))
-        iInputIndex = 5;
-    if (m_pGameInstance->Key_Down(DIK_7))
-        iInputIndex = 6;
-
-    if (m_iIndex != iInputIndex)
-        return;
+    _int iInputIndex = iIndex;
 
     if (m_iItemCount != nullptr)
     {
@@ -341,16 +323,7 @@ void CUI_QuickSlot_Item::Input_KeyState(_int iIndex)
             m_vFxColor.w = 1.f;
         else
         {
-            if (iInputIndex == 0)
-            {
-                if (*m_iItemCount > 0 && CClientInstance::GetInstance()->Get_PlayerData().fCulHp < CClientInstance::GetInstance()->Get_PlayerData().fMaxHp)
-                {
-                    --*m_iItemCount;
-                    m_pGameInstance->StopByKey(TEXT("UI_item_consume_assassinportion_01 (SFX).wav"));
-                    m_pGameInstance->PlaySoundOnce(TEXT("UI_item_consume_assassinportion_01 (SFX).wav"));
-                }
-            }
-            else if (m_iItemIndex >= 1001 && m_iItemIndex <= 1004)
+            if (m_iItemIndex >= 1001 && m_iItemIndex <= 1004)
             {
                 --*m_iItemCount;
                 if (*m_iItemCount <= 0)
@@ -370,10 +343,10 @@ void CUI_QuickSlot_Item::Input_KeyState(_int iIndex)
                     static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, 10000);
                     break;
                 case 1003:
-                    CClientInstance::GetInstance()->Get_ptrPlayerData().fCulDoggedness += CClientInstance::GetInstance()->Get_ptrPlayerData().iMaxDoggednessCount * 0.3;
+                    CClientInstance::GetInstance()->Get_ptrPlayerData().fCulDoggedness += CClientInstance::GetInstance()->Get_ptrPlayerData().iMaxDoggednessCount * 0.3f;
                     break;
                 case 1004:
-                    CClientInstance::GetInstance()->Get_ptrPlayerData().fCulDoggedness += CClientInstance::GetInstance()->Get_ptrPlayerData().iMaxDoggednessCount * 0.5;                    break;
+                    CClientInstance::GetInstance()->Get_ptrPlayerData().fCulDoggedness += CClientInstance::GetInstance()->Get_ptrPlayerData().iMaxDoggednessCount * 0.5f;                    break;
                     break;
                 }
                 if (m_iItemIndex == 1001 || m_iItemIndex == 1002)
