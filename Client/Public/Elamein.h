@@ -147,7 +147,7 @@ private:
     COLLISION_DESC				    m_tHitCollisionDesc = {};
 private :
     _uint                           m_iFXIdx;
-
+    _int                            m_iEventID = {};
 
 private:
     HRESULT                         Ready_Prototype();

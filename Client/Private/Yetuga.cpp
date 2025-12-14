@@ -13,6 +13,7 @@
 #include "Viper.h"
 #include "FSM_Yetuga.h"
 #include "AS_CutScene_Yetuga.h"
+#include "Destructible_Stone.h"
 
 CYetuga::CYetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -1412,7 +1413,13 @@ HRESULT CYetuga::Ready_AnimEvent()
         });
 
     pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        // 여기에 하시면됩니다.
+        CDestructible_Stone::STONE_DESC Desc;
+        Desc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
+        Desc.vPos = m_pHoldRock->Get_Transform()->Get_State(STATE::POSITION);
+
+        if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Chunk"),
+            ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Destructible_Stone"), TIME_CHANNEL::ENEMY, &Desc)))
+            return;
         });
 
 

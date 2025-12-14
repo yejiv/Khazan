@@ -588,6 +588,7 @@ void CCamera::Push_FOVModifier(const FOVModifier& tMod)
 		Mod.iPriority = tMod.iPriority;
 		Mod.isAlive = true;
 		Mod.Ease = tMod.Ease;
+        Mod.fOutDuration = tMod.fOutDuration;
 	}
 	else
 	{

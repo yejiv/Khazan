@@ -91,7 +91,7 @@ void CUnLockGear::Priority_Update(_float fTimeDelta)
     {
         m_isGimmickDone = true;
 
-        SoundOnce(TEXT("IP_Statue_Done"), m_fInteract_Volume);
+        SoundOnce(TEXT("IP_Statue_Done"), m_fInteract_Volume * 1.875f);
     }
 }
 
