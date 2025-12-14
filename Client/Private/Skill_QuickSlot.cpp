@@ -243,11 +243,21 @@ HRESULT CSkill_QuickSlot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevel
     for (_int i = 0; i < (_int)m_pList.size(); ++i)
     {
         m_pList[i]->Update_Pos(i, vPos, 110.f);
+
+        //데이터 셋팅
+        //if(i == 0)
+        //    m_pList[i]->Setting_Data(i, 106);
+        //else if (i == 1)
+        //    m_pList[i]->Setting_Data(i, 114);
+        //else if (i == 2)
+        //    m_pList[i]->Setting_Data(i, 103);
+
     }
     __super::Update_Transform(nullptr, m_vLocalPos);
     CHECK_FAILED(Ready_Object(), E_FAIL);
 
     m_vLocalPos.x = 400.f;
+
     return S_OK;
 }
 

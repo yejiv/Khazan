@@ -20,7 +20,7 @@ CEquip_Slot::CEquip_Slot(const CEquip_Slot& Prototype)
 {
 }
 
-_bool CEquip_Slot::Add_Item(_int iItemIndex, CItem_Slot* pItem)
+_bool CEquip_Slot::Add_Item(_int iItemIndex, CItem_Slot* pItem, _bool isSetting)
 {
     if (m_pItem_Slot == pItem)
     {
@@ -63,7 +63,7 @@ _bool CEquip_Slot::Add_Item(_int iItemIndex, CItem_Slot* pItem)
             EventDesc.iItemCount = m_pItem_Slot->Get_ptrItemCount();
             m_pGameInstance->Emit_Event<EVENT_HUD_QUICKSLOT>(ENUM_CLASS(EVENT_TYPE::UI_QUICK_SLOT), EventDesc);
         }
-        else
+        else if (isSetting)
         {
             EQUIPITEM_DATA pEquipData = *CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData.iEffect_ID);
             Setting_EquipData(pEquipData);

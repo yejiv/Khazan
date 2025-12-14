@@ -6,6 +6,7 @@
 #include "AI_Controller.h"
 #include "Interaction_Item.h"
 #include "Imp_Sword.h"
+#include "ClientInstance.h"
 
 CAS_Dead_Imp_Melee::CAS_Dead_Imp_Melee()
 {
@@ -36,6 +37,7 @@ void CAS_Dead_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
 
     if (pModel->IsFinished())
     {
+        CClientInstance::GetInstance()->Add_SkillExp(80.f);
         pImp->Dissolve_On();
     }
 }
