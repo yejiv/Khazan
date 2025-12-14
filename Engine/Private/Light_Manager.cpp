@@ -78,6 +78,8 @@ _bool CLight_Manager::Is_LightEnable(const _wstring& strLightTag, _uint iLevelIn
 
 HRESULT CLight_Manager::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer, _uint iLevelIndex)
 {
+    _float4 vCamPos = *m_pGameInstance->Get_CamPosition();
+
 	for (auto& pLight : m_pLights[iLevelIndex])
 	{
         CLight* pEnableLight = pLight.second;
@@ -88,10 +90,12 @@ HRESULT CLight_Manager::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer, _uin
 		{
             const LIGHT_DESC LightDesc = *pEnableLight->Get_LightDesc();
 
-            //  if (LIGHT_DESC::POINT == LightDesc.eType && false == m_pGameInstance->isIn_Frustum_WorldSpace(XMLoadFloat4(&LightDesc.vPosition), LightDesc.fRange * 1.1f))
-            //  {
-            //      continue;
-            //  }
+            if (LIGHT_DESC::POINT == LightDesc.eType && false == m_pGameInstance->isIn_Frustum_WorldSpace(XMLoadFloat4(&LightDesc.vPosition), LightDesc.fRange * 1.1f))
+            {
+                _float fDistance = XMVectorGetX(XMVector3Length(XMLoadFloat4(&vCamPos) - XMLoadFloat4(&LightDesc.vPosition)));
+                if (20.f < fDistance)
+                    continue;
+            }
 
 			pEnableLight->Render(pShader, pVIBuffer);
 		}
