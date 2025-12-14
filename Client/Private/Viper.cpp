@@ -1158,9 +1158,16 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("P1_Landing", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
-            _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            m_pCharVirCom->Start_Dive(vTargetPos,80.f);
+
+            //CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            //_vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            //_vector vOwnerPos = m_pTransformCom->Get_State(STATE::POSITION);
+            //_vector vDir = vTargetPos - vOwnerPos;
+            //vDir = XMVector3Normalize(vDir);
+            //_float fOffset = 40.f;
+            //_vector vLandPos = vTargetPos + vDir * fOffset;
+            //m_pCharVirCom->Start_Dive(vTargetPos, 1.f);
+            m_pWeapon->Set_OnAttackCollision(true);
 
         });
 
@@ -1178,6 +1185,7 @@ HRESULT CViper::Ready_AnimEvent()
             //m_pCharVirCom->Start_Dive(vTargetPos, 1.f);
             m_pWeapon->Set_OnAttackCollision(true);
         });
+
 
     pModel->Register_Event("P1_LandShake", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
@@ -2954,6 +2962,30 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_V"), m_pTransformCom->Get_State(STATE::POSITION));
         });
 
+    pModel->Register_Event("P1_Sting0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _float4x4 combinedMatrix = m_pWeapon->Get_CombinedMatrix();
+        _vector rot = Decompose_Rotation(XMLoadFloat4x4(&combinedMatrix));
+        m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Sting"), rot, m_pWeapon->Get_RightSwordTip());
+        });
+
+    pModel->Register_Event("P1_Sting0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        _float4x4 combinedMatrix = m_pWeapon->Get_CombinedMatrix();
+        _vector rot = Decompose_Rotation(XMLoadFloat4x4(&combinedMatrix));
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Sting"), m_iRotFX_Idx, rot, m_pWeapon->Get_RightSwordTip());
+        });
+
+    pModel->Register_Event("P1_Sting1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _float4x4 combinedMatrix = m_pWeapon->Get_CombinedMatrix();
+        _vector rot = Decompose_Rotation(XMLoadFloat4x4(&combinedMatrix));
+        m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Sting"), rot, m_pWeapon->Get_RightSwordTip());
+        });
+
+    pModel->Register_Event("P1_Sting0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        _float4x4 combinedMatrix = m_pWeapon->Get_CombinedMatrix();
+        _vector rot = Decompose_Rotation(XMLoadFloat4x4(&combinedMatrix));
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Sting"), m_iRotFX_Idx, rot, m_pWeapon->Get_RightSwordTip());
+        });
+
     /////=========================================================== [ 2P ] ================================================================================ ////
     // CutScene
     pModel->Register_Event("CameraShaking0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -3266,6 +3298,35 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
 
+    ///----------///
+
+    pModel->Register_Event("DASwrd_Atk0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector pos = m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3];
+        //pos = XMVectorSetY(pos, XMVectorGetY(pos) + 1.5f);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), pos);
+        });
+
+    pModel->Register_Event("RockThrow_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_V"), rot, m_pTransformCom->Get_State(STATE::POSITION));
+        });
+
+    pModel->Register_Event("RockThrow_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
+        });
+
+    pModel->Register_Event("DASwrd_Atk1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_Up"), rot, m_pTransformCom->Get_State(STATE::POSITION));
+        });
+
+    pModel->Register_Event("DASwrd_Atk2_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pP2Weapon->Get_BladeTipPos()); 
+        });
+
+
+    ///----------///
+
     pModel->Register_Event("CutSceenFoot_R0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), 발위치);
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Footprint"), m_pPahse2Body->Get_BoneMatrix("Bip001-R-Foot").r[3]);
@@ -3382,15 +3443,18 @@ HRESULT CViper::Ready_AnimEffectEvent()
         });
 
     pModel->Register_Event("DownTrail0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_V"), m_pTransformCom->Get_State(STATE::POSITION));
+        _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_V"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
 
     pModel->Register_Event("DownTrail0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_V"), m_pTransformCom->Get_State(STATE::POSITION));
+        _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_V"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
 
     pModel->Register_Event("DownTrail0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_V"), m_pTransformCom->Get_State(STATE::POSITION));
+        _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_V"), rot,m_pTransformCom->Get_State(STATE::POSITION));
         });
 
     pModel->Register_Event("Cutscene_LastRoar_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {

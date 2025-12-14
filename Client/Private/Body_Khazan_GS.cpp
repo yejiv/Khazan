@@ -1717,14 +1717,12 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
         EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), world, world.r[3]);
         });
+
     m_pModelCom->Register_Event("Grapple_ChargeArm_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
         _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
         m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear, world, world.r[3]);
         });
-    //m_pModelCom->Register_Event("Grapple_ChargeArm_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-    //    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear);
-    //    });
 
     m_pModelCom->Register_Event("Grapple_Sting_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutalParticle"), m_pParentTransform->Get_WorldMatrix(), XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);

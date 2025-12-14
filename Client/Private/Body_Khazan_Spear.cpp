@@ -908,7 +908,6 @@ void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
     m_pBodyCom_BodyAttack->Sync_Update(matParent);
 
 }
-
 void CBody_Khazan_Spear::Check_Guarding(_float fTimeDelta)
 {
     if (m_isSpearPoleActive)
@@ -1311,7 +1310,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
     /* 급소 타격 */
     m_pModelCom->Register_Event("Crescent_Land", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_Crescent_Land"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_Crescent_Land"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
         });
 
     /* 나선 찌르기 :: 소용돌이*/
@@ -1323,7 +1322,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust11"), m_pParentTransform->Get_WorldMatrix().r[3]); });
 
     m_pModelCom->Register_Event("PureMind_Pin", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("JumpSpear"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]); });
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("JumpSpear"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]); });
 
 
     // 약공 스킬 두번쨰꺼
@@ -1343,7 +1342,41 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     m_pModelCom->Register_Event("FastBlust3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Spear_Spike(); });
 
     m_pModelCom->Register_Event("FallATK_Land", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_FallAtk_Land"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]); });
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_FallAtk_Land"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]); });
+
+    //brutal
+    m_pModelCom->Register_Event("Brutal_FX0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
+        //Decompose_Rotation(mat_arm, XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90));
+        _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
+        EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), world, world.r[3]);
+        });
+    m_pModelCom->Register_Event("Brutal_FX0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
+        _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear, world, world.r[3]);
+        });
+    m_pModelCom->Register_Event("Brutal_FX0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutalParticle"), m_pParentTransform->Get_WorldMatrix(), XMLoadFloat4x4(&m_pSpearPole_MatrixW).r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("blust_brutal"), XMLoadFloat4x4(&m_pSpearPole_MatrixW).r[3]);
+        });
+
+    m_pModelCom->Register_Event("Brutal_FX1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("blust_brutal"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
+        });
+
+    m_pModelCom->Register_Event("Brutal_FX1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust12"), m_pParentTransform->Get_WorldMatrix().r[3]);
+        });
+
+    m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_RedTrail(); });
+    m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
+
+    m_pModelCom->Register_Event("Brutal_Trail1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
+    m_pModelCom->Register_Event("Brutal_Trail1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_RedTrail(); });
+    m_pModelCom->Register_Event("Brutal_Trail1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
 
 
 #pragma endregion
@@ -2020,11 +2053,11 @@ void CBody_Khazan_Spear::FX_Trail()
     _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 
-    if (m_iTrailType)
+    if (m_TrailParticleTime > 3.f)
     {
-        m_TrailParticleTime += 1.f;
-        if (m_TrailParticleTime > 5.f)
-            m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
+        (m_iTrailType == 1) ?
+            m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3])
+            : m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle_R"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
     }
     else
         m_TrailParticleTime = 0.f;
@@ -2218,6 +2251,7 @@ void CBody_Khazan_Spear::Set_RedTrail()
     Config.iDivisionCount = 10;
     Config.vColor = _float4(3.529f, 2.569f, 2.569f, 1.f);
     m_pTrail->Set_TrailConfig(Config);
+    m_iTrailType = 2;
 }
 
 void CBody_Khazan_Spear::Spawn_Guard_FX()
@@ -2272,7 +2306,7 @@ _vector CBody_Khazan_Spear::Decompose_Rotation(_matrix W, _vector localRot, _vec
 
 void CBody_Khazan_Spear::UpdateSpearWind(_bool isEnableRadialBlur)
 { 
-    m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearWind"), EffectID_SpearWind, XMLoadFloat4x4(&m_pSpearTip1_MatrixW), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
+    m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearWind"), EffectID_SpearWind, XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
 
     DISTORTION_DESC Desc{};
     _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
@@ -2291,8 +2325,7 @@ void CBody_Khazan_Spear::UpdateSpearWind(_bool isEnableRadialBlur)
 
 void CBody_Khazan_Spear::UpdateSpearRedWind(_bool isEnableRadialBlur)
 {
-    m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_BloodWind"), EffectID_SpearWind, XMLoadFloat4x4(&m_pSpearTip1_MatrixW), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
-    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt);
+    m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_BloodWind"), EffectID_SpearWind, XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
 
     DISTORTION_DESC Desc{};
     _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
@@ -2311,7 +2344,7 @@ void CBody_Khazan_Spear::UpdateSpearRedWind(_bool isEnableRadialBlur)
 
 void CBody_Khazan_Spear::SpawnSpearWind()
 { 
-    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearWind"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
+    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearWind"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
 
     // Distortion
     DISTORTION_DESC Desc{};
@@ -2331,7 +2364,7 @@ void CBody_Khazan_Spear::SpawnSpearWind()
 
 void CBody_Khazan_Spear::SpawnSpearRedWind()
 {
-    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_BloodWind"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
+    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_BloodWind"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
 
     // Distortion
     DISTORTION_DESC Desc{};
