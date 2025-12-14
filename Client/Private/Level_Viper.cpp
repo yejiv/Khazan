@@ -1027,6 +1027,7 @@ HRESULT CLevel_Viper::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("SpearTrailRL"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("SphereTrail_V"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Small"), 50);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Small_Once"), 300);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Big"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_blood_loop"), 5);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_blood2_loop"), 5);

@@ -3090,6 +3090,10 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Twinkle_Small"))))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Small_Once"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Twinkle_Small_Once"))))
+        return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Big"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Twinkle_Big"))))
         return E_FAIL;

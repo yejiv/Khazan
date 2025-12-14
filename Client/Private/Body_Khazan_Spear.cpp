@@ -191,18 +191,19 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
 
         m_HealRimLightDesc.fRimLightIntensity = m_HealRimLightDesc.fTargetIntensity * fIntensityRatio;
     }
+    m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Teleport"), 0, BodyCenter());
 
     //테스트용! 발견 시 지워주셔도 됩니다
-    if (m_pGameInstance->Key_Down(DIK_H, INPUT_TYPE::FORCE))
-    {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Teleport"), BodyCenter());
-    }
-    if (m_pGameInstance->Key_Down(DIK_J, INPUT_TYPE::FORCE))
-    {
-        m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Teleport"), 0, BodyCenter());
-        m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Teleport"), 1, BodyCenter());
-    }
-
+    //if (m_pGameInstance->Key_Down(DIK_H, INPUT_TYPE::FORCE))
+    //{
+    //    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Teleport"), BodyCenter());
+    //}
+    //if (m_pGameInstance->Key_Down(DIK_J, INPUT_TYPE::FORCE))
+    //{
+    //    m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Teleport"), 0, BodyCenter());
+    //    m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Teleport"), 1, BodyCenter());
+    //}
+    
     /*  어택콜라이더 on -> 다른 애니메이션 들어오면 끄기 */
     if (m_isSpearTipActive && m_iCurAnimIndex != m_pModelCom->Get_CurAnimIndex()) {
         m_isNotifyAttacking = false;

@@ -123,6 +123,13 @@ private:
     void                            Spawn_BloodDecal();
     void                            Spawn_EmissiveCrackDecal(_fvector vPosition);
 
+private :
+    void                            SpwanParticle(_fvector pos);
+    void                            SpwanLand();
+private :
+    _float                          m_fParticleTimeAcc;
+
+
 private:
     class CBody_Viper*              m_pBody = { nullptr };
     class CBody_Cinematic_Viper*    m_pCinematicBody = { nullptr };
