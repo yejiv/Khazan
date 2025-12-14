@@ -1407,6 +1407,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(70.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1507,6 +1508,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(70.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         }); 
@@ -1523,6 +1525,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(75.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 1.f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1540,6 +1543,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(40.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1605,6 +1609,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(75.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1621,6 +1626,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(45.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1763,6 +1769,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(70.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1927,8 +1934,8 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
     /* Move */
     Register_EventGroup("SFX_Move_Injure_R", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_L, 0.35f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Injure_L", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_R, 0.35f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Walk", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_WALK, 0.35f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Run", 12, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RUN, 0.4f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Walk", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_WALK, 1.5f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Run", 12, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RUN, 1.f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Sprint_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_START, 0.6f, SOUND_CHANNEL::VOICE);
     Register_EventGroup("SFX_Move_Sprint", 16, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT, 0.45f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Sprint_Stop", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_STOP, 0.5f, SOUND_CHANNEL::MOVE);

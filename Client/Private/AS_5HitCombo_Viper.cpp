@@ -101,6 +101,22 @@ void CAS_5HitCombo_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLay
     }
 }
 
+void CAS_5HitCombo_Viper::On_JustGuard(CGameObject* pOwner)
+{
+    CViper* pViper = static_cast<CViper*>(pOwner);
+    CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+
+    _uint iAttackCnt = pBB->Get_Value<_uint>(pViper->Get_Name(), "AttackCount");
+    if (iAttackCnt == 7)
+    {
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isP1_5HitComboFinished", true);
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isJustGuard", true);
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isGroggy", true);
+        pBB->Set_Value<_uint>(pViper->Get_Name(), "AttackCount", 0);
+
+    }
+}
+
 
 
 CAS_5HitCombo_Viper* CAS_5HitCombo_Viper::Create()

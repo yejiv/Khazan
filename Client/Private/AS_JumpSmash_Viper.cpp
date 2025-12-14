@@ -32,6 +32,9 @@ void CAS_JumpSmash_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
 void CAS_JumpSmash_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+    CViper* pViper = static_cast<CViper*>(pOwner);
+    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), pViper->Get_FxRotIdx());
+
 }
 
 void CAS_JumpSmash_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
