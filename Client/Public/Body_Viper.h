@@ -89,12 +89,12 @@ private:
     _float                  m_fRimDuration = {};
 
 private:
-    class CClothBody* m_pFeelerBody = { nullptr };
-    COLLISION_DESC m_tFeelerCollDesc = {};
-    class CBody* m_pClothBody = { nullptr };
-    COLLISION_DESC m_tClothBodyCollDesc = {};
-    _float4x4* m_pClothBodyMatrix = { nullptr };
-    _float4x4 m_pClothCombinedMatrix;
+    class CClothBody*       m_pFeelerBody = { nullptr };
+    COLLISION_DESC          m_tFeelerCollDesc = {};
+    class CBody*            m_pClothBody = { nullptr };
+    COLLISION_DESC          m_tClothBodyCollDesc = {};
+    _float4x4*              m_pClothBodyMatrix = { nullptr };
+    _float4x4               m_pClothCombinedMatrix;
 
 public:
     static CBody_Viper*     Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
