@@ -2906,6 +2906,8 @@ void CKhazan_Spear::Subscribe_Events()
                 static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
                 Add_Status(SPEAR);
                 Remove_Status(BAREHAND | INJURED);
+
+          
             }
         }  });
 
@@ -3153,6 +3155,7 @@ void CKhazan_Spear::BladeNexus_Event(_float fTimeDelta)
                 Clear_SubState();
                 Clear_CycleState();
 
+                m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
             }
         }
         // 이미 해금된 귀검
@@ -3166,6 +3169,8 @@ void CKhazan_Spear::BladeNexus_Event(_float fTimeDelta)
                 Clear_State();
                 Clear_SubState();
                 Clear_CycleState();
+
+                m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
             }
         }
 

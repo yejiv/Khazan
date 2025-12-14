@@ -1065,6 +1065,10 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
      { TEXT("ShadowLandFlow_Arm"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Arm") },
      { TEXT("ShadowLandFlow_Leg"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Leg") },
      { TEXT("ShadowLandFlow_Shoes"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes") },
+
+     /* Event Clothes*/
+     { TEXT("Danjin_Hair"), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair") },
+
     };
 
     // 모든 파츠 로드
