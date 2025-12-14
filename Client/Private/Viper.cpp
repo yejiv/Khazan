@@ -1313,7 +1313,6 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("StingGrab_Start", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_isLookAt = false;
-            m_pWeapon->Set_OnAttackCollision_L(false);
             m_fTurnSpeed = 8.f;
         });
 
@@ -1357,6 +1356,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("P1_StingGrab_Rush", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isP1_StingGrab_Rush", false);
+            m_pWeapon->Set_OnAttackCollision_L(false);
 
         });
 
@@ -1511,8 +1511,8 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("Remove_Core", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pCore->Set_IsActive(false);
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_cn_embars_be_01_sfx_02 (SFX).wav"), 20.f,Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_roar_01 (SFX).wav"), 20.f,Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)));
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_cn_embars_be_01_sfx_02 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_roar_01 (SFX).wav"), 1.f);
            
         });
 
@@ -2179,7 +2179,7 @@ HRESULT CViper::Ready_AnimEvent()
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
             m_pCharVirCom->Jump(50.f, 7.f);
 
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_jump_long_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_jump_long_01 (SFX).wav"), 1.f);
 
         });
 
@@ -2211,7 +2211,7 @@ HRESULT CViper::Ready_AnimEvent()
             SFX_STOMP_P2(1);
 
             //Mon_vo_viper_p2_jump_atk_jump_01 (SFX).wav
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_jump_atk_stomp_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_jump_atk_stomp_01 (SFX).wav"), 1.f);
 
         });
 
@@ -2267,14 +2267,14 @@ HRESULT CViper::Ready_AnimEvent()
             Pick_ViperRock();
             m_isLookAt = true;
             m_fTurnSpeed = 10.f;
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_pull_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_pull_01 (SFX).wav"), 1.f);
 
         });
 
     pP2Model->Register_Event("P2_ThrowRock_Loop", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
 
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_grab_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_grab_01 (SFX).wav"), 1.f);
 
         });
 
@@ -2283,7 +2283,7 @@ HRESULT CViper::Ready_AnimEvent()
             Throw_ViperRock();
             m_isLookAt = false;
             m_fTurnSpeed = 8.f;
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_throw_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_throw_01 (SFX).wav"), 1.f);
 
         });
 
@@ -3564,12 +3564,21 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("JumpAttack_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
 
     pModel->Register_Event("SwingCombo_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) { Start_Thunder(0.2f, 2); m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_05 (SFX).wav"), 1.5f); } });
-    pModel->Register_Event("SwingCombo_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
+    pModel->Register_Event("SwingCombo_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        { 
+            if (m_isBerserker) Start_Thunder(0.3f, 3); 
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_round_start_layer_01 (SFX).wav"), 1.f);
+        });
     pModel->Register_Event("SwingCombo_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("SwingCombo_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("SwingCombo_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("SwingCombo_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
-    pModel->Register_Event("SwingCombo_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
+    pModel->Register_Event("SwingCombo_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        { 
+            if (m_isBerserker) Start_Thunder(0.2f, 2); 
+            SFX_HAND_SWISH(1);
+
+        });
     pModel->Register_Event("SwingCombo_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("SwingCombo_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
         if (m_isBerserker)
@@ -5104,10 +5113,8 @@ _float CViper::Clamp_TargetDistance()
 
     _float fResult = UtilityScore::DistanceScore(fDist,fMinDist,fMaxDist);
 
-    if (fDist <= fMinDist)
-        int a = 10;
 
-    return fResult;
+    return fResult + 0.7f;
 
 }
 
@@ -5460,37 +5467,37 @@ void CViper::SFX_Move_P2(_uint iIndex)
     if (iIndex == 1)
     {
         if (iSoundIndex == 0)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_01 (SFX).wav"), Clamp_TargetDistance());
         else if (iSoundIndex == 1)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_02 (SFX).wav"), Clamp_TargetDistance());
         else if (iSoundIndex == 2)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_03 (SFX).wav"), Clamp_TargetDistance());
         else if (iSoundIndex == 3)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_04 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_04 (SFX).wav"), Clamp_TargetDistance());
         else if (iSoundIndex == 4)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_05 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_05 (SFX).wav"), Clamp_TargetDistance());
         else if (iSoundIndex == 5)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_06 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_06 (SFX).wav"), Clamp_TargetDistance());
         else if (iSoundIndex == 6)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_07 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_07 (SFX).wav"), Clamp_TargetDistance());
     }
 
     else if (iIndex == 2)
     {
          if (iSoundIndex == 0)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
-        else if (iSoundIndex == 1)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
-        else if (iSoundIndex == 2)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
-        else if (iSoundIndex == 3)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
-        else if (iSoundIndex == 4)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_05 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
-        else if (iSoundIndex == 5)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_06 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
-        else if (iSoundIndex == 6)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_b_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_01 (SFX).wav"), Clamp_TargetDistance());
+        else if (iSoundIndex == 1)                                                             
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_02 (SFX).wav"), Clamp_TargetDistance());
+        else if (iSoundIndex == 2)                                                              
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_03 (SFX).wav"), Clamp_TargetDistance());
+        else if (iSoundIndex == 3)                                                            
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), Clamp_TargetDistance());
+        else if (iSoundIndex == 4)                                                             
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_05 (SFX).wav"), Clamp_TargetDistance());
+        else if (iSoundIndex == 5)                                                             
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_06 (SFX).wav"), Clamp_TargetDistance());
+        else if (iSoundIndex == 6)                                                             
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_b_01 (SFX).wav"), Clamp_TargetDistance());
     }
 }
 
@@ -5502,39 +5509,39 @@ void CViper::SFX_STOMP_P2(_uint iIndex)
     if (iIndex == 1)
     {
         if (iSoundIndex == 0)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_stomp_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_stomp_01 (SFX).wav"), 1.f);
         else if (iSoundIndex == 1)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_stomp_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_stomp_02 (SFX).wav"), 1.f);
         else if (iSoundIndex == 2)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_stomp_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_stomp_03 (SFX).wav"), 1.f);
     }
 
     // 칼 찍기
     else if (iIndex == 2)
     {
         if (iSoundIndex == 0)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_stomp_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_stomp_01 (SFX).wav"), 1.f);
         else if (iSoundIndex == 1)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_stomp_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_stomp_02 (SFX).wav"), 1.f);
         else if (iSoundIndex == 2)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_stomp_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_stomp_03 (SFX).wav"), 1.f);
     }
     
     // DashUpper
     else if (iIndex == 3)
     {
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_stomp_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_stomp_01 (SFX).wav"), 1.f);
     }
 
     // JumpAttack
     else if (iIndex == 4)
     {
         if (iSoundIndex == 0)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_jump_atk_double_stomp_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_jump_atk_double_stomp_02 (SFX).wav"), 1.f);
         else if (iSoundIndex == 1)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_jump_atk_double_stomp_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_jump_atk_double_stomp_01 (SFX).wav"), 1.f);
         else if (iSoundIndex == 2)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_jump_atk_double_stomp_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_jump_atk_double_stomp_01 (SFX).wav"), 1.f);
     }
 }
 
@@ -5547,38 +5554,38 @@ void CViper::SFX_HAND_SWISH(_uint iIndex)
     if (iIndex == 1)
     {
         if (iSoundIndex == 0)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_short_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_short_01 (SFX).wav"), 1.f);
         else if (iSoundIndex == 1)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_a_01 (SFX).wav"), 1.f);
         else if (iSoundIndex == 2)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_a_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_a_02 (SFX).wav"), 1.f);
         else if (iSoundIndex == 3)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_a_03 (SFX).wav"), 1.f);
         else if (iSoundIndex == 4)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_b_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_b_01 (SFX).wav"), 1.f);
         else if (iSoundIndex == 5)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_b_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_b_02 (SFX).wav"), 1.f);
         else if (iSoundIndex == 6)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_b_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_b_03 (SFX).wav"), 1.f);
     }
 
     // 어퍼
     else if (iIndex == 2)
     {
         if (iSoundIndex == 0)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_01 (SFX).wav"), 1.f);
         else if (iSoundIndex == 1)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 2)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 3)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_04 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 4)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 5)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 6)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 2)                                                             
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_03 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 3)                                                             
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_04 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 4)                                                             
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 5)                                                             
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 6)                                                             
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_03 (SFX).wav"), 1.f);
     }
 
     // 백스탭 칼 휘두루는 소리
@@ -5586,19 +5593,19 @@ void CViper::SFX_HAND_SWISH(_uint iIndex)
     {
         //
         if (iSoundIndex == 0)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 1)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 2)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 3)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 4)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 5)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 6)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_01 (SFX).wav"),  1.f);
+        else if (iSoundIndex == 1)                                                                          
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_02 (SFX).wav"),  1.f);
+        else if (iSoundIndex == 2)                                                                          
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_03 (SFX).wav"),  1.f);
+        else if (iSoundIndex == 3)                                                                          
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_01 (SFX).wav"),  1.f);
+        else if (iSoundIndex == 4)                                                                          
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_02 (SFX).wav"),  1.f);
+        else if (iSoundIndex == 5)                                                                          
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_03 (SFX).wav"),  1.f);
+        else if (iSoundIndex == 6)                                                                          
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_03 (SFX).wav"),  1.f);
     }
 
 
@@ -5606,19 +5613,19 @@ void CViper::SFX_HAND_SWISH(_uint iIndex)
     {
         
         if (iSoundIndex == 0)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 1)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 2)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 3)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 4)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 5)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-        else if (iSoundIndex == 6)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 1)                                                                 
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 2)                                                                 
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_03 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 3)                                                                 
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 4)                                                                 
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 5)                                                                 
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_03 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 6)                                                                 
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_01 (SFX).wav"), 1.f);
     }
 
 
@@ -5635,11 +5642,11 @@ void CViper::SFX_DASHDRIFT()
 
 
     if (iSoundIndex == 0)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_loop_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 30.f);
-    else if (iSoundIndex == 1)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_loop_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 30.f);
-    else if (iSoundIndex == 2)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_loop_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 30.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_loop_01 (SFX).wav"), 1.f);
+    else if (iSoundIndex == 1)                                                                
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_loop_02 (SFX).wav"), 1.f);
+    else if (iSoundIndex == 2)                                                                
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_loop_03 (SFX).wav"), 1.f);
 
 
 }

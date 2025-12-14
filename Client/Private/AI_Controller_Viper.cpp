@@ -37,82 +37,85 @@ HRESULT CAI_Controller_Viper::Initialize(CCreature* pOwner)
 void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 {
     
-    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
-    {
-        // 컷신 스테이트 변경
-        if (m_pGameInstance->Key_Down(DIK_O))
-        {
-            CViper* pViper = static_cast<CViper*>(pOwner);
-            
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
+#pragma region Remote
 
-        }
+    //if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    //{
+    //    // 컷신 스테이트 변경
+    //    if (m_pGameInstance->Key_Down(DIK_O))
+    //    {
+    //        CViper* pViper = static_cast<CViper*>(pOwner);
+    //        
+    //        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
 
-        if (m_pGameInstance->Key_Down(DIK_P))
-        {
-            CViper* pViper = static_cast<CViper*>(pOwner);
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
+    //    }
 
-        }
-    }
+    //    if (m_pGameInstance->Key_Down(DIK_P))
+    //    {
+    //        CViper* pViper = static_cast<CViper*>(pOwner);
+    //        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_PHASE2), pViper);
 
-    if (m_pGameInstance->Key_Down(DIK_Y))
-    {
+    //    }
+    //}
 
-        CViper* pViper = static_cast<CViper*>(pOwner);
-        CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
-        //pViper->Consume_Stamina(10.f);
-        //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
-                
-        // 버서커 시작 셰이더 세팅, 카메라 쉐이킹
-        CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
-        Set_ViperBerserkerStart_ShaderSettings();
+    //if (m_pGameInstance->Key_Down(DIK_Y))
+    //{
 
-        m_pBB->Set_Value<_bool>(m_strMonstertag, "is_Berserker", true);
+    //    CViper* pViper = static_cast<CViper*>(pOwner);
+    //    CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+    //    //pViper->Take_Damage(10.f,HITREACTION::KNOCKBACK_WEAK,pTarget);
+    //    //pViper->Consume_Stamina(10.f);
+    //    //m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::CUTSCENE_START), pViper);
+    //            
+    //    // 버서커 시작 셰이더 세팅, 카메라 쉐이킹
+    //    CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
+    //    Set_ViperBerserkerStart_ShaderSettings();
 
-    }
+    //    m_pBB->Set_Value<_bool>(m_strMonstertag, "is_Berserker", true);
 
-    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
-    {
+    //}
 
-        if (m_pGameInstance->Key_Down(DIK_B))
-        {
-            //m_pBB->Set_Value<_uint>(m_strMonstertag,"DebugIndex",0);
-            CViper* pViper = static_cast<CViper*>(pOwner);
-            pViper->Set_PhaseWeapon_Phase2();
-            //pViper->Set_Weapon_Phase1();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHUPPER), pViper);
-        }
+    //if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    //{
 
-        if (m_pGameInstance->Key_Down(DIK_N))
-        {
-            //m_pBB->Set_Value<_uint>(m_strMonstertag, "DebugIndex", 1);
-            CViper* pViper = static_cast<CViper*>(pOwner);
-            pViper->Set_PhaseWeapon_Phase2();
-            //pViper->Set_Weapon_Phase1();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHDRIFT), pViper);
-        }
+    //    if (m_pGameInstance->Key_Down(DIK_B))
+    //    {
+    //        //m_pBB->Set_Value<_uint>(m_strMonstertag,"DebugIndex",0);
+    //        CViper* pViper = static_cast<CViper*>(pOwner);
+    //        pViper->Set_PhaseWeapon_Phase2();
+    //        //pViper->Set_Weapon_Phase1();
+    //        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHUPPER), pViper);
+    //    }
 
-        if (m_pGameInstance->Key_Down(DIK_M))
-        {
-            CViper* pViper = static_cast<CViper*>(pOwner);
+    //    if (m_pGameInstance->Key_Down(DIK_N))
+    //    {
+    //        //m_pBB->Set_Value<_uint>(m_strMonstertag, "DebugIndex", 1);
+    //        CViper* pViper = static_cast<CViper*>(pOwner);
+    //        pViper->Set_PhaseWeapon_Phase2();
+    //        //pViper->Set_Weapon_Phase1();
+    //        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHDRIFT), pViper);
+    //    }
 
-            pViper->Set_PhaseWeapon_Phase2();
-            //pViper->Set_Weapon_Phase1();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SIDEMOVE), pViper);
-        }
+    //    if (m_pGameInstance->Key_Down(DIK_M))
+    //    {
+    //        CViper* pViper = static_cast<CViper*>(pOwner);
 
-    }
+    //        pViper->Set_PhaseWeapon_Phase2();
+    //        //pViper->Set_Weapon_Phase1();
+    //        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_SIDEMOVE), pViper);
+    //    }
+
+    //}
 
 
-    if (m_pGameInstance->Key_Down(DIK_J))
-    {
-        m_isActiveController = true;
-        CViper* pViper = static_cast<CViper*>(pOwner);
-        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pOwner);
-    }
+    //if (m_pGameInstance->Key_Down(DIK_J))
+    //{
+    //    m_isActiveController = true;
+    //    CViper* pViper = static_cast<CViper*>(pOwner);
+    //    m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pOwner);
+    //}
 
+#pragma endregion
 
 
     if (m_pBB->Get_Value<_bool>(m_strMonstertag, "is_Berserker"))
@@ -629,7 +632,7 @@ CONDITION CAI_Controller_Viper::GetCallbackCondition(CGameObject* pOwner, const 
                 {
                     _uint iBersekerIndex = BB->Get_Value<_uint>(pViper->Get_Name(), "BerserkerIndex");
 
-                    if (iBersekerIndex == 3)
+                    if (iBersekerIndex == 4)
                     {
                         BB->Set_Value(pViper->Get_Name(), "AttackInterrupt", true);
                         return true;
