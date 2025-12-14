@@ -185,7 +185,7 @@ HRESULT CProjectile_Rock_Viper::Ready_Colliders()
     m_tVIperRock_CollisionDesc.pGameObject = this;
     m_tVIperRock_CollisionDesc.strName = TEXT("Viper_Rock");
     m_tVIperRock_CollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    BodyDesc.pCollisionDesc = &m_tVIperRock_CollisionDesc;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_Viper_Rock"), reinterpret_cast<CComponent**>(&m_pBody), &BodyDesc)))

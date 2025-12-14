@@ -7,6 +7,7 @@
 #include "ClothBody.h"
 #include "AS_CutScene_2Phase_Viper.h"
 
+
 _float3 CBody_Phase2_Viper::Get_BonePoint(const _char* BoneName)
 {
     _float4x4 BoneMatrix = *m_pModelCom->Get_BoneMatrix(BoneName);
@@ -61,12 +62,12 @@ _float4x4* CBody_Phase2_Viper::Get_BoneMatrix_Ptr(const _char* pBoneName)
 
 
 CBody_Phase2_Viper::CBody_Phase2_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CPartObject{ pDevice,pContext }
+    :CWeaponObject{ pDevice,pContext }
 {
 }
 
 CBody_Phase2_Viper::CBody_Phase2_Viper(const CBody_Phase2_Viper& Prototype)
-    :CPartObject{ Prototype }
+    :CWeaponObject{ Prototype }
 {
 }
 
@@ -97,6 +98,9 @@ HRESULT CBody_Phase2_Viper::Initialize_Clone(void* pArg)
         return E_FAIL;
 
      if (FAILED(Ready_Colliders()))
+         return E_FAIL;
+
+     if (FAILED(Ready_Callback()))
          return E_FAIL;
 
     _matrix PreTransformMatrix = XMMatrixIdentity();
@@ -355,6 +359,18 @@ HRESULT CBody_Phase2_Viper::Bind_ShaderResources()
         return E_FAIL;
 
 
+    return S_OK;
+}
+
+HRESULT CBody_Phase2_Viper::Ready_Callback()
+{
+    Set_JustGuardCallBack([this](_bool isJustGuard)
+        {
+            if (isJustGuard)
+            {
+                static_cast<CMonster*>(m_pOwner)->Consume_Stamina(m_pOwner->Get_MaxStamina() * 0.05f);
+            }
+        });
     return S_OK;
 }
 
