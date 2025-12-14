@@ -37,7 +37,7 @@ void CAS_Dead_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
 
     if (pModel->IsFinished())
     {
-        CClientInstance::GetInstance()->Add_SkillExp(70.f);
+        CClientInstance::GetInstance()->Add_SkillExp(80.f);
         pImp->Dissolve_On();
     }
 }

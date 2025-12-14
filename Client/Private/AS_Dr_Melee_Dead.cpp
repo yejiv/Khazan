@@ -40,7 +40,7 @@ void CAS_Dr_Melee_Dead::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         {
             m_eState = RELEASSE;
             m_pMonData->pOwner->Hp_Dead();
-            CClientInstance::GetInstance()->Add_SkillExp(40.f);
+            CClientInstance::GetInstance()->Add_SkillExp(80.f);
         }
     }
     else if (m_eState == RELEASSE)
