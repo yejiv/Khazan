@@ -1137,7 +1137,7 @@ HRESULT CBody_Khazan_GS::Ready_Components()
         { TEXT("ShadowLandFlow_Shoes"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes") },
 
         /* Event Clothes*/
-        { TEXT("Danjin_Hair"), TEXT("Prototype_Component_Model_Khazan_Danjin_Hair") },
+        { TEXT("Danjin_Hair"), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair") },
     };
 
     // 모든 파츠 로드
@@ -1397,6 +1397,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(70.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1497,6 +1498,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(70.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         }); 
@@ -1513,6 +1515,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(75.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 1.f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1530,6 +1533,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(40.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1595,6 +1599,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(75.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1611,6 +1616,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(45.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
@@ -1753,6 +1759,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         tMod.fFrom = XMConvertToRadians(60.f);
         tMod.fTo = XMConvertToRadians(70.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 0.6f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
