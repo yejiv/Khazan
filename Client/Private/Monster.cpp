@@ -155,6 +155,9 @@ void CMonster::Take_Damage(_float fDamage, HITREACTION eHitreaction ,CGameObject
 
 void CMonster::Consume_Stamina(_float fAmout)
 {
+    if (m_isRequestRecoveryStamina)
+        return;
+
     if (m_fCurrentStamina > 0.f)
         m_fCurrentStamina -= fAmout;
 
