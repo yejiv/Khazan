@@ -16,6 +16,7 @@ private:
 	virtual ~CSkill_Slot() = default;
 
 public:
+    void                                Setting_Data(_int iSkillIndex, _int SKillPoint);
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;
 	virtual void						Priority_Update(_float fTimeDelta) override;

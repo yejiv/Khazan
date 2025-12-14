@@ -117,6 +117,17 @@ void CSkill_Slot::Reset_Slot()
         
 }
 
+void CSkill_Slot::Setting_Data(_int iSkillIndex, _int SKillPoint)
+{
+    if (m_iSkillIndex != iSkillIndex)
+        return;
+
+    m_iSkillPoint = SKillPoint;
+
+    m_pSlot_Selete->Update_Visible(true);
+    m_pGameInstance->Emit_Event< EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), { true, m_iSkillIndex });
+}
+
 HRESULT CSkill_Slot::Initialize_Prototype(_uint iLevel)
 {
     m_iLevel = iLevel;
