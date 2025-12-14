@@ -328,27 +328,33 @@ void CKhazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLaye
 
 void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
 {
-    /* Just Guard 우선 처리*/
-    if (Has_Status(JUST_GUARD))
-    {
-        Clear_Step3();
-        m_pAnimGuard->Try_JustGuard(m_eHitNormalDir.iDirFlag);
-        Remove_Status(JUST_GUARD);
+    if (Has_State(CAT::M_DIE))
         return;
-    }
 
-
-    /* 가드 중 강한넉백공격이 오면 성공모션 취하기 */
-    if (m_pAnimGuard->Is_Guarding())
+    if (eHitreaction != HITREACTION::GRAB)
     {
-        if (eHitreaction == HITREACTION::KNOCKBACK_STRONG) {
+        /* Just Guard 우선 처리*/
+        if (Has_Status(JUST_GUARD))
+        {
             Clear_Step3();
-            m_pAnimGuard->Try_SuccessGuard(m_eHitNormalDir.iDirFlag);
+            m_pAnimGuard->Try_JustGuard(m_eHitNormalDir.iDirFlag);
+            Remove_Status(JUST_GUARD);
+            return;
         }
-        
-        return;
+
+
+        /* 가드 중 강한넉백공격이 오면 성공모션 취하기 */
+        if (m_pAnimGuard->Is_Guarding())
+        {
+            if (eHitreaction == HITREACTION::KNOCKBACK_STRONG) {
+                Clear_Step3();
+                m_pAnimGuard->Try_SuccessGuard(m_eHitNormalDir.iDirFlag);
+            }
+
+            return;
+        }
     }
-    
+
     m_pPlayerData->fCulHp -= fDamage;
 
     /* 플레이어 죽었을 때 세팅하는 법  */

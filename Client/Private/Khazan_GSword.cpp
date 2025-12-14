@@ -89,8 +89,8 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
         Add_Status(BAREHAND);
 
 
-    //m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
-    //Add_Status(GSWORD);
+    m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
+    Add_Status(GSWORD);
 
     if (FAILED(Ready_Components()))
         return E_FAIL;
@@ -372,26 +372,28 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
 {
     if (Has_State(CAT::M_DIE))
         return;
-
-    /* Just Guard 우선 처리*/
-    if (Has_Status(JUST_GUARD))
+    if (eHitreaction != HITREACTION::GRAB)
     {
-        Clear_Step3();
-        m_pAnimGuard->Try_JustGuard(m_eHitNormalDir.iDirFlag);
-        Remove_Status(JUST_GUARD);
-        return;
-    }
-
-
-    /* 가드 중 강한넉백공격이 오면 성공모션 취하기 */
-    if (m_pAnimGuard->Is_Guarding())
-    {
-        if (eHitreaction == HITREACTION::KNOCKBACK_STRONG) {
+        /* Just Guard 우선 처리*/
+        if (Has_Status(JUST_GUARD))
+        {
             Clear_Step3();
-            m_pAnimGuard->Try_SuccessGuard(m_eHitNormalDir.iDirFlag);
+            m_pAnimGuard->Try_JustGuard(m_eHitNormalDir.iDirFlag);
+            Remove_Status(JUST_GUARD);
+            return;
         }
 
-        return;
+
+        /* 가드 중 강한넉백공격이 오면 성공모션 취하기 */
+        if (m_pAnimGuard->Is_Guarding())
+        {
+            if (eHitreaction == HITREACTION::KNOCKBACK_STRONG) {
+                Clear_Step3();
+                m_pAnimGuard->Try_SuccessGuard(m_eHitNormalDir.iDirFlag);
+            }
+
+            return;
+        }
     }
 
     m_pPlayerData->fCulHp -= fDamage;
@@ -434,80 +436,82 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
           //  m_isGhost = false;
         }
     }
-
-    /* Damage UI font */
-    CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
-    if (pDamage != nullptr)
+    if (eHitreaction != HITREACTION::GRAB)
     {
-        _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
-        vPos.m128_f32[1] += 1.4f;
-        pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::PLAYER, vPos, fDamage, { 0.f, 5.f });
-        m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
-    }
+        /* Damage UI font */
+        CDamage_Text* pDamage = static_cast<CDamage_Text*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Damage_Text")));
+        if (pDamage != nullptr)
+        {
+            _vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+            vPos.m128_f32[1] += 1.4f;
+            pDamage->Render_Damage(CDamage_Text::DAMAGE_TYPE::PLAYER, vPos, fDamage, { 0.f, 5.f });
+            m_pGameInstance->Push_PoolObject_ToLayer(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_UI"), pDamage);
+        }
 
-    /*  Decal */
-    DECAL_DESC Desc{};
-    Desc.fLifeTime = 8.f;
-    Desc.vFadeTime = _float2(0.2f, 0.2f);
-    Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
-    Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
-    Desc.isRandomTexture = true;
-    _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
-
-    _float fRadianY{}, fDegreeY{};
-
-    switch (Desc.eType)
-    {
-    case DECALTYPE::LINEAR:
-        Desc.eType = DECALTYPE::LINEAR;
-        _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
-        _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
-        vPosition += (vLook * -1.5f);
-        XMStoreFloat3(&Desc.vPosition, vPosition);
-        fRadianY = atan2f(XMVectorGetX(vLook), XMVectorGetZ(vLook));
-        fDegreeY = XMConvertToDegrees(fRadianY);
-        Desc.vAngle = _float3(0.f, fDegreeY, 0.f);
-        Desc.vScale = _float3(2.f, 1.f, 4.f);
-        break;
-
-    case DECALTYPE::CIRCLE:
-        Desc.eType = DECALTYPE::CIRCLE;
-        XMStoreFloat3(&Desc.vPosition, vDecalPos);
-        Desc.vScale = _float3(
-            m_pGameInstance->Rand(3.f, 5.f),
-            1.f,
-            m_pGameInstance->Rand(3.f, 5.f)
-        );
+        /*  Decal */
+        DECAL_DESC Desc{};
+        Desc.fLifeTime = 8.f;
+        Desc.vFadeTime = _float2(0.2f, 0.2f);
+        Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
         Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
         Desc.isRandomTexture = true;
-        break;
+        _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
 
-    case DECALTYPE::CURVE:
-        Desc.eType = DECALTYPE::CURVE;
-        _float fOffset = 1.25f;
-        _float fPosX = XMVectorGetX(vDecalPos);
-        _float fPosZ = XMVectorGetZ(vDecalPos);
-        vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
-        vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
-        XMStoreFloat3(&Desc.vPosition, vDecalPos);
-        Desc.vAngle = _float3(0.f, m_pGameInstance->Rand(0.f, 360.f), 0.f);
-        Desc.vScale = _float3(2.f, 1.f, 4.f);
-        Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
-        Desc.isRandomTexture = true;
-        break;
+        _float fRadianY{}, fDegreeY{};
+
+        switch (Desc.eType)
+        {
+        case DECALTYPE::LINEAR:
+            Desc.eType = DECALTYPE::LINEAR;
+            _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+            _vector vLook = m_pTransformCom->Get_State(STATE::LOOK);
+            vPosition += (vLook * -1.5f);
+            XMStoreFloat3(&Desc.vPosition, vPosition);
+            fRadianY = atan2f(XMVectorGetX(vLook), XMVectorGetZ(vLook));
+            fDegreeY = XMConvertToDegrees(fRadianY);
+            Desc.vAngle = _float3(0.f, fDegreeY, 0.f);
+            Desc.vScale = _float3(2.f, 1.f, 4.f);
+            break;
+
+        case DECALTYPE::CIRCLE:
+            Desc.eType = DECALTYPE::CIRCLE;
+            XMStoreFloat3(&Desc.vPosition, vDecalPos);
+            Desc.vScale = _float3(
+                m_pGameInstance->Rand(3.f, 5.f),
+                1.f,
+                m_pGameInstance->Rand(3.f, 5.f)
+            );
+            Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+            Desc.isRandomTexture = true;
+            break;
+
+        case DECALTYPE::CURVE:
+            Desc.eType = DECALTYPE::CURVE;
+            _float fOffset = 1.25f;
+            _float fPosX = XMVectorGetX(vDecalPos);
+            _float fPosZ = XMVectorGetZ(vDecalPos);
+            vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
+            vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
+            XMStoreFloat3(&Desc.vPosition, vDecalPos);
+            Desc.vAngle = _float3(0.f, m_pGameInstance->Rand(0.f, 360.f), 0.f);
+            Desc.vScale = _float3(2.f, 1.f, 4.f);
+            Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+            Desc.isRandomTexture = true;
+            break;
+        }
+
+        m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
+
+        // 피격 Vignette
+        VIGNETTE_CONFIG Config{};
+        Config.vColor = _float3(0.5f, 0.f, 0.f);
+        Config.fPower = 3.5f;
+        Config.fMinIntensity = 0.f;
+        Config.fMaxIntensity = 2.f;
+        Config.fDuration = 0.5f;
+        Config.vFadeTime = _float2(0.25f, 0.25f);
+        m_pGameInstance->Start_VignetteAnimation(Config);
     }
-
-    m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Decal"), Desc);
-
-    // 피격 Vignette
-    VIGNETTE_CONFIG Config{};
-    Config.vColor = _float3(0.5f, 0.f, 0.f);
-    Config.fPower = 3.5f;
-    Config.fMinIntensity = 0.f;
-    Config.fMaxIntensity = 2.f;
-    Config.fDuration = 0.5f;
-    Config.vFadeTime = _float2(0.25f, 0.25f);
-    m_pGameInstance->Start_VignetteAnimation(Config);
 
     /* Play Damaged Animation */
     switch (eHitreaction)
@@ -521,6 +525,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
     case Client::HITREACTION::GRAB_FINISHED:
         m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_DamAir_F");
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+        m_pCharVirCom->End_Ladder();
         break;
     case Client::HITREACTION::BRUTAL_ATTACK:
         break;
@@ -531,9 +536,12 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
         Clear_Step1();
 
-        m_pBody->Get_Model()->Set_AnimationSet("Set_ViperGrab");
+        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Burrow_Predation_Kazan_DamageHold");
+        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+        m_pCharVirCom->Begin_Ladder();
+        m_fGrabFinishTime.x = 0.f;
+        m_isGrab = true;
 
-        //Add_Status(VIPER_GRAB);
         break;
     case Client::HITREACTION::KNOCKBACK_WEAK:
         if (Has_State(CAT::M_ATTACK | CAT::M_SKILL))  break;
@@ -696,11 +704,11 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
     }
 
 
-    ///* Viper Grab 상태 최우선 체크 */
-    //if (Has_Status(VIPER_GRAB)) {
-    //    if (!ChangeGrabAnimation())
-    //        return;
-    //}
+    /* Viper Grab 상태 최우선 체크 */
+    if (m_isGrab||m_isGrabFinish) {
+        if (!ChangeGrabAnimation(fTimeDelta))
+            return;
+    }
 
     /* Fall 상태 최우선 체크 */
     if (Fall_Input(fTimeDelta))
@@ -1961,15 +1969,30 @@ void CKhazan_GSword::ExecuteAnimationExit()
 
 }
 
-_bool CKhazan_GSword::ChangeGrabAnimation()
+_bool CKhazan_GSword::ChangeGrabAnimation(_float fTimeDelta)
 {
-    if (m_pBody->Get_Model()->IsAnimationStart(m_iCurAnimIndex) && m_pBody->Get_Model()->Check_MinAnimationTime())
+    if(m_isGrab && m_pCharVirCom->Get_isGround())
     {
-        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Down_Loop_F");
-        //m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
-       // Remove_Status(VIPER_GRAB);
-        return true;
+        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_DamAir_F");
+        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+
+        m_isGrabFinish = true;
+        m_isGrab = false;
+      
     }
+
+    if (m_isGrabFinish)
+    {
+        m_fGrabFinishTime.x += fTimeDelta;
+
+        if (m_fGrabFinishTime.y <= m_fGrabFinishTime.x)
+        {
+            m_isGrabFinish = m_isGrabFinish = false;
+            return true;
+        }
+    }
+
+
 
     return false;
 }

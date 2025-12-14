@@ -794,7 +794,7 @@ _bool CBody_Khazan_GS::Check_BrutalAttack(_float fTimeDelta)
     for (auto it = m_CollMonsters.begin(); it != m_CollMonsters.end(); )
     {
         CMonster* pCreatureMoster = static_cast<CMonster*>(m_pBrutalmonster);
-        if (*it == m_pBrutalmonster && (m_pBrutalmonster->Get_IsDead() || m_pBrutalmonster->Get_IsActive() || pCreatureMoster->Get_CurrentHP() <= 0.f))
+        if (*it == m_pBrutalmonster && (m_pBrutalmonster->Get_IsDead() || !m_pBrutalmonster->Get_IsActive() || pCreatureMoster->Get_CurrentHP() <= 0.f))
             it = m_CollMonsters.erase(it);
         else
             ++it;
@@ -1899,16 +1899,16 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
             m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
 
         if (*m_pHealIndex == 3)
-            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 3 });
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 2 });
 
         if (*m_pHealIndex == 4)
-            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 4 });
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 3 });
 
         if (*m_pHealIndex == 5)
-            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 5 });
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 4 });
 
         if (*m_pHealIndex == 6)
-            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 6 });
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 5 });
         
         }); //힐템
 
