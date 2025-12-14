@@ -295,6 +295,17 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(2.f, Desc);
+
+#pragma region 뚫린 동굴 들어갈때 ( 정방향 ) 플레이어 isInCave = false;
+
+            EventInteractType InteractType = {};
+
+            InteractType.eState = EventInteractType::NONE;
+            InteractType.CaveOut();
+
+            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+#pragma endregion
         }
         else if (m_strTriggerKey == "CaveExit")
         {
@@ -372,6 +383,17 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(2.f, Desc);
+
+#pragma region 동굴 들어갈때 ( 역방향 ) 플레이어 isInCave = true;
+
+            EventInteractType InteractType = {};
+
+            InteractType.eState = EventInteractType::NONE;
+            InteractType.CaveIn();
+
+            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+#pragma endregion
         }
         else if (m_strTriggerKey == "CaveExit_Rev")
         {
@@ -403,6 +425,32 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma endregion
         }
 #pragma endregion
+        else if (m_strTriggerKey == "CaveSnow_On")
+        {
+#pragma region 뚫린 동굴 들어갈때 ( 역방향 ) 플레이어 isInCave = false;
+
+            EventInteractType InteractType = {};
+
+            InteractType.eState = EventInteractType::NONE;
+            InteractType.CaveOut();
+
+            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+#pragma endregion
+        }
+        else if (m_strTriggerKey == "CaveSnow_Off")
+        {
+#pragma region 뚫린 동굴 나갈때 ( 정방향 ) 플레이어 isInCave = true;
+
+            EventInteractType InteractType = {};
+
+            InteractType.eState = EventInteractType::NONE;
+            InteractType.CaveIn();
+
+            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+#pragma endregion
+        }
         else if (m_strTriggerKey == "Shadow_Restore")
         {
             // Split 35로 변경 -> 동굴 밖 두둥실 아래 트리거에서 그림자 원복 시 호출할 함수
