@@ -71,7 +71,10 @@ void CUI_QuickSlot_Item::Late_Update(_float fTimeDelta)
     if (m_iState != ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM))
     {
         m_pIcon->Late_Update(fTimeDelta);
-        m_pTextBox->Set_Text(to_wstring(*m_iItemCount));
+        if(m_iItemCount != nullptr)
+            m_pTextBox->Set_Text(to_wstring(*m_iItemCount));
+        else
+            m_pTextBox->Set_Text(to_wstring(0));
         m_pTextBox->Late_Update(fTimeDelta);
     }
 
