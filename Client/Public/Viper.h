@@ -23,6 +23,8 @@ public:
     class CBody_Cinematic_Viper*    Get_Cinematic_Body() const { return m_pCinematicBody; }
     class CBody_Phase2_Viper*       Get_P2Body() const { return m_pPahse2Body; }
     class CCore_Viper*              Get_Core() { return m_pCore; }
+    class CTwinBlade_Viper*         Get_TB() const {return m_pWeapon;}
+   
 
     void                            Set_HPUI(_bool isToggle) { m_isUIHp = isToggle; };
 

@@ -519,19 +519,19 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
     case Client::HITREACTION::GROGGY:
         break;
     case Client::HITREACTION::GRAB_FINISHED:
-        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_DamAir_F");
-        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_DamAir_F");
+        //m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
         break;
     case Client::HITREACTION::BRUTAL_ATTACK:
         break;
     case Client::HITREACTION::GRAB:
 
-        if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
-        if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
-        if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
-        Clear_Step1();
+        //if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
+        //if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
+        //if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
+        //Clear_Step1();
 
-        m_pBody->Get_Model()->Set_AnimationSet("Set_ViperGrab");
+        //m_pBody->Get_Model()->Set_AnimationSet("Set_ViperGrab");
 
         //Add_Status(VIPER_GRAB);
         break;

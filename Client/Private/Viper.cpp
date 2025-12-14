@@ -1178,11 +1178,6 @@ HRESULT CViper::Ready_AnimEvent()
             CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
             m_pCharVirCom->Start_Dive(vTargetPos,80.f);
-
-            _vector pos = m_pWeapon->Get_LeftSwordTip();
-            pos = XMVectorSetY(pos, XMVectorGetY(pos) + 1.5f);
-            m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pWeapon->Get_LeftSwordTip());
-            cout << "----------------------- P1_Landing::ENTER ----------------------" << endl;
         });
 
 
@@ -1213,8 +1208,9 @@ HRESULT CViper::Ready_AnimEvent()
             //_float fOffset = 40.f;
             //_vector vLandPos = vTargetPos + vDir * fOffset;
             //m_pCharVirCom->Start_Dive(vTargetPos, 1.f);
-            m_pWeapon->Set_OnAttackCollision(true);
-        });
+            m_pWeapon->Set_OnAttackCollision(true);   
+
+             });
 
 
     pModel->Register_Event("P1_LandShake", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
@@ -1222,6 +1218,7 @@ HRESULT CViper::Ready_AnimEvent()
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_foley1_01 (SFX).wav"), 1.f);
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_impact_01 (SFX).wav"), 1.f);
             CClientInstance::GetInstance()->ActiveCamera_Shaking(3.f, 1.f);
+            m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pWeapon->Get_RightSwordTip());
             m_pWeapon->Set_OnAttackCollision(false);
 
         });
@@ -1792,7 +1789,9 @@ HRESULT CViper::Ready_AnimEvent()
             m_pP2Weapon->Set_OnAttackCollision(true);
             CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
 
-
+            _vector pos = m_pP2Weapon->Get_BladeTipPos();
+            pos = XMVectorSetY(pos, XMVectorGetY(pos) - 2.5f);
+            m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land_Big"), pos);
         });
 
     pP2Model->Register_Event("DashUpperAttack2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -2933,6 +2932,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_mouth_particle"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
         m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_growl_e_01 (SFX).wav"), 1.f);
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("snow_viper_load"));
 
         });
 
@@ -3333,7 +3333,6 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     pModel->Register_Event("DASwrd_Atk0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector pos = m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3];
-        //pos = XMVectorSetY(pos, XMVectorGetY(pos) + 1.5f);
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), pos);
         });
     
@@ -3350,9 +3349,8 @@ HRESULT CViper::Ready_AnimEffectEvent()
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_Up"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-    
+
     pModel->Register_Event("DASwrd_Atk2_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pP2Weapon->Get_BladeTipPos()); 
         });
 
 
@@ -3729,6 +3727,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         //휘몰아치는 눈 계속 켜는 거
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_snow2"), m_pTransformCom->Get_State(STATE::POSITION)); 
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_ChangeSnow"), m_pTransformCom->Get_State(STATE::POSITION)); 
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("snow_viper")); 
         //mist1번 (단발)
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("mist1"), m_pTransformCom->Get_State(STATE::POSITION));
         });

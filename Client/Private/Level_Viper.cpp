@@ -1089,6 +1089,11 @@ HRESULT CLevel_Viper::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("blust_brutal_GS"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Brutal_Spark_GS"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("GrappleTrail"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("snow_viper"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("snow_viper_load"), 1);
+    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("snow_viper_load"), XMVectorSet(-4.6f, 3.f, 62.96f, 1.f));//첫 컷씬 들어가면 끄기
+    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::VIPER), TEXT("snow_viper"), XMVectorSet(-28.802f, 10.f, 180.736f, 1.f)); //눈보라 휘몰아치기 시작하면 끄기
+
     //임시
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Stamp"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::VIPER), TEXT("Halberd_Weapon_Wind"), 3);
