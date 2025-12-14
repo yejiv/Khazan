@@ -72,10 +72,7 @@ void CAS_IceBreath_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _flo
         m_iIceBreathSoundChannelIndex = (m_iIceBreathSoundChannelIndex + 1) % m_IceBreathChannels.size();
 
         m_pGameInstance->PlaySoundOnce(
-            pYetuga->Get_IceBreathSound()[iRand],
-            pYetuga->Get_Position(),
-            pChannel,
-            10.f);
+            pYetuga->Get_IceBreathSound()[iRand],0.5f);
 
         m_fIceBreathTimeAcc = 0.f;
     }

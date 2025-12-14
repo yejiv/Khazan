@@ -281,6 +281,9 @@ void CSpear_Khazan_Spear::Change_Weapon(EQUIPMENTTYPE type, const _wstring& strP
         isGSword = true;
     }
     else if (strPartName == TEXT("Flash_Spear")) {
+        m_pModelCom = m_pModelCom_Punish_Spear;
+        m_pModelCom->Update_BoneCombinedMatrices();
+
         m_pModelCom = m_pModelCom_Flash_Spear;
         isSpear = true;
     }
@@ -290,6 +293,7 @@ void CSpear_Khazan_Spear::Change_Weapon(EQUIPMENTTYPE type, const _wstring& strP
     }
     Safe_AddRef(m_pModelCom);
 
+   // m_pModelCom->Set_Transform(&m_CombinedWorldMatrix);
 /*    if (isGSword)
     {
         *m_pParentStatus |= CKhazan_Spear::PLAYER_STATUS::GSWORD;
@@ -336,6 +340,11 @@ HRESULT CSpear_Khazan_Spear::Ready_Components()
     if (equipment.isGSword)
         m_pModelCom = equipment.iGSword == 4001 ? m_pModelCom_Meteor_GSword : m_pModelCom_Execution_GSword;
     Safe_AddRef(m_pModelCom);
+
+    m_pModelCom_Punish_Spear->Set_Transform(&m_CombinedWorldMatrix);
+    m_pModelCom_Flash_Spear->Set_Transform(&m_CombinedWorldMatrix);
+    m_pModelCom_Meteor_GSword->Set_Transform(&m_CombinedWorldMatrix);
+    m_pModelCom_Execution_GSword->Set_Transform(&m_CombinedWorldMatrix);
 
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
     MTDesc.pOwnerMasterModel = m_pModelCom;
