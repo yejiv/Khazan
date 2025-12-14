@@ -487,29 +487,40 @@ void CUI_BladeNexus_Map::Move_Player()
         m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
         });
 
-    // Main Light 백업
-    //  m_pGameInstance->Backup_LightDesc(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()));
-    //  
-    //  LIGHT_DESC LightBackup = *m_pGameInstance->Get_LightDesc(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()));
-    //  
-    //  // 암전
-    //  LIGHT_DESC LightDesc{};
-    //  LightDesc.eType = LightBackup.eType;
-    //  LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
-    //  LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
-    //  LightDesc.vSpecular = _float4(0.f, 0.f, 0.f, 0.f);
-    //  LightDesc.vDirection = LightBackup.vDirection;
-    //  m_pGameInstance->Set_LightDesc(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
-    //  
-    //  // 천천히 밝아지기
-    //  LIGHT_TRANSITION_DESC LightTransDesc{};
-    //  LightTransDesc.fDuration = 5.f;
-    //  LightTransDesc.vFadeTime = _float2(5.f, 0.f);
-    //  LightTransDesc.vDiffuse = LightBackup.vDiffuse;
-    //  LightTransDesc.vAmbient = LightBackup.vAmbient;
-    //  LightTransDesc.vSpecular = LightBackup.vSpecular;
-    //  LightTransDesc.isReturnToStart = false;
-    //  m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightTransDesc);
+    LIGHT_DESC LightBackup = *m_pGameInstance->Get_LightDesc(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()));
+    FOG_CONFIG FogBackup = m_pGameInstance->Get_FogConfig();
+
+    // 암전
+    LIGHT_DESC LightDesc{};
+    LightDesc.eType = LightBackup.eType;
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vDirection = LightBackup.vDirection;
+    m_pGameInstance->Set_LightDesc(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+   
+    // 포그 검정
+    FOG_CONFIG BlackFogConfig{};
+    BlackFogConfig = FogBackup;
+    BlackFogConfig.vColor = _float4(0.f, 0.f, 0.f, 0.f);
+    m_pGameInstance->Set_FogConfig(BlackFogConfig);
+
+    // 천천히 밝아지기
+    _float fDuration = 5.f;
+
+    FOG_TRANSITION_DESC FogDesc{};
+    FogDesc.fDensity = FogBackup.fDensity;
+    FogDesc.fBias = FogBackup.fBias;
+    FogDesc.vColor = FogBackup.vColor;
+    FogDesc.isUseHeight = FogBackup.isUseHeight;
+    FogDesc.isUseNoise = false;
+    m_pGameInstance->Start_FogTransition(fDuration, FogDesc);
+
+    LIGHT_TRANSITION_DESC LightTransDesc{};
+    LightTransDesc.fDuration = fDuration;
+    LightTransDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightTransDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightTransDesc, true);
 }
 
 CUI_BladeNexus_Map* CUI_BladeNexus_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

@@ -2424,8 +2424,8 @@ void CBody_Khazan_GS::Set_BrightTrail()
     Config.iTextureIdx = 22;
     Config.fLifeTime = 0.22f;
     Config.iDivisionCount = 10.f;
-    Config.vColor = { 3.529f, 0.f, 0.f, 1.f };
-    Config.vSubColor = { 0.f, 0.f, 0.f, 3.f };
+    Config.vColor = { 1.529f, 0.f, 0.f, 1.f };
+    Config.vSubColor = { 0.f, 0.f, 0.f, 10.f };
     m_pTrail->Set_TrailConfig(Config);
     m_iTrailType = 1;
 }
