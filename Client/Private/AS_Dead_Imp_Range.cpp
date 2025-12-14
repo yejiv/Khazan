@@ -34,6 +34,7 @@ void CAS_Dead_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
         pBB->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", true);
         pImp->Get_Controller()->Set_ControllerActivate(false);        
         pImp->HPUI_Dead();
+        pImp->Set_IsDead(true);
     }
 
     if (pModel->IsFinished())

@@ -15,6 +15,8 @@
 #include "SkySphere.h"
 #include "CloudSphere.h"
 #include "UI_HUD.h"
+#include "Khazan_GSword.h"
+#include "Body_Khazan_GS.h"
 
 CSequence_Viper_SecondPhase::CSequence_Viper_SecondPhase(CViper* pViper, CKhazan_GSword* pKhazan)
     : m_pGameInstance{ CGameInstance::GetInstance() }
@@ -50,6 +52,8 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
         if (m_fTime > 0.f && !m_isFadeOut1)
         {
             //m_pClientInstance->BGM_Viper_2PhaseCutScene(10.f);
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(false);
             m_pClientInstance->Fade_Out();
             m_isFadeOut1 = true;
         }
@@ -368,6 +372,8 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             //dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_CutSceneFinished();
             m_pClientInstance->Set_PlayerInput(true);
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_isEnd = true;
         }
 
@@ -425,12 +431,15 @@ void CSequence_Viper_SecondPhase::Update(_float fTimeDelta)
             m_pClientInstance->Camera_Force_AniEnd();
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_CutSceneFinished();
             m_pClientInstance->Set_PlayerInput(true);
-            m_isEnd = true;
+            
 
             static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
             m_pViper->Set_HPUI(false);
-
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_pClientInstance->BGM_Viper_2Phase(1.f);
+
+            m_isEnd = true;
         }
     }
 }
