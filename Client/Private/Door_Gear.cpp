@@ -76,7 +76,29 @@ void CDoor_Gear::Update(_float fTimeDelta)
 {
     Animation_Update(fTimeDelta);
 
-    if (true == m_pModelCom->Play_Animation(fTimeDelta))
+    _float fTimeAcc = fTimeDelta;
+
+    if (ANIM_STATE::ACTIVATION == m_eAnimState)
+    {
+        m_fAnimTimeAcc += fTimeDelta;
+
+        if (4.2f <= m_fAnimTimeAcc)
+        {
+            if (false == m_isEffectOn)
+            {
+                m_isEffectOn = true;
+
+                //가동시작!
+                m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On"),
+                    XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)),
+                    XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
+            }
+
+            fTimeAcc *= 2.2f;
+        }
+    }
+
+    if (true == m_pModelCom->Play_Animation(fTimeAcc))
         Animation_Change(fTimeDelta);
 
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
@@ -208,10 +230,6 @@ void CDoor_Gear::Animation_Update(_float fTimeDelta)
             m_eAnimState = ANIM_STATE::ACTIVATION;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
-            //가동시작!
-            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On"), 
-                XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)), 
-                XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
         }
     }
 }
@@ -220,6 +238,8 @@ void CDoor_Gear::Animation_Change(_float fTimeDelta)
 {
     if (ANIM_STATE::ACTIVATION == m_eAnimState)
     {
+        m_pGameInstance->PlaySoundOnce(TEXT("IP_Door_Gear_End.wav"), XMLoadFloat4x4(&m_CombinedWorldMatrix).r[3], nullptr, 0.5f);
+
         // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
         m_eAnimState = ANIM_STATE::IDLE2;
         m_pModelCom->Set_Animation(m_eAnimState);
