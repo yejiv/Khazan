@@ -1688,16 +1688,16 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
             m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
        
         if (*m_pHealIndex == 3) 
-            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 3 });
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 2 });
         
         if (*m_pHealIndex == 4) 
-            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 4 });
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 3 });
         
         if (*m_pHealIndex == 5) 
-            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 5 });
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 4 });
         
         if (*m_pHealIndex == 6) 
-            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 6 });
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 5 });
 
         }); //힐템
 #pragma endregion
