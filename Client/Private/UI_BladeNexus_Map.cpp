@@ -472,7 +472,7 @@ void CUI_BladeNexus_Map::Move_Player()
     }
     else
         return;
-    CClientInstance::GetInstance()->Fade_Out();
+    CClientInstance::GetInstance()->Fade_Out();    
     CClientInstance::GetInstance()->Fade_In([this]() {
         EVENT_ANNOUNCE_MAPNAME Desc = {};
         Desc.fTime = 2.f;

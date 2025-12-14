@@ -16,7 +16,7 @@ void CAS_Elamein_Dead::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, 2800);
     static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 7200);
     static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::STONE, 4);
-    CClientInstance::GetInstance()->Add_SkillExp(55.f);
+    CClientInstance::GetInstance()->Add_SkillExp(70.f);
 
     TARGET_DIR eDir = m_pMonData->pOwner->Get_DIR();
 
