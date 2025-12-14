@@ -1372,6 +1372,13 @@ HRESULT CViper::Ready_AnimEvent()
         });
 
 
+    pModel->Register_Event("StingGrab_Hold", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
+            pTarget->Take_Damage(0.f,HITREACTION::GRAB_FINISHED);
+        });
+
+
 
 
 

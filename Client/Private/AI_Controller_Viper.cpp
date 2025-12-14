@@ -73,16 +73,16 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
     }
 
-    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
     {
 
         if (m_pGameInstance->Key_Down(DIK_B))
         {
             //m_pBB->Set_Value<_uint>(m_strMonstertag,"DebugIndex",0);
             CViper* pViper = static_cast<CViper*>(pOwner);
-            pViper->Set_PhaseWeapon_Phase2();
-            //pViper->Set_Weapon_Phase1();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::P2_DASHUPPER), pViper);
+            //pViper->Set_PhaseWeapon_Phase2();
+            pViper->Set_Weapon_Phase1();
+            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::STINGGRAB), pViper);
         }
 
         if (m_pGameInstance->Key_Down(DIK_N))
@@ -141,8 +141,8 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
         else
             m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-        if (!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
-            m_pBT->Update();
+        /*if (!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
+            m_pBT->Update();*/
     }
 
     m_pFSM->Update(pOwner, fTimeDelta * m_fAnimSpeed);
