@@ -177,7 +177,7 @@ void CAS_Groggy_Yetuga::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     pYetuga->Set_IsGhost(false);
-    m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_vo_yetuga_stamina_recover_roar_01 (SFX).wav"), 1.f);
+    m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_vo_yetuga_gro_strong_loop_01 (SFX).wav"), 1.f);
     m_isCheckBrutalCnt = false;
 }
 

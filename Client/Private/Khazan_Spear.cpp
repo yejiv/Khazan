@@ -471,10 +471,17 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         break;
 	case Client::HITREACTION::GRAB:
 
+        if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
+        if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
+        if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
+        Remove_Status(RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | SPRINT_AGAIN_REQUEST | READY_ASSAULT);
+        Clear_Step1();
+
 		m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
         Add_Status(YETUGA_GRAB);
         m_fGrabDownTime = { 0.f };
+
 		break;
     case Client::HITREACTION::KNOCKBACK_WEAK:
         if (Has_State(CAT::M_SKILL))  break;
@@ -539,6 +546,8 @@ void CKhazan_Spear::Set_Camera(CCamera_Compre* pCamera)
 void CKhazan_Spear::Set_Position(_float4 vPos)
 {
     m_pCharVirCom->Teleport(XMLoadFloat4(&vPos), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+    m_pBody->Get_Model()->QuitAnimationSet();
+    m_pAnimInteraction->Try_Teleport();
 }
 
 void CKhazan_Spear::Update_Stats(_float fTimeDelta)
@@ -1271,7 +1280,19 @@ _bool CKhazan_Spear::Attack_Input(_float fTimeDelta)
 
     _bool isAttack = { false };
 
-
+    /* 야매 부르탈 */
+    if (m_pGameInstance->Key_Down(DIK_Y))
+    {
+        Add_Status(BRUTAL_BEGIN | BRUTAL_READY);
+        if (m_pAnimAttack->Try_GrappleAttack())
+        {
+            Clear_Step0();
+            Add_State(CAT::M_ATTACK);
+            Add_SubState(ATT::ATK_GRAPPLE);
+            Add_Status(BRUTAL_SUCCESS);
+            m_eHitReaction = ENUM_CLASS(HITREACTION::BRUTAL_ATTACK);
+        }
+    }
 
     /*  브루탈 공격.*/
     if ( Has_Status(BRUTAL_READY) && m_pGameInstance->Key_Down(DIK_T))

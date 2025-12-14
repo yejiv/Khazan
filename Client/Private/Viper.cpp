@@ -1146,19 +1146,9 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("P1_Landing", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-          /*  CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
-            _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            m_pCharVirCom->Start_Dive(vTargetPos,80.f);*/
-
             CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            _vector vOwnerPos = m_pTransformCom->Get_State(STATE::POSITION);
-            _vector vDir = vTargetPos - vOwnerPos;
-            vDir = XMVector3Normalize(vDir);
-            _float fOffset = 40.f;
-            _vector vLandPos = vTargetPos + vDir * fOffset;
-            m_pCharVirCom->Start_Dive(vTargetPos, 1.f);
-            m_pWeapon->Set_OnAttackCollision(true);
+            m_pCharVirCom->Start_Dive(vTargetPos,80.f);
 
         });
 
@@ -1166,7 +1156,15 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("P1_Landing", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
 
-           
+            //CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+            //_vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+            //_vector vOwnerPos = m_pTransformCom->Get_State(STATE::POSITION);
+            //_vector vDir = vTargetPos - vOwnerPos;
+            //vDir = XMVector3Normalize(vDir);
+            //_float fOffset = 40.f;
+            //_vector vLandPos = vTargetPos + vDir * fOffset;
+            //m_pCharVirCom->Start_Dive(vTargetPos, 1.f);
+            m_pWeapon->Set_OnAttackCollision(true);
         });
 
     pModel->Register_Event("P1_LandShake", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
