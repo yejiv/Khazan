@@ -105,7 +105,8 @@ public:
     void	Set_Camera(class CCamera_Compre* pCamera);
     void    Set_Position(_float4 vPos);
 
-
+    class CBody_Khazan_Spear* Get_Khazan_Body() { return m_pBody; }
+    
 private:
 	class CBody_Khazan_Spear*			    m_pBody = { nullptr };
     class CSpear_Khazan_Spear*              m_pSpear = { nullptr };
