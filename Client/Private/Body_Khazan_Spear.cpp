@@ -1468,8 +1468,9 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
         tMod.fDuration = 1.5f;
         tMod.fFrom = XMConvertToRadians(60.f);
-        tMod.fTo = XMConvertToRadians(50.f);
+        tMod.fTo = XMConvertToRadians(80.f);
         tMod.iPriority = 1.f;
+        tMod.fOutDuration = 1.f;
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);        
         });
