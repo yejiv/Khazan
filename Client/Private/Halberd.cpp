@@ -195,7 +195,7 @@ void CHalberd::Priority_Update(_float fTimeDelta)
     m_isRequestRecoveryStamina = m_Data.isStamina_Regen;
     if (m_Data.isStamina_Regen)
     {
-        Recovery_Stamina(fTimeDelta * 12.f);
+        Recovery_Stamina(fTimeDelta * 60.f);
         if (m_fCurrentStamina == m_fMaxStamina)
             m_Data.isStamina_Regen = false;
     }
