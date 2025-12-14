@@ -114,6 +114,17 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)] = { 5.f, 7.f };
     m_vDecalSize[ENUM_CLASS(DECALTYPE::CURVE)] = { 4.f, 6.f };
 
+
+    for (size_t i = 0; i < 5; i++)
+    {
+        CDestructible_Stone::STONE_DESC Desc;
+        Desc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
+        Desc.vPos = XMVectorSet(1000.f, 1000.f, 1000.f, 1.f);
+
+        CDestructible_Stone* pStone = dynamic_cast<CDestructible_Stone*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Destructible_Stone"), &Desc));
+        m_pYetugaStones.push_back(pStone);
+    }    
+
     return S_OK;
 }
 
@@ -1412,14 +1423,11 @@ HRESULT CYetuga::Ready_AnimEvent()
         CClientInstance::GetInstance()->ActiveCamera_Shaking(3.5f, 1.5f);
         });
 
-    pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        CDestructible_Stone::STONE_DESC Desc;
-        Desc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
-        Desc.vPos = m_pHoldRock->Get_Transform()->Get_State(STATE::POSITION);
-
-        if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Chunk"),
-            ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Destructible_Stone"), TIME_CHANNEL::ENEMY, &Desc)))
-            return;
+    pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {       
+        CDestructible_Stone* pStone = m_pYetugaStones.back();
+        m_pYetugaStones.pop_back();
+        pStone->Set_Pos(m_pHoldRock->Get_Transform()->Get_State(STATE::POSITION));
+        m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Stone"), m_pYetugaStones.back(), TIME_CHANNEL::ENEMY);        
         });
 
 
