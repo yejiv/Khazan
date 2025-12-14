@@ -203,8 +203,8 @@ void CS_UPDATE_GRAVITY(uint3 DTid : SV_DispatchThreadID)
         SpeedData.fGravity = 0.f;
         return;
     }
-    SpeedData.fGravity += g_fTimeDelta * 2.6f;
-    Particle.vTranslation.y -= 4.8f * SpeedData.fGravity * g_fTimeDelta;
+    SpeedData.fGravity += g_fTimeDelta * 2.5f;
+    Particle.vTranslation.y -= 4.5f * SpeedData.fGravity * g_fTimeDelta;
     g_OutputData[iIndex] = Particle;
     g_SpeedData[iIndex].fGravity = SpeedData.fGravity;
 } 

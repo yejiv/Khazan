@@ -81,16 +81,16 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     /* 플레이어 셋팅  */
     m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();  //플레이어 데이터 연결
 
-    if (m_pClientInstance->Is_CurrentSpear())
-        Add_Status(SPEAR);
-    else if (m_pClientInstance->Is_CurrentGSword()) 
-        Add_Status(GSWORD);
-    else 
-        Add_Status(BAREHAND);
+    //if (m_pClientInstance->Is_CurrentSpear())
+    //    Add_Status(SPEAR);
+    //else if (m_pClientInstance->Is_CurrentGSword()) 
+    //    Add_Status(GSWORD);
+    //else 
+    //    Add_Status(BAREHAND);
 
 
-    //m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
-
+    m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
+    Add_Status(GSWORD);
 
     if (FAILED(Ready_Components()))
         return E_FAIL;
@@ -120,21 +120,21 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
 
     /* 기본 셋팅  */
     m_eDir.Add_Flag(DIRECTION_INFO::NONE);
-    if (m_pClientInstance->Is_CurrentSpear())
-    {
-        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand");
-        Add_Status(SPEAR);
-    }
-    else if (m_pClientInstance->Is_CurrentGSword())
-    {
-       // m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand");
-        Add_Status(GSWORD);
-    }
-    else
-    {
-        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
-        Add_Status(BAREHAND);
-    }
+    //if (m_pClientInstance->Is_CurrentSpear())
+    //{
+    //    //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Stand");
+    //    Add_Status(SPEAR);
+    //}
+    //else if (m_pClientInstance->Is_CurrentGSword())
+    //{
+    //   // m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand");
+    //    Add_Status(GSWORD);
+    //}
+    //else
+    //{
+    //    //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_BareHands_Stand");
+    //    Add_Status(BAREHAND);
+    //}
 
     m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Teleport_End");
     m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
@@ -237,6 +237,16 @@ void CKhazan_GSword::Update(_float fTimeDelta)
     //    m_pTransformCom->Set_State(STATE::POSITION, vpos);
     //    //m_pCharVirCom->Set_Gravity(g_fGravity);
     //    //m_vGravity = XMVectorSet(0.f, 0.F, 0.f, 0.f);
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_M))
+    {
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_Grapple_Atk_01"));
+
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_N))
+    {
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_Com_Grapple_Atk_02"));
+
+    }
 
     if (m_isEnableControl)
     {
@@ -1463,7 +1473,7 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
 
 
     /*  브루탈 공격.*/
-    if (Has_Status(BRUTAL_READY) && m_pGameInstance->Key_Down(DIK_F))
+    if (Has_Status(BRUTAL_READY) && m_pGameInstance->Key_Down(DIK_T))
     {
         if (m_pAnimAttack->Try_GrappleAttack())
         {
@@ -2779,13 +2789,11 @@ void CKhazan_GSword::Subscribe_Events()
             }
             else if(INTERACTIVE_TYPE::CHECKPOINT == m_EventInteract.eInteractType)
             {
-                cout << "@@@@@@@@@@@@@@  INTERACTIVE_TYPE::CHECKPOINT   @@@@@@@@@@" << endl;
                 m_pBody->Get_Model()->AnimationSetIndexIncrease();
                 static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
             }
             else
             {
-                cout << "@@@@@@@@@@@@@@  INTERACTIVE_TYPE::CHECKPOINT   @@@@@@@@@@" << endl;
                 static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
             }
         }  });
@@ -3058,6 +3066,8 @@ void CKhazan_GSword::BladeNexus_Event(_float fTimeDelta)
                 Clear_SubState();
                 Clear_CycleState();
                 //m_isInteractEventStart = true;
+
+                m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
             }
         }
         // 이미 해금된 귀검
@@ -3072,6 +3082,8 @@ void CKhazan_GSword::BladeNexus_Event(_float fTimeDelta)
                 Clear_SubState();
                 Clear_CycleState();
                // m_isInteractEventStart = true;
+
+                m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
             }
         }
 

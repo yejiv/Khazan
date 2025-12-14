@@ -91,6 +91,7 @@ HRESULT CBody_Khazan_GS::Initialize_Clone(void* pArg)
 
     m_bGuradFX[0] = false;
     m_bGuradFX[1] = false;
+    m_iTrailType = 0;
 
     return S_OK;
 }
@@ -1134,6 +1135,9 @@ HRESULT CBody_Khazan_GS::Ready_Components()
         { TEXT("ShadowLandFlow_Arm"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Arm") },
         { TEXT("ShadowLandFlow_Leg"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Leg") },
         { TEXT("ShadowLandFlow_Shoes"), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes") },
+
+        /* Event Clothes*/
+        { TEXT("Danjin_Hair"), TEXT("Prototype_Component_Model_Khazan_Danjin_Hair") },
     };
 
     // 모든 파츠 로드
@@ -1148,13 +1152,13 @@ HRESULT CBody_Khazan_GS::Ready_Components()
 
         m_AllParts[info.strPartName] = pModel;
     }
-
+    
     CMeshTrail::TRAIL_DESC MeshDsc;
     MeshDsc.iTextureIdx = 22;
-    MeshDsc.fLifeTime = 0.3f;
+    MeshDsc.fLifeTime = 0.22f;
     MeshDsc.iDivisionCount = 10.f;
-    MeshDsc.vColor = { 0.5f, 0.f, 0.f, 7.843f };
-    MeshDsc.vSubColor = { 0.f, 0.f, 0.f, 2.f };
+    MeshDsc.vColor = { 0.6f, 0.f, 0.f, 7.843f };
+    MeshDsc.vSubColor = { 0.f, 0.f, 0.f, 3.f };
     m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
 
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
@@ -1369,7 +1373,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiningCharger_Trail"), rot, m_pParentTransform->Get_State(STATE::POSITION));
         }); 
 
-    //강공 차지
+    //강공 차지ww
     m_pModelCom->Register_Event("GS_StrongAtk01_Charge_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust10"), m_pParentTransform->Get_State(STATE::POSITION)); //흰색
 
@@ -1684,6 +1688,51 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("WeakAtk01_ChargeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
     m_pModelCom->Register_Event("WeakAtk01_ChargeAtk_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
 
+    m_pModelCom->Register_Event("Grapple_ChargeArm_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
+        _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
+        EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), world, world.r[3]);
+        });
+    m_pModelCom->Register_Event("Grapple_ChargeArm_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
+        _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear, world, world.r[3]);
+        });
+    //m_pModelCom->Register_Event("Grapple_ChargeArm_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+    //    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear);
+    //    });
+
+    m_pModelCom->Register_Event("Grapple_Sting_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutalParticle"), m_pParentTransform->Get_WorldMatrix(), XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("blust_brutal"), XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);
+        });
+
+    m_pModelCom->Register_Event("Grapple_Charge0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust12"), m_pParentTransform->Get_WorldMatrix().r[3]);
+        });
+
+    m_pModelCom->Register_Event("Grapple_BackBlust_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Brutal_Spark_GS"), m_pParentTransform->Get_WorldMatrix(), BodyCenter());
+        }); 
+
+    m_pModelCom->Register_Event("Grapple_Charge1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust5"), m_pParentTransform->Get_WorldMatrix(), BodyCenter());
+        });
+
+    m_pModelCom->Register_Event("Grapple_Trail_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  Set_BrightTrail(); 
+        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("GrappleTrail"), rot, m_pParentTransform->Get_WorldMatrix().r[3]);
+        });
+
+    m_pModelCom->Register_Event("Grapple_Trail_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {  FX_Trail(); });
+    m_pModelCom->Register_Event("Grapple_Trail_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("blust_brutal_GS"), m_pParentTransform->Get_WorldMatrix(), BodyCenter());
+        _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("GS_StrongATK"), rot, XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear);
+        Set_BaseTrail();
+        });
+
 #pragma endregion
 
 
@@ -1855,7 +1904,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
             strTempEventKey += "_" + ss.str();
 
             m_pModelCom->Register_Event(strTempEventKey, eTrigger, [this, eSoundType, fVolume, eChannelType]() {
-                m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume, Get_SoundChannel(eChannelType)); });
+              if(m_isPlaySound) m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume, Get_SoundChannel(eChannelType)); });
         }
     };
 
@@ -1865,19 +1914,21 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
     //Register_EventGroup("SFX_Idle_Rattle", 3, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::IDLE_RATTLE, 10.f, SOUND_CHANNEL::MOVE);
 
     /* Move */
-    Register_EventGroup("SFX_Move_Injure_R", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_L, 0.2f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Injure_L", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_R, 0.2f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Walk", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_WALK, 0.15f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Run", 12, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RUN, 0.25f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Injure_R", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_L, 0.35f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Injure_L", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_R, 0.35f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Walk", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_WALK, 0.35f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Run", 12, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RUN, 0.4f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Sprint_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_START, 0.6f, SOUND_CHANNEL::VOICE);
-    Register_EventGroup("SFX_Move_Sprint", 16, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT, 0.35f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Sprint_Stop", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_STOP, 0.35f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Sprint_Rattle", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_RATTLE, 0.35f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Sprint", 16, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT, 0.45f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Sprint_Stop", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_STOP, 0.5f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Sprint_Rattle", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_RATTLE, 0.45f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Dodge_Front", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_DODGE_FRONT, 0.45f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Dodge_Rear", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_DODGE_REAR, 0.45f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Dodge_Side", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_DODGE_SIDE, 0.45f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Fall", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_FALL, 0.7f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Randing", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RANDING, 1.f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Climb", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RANDING, 0.5f, SOUND_CHANNEL::MOVE);
+    Register_EventGroup("SFX_Move_Climb_End", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RANDING, 0.5f, SOUND_CHANNEL::MOVE);
 
     /* Attack */
     Register_EventGroup("SFX_Attack_Gs_Weak1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK1, 0.8f, SOUND_CHANNEL::WEAPON);
@@ -2298,28 +2349,42 @@ void CBody_Khazan_GS::FX_Trail()
     _vector vTipPos = SwordTipMatrix.r[3];
     _vector vHandPos = SwordHandMatrix.r[3];
     m_pTrail->Add_ControlPoint(vTipPos, vHandPos);
+
+
+    if (m_iTrailType)
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle_R"), XMLoadFloat4x4(&m_matWorldGSwordTip_nJolt).r[3]);
+    //if (m_iTrailType)
+    //{
+    //    m_TrailParticleTime += 1.f;
+    //    if (m_TrailParticleTime > 3.f)
+    //        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle_R"), XMLoadFloat4x4(&m_matWorldGSwordTip_nJolt).r[3]);
+    //}
+    //else
+    //    m_TrailParticleTime = 0.f;
 }
 
 void CBody_Khazan_GS::Set_BaseTrail()
 {
     TRAIL_CONFIG Config{};
     Config.iTextureIdx = 22;
-    Config.fLifeTime = 0.3f;
+    Config.fLifeTime = 0.22f;
     Config.iDivisionCount = 10.f;
-    Config.vColor = { 0.5f, 0.f, 0.f, 7.843f };
-    Config.vSubColor = { 0.f, 0.f, 0.f, 2.f };
+    Config.vColor = { 0.6f, 0.f, 0.f, 7.843f };
+    Config.vSubColor = { 0.f, 0.f, 0.f, 3.f };
     m_pTrail->Set_TrailConfig(Config);
+    m_iTrailType = 0;
 }
 
 void CBody_Khazan_GS::Set_BrightTrail()
 {
     TRAIL_CONFIG Config{};
     Config.iTextureIdx = 22;
-    Config.fLifeTime = 0.3f;
+    Config.fLifeTime = 0.22f;
     Config.iDivisionCount = 10.f;
     Config.vColor = { 3.529f, 0.f, 0.f, 1.f };
-    Config.vSubColor = { 0.f, 0.f, 0.f, 2.f };
+    Config.vSubColor = { 0.f, 0.f, 0.f, 3.f };
     m_pTrail->Set_TrailConfig(Config);
+    m_iTrailType = 1;
 }
 
 void CBody_Khazan_GS::Spawn_Guard_FX()
@@ -2335,6 +2400,13 @@ void CBody_Khazan_GS::Spawn_Guard_FX()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Guard"), mat.r[3]);
         m_bGuradFX[1] = false;
     }
+}
+
+_vector CBody_Khazan_GS::BodyCenter()
+{
+    _vector pos = m_pParentTransform->Get_WorldMatrix().r[3];
+    pos = XMVectorSetY(pos, XMVectorGetY(pos) + 1.2f);
+    return pos;
 }
 
 CBody_Khazan_GS* CBody_Khazan_GS::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
