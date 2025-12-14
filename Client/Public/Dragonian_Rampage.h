@@ -149,6 +149,8 @@ private:
     class CTarget_BrutalAttack*     m_pBrutalAttack = { nullptr };
     COLLISION_DESC				    m_tSearchCollisionDesc = {};
     COLLISION_DESC				    m_tHitCollisionDesc = {};
+
+    _int                            m_iEventID = {};
 private:
     HRESULT                         Ready_Prototype();
 
