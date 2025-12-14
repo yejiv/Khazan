@@ -297,6 +297,8 @@ private:
     void Set_BrightTrail();
     void Spawn_Guard_FX();
     _vector BodyCenter();
+    void    BrutalAtk_ScreenEffect0();
+    void    BrutalAtk_ScreenEffect1();
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

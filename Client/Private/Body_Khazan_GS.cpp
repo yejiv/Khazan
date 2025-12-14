@@ -1716,6 +1716,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
         _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
         EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), world, world.r[3]);
+        BrutalAtk_ScreenEffect0();
         });
     m_pModelCom->Register_Event("Grapple_ChargeArm_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
@@ -1746,6 +1747,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("Grapple_Trail_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  Set_BrightTrail(); 
         _vector rot = Decompose_Rotation(m_pParentTransform->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("GrappleTrail"), rot, m_pParentTransform->Get_WorldMatrix().r[3]);
+        BrutalAtk_ScreenEffect1();
         });
 
     m_pModelCom->Register_Event("Grapple_Trail_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {  FX_Trail(); });
@@ -2422,8 +2424,8 @@ void CBody_Khazan_GS::Set_BrightTrail()
     Config.iTextureIdx = 22;
     Config.fLifeTime = 0.22f;
     Config.iDivisionCount = 10.f;
-    Config.vColor = { 3.529f, 0.f, 0.f, 1.f };
-    Config.vSubColor = { 0.f, 0.f, 0.f, 3.f };
+    Config.vColor = { 1.529f, 0.f, 0.f, 1.f };
+    Config.vSubColor = { 0.f, 0.f, 0.f, 10.f };
     m_pTrail->Set_TrailConfig(Config);
     m_iTrailType = 1;
 }
@@ -2448,6 +2450,81 @@ _vector CBody_Khazan_GS::BodyCenter()
     _vector pos = m_pParentTransform->Get_WorldMatrix().r[3];
     pos = XMVectorSetY(pos, XMVectorGetY(pos) + 1.2f);
     return pos;
+}
+
+void CBody_Khazan_GS::BrutalAtk_ScreenEffect0()
+{
+    // 레디얼 블러 짧게
+    RADIAL_BLUR_DESC RBDesc{};
+    RBDesc.vCenterUV = _float2(0.5f, 0.5f);
+    RBDesc.fSampleRadius = 0.05f;
+    RBDesc.vMaskRadius = _float2(0.f, 0.3f);
+    RBDesc.fExponent = 1.f;
+    RBDesc.iNumSamples = 16;
+    RBDesc.fAttenuation = 0.1f;
+    RBDesc.fStrength = 0.7f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
+    RBDesc.fDuration = 2.f;
+    RBDesc.vFadeTime = _float2(1.5f, 0.5f);
+    m_pGameInstance->Start_RadialBlur(RBDesc);
+
+    // Fov 좁게
+    FOVModifier tMod{};
+    tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+    tMod.fDuration = 1.f;
+    tMod.fFrom = XMConvertToRadians(60.f);
+    tMod.fTo = XMConvertToRadians(50.f);
+    tMod.iPriority = 1.f;
+    tMod.Ease = EaseOutQuad;
+    m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+
+    VIGNETTE_CONFIG Config{};
+    Config.vColor = _float3(0.f, 0.f, 0.f);
+    Config.fPower = 3.5f;
+    Config.fMinIntensity = 0.f;
+    Config.fMaxIntensity = 4.f;
+    Config.fDuration = 2.f;
+    Config.vFadeTime = _float2(1.5f, 0.5f);
+    m_pGameInstance->Start_VignetteAnimation(Config);
+}
+
+void CBody_Khazan_GS::BrutalAtk_ScreenEffect1()
+{
+    RADIAL_BLUR_DESC RBDesc{};
+    RBDesc.vCenterUV = _float2(0.5f, 0.5f);
+    RBDesc.fSampleRadius = 0.05f;
+    RBDesc.vMaskRadius = _float2(0.f, 0.3f);
+    RBDesc.fExponent = 1.f;
+    RBDesc.iNumSamples = 16;
+    RBDesc.fAttenuation = 0.1f;
+    RBDesc.fStrength = 1.f;
+    RBDesc.fDuration = 0.75f;
+    RBDesc.vFadeTime = _float2(0.35f, 0.35f);
+    m_pGameInstance->Start_RadialBlur(RBDesc);
+
+    FOVModifier tMod{};
+    tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
+    tMod.fDuration = 0.375f;
+    tMod.fFrom = XMConvertToRadians(60.f);
+    tMod.fTo = XMConvertToRadians(70.f);
+    tMod.iPriority = 1.f;
+    tMod.Ease = EaseOutQuad;
+    m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
+
+    VIGNETTE_CONFIG Config{};
+    Config.vColor = _float3(0.f, 0.f, 0.f);
+    Config.fPower = 3.5f;
+    Config.fMinIntensity = 0.f;
+    Config.fMaxIntensity = 5.f;
+    Config.fDuration = 0.75f;
+    Config.vFadeTime = _float2(0.35f, 0.35f);
+    m_pGameInstance->Start_VignetteAnimation(Config);
+
+    // 히트스탑
+    m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.5f, 0.5f, 0.5f);
+    m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.5f, 0.5f, 0.5f);
+    m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.5f, 0.5f, 0.5f);
+
+    // 카메라쉐이킹강
 }
 
 CBody_Khazan_GS* CBody_Khazan_GS::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
