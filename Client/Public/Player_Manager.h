@@ -59,6 +59,9 @@ private:
 
     class CClientInstance*                   m_pClientInstance = { nullptr };
 
+private:
+    void                        Setting_Data();
+
 public:
 	static CPlayer_Manager*		Create();
 	virtual void				Free() override;

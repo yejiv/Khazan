@@ -10,7 +10,7 @@ private:
 	CEquip_Slot(const CEquip_Slot& Prototype);
 	virtual ~CEquip_Slot() = default;
 public:
-	_bool								Add_Item(_int iItemIndex, class CItem_Slot* pItem);
+	_bool								Add_Item(_int iItemIndex, class CItem_Slot* pItem, _bool isSetting = true);
 	void								Release_Item(class CItem_Slot* pItem);
 
 	void								Update_PosX(_int iIndex, _float2 vPos, _float fOffSetX, _float fOffSetY, CUIObject* pParent);

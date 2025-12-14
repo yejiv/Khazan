@@ -54,6 +54,9 @@ HRESULT CSkill_Slot_Panel::Setting_Slot(_int iTapIndex, _int iPanelIndex)
 	Update_Transform(nullptr, m_vWorldPos);
 
 	Panel_NameMapping(iTapIndex, iPanelIndex);
+
+    //데이터 셋팅
+    //Setting_Data();
 	return S_OK;
 }
 
@@ -182,6 +185,15 @@ void CSkill_Slot_Panel::Panel_NameMapping(_int iTapIndex, _int iPanelIndex)
 		else if (iPanelIndex == 3)
 			m_pTextBox->Set_Text(TEXT("카운트 어택"));
 	}
+}
+
+void CSkill_Slot_Panel::Setting_Data()
+{
+    for (auto pSlot : m_Skill)
+    {
+        pSlot->Setting_Data(101, 1);
+        pSlot->Setting_Data(106, 3);
+    }
 }
 
 CSkill_Slot_Panel* CSkill_Slot_Panel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel)

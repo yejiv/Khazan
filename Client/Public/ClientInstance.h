@@ -191,6 +191,7 @@ public:
 
     void Camera_Force_AniEnd();
     void Camera_MouseOnOff(_bool isOn);
+    void Camera_InitStartPoseOnce();
 #pragma endregion
 
 #pragma region INTERACT_MANAGER

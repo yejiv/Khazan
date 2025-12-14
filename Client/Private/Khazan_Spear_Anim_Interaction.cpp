@@ -118,6 +118,16 @@ _bool CKhazan_Spear_Anim_Interaction::Try_Heal()
     return true;
 }
 
+_bool CKhazan_Spear_Anim_Interaction::Try_Teleport()
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Getup_F"));
+
+    return true;
+}
+
 _bool CKhazan_Spear_Anim_Interaction::Is_Lachryma() const
 {
     return m_pModel->Get_CurAnimIndex() == m_pModel->Get_AnimIndexByName("CA_P_Kazan_LacrimaInteraction");

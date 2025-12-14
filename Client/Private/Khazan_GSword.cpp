@@ -89,8 +89,8 @@ HRESULT CKhazan_GSword::Initialize_Clone(void* pArg)
     //    Add_Status(BAREHAND);
 
 
-    m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
-    Add_Status(GSWORD);
+    //m_pClientInstance->Set_PlayerEquipment(EQUIPMENTTYPE::GSWORD, 4002);  //Test
+    //Add_Status(GSWORD);
 
     if (FAILED(Ready_Components()))
         return E_FAIL;
@@ -222,6 +222,11 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
         if (m_pAnimInteraction->Try_Teleport())
             Teleport_SFX();
 
+    }
+
+    if (m_pGameInstance->Key_Down(DIK_O))
+    {
+        m_pClientInstance->Add_SkillExp(1000.f);
     }
 
 }
@@ -520,8 +525,12 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
     case Client::HITREACTION::BRUTAL_ATTACK:
         break;
     case Client::HITREACTION::GRAB:
-       // m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Burrow_Predation_Kazan_DamageHold");
-      //  m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+
+        if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
+        if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
+        if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
+        Clear_Step1();
+
         m_pBody->Get_Model()->Set_AnimationSet("Set_ViperGrab");
 
         //Add_Status(VIPER_GRAB);
@@ -593,6 +602,13 @@ void CKhazan_GSword::Set_Camera(CCamera_Compre* pCamera)
 void CKhazan_GSword::Set_Position(_float4 vPos)
 {
     m_pCharVirCom->Teleport(XMLoadFloat4(&vPos), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+    if (m_pAnimInteraction->Try_Teleport()) {
+        m_pBody->Get_Model()->QuitAnimationSet();
+        m_pGSword->Set_Equipped(true);
+        m_pClientInstance->Set_PlayerInput(true);
+        Teleport_SFX();
+    }
+
 }
 
 void CKhazan_GSword::Update_Stats(_float fTimeDelta)
@@ -1303,6 +1319,21 @@ _bool CKhazan_GSword::Attack_Input(_float fTimeDelta)
         return false;
     }
 
+    /* 야매 부르탈 */
+    if (m_pGameInstance->Key_Down(DIK_Y))
+    {
+        Add_Status(BRUTAL_BEGIN | BRUTAL_READY);
+        if (m_pAnimAttack->Try_GrappleAttack())
+        {
+            Clear_Step2();
+            Add_State(CAT::M_ATTACK);
+            Add_SubState(ATT::ATK_GRAPPLE);
+            Add_Status(BRUTAL_SUCCESS);
+            m_eHitReaction = ENUM_CLASS(HITREACTION::BRUTAL_ATTACK);
+            return true;
+        }
+    }
+
 
     /* 강한 공격 1타  + 차징 + 스킬: 숨통끊기들 판별 */
     if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::RB))
@@ -1659,6 +1690,18 @@ _bool CKhazan_GSword::Interaction_Input(_float fTimeDelta)
     _matrix mat_arm = XMLoadFloat4x4(m_pBody->Get_BoneMatrix("Muscle_L_ForeTwist1"));
     _matrix mat_hand = XMLoadFloat4x4(m_pBody->Get_BoneMatrix("FX_L_Hand_02"));
 
+    //라크리마 
+    if (m_pGameInstance->Key_Down(DIK_1))
+    {
+        if (m_pPlayerData->fCulHp < m_pPlayerData->fMaxHp)
+            if (m_pAnimInteraction->Try_Heal())
+            {
+                m_FXIdx[FX_LACRIMA] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), mat_arm, (m_Offset_Matrix * mat_arm * m_pTransformCom->Get_WorldMatrix()).r[3]);
+                m_FXIdx[FX_LACRIMA_HAND] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"), (m_Offset_Matrix * mat_hand * m_pTransformCom->Get_WorldMatrix()).r[3]);
+                m_iHealIndex = 1;
+            }
+    }
+
     //랜턴
     if (m_pGameInstance->Key_Down(DIK_2)) {
         _bool isEquip = !m_pLantern->Get_Equipped();
@@ -1666,22 +1709,42 @@ _bool CKhazan_GSword::Interaction_Input(_float fTimeDelta)
             m_pLantern->Set_Equipped(isEquip);
     }
 
-    //라크리마 
-    if (m_pGameInstance->Key_Down(DIK_1)) {
-        if (m_pPlayerData->fCulHp < m_pPlayerData->fMaxHp)
-            m_pAnimInteraction->Try_Lachryma();
+    if (m_pGameInstance->Key_Down(DIK_3))
+    {
+        if (m_pAnimInteraction->Try_Heal())
+        {
+            m_FXIdx[FX_LACRIMA] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), mat_arm, (m_Offset_Matrix * mat_arm * m_pTransformCom->Get_WorldMatrix()).r[3]);
+            m_FXIdx[FX_LACRIMA_HAND] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"), (m_Offset_Matrix * mat_hand * m_pTransformCom->Get_WorldMatrix()).r[3]);
+            m_iHealIndex = 3;
+        }
     }
-
-    //힐 템
-    if (m_pGameInstance->Key_Down(DIK_3)) {
-        if (m_pPlayerData->fCulHp < m_pPlayerData->fMaxHp)
-            if (m_pAnimInteraction->Try_Heal())
-            {
-                m_FXIdx[FX_LACRIMA] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), mat_arm, (m_Offset_Matrix * mat_arm * m_pTransformCom->Get_WorldMatrix()).r[3]);
-                m_FXIdx[FX_LACRIMA_HAND] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"), (m_Offset_Matrix * mat_hand * m_pTransformCom->Get_WorldMatrix()).r[3]);
-            }
+    if (m_pGameInstance->Key_Down(DIK_4))
+    {
+        if (m_pAnimInteraction->Try_Heal())
+        {
+            m_FXIdx[FX_LACRIMA] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), mat_arm, (m_Offset_Matrix * mat_arm * m_pTransformCom->Get_WorldMatrix()).r[3]);
+            m_FXIdx[FX_LACRIMA_HAND] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"), (m_Offset_Matrix * mat_hand * m_pTransformCom->Get_WorldMatrix()).r[3]);
+            m_iHealIndex = 4;
+        }
     }
-
+    if (m_pGameInstance->Key_Down(DIK_5))
+    {
+        if (m_pAnimInteraction->Try_Heal())
+        {
+            m_FXIdx[FX_LACRIMA] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), mat_arm, (m_Offset_Matrix * mat_arm * m_pTransformCom->Get_WorldMatrix()).r[3]);
+            m_FXIdx[FX_LACRIMA_HAND] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"), (m_Offset_Matrix * mat_hand * m_pTransformCom->Get_WorldMatrix()).r[3]);
+            m_iHealIndex = 5;
+        }
+    }
+    if (m_pGameInstance->Key_Down(DIK_6))
+    {
+        if (m_pAnimInteraction->Try_Heal())
+        {
+            m_FXIdx[FX_LACRIMA] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), mat_arm, (m_Offset_Matrix * mat_arm * m_pTransformCom->Get_WorldMatrix()).r[3]);
+            m_FXIdx[FX_LACRIMA_HAND] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"), (m_Offset_Matrix * mat_hand * m_pTransformCom->Get_WorldMatrix()).r[3]);
+            m_iHealIndex = 6;
+        }
+    }
     if (m_pAnimInteraction->Is_Heal())
     {
         m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), m_FXIdx[FX_LACRIMA], mat_arm, (m_Offset_Matrix * mat_arm * m_pTransformCom->Get_WorldMatrix()).r[3]);
@@ -2658,6 +2721,7 @@ HRESULT CKhazan_GSword::Ready_PartObjects()
     BodyDesc.pGuardRotationTarget = &m_vGuardRotationTarget;
     BodyDesc.pParentTransform = m_pTransformCom;
     BodyDesc.pParentIsCanStaminaRecovery = &m_isCanStaminaRecovery;
+    BodyDesc.pHealIndex = &m_iHealIndex;
     if (FAILED(__super::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Body_Khazan_GS"), &BodyDesc)))
         return E_FAIL;
     m_pBody = static_cast<CBody_Khazan_GS*>(Find_PartObject(TEXT("Part_Body")));

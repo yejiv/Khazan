@@ -41,6 +41,7 @@ void CAS_Dead_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
         CBossHp::BOSSMON_UPDATE_DESC Desc;
         Desc.isOpen = false;
         CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &Desc);
+        CClientInstance::GetInstance()->Add_SkillExp(200.f);
         pYetuga->Creature_Release();
     }
 

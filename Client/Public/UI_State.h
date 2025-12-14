@@ -76,6 +76,8 @@ private:
 	void								Button_Bubble_Event(UI_STATE_BUBLLE* pDesc);
 
     void                                Update_Data();
+
+    void                                Setting_Data();
 public:
 	static CUI_State*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

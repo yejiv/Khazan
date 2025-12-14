@@ -177,13 +177,13 @@ void CCursor::Play_Mode()
 	RECT clientRect;
 	POINT centerPoint;
 
-	GetClientRect(g_hWnd, &clientRect);
-	centerPoint.x = (clientRect.right - clientRect.left) / 2;
-	centerPoint.y = (clientRect.bottom - clientRect.top) / 2;
+	//GetClientRect(g_hWnd, &clientRect);
+	//centerPoint.x = (clientRect.right - clientRect.left) / 2;
+	//centerPoint.y = (clientRect.bottom - clientRect.top) / 2;
 
-	ClientToScreen(g_hWnd, &centerPoint);
+	//ClientToScreen(g_hWnd, &centerPoint);
 
-	SetCursorPos(centerPoint.x, centerPoint.y);
+	//SetCursorPos(centerPoint.x, centerPoint.y);
 }
 
 void CCursor::UI_Mode()
