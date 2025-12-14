@@ -12,6 +12,8 @@
 #include "AI_Controller_Viper.h"
 #include "SkipButton.h""
 #include "UI_HUD.h"
+#include "Khazan_GSword.h"
+#include "Body_Khazan_GS.h"
 
 CSequence_Viper_CutScene::CSequence_Viper_CutScene(CViper* pViper, CKhazan_GSword* pKhazan)
     : m_pGameInstance{ CGameInstance::GetInstance() }
@@ -41,6 +43,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         // 1차 페이드 아웃
         if (m_fTime > 0.f && !m_isFadeOut)
         {
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(false);
             m_pClientInstance->Fade_Out();
             static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
             m_pClientInstance->Set_PlayerInput(false);
@@ -171,6 +175,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
             Start_FogTransition();
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);  
             m_pClientInstance->Set_PlayerInput(true);
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_isEnd = true;
         }
     }
@@ -206,6 +212,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
             pCharVir->Teleport(XMVectorSet(-31.938f, -29.986f, 198.162f, 1.f), m_pViper->Get_Transform()->Get_Rotation_Quat(), m_pViper->Get_Transform());
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);
             m_pClientInstance->Set_PlayerInput(true);
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_isEnd = true;
         }
     }

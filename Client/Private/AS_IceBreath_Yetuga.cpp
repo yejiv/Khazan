@@ -8,7 +8,7 @@
 
 CAS_IceBreath_Yetuga::CAS_IceBreath_Yetuga()
 {
-
+    m_IceBreathChannels.resize(10);
 }
 
 void CAS_IceBreath_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
@@ -23,7 +23,7 @@ void CAS_IceBreath_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         pModel->Set_Animation(21);
         pYetuga->Look_Target();
     }
-    
+
     m_IceBreathChannels =
     {
         pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)),
@@ -80,7 +80,7 @@ void CAS_IceBreath_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _flo
         m_fIceBreathTimeAcc = 0.f;
     }
 
-        break;
+    break;
     }
 
     if (pModel->Play_Animation(fTimeDelta))
@@ -94,7 +94,7 @@ void CAS_IceBreath_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _flo
             CBlackBoard* BB = pYetuga->Get_Controller()->Get_BlackBoard();
             BB->Set_Value<_bool>(pYetuga->Get_Name(), "isIceBreathFinished", true);
         }
-        
+
     }
 
 

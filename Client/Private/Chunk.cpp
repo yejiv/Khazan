@@ -128,6 +128,13 @@ HRESULT CChunk::Render()
     return S_OK;
 }
 
+void CChunk::Set_Pos(_vector vPos)
+{
+    m_pTransformCom->Set_State(STATE::POSITION, vPos);
+    m_pBodyCom->Set_Pos(vPos);
+}
+
+
 void CChunk::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
 
