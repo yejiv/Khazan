@@ -54,6 +54,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     m_pGuardRotationTarget = pDesc->pGuardRotationTarget;
     m_pParentTransform = pDesc->pParentTransform;
     m_pParentIsCanStaminaRecovery = pDesc->pParentIsCanStaminaRecovery;
+    m_pHealIndex = pDesc->pHealIndex;
     Safe_AddRef(m_pParentTransform);
 
     if (FAILED(__super::Initialize_Clone(pArg)))
@@ -203,8 +204,19 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
     }
 
     /*  어택콜라이더 on -> 다른 애니메이션 들어오면 끄기 */
-    if (m_isSpearTipActive && m_iCurAnimIndex != m_pModelCom->Get_CurAnimIndex())
+    if (m_isSpearTipActive && m_iCurAnimIndex != m_pModelCom->Get_CurAnimIndex()) {
+        m_isNotifyAttacking = false;
         m_isSpearTipActive = false;
+        m_isSpearFullExtension = true;
+        m_pBodyCom_SpearTip1->Collision_Active(false);
+    }
+
+    /*  바디어택콜라이더 on -> 다른 애니메이션 들어오면 끄기 */
+    if (m_isBodyAttackActive && m_iCurAnimIndex != m_pModelCom->Get_CurAnimIndex()) {
+        m_isBodyAttackActive = false;
+        m_isNotifyAttacking = false;
+        m_pBodyCom_BodyAttack->Collision_Active(false);
+    }
 }
 
 void CBody_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -671,8 +683,10 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
     lock_guard<mutex> lock(m_CollMonsterMutex);
     for (CGameObject* monster : m_CollMonsters)
     {
-        if (!monster || monster->Get_IsDead())
-            return;
+        CMonster* pCreatureMoster = static_cast<CMonster*>(monster);
+
+        if (!monster || !monster->Get_IsActive() || monster->Get_IsDead() || pCreatureMoster->Get_CurrentHP() <= 0.f)
+            continue;
 
         _vector vMonsterPos = monster->Get_Position();
 
@@ -681,7 +695,6 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
         /* 일정 범위에 다가가면  */
         if (fDistSq < 15.f * 15.f)
         {
-            CMonster* pCreatureMoster = static_cast<CMonster*>(monster);
             /* 후방 */
             if (!pCreatureMoster->Get_isSleep()) {
                 _float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(monster->Get_Look()), XMVector3Normalize(vDiff)));
@@ -724,7 +737,8 @@ _bool CBody_Khazan_Spear::Check_BrutalAttack(_float fTimeDelta)
     lock_guard<mutex> lock(m_CollMonsterMutex);
     for (auto it = m_CollMonsters.begin(); it != m_CollMonsters.end(); )
     {
-        if (*it == m_pBrutalmonster && m_pBrutalmonster->Get_IsDead())
+        CMonster* pCreatureMoster = static_cast<CMonster*>(m_pBrutalmonster);
+        if (*it == m_pBrutalmonster && (m_pBrutalmonster->Get_IsDead() || m_pBrutalmonster->Get_IsActive() || pCreatureMoster->Get_CurrentHP() <= 0.f))
             it = m_CollMonsters.erase(it);
         else
             ++it;
@@ -869,6 +883,7 @@ void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
     _vector vOutQuat, vOutPos;
 
     const XMMATRIX matWorld_SpearTip1 = XMLoadFloat4x4(m_pSpearTip1_Matrix) * matParent;
+    XMStoreFloat4x4(&m_pSpearTip1_MatrixW_nJolt, matWorld_SpearTip1);
     m_pBodyCom_SpearTip1->Sync_Update(matWorld_SpearTip1);
     m_pBodyCom_SpearTip1->Update(fTimeDelta, matWorld_SpearTip1, vOutQuat, vOutPos);
     XMStoreFloat4x4(&m_pSpearTip1_MatrixW, matWorld_SpearTip1);
@@ -1080,7 +1095,7 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
 
      /* Event Clothes*/
      { TEXT("Danjin_Hair"), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair") },
-
+     
     };
 
     // 모든 파츠 로드
@@ -1159,8 +1174,8 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         tMod.Ease = EaseOutQuad;
         m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
         });
-    m_pModelCom->Register_Event("StrongAtk_Charge_Stamp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+    m_pModelCom->Register_Event("StrongAtk_Charge_Stamp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {   
+        _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt);
         _matrix W_withOffset = XMMatrixTranslation(-1.f, 0.f, 1.f) * W;
         _vector V_FinalPosition = W_withOffset.r[3];
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Stamp"), V_FinalPosition); }
@@ -1213,6 +1228,27 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         _matrix mat = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
         m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Sphere_Blood"), EffectID_SpiralSpear, mat, mat.r[3]);
+        _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt);
+
+        _vector S, Q, T;
+
+        if (!XMMatrixDecompose(&S, &Q, &T, W))
+        { 
+            XMFLOAT4X4 m; XMStoreFloat4x4(&m, W); 
+            _vector r0 = XMVector3Normalize(XMVectorSet(m._11, m._12, m._13, 0.f));
+            _vector r1 = XMVector3Normalize(XMVectorSet(m._21, m._22, m._23, 0.f));
+            _vector r2 = XMVector3Normalize(XMVectorSet(m._31, m._32, m._33, 0.f)); 
+
+            _matrix RotationMatrix(
+                r0,
+                r1,
+                r2,
+                XMVectorSet(0.f, 0.f, 0.f, 1.f)
+            );
+
+            Q = XMQuaternionRotationMatrix(RotationMatrix);
+        }
+        m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpiralSpear_SpearFX"), EffectID_SpiralSpear, Q, W.r[3]); 
         });
 
     m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp_Stop", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -1577,8 +1613,15 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 #pragma region Collider  
     m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Event_AttackTiming(true); });
     m_pModelCom->Register_Event("AttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {Event_AttackTiming(false);  });
-    m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { m_isBodyAttackActive = true;  m_isNotifyAttacking = true;  m_pBodyCom_BodyAttack->Collision_Active(true); });
-    m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { m_isBodyAttackActive = false;  m_pBodyCom_BodyAttack->Collision_Active(false); });
+    m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_iCurAnimIndex = m_pModelCom->Get_CurAnimIndex(); 
+        m_isBodyAttackActive = true; 
+        m_isNotifyAttacking = true;
+        m_pBodyCom_BodyAttack->Collision_Active(true); });
+    m_pModelCom->Register_Event("BodyAttackTiming", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_isBodyAttackActive = false;
+        m_isNotifyAttacking = false;
+        m_pBodyCom_BodyAttack->Collision_Active(false); });
     m_pModelCom->Register_Event("SpearOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pSpear->Set_Equipped(true);
         m_pClientInstance->Set_PlayerInput(true); });
@@ -1586,6 +1629,28 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_pSpear->Set_Equipped(false);
         m_pClientInstance->Set_PlayerInput(false);
         });
+    m_pModelCom->Register_Event("HeaL1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;
+        if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
+            m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp; }); //라크리마
+    m_pModelCom->Register_Event("Heal2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+
+        if (*m_pHealIndex == 1)
+            m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
+       
+        if (*m_pHealIndex == 3) 
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 3 });
+        
+        if (*m_pHealIndex == 4) 
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 4 });
+        
+        if (*m_pHealIndex == 5) 
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 5 });
+        
+        if (*m_pHealIndex == 6) 
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 6 });
+
+        }); //힐템
 #pragma endregion
 
     // 프리즈너
@@ -1943,7 +2008,7 @@ void CBody_Khazan_Spear::Update_QuickRenderCache()
 
 void CBody_Khazan_Spear::FX_Trail()
 {
-    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+    _matrix tip = XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt);
     _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 
@@ -2080,7 +2145,7 @@ void CBody_Khazan_Spear::FX_StrongAtk_Charge_BlustSmall(_fvector pos)
 
 void CBody_Khazan_Spear::Spear_Spike()
 {
-    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW);
+    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt);
 
     _vector S, Q, T;
 
@@ -2171,6 +2236,7 @@ _vector CBody_Khazan_Spear::BodyCenter()
 
 _vector CBody_Khazan_Spear::Decompose_Rotation(_matrix W, _vector localRot, _vector offset)
 {
+    //_matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt);
 
     _vector S, Q, T;
 
@@ -2218,6 +2284,7 @@ void CBody_Khazan_Spear::UpdateSpearWind(_bool isEnableRadialBlur)
 void CBody_Khazan_Spear::UpdateSpearRedWind(_bool isEnableRadialBlur)
 {
     m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_BloodWind"), EffectID_SpearWind, XMLoadFloat4x4(&m_pSpearTip1_MatrixW), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
+    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt);
 
     DISTORTION_DESC Desc{};
     _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
