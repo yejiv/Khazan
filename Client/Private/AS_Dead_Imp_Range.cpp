@@ -5,7 +5,7 @@
 #include "BlackBoard.h"
 #include "AI_Controller.h"
 #include "Interaction_Item.h"
-
+#include "ClientInstance.h"
 
 CAS_Dead_Imp_Range::CAS_Dead_Imp_Range()
 {
@@ -38,6 +38,7 @@ void CAS_Dead_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
 
     if (pModel->IsFinished())
     {
+        CClientInstance::GetInstance()->Add_SkillExp(70.f);
         pImp->Dissolve_On();
     }
 

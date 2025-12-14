@@ -606,9 +606,9 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
                 m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
 
                 //히트스탑
-                m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.2f, 0.003f, 1.2f);
-                m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.2f, 0.003f, 1.2f);
-                m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.2f, 0.003f, 1.2f);
+                m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.2f, 0.003f, 0.6f);
+                m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.2f, 0.003f, 0.6f);
+                m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.2f, 0.003f, 0.6f);
 
             }
 
@@ -1475,7 +1475,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         RBDesc.fExponent = 1.f;
         RBDesc.iNumSamples = 16;
         RBDesc.fAttenuation = 0.1f;
-        RBDesc.fStrength = 0.7f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
+        RBDesc.fStrength = 0.7f;
         RBDesc.fDuration = 1.f;
         RBDesc.vFadeTime = _float2(0.25f, 0.5f);
         m_pGameInstance->Start_RadialBlur(RBDesc);
