@@ -21,6 +21,7 @@ public:
         _uint* pState = { nullptr };
         _uint* pStatus = { nullptr };
         _uint* pHitReation = { nullptr };
+        _uint* pHealIndex = { nullptr };
         //_bool* pIsGuarding = { nullptr };
         _float4* pGuardRotationTarget = { nullptr };
         class CTransform* pParentTransform = { nullptr };
@@ -126,6 +127,7 @@ private:
     _uint*              m_pParentState = { nullptr };
     _uint*              m_pParentStatus = { nullptr };
     _uint*              m_pHitReaction = { nullptr };
+    _uint*              m_pHealIndex = { nullptr };
     _uint				m_iCurState = {  };
 
 
@@ -139,6 +141,7 @@ private:
     /* 뼈 위치 */
     _float4x4*          m_pSpearTip1_Matrix = { nullptr };
     _float4x4			m_pSpearTip1_MatrixW;
+    _float4x4			m_pSpearTip1_MatrixW_nJolt;
     _float4x4*          m_pSpearPole_Matrix = { nullptr };
     _float4x4			m_pSpearPole_MatrixW;
 
