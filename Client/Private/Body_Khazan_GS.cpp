@@ -45,6 +45,7 @@ HRESULT CBody_Khazan_GS::Initialize_Clone(void* pArg)
     m_pParentTransform = pDesc->pParentTransform;
     Safe_AddRef(m_pParentTransform);
     m_pParentIsCanStaminaRecovery = pDesc->pParentIsCanStaminaRecovery;
+    m_pHealIndex = pDesc->pHealIndex;
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
@@ -640,6 +641,9 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
                     , 15.f, 50.f);
 
             pMonster->Consume_Stamina(20.f);
+            m_pPlayerData->fCulDoggedness = m_pPlayerData->fCulDoggedness+ 0.2f > m_pPlayerData->iMaxDoggednessCount ?
+                m_pPlayerData->iMaxDoggednessCount : m_pPlayerData->fCulDoggedness + 0.2f;
+
         }
 
         if (pMyDesc->strName == TEXT("Player_RangeAttack"))
@@ -650,6 +654,7 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
                     - m_pParentTransform->Get_State(STATE::POSITION))
                 , 10.f, 45.f);
             pMonster->Consume_Stamina(15.f);
+            //m_pPlayerData->fCulDoggedness += 0.2f;
         }
 
         if (pMyDesc->strName == TEXT("Player_BodyAttack"))
@@ -660,6 +665,9 @@ void CBody_Khazan_GS::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
                     - m_pParentTransform->Get_State(STATE::POSITION))
                 , 18.f, 50.f);
             pMonster->Consume_Stamina(10.f);
+            m_pPlayerData->fCulDoggedness = m_pPlayerData->fCulDoggedness + 0.2f > m_pPlayerData->iMaxDoggednessCount ?
+                m_pPlayerData->iMaxDoggednessCount : m_pPlayerData->fCulDoggedness + 0.2f;
+
         }
 
         if (isAttack)
@@ -839,7 +847,7 @@ _bool CBody_Khazan_GS::Check_BrutalAttack(_float fTimeDelta)
 
     /* 브루탈 가능 범위인지 아닌지 체크 */
     _float  fDistSq = XMVectorGetX(XMVector3LengthSq(XMVectorSet(m_pParentMatrix->_41, m_pParentMatrix->_42, m_pParentMatrix->_43, 1.f) - m_pBrutalmonster->Get_Position()));
-    if (fDistSq < 6.f * 6.f) {
+    if (fDistSq < 15.f * 15.f) {
         if (!Has_Status(CKhazan_GSword::BRUTAL_READY)) {
             Add_Status(CKhazan_GSword::BRUTAL_READY);
             return true;
@@ -1880,12 +1888,27 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
     m_pModelCom->Register_Event("HEAL1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
         m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;
         if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
-            m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp; }); //라크리마
+            m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
+        }); //라크리마
 
     m_pModelCom->Register_Event("HEAL2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
-        m_pPlayerData->fCulHp += m_pPlayerData->fHealItemRegen;
-        if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
-            m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp; }); //힐템
+
+        if (*m_pHealIndex == 1)
+            m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
+
+        if (*m_pHealIndex == 3)
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 3 });
+
+        if (*m_pHealIndex == 4)
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 4 });
+
+        if (*m_pHealIndex == 5)
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 5 });
+
+        if (*m_pHealIndex == 6)
+            m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 6 });
+        
+        }); //힐템
 
     m_pModelCom->Register_Event("WeaponOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGSword->Set_Equipped(false);

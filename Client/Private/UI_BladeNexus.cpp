@@ -522,9 +522,12 @@ void CUI_BladeNexus::Next_Event()
 		//m_eAnimState = UIANIMSTATE::OFF;
 		//m_fAccTime = 1.f;
 
-        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+        CClientInstance::GetInstance()->Fade_Out([this](){ 
+            static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
         m_pGameInstance->Emit_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), { ENUM_CLASS(LEVEL::EMBARS) });
-		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
+        m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY); 
+            });
+
 	}
 
 }

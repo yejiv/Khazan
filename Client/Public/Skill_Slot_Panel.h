@@ -32,6 +32,7 @@ private:
 	HRESULT								Ready_Prototype();
 
 	void								Panel_NameMapping(_int iTapIndex, _int iPanelIndex);
+    void                                Setting_Data();
 public:
 	static CSkill_Slot_Panel*			Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
 	virtual CGameObject*				Clone(void* pArg) override;

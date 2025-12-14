@@ -21,6 +21,7 @@ public:
     void                                UnEquipSlot(_int iSkillIndex);
     void                                Set_SkillIndex(_int iSKillIndex);
     void								Update_Pos(_int iIndex, _float2 vPos, _float fOffSetY);
+    void                                Setting_Data(_int iSlotIndex, _int iSkillIndex);
 public:
 	virtual HRESULT						Initialize_Prototype(_uint iLevel);
 	virtual HRESULT						Initialize_Clone(void* pArg) override;

@@ -238,9 +238,11 @@ HRESULT CLadder::Ready_Collision(void* pArg)
 
     _vector vUpDir = vLadderPos - vUpPos;
 
-    _float fUpOffset = XMVectorGetX(XMVector4Length(vUpDir));
+    _float fUpOffset = 1.5f;
 
-    fUpOffset *= 0.075f;            // OffSet
+    //_float fUpOffset = XMVectorGetX(XMVector4Length(vUpDir));
+
+    //fUpOffset *= 0.0375f;            // OffSet
 
     XMStoreFloat4(&m_vUpPlayerPos, vUpPos + XMVector3Normalize(vUpDir) * fUpOffset);
 

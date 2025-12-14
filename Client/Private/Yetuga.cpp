@@ -1331,6 +1331,7 @@ HRESULT CYetuga::Ready_AnimEvent()
 
             CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
             pTarget->Take_Damage(300.f, HITREACTION::GRAB_FINISHED);
+            CClientInstance::GetInstance()->Set_PlayerInput(true);
 
 
         });
