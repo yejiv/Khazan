@@ -191,6 +191,10 @@ private:
     /* Ladder  Climb */
     _float4                     m_fLadderClimbPos= { 0.f,0.f,0.f,0.f }; 
 
+    /* Grab */
+    _bool                       m_isGrab = { false };
+    _bool                       m_isGrabFinish = { false };
+    _float2                     m_fGrabFinishTime = { 0.f, 1.5f };
 
     /* ====== const ======*/
     const	_float				m_fMinSprintTime = { 0.15f };
@@ -233,7 +237,7 @@ private:
     /* Animation  */
     void			Change_MoveIdle(_float fTimeDelta);
     void			ExecuteAnimationExit();
-    _bool           ChangeGrabAnimation();
+    _bool           ChangeGrabAnimation(_float fTimeDelta);
 
     /* Rotation, Direction */
     void			Apply_PlayerMovement(_float fTimeDelta);
