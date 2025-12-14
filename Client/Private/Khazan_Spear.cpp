@@ -189,6 +189,16 @@ void CKhazan_Spear::Update(_float fTimeDelta)
         m_pCharVirCom->Teleport(XMVectorSet(120.f, 8.f, 116.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
 
     }
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_M))
+    {
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_GrappleAtk01"));
+       
+    }
+    if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_N))
+    {
+        m_pBody->Get_Model()->Set_Animation(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_GrappleAtk02"));
+
+    }
 
     if (m_isEnableControl)
     {

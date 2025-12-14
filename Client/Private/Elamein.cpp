@@ -250,7 +250,7 @@ HRESULT CElamein::Initialize_Clone(void* pArg)
     m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
     m_fRecoveryPerSec = 100.f;
-    m_pGameInstance->Subscribe_Event<EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), [&](const EVENT_RESPOWN& e) {ReSpown(); });
+    m_iEventID = m_pGameInstance->Subscribe_Event<EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), [&](const EVENT_RESPOWN& e) {ReSpown(); });
 
     m_vDecalSize[ENUM_CLASS(DECALTYPE::LINEAR)] = { 3.f, 5.f };
     m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)] = { 4.f, 6.f };
@@ -903,5 +903,7 @@ void CElamein::Free()
     Safe_Release(m_pShield);
     Safe_Release(m_pBodyComp);
     m_Data.pOwner = nullptr;
+
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::PET), m_iEventID);
 
 }
