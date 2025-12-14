@@ -66,6 +66,18 @@ HRESULT CPlayerData_Manager::Initialize()
     m_ePlayerEquipment.isGSword = false;
     UsedSpear();
 
+    //m_ePlayerEquipment.iFace = 10;
+    //m_ePlayerEquipment.iHair = 5006;
+    //m_ePlayerEquipment.iTorso = 5007;
+    //m_ePlayerEquipment.iArm = 5008;
+    //m_ePlayerEquipment.iLeg = 5009;
+    //m_ePlayerEquipment.iShoes = 5010;
+    //m_ePlayerEquipment.iSpear = 4011;
+    //m_ePlayerEquipment.iGSword = 4002;
+    //m_ePlayerEquipment.isSpear = false;
+    //m_ePlayerEquipment.isGSword = true;
+    //UsedGSword();
+
     return S_OK;
 }
 

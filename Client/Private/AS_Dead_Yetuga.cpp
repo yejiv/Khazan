@@ -26,6 +26,7 @@ void CAS_Dead_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_pGameInstance->Emit_Event<EventPopBN>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), { true });
     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_roar_die_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 50.f);
 
+    CClientInstance::GetInstance()->Add_SkillExp(200.f);
     CClientInstance::GetInstance()->BGM_HeinMach_Day(4.f);
 }
 
@@ -35,13 +36,12 @@ void CAS_Dead_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
 
     if (pModel->Play_Animation(fTimeDelta))
-    {  
+    {
         CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
         pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isDeadFinished", true);
         CBossHp::BOSSMON_UPDATE_DESC Desc;
         Desc.isOpen = false;
         CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &Desc);
-        CClientInstance::GetInstance()->Add_SkillExp(200.f);
         pYetuga->Creature_Release();
     }
 
