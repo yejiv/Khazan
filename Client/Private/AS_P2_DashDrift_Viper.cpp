@@ -75,10 +75,6 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
       
         case Client::DRIFTSTATE::FINISH:
         {
-            //CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
-            //CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Transform());
-            //_vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            //pViper->Get_Transform()->LookAt(vTargetPos);
             pBB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_DashDriftFinished",true);
             pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2_Dash_Abort", false);
             pViper->Set_IsGhost(false);
@@ -91,6 +87,8 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
 
 void CAS_P2_DashDrift_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+    CViper* pViper = static_cast<CViper*>(pOwner);
+    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), pViper->Get_FxRotIdx());
 
 }
 

@@ -30,6 +30,8 @@ public:
     PHASE                           Get_Phase() const { return m_ePhase; }
     _vector                         Get_CutSceneLook() const { return XMLoadFloat3(&m_vCutSceneLook); }
 
+    _uint                           Get_FxRotIdx() const { return m_iRotFX_Idx; }
+
     void                            Set_Phase(PHASE ePhase);
     void                            Set_Weapon_Phase1();
     void                            Set_PhaseWeapon_Cinematic();

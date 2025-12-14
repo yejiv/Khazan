@@ -4,7 +4,8 @@
 #include "Viper.h"
 #include "Body_Viper.h"
 #include "Effect_Prefab.h"
-
+#include "FSM_Viper.h"
+#include "AS_5HitCombo_Viper.h"
 
 
 
@@ -16,12 +17,12 @@ _matrix CTwinBlade_Viper::Get_BoneMatrix(const _char* pBoneName)
 }
 
 CTwinBlade_Viper::CTwinBlade_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CPartObject{ pDevice,pContext }
+    :CWeaponObject{ pDevice,pContext }
 {
 }
 
 CTwinBlade_Viper::CTwinBlade_Viper(const CTwinBlade_Viper& Prototype)
-    :CPartObject{ Prototype }
+    :CWeaponObject{ Prototype }
 {
 }
 
@@ -47,9 +48,11 @@ HRESULT CTwinBlade_Viper::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components())) return E_FAIL;
     if (FAILED(Ready_Collision())) return E_FAIL;
     if (FAILED(Ready_Effect())) return E_FAIL;
-
-    //m_VDebugRot = { x = 2.99350357 y = 0.159982994 z = 1.66338313 }
     m_pTransformCom->Rotation(3.f,0.16f,1.6f);
+
+
+    if (FAILED(Ready_Callback()))
+        return E_FAIL;
 
     return S_OK;
 }
@@ -338,6 +341,31 @@ HRESULT CTwinBlade_Viper::Ready_Effect()
     
     m_pEffect[0]->ResetChildren();
     m_pEffect[1]->ResetChildren();
+
+    return S_OK;
+}
+
+HRESULT CTwinBlade_Viper::Ready_Callback()
+{
+    Set_JustGuardCallBack([this](_bool isJustGuard)
+        {
+            if (isJustGuard)
+            {
+                CFSM_Viper* pFSM = static_cast<CFSM_Viper*>(m_pOwner->Get_Controller()->Get_State_Machine());
+                if (nullptr == pFSM)
+                    return E_FAIL;
+
+                if (pFSM->Get_CurrentState()->Get_StateIndex() == ENUM_CLASS(VIPER_STATE_P1::COMBO5HIT))
+                {
+                    CAS_5HitCombo_Viper* pComboState = pFSM->Get_P1_5Hit();
+                    if (nullptr == pComboState)
+                        return E_FAIL;
+
+                    pComboState->On_JustGuard(m_pOwner);
+                }
+
+            }
+        });
 
     return S_OK;
 }

@@ -19,6 +19,7 @@ public:
     virtual void OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
 
 public:
+    void         On_JustGuard(class CGameObject* pOwner);
 
 
 

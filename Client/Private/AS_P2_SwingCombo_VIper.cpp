@@ -72,7 +72,7 @@ void CAS_SwingCombo_VIper::Update(CStateMachine* pFSM, CGameObject* pOwner, _flo
 
 void CAS_SwingCombo_VIper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-   
+    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"));
 }
 
 void CAS_SwingCombo_VIper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)

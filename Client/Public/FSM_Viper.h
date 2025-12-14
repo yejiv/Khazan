@@ -64,13 +64,20 @@ private:
     virtual ~CFSM_Viper() = default;
 
 public:
-    class CAS_CutScene_Start_Viper* Get_CutScene_Start_Viper();
-    class CAS_CutScene_2Phase_Viper* Get_Phase2_CutScene_Start_Viper();
+    class CAS_CutScene_Start_Viper*     Get_CutScene_Start_Viper();
+    class CAS_CutScene_2Phase_Viper*    Get_Phase2_CutScene_Start_Viper();
+    class CAS_5HitCombo_Viper*          Get_P1_5Hit();
+
+
 
 
 public:
     virtual HRESULT				Initialize(class CGameObject* pOwner);
     virtual void				Update(class CGameObject* pOwner, _float fTimeDelta) override;
+
+
+
+
 
 public:
     static CFSM_Viper*          Create(class CGameObject* pOwner);

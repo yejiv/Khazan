@@ -32,6 +32,7 @@ void CAS_Dead_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
         //m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", true);
         pBB->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", true);
         pImp->HPUI_Dead();
+        pImp->Set_IsDead(true);
     }
 
     if (pModel->IsFinished())

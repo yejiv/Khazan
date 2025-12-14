@@ -86,6 +86,7 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimEvent()))
         return E_FAIL;
 
+    m_IceBreathSounds.resize(10);
 
     m_IceBreathSounds =
     {
