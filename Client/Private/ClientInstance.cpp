@@ -388,6 +388,10 @@ void CClientInstance::Camera_MouseOnOff(_bool isOn)
 {
     m_pCamera_Manager->MouseOnOff(isOn);
 }
+void CClientInstance::Camera_InitStartPoseOnce()
+{
+    m_pCamera_Manager->InitStartPoseOnce();
+}
 void CClientInstance::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
 {
     m_pCamera_Manager->Start_ForceOrbit(eForceDir);

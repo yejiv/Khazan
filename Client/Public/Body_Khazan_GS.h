@@ -20,6 +20,7 @@ public:
         _uint* pState = { nullptr };
         _uint* pStatus = { nullptr };
         _uint* pHitReation = { nullptr };
+        _uint*  pHealIndex = { nullptr };
         _float4* pGuardRotationTarget = { nullptr };
         class CTransform* pParentTransform = { nullptr };
 
@@ -144,6 +145,7 @@ private:
     _uint*                      m_pParentState = { nullptr };
     _uint*                      m_pParentStatus = { nullptr };
     _uint*                      m_pHitReaction = { nullptr };
+    _uint*                      m_pHealIndex = { nullptr };
     _uint				        m_iCurState = {  };
     _uint                       m_iCollState = {};          //어떤 콜라이더가 켜질 것인가에대한 상태 
 
