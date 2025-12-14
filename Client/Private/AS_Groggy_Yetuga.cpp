@@ -117,21 +117,26 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         if (m_fBrutalAttackDelayTime <= m_fBrutalAcc && !m_isBlockAnimSet)
         {
             m_isBlockAnimSet = true;
+            CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
+            _vector vLook = pYetuga->Get_Transform()->Get_State(STATE::LOOK);
+
+            m_isSecondKnockback = true;
             pModel->Set_Animation(69);
         }
-
-
+     
         if (pModel->Play_Animation(fTimeDelta))
         {
             if (m_isBlockAnimSet)
             {
                 pModel->Set_Animation(93);
+                pYetuga->Set_RequestRecoveryStamina(true);
+                CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+                pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isSuperArmor", true);
                 m_isBlockAnimSet = false;
                 m_fBrutalAcc = 0.f;
                 m_isCheckBrutalCnt = false;
-                m_eState = GROGGY::RECOVERY;
+                m_eState = GROGGY::END;
             }
-      
         }
     }
     break;
@@ -152,7 +157,7 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
     case GROGGY::END:
 
-        pYetuga->Recovery_Stamina(fTimeDelta * 10.f);
+        pYetuga->Recovery_Stamina(fTimeDelta * 100.f);
 
 
         if (pModel->Play_Animation(fTimeDelta))
