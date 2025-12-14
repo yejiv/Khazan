@@ -157,7 +157,7 @@ void CAS_Groggy_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
 
     case GROGGY::END:
 
-        pYetuga->Recovery_Stamina(fTimeDelta * 50.f);
+        pYetuga->Recovery_Stamina(fTimeDelta * 100.f);
 
 
         if (pModel->Play_Animation(fTimeDelta))

@@ -115,8 +115,6 @@ HRESULT CBody_Yetuga::Initialize_Clone(void* pArg)
 
    if (FAILED(Ready_AnimationEvent()))
        return E_FAIL;
-
-   // m_pTransformCom->Scale(_float3(1.3f,1.3f,1.3f));
     
     m_pLH_BodyCom->Collision_Active(false);
     m_pRH_BodyCom->Collision_Active(false);
@@ -463,6 +461,7 @@ HRESULT CBody_Yetuga::Ready_Callback()
                     pComboState->On_JustGuard(m_pOwner);
                 }
 
+                
                 static_cast<CMonster*>(m_pOwner)->Consume_Stamina(m_pOwner->Get_MaxStamina() * 0.05f);
             }
         });
