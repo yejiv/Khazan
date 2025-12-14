@@ -12,6 +12,7 @@
 #include "UI_BladeNexus.h"
 
 #include "Khazan_Spear.h"
+#include "Khazan_GSword.h"
 #include "UI_Announce_MapName.h"
 
 CUI_BladeNexus_Map::CUI_BladeNexus_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -465,7 +466,7 @@ void CUI_BladeNexus_Map::Move_Player()
     }
     else if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::EMBARS))
     {
-        CKhazan_Spear* pKhazan = static_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Creature_Player"), 0));
+        CKhazan_GSword* pKhazan = static_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Creature_Player"), 0));
         if (pKhazan == nullptr)
             MSG_BOX(TEXT("플레이어 없음"));
         pKhazan->Set_Position(CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->vPos);

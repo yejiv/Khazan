@@ -513,6 +513,10 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
             m_isCollision = true;
             CTransform* MonsterTransform = dynamic_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")));
             XMStoreFloat4(&m_fCollisionPos, MonsterTransform->Get_State(STATE::POSITION));
+
+            m_pPlayerData->fCulDoggedness = m_pPlayerData->fCulDoggedness + 0.2f > m_pPlayerData->iMaxDoggednessCount ?
+                m_pPlayerData->iMaxDoggednessCount : m_pPlayerData->fCulDoggedness + 0.2f;
+
         }
 
         /* 바디 공격 콜라이더  */
@@ -533,6 +537,9 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
             m_isCollision = true;
             CTransform* MonsterTransform = dynamic_cast<CTransform*>(pDesc->pGameObject->Get_Component(TEXT("Com_Transform")));
             XMStoreFloat4(&m_fCollisionPos, MonsterTransform->Get_State(STATE::POSITION));
+            m_pPlayerData->fCulDoggedness = m_pPlayerData->fCulDoggedness + 0.2f > m_pPlayerData->iMaxDoggednessCount ?
+                m_pPlayerData->iMaxDoggednessCount : m_pPlayerData->fCulDoggedness + 0.2f;
+
         }
 
 
@@ -791,7 +798,7 @@ _bool CBody_Khazan_Spear::Check_BrutalAttack(_float fTimeDelta)
 
     /* 브루탈 가능 범위인지 아닌지 체크 */
     _float  fDistSq = XMVectorGetX(XMVector3LengthSq(XMVectorSet(m_pParentMatrix->_41, m_pParentMatrix->_42, m_pParentMatrix->_43, 1.f) - m_pBrutalmonster->Get_Position()));
-    if (fDistSq < 6.f * 6.f) {
+    if (fDistSq < 15.f * 15.f) {
         if (!Has_Status(CKhazan_Spear::BRUTAL_READY)) {
             Add_Status(CKhazan_Spear::BRUTAL_READY);
             return true;
