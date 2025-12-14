@@ -134,7 +134,6 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
     else if (m_pGameInstance->Key_Down(DIK_F2, INPUT_TYPE::FORCE))
     {
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::PLAYER);
-        static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1004);
     }
 
     if (m_eNextLevel != LEVEL::END)
