@@ -794,7 +794,7 @@ _bool CBody_Khazan_GS::Check_BrutalAttack(_float fTimeDelta)
     for (auto it = m_CollMonsters.begin(); it != m_CollMonsters.end(); )
     {
         CMonster* pCreatureMoster = static_cast<CMonster*>(m_pBrutalmonster);
-        if (*it == m_pBrutalmonster && (m_pBrutalmonster->Get_IsDead() || m_pBrutalmonster->Get_IsActive() || pCreatureMoster->Get_CurrentHP() <= 0.f))
+        if (*it == m_pBrutalmonster && (m_pBrutalmonster->Get_IsDead() || !m_pBrutalmonster->Get_IsActive() || pCreatureMoster->Get_CurrentHP() <= 0.f))
             it = m_CollMonsters.erase(it);
         else
             ++it;
