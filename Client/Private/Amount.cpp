@@ -16,6 +16,11 @@ CAmount::CAmount(const CAmount& Prototype)
 
 void CAmount::Add_Value(AMOUNT_TYPE eType, _int IValue, _bool isRandeOff)
 {
+    m_pAmount[ENUM_CLASS(eType)]->Add_Value(IValue);
+    m_isAddAmount[ENUM_CLASS(eType)] = true;
+    On_Panel();
+    m_isAddValue = isRandeOff;
+
     switch (eType)
     {
     case AMOUNT_TYPE::GOLD:
@@ -28,10 +33,6 @@ void CAmount::Add_Value(AMOUNT_TYPE eType, _int IValue, _bool isRandeOff)
         CClientInstance::GetInstance()->Get_ptrPlayerData().iStone += IValue;
         break;
     }
-    m_pAmount[ENUM_CLASS(eType)]->Add_Value(IValue);
-    m_isAddAmount[ENUM_CLASS(eType)] = true;
-    On_Panel();
-    m_isAddValue = isRandeOff;
 }
 
 void CAmount::On_Panel()

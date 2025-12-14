@@ -403,9 +403,8 @@ void CDestinyStone::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLay
 
 void CDestinyStone::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-
-    if (false == m_isInteracted)
-        m_pGuide->Update_Visible(true);
+    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::CAMERA) || iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
+        return;
 
     m_isCollision = true;
 }

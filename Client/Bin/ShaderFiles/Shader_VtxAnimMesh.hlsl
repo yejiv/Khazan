@@ -89,6 +89,10 @@ float4 g_vPupilRing;                //홍채 외곽 강조
 float4 g_vShadingColor;             //조명 조정 및 빛 반사
 float g_PupilScale;                 //동공 크기
 
+float g_IrisRadius;
+float g_PupilRadius;
+float g_RingWidth;
+
 // Player
 bool g_isEnableHealRimLight;
 
@@ -1584,23 +1588,33 @@ PS_OUT PS_NPC(PS_IN In)
 PS_OUT PS_NPC_EYE(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
-        
-    float pupilScale = 0.18 * g_PupilScale; // 0.75 들어감
-    float irisScale = 0.34;
-    
-    float dist = distance(In.vTexcoord, float2(0.5, 0.5));
-    float4 color = g_vEyeWhiteColor;
-    color = lerp(color, g_vPupilCircle * 5.f, smoothstep(irisScale, irisScale - 0.05, dist));
-    
-    float ring = smoothstep(pupilScale + 0.02, pupilScale, dist);
-    color = lerp(color, g_vPupilRing, ring);
-    
-    color = lerp(color, g_vPupilLens, smoothstep(pupilScale, pupilScale - 0.03, dist));
-    
-    color.rgb *= g_vShadingColor.rgb;
-    
-    Out.vDiffuse = float4(color.xyz, 1.f);
-    
+
+    float2 uv = In.vTexcoord;
+    float dist = distance(uv, float2(0.5, 0.5));
+
+    float irisRadius = g_IrisRadius;
+    float pupilRadius = g_PupilRadius * g_PupilScale;
+    float ringWidth = g_RingWidth;
+
+    // 기본 흰자
+    float3 color = g_vEyeWhiteColor.rgb;
+
+    // 홍채
+    float irisMask = 1.0 - smoothstep(irisRadius - 0.04, irisRadius, dist);
+    color = lerp(color, g_vPupilCircle.rgb, irisMask);
+
+    // 동공
+    float pupilMask = 1.0 - smoothstep(pupilRadius - 0.02, pupilRadius, dist);
+    color = lerp(color, g_vPupilLens.rgb, pupilMask);
+
+    // 테두리 (도넛)
+    float ringOuter = 1.0 - smoothstep(pupilRadius,pupilRadius + ringWidth, dist);
+    float ringInner = 1.0 - smoothstep(pupilRadius - ringWidth, pupilRadius, dist);
+    float ringMask = saturate(ringOuter - ringInner);
+    color = lerp(color, g_vPupilRing.rgb, ringMask);
+
+    // Eye는 Unlit에 가깝게
+    Out.vDiffuse = float4(color, 1.0f);
     return Out;
 }
 

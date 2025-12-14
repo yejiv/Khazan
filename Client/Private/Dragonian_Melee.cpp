@@ -148,7 +148,7 @@ HRESULT CDragonian_Melee::Initialize_Clone(void* pArg)
     m_pMeshTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDesc));
 
     m_fRecoveryPerSec = 10.f;
-    m_pGameInstance->Subscribe_Event<EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), [&](const EVENT_RESPOWN& e) {ReSpown(); });
+    m_iEventID = m_pGameInstance->Subscribe_Event<EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), [&](const EVENT_RESPOWN& e) {ReSpown(); });
 
     return S_OK;
 }
@@ -638,4 +638,6 @@ void CDragonian_Melee::Free()
     Safe_Release(m_pWeapon);
     Safe_Release(m_pBlackBoard);
     Safe_Release(m_pBodyComp);
+
+    m_pGameInstance->Unsubscribe_Event(ENUM_CLASS(EVENT_TYPE::PET), m_iEventID);
 }

@@ -26,6 +26,7 @@ namespace Client {
         OBELISK_DESTRUCT,
         PET,
         RESPOWN,
+        ITEM_ACTIVE,
 		END };
 
 	// Structs
@@ -429,4 +430,5 @@ namespace Client {
     };
 
     struct EVENT_RESPOWN {};
+    struct EVENT_ATICVE_ITEM { _int iIndex; };
 }

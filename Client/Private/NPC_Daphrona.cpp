@@ -106,22 +106,38 @@ HRESULT CNPC_Daphrona::Render()
 
         if (4 == i)
         {
-            _float4 vEyeWhiteColor = { 1.f, 1.f, 1.f, 1.f };   // 눈 흰자 (EyeWhiteColor0)
-            _float4 vPupilCircle = { 1.f, 1.f, 1.f, 1.f };    // 홍채 외곽 (Pupil_Circle0)
-            _float4 vPupilLens = { 1.f, 1.f, 1.f, 1.f };    // 홍채 내부 (Pupil_Lens0)
-            _float4 vPupilRing = { 1.f, 1.f, 1.f, 1.f };   // 홍채 테두리 (Pupil_Ring0)
-            _float4 vShadingColor = { 1.f, 1.f, 1.f, 1.f };    // 조명/명암 색 (ShadingColor0)
+            // 색상 계층 (절대 1.0 풀화이트 쓰면 안됨)
+            // 눈 흰자 – 완전 흰색 금지 (눈부심/플랫함 방지)
+            _float4 vEyeWhiteColor = { 3.f, 3.f, 3.f, 1.f };
+            // 홍채 외각
+            _float4 vPupilCircle = { 0.35f, 0.25f, 0.1f, 1.f };
+            // 홍채 중간
+            _float4 vPupilRing = { 1.45f, 1.225f, 0.47f, 1.f };
+            // 홍채 내각
+            _float4 vPupilLens = { 0.25f, 0.15f, 0.06f, 1.f };
 
-            _float  fPupilScale = 0.8f;                                       // PupilScale
+            // 크기 계열 (캐릭터 고정값)
+            // 홍채 전체 크기
+            _float fIrisRadius = 0.18f;
+            // 동공 기본 크기
+            _float fPupilRadius = 0.11f;
+            // 테두리 두께
+            _float fRingWidth = 0.06f;
+
+            // 애니메이션용 (감정, 조명 반응)
+            _float fPupilScale = 0.85f;   // 0.6 ~ 1.0
 
             m_pShaderCom->Bind_RawValue("g_vEyeWhiteColor", &vEyeWhiteColor, sizeof(_float4));
             m_pShaderCom->Bind_RawValue("g_vPupilCircle", &vPupilCircle, sizeof(_float4));
             m_pShaderCom->Bind_RawValue("g_vPupilLens", &vPupilLens, sizeof(_float4));
             m_pShaderCom->Bind_RawValue("g_vPupilRing", &vPupilRing, sizeof(_float4));
-            m_pShaderCom->Bind_RawValue("g_vShadingColor", &vShadingColor, sizeof(_float4));
+
+            m_pShaderCom->Bind_RawValue("g_IrisRadius", &fIrisRadius, sizeof(_float));
+            m_pShaderCom->Bind_RawValue("g_PupilRadius", &fPupilRadius, sizeof(_float));
+            m_pShaderCom->Bind_RawValue("g_RingWidth", &fRingWidth, sizeof(_float));
             m_pShaderCom->Bind_RawValue("g_PupilScale", &fPupilScale, sizeof(_float));
-    
-            m_pShaderCom->Begin(36);
+
+            m_pShaderCom->Begin(36); // Eye pass
         }
         else
         {
@@ -365,7 +381,7 @@ void CNPC_Daphrona::Animation_Update(_float fTimeDelta)
     }
     else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
     {
-        if (ANIM_STATE::TALK_IDLE == m_eAnimState)
+        if (ANIM_STATE::TALK_START == m_eAnimState || ANIM_STATE::TALK_IDLE == m_eAnimState)
         {
             m_eAnimState = ANIM_STATE::TALK_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));

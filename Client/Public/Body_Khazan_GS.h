@@ -79,9 +79,10 @@ public:
    // _bool               Is_SpearFullExtension() const { return m_isSpearFullExtension; }
 
 public:
-    void                Search_BrutalTarget(_float fTimeDelta); //부르탈 타겟 찾기 
-    _bool               Check_BrutalAttack(_float fTimeDelta);  //부르탈 체크
-    void                AllAttackCollisionActive_Off();         //어택 콜리젼 다 끄기 
+    void                        Search_BrutalTarget(_float fTimeDelta); //부르탈 타겟 찾기 
+    _bool                       Check_BrutalAttack(_float fTimeDelta);  //부르탈 체크
+    void                        AllAttackCollisionActive_Off();         //어택 콜리젼 다 끄기 
+    void                        Set_AllPlaySound(_bool isPlaySound) { m_isPlaySound = isPlaySound; }
 
     /* Shader */
     void                        Set_EnableEdge(_bool isEnable) { m_isEnableEdge = isEnable; }
@@ -216,7 +217,7 @@ private:
 
     /* Sound */
     vector<FMOD_CHANNEL*>       m_pChannel;
-
+    _bool                       m_isPlaySound = { true };
   
 
     /*  mutex */
