@@ -35,16 +35,6 @@ HRESULT CProjectile_Rock_Yetuga::Initialize_Clone(void* pArg)
 
 	m_pTransformCom->Rotation(XMConvertToRadians(90.f),0.f,0.f);
 
-
-    /*_matrix PreTransformMatrix = XMMatrixIdentity();
-    PreTransformMatrix = XMMatrixScaling(0.00053f, 0.00053f, 0.00053f);
-    _float4x4 TempMatrix = {};
-    XMStoreFloat4x4(&TempMatrix, PreTransformMatrix);
-    m_pAnimModelCom->Set_PreTransformMatrix(TempMatrix);
-    m_pAnimModelCom->Set_Animation(0);*/
-
-
-
 	return S_OK;
 }
 
@@ -65,89 +55,43 @@ void CProjectile_Rock_Yetuga::Update(_float fTimeDelta)
         m_pBody->Collision_Active(false);
     }
     
-   
-    //if (m_pAnimModelCom->Play_Animation(fTimeDelta))
-    //{
 
-        if (CProjectile::PRJSTATE::CRASHED == m_eState)
-        {
-            Enter_State(PRJSTATE::END);
-        }
-    //}
+    if (CProjectile::PRJSTATE::CRASHED == m_eState)
+    {
+        Enter_State(PRJSTATE::END);
+    }
 }
 
 void CProjectile_Rock_Yetuga::Late_Update(_float fTimeDelta)
 {
     if (m_isVisible)
-    {
-    /*    if(m_eState == CProjectile::PRJSTATE::CRASHED)
-            m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
-        else*/
-            m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
 
-    }
+    
 
 }
 
 HRESULT CProjectile_Rock_Yetuga::Render()
 {
+    if (FAILED(Bind_ShaderResources()))
+        return E_FAIL;
 
-   /* if (m_eState == CProjectile::PRJSTATE::CRASHED)
+    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    for (size_t i = 0; i < iNumMeshes; i++)
     {
-        if (FAILED(m_pTransformCom->Bind_Shader_Resource(m_pAnimShaderCom, "g_WorldMatrix")))
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
+
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+
+        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        if (FAILED(m_pAnimShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
-            return E_FAIL;
-
-        if (FAILED(m_pAnimShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
-            return E_FAIL;
-
-        _uint           iNumMeshes = m_pAnimModelCom->Get_NumMeshes();
-
-        for (size_t i = 0; i < iNumMeshes; i++)
-        {
-            _uint           iNumMeshes = m_pAnimModelCom->Get_NumMeshes();
-
-            for (size_t i = 0; i < iNumMeshes; i++)
-            {
-                m_pModelCom->Bind_Materials(m_pAnimShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-
-                m_pModelCom->Bind_Materials(m_pAnimShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
-
-                if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pAnimShaderCom, "g_BoneMatrices", i)))
-                    return E_FAIL;
-
-                m_pAnimShaderCom->Begin(0);
-                m_pAnimModelCom->Render(i);
-            }
-
-
-        }
-    }*/
-
-    //else
-    //{
-        if (FAILED(Bind_ShaderResources()))
-            return E_FAIL;
-
-        _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-        for (size_t i = 0; i < iNumMeshes; i++)
-        {
-            m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-
-            m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
-
-            if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
-                return E_FAIL;
-
-            m_pShaderCom->Begin(0);
-            m_pModelCom->Render(i);
-        }
-    //}
-
+        m_pShaderCom->Begin(0);
+        m_pModelCom->Render(i);
+    }
     
+
 	return S_OK;
 }
 
@@ -186,7 +130,7 @@ void CProjectile_Rock_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOthe
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
         
         // 데미지 주고
-        pTarget->Take_Damage(350.f,HITREACTION::KNOCKBACK_STRONG);
+        pTarget->Take_Damage(125.f,HITREACTION::KNOCKBACK_STRONG);
         Enter_State(PRJSTATE::CRASHED);
         
     }

@@ -72,6 +72,15 @@ CAS_CutScene_2Phase_Viper* CFSM_Viper::Get_Phase2_CutScene_Start_Viper()
     return pCutScneState;
 }
 
+CAS_5HitCombo_Viper* CFSM_Viper::Get_P1_5Hit()
+{
+    CAS_5HitCombo_Viper* pComboState = static_cast<CAS_5HitCombo_Viper*>(m_States[ENUM_CLASS(VIPER_STATE_P1::COMBO5HIT)]);
+    if (nullptr == pComboState)
+        return nullptr;
+
+    return pComboState;
+}
+
 HRESULT CFSM_Viper::Initialize(CGameObject* pOwner)
 {
 #pragma region PHASE1
