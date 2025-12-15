@@ -1827,7 +1827,23 @@ void CKhazan_Spear::ExecuteAnimationExit()
 
 _bool CKhazan_Spear::ChangeGrabAnimation(_float fTimeDelta)
 {
-    if (m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F")) )
+    _uint iDownAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F");
+    _uint iGetupAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Getup_F");
+    _uint iHoldAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab");
+    _uint iCurAnimIndex = m_pBody->Get_Model()->Get_CurAnimIndex();
+
+    if (iCurAnimIndex != iDownAnimIndex && iCurAnimIndex != iGetupAnimIndex && iCurAnimIndex != iHoldAnimIndex)
+    {
+        Clear_Step1();
+        Remove_Status(YETUGA_GRAB);
+
+        m_iCurAnimIndex = iGetupAnimIndex;
+        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+
+        return true;
+    }
+
+    if (m_pBody->Get_Model()->IsAnimationStart(iDownAnimIndex) )
     {
         m_fGrabDownTime += fTimeDelta;
         if (m_fGrabDownIntervalTime >= m_fGrabDownTime)
@@ -1837,16 +1853,16 @@ _bool CKhazan_Spear::ChangeGrabAnimation(_float fTimeDelta)
             Clear_Step1();
             Remove_Status(YETUGA_GRAB);
 
-            m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Getup_F");
+            m_iCurAnimIndex = iGetupAnimIndex;
             m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
 
             return true;
         }
     }
 
-    if (m_pBody->Get_Model()->IsAnimationStart(m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_DamageHold_Yetuga_RushGrab")) && m_pBody->Get_Model()->Check_MinAnimationTime())
+    if (m_pBody->Get_Model()->IsAnimationStart(iHoldAnimIndex) && m_pBody->Get_Model()->Check_MinAnimationTime())
     {
-        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F");
+        m_iCurAnimIndex = iDownAnimIndex;
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
         return true;
     }

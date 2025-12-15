@@ -441,8 +441,10 @@ void CBody_Khazan_GS::Render_Part(CModel* pModel)
             continue;
         if(Has_State(1u))
             m_pShaderCom->Begin(17);
-        else
-            m_pShaderCom->Begin(28);
+        else {
+
+            m_pShaderCom->Begin(37);
+        }
         pModel->Render(i);
     }
 }
