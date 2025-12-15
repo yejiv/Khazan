@@ -80,6 +80,9 @@ public:
     void                            Set_Teleport(_fvector vPos);
     void                            SFX_DASHDRIFT();
 
+    void                            Dissolve_On();
+
+
 private:
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();
@@ -150,7 +153,7 @@ private:
     _bool                           m_isUIHp = { false };
 
     PHASE                           m_ePhase = { PHASE::END };
-
+    _float                          m_fDecreaseAlpha = {};
     _float4x4*                      m_pThrowMatrix = {};
     COLLISION_DESC                  m_tViperCollisionDesc = {};
     _float3                         m_vCutSceneLook = {};

@@ -259,7 +259,7 @@ void CBody_Khazan_GS::Late_Update(_float fTimeDelta)
 HRESULT CBody_Khazan_GS::Render()
 {
 
-    //if (*m_isLadderRotationEvent == true )
+        //if (*m_isLadderRotationEvent == true )
       //  m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(0.f));
 
     if (FAILED(Bind_ShaderResources()))
@@ -442,7 +442,7 @@ void CBody_Khazan_GS::Render_Part(CModel* pModel)
         if(Has_State(1u))
             m_pShaderCom->Begin(17);
         else
-            m_pShaderCom->Begin(28);
+            m_pShaderCom->Begin(37);
         pModel->Render(i);
     }
 }
@@ -2461,8 +2461,8 @@ void CBody_Khazan_GS::BrutalAtk_ScreenEffect0()
     RBDesc.iNumSamples = 16;
     RBDesc.fAttenuation = 0.1f;
     RBDesc.fStrength = 0.7f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
-    RBDesc.fDuration = 2.f;
-    RBDesc.vFadeTime = _float2(1.5f, 0.5f);
+    RBDesc.fDuration = 1.5f;
+    RBDesc.vFadeTime = _float2(1.f, 0.5f);
     m_pGameInstance->Start_RadialBlur(RBDesc);
 
     // Fov 좁게
@@ -2480,8 +2480,8 @@ void CBody_Khazan_GS::BrutalAtk_ScreenEffect0()
     Config.fPower = 3.5f;
     Config.fMinIntensity = 0.f;
     Config.fMaxIntensity = 4.f;
-    Config.fDuration = 2.f;
-    Config.vFadeTime = _float2(1.5f, 0.5f);
+    Config.fDuration = 1.5f;
+    Config.vFadeTime = _float2(1.f, 0.5f);
     m_pGameInstance->Start_VignetteAnimation(Config);
 }
 

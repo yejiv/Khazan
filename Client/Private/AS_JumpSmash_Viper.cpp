@@ -45,7 +45,7 @@ void CAS_JumpSmash_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLay
     {
         CViper* pViper =  static_cast<CViper*>(pOwner);
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(40.f, HITREACTION::KNOCKBACK_STRONG);
+        pTarget->Take_Damage(266.f, HITREACTION::KNOCKBACK_STRONG);
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
         if (nullptr == pOwnerTransform)
             return;

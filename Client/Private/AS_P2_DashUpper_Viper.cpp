@@ -54,7 +54,7 @@ void CAS_P2_DashUpper_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollision
             return;
 
     
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+        pTarget->Take_Damage(137.f, HITREACTION::KNOCKBACK_NORMAL);
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
         pTarget->KnockBack(vLook, 20.f, 40.f);
       

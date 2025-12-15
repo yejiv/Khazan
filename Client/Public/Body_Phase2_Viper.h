@@ -8,6 +8,7 @@ class CModel;
 class CBody;
 class CClothBody;
 class CMotionTrail;
+class CTexture;
 NS_END
 
 
@@ -18,9 +19,10 @@ class CBody_Phase2_Viper final : public CWeaponObject
 public:
     typedef struct tagBodyDesc : public PARTOBJECT_DESC
     {
-        CTransform* pOwnerTransform = { nullptr };
-        class CViper* pOwner = { nullptr };
-
+        CTransform*     pOwnerTransform = { nullptr };
+        class CViper*   pOwner = { nullptr };
+        _bool* pDissolve = { nullptr };
+        _float* pDecreaseAlpha = { nullptr };
     }BODY_DESC;
 
 public:
@@ -47,9 +49,14 @@ public:
     virtual HRESULT			Render() override;
 
 public:
+    HRESULT                 Bind_Dissolve();
+
+public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* = nullptr) override;
     virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
+
+    _float*                 m_pDecreaseAlpha = { nullptr };
 
 public:
     void                    Set_EnableMotionTrail(_bool isEnable);
@@ -74,6 +81,7 @@ private:
     CTransform*             m_pOwnerTransform = { nullptr };
     CBody*                  m_pLeftHandBody = { nullptr };
     CMotionTrail*           m_pMotionTrailCom = { nullptr };
+    CTexture*               m_pDissolveCom = { nullptr };
 
 private:
     _float3					m_vThrowPoint = {};

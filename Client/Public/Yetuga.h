@@ -74,6 +74,7 @@ private:
 
     void                            Abort_Node(_bool isToggle);
 
+    void                            Play_IcebreathSounds();
 
 private:
     void                            Start_DefaultRadialBlur();
@@ -102,7 +103,9 @@ private:
 private:
     _bool                           m_isLanding = false;
     _bool                           m_isBrutalKnockback = { false };
-
+    _bool                           m_isIceBreathCreated = { false };
+    _float                          m_fCurrentTime = {};
+    _float                          m_isIceCreatTime = { 0.8f };
 
 
     _float3 m_vLandingStartPos;

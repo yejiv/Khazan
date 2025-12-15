@@ -229,6 +229,14 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
         m_pClientInstance->Add_SkillExp(1000.f);
     }
 
+    if (m_pGameInstance->Key_Down(DIK_GRAVE))
+    {
+        m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
+    }
+    if (m_pGameInstance->Key_Down(DIK_INSERT))
+    {
+        m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp*0.24f;
+    }
 }
 
 void CKhazan_GSword::Update(_float fTimeDelta)
@@ -524,7 +532,7 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         break;
     case Client::HITREACTION::GRAB_FINISHED:
         m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_DamAir_F");
-        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+       m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
         m_pCharVirCom->End_Ladder();
         break;
     case Client::HITREACTION::BRUTAL_ATTACK:
@@ -713,6 +721,8 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
     if (Fall_Input(fTimeDelta))
         return;
 
+    Interaction_Input(fTimeDelta);
+
     /* ?씠?쟾 ?긽?깭 ????옣*/
     m_iPrevMainState = m_iCurMainState;
     m_iPrevSubState = m_iCurSubState;
@@ -767,7 +777,7 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
         /* 諛⑺뼢 寃곗젙 */
         Check_KeyInput_Direction(fTimeDelta);
 
-        Interaction_Input(fTimeDelta);
+       /* Interaction_Input(fTimeDelta);*/
         /* 怨듦꺽?씠?굹 媛??뱶瑜? 留됱븘?빞?븯?뒗 ?긽?샇?옉?슜 泥섎━  */
         if (!Has_Status(BLOCK_ATK_SKILL_GUARD))
         {
@@ -1970,9 +1980,20 @@ void CKhazan_GSword::ExecuteAnimationExit()
 
 _bool CKhazan_GSword::ChangeGrabAnimation(_float fTimeDelta)
 {
+    _uint iHoldIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Burrow_Predation_Kazan_DamageHold");
+    _uint iDamIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_DamAir_F");
+    _uint iCurIndex = m_pBody->Get_Model()->Get_CurAnimIndex();
+
+    if (iCurIndex != iDamIndex && iCurIndex != iHoldIndex)
+    {
+        m_isGrabFinish = m_isGrabFinish = false;
+        m_pCharVirCom->End_Ladder();
+        return true;
+    }
+
     if(m_isGrab && m_pCharVirCom->Get_isGround())
     {
-        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_DamAir_F");
+        m_iCurAnimIndex = iDamIndex;
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
 
         m_isGrabFinish = true;

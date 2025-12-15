@@ -100,13 +100,13 @@ void CAS_P2_FakeRunAttack_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iColli
 
         if (iAttackCnt == 1)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+            pTarget->Take_Damage(143.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 20.f, 60.f);
         }
         else if (iAttackCnt == 2)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+            pTarget->Take_Damage(99.f, HITREACTION::KNOCKBACK_WEAK);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 20.f, 60.f);
         }

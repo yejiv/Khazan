@@ -924,8 +924,8 @@ HRESULT CLevel_Viper::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, con
 
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 500.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMaxHP = 18000.f;
+            MonsterDesc.fMaxStamina = 1500.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;

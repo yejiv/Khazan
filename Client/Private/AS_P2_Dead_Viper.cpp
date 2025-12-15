@@ -26,7 +26,7 @@ void CAS_P2_Dead_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     //static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1001);
     //static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1002);
     //static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(1003);
-    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 5000);
+    //static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 5000);
     CClientInstance::GetInstance()->BGM_Viper_End(1.f);
 
 
@@ -48,6 +48,13 @@ void CAS_P2_Dead_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &Desc);
         pViper->Creature_Release();
     }
+
+    if (pModel->IsFinished())
+    {
+
+        pViper->Dissolve_On();
+    }
+
 }
 
 void CAS_P2_Dead_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)

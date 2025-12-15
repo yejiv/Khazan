@@ -28,20 +28,20 @@ HRESULT CPlayer_Manager::Initialize()
     m_Data.fSkillLevel_EXP = { 0.f };
 
 
-	m_Data.iLevel = 1;
+	m_Data.iLevel = 25;
 	m_Data.iGold = 1000;
 	m_Data.iLachryma = 500;
     m_Data.iStone = 0;
     m_Data.iLevelStone = 0;
     m_Data.iVitality = { 10 };
     m_Data.iEndurance = { 10 };
-    m_Data.iPower = { 10 };
+    m_Data.iPower = { 25 };
     m_Data.iCompetency = { 10 };
     m_Data.iWill = { 10 };
 
     m_Data.fWeight = { 0.f };
     //데이터 셋팅
-    //Setting_Data();
+    Setting_Data();
 
     m_UsedSpearSkill.assign(GetBitPosition(CPlayerData_Manager::SPEAR_END), false);
 
@@ -54,14 +54,14 @@ HRESULT CPlayer_Manager::Initialize()
     //BindSkillToButton(R, CPlayerData_Manager::SHADOW_CLEAVE);
 
     ///* 임시 */
-    //m_pClientInstance->UsedGSword();
-    //BindSkillToButton(Q, CPlayerData_Manager::GIANTHUNT);   /* 거인 사냥 */
-    //BindSkillToButton(E, CPlayerData_Manager::PHANTOM_SHADOWOFDARKNESS);    /* 귀신 : 어둠의 그림자*/
-    //BindSkillToButton(R, CPlayerData_Manager::BREAK_THROUGH);   /* 정면 돌파 */
-    //BindSkillToButton(CTRL_LB, CPlayerData_Manager::WARCRY);    /* 거대한 포효 */ 
-    //BindSkillToButton(CTRL_RB, CPlayerData_Manager::INNER_FURY);    /* 내재된 분노 */
+    m_pClientInstance->UsedGSword();
+    BindSkillToButton(Q, CPlayerData_Manager::GIANTHUNT);         
+    BindSkillToButton(E, CPlayerData_Manager::BREAK_THROUGH);     
+    BindSkillToButton(R, CPlayerData_Manager::LIMIT_BREAK);       
+    BindSkillToButton(CTRL_LB, CPlayerData_Manager::WARCRY);      
+    BindSkillToButton(CTRL_RB, CPlayerData_Manager::INNER_FURY);  
 
-    m_pClientInstance->UsedSpear();
+    //m_pClientInstance->UsedSpear();
 
 	return S_OK;
 }
@@ -237,14 +237,14 @@ void CPlayer_Manager::Setting_Data()
     m_Data.iGold = 2000;
     m_Data.iLachryma = 5100;
     m_Data.iStone = 8;
-    m_Data.fSkillLevel_EXP = 50.f;
-    m_Data.iSkillLevel = 10;
-    m_Data.iSkilPoint = 0;
+    m_Data.fSkillLevel_EXP = 80.f;
+    m_Data.iSkillLevel = 20;
+    m_Data.iSkilPoint = 16;
 
-    m_Data.iLevel = 10;
-    m_Data.iVitality = { 13 };
-    m_Data.iEndurance = { 16 };
-    m_Data.iPower = { 11 };
+    m_Data.iLevel = 20;
+    m_Data.iVitality = { 10 };
+    m_Data.iEndurance = { 10 };
+    m_Data.iPower = { 20 };
     m_Data.iCompetency = { 10 };
     m_Data.iWill = { 10 };
 }

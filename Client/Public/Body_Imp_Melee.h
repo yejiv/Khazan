@@ -58,13 +58,13 @@ private:
     CShader*                m_pShaderCom = { nullptr };
     CModel*                 m_pModelCom = { nullptr };
     CTransform*             m_pOwnerTransform = { nullptr };
-    class CTexture* m_pDissolveCom = { nullptr };
+    class CTexture*         m_pDissolveCom = { nullptr };
 
     _bool					m_isOnAttackCollision = { false };
     _float4x4*              m_pLockOnBoneMatrix = { nullptr };
 
-    _bool* m_pDissolve = { nullptr };
-    _float* m_pDecreaseAlpha = { nullptr };
+    _bool*                  m_pDissolve = { nullptr };
+    _float*                 m_pDecreaseAlpha = { nullptr };
 
 private:
     _float4					m_vLockOnPoint = {};

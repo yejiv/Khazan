@@ -36,7 +36,7 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
 
         CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
         CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
-        pYetuga->Take_Damage(100.f, HITREACTION::KNOCKBACK_STRONG, pTarget);
+        pYetuga->Take_Damage(1000.f, HITREACTION::KNOCKBACK_STRONG, pTarget);
         //m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::DEAD), pYetuga);
         //pViper->Consume_Stamina(10.f);
 

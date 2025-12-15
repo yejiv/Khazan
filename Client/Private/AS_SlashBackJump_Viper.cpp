@@ -70,7 +70,7 @@ void CAS_SlashBackJump_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisio
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+        pTarget->Take_Damage(120.f, HITREACTION::KNOCKBACK_NORMAL);
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
         if (nullptr == pOwnerTransform)
             return;

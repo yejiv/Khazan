@@ -89,9 +89,9 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimEvent()))
         return E_FAIL;
 
-    m_IceBreathSounds.resize(10);
+    //m_IceBreathSounds.resize(10);
 
-    m_IceBreathSounds =
+  /*  m_IceBreathSounds =
     {
         TEXT("Mon_efx_yetuga_icebreath_obj_idle_01 (SFX).wav"),
         TEXT("Mon_efx_yetuga_icebreath_obj_idle_02 (SFX).wav"),
@@ -99,7 +99,7 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
         TEXT("Mon_efx_yetuga_icebreath_obj_idle_04 (SFX).wav"),
         TEXT("Mon_efx_yetuga_icebreath_obj_idle_05 (SFX).wav"),
         TEXT("Mon_efx_yetuga_icebreath_obj_idle_06 (SFX).wav"),
-    };
+    };*/
 
     if (FAILED(Ready_SFX()))
         return E_FAIL;
@@ -195,7 +195,6 @@ void CYetuga::Update(_float fTimeDelta)
         Update_Landing(fTimeDelta);
     }
 
-  
     __super::Update(fTimeDelta);
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
@@ -658,6 +657,25 @@ void CYetuga::Abort_Node(_bool isToggle)
 
     if (fDist >= fAbortRange)
         m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isAbort", isToggle);
+}
+
+void CYetuga::Play_IcebreathSounds()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 6);
+   
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath_obj_idle_01 (SFX).wav"), 1.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath_obj_idle_02 (SFX).wav"), 1.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath_obj_idle_03 (SFX).wav"), 1.f);
+    else if (iSoundIndex == 3)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath_obj_idle_04 (SFX).wav"), 1.f);
+    else if (iSoundIndex == 4)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath_obj_idle_05 (SFX).wav"), 1.f);
+    else if (iSoundIndex == 5)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath_obj_idle_06 (SFX).wav"), 1.f);
+
 }
 
 void CYetuga::Start_DefaultRadialBlur()

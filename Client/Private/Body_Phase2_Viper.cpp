@@ -110,6 +110,10 @@ HRESULT CBody_Phase2_Viper::Initialize_Clone(void* pArg)
     m_pModelCom->Set_PreTransformMatrix(TempMatrix);
     m_pModelCom->Set_Transform(&m_CombinedWorldMatrix);
 
+
+    //m_pDissolve = pDesc->pDissolve;
+    m_pDecreaseAlpha = pDesc->pDecreaseAlpha;
+
     return S_OK;
 }
 
@@ -197,6 +201,8 @@ HRESULT CBody_Phase2_Viper::Render()
     if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
+    CHECK_FAILED(Bind_Dissolve(), E_FAIL);
+
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     _float fEdgeIntensity = 0.5f;
@@ -244,6 +250,22 @@ HRESULT CBody_Phase2_Viper::Render()
     return S_OK;
 }
 
+HRESULT CBody_Phase2_Viper::Bind_Dissolve()
+{
+    CHECK_FAILED(m_pDissolveCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", 0), E_FAIL);
+
+    _float fEdgeWidth = 0.05f;
+    _float4 fEdgeColor = _float4(1.3f, 0.75f, 0.f, 1.f);
+
+    m_pShaderCom->Bind_RawValue("g_fDecreaseAlpha", m_pDecreaseAlpha, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeWidth", &fEdgeWidth, sizeof(_float));
+    m_pShaderCom->Bind_RawValue("g_fEdgeColor", &fEdgeColor, sizeof(_float4));
+
+    return S_OK;
+}
+
+
+
 void CBody_Phase2_Viper::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
      COLLISION_LAYER eType = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
@@ -275,6 +297,9 @@ HRESULT CBody_Phase2_Viper::Ready_Components()
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Viper_Phase2"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Monster_Dissolve"),
+        TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pDissolveCom), nullptr), E_FAIL);
 
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
 
@@ -455,6 +480,7 @@ void CBody_Phase2_Viper::Free()
     Safe_Release(m_pLeftHandBody);
     Safe_Release(m_pClothBody);
     Safe_Release(m_pFeelerBody);
+    Safe_Release(m_pDissolveCom);
 
     __super::Free();
 

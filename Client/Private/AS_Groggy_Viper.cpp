@@ -158,7 +158,7 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
             break;
 
         case GROGGY::END:
-            pViper->Recovery_Stamina(fTimeDelta * 10.f);
+            pViper->Recovery_Stamina(fTimeDelta * 150.f);
 
             if (pModel->Play_Animation(fTimeDelta))
             {
@@ -177,7 +177,7 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
     else if (CViper::PHASE::PHASE2 == pViper->Get_Phase())
     {
 
-        CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+        CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
 
         switch (m_eState)
         {
@@ -277,7 +277,7 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
             if (pModel->Play_Animation(fTimeDelta))
             {
                 m_eState = GROGGY::END;
-                pModel->Set_Animation(43);
+                pModel->Set_Animation(42);
                 pViper->Set_RequestRecoveryStamina(true);
                 CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
                 pBB->Set_Value<_bool>(pViper->Get_Name(), "isSuperArmor", true);
@@ -285,7 +285,7 @@ void CAS_Groggy_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
             break;
 
         case GROGGY::END:
-            pViper->Recovery_Stamina(fTimeDelta * 10.f);
+            pViper->Recovery_Stamina(fTimeDelta * 150.f);
 
             if (pModel->Play_Animation(fTimeDelta))
             {
