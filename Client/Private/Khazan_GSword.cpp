@@ -309,7 +309,7 @@ void CKhazan_GSword::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
-    if ((m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH) || m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::VIPER)) 
+    if ((m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH)) 
         && m_EventInteract.isInCave() == false)
     {
         m_EffectTimeDelta += fTimeDelta;
