@@ -1,18 +1,19 @@
 #pragma once
 #include "Client_Defines.h"
-#include "PartObject.h"
+#include "WeaponObject.h"
 #include "Elamein.h"
 
 NS_BEGIN(Engine)
 class CShader;
 class CModel;
 class CBody;
+class CClothBody;
 class CTexture;
 NS_END
 
 NS_BEGIN(Client)
 
-class CBody_Elamein final : public CPartObject
+class CBody_Elamein final : public CWeaponObject
 {
 public:
     typedef struct tagBodyDesc : public PARTOBJECT_DESC
@@ -47,16 +48,26 @@ private:
     CShader*                        m_pShaderCom = { nullptr };
     CModel*                         m_pModelCom = { nullptr };
     CTexture*                       m_pTextureCom = { nullptr };
-    
     CTransform*                     m_pOwnerTransform = { nullptr };
     
     _int                            m_iPreAnim = { -1 };
-    CElamein::MONDATA*               m_pData = { nullptr };
+    CElamein::MONDATA*              m_pData = { nullptr };
+
+    CBody*                          m_pBodyComp = { nullptr };
+    _bool					        m_isOnAttackCollision = { false };
+    _float4x4*                      m_pSocketMatrix = { nullptr };
+    class CClothBody* m_pCapeBody = { nullptr };
+    COLLISION_DESC m_tCapeCollDesc = {};
+    class CBody* m_pClothBody = { nullptr };
+    COLLISION_DESC m_tClothBodyCollDesc = {};
+    _float4x4* m_pClothBodyMatrix = { nullptr };
+    _float4x4 m_pClothCombinedMatrix;
 
 private:
     HRESULT					        Ready_Components();
     HRESULT					        Bind_ShaderResources();
     HRESULT                         Bind_Dissolve();
+    void                            Update_Body(_float fTimedelta);
 public:
     static CBody_Elamein*   Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;

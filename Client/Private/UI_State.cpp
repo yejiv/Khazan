@@ -27,6 +27,7 @@ void CUI_State::On_Panel(UI_TYPE eType)
 {
 	if (m_IsUpdate)
 		return;
+    m_UpPlayer_Data.iLevel = 0;
 
 	m_eType = eType;
 	m_eType == UI_TYPE::DEFAULT ? m_pTitle->Set_Text(TEXT("상태")) : m_pTitle->Set_Text(TEXT("능력 강화"));
@@ -45,7 +46,7 @@ void CUI_State::On_Panel(UI_TYPE eType)
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LACHRYMA)]->Setting_Type(m_eType, this);
 	m_pPanel[ENUM_CLASS(STATE_PANEL::LEVEL)]->Setting_Type(m_eType, this);
     Update_Data();
-
+    
 	_int iLacryma = *m_pLachryma;
 	_int iPreUpPoint = m_Player_Data.iLevel;
 	_int iUpPoint = 0;
@@ -64,6 +65,34 @@ void CUI_State::On_Panel(UI_TYPE eType)
 	m_eAnimState = UIANIMSTATE::ON;
 	m_fAccTime = 0.5f;
 	m_IsUpdate = true;
+
+    for (_int i = 0; i < ENUM_CLASS(STATE_LIST::END); ++i)
+    {
+        m_UpStateLevel[i] = 0;
+    }
+
+
+    m_UpPlayer_Data.iMaxHp = 0;
+    m_UpPlayer_Data.iMaxStamina = 0;
+    m_UpPlayer_Data.iAtk = 0;
+    m_UpPlayer_Data.iDef = 0;
+    m_UpPlayer_Data.fWeight = 0;
+    m_UpPlayer_Data.fMaxWeight = 0;
+    m_UpPlayer_Data.fAgile = 0;
+
+    m_UpPlayer_Data.fStaminaAttack = 0;
+    m_UpPlayer_Data.fStaminaRegen = 0;
+    m_UpPlayer_Data.fEvasion_StaminaDown = 0;
+    m_UpPlayer_Data.fDamage_StaminaDown = 0;
+    m_UpPlayer_Data.fGuard_StaminaDown = 0;
+
+    m_UpPlayer_Data.iFire = 0;
+    m_UpPlayer_Data.iWater = 0;
+    m_UpPlayer_Data.iLightning = 0;
+    m_UpPlayer_Data.iEarth = 0;
+    m_UpPlayer_Data.iChaos = 0;
+    m_UpPlayer_Data.iDisease = 0;
+    m_UpPlayer_Data.iPoison = 0;
 }
 
 
@@ -109,6 +138,9 @@ HRESULT CUI_State::Initialize_Clone(void* pArg)
 	Ready_PlayerData();
 
     m_pLachryma = &CClientInstance::GetInstance()->Get_ptrPlayerData().iLachryma;
+
+    //데이터 셋팅
+    //Setting_Data();
 	return S_OK;
 }
 
@@ -572,23 +604,11 @@ void CUI_State::List_Bubble_Event(UI_STATE_BUBLLE* pDesc)
 				break;
 			case PLAYTER_STATE::FIRE:
 				pDesc->isUp ? m_UpPlayer_Data.iFire += Index[i].second : m_UpPlayer_Data.iFire -= Index[i].second;
-				break;
-			case PLAYTER_STATE::WATER:
 				pDesc->isUp ? m_UpPlayer_Data.iWater += Index[i].second : m_UpPlayer_Data.iWater -= Index[i].second;
-				break;
-			case PLAYTER_STATE::LIGHTNING:
 				pDesc->isUp ? m_UpPlayer_Data.iLightning += Index[i].second : m_UpPlayer_Data.iLightning -= Index[i].second;
-				break;
-			case PLAYTER_STATE::EARTH:
 				pDesc->isUp ? m_UpPlayer_Data.iEarth += Index[i].second : m_UpPlayer_Data.iEarth -= Index[i].second;
-				break;
-			case PLAYTER_STATE::CHAOS:
 				pDesc->isUp ? m_UpPlayer_Data.iChaos += Index[i].second : m_UpPlayer_Data.iChaos -= Index[i].second;
-				break;
-			case PLAYTER_STATE::DISEASE:
 				pDesc->isUp ? m_UpPlayer_Data.iDisease += Index[i].second : m_UpPlayer_Data.iDisease -= Index[i].second;
-				break;
-			case PLAYTER_STATE::POISON:
 				pDesc->isUp ? m_UpPlayer_Data.iPoison += Index[i].second : m_UpPlayer_Data.iPoison -= Index[i].second;
 				break;
 			}
@@ -656,12 +676,6 @@ void CUI_State::Button_Bubble_Event(UI_STATE_BUBLLE* pDesc)
 	m_Player_Data.iLachryma = *m_pLachryma;
 	m_Player_Data.iUpLachryma = (300 + (m_Player_Data.iLevel - 1 + m_UpPlayer_Data.iLevel) * 280);
 
-	for (_int i = 0; i < ENUM_CLASS(STATE_LIST::END); ++i)
-	{
-		*m_CulStateLevel[i] += m_UpStateLevel[i];
-		m_UpStateLevel[i] = 0;
-	}
-
 	m_Player_Data.iMaxHp				+=		m_UpPlayer_Data.iMaxHp					;
 	m_Player_Data.iMaxStamina			+=		m_UpPlayer_Data.iMaxStamina				;
 	m_Player_Data.iAtk					+=		m_UpPlayer_Data.iAtk					;
@@ -683,6 +697,11 @@ void CUI_State::Button_Bubble_Event(UI_STATE_BUBLLE* pDesc)
 	m_Player_Data.iChaos				+=		m_UpPlayer_Data.iChaos					;
 	m_Player_Data.iDisease				+=		m_UpPlayer_Data.iDisease				;
 	m_Player_Data.iPoison				+=		m_UpPlayer_Data.iPoison					;
+    for (_int i = 0; i < ENUM_CLASS(STATE_LIST::END); ++i)
+    {
+        *m_CulStateLevel[i] += m_UpStateLevel[i];
+        m_UpStateLevel[i] = 0;
+    }
 
 	m_UpPlayer_Data.iMaxHp				= 0;
 	m_UpPlayer_Data.iMaxStamina			= 0;
@@ -723,6 +742,165 @@ void CUI_State::Update_Data()
     m_Player_Data.iDef = CClientInstance::GetInstance()->Get_PlayerData().fGuard;
     m_Player_Data.fWeight = CClientInstance::GetInstance()->Get_PlayerData().fWeight;
     m_Player_Data.fStaminaRegen = CClientInstance::GetInstance()->Get_PlayerData().fStaminaRegen;
+}
+
+void CUI_State::Setting_Data()
+{
+    //수치 셋팅
+    for (_int i = 0; i < 5; i++)
+    {
+        _int iLevel = {};
+        switch (i)
+        {
+        case 0:
+            iLevel = CClientInstance::GetInstance()->Get_PlayerData().iVitality - 10;
+            break;
+        case 1:
+            iLevel = CClientInstance::GetInstance()->Get_PlayerData().iEndurance - 10;
+            break;
+        case 2:
+            iLevel = CClientInstance::GetInstance()->Get_PlayerData().iPower - 10;
+            break;
+        case 3:
+            iLevel = CClientInstance::GetInstance()->Get_PlayerData().iCompetency - 10;
+            break;
+        case 4:
+            iLevel = CClientInstance::GetInstance()->Get_PlayerData().iWill - 10;
+            break;
+        }
+
+        if (iLevel <= 0)
+            continue;
+
+        _int iType = ENUM_CLASS(STATE_LIST::VITALITY);
+
+        pair<_int, _float> Index[4];
+        Index[0].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_1;
+        Index[1].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_2;
+        Index[2].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_3;
+        Index[3].first = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iType_4;
+
+        Index[0].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iValue_1;
+        Index[1].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->iValue_2;
+        Index[2].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->fValue_3;
+        Index[3].second = CClientInstance::GetInstance()->Get_Data<STATE_DATA>(iType)->fValue_4;
+
+        for (_int i = 0; i < 4; ++i)
+        {
+            switch (static_cast<PLAYTER_STATE>(Index[i].first))
+            {
+            case PLAYTER_STATE::MAXHP:
+                m_UpPlayer_Data.iMaxHp += Index[i].second * iLevel;
+                break;
+            case PLAYTER_STATE::MAXSTAMINA:
+                m_UpPlayer_Data.iMaxStamina += Index[i].second * iLevel;
+                break;
+            case PLAYTER_STATE::ATK:
+                m_UpPlayer_Data.iAtk += Index[i].second * iLevel;
+                break;
+            case PLAYTER_STATE::DEF:
+                m_UpPlayer_Data.iDef += Index[i].second * iLevel;
+                break;
+            case PLAYTER_STATE::WEIGHT:
+                m_UpPlayer_Data.fMaxWeight += Index[i].second * iLevel;
+                break;
+            case PLAYTER_STATE::AGILE:
+                m_UpPlayer_Data.fAgile += Index[i].second * iLevel;
+                break;
+            case PLAYTER_STATE::STAMINAATK:
+                m_UpPlayer_Data.fStaminaAttack += Index[i].second * iLevel;
+                break;
+            case PLAYTER_STATE::STAMINAREGEN:
+                m_UpPlayer_Data.fStaminaRegen += Index[i].second * iLevel;
+                break;
+            case PLAYTER_STATE::EVASION_STAMINADOWN:
+                m_UpPlayer_Data.fEvasion_StaminaDown += Index[i].second * iLevel;
+                break;
+            case PLAYTER_STATE::DAMAGE_STAMINADOWN:
+                m_UpPlayer_Data.fDamage_StaminaDown += Index[i].second * iLevel;
+                break;
+            case PLAYTER_STATE::GUARD_STAMINADOWN:
+                m_UpPlayer_Data.fGuard_StaminaDown += Index[i].second * iLevel;
+                break;
+            case PLAYTER_STATE::FIRE:
+                m_UpPlayer_Data.iFire += Index[i].second * iLevel;
+                m_UpPlayer_Data.iWater += Index[i].second * iLevel;
+                m_UpPlayer_Data.iLightning += Index[i].second * iLevel;
+                m_UpPlayer_Data.iEarth += Index[i].second * iLevel;
+                m_UpPlayer_Data.iChaos += Index[i].second * iLevel;
+                m_UpPlayer_Data.iDisease += Index[i].second * iLevel;
+                m_UpPlayer_Data.iPoison += Index[i].second * iLevel;
+                break;
+            case PLAYTER_STATE::WATER:
+                break;
+            case PLAYTER_STATE::LIGHTNING:
+                break;
+            case PLAYTER_STATE::EARTH:
+                break;
+            case PLAYTER_STATE::CHAOS:
+                break;
+            case PLAYTER_STATE::DISEASE:
+                break;
+            case PLAYTER_STATE::POISON:
+                break;
+            }
+        }
+    }
+    //실제 수치 올려주는 곳
+    m_UpPlayer_Data.iLevel = 0;
+
+    *m_pLachryma = m_Player_Data.iLachryma;
+
+    m_Player_Data.iMaxHp += m_UpPlayer_Data.iMaxHp;
+    m_Player_Data.iMaxStamina += m_UpPlayer_Data.iMaxStamina;
+    m_Player_Data.iAtk += m_UpPlayer_Data.iAtk;
+    m_Player_Data.iDef += m_UpPlayer_Data.iDef;
+    m_Player_Data.fWeight += m_UpPlayer_Data.fWeight;
+    m_Player_Data.fMaxWeight += m_UpPlayer_Data.fMaxWeight;
+    m_Player_Data.fAgile += m_UpPlayer_Data.fAgile;
+
+    m_Player_Data.fStaminaAttack += m_UpPlayer_Data.fStaminaAttack;
+    m_Player_Data.fStaminaRegen += m_UpPlayer_Data.fStaminaRegen;
+    m_Player_Data.fEvasion_StaminaDown += m_UpPlayer_Data.fEvasion_StaminaDown;
+    m_Player_Data.fDamage_StaminaDown += m_UpPlayer_Data.fDamage_StaminaDown;
+    m_Player_Data.fGuard_StaminaDown += m_UpPlayer_Data.fGuard_StaminaDown;
+
+    m_Player_Data.iFire += m_UpPlayer_Data.iFire;
+    m_Player_Data.iWater += m_UpPlayer_Data.iWater;
+    m_Player_Data.iLightning += m_UpPlayer_Data.iLightning;
+    m_Player_Data.iEarth += m_UpPlayer_Data.iEarth;
+    m_Player_Data.iChaos += m_UpPlayer_Data.iChaos;
+    m_Player_Data.iDisease += m_UpPlayer_Data.iDisease;
+    m_Player_Data.iPoison += m_UpPlayer_Data.iPoison;
+
+    m_UpPlayer_Data.iMaxHp = 0;
+    m_UpPlayer_Data.iMaxStamina = 0;
+    m_UpPlayer_Data.iAtk = 0;
+    m_UpPlayer_Data.iDef = 0;
+    m_UpPlayer_Data.fWeight = 0;
+    m_UpPlayer_Data.fMaxWeight = 0;
+    m_UpPlayer_Data.fAgile = 0;
+
+    m_UpPlayer_Data.fStaminaAttack = 0;
+    m_UpPlayer_Data.fStaminaRegen = 0;
+    m_UpPlayer_Data.fEvasion_StaminaDown = 0;
+    m_UpPlayer_Data.fDamage_StaminaDown = 0;
+    m_UpPlayer_Data.fGuard_StaminaDown = 0;
+
+    m_UpPlayer_Data.iFire = 0;
+    m_UpPlayer_Data.iWater = 0;
+    m_UpPlayer_Data.iLightning = 0;
+    m_UpPlayer_Data.iEarth = 0;
+    m_UpPlayer_Data.iChaos = 0;
+    m_UpPlayer_Data.iDisease = 0;
+    m_UpPlayer_Data.iPoison = 0;
+
+    PLAYER_DATA* pData = &CClientInstance::GetInstance()->Get_ptrPlayerData();
+
+    pData->fMaxHp = m_Player_Data.iMaxHp;
+    pData->fMaxStamina = m_Player_Data.iMaxStamina;
+    pData->fDamage = m_Player_Data.iAtk;
+    pData->fGuard = m_Player_Data.iDef;
 }
 
 CUI_State* CUI_State::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

@@ -1,5 +1,6 @@
 #include "Projectile_Yetuga.h"
 #include "GameInstance.h"
+#include "Creature.h"
 
 CProjectile_Yetuga::CProjectile_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CProjectile{pDevice,pContext}
@@ -137,6 +138,8 @@ void CProjectile_Yetuga::Enter_State(PRJSTATE eNextState)
 		break;
 	case Client::CProjectile::CRASHED:
 		m_pModelCom->Set_Animation(2);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_fastball_obj_explosion_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 10.f);
+
 		m_isActive = false;
 		break;
 	case Client::CProjectile::END:
@@ -217,7 +220,12 @@ void CProjectile_Yetuga::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjec
 		{
 			Enter_State(PRJSTATE::CRASHED);
 			m_isCrashed = true;
-			
+
+            if (COLLISION_LAYER::PLAYER == eType)
+            {
+                CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+                pTarget->Take_Damage(60.f,HITREACTION::KNOCKBACK_NORMAL);
+            }
 		}
 	}
 }

@@ -3,12 +3,12 @@
 #include "AI_Controller.h"
 
 CDragonian_Claw_L::CDragonian_Claw_L(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CPartObject{ pDevice,pContext }
+    :CWeaponObject{ pDevice,pContext }
 {
 }
 
 CDragonian_Claw_L::CDragonian_Claw_L(const CDragonian_Claw_L& Prototype)
-    :CPartObject(Prototype)
+    :CWeaponObject(Prototype)
 {
 }
 
@@ -32,6 +32,7 @@ HRESULT CDragonian_Claw_L::Initialize_Clone(void* pArg)
     m_pTransformCom->Rotation(XMConvertToRadians(0.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
     CHECK_FAILED(Ready_Components(), E_FAIL);
     CHECK_FAILED(Ready_Collision(), E_FAIL);
+    Set_JustGuardCallBack([this](_bool isJustGuard) { *m_pData->pCulStamina -= *m_pData->pMaxStamina * 0.1f; });
 
 
     return S_OK;
@@ -69,7 +70,6 @@ void CDragonian_Claw_L::Update(_float fTimeDelta)
 
 void CDragonian_Claw_L::Late_Update(_float fTimeDelta)
 {
-   CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this),);
 }
 
 HRESULT CDragonian_Claw_L::Render()

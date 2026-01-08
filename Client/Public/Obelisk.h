@@ -41,6 +41,9 @@ private:
 
     _bool m_isExplosion = { false };
     _bool m_isVortex = { false };
+
+    _uint m_iEventID = {};
+    
 private:
     HRESULT Ready_Components(void* pArg);
     HRESULT Ready_Chunk(void* pArg);

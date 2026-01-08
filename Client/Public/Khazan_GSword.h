@@ -31,34 +31,37 @@ public:
         LOCKON = 1 << 9,  // 락 온
         CHARGING_STRONG_ATTACK = 1 << 10, // 차징 공격
         DODGING = 1 << 11,  //닷지할 때 
+        DODGE_ENDING = 1 << 12, //닷지할 때 추가 되고, 닷지가 끝날 때 제거됨
 
         /* 가드 */
-        GUARD = 1 << 12,
-        GUARD_SUCCESS = 1 << 13,
-        JUST_GUARD = 1 << 14,
-        GUARD_ROTATION = 1 << 15,
-        GUARD_ROTATION_REQUEST = 1 << 16,
+        GUARD = 1 << 13,
+        GUARD_SUCCESS = 1 << 14,
+        JUST_GUARD = 1 << 15,
+        GUARD_ROTATION = 1 << 16,
+        GUARD_ROTATION_REQUEST = 1 << 17,
 
         /*  낙하 */
-        FALLING = 1 << 17,
-        PRE_LAND = 1 << 18, //착지 직전 
-        FALLING_ATTACK = 1 << 19,
+        FALLING = 1 << 18,
+        PRE_LAND = 1 << 19, //착지 직전 
+        FALLING_ATTACK = 1 << 20,
 
         /* 스태미나 */
-        STAMINA_RECOVERY = 1 << 20,
+        STAMINA_RECOVERY = 1 << 21,
+        STAMINA_EXHAUSTION = 1 << 22,
 
         /* 브루탈 */
-        BRUTAL_BEGIN = 1 << 21, //브루탈 탐지 범위 내에 옴
-        BRUTAL_READY = 1 << 22, //브루탈공격 가능 범위 내에 옴
-        BRUTAL_SUCCESS = 1 << 23,  //브루탈공격 함. 
+        BRUTAL_BEGIN = 1 << 23, //브루탈 탐지 범위 내에 옴
+        BRUTAL_READY = 1 << 24, //브루탈공격 가능 범위 내에 옴
+        BRUTAL_SUCCESS = 1 << 25,  //브루탈공격 함. 
 
-        STATUE_MODE = 1 << 24, 
+        /* 상호작용 */
+        STATUE_MODE = 1 << 26, 
 
-        BLOCK_ATK_SKILL_GUARD = 1 << 25, //상호작용 조각상, 스태미나 떨어짐, 사다리 (공격,가드,스킬키 입력 안받음)
-        STAMINA_EXHAUSTION  = 1 << 26, 
+        /* 입력 막기  */
+        BLOCK_ATK_SKILL_GUARD = 1 << 27, //상호작용 조각상, 스태미나 떨어짐, 사다리 (공격,가드,스킬키 입력 안받음)
 
-        VIPER_GRAB = 1 << 27, //안쓸듯
 
+        /* 사다리 */
         LADDER_CLIMBING = 1 << 28,
         LADDER_CLIMBING_ROTATION = 1 << 29,
         LADDER_CLIMBING_END= 1 << 30,
@@ -69,13 +72,15 @@ public:
         | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST
         | FALLING | FALLING_ATTACK | PRE_LAND  | DODGING | STATUE_MODE
         | BRUTAL_BEGIN | BRUTAL_READY | BRUTAL_SUCCESS
-        | BLOCK_ATK_SKILL_GUARD | STAMINA_EXHAUSTION | VIPER_GRAB | LADDER_CLIMBING | LADDER_CLIMBING_ROTATION  ,
+        | BLOCK_ATK_SKILL_GUARD  | LADDER_CLIMBING | LADDER_CLIMBING_ROTATION  ,
 
     };
     enum PLAYER_CAMERA_DIR {
         PC_FRONT, PC_FRONT_RIGHT, PC_RIGHT, PC_BACK_RIGHT,
         PC_BACK, PC_BACK_LEFT, PC_LEFT, PC_FRONT_LEFT
     };
+
+    enum PLAYER_UPDATE_FX { FX_LACRIMA, FX_LACRIMA_HAND, PLAYER_UPDATE_FX_END };
 
 private:
     CKhazan_GSword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -102,6 +107,7 @@ public:
     void	Set_Camera(class CCamera_Compre* pCamera);
     void    Set_Position(_float4 vPos);
 
+    class CBody_Khazan_GS* Get_Khazan_Body() { return m_pBody; }
 
     void            EnterStatuePuzzle(); //조각상 돌리기 모드 on
     void            ExitStatuePuzzle(); //조각상 돌리기 모드 off
@@ -138,6 +144,7 @@ private:
     DIR							m_eDir = {};		//플레이어의 로컬 방향  dir(애니메이션 선택용)
     _uint						m_ePrevDir = {};
     _uint                       m_eHitReaction = {}; //몬스터한테 가할 넉백이나 저스트가드 내용 담기 
+    _uint                       m_iHealIndex = {  };
 
     _uint						m_iCurAnimIndex = {};
     _uint						m_iReserveAnimIndex = {};
@@ -150,9 +157,9 @@ private:
     _float4x4*                  m_pWeaponR_Matrix = { nullptr };
     _float4x4*                  m_pGSword_Matrix = { nullptr };
    // _float4x4					m_pGSword_WorldMatrix = {};
-   // _matrix						m_Offset_Matrix = {};
+    _matrix						m_Offset_Matrix = {};
     _bool						m_isEnableControl = { true };
-
+    COLLISION_DESC				m_tPlayerCollisionDesc = {};
 
     /* Move*/
     DIR							m_eWorldDir = {}; // 카메라 기준 월드 방향 
@@ -178,20 +185,25 @@ private:
 
     /* recovery */
     _float2                     m_fIntervalStaminaRecovery = { 0.f, 0.25f };
-    _float2                     m_fWaitStaminaRecovery = { 0.f, 1.f };
+    _float2                     m_fWaitStaminaRecovery = { 0.f, 1.58f };
+    _bool                       m_isCanStaminaRecovery = { false };
 
     /* Ladder  Climb */
     _float4                     m_fLadderClimbPos= { 0.f,0.f,0.f,0.f }; 
 
+    /* Grab */
+    _bool                       m_isGrab = { false };
+    _bool                       m_isGrabFinish = { false };
+    _float2                     m_fGrabFinishTime = { 0.f, 1.5f };
 
     /* ====== const ======*/
     const	_float				m_fMinSprintTime = { 0.15f };
 
     /* Move Speed */
     _float				        m_fInjuredSpeed = { 1.15f };
-    _float				        m_fWalkSpeed = { 2.6f };
-    _float				        m_fRunSpeed = { 9.f };
-    _float				        m_fSprintSpeed = { 15.4f };
+    _float				        m_fWalkSpeed = { 1.7f };
+    _float				        m_fRunSpeed = { 4.4f };
+    _float				        m_fSprintSpeed = { 7.2f };
 
     /*  Attack */
     const _float				m_fChargingStartIntervalTime = { 0.25f }; // 차징 시작 시간
@@ -206,6 +218,7 @@ private:
     /* SnowEffect SpawnTime*/
 private:
     _float                      m_EffectTimeDelta;
+    _uint                       m_FXIdx[PLAYER_UPDATE_FX_END];
 
 private:
     void			Update_Stats(_float fTimeDelta);
@@ -224,7 +237,7 @@ private:
     /* Animation  */
     void			Change_MoveIdle(_float fTimeDelta);
     void			ExecuteAnimationExit();
-    _bool           ChangeGrabAnimation();
+    _bool           ChangeGrabAnimation(_float fTimeDelta);
 
     /* Rotation, Direction */
     void			Apply_PlayerMovement(_float fTimeDelta);
@@ -243,8 +256,12 @@ private:
     /* state update */
     void            Update_Die(_float fTimeDelta);
 
+    /*  teleport*/
+    void            Teleport_SFX();
+
     /* others,, */
     void            Check_IsInAir(_float fTimeDelta);
+    void            Check_Statue();
     void            Clear_Injured();
 
 private:
@@ -303,6 +320,9 @@ private:
 
     _uint                       m_iInteractTypeEventID = { };
     _uint                       m_iObjectInteractEventID = { };
+    _bool                       m_isInteractEventStart = { false };
+    _bool                       m_isLadderEndEvent = { false };
+    _bool                       m_isLadderRotationEvent = { false };
 
 
 private:
@@ -311,10 +331,10 @@ private:
     /*  하인마스 + 엠바스 */
     void						BladeNexus_Event(_float fTimeDelta);
     void						Chest_Event(_float fTimeDelta);
-    void						TombStone_Event(_float fTimeDelta);     //폐기
 
     /* 앰바스 */
     void						Lever_Event(_float fTimeDelta);
+    void						TombStone_Event(_float fTimeDelta); // 비밀 방 들어가는 툼스톤
     void						Statue_Event(_float fTimeDelta); //조각상 퍼즐
     void						IronGate_Event(_float fTimeDelta); //레버 다음 철문 밀어서열기 (자물쇠 해제)
     void						UnLockGear_Event(_float fTimeDelta);  // ?? CA_P_Kazan_GearSwitch_001_Interation 이거 쓰면될 듯
@@ -341,6 +361,10 @@ private:
 
 #endif // _DEBUG
 
+public:
+    void Set_Idle(); // 강제 아이들 상태로 돌리기 위해 사용
+
+
 
 public:
     static CKhazan_GSword* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -354,9 +378,9 @@ NS_END
 
 
 
-
+ 
 #pragma region Try Later
-
+                                                             
 //#pragma once
 //
 //#include "Client_Defines.h"

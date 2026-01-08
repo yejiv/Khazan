@@ -4,6 +4,9 @@
 #include "Body_Imp_Melee.h"
 #include "BlackBoard.h"
 #include "AI_Controller.h"
+#include "Interaction_Item.h"
+#include "Imp_Sword.h"
+#include "ClientInstance.h"
 
 CAS_Dead_Imp_Melee::CAS_Dead_Imp_Melee()
 {
@@ -15,7 +18,8 @@ void CAS_Dead_Imp_Melee::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
 
     pModel->Set_Animation(10);
-
+    CClientInstance::GetInstance()->Add_SkillExp(80.f);
+    pImp->Get_Sword()->Set_OnAttackCollision(false);
 }
 
 void CAS_Dead_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -28,8 +32,13 @@ void CAS_Dead_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
         CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
         //m_pGameInstance->Get_BlackBoard()->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", true);
         pBB->Set_Value<_bool>(pImp->Get_Name(), "isDeadFinished", true);
-        pImp->Creature_Release();
         pImp->HPUI_Dead();
+    }
+
+    if (pModel->IsFinished())
+    {
+
+        pImp->Dissolve_On();
     }
 }
 

@@ -41,7 +41,7 @@ void CAI_Controller_Elamein::Update(CGameObject* pOwner, _float fTimeDelta)
 {
     if (!m_isActive)
         return;
-
+    
     if (*m_pMonData->pCulHp <= 0.f)
     {
         m_pFSM->Change_State(ENUM_CLASS(CElamein::MONSTATE::DEAD), pOwner);
@@ -180,6 +180,10 @@ PERCEPTIONCALLBACK CAI_Controller_Elamein::GetCallBackPerception(CGameObject* pO
 
                         if (m_pMonData->eHitType != HITREACTION::BRUTAL_ATTACK)
                             m_pMonData->eHitType = static_cast<HITREACTION>(m_pBB->Get_Value<_uint>(m_strMonstertag, "DamageType"));
+                        
+                        if(m_pMonData->eHitType == HITREACTION::BRUTAL_ATTACK)
+                            ++m_pMonData->iBrutalHit;
+
 
                     }
                 }
@@ -221,7 +225,8 @@ BTNODESTATE CAI_Controller_Elamein::Damage_Check(CGameObject* pOwner)
 {
     if (!m_pMonData->isSleep && m_pMonData->eHitType != HITREACTION::END)
     {
-        if (m_pMonData->fDodgeCool > 0.f)
+        TARGET_DIR eDir = m_pMonData->pOwner->Get_DIR();
+        if (m_pMonData->fDodgeCool > 0.f && (eDir == TARGET_DIR::F || eDir == TARGET_DIR::FR || eDir == TARGET_DIR::FL))
             m_pMonData->isDamage = true;
         else
             m_pMonData->isDodge = true;
@@ -254,7 +259,7 @@ BTNODESTATE CAI_Controller_Elamein::Damage(CGameObject* pOwner)
 
         return BTNODESTATE::RUNNING;
     }
-    return BTNODESTATE::SUCCESS;
+    return BTNODESTATE::FAILURE;
 }
 
 BTNODESTATE CAI_Controller_Elamein::Turn_Check(CGameObject* pOwner)

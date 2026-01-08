@@ -4,6 +4,7 @@
 #include "BlackBoard.h"
 #include "AI_Controller.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
 
 
 CAS_Devour_Viper::CAS_Devour_Viper()
@@ -48,17 +49,21 @@ void CAS_Devour_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
 
         _float fSpeed = MakeDevourSpeed(fDist);
 
-        if (m_fDevourAcc >= 0.3f)
+        if (m_fDevourAcc >= 0.5f)
         {
-            if (fDist < m_fMinRange + 10)
+            if (fDist < m_fMinRange)
             {
                 CCreature* pDamagedTarget = static_cast<CCreature*>(pTarget);
+                
+               
+                CClientInstance::GetInstance()->Set_PlayerInput(false);
                 pDamagedTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
                 m_fDevourAcc = 0.f;
+                
             }
         }
 
-        
+
         _vector vNewPos = vTargetPos + (vDirection * fSpeed * fTimeDelta);
         pTargetTransform->Set_State(STATE::POSITION, vNewPos);
 
@@ -66,12 +71,36 @@ void CAS_Devour_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
     if (pModel->Play_Animation(fTimeDelta))
     {
         pViper->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pViper->Get_Name(), "isP1_DevourFinished", true);
+        CClientInstance::GetInstance()->Set_PlayerInput(true);
     }
 
 }
 
 void CAS_Devour_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+    CClientInstance::GetInstance()->Set_PlayerInput(true);
+
+    CViper* pViper = static_cast<CViper*>(pOwner);
+
+    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), pViper->Get_FxRotIdx());
+    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Rot_Start"), pViper->Get_FxRotIdx());
+    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Rot_Loop"), pViper->Get_FxRotIdx());
+
+}
+
+void CAS_Devour_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+        _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+        //pTarget->KnockBack(vLook, 20.f, 30.f);
+    }
 }
 
 _float CAS_Devour_Viper::MakeDevourSpeed(_float fDist)

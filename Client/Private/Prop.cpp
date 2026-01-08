@@ -30,6 +30,16 @@ HRESULT CProp::Initialize_Clone(void* pArg)
 
     m_Properties = pDesc->Properties;
 
+    switch (pDesc->eLevel)
+    {
+    case LEVEL::HEINMACH:
+        m_vSnowColor = _float3(1.3f, 1.3f, 1.3f);
+        break;
+    case LEVEL::VIPER:
+        m_vSnowColor = _float3(0.92f, 0.94f, 1.f);
+        break;
+    }
+
     return S_OK;
 }
 
@@ -67,6 +77,8 @@ HRESULT CProp::Deferred_Bind_ShaderResources_ForSnowMap(_uint iMeshIndex, CDefer
     CHECK_FAILED(pDeferredShader->Bind_RawValue("g_fSnowAmount", &m_fSnowAmount, sizeof(_float)), E_FAIL);
 
     CHECK_FAILED(pDeferredShader->Bind_RawValue("g_vSnowColor", &m_vSnowColor, sizeof(_float3)), E_FAIL);
+
+    CHECK_FAILED(pDeferredShader->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4)), E_FAIL);
 
     return S_OK;
 }

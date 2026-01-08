@@ -4,6 +4,9 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "SkipButton.h"
+#include "UI_HUD.h"
+#include "Khazan_GSword.h"
+#include "Body_Khazan_GS.h"
 
 CSequence_Embars_Puzzle_First::CSequence_Embars_Puzzle_First()
     : m_pGameInstance{ CGameInstance::GetInstance() }
@@ -20,7 +23,8 @@ HRESULT CSequence_Embars_Puzzle_First::Initialize(const SEQ_REQ_PLAY_DESC& tDesc
 
     m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/VerticalGate1");
     m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Turn_Elevator");
-
+    static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+    m_pClientInstance->Set_PlayerInput(false);
     return S_OK;
 }
 
@@ -34,6 +38,8 @@ void CSequence_Embars_Puzzle_First::Update(_float fTimeDelta)
     {
         if (m_fTime >= 3.0f && !m_isElevatorFadeOut)
         {
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(false);
             m_pClientInstance->Fade_Out();
             m_isElevatorFadeOut = true;
         }
@@ -66,7 +72,11 @@ void CSequence_Embars_Puzzle_First::Update(_float fTimeDelta)
         }
         else if (m_fTime >= 17.f)
         {
-            m_pClientInstance->Fade_In();
+            m_pClientInstance->Fade_In();            
+            m_pClientInstance->Set_PlayerInput(true);
+            static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_isEnd = true;
         }
     }
@@ -97,6 +107,10 @@ void CSequence_Embars_Puzzle_First::Update(_float fTimeDelta)
 
         if (m_fSkipTime > 3.f && !m_isEnd)
         {
+            m_pClientInstance->Set_PlayerInput(true);
+            static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_isEnd = true;
         }
     }

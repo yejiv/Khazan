@@ -8,7 +8,9 @@
 #include "CharacterVirtual.h"
 #include "AI_Controller_Yetuga.h"
 #include "SkipButton.h"
-
+#include "UI_HUD.h"
+#include "Khazan_Spear.h"
+#include "Body_Khazan_Spear.h"
 
 CSequence_Yetuga_CutScene::CSequence_Yetuga_CutScene(CYetuga* pYetuga)
     : m_pClientInstance{ CClientInstance::GetInstance() }
@@ -36,8 +38,8 @@ HRESULT CSequence_Yetuga_CutScene::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
     pCharVir->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 0.f));    
 
     
-
-
+    static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+    m_pClientInstance->Set_PlayerInput(false);
     return S_OK;
 }
 
@@ -51,35 +53,30 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
     if (!m_isSkip)
     {
         CTransform* pYetugaTransform = static_cast<CTransform*>(m_pYetuga->Get_Component(TEXT("Com_Transform")));
-        pYetugaTransform->LookAt(XMVectorSet(507.5f, -9.15f, 260.09f, 1.f));
-        //2. 작은 눈안개 깔기 시작
-        if (m_fTime < 4.f)
-        {
-            if (m_fSnowTime > 0.4f)
-            {
-                m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"), XMVectorSet(
-                    513.90f,
-                    -7.44f,
-                    240.47,
-                    1.f));
-                for (size_t i = 0; i < 1; ++i)
-                {
-                    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"), XMVectorSet(
-                        m_pGameInstance->Rand(500.f, 530.f),
-                        -7.44f,
-                        m_pGameInstance->Rand(217.f, 240.f),
-                        1.f));
-                }
-                m_fSnowTime = 0.f;
-            }
+        pYetugaTransform->LookAt(XMVectorSet(507.5f, -20.f, 260.09f, 1.f));
 
-            if (!m_isCameraAnimation && m_fTime > 0.5f)
-            {
-                m_pClientInstance->Camera_Set_Animation(TEXT("Yetuga_CutScene"));
-                m_pClientInstance->Fade_In();
-                m_isCameraAnimation = true;
-            }
+
+        if (!m_isCameraAnimation && m_fTime > 0.5f)
+        {
+            CKhazan_Spear* pPlayer = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(false);
+            m_pClientInstance->Camera_Set_Animation(TEXT("Yetuga_CutScene"));
+            m_pClientInstance->Fade_In();
+            m_isCameraAnimation = true;
         }
+
+        //2. 작은 눈안개 깔기 시작
+        if (!m_isSnowSmoke && m_fTime > 0.75f)
+        {
+            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"), XMVectorSet(
+                513.90f,
+                -7.44f,
+                240.47,
+                1.f));
+
+            m_isSnowSmoke = true;
+        }
+
         if (m_fTime > 1.5f && !m_isYetugaJump)
         {
             CAS_CutScene_Yetuga* Cut_Yetuga = m_pYetuga->Get_Yetuga_CutSceneState();
@@ -98,12 +95,13 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
 
             // Vignette
             VIGNETTE_CONFIG Config{};
-            Config.eMode = VIGNETTE_CONFIG::SMOOTH_SMOOTH;
             Config.vColor = _float3(0.f, 0.f, 0.f);
             Config.fPower = 3.5f;
-            Config.fIntensity = 1.f;
+            Config.fMinIntensity = 0.f;
             Config.fMaxIntensity = 4.f;
-            m_pGameInstance->Start_VignetteAnimation(2.f, Config);
+            Config.fDuration = 2.f;
+            Config.vFadeTime = _float2(1.f, 1.f);
+            m_pGameInstance->Start_VignetteAnimation(Config);
 
             m_isYetugaLand = true;
         }
@@ -199,6 +197,10 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
         if (m_fTime > 14.f)
         {
             dynamic_cast<CAI_Controller_Yetuga*>(m_pYetuga->Get_Controller())->Set_ControllerActivate(true);
+            static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+            m_pClientInstance->Set_PlayerInput(true);
+            CKhazan_Spear* pPlayer = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_isEnd = true;
         }
     }
@@ -234,6 +236,10 @@ void CSequence_Yetuga_CutScene::Update(_float fTimeDelta)
         if (m_fSkipTime > 3.f && !m_isEnd)
         {
             dynamic_cast<CAI_Controller_Yetuga*>(m_pYetuga->Get_Controller())->Set_ControllerActivate(true);
+            static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+            m_pClientInstance->Set_PlayerInput(true);
+            CKhazan_Spear* pPlayer = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_isEnd = true;
         }
         

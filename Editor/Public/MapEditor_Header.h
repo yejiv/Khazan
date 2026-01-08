@@ -62,11 +62,19 @@
 #include "GiantGate_Part_L.h"            // 바이퍼 가는 문 왼쪽
 #include "GiantGate_Part_R.h"            // 바이퍼 가는 문 오른쪽
 
+#include "DestinyStone.h"                // 귀석 ( 받침대 ) ( 컨테이너 )
+#include "DestinyGem.h"                  // 귀석 녀석 ( 광석 ) ( 파츠 )
+
+#include "Destructible_Prop.h"           // 파괴 가능 오브젝트
+
+#include "Illusion_Wall.h"               // 신기루 벽
+
 // Interactive ( NPC )
 #include "NPC_Daphrona.h"                // 다프로나 ( 사실 서나 ) ( 귀석 )
 #include "NPC_Duimuk.h"                  // 두이무크 ( 상인 )
 #include "Duimuk_Part.h"                 // 두이무크 파츠
 #include "NPC_Danjin.h"                  // 단진 ( 랜턴 상인 )
+#include "NPC_Gacha.h"                   // 단진 ( 가챠 )
 
 // Interactive ( 항아리 요정 )
 #include "DanjinJar.h"                   // 항아리 요정

@@ -52,5 +52,3 @@ Editor/Default/imgui.ini
 *.vcxproj merge=union
 *.vcxproj.filters merge=union
 *.sln merge=union
-
-

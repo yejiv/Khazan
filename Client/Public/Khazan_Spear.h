@@ -55,6 +55,8 @@ public:
         YETUGA_GRAB = 1 << 24,
 
         BLOCK_ATK_SKILL_GUARD = 1 << 25, // 스태미나 떨어짐   에 사용(공격,가드,스킬키 입력 안받음)
+
+        DODGE_ENDING = 1 <<26, 
         /* 회전 */
         //TURN180 = 1 << 20,
         //TURN180_REQUESTED = 1 << 21, 
@@ -63,10 +65,11 @@ public:
         //JUST_COMPLETED_TURN180 = 1 << 24,
 
 
+
         STATUS_CLEARS = RESERVED | CHARGING_SPRINT | BACK_DODGE | CHARGING_STRONG_ATTACK | SPRINT_AGAIN_REQUEST | READY_ASSAULT
         | GUARD | GUARD_SUCCESS | JUST_GUARD | GUARD_ROTATION_REQUEST
         | FALLING | FALLING_ATTACK | PRE_LAND
-        | STAMINA_EXHAUSTION | YETUGA_GRAB | BLOCK_ATK_SKILL_GUARD
+        | STAMINA_EXHAUSTION | YETUGA_GRAB | BLOCK_ATK_SKILL_GUARD | DODGE_ENDING
         /*| TURN180| TURN180_REQUESTED | TURN180_COMPLETE| MOVE_AFTER_TURN*/,
 
 	};
@@ -74,6 +77,8 @@ public:
 		PC_FRONT, PC_FRONT_RIGHT, PC_RIGHT, PC_BACK_RIGHT,
 		PC_BACK, PC_BACK_LEFT, PC_LEFT, PC_FRONT_LEFT
 	};
+
+    enum PLAYER_UPDATE_FX { FX_LACRIMA, FX_LACRIMA_HAND,  PLAYER_UPDATE_FX_END };
 
 private:
 	CKhazan_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -100,6 +105,8 @@ public:
     void	Set_Camera(class CCamera_Compre* pCamera);
     void    Set_Position(_float4 vPos);
 
+    class CBody_Khazan_Spear* Get_Khazan_Body() { return m_pBody; }
+    
 private:
 	class CBody_Khazan_Spear*			    m_pBody = { nullptr };
     class CSpear_Khazan_Spear*              m_pSpear = { nullptr };
@@ -134,6 +141,7 @@ private:
 	DIR							m_eDir = {};		//플레이어의 로컬 방향  dir(애니메이션 선택용)
 	_uint						m_ePrevDir = {};
     _uint                       m_eHitReaction = {}; //몬스터한테 가할 넉백이나 저스트가드 내용 담기 
+    _uint                       m_iHealIndex = {};
 
 	_uint						m_iCurAnimIndex = {};
 	_uint						m_iReserveAnimIndex = {};
@@ -158,6 +166,12 @@ private:
 	//_float						m_fDodgeTime = { 0.f };
 	uint						m_iStopMoveIndexTable[9];	/* 스탑 애니메이션일 때 움직임 x  */
 
+	/* Move Speed */
+    _float				        m_fInjuredSpeed = { 1.15f };
+    _float				        m_fWalkSpeed = { 1.7f };
+    _float				        m_fRunSpeed = { 4.4f };
+    _float				        m_fSprintSpeed = { 7.2f };
+
 	/* Attack  */
 	_float						m_fChargingStrongTime = { 0.f };
     _uint                       m_iCurSkillIndex = {};
@@ -175,27 +189,13 @@ private:
     /* recovery */
     _float2                     m_fIntervalStaminaRecovery = { 0.f, 0.25f };
     _float2                     m_fWaitStaminaRecovery = { 0.f, 1.f };
+    _bool                       m_isCanStaminaRecovery = { false };
 
-    /* 180 turn */
-    //_float2                     m_f180TurnTime = { 0.f, 0.f };      // x: 경과시간, y: 회전 소요시간
-    //_vector                     m_v180TurnStartRot = {};            // 시작 회전
-    //_vector                     m_v180TurnEndRot = {};              // 목표 회전
-    //_uint                       m_iPrev180TurnSubState = {};
-    //_float                      m_fTurn180CooldownTime = {};
-
-    /* Monster Search */
-    //vector< CGameObject*>       m_CollMonsters;
-    //_float2                     m_fOptimizationSearchTime = { 0.f,0.3f };
-    //CGameObject*                m_pBrutalmonster = { nullptr };
+    /*  Grab*/
+     _float                     m_fGrabDownTime = { 0.f };
 
 	/* ====== const ======*/
 	const	_float				m_fMinSprintTime = { 0.15f };
-
-	/* Move Speed */
-     _float				m_fInjuredSpeed = { 1.15f };
-     _float				m_fWalkSpeed = { 2.6f };
-	 _float				m_fRunSpeed = { 9.f };
-	 _float				m_fSprintSpeed = {15.4f };
 
 	/*  Attack */
 	const _float				m_fChargingStrongIntervalTime = { 0.25f };
@@ -206,9 +206,13 @@ private:
     const _float                m_fRayLength = { 8.f };
     const _float2                m_fRayZOffset = { 0.f, 0.5f };
 
+    /*  Grab*/
+    const _float                m_fGrabDownIntervalTime = { 1.65f };
+
 /* SnowEffect SpawnTime*/
 private:
     _float              m_EffectTimeDelta;
+    _uint               m_FXIdx[PLAYER_UPDATE_FX_END];
 
 
 private:
@@ -228,7 +232,7 @@ private:
     /* Animation  */
 	void			Change_MoveIdle(_float fTimeDelta);
 	void			ExecuteAnimationExit();
-    _bool           ChangeGrabAnimation();
+    _bool           ChangeGrabAnimation(_float fTimeDelta);
 
     /* Rotation, Direction */
 	void			Apply_PlayerMovement(_float fTimeDelta);
@@ -309,7 +313,7 @@ private:
     _float4                     m_vStartPos_Event = {};
     _float                      m_fLerpTime_Event = { 0.f };
     _bool                       m_isInteractEventSetting = { false };
-
+    _bool                       m_isInteractDestinyStone = { false };
     _uint                       m_iInteractTypeEventID = { };
     _uint                       m_iObjectInteractEventID = { };
 
@@ -318,8 +322,9 @@ private:
 	void						Update_Interact_Event(_float fTimeDelta);  
     /*  하인마스 + 엠바스 */
 	void						BladeNexus_Event(_float fTimeDelta);    
-    void						Chest_Event(_float fTimeDelta);         
+    void						Chest_Event(_float fTimeDelta);
     void						TombStone_Event(_float fTimeDelta);     //폐기
+    void						DestinyStone_Event(_float fTimeDelta);      // 귀석 이벤트
 
     /* 앰바스 */
     void						Lever_Event(_float fTimeDelta);

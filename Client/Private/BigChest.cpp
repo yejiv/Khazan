@@ -38,6 +38,8 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
     PROP_INTERACTIVE_DESC* pDesc = static_cast<PROP_INTERACTIVE_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
+    m_eLevel = pDesc->eLevel;
+
     BOX_ITEMS* pItemBox = static_cast<BOX_ITEMS*>(pDesc->pOtherDesc);
     CHECK_NULLPTR(pItemBox, E_FAIL);
 
@@ -56,7 +58,7 @@ HRESULT CBigChest::Initialize_Clone(void* pArg)
         });
 
     m_pModelCom->Register_Event("Open", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Open"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(m_eLevel), TEXT("Open"), m_pTransformCom->Get_State(STATE::POSITION));
         });
 
     return S_OK;
@@ -171,9 +173,10 @@ HRESULT CBigChest::Ready_Collision(void* pArg)
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.isForceVaildation = true;
     //pCollDesc.pInfo = ?? // 작성하기
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    TriggerDesc.pCollisionDesc = &m_TriggerCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
@@ -188,7 +191,7 @@ HRESULT CBigChest::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("열기"), 1.f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("열기"), 0.75f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 
@@ -207,16 +210,6 @@ void CBigChest::Input_Interact_Event(_float fTimeDelta)
     if (m_pGameInstance->Key_Pressing(DIK_F, fTimeDelta))
     {
         isPressing = m_pGuide->IsPressing();
-    }
-    else if (m_pGameInstance->Key_Down(DIK_LCONTROL))
-    {
-        EventInteractType InteractType = {};
-
-        InteractType.eState = EventInteractType::END;
-
-        m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
-
-        return;
     }
 
     if (true == isPressing)
@@ -264,6 +257,8 @@ void CBigChest::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::CLOSE == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_Chest_Open"), m_fInteract_Volume);
+
             m_pStaticCom->Collision_Active(false);
 
             m_pGuide->Update_Visible(false);
@@ -373,6 +368,32 @@ void CBigChest::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, C
     m_pGuide->Update_Visible(false);
 
     m_isCollision = false;
+}
+
+HRESULT CBigChest::Bind_Materials(_uint iMeshIndex)
+{
+    m_iMtrlFlags = 0;
+
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+        m_iMtrlFlags |= M_DIFFUSE;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
+        m_iMtrlFlags |= M_NORMAL;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
+        m_iMtrlFlags |= M_EMISSIVE;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
+        m_iMtrlFlags |= M_SPECULAR;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalicTexture", iMeshIndex, aiTextureType_METALNESS, 0)))
+        m_iMtrlFlags |= M_METALIC;
+    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_RoughnessTexture", iMeshIndex, aiTextureType_SHININESS, 0)))
+        m_iMtrlFlags |= M_ROUGHNESS;
+
+    m_iMtrlFlags &= ~M_EMISSIVE;
+    if (LEVEL::EMBARS == m_eLevel)
+        m_iMtrlFlags &= ~M_SPECULAR;
+
+    m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
+
+    return S_OK;
 }
 
 CBigChest* CBigChest::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

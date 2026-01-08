@@ -3,12 +3,12 @@
 #include "AI_Controller.h"
 
 CDragonian_Sword::CDragonian_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CPartObject{ pDevice,pContext }
+    :CWeaponObject{ pDevice,pContext }
 {
 }
 
 CDragonian_Sword::CDragonian_Sword(const CDragonian_Sword& Prototype)
-    :CPartObject( Prototype )
+    :CWeaponObject( Prototype )
 {
 }
 
@@ -33,6 +33,7 @@ HRESULT CDragonian_Sword::Initialize_Clone(void* pArg)
     CHECK_FAILED(Ready_Collision(), E_FAIL);
 
     m_pTransformCom->Rotation(XMConvertToRadians(-270.f), XMConvertToRadians(-90.f), XMConvertToRadians(90.f));
+    Set_JustGuardCallBack([this](_bool isJustGuard) { *m_pData->pCulStamina -= *m_pData->pMaxStamina * 0.2f; });
 
     return S_OK;
 }
@@ -43,6 +44,9 @@ void CDragonian_Sword::Priority_Update(_float fTimeDelta)
 
 void CDragonian_Sword::Update(_float fTimeDelta)
 {
+    if (!m_pData->isSearch)
+        return;
+
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 
     for (uint32_t i = 0; i < 3; i++)
@@ -65,7 +69,6 @@ void CDragonian_Sword::Update(_float fTimeDelta)
 
 void CDragonian_Sword::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this),);
 }
 
 HRESULT CDragonian_Sword::Render()

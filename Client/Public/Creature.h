@@ -32,8 +32,10 @@ public:
 	_float						Get_CurrentStamina() const{ return m_fCurrentStamina; }
 	_float						Get_MaxStamina() const { return m_fMaxStamina; }
 	_float						Get_MoveSpeed() const{ return m_fMoveSpeed; }
-	
-	// Set함수는 다르게 작동할수도 있을 것 같아서  일단 Get만 만들었습니다.
+    FMOD_CHANNEL**              Get_SoundChannel(_int iIndex);
+
+    void                        Set_HP(_float fCurrentfHp, _float fMaxHp) { m_fCurrentHP = fCurrentfHp; m_fMaxHP = fMaxHp; }
+    void                        Set_Stamina(_float fCurrnetStamina, _float fMaxStamina) { m_fCurrentStamina = fCurrnetStamina; m_fMaxStamina = fMaxStamina; }
 
 public:
     virtual void                Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) {};
@@ -53,7 +55,6 @@ public:
 public:
     virtual void                Creature_Release();
 
-
 protected:
 	_float						m_fCurrentHP = {};
 	_float						m_fMaxHP = {};
@@ -69,13 +70,16 @@ protected:
     _float                      m_fKnockBackLoss = { };
     _vector                     m_fKnockBackDir = {};
 
+    vector<FMOD_CHANNEL*>       m_pChannel;
+
+    /* Call back */
+    function<void(_bool)>       m_JustGuardCallback = nullptr;
 
 protected:
 	CCharacterVirtual*			m_pCharVirCom = { nullptr };
     
 protected:
     virtual void				Compute_KnockBack(_float fTimeDelta);
-
 
 public:
 	virtual CGameObject*		Clone(void* pArg) = 0;

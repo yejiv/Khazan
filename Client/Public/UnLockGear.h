@@ -68,6 +68,11 @@ private:
 
     _bool m_isForceOff = { false };
 
+    _bool m_isGimmickDone = { false };
+
+private:
+    COLLISION_DESC m_TriggerCollisionDesc;
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     virtual HRESULT Bind_Materials(_uint iMeshIndex) override;

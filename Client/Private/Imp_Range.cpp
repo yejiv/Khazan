@@ -9,6 +9,7 @@
 #include "Mon_HP.h"
 #include "ClientInstance.h"
 #include "Amount.h"
+#include "Interaction_Item.h"
 
 CImp_Range::CImp_Range(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{pDevice,pContext}
@@ -49,6 +50,9 @@ HRESULT CImp_Range::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimEvent()))
         return E_FAIL;
 
+    if (FAILED(Ready_SFX()))
+        return E_FAIL;
+
       m_pController = CAI_Controller_Imp_Range::Create(this);
       if (nullptr == m_pController)
           return E_FAIL;
@@ -68,7 +72,10 @@ void CImp_Range::Priority_Update(_float fTimeDelta)
     if (m_fCurrentHP <= 0.f && !m_isDeadFlag)
     {
         CClientInstance::GetInstance()->Add_SkillExp(10.f);
-        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 100);
+        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::GOLD, 1800);
+        static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, 500);
+
+
         m_isDeadFlag = true;
     }
 
@@ -78,7 +85,7 @@ void CImp_Range::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
 
-    if (m_fCurrentHP <= 0.f)
+    if (m_fCurrentHP > 0.f)
     {
         if (m_isLookAt)
         {
@@ -86,13 +93,25 @@ void CImp_Range::Update(_float fTimeDelta)
             if (nullptr == pModel)
                 return;
             _float fRatio = pModel->MakeRatio();
-            Look_Target_Lerp(fTimeDelta, fRatio, 3.f);
+            Look_Target_Lerp(fTimeDelta, fRatio, 10.f);
         }
     }
   
     __super::Update(fTimeDelta);
 
     m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
+
+    if (m_isDissolve)
+        m_fDecreaseAlpha += fTimeDelta * 0.7f;
+
+    if (m_fDecreaseAlpha >= 1.f && !m_isDissolveEnd)
+    {
+        Creature_Release();
+        CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Item")));
+        pItem->RandNormal_Item(m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), TEXT("Layer_Item"), pItem);
+        m_isDissolveEnd = true;
+    }
 
 }
 
@@ -159,9 +178,11 @@ HRESULT CImp_Range::Ready_Components()
     tCharVirDesc.fMaxSlopeAngle = 45.f;
     tCharVirDesc.fPenetrationRecoverySpeed = 0.1f;
 
-    m_tCollisionDesc.pGameObject = this;
+    m_tImp_RangeColliderDesc.pGameObject = this;
+    m_tImp_RangeColliderDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
+    m_tImp_RangeColliderDesc.strName = TEXT("Imp_Range_Collider");
     //pCollDesc.pInfo = ?? // 작성하기
-    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+    tCharVirDesc.pCollisionDesc = &m_tImp_RangeColliderDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
@@ -176,6 +197,8 @@ HRESULT CImp_Range::Ready_PartObjects()
     BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     BodyDesc.pOwnerTransform = m_pTransformCom;
     BodyDesc.pOwner = this;
+    BodyDesc.pDissolve = &m_isDissolve;
+    BodyDesc.pDecreaseAlpha = &m_fDecreaseAlpha;
 
     if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Range_Body"), &BodyDesc)))
         return E_FAIL;
@@ -193,6 +216,8 @@ HRESULT CImp_Range::Ready_PartObjects()
     WeaponDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     WeaponDesc.pOwnerTransform = m_pTransformCom;
     WeaponDesc.pSocketMatrix = m_pBody->Get_BoneMatrix_Ptr("Weapon_R");
+    WeaponDesc.pDissolve = &m_isDissolve;
+    WeaponDesc.pDecreaseAlpha = &m_fDecreaseAlpha;
 
     if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Monster_Imp_Range_Wand"), &WeaponDesc)))
         return E_FAIL;
@@ -243,59 +268,58 @@ HRESULT CImp_Range::Ready_AnimEvent()
 
     pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = true;
-
         Cast_MagicBall(0);
-        });
-    pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-        });
-    pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 15.f);
 
-        });
-
-    pModel->Register_Event("ShotSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Shoot_MagicBall(0);
         });
 
 
     pModel->Register_Event("CastSpell2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Cast_MagicBall(1);
-        });
-    pModel->Register_Event("CastSpell2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-
-        });
-    pModel->Register_Event("CastSpell2", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-
-        });
-
-    pModel->Register_Event("ShotSpell2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        Shoot_MagicBall(1);
-        m_isLookAt = false;
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 15.f);
 
         });
 
 
     pModel->Register_Event("CastSpell3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = true;
         Cast_MagicBall(2);
-        });
-    pModel->Register_Event("CastSpell3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
 
         });
-    pModel->Register_Event("CastSpell3", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+
+    pModel->Register_Event("ShotSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = false;
+        Shoot_MagicBall(0);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
 
         });
+
+
+    pModel->Register_Event("ShotSpell2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = false;
+        Shoot_MagicBall(1);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+
+        });
+
 
     pModel->Register_Event("ShotSpell3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_isLookAt = false;
         Shoot_MagicBall(2);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+
         });
-
-
 
 
 #pragma endregion
 
 #pragma region Boomarang
     pModel->Register_Event("CastBoomarang", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        
         Cast_Boomarang();
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 15.f);
+
         });
     pModel->Register_Event("HoldBoomarang", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
        
@@ -305,6 +329,8 @@ HRESULT CImp_Range::Ready_AnimEvent()
         Shoot_Boomarang();
         if (nullptr == m_pTarget)
             Look_Target();
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+
         });
 
 #pragma endregion
@@ -312,10 +338,140 @@ HRESULT CImp_Range::Ready_AnimEvent()
     return S_OK;
 }
 
+HRESULT CImp_Range::Ready_SFX()
+{
+
+    CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+    if (nullptr == pModel)
+        return E_FAIL;
+
+#pragma region MOVEMENT
+
+    pModel->Register_Event("IR_SFX_Walk_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_Move(); });
+    pModel->Register_Event("IR_SFX_Walk_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_Move(); });
+
+#pragma endregion
+
+#pragma region HIT
+
+    pModel->Register_Event("IR_SFX_NormalHit_B", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(1); });
+    pModel->Register_Event("IR_SFX_NormalHit_UF", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(1); });
+    pModel->Register_Event("IR_SFX_NormalHit_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(1); });
+    pModel->Register_Event("IR_SFX_NormalHit_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(1); });
+
+
+    pModel->Register_Event("IR_SFX_StringlHit_U", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(2); });
+    pModel->Register_Event("CA_M_DIWiz_DamageStrong_L_F", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(2); });
+    pModel->Register_Event("IR_SFX_StringlHit_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(2); });
+    pModel->Register_Event("IR_SFX_StringlHit_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_HIT(2); });
+
+
+
+#pragma endregion
+
+#pragma region DEAD
+    pModel->Register_Event("IR_SFX_Dead", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_DEAD(); });
+#pragma endregion
+
+#pragma region REALIZE
+    pModel->Register_Event("IM_SFX_Realize_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_REALIZE(); });
+#pragma endregion
+
+
+#pragma region SLEEP
+    pModel->Register_Event("IR_SFX_Sleep_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_SLEEP();  });
+    pModel->Register_Event("IR_SFX_Sleep_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_SLEEP(); });
+    pModel->Register_Event("IR_SFX_Sleep_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_SLEEP(); });
+    pModel->Register_Event("IR_SFX_Sleep_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_SLEEP(); });
+#pragma endregion
+
+
+    return S_OK;
+}
+
+void CImp_Range::SFX_Move()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 40.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 40.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 40.f);
+
+}
+
+void CImp_Range::SFX_HIT(_uint iHitIndex)
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iHitIndex == 1)
+    {
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Dmg_M_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Dmg_M_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Dmg_M_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+    }
+
+    
+    else if(iHitIndex == 2)
+    {
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Dmg_L_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Dmg_L_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Dmg_L_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 8.f);
+    }
+
+
+}
+
+void CImp_Range::SFX_DEAD()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Die_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::DEAD)), 8.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Die_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::DEAD)), 8.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Die_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::DEAD)), 8.f);
+    
+}
+
+void CImp_Range::SFX_REALIZE()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Breath_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Breath_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Breath_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+}
+
+void CImp_Range::SFX_SLEEP()
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iSoundIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Laugh_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+    else if (iSoundIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Laugh_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+    else if (iSoundIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_DemonImp_Laugh_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+}
+
 
 void CImp_Range::Cast_MagicBall(_uint iIndex)
 {
-   
+    m_isCastMagicBall = true;
+
     _float4x4 TempMatrix = m_pWeapon->Get_CombinedMatrix();
     _matrix matWorld = XMLoadFloat4x4(&TempMatrix);
     _vector vOffset = {};
@@ -355,12 +511,22 @@ void CImp_Range::Cast_MagicBall(_uint iIndex)
         TEXT("Layer_Imp_MagicBall"),
         m_MagicBalls[iIndex]
     );
+
+    if(iIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Cast_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 15.f);
+    else if(iIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Cast_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 15.f);
+    else if(iIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Cast_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 15.f);
+
 }
 
 void CImp_Range::Shoot_MagicBall(_uint iIndex)
 {
     if (m_MagicBalls[iIndex] == nullptr)
         return;
+
+    m_isCastMagicBall = false;
 
     CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
     _vector vTargetLoc = pTargetTransform->Get_State(STATE::POSITION);
@@ -397,10 +563,19 @@ void CImp_Range::Shoot_MagicBall(_uint iIndex)
     pMagicBall->Set_IsActive(true);
     pMagicBall->Fire_Projectile();
 
+    if (iIndex == 0)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Shot_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 15.f);
+    else if (iIndex == 1)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Shot_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 15.f);
+    else if (iIndex == 2)
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Shot_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 15.f);
+
 }
 
 void CImp_Range::Cast_Boomarang()
 {
+    m_isCastBoomarange = true;
+
     _float4 vTempSpawnPoint = *m_pBody->Get_BonePointEX("Weapon_L");
     CGameObject* pGameObject = m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Imp_Boomarang"));
     if (nullptr == pGameObject)
@@ -427,12 +602,38 @@ void CImp_Range::Cast_Boomarang()
         TEXT("Layer_Imp_Boomarang"),
         m_pBoomarang
     );
+
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 20.f);
+
 }
 
 void CImp_Range::Cast_Failed()
 {
-    if(nullptr != m_pBoomarang)
+
+    if (m_isCastBoomarange && nullptr != m_pBoomarang)
+    {
+        m_pBoomarang->Set_IsActive(false);
         m_pBoomarang->Set_IsDead(true);
+        m_pBoomarang->StopBoomarangSound();
+
+    }
+    else if(m_isCastMagicBall)
+    {
+        for (auto& pMagicBall : m_MagicBalls)
+        {
+            if (nullptr != pMagicBall)
+            {
+                pMagicBall->Set_IsDead(true);
+                pMagicBall->Set_IsActive(false);
+                pMagicBall->StopSound();
+
+            }
+
+        }
+    }
+  
+
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Fail (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 1.5f);
 }
 
 void CImp_Range::Hold_Boomarang()
@@ -450,12 +651,16 @@ void CImp_Range::Hold_Boomarang()
     m_pBoomarang->Set_SpawnDir(vNormalize);
     m_pBoomarang->Set_SpanwPoint(vSpawnPoint);
     m_pBoomarang->Reset();
+
+
 }
 
 void CImp_Range::Shoot_Boomarang()
 {
     if (m_pBoomarang == nullptr)
         return;
+
+    m_isCastBoomarange = false;
 
     CTransform* pTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
     _vector vTargetLoc = pTransform->Get_State(STATE::POSITION);
@@ -472,12 +677,19 @@ void CImp_Range::Shoot_Boomarang()
     m_pBoomarang->Reset();
     m_pBoomarang->Set_IsActive(true);
     m_pBoomarang->Fire_Projectile();
+
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 20.f);
 }
 
 void CImp_Range::HPUI_Dead()
 {
     m_pUI_HP->Update_Visible(false);
     m_pUI_HP->Set_IsDead(true);
+}
+
+void CImp_Range::Dissolve_On()
+{
+    m_isDissolve = true;
 }
 
 CImp_Range* CImp_Range::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

@@ -13,13 +13,16 @@ CCreature::CCreature(const CCreature& Prototype)
 }
 
 
+FMOD_CHANNEL** CCreature::Get_SoundChannel(_int iIndex)
+{
+    if (m_pChannel.size() <= iIndex)
+        m_pChannel.resize(iIndex + 1, nullptr);
+
+    return &m_pChannel[iIndex];
+}
+
 void CCreature::KnockBack(_vector vDir, _float fPower, _float fLoss)
 {
-   // m_pCharVirCom->Set_VelocityPower(vDir,fPower,fLoss);
-
-    if (m_strName == "Yetuga")
-        return;
-
 
     m_isKnockBack = true;
     m_fKnockBackDir = vDir;
@@ -64,7 +67,6 @@ void CCreature::Update(_float fTimeDelta)
 
     if (m_pCharVirCom != nullptr)
     {
-        //m_pCharVirCom->Sync_Update(m_pTransformCom);
         m_pCharVirCom->Update(fTimeDelta, m_pTransformCom, m_vGravity);
     }
 }
@@ -82,10 +84,13 @@ HRESULT CCreature::Render()
 
 void CCreature::Creature_Release()
 {
-    m_pCharVirCom->Fake_Release();
+    //m_pCharVirCom->Fake_Release();
+    m_isGhost = true;
     m_isDead = true;
     m_isActive = false;
 }
+
+
 
 void CCreature::Compute_KnockBack(_float fTimeDelta)
 {

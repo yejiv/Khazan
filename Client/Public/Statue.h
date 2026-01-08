@@ -78,10 +78,18 @@ private:
     _bool m_isLateInit = { false };
 
 private:
+    class CEffect_Prefab* m_pEffect = { nullptr };
+    _bool   m_bPrevState;
+
+private:
+    COLLISION_DESC m_TriggerCollisionDesc;
+
+private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_PartObjects(void* pArg);
     HRESULT Ready_Collision(void* pArg);
     HRESULT Ready_Interaction_Guide(void* pArg);
+    HRESULT Ready_Effect();
 
     void Check_Solved();
 

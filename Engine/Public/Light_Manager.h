@@ -38,20 +38,8 @@ private:
 	_uint                                   m_iNumLevels = {};
     vector<_wstring>                        m_strLightTags = {}; // For Light Setting
 
-    // Transition
-    LIGHT_TRANSITION_DESC                   m_TargetLightDesc = {};
-    _float                                  m_fTransTimeAcc = {};
-    _bool                                   m_isTransition = {};
-    class CLight*                           m_pTransLight = { nullptr };
-    LIGHT_DESC                              m_StartLightDesc;
-    _float                                  m_fBlinkPeriod = {};
-
-    // Backup
-    map<_wstring, LIGHT_DESC>               m_OriginalLightDesc;
-
 private:
 	class CLight*           Find_Light(const _wstring& strLightTag, _uint iLevelIndex);
-    void                    Lerp_LightProperties(_fvector vStart, _fvector vTarget);
 
 public:
 	static CLight_Manager*  Create(_uint iNumLevels);

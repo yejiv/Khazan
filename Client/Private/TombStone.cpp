@@ -5,7 +5,6 @@
 #include "Interaction_Guide.h"
 
 #include "ClientInstance.h"
-#include "UI_BladeNexus.h"
 
 CTombStone::CTombStone(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive { pDevice, pContext }
@@ -32,9 +31,9 @@ HRESULT CTombStone::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
 
-    CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
+    CHECK_FAILED(Ready_DefaultSetting(pArg), E_FAIL);
 
-    CHECK_FAILED(Ready_PlaceName(pArg), E_FAIL);
+    CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
     m_eAnimState = ANIM_STATE::BEFORE_IDLE;
     m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_IDLE);
@@ -78,26 +77,23 @@ HRESULT CTombStone::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    // 옆면 이미시브
+    _float fEmissiveIntensity = 30.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    // 룬 문자 이미시브
+    _float fDiffuseBluePower = 50.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fDiffuseBluePower", &fDiffuseBluePower, sizeof(_float))))
+        return E_FAIL;
+
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
 
-        /*
-        if (1 == i)     // 1 == 룬문자
-        {
-            _bool isEmissive = { true };
-            m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_SPECULAR, 0);
-            m_pShaderCom->Bind_RawValue("g_isEmissive", &isEmissive, sizeof(_bool));
-
-            m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &m_fEmissiveIntensity, sizeof(_float));
-            m_pShaderCom->Bind_RawValue("g_isEnableEmissive", &m_isEnableEmissive, sizeof(_bool));
-            m_pShaderCom->Bind_RawValue("g_isEnableBloom", &m_isEnableBloom, sizeof(_bool));
-        }
-        */
-
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(29), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -171,9 +167,10 @@ HRESULT CTombStone::Ready_Collision(void* pArg)
     TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.isForceVaildation = true;
     //pCollDesc.pInfo = ?? // 작성하기
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    TriggerDesc.pCollisionDesc = &m_TriggerCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
@@ -188,21 +185,32 @@ HRESULT CTombStone::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("샤르나크 산맥 일대"), 1.5f);
+    switch (m_iTombStoneID)
+    {
+    case 0:
+        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("???"), 1.f);
+        break;
+    case 1:
+        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("나가기"), 1.f);
+        break;
+    }
 
-    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_UI"), m_pGuide);
 
     m_pGuide->Update_Visible(false);
 
     return S_OK;
 }
 
-HRESULT CTombStone::Ready_PlaceName(void* pArg)
+HRESULT CTombStone::Ready_DefaultSetting(void* pArg)
 {
     TOMBSTONE_DESC* pDesc = static_cast<TOMBSTONE_DESC*>(pArg);
     CHECK_NULLPTR(pDesc, E_FAIL);
 
-    memcpy(m_szPlaceName, TEXT("툼스톤 파일드라이버"), sizeof(m_szPlaceName));
+    _int* pTombStoneID = static_cast<_int*>(pDesc->pOtherDesc);
+    CHECK_NULLPTR(pTombStoneID, E_FAIL);
+
+    m_iTombStoneID = *pTombStoneID;
 
     return S_OK;
 }
@@ -220,8 +228,8 @@ HRESULT CTombStone::Bind_Materials(_uint iMeshIndex)
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", iMeshIndex, aiTextureType_SPECULAR, 0)))
         m_iMtrlFlags |= M_SPECULAR;
 
-    m_iMtrlFlags &= ~M_EMISSIVE;
-    m_iMtrlFlags &= ~M_SPECULAR;
+    //  m_iMtrlFlags &= ~M_EMISSIVE;
+    //  m_iMtrlFlags &= ~M_SPECULAR;
 
     m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 
@@ -269,7 +277,7 @@ void CTombStone::Animation_Update(_float fTimeDelta)
     {
         m_fTimeAcc += fTimeDelta;
 
-        if (10.f <= m_fTimeAcc)
+        if (3.f <= m_fTimeAcc)
         {
             m_eAnimState = ANIM_STATE::BEFORE_START;
             m_pModelCom->Set_Animation(m_eAnimState);
@@ -289,6 +297,8 @@ void CTombStone::Animation_Update(_float fTimeDelta)
         // IDLE 상태
         if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_TombStone_On"), Get_Position(), nullptr, m_fInteract_Volume);
+
             m_pGuide->Update_Visible(false);
 
             m_fEmissiveIntensity = 1.5f;
@@ -314,15 +324,26 @@ void CTombStone::Animation_Update(_float fTimeDelta)
 
             // 툼스톤을 바라볼 수 있도록 포지션만 던짐 ( 툼스톤 애니메이션 아직 종료 X )
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
-        }
-    }
-    else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
-    {
-        if (ANIM_STATE::AFTER_LOOP == m_eAnimState)
-        {
-            m_eAnimState = ANIM_STATE::AFTER_END;
-            m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-            m_pModelCom->Set_AnimationLoop(false);
+
+            CClientInstance::GetInstance()->Fade_Out([this](){
+                m_pGameInstance->Set_LightEnable(TEXT("Mirroball"), ENUM_CLASS(LEVEL::EMBARS), false);
+                m_pGameInstance->Set_LightEnable(TEXT("GachaSelect1"), ENUM_CLASS(LEVEL::EMBARS), false);
+                m_pGameInstance->Set_LightEnable(TEXT("GachaSelect2"), ENUM_CLASS(LEVEL::EMBARS), false);
+                m_pGameInstance->Set_LightEnable(TEXT("GachaSelect3"), ENUM_CLASS(LEVEL::EMBARS), false);
+                m_pGameInstance->Set_LightEnable(TEXT("MainLight"), ENUM_CLASS(LEVEL::EMBARS), true); 
+                }, 0.5f);
+
+            switch (m_iTombStoneID)
+            {
+            case ENUM_CLASS(TOMBSTONE_ID::IN_EMBARS):
+                CClientInstance::GetInstance()->BGM_Embars_Club(4.f);
+                break;
+            case ENUM_CLASS(TOMBSTONE_ID::IN_HIDDEN):
+                CClientInstance::GetInstance()->BGM_Embars_B1(4.f);
+                break;
+            }
+
+            m_Event.None();
         }
     }
 }
@@ -342,13 +363,18 @@ void CTombStone::Animation_Change(_float fTimeDelta)
     // 툼스톤 가동 끝나면
     if (ANIM_STATE::AFTER_START == m_eAnimState)
     {
-        // 툼스톤 애니메이션 끝나면 툼스톤 UI 창 팝업
-        static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(CUI_BladeNexus::ONTYPE::DEFAULT, TEXT("하인마흐 구석진 으슥한 어떠한 곳"));
-
         // 애니메이션 루프로 전환
         m_eAnimState = ANIM_STATE::AFTER_LOOP;
         m_pModelCom->Set_Animation(m_eAnimState);
-        m_pModelCom->Set_AnimationLoop(true);
+        m_pModelCom->Set_AnimationLoop(false);
+    }
+    // 툼스톤 가동 끝나면
+    if (ANIM_STATE::AFTER_LOOP == m_eAnimState)
+    {
+        // 애니메이션 루프로 전환
+        m_eAnimState = ANIM_STATE::AFTER_END;
+        m_pModelCom->Set_Animation(m_eAnimState);
+        m_pModelCom->Set_AnimationLoop(false);
 
         EventInteractType InteractType = {};
 
@@ -357,15 +383,21 @@ void CTombStone::Animation_Change(_float fTimeDelta)
 
         EventTombStone TSEvent = {};
 
-        XMStoreFloat4(&TSEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        switch (m_iTombStoneID)
+        {
+        case ENUM_CLASS(TOMBSTONE_ID::IN_EMBARS):
+            XMStoreFloat4(&TSEvent.vPlayerTPPos, XMVectorSet(-61.895f, -92.2f, -41.636f, 1.f));
+            break;
+        case ENUM_CLASS(TOMBSTONE_ID::IN_HIDDEN):
+            XMStoreFloat4(&TSEvent.vPlayerTPPos, XMVectorSet(-24.338f, -92.2f, -42.551f, 1.f));
+            break;
+        }
         TSEvent.isTSOpened = true;              // 이제 툼스톤 UI 열리게
 
         InteractType.TSEvent = TSEvent;
 
-        // 툼스톤을 바라볼 수 있도록 포지션만 던짐 ( 툼스톤 애니메이션 종료 O, UI 창 팝업? )
+        // TP 포지션 던져버리기
         m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
-
-        m_Event.None();
     }
     // 툼스톤 상호 작용 종료 후 ( 첫 해금 X )
     if (ANIM_STATE::AFTER_END == m_eAnimState)
@@ -381,6 +413,8 @@ void CTombStone::Animation_Change(_float fTimeDelta)
         m_pModelCom->Set_AnimationLoop(true);
 
         m_Event.None();
+
+        CClientInstance::GetInstance()->Fade_In(nullptr, 0.5f);
     }
 }
 

@@ -174,6 +174,7 @@ PS_OUT PS_TEX_PROGRESS_LEFTDOWN_GAUGE(PS_IN In)
     else
     {
         Out.vColor = g_Texture.Sample(ClampSampler, In.vTexcoord);
+        Out.vColor.rgb += 0.2f;
         Out.vColor.a = Out.vColor.a * g_fAlpha;
     }
   

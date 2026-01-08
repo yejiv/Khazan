@@ -69,6 +69,8 @@ public:
 
 private:
     class CBody* m_pBodyCom = { nullptr };
+    class CBody* m_pMidBodyCom = { nullptr };
+    class CBody* m_pTopBodyCom = { nullptr };
     class CBody* m_pTriggerCom = { nullptr };
 
 private:
@@ -100,6 +102,14 @@ private:
     _uint m_iSkipEventID = { 0 };
 
 private:
+    COLLISION_DESC m_CollisionMidDesc;
+    COLLISION_DESC m_CollisionTopDesc;
+    COLLISION_DESC m_TriggerCollisionDesc;
+
+private:
+    class CEffect_Prefab* m_pEffect = { nullptr };
+
+private:
     void Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4 vTargetPos, _float fDuration);
 
 private:
@@ -107,6 +117,7 @@ private:
     virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
     HRESULT Ready_PartObjects(void* pArg);
     HRESULT Ready_Collision(void* pArg);
+    HRESULT Ready_Effect();
 
     void Animation_Update(_float fTimeDelta);
     void Animation_Change(_float fTimeDelta);

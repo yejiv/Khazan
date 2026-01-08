@@ -27,6 +27,7 @@ private:
 	HRESULT Ready_Layer_Effect(const _wstring& strLayerTag);    
     HRESULT Ready_Layer_Decal();
     HRESULT Ready_Layer_Item();
+    HRESULT Ready_SoundSetting();
 
 	// 파라미터 ( 1. 등록할 레이어 태그 | 2. 데이터 파일 이름 | 3. 서브 레벨 인덱스 | 4. 현재 로드할 레벨 | 5. 맵 타입 ( 안넣으면 폴더 내부 X ) )
 	// 서브 레벨 오브젝트
@@ -59,8 +60,7 @@ private:
 
     HRESULT Ready_Layer_MapObject_DEST(const _wstring& strLayerTag, const _tchar* pDataFilename, LEVEL eCurrentLevel);
 
-    // UI 랜더
-    HRESULT Ready_Layer_UI();
+    HRESULT Ready_ShaderSettings();
 
     _bool Wait_All_Futures();
 
@@ -80,6 +80,9 @@ private:
     LEVEL	m_eNextLevel = { LEVEL::END };
     _bool	m_isOpenLevel = { false };
     _uint m_iEventID = { 0 };
+    
+
+    _float m_fFadeTime = { };
 
 public:
 	static CLevel_HeinMach* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

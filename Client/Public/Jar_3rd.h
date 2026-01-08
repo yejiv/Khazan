@@ -43,6 +43,8 @@ public:
 private:
     _uint m_iStepState = {};
 
+    EventGimmick m_EventGimmick = {};
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_TalkUI(void* pArg);

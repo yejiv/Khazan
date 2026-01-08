@@ -28,6 +28,11 @@ void CAS_Hit_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     pModel->Set_AnimationLoop(false);
 
 
+    if (iAnimIndex >= 16 && iAnimIndex <= 19)
+        pImp->SFX_HIT(1);
+    else if (iAnimIndex >= 21 && iAnimIndex <= 24)
+        pImp->SFX_HIT(2);
+
 }
 
 void CAS_Hit_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -64,6 +69,8 @@ _uint CAS_Hit_Imp_Range::Make_AnimIndex(HITREACTION eHitreaction, HIT_DIR eHitDi
     // static 으로 두는 이유는  매번 Enter로 들어오면 변수를 만들어야해서 딱 처음 1번만 초기화 하도록하기 위해서
     static _uint table[ENUM_CLASS(HITREACTION::END)][ENUM_CLASS(HIT_DIR::END)] =
     {
+        {0,0,0,0},
+        {0,0,0,0,},
         // WEAK
         {16,17,18,19},
         // NORMAL
@@ -72,6 +79,9 @@ _uint CAS_Hit_Imp_Range::Make_AnimIndex(HITREACTION eHitreaction, HIT_DIR eHitDi
         {21,22,23,24},
         // PARRY
         {21,21,21,21},
+        {0,0,0,0},
+        {0,0,0,0},
+        {21,22,23,24},
     };
 
     return table[ENUM_CLASS(eHitreaction)][ENUM_CLASS(eHitDir)];

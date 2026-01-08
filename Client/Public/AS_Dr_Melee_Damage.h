@@ -14,8 +14,8 @@ public:
     virtual void				Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
 private:
-    CDragonian_Melee::MONDATA* m_pMonData = { nullptr };
-
+    CDragonian_Melee::MONDATA*  m_pMonData = { nullptr };
+    _bool                       m_IsDamage = {};
 public:
     static CAS_Dr_Melee_Damage* Create();
     virtual void				Free() override;

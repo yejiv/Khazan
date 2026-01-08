@@ -55,10 +55,8 @@ public:
 public:
 	void Set_EnableShadow(_bool isEnable) { m_isEnableShadow = isEnable; }
 	void Set_EnableSSAO(_bool isEnable) { m_isEnableSSAO = isEnable; }
-	void Set_EnableFog(_bool isEnable) { m_isEnableFog = isEnable; }
 	void Set_EnableToonShade(_bool isEnable) { m_isEnableToonShade = isEnable; }
 	void Set_EnableOutline(_bool isEnable) { m_isEnableOutline = isEnable; }
-    void Set_EnableRimLight(_bool isEnable) { m_isEnableRimLight = isEnable; }
 #endif
 
 public:
@@ -70,8 +68,11 @@ public:
 		m_OutlineConfig.fBias = Config.fBias;
 	}
     void Set_SpecularPower(_float2 vPower) { m_vSpecularPower = vPower; }
+    void Set_SpecularAttenuation(_float fAttenuation) { m_fSpecularAttenuation = fAttenuation; }
     RIM_LIGHT_DESC Get_RimLightDesc() { return m_RimLightDesc; }
     void Set_RimLightDesc(RIM_LIGHT_DESC Desc) { m_RimLightDesc = Desc; }
+    void Set_EnableRimLight(_bool isEnable) { m_isEnableRimLight = isEnable; }
+    const RENDERGROUP& Get_CurrentRenderGroup() { return m_CurRenderGroup; }
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
@@ -81,6 +82,8 @@ private:
 	list<class CGameObject*>	m_RenderObjects[ENUM_CLASS(RENDERGROUP::END)];
     list<class CComponent*>		m_RenderComponents;
 	vector<class CShader*>		m_pThreadEffect = { nullptr };
+
+    RENDERGROUP                 m_CurRenderGroup = { RENDERGROUP::END };
 
 private:
 	class CShader*				m_pShader = { nullptr };
@@ -101,8 +104,10 @@ private:
 
     // Specular
     _float2                     m_vSpecularPower = { 32.f, 64.f };
+    _float                      m_fSpecularAttenuation = { 1.f };
 
     // Rim Light
+    _bool                       m_isEnableRimLight = { true };
     RIM_LIGHT_DESC              m_RimLightDesc = { 5.f, false, 1.f, 0.3f };
 
 #ifdef _DEBUG
@@ -110,12 +115,10 @@ private:
 	_bool						m_isEnableDebugRender = {};
 	_bool						m_isEnableShadow = { true };
 	_bool						m_isEnableSSAO = { true };
-	_bool						m_isEnableFog = { true };
 	_bool						m_isEnableToonShade = { true };
 	_bool						m_isEnableOutline = {};
 	_bool						m_isEnableVignette = {};
 	_bool						m_isEnableDistortion = {};
-    _bool                       m_isEnableRimLight = { true };
 #endif
 
 private:
@@ -165,7 +168,6 @@ private:
 private:
 	_bool isEnableShadow();
 	_bool isEnableSSAO();
-	_bool isEnableFog();
 	_bool isEnableToonShade();
     _bool isEnableRimLight();
 

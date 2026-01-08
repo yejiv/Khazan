@@ -99,6 +99,7 @@ HRESULT CEffect_Point_Instance::Render()
 
 void CEffect_Point_Instance::Save_Data(ofstream& os)
 {
+    //m_sData.fTurbulenceSampleSize = 0.1f;
     os.write(reinterpret_cast<char*>(&m_iEffect_Type), sizeof(_uint));
     os.write(reinterpret_cast<char*>(&m_sData), sizeof(PARTICLE_DESC));
 }
@@ -132,7 +133,7 @@ void CEffect_Point_Instance::Edit_Element()
 
     ImGui::ColorEdit4("MyColorWithAlpha",(float*)&m_sEditingData.vColor);
 
-    const char* textures[] = { "test0", "test1", "test2",  "test3",  "flare", "Fire_Sprite", "Fire_Sprite2",  "flare",  "blood", "BloomParticle" };
+    const char* textures[] = { "test0", "test1", "test2",  "test3",  "flare", "Fire_Sprite", "Fire_Sprite2",  "flare",  "blood", "BloomParticle", "GuardParticle", "Smoke2", "Snow", "Snow2" };
     ImGui::Combo("Point Particles Textures", reinterpret_cast<int*>(&m_sEditingData.iTextureIdx), textures, IM_ARRAYSIZE(textures));
 
     ImGui::Checkbox("Do Mask Scrolling", &m_bIsMaskScrolling);
@@ -153,7 +154,7 @@ void CEffect_Point_Instance::Edit_Element()
     if (bIsDissolve)
     {
         ImGui::Indent();
-        const char* DissolveTex[] = { "DissolveTexture0", "DissolveTexture1", "DissolveTexture2" };
+        const char* DissolveTex[] = { "DissolveTexture0", "DissolveTexture1", "DissolveTexture2", "DissolveTexture3","DissolveTexture4", "Normal0", "Normal1", "RockNormal" };
         ImGui::Combo("Dissolve Texture", reinterpret_cast<int*>(&m_sEditingData.sDissolveData.iDissolveTextureIdx), DissolveTex, IM_ARRAYSIZE(DissolveTex));
         ImGui::InputFloat("Dissolve Edge Width : ", reinterpret_cast<_float*>(&m_sEditingData.sDissolveData.fDissolveEdgeWidth));
         ImGui::ColorEdit4("Edge Color", (float*)&m_sEditingData.sDissolveData.fDissolveEdgeColor);
@@ -356,7 +357,7 @@ void CEffect_Point_Instance::Apply(void* pArg)
 {
     m_sData = *static_cast<PARTICLE_DESC*>(pArg);
 
-    //юс╫ц
+    //О©╫с╫О©╫
     m_sData.iTurbulenceTextureIdx = 0;
 
     const char* format = "../../Client/Bin/Resources/Effect/Noise/Noise%d.png";

@@ -11,6 +11,14 @@ CProjectile::CProjectile(const CProjectile& Prototype)
 {
 }
 
+FMOD_CHANNEL** CProjectile::Get_SoundChannel(_int iIndex)
+{
+    if (m_pChannel.size() <= iIndex)
+        m_pChannel.resize(iIndex + 1, nullptr);
+
+    return &m_pChannel[iIndex];
+}
+
 HRESULT CProjectile::Initialize_Prototype()
 {
     return S_OK;

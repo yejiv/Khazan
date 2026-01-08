@@ -31,7 +31,7 @@ void CSkill_QuickSlot_List::UnEquipSlot(_int iSkillIndex)
         m_pSkillIcon->Update_Scaling(1.f);
         wstring wstrTemp = TEXT("장착 중인 스킬이 없습니다.");
         m_pSkillName->Set_Text(wstrTemp);
-        m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::SKILL_QUICKSLOT), EVENT_SKILL_SLOT{ m_iIndex,m_iEquipSkillIndex , false });
+        m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::SKILL_QUICKSLOT), EVENT_SKILL_SLOT{ m_iIndex, m_iEquipSkillIndex , false });
         if (m_iIndex == 0)
             CClientInstance::GetInstance()->UnBindSkillToButton(CONTROL_BUTTON::CTRL_LB);
         else if (m_iIndex == 1)
@@ -222,6 +222,7 @@ HRESULT CSkill_QuickSlot_List::Load_UI(nlohmann::json& pInData, _uint iPrototype
         {
             m_pHover = static_cast<CUI_Default_Tex*>(pChild);
             Safe_AddRef(m_pHover);
+            m_pHover->Set_Depth(2.5f);
         }
     }
 
@@ -246,6 +247,29 @@ HRESULT CSkill_QuickSlot_List::Ready_Componet()
         return E_FAIL;
 
     return S_OK;
+}
+
+void CSkill_QuickSlot_List::Setting_Data(_int iSlotIndex, _int iSkillIndex)
+{
+    if (m_iIndex != iSlotIndex)
+        return;
+
+    m_iEquipSkillIndex = iSkillIndex;
+    
+    const SKILL_DB* pDB = CClientInstance::GetInstance()->Get_Data<SKILL_DB>(m_iEquipSkillIndex);
+    m_pSkillIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV(WStringToAnsi(pDB->wstrIcon), pDB->iTexPass), pDB->iTexPass);
+    m_pSkillIcon->Set_Color({ 0.929f, 0.741f, 0.376f,1.f });
+    m_pSkillIcon->Update_Scaling(0.5f);
+    m_pSkillName->Set_Text(pDB->wstrName);
+
+    CSkill_QuickSlot::BUBBLE_DESC Desc;
+    Desc.iIndex = m_iIndex;
+    Desc.iSkillIndex = m_iEquipSkillIndex;
+
+    m_UIBubbleCallBack(&Desc);
+
+    m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::SKILL_QUICKSLOT), EVENT_SKILL_SLOT{ m_iIndex,m_iEquipSkillIndex , true });
+
 }
 
 CSkill_QuickSlot_List* CSkill_QuickSlot_List::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

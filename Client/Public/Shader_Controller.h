@@ -48,6 +48,7 @@ private:
     _bool                   m_isEnableEdge = { true };
     _bool                   m_isEnableRimLight = { true };
     _bool                   m_isEnableMotionTrail = {};
+    _bool					m_isEnableVignette = {};
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
@@ -58,6 +59,11 @@ private:
 	_float					m_fFogTransDuration = {};	
 	FOG_TRANSITION_DESC		m_TargetFogDesc = {};
     FOG_CONFIG              m_InitFogConfig = {};
+
+    // Vignette
+    VIGNETTE_CONFIG			m_VignetteConfig = {};
+    _float                  m_fVignetteIntensity = {};
+    _bool                   m_isVignetteReturnOff = {};
 
 	// Cartoon Rendering
 	_float					m_fToonShadeLevel = { 3.f };
@@ -97,6 +103,11 @@ private:
     // Effect Trail
     _int                    m_iTrailOwnerIndex = { -1 };
     TRAIL_CONFIG            m_TrailConfig = {};
+
+    // Sky, Cloud
+    SKY_DESC                m_SkyDesc = {};
+    CLOUD_DESC              m_CloudDesc = {};
+    _float                  m_fSkyCloudDuration = {};
 
 	LEVEL                   m_eCurrentLevel = { LEVEL::TITLE };
 	_bool                   m_isSelectLevel[ENUM_CLASS(LEVEL::END)];

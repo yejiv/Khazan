@@ -20,6 +20,19 @@ void CAmount::Add_Value(AMOUNT_TYPE eType, _int IValue, _bool isRandeOff)
     m_isAddAmount[ENUM_CLASS(eType)] = true;
     On_Panel();
     m_isAddValue = isRandeOff;
+
+    switch (eType)
+    {
+    case AMOUNT_TYPE::GOLD:
+        CClientInstance::GetInstance()->Get_ptrPlayerData().iGold += IValue;
+        break;
+    case AMOUNT_TYPE::LACHRYMA:
+        CClientInstance::GetInstance()->Get_ptrPlayerData().iLachryma += IValue;
+        break;
+    case AMOUNT_TYPE::STONE:
+        CClientInstance::GetInstance()->Get_ptrPlayerData().iStone += IValue;
+        break;
+    }
 }
 
 void CAmount::On_Panel()
@@ -29,6 +42,11 @@ void CAmount::On_Panel()
 	m_eAnimState = UIANIMSTATE::ON;
 	m_fAccTime = 0.5f;
 	m_IsUpdate = true;
+
+    m_iAmountGold = CClientInstance::GetInstance()->Get_ptrPlayerData().iGold;
+    m_iAmountLachryma = CClientInstance::GetInstance()->Get_ptrPlayerData().iLachryma;
+    m_iAmountStone = CClientInstance::GetInstance()->Get_ptrPlayerData().iStone;
+
 }
 
 void CAmount::Off_Panel()
@@ -55,9 +73,9 @@ HRESULT CAmount::Initialize_Clone(void* pArg)
 
 	m_IsUpdate = false;
 
-    m_iGold = &CClientInstance::GetInstance()->Get_ptrPlayerData().iGold;
-    m_iLachryma = &CClientInstance::GetInstance()->Get_ptrPlayerData().iLachryma;
-    m_iStone = &CClientInstance::GetInstance()->Get_ptrPlayerData().iStone;
+    m_iAmountGold = CClientInstance::GetInstance()->Get_ptrPlayerData().iGold;
+    m_iAmountLachryma = CClientInstance::GetInstance()->Get_ptrPlayerData().iLachryma;
+    m_iAmountStone = CClientInstance::GetInstance()->Get_ptrPlayerData().iStone;
 
     m_isAddAmount.resize(3);
 
@@ -106,19 +124,19 @@ HRESULT CAmount::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevelID, void*
 		{
 			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::GOLD)] = static_cast<CAmount_Panel*>(child);
 			Safe_AddRef(child);
-			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::GOLD)]->Setting_Index(AMOUNT_TYPE::GOLD, m_iGold);
+			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::GOLD)]->Setting_Index(AMOUNT_TYPE::GOLD, &m_iAmountGold);
 		}
 		else if (strName == "Lachryma")
 		{
 			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::LACHRYMA)] = static_cast<CAmount_Panel*>(child);
 			Safe_AddRef(child);
-			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::LACHRYMA)]->Setting_Index(AMOUNT_TYPE::LACHRYMA, m_iLachryma);
+			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::LACHRYMA)]->Setting_Index(AMOUNT_TYPE::LACHRYMA, &m_iAmountLachryma);
 		}
 		else if (strName == "Stone")
 		{
 			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::STONE)] = static_cast<CAmount_Panel*>(child);
 			Safe_AddRef(child);
-			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::STONE)]->Setting_Index(AMOUNT_TYPE::STONE, m_iStone);
+			m_pAmount[ENUM_CLASS(AMOUNT_TYPE::STONE)]->Setting_Index(AMOUNT_TYPE::STONE, &m_iAmountStone);
 		}
 		child->Set_ShaderPass(12);
 	}

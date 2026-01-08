@@ -51,7 +51,7 @@ public:
     HRESULT LockOn(_float fTimeDelta);
     void Update_BlendBack(_float fTimeDelta);
     void Update_InteractFocus(_float fTimeDelta);
-    void Update_NpcTalk(_float fTimeDelta);
+    void Update_PoseBlend(_float fTimeDelta);
 
 public:
     void LockOn_Check(_float fTimeDelta);
@@ -86,12 +86,33 @@ public:
     void Exit_PostForceFrameRight(_bool isSmoothReturn = true, _float fReturnDur = 0.22f);
 
 public:
+    CAMERA_POSE CaptureCurrentPose() const;
+    void ApplyPose(const CAMERA_POSE& tPose);
+
+    void PushCurrentPose();
+    void PushPose(const CAMERA_POSE& pose);
+    _bool HasPose() const { return !m_PoseStack.empty(); }
+    void ClearPoseStack() { m_PoseStack.clear(); }
+
+    void StartPoseBlendTo(const CAMERA_POSE& targetPose, _float fDuration, _bool bPushCurrent);
+
+    void ReturnToPreviousPose(_float fDuration);
+
+    void Play_SubShotOnce(const CAMERA_POSE& subShotPose, _float fInDur, _float fOutDur);
+
+public:
     CAMERA_COMPRE_DESC  Get_Desc();
     _bool               Get_IsLockOn() const { return m_isLockOn; }
     _float4* Get_LockOnPosition() { return m_pLockOnPos; }
 
 public:
     void Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos = _float3(0.f, 0.f, 0.f), _float3 vLookAt = _float3(0.f, 0.f, 0.f));
+
+public:
+    void InitStartPoseOnce();
+
+public:
+    void MouseOnOff(_bool isOn) { m_isMouseOn = isOn; }
 private:
     CBody* m_pBody = { nullptr };
 
@@ -122,14 +143,22 @@ private:
     class CTarget_LockOn* m_pLockOnUI = { nullptr };
 
     // LockOn 보정
-    _float m_fTopClampNearDist = 2.5f;   // 이 이하에서 강하게 개입
-    _float m_fTopClampFarDist = 6.0f;   // 이 이상이면 개입 해제
-    _float m_fTopViewClampDeg = -2.0f;  // 근접 시 허용하는 최소(가장 내려다보는) pitch(도). -2~-5 추천
-	
 	_float m_fTargetHalfFovDegrees = { 50.f };
     _float m_fTargetHalfFovCos = { 0.f };
     _float m_fTargetMaxDistance = { 20.f };
 
+    _float m_fLockBasePitch = XMConvertToRadians(-10.f); // 기본: 플레이어 뒤에서 살짝 위에서 내려다보기(튜닝)
+
+    _float m_fLockHeightAssistStart = 1.5f;
+    _float m_fLockHeightAssistFull = 6.0f;   // 또는 8.0f
+    _float m_fLockHeightAssistMaxDeg = 18.0f; // 12보다 확실히 체감됨
+
+    _float m_fLockYawSmoothBase = { 0.1f }; // 기본 yaw 스무딩(빠르게 따라감)
+    _float m_fLockYawSmoothLag = { 0.25f }; // 좌우 이동이 클 때 yaw 스무딩(늦게 따라옴)
+    _float m_fLockSideLagStart = { 0.25f }; // 이 이상부터 지연 가중(0~1, dot 기준)
+
+    _bool   m_isPrevLockPlayerPos = false;
+    _float4 m_vPrevLockPlayerPosWS = {};
 
     // 특정위치에서 강제 이동시 보간
     _bool m_isBlendBack = { false };
@@ -222,6 +251,14 @@ private:
     _float3 m_vNpcCamTargetPos = _float3(0.f, 0.f, 0.f);
     _float3 m_vNpcCamLookAt = _float3(0.f, 0.f, 0.f);
 
+    // 스택형 화면 전환
+    vector<CAMERA_POSE> m_PoseStack;
+    POSE_BLEND_STATE    m_tPoseBlend;
+
+    // 시작 구도
+    _bool m_isInitPose = { false };
+
+    _bool m_isMouseOn = { false };
 
     mutex m_CollMonsterMutex;
 

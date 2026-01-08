@@ -6,6 +6,7 @@
 
 #include "ClientInstance.h"
 #include "UI_BladeNexus.h"
+#include "UI_Inven.h"
 
     CBladeNexus::CBladeNexus(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
     : CProp_Interactive{ pDevice, pContext }
@@ -52,11 +53,26 @@ HRESULT CBladeNexus::Initialize_Clone(void* pArg)
 
     if (BLADENEXUS_ID::HEINMACH_YETUGA == static_cast<BLADENEXUS_ID>(m_iBladeNexus_ID))
     {
+        LIGHT_DESC LightDesc = {};
+
+        LightDesc.eType = LIGHT_DESC::TYPE::POINT;
+
+        LightDesc.vDiffuse = _float4(0.9f, 0.05f, 0.05f, 1.f);
+        LightDesc.vAmbient = _float4(0.28f, 0.18f, 0.18f, 1.f);
+        LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
+        XMStoreFloat4(&LightDesc.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+        LightDesc.vPosition.y += 2.f;
+
+        LightDesc.fRange = 7.5f;
+
+        m_pGameInstance->Add_Light(TEXT("BladeNexus_4"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc, false);
+
         m_iPopEventID = m_pGameInstance->Subscribe_Event<EventPopBN>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), [&](const EventPopBN& e)
             {
                 m_BNPop = e;
             });
 
+        m_pStaticCom->Collision_Active(false);
         m_pTriggerCom->Collision_Active(false);
     }
     else
@@ -75,8 +91,11 @@ void CBladeNexus::Priority_Update(_float fTimeDelta)
         {
             m_isPop = true;
 
+            m_pGameInstance->Set_LightEnable(TEXT("BladeNexus_4"), ENUM_CLASS(LEVEL::HEINMACH), true);
+
             m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_NextLevelID(), TEXT("GhostKnight_static"), m_pTransformCom->Get_State(STATE::POSITION));
 
+            m_pStaticCom->Collision_Active(true);
             m_pTriggerCom->Collision_Active(true);
         }
     }
@@ -119,7 +138,7 @@ HRESULT CBladeNexus::Render()
     CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-    _float fIntensity = 10.f;
+    _float fIntensity = 5.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fIntensity, sizeof(_float))))
         return E_FAIL;
 
@@ -140,12 +159,18 @@ HRESULT CBladeNexus::Render()
     {
         Bind_Materials(i);
 
-        _bool isBNEye = { 5 == i };
-        m_pShaderCom->Bind_RawValue("g_isBNEye", &isBNEye, sizeof(_bool));
-
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(8), E_FAIL);
+        if (i == 1)
+        {
+            _float4 vCristalColor = _float4(3.5f, 1.f, 1.f, 1.f);
+            if (FAILED(m_pShaderCom->Bind_RawValue("g_vCristalColor", &vCristalColor, sizeof(_float4))))
+                return E_FAIL;
+            
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(27), E_FAIL);
+        }
+        else
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(8), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -219,9 +244,10 @@ HRESULT CBladeNexus::Ready_Collision(void* pArg)
     TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.isForceVaildation = true;
     //pCollDesc.pInfo = ?? // 작성하기
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    TriggerDesc.pCollisionDesc = &m_TriggerCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
@@ -237,7 +263,7 @@ HRESULT CBladeNexus::Ready_Interaction_Guide(void* pArg)
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("접촉"), 1.5f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("접촉"), 0.75f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 
@@ -268,13 +294,8 @@ HRESULT CBladeNexus::Ready_DefaultSetting(void* pArg)
         memcpy(m_szPlaceName, TEXT("설인의 대지"), sizeof(m_szPlaceName));
         break;
     case static_cast<_int>(BLADENEXUS_ID::HEINMACH_YETUGA):
-    {
-        memcpy(m_szPlaceName, TEXT("물음표"), sizeof(m_szPlaceName));
-
-        // 예투가 죽었다는 이벤트 받으면 위치 옮길 예정 ( 아래에서 뿅 )
-
+        memcpy(m_szPlaceName, TEXT("예투가의 레어"), sizeof(m_szPlaceName));
         break;
-    }
     case static_cast<_int>(BLADENEXUS_ID::EMBARS_UNDER):
         memcpy(m_szPlaceName, TEXT("잊혀진 사원의 지하"), sizeof(m_szPlaceName));
         break;
@@ -383,6 +404,10 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
         // 해금 전 IDLE 상태
         if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
         {
+            CClientInstance::GetInstance()->All_Mute();
+
+            SoundOnce(TEXT("IP_TS_Before_Start"), m_fInteract_Volume);
+
             m_pGuide->Update_Visible(false);
 
             // 처음 상호 작용 시
@@ -422,21 +447,43 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
             Desc.vFadeTime = _float2(3.5f, 0.5f);
             m_pGameInstance->Start_RadialBlur(Desc);
 
+            _float fDuration = 7.f;
+
             // Main Light 백업
             m_pGameInstance->Backup_LightDesc(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()));
 
             LIGHT_TRANSITION_DESC LightDesc{};
-            LightDesc.fDuration = 7.f;
-            LightDesc.vFadeTime = _float2(7.f, 0.f);
+            LightDesc.fDuration = fDuration;
+            LightDesc.vFadeTime = _float2(fDuration, 0.f);
             LightDesc.vDiffuse = _float4(0.1f, 0.1f, 0.1f, 0.1f);
             LightDesc.vAmbient = _float4(0.1f, 0.1f, 0.1f, 0.1f);
             LightDesc.vSpecular = _float4(0.1f, 0.1f, 0.1f, 0.1f);
             LightDesc.isReturnToStart = false;
             m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+
+            // 귀검 활성화 흰 조명 추가
+            _float4 vPosition{};
+            XMStoreFloat4(&vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+            m_pGameInstance->Set_LightPosition(TEXT("BladeNexus_ActivateLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), vPosition);
+
+            // BladeNexus_ActivateLight 백업
+            m_pGameInstance->Backup_LightDesc(TEXT("BladeNexus_ActivateLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()));
+
+            LightDesc.fDuration = fDuration;
+            LightDesc.vFadeTime = _float2(fDuration, 0.f);
+            LightDesc.vDiffuse = _float4(1.f, 0.7f, 0.7f, 1.f);
+            LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+            LightDesc.vSpecular = LightDesc.vDiffuse;
+            LightDesc.isReturnToStart = false;
+            m_pGameInstance->Start_LightTransition(TEXT("BladeNexus_ActivateLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
         }
         // 해금 후 IDLE 상태
         else if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         {
+            CClientInstance::GetInstance()->All_Mute();
+
+            SoundOnce(TEXT("IP_TS_On"), m_fInteract_Volume);
+
             m_pGuide->Update_Visible(false);
 
             // 2번 이상의 상호 작용 시
@@ -465,12 +512,22 @@ void CBladeNexus::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::BEFORE_LOOP == m_eAnimState)
         {
+            CClientInstance::GetInstance()->All_UnMute();
+
+            SoundStop_FadeOut(TEXT("IP_TS_Loop"), 3.f);
+            SoundOnce(TEXT("IP_TS_Off"), m_fInteract_Volume);
+
             m_eAnimState = ANIM_STATE::BEFORE_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
         }
         if (ANIM_STATE::AFTER_LOOP == m_eAnimState)
         {
+            CClientInstance::GetInstance()->All_UnMute();
+
+            SoundStop_FadeOut(TEXT("IP_TS_Loop_Vocal"), 3.f);
+            SoundOnce(TEXT("IP_TS_Off"), m_fInteract_Volume);
+
             m_eAnimState = ANIM_STATE::AFTER_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
@@ -483,10 +540,18 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
     // 귀검 가동 끝나면 ( 첫 해금 O )
     if (ANIM_STATE::BEFORE_START == m_eAnimState)       // BEFORE_START 가 끝나면 BEFORE_LOOP ( 플레이어가 UI랑 상호 작용 )
     {
+        m_pGameInstance->PlaySound_FadeIn(TEXT("IP_TS_Loop.wav"), m_fInteract_Volume, 3.f);
+
         CUI_BladeNexus::ONTYPE eUIType = {};
 
         switch (m_iBladeNexus_ID)
         {
+        case static_cast<_int>(BLADENEXUS_ID::HEINMACH_ENTER):
+            static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(4012);
+            eUIType = CUI_BladeNexus::ONTYPE::DEFAULT;
+            // 비네트 끄기
+            m_pGameInstance->Set_EnableVignette(false);
+            break;
         case static_cast<_int>(BLADENEXUS_ID::HEINMACH_YETUGA):
             eUIType = CUI_BladeNexus::ONTYPE::EMBARS;
             break;
@@ -495,13 +560,17 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
             break;
         }
 
+        if (static_cast<_int>(BLADENEXUS_ID::HEINMACH_ENTER) == m_iBladeNexus_ID)
+            m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_TALK>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_TALK), EVENT_ANNOUNCE_TALK{ 10 });
+
         static_cast<CUI_BladeNexus*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus")))->On_Panel(eUIType, m_szPlaceName);
 
         // 처음 상호 작용 후 애니메이션 루프로 전환 및 이벤트 발생
         m_eAnimState = ANIM_STATE::BEFORE_LOOP;
         m_pModelCom->Set_Animation(ANIM_STATE::BEFORE_LOOP);
         m_pModelCom->Set_AnimationLoop(true);
-
+        m_pGameInstance->Emit_Event< EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), { });
+        CClientInstance::GetInstance()->Initialize_PlayerData();
         EventInteractType InteractType = {};
 
         InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;
@@ -537,17 +606,21 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         m_Event.None();
 
         // 첫 해금 후 접촉 -> 결속 으로 변경
-        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("결속"), 1.5f);
+        m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("결속"), 0.75f);
     
         LIGHT_TRANSITION_DESC LightDesc{};
         LightDesc.fDuration = 1.f;
         LightDesc.vFadeTime = _float2(1.f, 0.f);
         LightDesc.isReturnToStart = false;
         m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc, true);
+        LightDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(TEXT("BladeNexus_ActivateLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false); };
+        m_pGameInstance->Start_LightTransition(TEXT("BladeNexus_ActivateLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc, true);
     }
     // 귀검 가동 끝나면 ( 첫 해금 X )
     if (ANIM_STATE::AFTER_START == m_eAnimState)
     {
+        m_pGameInstance->PlaySound_FadeIn(TEXT("IP_TS_Loop_Vocal.wav"), m_fInteract_Volume, 3.f);
+
         CUI_BladeNexus::ONTYPE eUIType = {};
 
         switch (m_iBladeNexus_ID)
@@ -566,7 +639,8 @@ void CBladeNexus::Animation_Change(_float fTimeDelta)
         m_eAnimState = ANIM_STATE::AFTER_LOOP;
         m_pModelCom->Set_Animation(ANIM_STATE::AFTER_LOOP);
         m_pModelCom->Set_AnimationLoop(true);
-
+        m_pGameInstance->Emit_Event< EVENT_RESPOWN>(ENUM_CLASS(EVENT_TYPE::RESPOWN), { });
+        CClientInstance::GetInstance()->Initialize_PlayerData();
         EventInteractType InteractType = {};
 
         InteractType.eInteractType = INTERACTIVE_TYPE::CHECKPOINT;

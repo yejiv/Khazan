@@ -5,6 +5,7 @@
 #include "Body_Viper.h"
 
 
+
 CCore_Viper::CCore_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CPartObject{ pDevice,pContext }
 {
@@ -81,6 +82,15 @@ void CCore_Viper::Update(_float fTimeDelta)
         m_pBodyComp->Sync_Update(WeaponWorld);
         m_pBodyComp->Update(fTimeDelta, WeaponWorld, vQuat, vPos);
     }
+
+    _float4x4 vSwordMat = m_CombinedWorldMatrix;
+    _vector vSwordPos = { vSwordMat._41, vSwordMat._42, vSwordMat._43 };
+    vSwordPos += XMVector4Normalize(XMVectorSet(m_CombinedWorldMatrix._21, m_CombinedWorldMatrix._22, m_CombinedWorldMatrix._23, 0.f)) * 0.3f;
+    XMStoreFloat4(&m_vCoreCenterPos, XMVectorSetW(vSwordPos, 1.f));
+
+    // Light Test
+    //  m_pGameInstance->Set_LightPosition(TEXT("Viper_Core"), ENUM_CLASS(LEVEL::VIPER), 
+    //      _float4(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, m_CombinedWorldMatrix._44));
 }
 
 void CCore_Viper::Late_Update(_float fTimeDelta)
@@ -223,6 +233,18 @@ HRESULT CCore_Viper::Bind_ShaderResources()
 
     return S_OK;
 }
+
+
+_vector CCore_Viper::Get_CoreTip()
+{
+
+    _float4x4 vSwordMat = m_CombinedWorldMatrix;
+    _vector vSwordPos = { vSwordMat._41, vSwordMat._42, vSwordMat._43 };
+    vSwordPos += XMVector4Normalize(XMVectorSet(m_CombinedWorldMatrix._21, m_CombinedWorldMatrix._22, m_CombinedWorldMatrix._23, 0.f)) * 0.6f;
+    vSwordPos = XMVectorSetW(vSwordPos, 1.f);
+    return vSwordPos;
+}
+
 
 CCore_Viper* CCore_Viper::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

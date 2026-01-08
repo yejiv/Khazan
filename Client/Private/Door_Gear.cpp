@@ -60,6 +60,11 @@ HRESULT CDoor_Gear::Initialize_Clone(void* pArg)
     if (EVENT_TYPE::END != m_eEventType)
         m_iEventLisID = m_pGameInstance->Subscribe_Event<EventGateGear>(ENUM_CLASS(m_eEventType), [&](const EventGateGear& e) { m_EventGate = e; });
 
+    // 룬 문자
+    m_fMinIntensity = 20.f;
+    m_fMaxIntensity = 60.f;
+    m_fEmissiveIntensity = m_fMinIntensity;
+
     return S_OK;
 }
 
@@ -71,7 +76,29 @@ void CDoor_Gear::Update(_float fTimeDelta)
 {
     Animation_Update(fTimeDelta);
 
-    if (true == m_pModelCom->Play_Animation(fTimeDelta))
+    _float fTimeAcc = fTimeDelta;
+
+    if (ANIM_STATE::ACTIVATION == m_eAnimState)
+    {
+        m_fAnimTimeAcc += fTimeDelta;
+
+        if (4.2f <= m_fAnimTimeAcc)
+        {
+            if (false == m_isEffectOn)
+            {
+                m_isEffectOn = true;
+
+                //가동시작!
+                m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On"),
+                    XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)),
+                    XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
+            }
+
+            fTimeAcc *= 2.2f;
+        }
+    }
+
+    if (true == m_pModelCom->Play_Animation(fTimeAcc))
         Animation_Change(fTimeDelta);
 
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
@@ -80,6 +107,17 @@ void CDoor_Gear::Update(_float fTimeDelta)
         BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
 
     XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+
+    m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On_Static"), m_iEffectIdx,
+        XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)),
+        XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
+
+    if (m_isBlink)
+    {
+        m_fTimeAcc += fTimeDelta;
+        _float fRatio = 0.5f * (1.f + cos(m_fTimeAcc * 5.f));
+        m_fEmissiveIntensity = Lerp(m_fMinIntensity, m_fMaxIntensity, fRatio);
+    }
 }
 
 void CDoor_Gear::Late_Update(_float fTimeDelta)
@@ -99,7 +137,21 @@ HRESULT CDoor_Gear::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        if (GEAR == i)
+        {
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        }
+        else if (RUNE == i) // MeshIndex == 1
+        {
+            _float3 vRuneColor = _float3(0.f, 1.f, 1.5f);
+            if (FAILED(m_pShaderCom->Bind_RawValue("g_vRuneColor", &vRuneColor, sizeof(_float3))))
+                return E_FAIL;
+
+            if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &m_fEmissiveIntensity, sizeof(_float))))
+                return E_FAIL;
+
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(24), E_FAIL);
+        }
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -144,8 +196,11 @@ HRESULT CDoor_Gear::Bind_Materials(_uint iMeshIndex)
 {
     m_iMtrlFlags = 0;
 
-    if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
-        m_iMtrlFlags |= M_DIFFUSE;
+    if (GEAR == iMeshIndex)
+    {
+        if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", iMeshIndex, aiTextureType_DIFFUSE, 0)))
+            m_iMtrlFlags |= M_DIFFUSE;
+    }
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", iMeshIndex, aiTextureType_NORMALS, 0)))
         m_iMtrlFlags |= M_NORMAL;
     if (SUCCEEDED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", iMeshIndex, aiTextureType_EMISSIVE, 0)))
@@ -155,6 +210,9 @@ HRESULT CDoor_Gear::Bind_Materials(_uint iMeshIndex)
 
     m_iMtrlFlags &= ~M_EMISSIVE;
     m_iMtrlFlags &= ~M_SPECULAR;
+
+    if (RUNE == iMeshIndex && true == m_EventGate.isSecondStep())
+        m_iMtrlFlags |= M_EMISSIVE;
 
     m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 
@@ -167,6 +225,8 @@ void CDoor_Gear::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::IDLE1 == m_eAnimState)
         {
+            m_pGameInstance->PlaySoundOnce(TEXT("IP_Door_Gear_Active.wav"), XMLoadFloat4x4(&m_CombinedWorldMatrix).r[3], nullptr, 0.5f);
+
             m_eAnimState = ANIM_STATE::ACTIVATION;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
             m_pModelCom->Set_AnimationLoop(false);
@@ -178,6 +238,8 @@ void CDoor_Gear::Animation_Change(_float fTimeDelta)
 {
     if (ANIM_STATE::ACTIVATION == m_eAnimState)
     {
+        m_pGameInstance->PlaySoundOnce(TEXT("IP_Door_Gear_End.wav"), XMLoadFloat4x4(&m_CombinedWorldMatrix).r[3], nullptr, 0.5f);
+
         // 처음 상호 작용이 끝난 후 After Idle 상태로 전환
         m_eAnimState = ANIM_STATE::IDLE2;
         m_pModelCom->Set_Animation(m_eAnimState);
@@ -188,6 +250,14 @@ void CDoor_Gear::Animation_Change(_float fTimeDelta)
         m_EventGate.isActiveGear2 = true;
 
         m_pGameInstance->Emit_Event<EventGateGear>(ENUM_CLASS(m_eEventType), m_EventGate);
+        //가동 끝! 
+        m_iEffectIdx = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On_Static"),
+            XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90)),
+            XMVectorSet(m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43, 1.f));
+        
+        m_isBlink = true;
+
+        m_pGameInstance->Emit_Event<EVENT_PET_STATE>(ENUM_CLASS(EVENT_TYPE::PET), EVENT_PET_STATE{ false });
     }
 }
 

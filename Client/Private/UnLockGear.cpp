@@ -86,6 +86,13 @@ void CUnLockGear::Priority_Update(_float fTimeDelta)
     {
         m_Event.None();
     }
+
+    if (true == m_EventGimmick.isUnLockGearAvailable(m_iEventID) && false == m_isGimmickDone)
+    {
+        m_isGimmickDone = true;
+
+        SoundOnce(TEXT("IP_Statue_Done"), m_fInteract_Volume * 1.875f);
+    }
 }
 
 void CUnLockGear::Update(_float fTimeDelta)
@@ -238,9 +245,9 @@ HRESULT CUnLockGear::Ready_Collision(void* pArg)
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_TriggerCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.isForceVaildation = true;
+    TriggerDesc.pCollisionDesc = &m_TriggerCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
@@ -255,7 +262,7 @@ HRESULT CUnLockGear::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("해제해잇"), 1.f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("당기기"), 0.75f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_UI"), m_pGuide);
 
@@ -319,6 +326,8 @@ void CUnLockGear::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::IDLE == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_UnLockGear_Active"), m_fInteract_Volume);
+
             m_pStaticCom->Collision_Active(false);
 
             m_pGuide->Update_Visible(false);

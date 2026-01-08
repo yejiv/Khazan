@@ -17,11 +17,13 @@ void CAS_P2_FakeRunAttack_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
-   
     m_eState = FAKERUNATTACKSTATE::RUN;
     m_fSpeed = pBB->Get_Value<_float>(pViper->Get_Name(), "RunSpeed");
     pModel->Set_Animation(44);
+
     m_fAnimSpeed = 1.f;
+
+    pBB->Set_Value<_uint>(pViper->Get_Name(), "AttackCount", 0);
 }
 
 void CAS_P2_FakeRunAttack_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -29,6 +31,30 @@ void CAS_P2_FakeRunAttack_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+
+
+
+    if (pBB->Get_Value<_bool>(pViper->Get_Name(), "isFakeAttac_Movement1"))
+    {
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        pOwnerTransform->Go_Straight(fTimeDelta * 5.f);
+
+    }
+
+    if (pBB->Get_Value<_bool>(pViper->Get_Name(), "FakeAttac_Movement2"))
+    {
+        _float fAttackRange = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+        CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
+        pViper->Get_Controller()->AI_MoveTo(pViper, pTarget, fAttackRange, 10.f, fTimeDelta);
+
+    }
+
+    if (pBB->Get_Value<_bool>(pViper->Get_Name(), "FakeAttac_Movement3"))
+    {
+        _float fAttackRange = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
+        CGameObject* pTarget = pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target");
+        pViper->Get_Controller()->AI_MoveTo(pViper, pTarget, fAttackRange, 10.f, fTimeDelta);
+    }
 
     if (FAKERUNATTACKSTATE::RUN == m_eState)
     {
@@ -55,6 +81,38 @@ void CAS_P2_FakeRunAttack_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
 
 void CAS_P2_FakeRunAttack_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+   
+}
+
+void CAS_P2_FakeRunAttack_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CViper* pViper = static_cast<CViper*>(pOwner);
+        CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+        _uint iAttackCnt = pBB->Get_Value<_uint>(pViper->Get_Name(), "AttackCount");
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        if (nullptr == pOwnerTransform)
+            return;
+
+        if (iAttackCnt == 1)
+        {
+            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vLook, 20.f, 60.f);
+        }
+        else if (iAttackCnt == 2)
+        {
+            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vLook, 20.f, 60.f);
+        }
+      
+
+    }
 }
 
 CAS_P2_FakeRunAttack_Viper* CAS_P2_FakeRunAttack_Viper::Create()

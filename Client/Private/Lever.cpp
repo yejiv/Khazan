@@ -88,6 +88,8 @@ void CLever::Update(_float fTimeDelta)
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
         Animation_Change(fTimeDelta);
+
+    m_fBlinkTimeAcc += fTimeDelta;
 }
 
 void CLever::Late_Update(_float fTimeDelta)
@@ -99,6 +101,9 @@ HRESULT CLever::Render()
 {
     CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CLever : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     for (_uint i = 0; i < iNumMeshes; ++i)
@@ -107,7 +112,15 @@ HRESULT CLever::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        if (ANIM_STATE::IDLE1 == m_eAnimState)
+        {
+            if (FAILED(Bind_Blink_ShaderResources()))
+                return E_FAIL;
+
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(30), E_FAIL);
+        }
+        else
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -183,9 +196,10 @@ HRESULT CLever::Ready_Collision(void* pArg)
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.isForceVaildation = true;
     //pCollDesc.pInfo = ?? // 작성하기
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    TriggerDesc.pCollisionDesc = &m_TriggerCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
@@ -278,6 +292,7 @@ void CLever::Animation_Update(_float fTimeDelta)
     {
         if (ANIM_STATE::IDLE1 == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_Lever_Active"), m_fInteract_Volume);
             m_pStaticCom->Collision_Active(false);
 
             m_pGuide->Update_Visible(false);
@@ -305,13 +320,15 @@ void CLever::Animation_Update(_float fTimeDelta)
 
             // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("labber"), m_pTransformCom->Get_WorldMatrix(),m_pTransformCom->Get_State(STATE::POSITION));
+
         }
         if (ANIM_STATE::IDLE2 == m_eAnimState)
         {
             // 한번만 시행
             if (EVENT_TYPE::GATE_GEAR0 == m_eEventType || EVENT_TYPE::GATE_GEAR1 == m_eEventType)
             {
-
+                int a = 0;
             }
             else
             {
@@ -421,6 +438,35 @@ void CLever::Animation_Change(_float fTimeDelta)
             m_pGameInstance->Emit_Event<EventGateGear>(ENUM_CLASS(m_eEventType), m_EventGate);
         }
     }
+}
+
+HRESULT CLever::Bind_Blink_ShaderResources()
+{
+    _float fRimPower = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRimIntensity = 1.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &fRimIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    // 반짝이는 림라이트 이미시브
+    _float fRimEmissive = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fTimeDelta", &m_fBlinkTimeAcc, sizeof(_float))))
+        return E_FAIL;
+
+    _float fCycleSpeed = 3.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fCycleSpeed", &fCycleSpeed, sizeof(_float))))
+        return E_FAIL;
+
+    _float3 vRimColor = _float3(1.f, 1.f, 1.f);
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3))))
+        return E_FAIL;
+
+    return S_OK;
 }
 
 void CLever::Collision_Enter(COLLISION_DESC * pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)

@@ -30,7 +30,7 @@ private:
 
 public:
 	_float4x4*  Get_BoneMatrix(const _char* pBoneName);
-	const _matrix& Get_OffestMatrix() const { return m_matOffset; }
+	//const _matrix& Get_OffestMatrix() const { return m_matOffset; }
     void		Set_matWeaponR(_float4x4* mat) { m_pWeaponR_Matrix = mat; }
     void		Set_GSwordBackPack(_float4x4* mat) { m_GSwordBackPack_Matrix = mat; }
     void		Set_SpearBackPack(_float4x4* mat) { m_pSpearBackPack_Matrix = mat; }
@@ -61,6 +61,8 @@ public:
         m_pMotionTrailCom->Set_Config(strKey);
         m_isActiveMotionTrail = isActive;
     }
+    void                        Start_HealRimLight(_float fDuration, const _float2& vFadeTime, _float fMaxIntensity);
+    void                        Reset_HealRimLightFlag() { m_isFinishedHealRimLight = false; }
 
 private:
 	CShader*					m_pShaderCom = { nullptr };
@@ -78,7 +80,8 @@ private:
     _float4x4*                  m_GSwordBackPack_Matrix = { nullptr };
     _float4x4*                  m_pSpearBackPack_Matrix = { nullptr };
 
-	_matrix						m_matOffset;
+    _matrix						m_matGSwordOffset;
+    _matrix						m_matSpearOffset;
     _bool                       m_isEnble = { true };
     _bool                       m_isEquip = { true };
     
@@ -87,6 +90,10 @@ private:
     /* Motion Trail */
     function<void(const _wstring&, _bool)>  m_OnMotionTrailCallBack;
     _bool                       m_isActiveMotionTrail = { false };
+
+    _bool                       m_isEnableHealRimLight = { false };
+    _bool                       m_isFinishedHealRimLight = { false };
+    PLAYER_HEAL_RIMLIGHT_DESC   m_HealRimLightDesc;
 
 private:
     void        Change_Weapon(EQUIPMENTTYPE type, const _wstring& strPartName);

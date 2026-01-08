@@ -70,6 +70,8 @@
 #include "Dragonian_Melee.h"
 #include "Dragonian_Rampage.h"
 #include "Elamein.h"
+#include "Halberd.h"
+#include "Pet_Danjinjar.h"
 #pragma endregion
 
 #pragma region UI
@@ -82,6 +84,10 @@
 #pragma endregion
 
 #include "Effect_Prefab.h"
+
+#include "Destructible_Stone.h"
+#include "Chunk.h"
+
 //static mutex g_GpuGate;
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -356,7 +362,7 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         return E_FAIL;
     
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Fire"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/fire1"))))
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/newfire"))))
         return E_FAIL;
     
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Open"),
@@ -399,9 +405,17 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GhostKnight_static_connect"))))
         return E_FAIL;
 
-    //  if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("ITEM_FX"),
-    //      CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item"))))
-    //      return E_FAIL;
+      if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("ITEM_FX"),
+          CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item"))))
+          return E_FAIL;
+
+      if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("ITEM_RARE_FX"),
+          CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item_rare"))))
+          return E_FAIL;
+
+      if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("ITEM_UNIQUE_FX"),
+          CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item_unique"))))
+          return E_FAIL;
 
     // [GS]
     if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("FerociousMomentum0"),
@@ -483,9 +497,87 @@ HRESULT CLoader::Loading_For_Effect_Static(_uint level)
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GS_StrongATK"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Ghost_Dark_Shadow_Land"),
-        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Ghost_Dark_Shadow/Ghost_Dark_Shadow_Land"))))
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Guard"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Guard"))))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("PerfectGaurd"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/PerfectGaurd"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Lachryma"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Lachryma"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Lachryma_Arm"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Lachryma_Arm"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("lantern"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/lantern"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Spear_Crescent_Land"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear_Crescent_Land"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Spear_BloodWind"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear_BloodWind"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust11"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blust11"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Blust12"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blust12"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Sphere_Blood"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Sphere_Blood"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("JumpSpear"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/JumpSpear"))))
+        return E_FAIL;
+
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("TrailParticle"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/TrailParticle"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("TrailParticle_R"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/TrailParticle_R"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Spear_FallAtk_Land"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Spear_FallAtk_Land"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("brutal_hand"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/brutal_hand"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("brutalParticle"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/brutalParticle_L"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("blust_brutal"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blust_brutal"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("blust_brutal_GS"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/blust_brutal_GS"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("Brutal_Spark_GS"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Brutal_Spark_GS"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(level, TEXT("GrappleTrail"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/GrappleTrail"))))
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -647,6 +739,95 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
         return E_FAIL;
+
+    /* ===== Nude Set ====== */
+    /* Prototype_Component_Model_Khazan_Nude_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Nude_Arm/Nude_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Face*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Face"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Nude_Face/Nude_Face.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Hair1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair1/Nude_Hair1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Hair2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair2/Nude_Hair2.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Nude_Leg/Nude_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Nude_Shoes/Nude_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Nude_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Nude_Torso/Nude_Torso.dat"))))
+        return E_FAIL;
+
+    /* ========= Thief Set ========= */
+        /* Prototype_Component_Model_Khazan_Thief_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Thief_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Thief_Arm/Thief_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Thief_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Thief_Hair/Thief_Hair.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Thief_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Thief_Leg/Thief_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Thief_Shoes/Thief_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_Thief_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Thief_Torso/Thief_Torso.dat"))))
+        return E_FAIL;
+
+    /* ========= ShadowLandFlow Set ========= */
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/ShadowlandFlow_Arm/ShadowlandFlow_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/ShadowlandFlow_Hair/ShadowlandFlow_Hair.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/ShadowlandFlow_Leg/ShadowlandFlow_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/ShadowlandFlow_Shoes/ShadowlandFlow_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/ShadowlandFlow_Torso/ShadowlandFlow_Torso.dat"))))
+        return E_FAIL;
+
 #pragma endregion
 
 #pragma region YETUGA
@@ -713,6 +894,16 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_NPC_Danjin001/C_NPC_Danjin001.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 귀석
+    /* Prototype_Component_Model_DestinyStone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_DestinyStone"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Ore/WP_COM_DestinyStone_Base_001_a/WP_COM_DestinyStone_Base_001_a.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_DestinyStone_Gem */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_DestinyStone_Gem"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Ore/WP_COM_DestinyStone_Base_001_b/WP_COM_DestinyStone_Base_001_b.dat")), E_FAIL);
+#pragma endregion
+
 #pragma endregion
 
 #pragma region �� ���� : Ʈ����
@@ -721,55 +912,32 @@ HRESULT CLoader::Loading_For_HeinMach_Model()
 		CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Base/Cube/Cube.dat")), E_FAIL);
 #pragma endregion
 
+#pragma region 파괴 가능 오브젝트 : 모델
 
-#pragma region DEST
-    /* Prototype_Component_Model_Fence_Chunk */
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fence_Chunk_1"),
-    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk1/Fence_Chunk1.dat", false)), E_FAIL);
+    /* Prototype_Component_Model_Stone_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_1"),
+    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk1/Stone_Chunk1.dat", false)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fence_Chunk_2"),
-    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk2/Fence_Chunk2.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_2"),
+    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk2/Stone_Chunk2.dat", false)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fence_Chunk_3"),
-    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk3/Fence_Chunk3.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_3"),
+    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk3/Stone_Chunk3.dat", false)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fence_Chunk_4"),
-    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk4/Fence_Chunk4.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_4"),
+    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk4/Stone_Chunk4.dat", false)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Fence_Chunk_5"),
-    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk5/Fence_Chunk5.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_5"),
+    CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk5/Stone_Chunk5.dat", false)), E_FAIL);
 
-    /* Prototype_Component_Model_Pot_Chunk */
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Pot_Chunk_1"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk1/Pot_Chunk1.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_6"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk6/Stone_Chunk6.dat", false)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Pot_Chunk_2"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk2/Pot_Chunk2.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_7"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk7/Stone_Chunk7.dat", false)), E_FAIL);
 
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Pot_Chunk_3"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk3/Pot_Chunk3.dat", false)), E_FAIL);
-
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Pot_Chunk_4"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk4/Pot_Chunk4.dat", false)), E_FAIL);
-
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Pot_Chunk_5"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk5/Pot_Chunk5.dat", false)), E_FAIL);
-
-    /* Prototype_Component_Model_Barrel_Chunk */
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Barrel_Chunk_1"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk1/Barrel_Chunk1.dat", false)), E_FAIL);
-
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Barrel_Chunk_2"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk2/Barrel_Chunk2.dat", false)), E_FAIL);
-
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Barrel_Chunk_3"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk3/Barrel_Chunk3.dat", false)), E_FAIL);
-
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Barrel_Chunk_4"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk4/Barrel_Chunk4.dat", false)), E_FAIL);
-
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Barrel_Chunk_5"),
-        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk5/Barrel_Chunk5.dat", false)), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Stone_Chunk_8"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Monster/Model/Yetuga/Stone_Chunk8/Stone_Chunk8.dat", false)), E_FAIL);
 
 #pragma endregion
 
@@ -827,25 +995,30 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Projectile_Yetuga_Breath"),
         CProjectile_Breath_Yetuga::Create(m_pDevice, m_pContext))))
         return E_FAIL;
+#pragma endregion
 
+#pragma region Halberd
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Halberd"),
+        CHalberd::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::HEINMACH)))))
+        return E_FAIL;
 #pragma endregion
 
 #pragma region GOMDOL
 
 	/* Prototype_GameObject_Monster_Yetuga */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"),
-		CGomdol::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
-
-	// Prototype_PartObject_Yetuga_Body
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Gomdol_Body"),
-		CBody_Gomdol::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Gomdol"),
+	//	CGomdol::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 	//// Prototype_PartObject_Yetuga_Body
-	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Head"),
-	//	CHead_Yetuga::Create(m_pDevice, m_pContext))))
+	//if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Gomdol_Body"),
+	//	CBody_Gomdol::Create(m_pDevice, m_pContext))))
 	//	return E_FAIL;
+
+	////// Prototype_PartObject_Yetuga_Body
+	////if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Head"),
+	////	CHead_Yetuga::Create(m_pDevice, m_pContext))))
+	////	return E_FAIL;
 
 #pragma endregion
 
@@ -925,7 +1098,18 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
         CNPC_Danjin::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
 
-#pragma region 파괴
+#pragma region 귀석
+    /* Prototype_GameObject_Prop_DestinyStone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_DestinyStone"),
+        CDestinyStone::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_DestinyStone_Gem */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_DestinyStone_Gem"),
+        CDestinyGem::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 파괴 가능 오브젝트 : 객체
+
     /* Prototype_GameObject_Prop_Chunk */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"),
         CProp_Chunk::Create(m_pDevice, m_pContext)), E_FAIL);
@@ -941,6 +1125,14 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
     /* Prototype_GameObject_Prop_Barrel */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Barrel"),
         CBarrel::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Chunk"),
+        CChunk::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Destructible_Stone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Destructible_Stone"),
+        CDestructible_Stone::Create(m_pDevice, m_pContext)), E_FAIL);
 
 #pragma endregion
 
@@ -1044,19 +1236,31 @@ HRESULT CLoader::Loading_For_HeinMach_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice_Disappear"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Ice_Disappear"))))
         return E_FAIL;
-
         
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"),
-
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_Smoke"))))
-
         return E_FAIL;
-#pragma endregion
-
-#pragma region Shader
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Decal"),
-        CDecal::Create(m_pDevice, m_pContext))))
+     
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Halberd_Weapon_Wind"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Helberd_Spear"))))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("stone"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/stone"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("stone_blust"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/stone_blust"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_DropSnow"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_scream"))))
+        return E_FAIL;
+
+
 #pragma endregion
 
 #pragma region Item
@@ -1206,6 +1410,100 @@ HRESULT CLoader::Loading_For_Crevice_Model()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
         return E_FAIL;
+
+    /* ===== Nude Set ====== */
+/* Prototype_Component_Model_Khazan_Nude_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Nude_Arm/Nude_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Face*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Face"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Nude_Face/Nude_Face.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Hair1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair1/Nude_Hair1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Hair2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair2/Nude_Hair2.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Nude_Leg/Nude_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Nude_Shoes/Nude_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Nude_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Nude_Torso/Nude_Torso.dat"))))
+        return E_FAIL;
+
+    /* ========= Thief Set ========= */
+        /* Prototype_Component_Model_Khazan_Thief_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Thief_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Thief_Arm/Thief_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Face*/
+    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Thief_Face"),
+    //    CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Thief_Face/Thief_Face.dat"))))
+    //    return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Thief_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Thief_Hair/Thief_Hair.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Thief_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Thief_Leg/Thief_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Thief_Shoes/Thief_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_Thief_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Thief_Torso/Thief_Torso.dat"))))
+        return E_FAIL;
+
+    /* ========= ShadowLandFlow Set ========= */
+/* Prototype_Component_Model_Khazan_ShadowLandFlow_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/ShadowlandFlow_Arm/ShadowlandFlow_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/ShadowlandFlow_Hair/ShadowlandFlow_Hair.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/ShadowlandFlow_Leg/ShadowlandFlow_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/ShadowlandFlow_Shoes/ShadowlandFlow_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::CREVICE), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/ShadowlandFlow_Torso/ShadowlandFlow_Torso.dat"))))
+        return E_FAIL;
+
 #pragma endregion
 
 	/* Prototype_Component_Model_Khazan_Sample*/
@@ -1459,6 +1757,102 @@ HRESULT CLoader::Loading_For_Embars_Model()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
         return E_FAIL;
+
+    /* ===== Nude Set ====== */
+/* Prototype_Component_Model_Khazan_Nude_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Nude_Arm/Nude_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Face*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Face"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Nude_Face/Nude_Face.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Hair1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair1/Nude_Hair1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Hair2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair2/Nude_Hair2.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Nude_Leg/Nude_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Nude_Shoes/Nude_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Nude_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Nude_Torso/Nude_Torso.dat"))))
+        return E_FAIL;
+
+    /* ========= Thief Set ========= */
+        /* Prototype_Component_Model_Khazan_Thief_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Thief_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Thief_Arm/Thief_Arm.dat"))))
+        return E_FAIL;
+
+    ///* Prototype_Component_Model_Khazan_Thief_Face*/
+    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Thief_Face"),
+    //    CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Thief_Face/Thief_Face.dat"))))
+    //    return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Thief_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Thief_Hair/Thief_Hair.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Thief_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Thief_Leg/Thief_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Thief_Shoes/Thief_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_Thief_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Thief_Torso/Thief_Torso.dat"))))
+        return E_FAIL;
+
+
+    /* ========= ShadowLandFlow Set ========= */
+/* Prototype_Component_Model_Khazan_ShadowLandFlow_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/ShadowlandFlow_Arm/ShadowlandFlow_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/ShadowlandFlow_Hair/ShadowlandFlow_Hair.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/ShadowlandFlow_Leg/ShadowlandFlow_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/ShadowlandFlow_Shoes/ShadowlandFlow_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/ShadowlandFlow_Torso/ShadowlandFlow_Torso.dat"))))
+        return E_FAIL;
+
+
 #pragma endregion
 
 
@@ -1466,6 +1860,10 @@ HRESULT CLoader::Loading_For_Embars_Model()
     /* Prototype_Component_Model_BigChest */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_BigChest"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_COM_BigChest_Open_003/WIP_COM_BigChest_Open_003.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_TombStone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_TombStone"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/InteractiveProp/WIP_BGQ_BigTombStone_Destruct_001/WIP_BGQ_BigTombStone_Destruct_001.dat")), E_FAIL);
 
 #pragma region 엘리베이터 ( 스몰 사이즈 )
     /* Prototype_Component_Model_SmallElevator */
@@ -1503,6 +1901,10 @@ HRESULT CLoader::Loading_For_Embars_Model()
     /* Prototype_Component_Model_Statue_Deco */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Statue_Deco"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Symbol/WP_CTR_Statue_Stone_002/WP_CTR_Statue_Stone_002.dat")), E_FAIL);
+
+    /* Prototype_Component_Model_Statue_Deco_Else */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Statue_Deco_Else"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Symbol/WP_DKE_Statue_Stone_003/WP_DKE_Statue_Stone_003.dat")), E_FAIL);    
 #pragma endregion
 
 #pragma region 수직 차단봉
@@ -1588,6 +1990,10 @@ HRESULT CLoader::Loading_For_Embars_Model()
 #pragma endregion
 
 #pragma region NPC ( 야매 )
+    /* Prototype_Component_Model_NPC_Gacha */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_NPC_Gacha"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_NPC_Danjin001/C_NPC_Danjin001.dat")), E_FAIL);
+
     /* Prototype_Component_Model_NPC_Daphrona */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_NPC_Daphrona"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_NPC_Seona/C_NPC_Seona.dat")), E_FAIL);
@@ -1613,6 +2019,66 @@ HRESULT CLoader::Loading_For_Embars_Model()
     /* Prototype_Component_Model_NPC_DanjinJar_C */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_NPC_DanjinJar_C"),
         CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/NPC/C_M_DanjinJar_C/C_M_DanjinJar_C.dat")), E_FAIL);
+#pragma endregion
+
+#pragma region 신기루 벽
+
+    /* Prototype_Component_Model_Illusion_Wall */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Illusion_Wall"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Building_B/WP_BGQ_Walldeco_Base_001_01/WP_BGQ_Walldeco_Base_001_01.dat")), E_FAIL);
+
+#pragma endregion
+
+#pragma region 파괴 가능 오브젝트 : 모델
+
+    /* Prototype_Component_Model_Fence_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Fence_Chunk_1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk1/Fence_Chunk1.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Fence_Chunk_2"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk2/Fence_Chunk2.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Fence_Chunk_3"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk3/Fence_Chunk3.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Fence_Chunk_4"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk4/Fence_Chunk4.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Fence_Chunk_5"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk5/Fence_Chunk5.dat", false)), E_FAIL);
+
+    /* Prototype_Component_Model_Pot_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Pot_Chunk_1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk1/Pot_Chunk1.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Pot_Chunk_2"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk2/Pot_Chunk2.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Pot_Chunk_3"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk3/Pot_Chunk3.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Pot_Chunk_4"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk4/Pot_Chunk4.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Pot_Chunk_5"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk5/Pot_Chunk5.dat", false)), E_FAIL);
+
+    /* Prototype_Component_Model_Barrel_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Barrel_Chunk_1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk1/Barrel_Chunk1.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Barrel_Chunk_2"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk2/Barrel_Chunk2.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Barrel_Chunk_3"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk3/Barrel_Chunk3.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Barrel_Chunk_4"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk4/Barrel_Chunk4.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_Component_Model_Barrel_Chunk_5"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk5/Barrel_Chunk5.dat", false)), E_FAIL);
+
 #pragma endregion
 
 #pragma endregion
@@ -1689,6 +2155,10 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Monster_Elamein"),
         CElamein::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Pet_Danjinjar"),
+        CPet_Danjinjar::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::EMBARS)))))
         return E_FAIL;
 #pragma endregion
 
@@ -1855,6 +2325,10 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
 #pragma endregion
 
 #pragma region NPC ( 야매 )
+    /* Prototype_GameObject_Prop_NPC_Gacha */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Gacha"),
+        CNPC_Gacha::Create(m_pDevice, m_pContext)), E_FAIL);
+
     /* Prototype_GameObject_Prop_NPC_Daphrona */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Daphrona"),
         CNPC_Daphrona::Create(m_pDevice, m_pContext)), E_FAIL);
@@ -1880,7 +2354,51 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
     /* Prototype_GameObject_Prop_NPC_Jar_3rd */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_3rd"),
         CJar_3rd::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Jar_4th */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_4th"),
+        CJar_4th::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Jar_5th */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_5th"),
+        CJar_5th::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Jar_6th */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_6th"),
+        CJar_6th::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Jar_7th */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_7th"),
+        CJar_7th::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_NPC_Jar_8th */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_NPC_Jar_8th"),
+        CJar_8th::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
+
+#pragma region 신기루 벽
+    /* Prototype_GameObject_Prop_Illusion_Wall */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Illusion_Wall"),
+        CIllusion_Wall::Create(m_pDevice, m_pContext)), E_FAIL);
+#pragma endregion
+
+#pragma region 파괴 가능 오브젝트 : 객체
+
+    /* Prototype_GameObject_Prop_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Chunk"),
+        CProp_Chunk::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Fence */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Fence"),
+        CFence::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Pot */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Pot"),
+        CPot::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Barrel */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Prop_Barrel"),
+        CBarrel::Create(m_pDevice, m_pContext)), E_FAIL);
 
 #pragma endregion
 
@@ -1904,8 +2422,84 @@ HRESULT CLoader::Loading_For_Embars_GameObject()
 
 #pragma region EFFECT
     Loading_For_Effect_Static(ENUM_CLASS(LEVEL::EMBARS));
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elevator_Spark"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/SparkTime"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elevator_Button"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/Elevator_Button"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("MapSpine"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/UpSpline"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("DoorOpen"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/Door_Open"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("labber"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/labber"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Statue_Dust"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/Statue_Dust"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Statue_Twinkle"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/Statue_Twinkle"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/Big_labber_on"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On_Static"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Embars/labber_gear_on"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Brazier"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/fire_big"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Jump"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Elamein/Jump"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Land_Shield"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Elamein/Land_Shield"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Land_Sword"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Elamein/Land_Sword"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Spark_Loop"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Elamein/Spark_Loop"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Sword_Wind"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Elamein/Sword_Wind"))))
+        return E_FAIL; 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Smoke_Small"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Smoke_Small"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Gacha_Fail"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Gacha_Fail"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Gacha_Suceess"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Gacha_Suceess"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Item_normal_Gacha"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Item_normal_Gacha"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("item_rare_Gacha"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item_rare_Gacha"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("item_unique_Gacha"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item_unique_Gacha"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("item_blust"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/item_blust"))))
+        return E_FAIL;
+
 #pragma endregion
      
+#pragma region Item
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Item"),
+        CInteraction_Item::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+#pragma endregion
+
     return S_OK;
 }
 
@@ -2035,11 +2629,105 @@ HRESULT CLoader::Loading_For_Viper_Model()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Prisoner_Arm2"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Prisoner_Arm2/Prisoner_Arm2.dat"))))
         return E_FAIL;
-
+    
     /* Prototype_Component_Model_Khazan_DanJin_Hair*/
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_DanJin_Hair"),
         CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Danjin_Hair/Danjin_Hair/Danjin_Hair.dat"))))
         return E_FAIL;
+
+    /* ===== Nude Set ====== */
+/* Prototype_Component_Model_Khazan_Nude_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Nude_Arm/Nude_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Face*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Face"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Nude_Face/Nude_Face.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair1*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Hair1"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair1/Nude_Hair1.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Hair2*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Hair2"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Nude_Hair2/Nude_Hair2.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Nude_Leg/Nude_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Nude_Shoes/Nude_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Nude_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Nude_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Nude_Torso/Nude_Torso.dat"))))
+        return E_FAIL;
+
+    /* ========= Thief Set ========= */
+        /* Prototype_Component_Model_Khazan_Thief_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Thief_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/Thief_Arm/Thief_Arm.dat"))))
+        return E_FAIL;
+
+    ///* Prototype_Component_Model_Khazan_Thief_Face*/
+    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Thief_Face"),
+    //    CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Face/Thief_Face/Thief_Face.dat"))))
+    //    return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Thief_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/Thief_Hair/Thief_Hair.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Thief_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/Thief_Leg/Thief_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Thief_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/Thief_Shoes/Thief_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_Thief_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_Thief_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/Thief_Torso/Thief_Torso.dat"))))
+        return E_FAIL;
+
+    /* ========= ShadowLandFlow Set ========= */
+/* Prototype_Component_Model_Khazan_ShadowLandFlow_Arm*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Arm"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Arm/ShadowlandFlow_Arm/ShadowlandFlow_Arm.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Hair*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Hair"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Hair/ShadowlandFlow_Hair/ShadowlandFlow_Hair.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Leg*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Leg"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Leg/ShadowlandFlow_Leg/ShadowlandFlow_Leg.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Shoes"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Shoes/ShadowlandFlow_Shoes/ShadowlandFlow_Shoes.dat"))))
+        return E_FAIL;
+
+    /* Prototype_Component_Model_Khazan_ShadowLandFlow_Torso*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Component_Model_Khazan_ShadowLandFlow_Torso"),
+        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Khazan/Khazan_Parts/Torso/ShadowlandFlow_Torso/ShadowlandFlow_Torso.dat"))))
+        return E_FAIL;
+
 #pragma endregion
 
 
@@ -2319,16 +3007,201 @@ HRESULT CLoader::Loading_For_Viper_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Elamein"),
         CElamein::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Monster_Halberd"),
+        CHalberd::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::VIPER)))))
+        return E_FAIL;
 #pragma endregion
 
 #pragma region EFFECT
     Loading_For_Effect_Static(ENUM_CLASS(LEVEL::VIPER));
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_snow1"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/snow1"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_snow2"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/snow2"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Rot_Start"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Rot_Start"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Rot_Loop"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Rot_Loop"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Rot_End"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Rot_End"))))
+        return E_FAIL;
+
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Grap"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Grap"))))
         return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("scream"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/scream"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("scream_high"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/scream_high"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("HandTrail_Up"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/HandTrail_Up"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("HandTrail_V"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/HandTrail_V"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("HandTrailLR"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/HandTrailLR"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("HandTrailLR2"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/HandTrailLR2"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("HandTrailRL"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/HandTrailRL"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Land"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Land"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Land_Big"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Land_Big"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("SpearTrailLR"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/SpearTrailLR"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("SpearTrailRL"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/SpearTrailRL"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("SphereTrail_V"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/SphereTrail_V"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Small"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Twinkle_Small"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Small_Once"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Twinkle_Small_Once"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Twinkle_Big"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Twinkle_Big"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_blood_loop"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/blood_loop"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_blood2_loop"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/blood2_loop"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_blood_once"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/blood_once"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_blood2_once"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/blood2_once"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_mouth_particle"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/mouth_particle"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_fire2"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/fire2"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_fire3"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/fire3"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Body_Particle"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Body_Particle"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Body_Particle_Blust"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Body_Particle_Blust"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("mist1"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/mist"))))//군데군데 흰색
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("mist2"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/mist2"))))//흰색 (객체주변만)
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("mist3"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/mist3"))))//검은색 (전체)
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("mist4"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/mist4"))))//흰색작은거
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("mist5"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/mist5"))))//3 흰색으로 바꾼거
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Footprint"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/footprint"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Soward_Particle_red"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Soward_Particle_red"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Tornado"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Tornado"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_ChangeSnow"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/changeSnow"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_CutSceen_Land"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/CutSceen_Land"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Point_Particle_Blust"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/Point_Particle_Blust"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Sting"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Viper/SpearWind"))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("snow_viper"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/snow_viper"))))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("snow_viper_load"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/snow_viper_load"))))
+        return E_FAIL;
+
+
+    //임시 
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Halberd_Weapon_Wind"),
+        CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Helberd_Spear"))))
+        return E_FAIL;
+
 #pragma endregion
 
-
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_GameObject_Item"),
+        CInteraction_Item::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 	return S_OK;
 }
 

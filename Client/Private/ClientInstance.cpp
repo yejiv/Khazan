@@ -11,6 +11,7 @@
 #include "Interact_Manager.h"
 #include "Sequence_Data_Manager.h"
 #include "Sequence_Interface.h"
+#include "BGM_Manager.h"
 #ifdef _DEBUG
 #include "Debug_Manager.h"
 #include "Camera_Controller.h"
@@ -58,6 +59,9 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
     if (nullptr == m_pSeq_Data_Manager)
         return E_FAIL;
 
+    m_pBGM_Manager = CBGM_Manager::Create();
+    CHECK_NULLPTR(m_pBGM_Manager, E_FAIL);
+
 #ifdef _DEBUG
 	m_pDebug_Manager = CDebug_Manager::Create();
 	if (m_pDebug_Manager == nullptr)
@@ -77,6 +81,10 @@ HRESULT CClientInstance::Initialize(ID3D11Device** ppDevice, ID3D11DeviceContext
 
 void CClientInstance::Update(_float fTimeDelta)
 {
+    if (fTimeDelta > 1.f)
+        return;
+
+
 	m_pUI_Manager->UIObjectToRenderer();
 
 #ifdef _DEBUG
@@ -156,6 +164,11 @@ HRESULT CClientInstance::Release_RootUI(const _wstring& szRootUIName)
     return m_pUI_Manager->Release_RootUI(szRootUIName);
 }
 
+void CClientInstance::Set_UIAllRenderSet(_bool isRender)
+{
+    m_pUI_Manager->Set_UIAllRenderSet(isRender);
+}
+
 HRESULT CClientInstance::UI_UpdateSwitch(const _wstring& szRootUIName, void* pArg)
 {
 	return m_pUI_Manager->UI_UpdateSwitch(szRootUIName, pArg);
@@ -182,6 +195,10 @@ _float4 CClientInstance::Get_AtlasUV(const string pFrameName, _uint iTextureInde
 PLAYER_DATA* CClientInstance::Get_pInitailizePlayerData()
 {
     return m_pPlayer_Manager->Get_pInitailizePlayerData();
+}
+void CClientInstance::Initialize_PlayerData()
+{
+    m_pPlayer_Manager->Initialize_PlayerData();
 }
 PLAYER_DATA& CClientInstance::Get_ptrPlayerData()
 {
@@ -281,6 +298,36 @@ void CClientInstance::ActiveCamera_KillFov(const _wstring& strID)
 {
 	m_pCamera_Manager->ActiveCamera_KillFov(strID);
 }
+void CClientInstance::Camera_Play_FOVZoomSequence(
+    const _wstring& strID,
+    _float fZoomFOV,
+    _float fInDuration,
+    _float fHoldDuration,
+    _float fOutDuration,
+    _int   iPriority
+)
+{
+    m_pCamera_Manager->Play_FOVZoomSequence(strID, fZoomFOV, fInDuration, fHoldDuration, fOutDuration, iPriority);
+}
+
+void CClientInstance::Camera_Start_FOVHoldZoom(
+    const _wstring& strID,
+    _float fZoomFOV,
+    _float fInDuration,
+    _int   iPriority
+)
+{
+    m_pCamera_Manager->Start_FOVHoldZoom(strID, fZoomFOV, fInDuration, iPriority);
+}
+
+// 홀드 해제 → 줌 아웃
+void CClientInstance::Camera_Release_FOVHoldZoom(
+    const _wstring& strID,
+    _float fOutDuration
+)
+{
+    m_pCamera_Manager->Release_FOVHoldZoom(strID, fOutDuration);
+}
 void CClientInstance::Save_Json_Camera(_uint iLevelIndex, _wstring strCameraTag, nlohmann::ordered_json& pOutData)
 {
 	m_pCamera_Manager->Save_Json(iLevelIndex, strCameraTag, pOutData);
@@ -317,9 +364,33 @@ void CClientInstance::Camera_Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos, _f
 {
     m_pCamera_Manager->Set_NpcTalk(isNpcTalk, vTargetPos, vLookAt);
 }
+void CClientInstance::Camera_SubShot(const CAMERA_POSE& subShotPose, _float fInDur, _float fOutDur)
+{
+    m_pCamera_Manager->Play_SubShotOnce(subShotPose, fInDur, fOutDur);
+}
+CAMERA_POSE CClientInstance::Camera_MakePose(const _float3& vPos, const _float3& vLookDir)
+{
+    return m_pCamera_Manager->MakePose(vPos, vLookDir);
+}
+CAMERA_POSE CClientInstance::Camera_MakePose_FromTarget(const _float3& vPos, const _float3& vTargetPos)
+{
+    return m_pCamera_Manager->MakePose_FromTarget(vPos, vTargetPos);
+}
+void CClientInstance::Camera_ReturnToPreviousPose(_float fDuration)
+{
+    m_pCamera_Manager->ReturnToPreviousPose(fDuration);
+}
 void CClientInstance::Camera_Force_AniEnd()
 {
     m_pCamera_Manager->Force_AniEnd();
+}
+void CClientInstance::Camera_MouseOnOff(_bool isOn)
+{
+    m_pCamera_Manager->MouseOnOff(isOn);
+}
+void CClientInstance::Camera_InitStartPoseOnce()
+{
+    m_pCamera_Manager->InitStartPoseOnce();
 }
 void CClientInstance::Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir)
 {
@@ -389,9 +460,14 @@ _bool CClientInstance::Is_CurrentGSword()
     return m_pPlayerData_Manager->Is_CurrentGSword();
 }
 
-void CClientInstance::Set_ChangePlayerEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback)
+void CClientInstance::Set_ChangePlayerWeaponEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback)
 {
-    m_pPlayerData_Manager->Set_ChangePlayerEquipmentCallBack(callback);
+    m_pPlayerData_Manager->Set_ChangePlayerWeaponEquipmentCallBack(callback);
+}
+
+void CClientInstance::Set_ChangePlayerArmorEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback)
+{
+    m_pPlayerData_Manager->Set_ChangePlayerArmorEquipmentCallBack(callback);
 }
 
 void CClientInstance::Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex)
@@ -460,6 +536,231 @@ void CClientInstance::Seq_Clear()
 
 #pragma endregion
 
+#pragma region BGM_MANAGER
+
+_float CClientInstance::Get_Volume_BGM()
+{
+    return m_pBGM_Manager->Get_Volume_BGM();
+}
+
+void CClientInstance::Set_Volume_BGM(_float fVolume)
+{
+    m_pBGM_Manager->Set_Volume_BGM(fVolume);
+}
+
+void CClientInstance::BGM_Mute()
+{
+    m_pBGM_Manager->Mute_BGM();
+}
+
+void CClientInstance::BGM_UnMute()
+{
+    m_pBGM_Manager->UnMute_BGM();
+}
+
+_float CClientInstance::Get_Volume_AMB()
+{
+    return m_pBGM_Manager->Get_Volume_AMB();
+}
+
+void CClientInstance::Set_Volume_AMB(_float fVolume)
+{
+    m_pBGM_Manager->Set_Volume_AMB(fVolume);
+}
+
+void CClientInstance::AMB_Mute()
+{
+    m_pBGM_Manager->Mute_AMB();
+}
+
+void CClientInstance::AMB_UnMute()
+{
+    m_pBGM_Manager->UnMute_AMB();
+}
+
+void CClientInstance::All_Mute()
+{
+    m_pBGM_Manager->Mute_BGM();
+    m_pBGM_Manager->Mute_AMB();
+}
+
+void CClientInstance::All_UnMute()
+{
+    m_pBGM_Manager->UnMute_BGM();
+    m_pBGM_Manager->UnMute_AMB();
+}
+
+void CClientInstance::Clear_CurrentKey_BGM()
+{
+    m_pBGM_Manager->Clear_CurrentKey();
+}
+
+void CClientInstance::PlayBGM(const _tchar* pSoundKey, _float fFadeTime)
+{
+    m_pBGM_Manager->PlayBGM(pSoundKey, fFadeTime);
+}
+
+void CClientInstance::ChangeBGM(const _tchar* pSoundKey, _float fFadeTime)
+{
+    m_pBGM_Manager->ChangeBGM(pSoundKey, fFadeTime);
+}
+
+void CClientInstance::PlayAMB(const _tchar* pSoundKey, _float fFadeTime)
+{
+    m_pBGM_Manager->PlayAMB(pSoundKey, fFadeTime);
+}
+
+void CClientInstance::ChangeAMB(const _tchar* pSoundKey, _float fFadeTime, _bool isWav)
+{
+    m_pBGM_Manager->ChangeAMB(pSoundKey, fFadeTime);
+}
+
+void CClientInstance::BGM_HeinMach_Entry(_float fFadeTime)
+{
+    m_pBGM_Manager->HeinMach_Entry(fFadeTime);
+}
+
+void CClientInstance::BGM_HeinMach_Dawn(_float fFadeTime)
+{
+    m_pBGM_Manager->HeinMach_Dawn(fFadeTime);
+}
+
+void CClientInstance::BGM_HeinMach_CutScene(_float fFadeTime)
+{
+    m_pBGM_Manager->HeinMach_CutScene(fFadeTime);
+}
+
+void CClientInstance::BGM_HeinMach_Cave(_float fFadeTime)
+{
+    m_pBGM_Manager->HeinMach_Cave(fFadeTime);
+}
+
+void CClientInstance::BGM_HeinMach_Day(_float fFadeTime)
+{
+    m_pBGM_Manager->HeinMach_Day(fFadeTime);
+}
+
+void CClientInstance::BGM_HeinMach_Halberd(_float fFadeTime)
+{
+    m_pBGM_Manager->HeinMach_Halberd(fFadeTime);
+}
+
+void CClientInstance::BGM_HeinMach_Yetuga_CutScene(_float fFadeTime)
+{
+    m_pBGM_Manager->HeinMach_Yetuga_CutScene(fFadeTime);
+}
+
+void CClientInstance::BGM_HeinMach_Yetuga_1Phase(_float fFadeTime)
+{
+    m_pBGM_Manager->HeinMach_Yetuga_1Phase(fFadeTime);
+}
+
+void CClientInstance::BGM_Embars_Entry(_float fFadeTime)
+{
+    m_pBGM_Manager->Embars_Entry(fFadeTime);
+}
+
+void CClientInstance::BGM_Embars_B1(_float fFadeTime)
+{
+    m_pBGM_Manager->Embars_B1(fFadeTime);
+}
+
+void CClientInstance::BGM_Embars_Club(_float fFadeTime)
+{
+    m_pBGM_Manager->Embars_Club(fFadeTime);
+}
+
+void CClientInstance::BGM_Embars_Club_Game(_float fFadeTime)
+{
+    m_pBGM_Manager->Embars_Club_Game(fFadeTime);
+}
+
+void CClientInstance::Embars_Club_Shuffle_0(_float fFadeTime)
+{
+    m_pBGM_Manager->Embars_Club_Shuffle_0(fFadeTime);
+}
+
+void CClientInstance::Embars_Club_Shuffle_1(_float fFadeTime)
+{
+    m_pBGM_Manager->Embars_Club_Shuffle_1(fFadeTime);
+}
+
+void CClientInstance::Embars_Club_Shuffle_2(_float fFadeTime)
+{
+    m_pBGM_Manager->Embars_Club_Shuffle_2(fFadeTime);
+}
+
+void CClientInstance::BGM_Embars_1F(_float fFadeTime)
+{
+    m_pBGM_Manager->Embars_1F(fFadeTime);
+}
+
+void CClientInstance::BGM_Embars_Elamein(_float fFadeTime)
+{
+    m_pBGM_Manager->Embars_Elamein(fFadeTime);
+}
+
+void CClientInstance::BGM_Viper_Entry(_float fFadeTime)
+{
+    m_pBGM_Manager->Viper_Entry(fFadeTime);
+}
+
+void CClientInstance::BGM_Viper_1PhaseCutScene(_float fFadeTime)
+{
+    m_pBGM_Manager->Viper_1PhaseCutScene(fFadeTime);
+}
+
+void CClientInstance::BGM_Viper_1Phase(_float fFadeTime)
+{
+    m_pBGM_Manager->Viper_1Phase(fFadeTime);
+}
+
+void CClientInstance::BGM_Viper_2PhaseCutScene(_float fFadeTime)
+{
+    m_pBGM_Manager->Viper_2PhaseCutScene(fFadeTime);
+}
+
+void CClientInstance::BGM_Viper_2Phase(_float fFadeTime)
+{
+    m_pBGM_Manager->Viper_2Phase(fFadeTime);
+}
+
+void CClientInstance::BGM_Viper_End(_float fFadeTime)
+{
+    m_pBGM_Manager->Viper_End(fFadeTime);
+}
+
+void CClientInstance::BGM_Stop(_float fFadeTime)
+{
+    m_pBGM_Manager->BGM_Stop(fFadeTime);
+}
+
+void CClientInstance::BGM_Resume(_bool isFade, _float fFadeTime)
+{
+    m_pBGM_Manager->BGM_Resume(isFade, fFadeTime);
+}
+
+void CClientInstance::BGM_Pause(_bool isFade, _float fFadeTime)
+{
+    m_pBGM_Manager->BGM_Pause(isFade, fFadeTime);
+}
+
+void CClientInstance::AMB_Stop(_float fFadeTime)
+{
+    m_pBGM_Manager->AMB_Stop(fFadeTime);
+}
+
+void CClientInstance::AMB_Resume(_bool isFade, _float fFadeTime)
+{
+    m_pBGM_Manager->AMB_Resume(isFade, fFadeTime);
+}
+
+void CClientInstance::AMB_Pause(_bool isFade, _float fFadeTime)
+{
+    m_pBGM_Manager->AMB_Pause(isFade, fFadeTime);
+}
+
+#pragma endregion
 
 #ifdef _DEBUG
 #pragma region CAMERA_MANAGER
@@ -482,6 +783,7 @@ void CClientInstance::Release_Client()
 	Safe_Release(m_pPlayer_Manager);
     Safe_Release(m_pInteract_Manager);
     Safe_Release(m_pSeq_Data_Manager);
+    Safe_Release(m_pBGM_Manager);
 
 #ifdef _DEBUG	
 	Safe_Release(m_pDebug_Manager);

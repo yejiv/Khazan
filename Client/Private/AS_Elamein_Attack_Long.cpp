@@ -1,4 +1,5 @@
 #include "AS_Elamein_Attack_Long.h"
+#include "GameInstance.h"
 
 CAS_Elamein_Attack_Long::CAS_Elamein_Attack_Long()
 {
@@ -36,6 +37,7 @@ void CAS_Elamein_Attack_Long::Update(CStateMachine* pFSM, CGameObject* pOwner, _
             {
                 m_pMonData->iAnimIndex = 96;
                 m_eState = ATTACK_3;
+                m_pMonData->isAnimFinash = false;
             }
         }
         else if (m_eState == ATTACK_3)
@@ -54,6 +56,7 @@ void CAS_Elamein_Attack_Long::Update(CStateMachine* pFSM, CGameObject* pOwner, _
             {
                 m_pMonData->eAttackState = CElamein::ATTACKSTATE::END;
                 m_pMonData->fLong_AttackCool = 3.f;
+                m_pMonData->eHitType = HITREACTION::END;
             }
         }
 
@@ -87,6 +90,7 @@ void CAS_Elamein_Attack_Long::Update(CStateMachine* pFSM, CGameObject* pOwner, _
                 m_pMonData->iAnimIndex = 101;
                 m_pMonData->eAttackState = CElamein::ATTACKSTATE::END;
                 m_pMonData->fLong_AttackCool = 3.f;
+                m_pMonData->eHitType = HITREACTION::END;
             }
         }
     }
@@ -103,7 +107,8 @@ void CAS_Elamein_Attack_Long::OnCollision(COLLISION_DESC* pDesc, _uint iCollisio
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_NORMAL, nullptr);
+        pTarget->KnockBack(pOwner->Get_Look(), 13.5f, 35.f);
+        pTarget->Take_Damage(m_pGameInstance->Rand(m_pMonData->fAttackDamage * 0.8f, m_pMonData->fAttackDamage * 1.3f), HITREACTION::KNOCKBACK_NORMAL, nullptr);
     }
 }
 

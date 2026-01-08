@@ -17,25 +17,32 @@ namespace Client
 	enum class GUIDE_TYPE { LOCKON, GUARD, UNDERWORLD, DODGE, BURTALATTACK, FALLATTACK, IMPULSE,  END};
 	enum class LEVEL { STATIC, LOADING, TITLE, TEST, HEINMACH, CREVICE, EMBARS, VIPER, END };
 	enum class COLLISION_LAYER { 
-        MAP_STATIC, 
+        MAP_STATIC,  // 0
         MAP_DYNAMIC, 
         MAP_INTERACT, 
         PLAYER, 
         PLAYER_ATTACK, 
-        PLAYER_SEARCH, 
+        PLAYER_SEARCH, //5
         MONSTER, 
         MONSTERATTACK,
         ITEM, 
         EFFECT, 
-        SKILL, 
-        CAMERA, 
+        SKILL,  // 10
+        CAMERA,
         MAP_STATIC_TRIGGER, 
         MAP_MOVE_PLATFORM, 
         MAP_DEST, 
-        MAP_CHUNK, 
+        MAP_CHUNK, // 15
         TEST,
         CONTROLLER,
         INTERACT_OBJECT,
+
+
+        CLOTH,
+        CLOTHBODY, // 20
+        PET,
+
+        MONSTER_SEARCH,
         END };
 
 	enum class KHAZAN_MAP { HEINMACH, CREVICE, EMBARS, VIPER, END };
@@ -63,6 +70,9 @@ namespace Client
     };
 
     enum class EQUIPMENTTYPE { NONE, SPEAR, GSWORD, HEAD, TORSO, ARM, LEG, SHOES, FACE, END };
+
+
+    enum class MONSFX { NONE, REALIZE, MOVE, ATVO, SWISH, HITVO, DEAD, EFFECT1, EFFECT2, EFFECT3, EFFECT4, END };
 
     typedef struct tagDamageInfo 
     {

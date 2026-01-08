@@ -170,6 +170,9 @@ PERCEPTIONCALLBACK CAI_Controller_Dragonian_Melee::GetCallBackPerception(CGameOb
 
                         if (m_pMonData->eHitType != HITREACTION::BRUTAL_ATTACK)
                             m_pMonData->eHitType = static_cast<HITREACTION>(m_pBB->Get_Value<_uint>(m_strMonstertag, "DamageType"));
+
+                        if (m_pMonData->eHitType == HITREACTION::BRUTAL_ATTACK)
+                            m_pMonData->iBrutalHit++;
                     }
                 }
             };
@@ -202,7 +205,7 @@ HRESULT CAI_Controller_Dragonian_Melee::Ready_FSM(class CCreature* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Melee::Damage_Check(CGameObject* pOwner)
 {
-    if (!m_pMonData->isSleep && m_pMonData->eHitType != HITREACTION::END)
+    if (m_pMonData->eHitType != HITREACTION::END)
     {
         m_pMonData->isDamage = true;
         return BTNODESTATE::SUCCESS;

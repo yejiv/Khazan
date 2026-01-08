@@ -5,6 +5,7 @@
 #include "Body.h"
 #include "Prop_Chunk.h"
 #include "Body_Khazan_Spear.h"
+#include "Body_Khazan_GS.h"
 
 CFence::CFence(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Destructible{ pDevice, pContext }
@@ -58,6 +59,31 @@ void CFence::Update(_float fTimeDelta)
     {
         Chunk->Update(fTimeDelta);
     }
+
+    if (m_isPlayDestroy)
+    {
+        m_isPlayDestroy = false;
+
+        _int iRand = m_pGameInstance->Rand(0, 4);
+        switch (iRand)
+        {
+        case 0:
+            m_pGameInstance->PlaySoundOnce(TEXT("DP_Wood_Chaos_A.wav"), Get_Position(), nullptr, m_fDestroyVolume);
+            break;
+        case 1:
+            m_pGameInstance->PlaySoundOnce(TEXT("DP_Wood_Chaos_B.wav"), Get_Position(), nullptr, m_fDestroyVolume);
+            break;
+        case 2:
+            m_pGameInstance->PlaySoundOnce(TEXT("DP_Wood_Chaos_C.wav"), Get_Position(), nullptr, m_fDestroyVolume);
+            break;
+        case 3:
+            m_pGameInstance->PlaySoundOnce(TEXT("DP_Wood_Chaos_D.wav"), Get_Position(), nullptr, m_fDestroyVolume);
+            break;
+        default:
+            m_pGameInstance->PlaySoundOnce(TEXT("DP_Wood_Chaos_A.wav"), Get_Position(), nullptr, m_fDestroyVolume);
+            break;
+        }
+    }
 }
 
 void CFence::Late_Update(_float fTimeDelta)
@@ -99,7 +125,12 @@ void CFence::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _fl
             if (m_iLevelIndex == ENUM_CLASS(LEVEL::HEINMACH))
             {
                 CBody_Khazan_Spear* pKhazan = dynamic_cast<CBody_Khazan_Spear*>(pDesc->pGameObject);
-                if(pKhazan) isAttack = pKhazan->Get_IsAttackCollisionActive();
+                if (pKhazan) isAttack = pKhazan->Get_IsAttackCollisionActive();
+            }
+            else if (m_iLevelIndex == ENUM_CLASS(LEVEL::EMBARS))
+            {
+                CBody_Khazan_GS* pKhazan = dynamic_cast<CBody_Khazan_GS*>(pDesc->pGameObject);
+                if (pKhazan) isAttack = pKhazan->IsAttackActive();
             }
 
             if (isAttack)
@@ -111,6 +142,8 @@ void CFence::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _fl
 
                     Chunk->Destory(vVel, vContactPoint);
                 }
+
+                m_isPlayDestroy = true;
             }
         }
     }
@@ -157,6 +190,7 @@ HRESULT CFence::Ready_Collision(void* pArg)
     BodyDesc.vQuat = vQuat;
     BodyDesc.vShapeOffset = _float3(0.f, 0.5f, 0.f);
     m_tCollisionDesc.pGameObject = this;
+    m_tCollisionDesc.isForceVaildation = true;
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -174,25 +208,24 @@ HRESULT CFence::Ready_Chunk(void* pArg)
     CProp_Chunk::PROP_CHUNK_DESC Desc{};
     Desc.eLevel = pDesc->eLevel;
     Desc.fRotationPerSec = pDesc->fRotationPerSec;
-    Desc.fRotationPerSec = pDesc->fRotationPerSec;
     Desc.iMapObjectID = pDesc->iMapObjectID;
     Desc.WorldMatrix = pDesc->WorldMatrix;
     Desc.vPos = m_pTransformCom->Get_State(STATE::POSITION);
-    Desc.vScale = _float3(0.00015f, 0.00015f, 0.00015f);
+    Desc.vScale = _float3(0.0001f, 0.0001f, 0.0001f);
     Desc.strModelTag = TEXT("Prototype_Component_Model_Fence_Chunk_1");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     Desc.strModelTag = TEXT("Prototype_Component_Model_Fence_Chunk_2");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     Desc.strModelTag = TEXT("Prototype_Component_Model_Fence_Chunk_3");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     Desc.strModelTag = TEXT("Prototype_Component_Model_Fence_Chunk_4");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     Desc.strModelTag = TEXT("Prototype_Component_Model_Fence_Chunk_5");
-    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
+    m_Chunks.push_back(dynamic_cast<CProp_Chunk*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(Desc.eLevel), TEXT("Prototype_GameObject_Prop_Chunk"), &Desc)));
 
     return S_OK;
 }

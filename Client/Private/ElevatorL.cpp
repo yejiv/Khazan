@@ -6,6 +6,7 @@
 #include "Elevator_Mid.h"
 #include "Elevator_Outer.h"
 #include "Slate_Switch.h"
+#include "Effect_Prefab.h"
 
 CElevatorL::CElevatorL(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
@@ -55,48 +56,30 @@ HRESULT CElevatorL::Initialize_Clone(void* pArg)
 
     m_iEventID = m_pGameInstance->Subscribe_Event<EventHallElevator>(ENUM_CLASS(EVENT_TYPE::HALL_ELEVATOR_UNLOCK), [&](const EventHallElevator& e) { m_Event = e; });
     m_iSkipEventID = m_pGameInstance->Subscribe_Event<EventElevatorSkip>(ENUM_CLASS(EVENT_TYPE::ELEVATOR_SKIP), [&](const EventElevatorSkip& e) { m_SkipEvent = e; });
+    
+    CHECK_FAILED(Ready_Effect(), E_FAIL);
+
     return S_OK;
 }
  
 void CElevatorL::Priority_Update(_float fTimeDelta)
 {
     __super::Priority_Update(fTimeDelta);
+    m_pEffect->Priority_Update(fTimeDelta);
+
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
+    {
+        m_eMoveState = MOVE_STATE::MIDTODOWN;
+        m_pModelCom->Set_Animation(ENUM_CLASS(ANIM_STATE::IDLE));
+        Animation_Change(fTimeDelta);
+        m_pModelCom->AnimationLoop(false);
+        m_isAnimChange = true;
+    }
+
 }
 
 void CElevatorL::Update(_float fTimeDelta)
 {
-    /*
-    if (true == m_Event.isEvent()) // m_pGameInstance->Key_Down(DIK_H) && ANIM_STATE::IDLE != m_eAnimState) // 어떤 조건이 들어오면 애니메이션 Loop 중단 후 슥슥 샥샥
-    {
-        m_Event.EventOff();
-
-        m_isAnimChange = true;
-        m_pModelCom->AnimationLoop(false);
-        *m_pModelCom->Get_CurTrackPosition() = 50.f;
-    }
-    else if (ANIM_STATE::IDLE == m_eAnimState)
-    {
-        if (m_Event.IsThirdStep()) // m_pGameInstance->Key_Down(DIK_L)) // 아이들 상태 되면 이제 슥슥 이동을 시작
-        {
-            if (MOVE_STATE::DOWNTOUP == m_eMoveState)
-            {
-
-            }
-            else
-            {
-                switch (m_eMoveState)
-                {
-                case MOVE_STATE::MID:
-                    m_eMoveState = MOVE_STATE::MIDTODOWN;
-                    break;
-                default:
-                    break;
-                }
-            }
-        }
-    }
-    */
-
     Animation_Update(fTimeDelta);
 
     if (true == m_pModelCom->Play_Animation(fTimeDelta))
@@ -107,16 +90,24 @@ void CElevatorL::Update(_float fTimeDelta)
     VerticalOnTime_Update(fTimeDelta);
 
     __super::Update(fTimeDelta);
-    m_pBodyCom->Sync_Update(m_pTransformCom);
-    m_pTriggerCom->Sync_Update(m_pTransformCom);
 
-    m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
-    m_pTriggerCom->Update(fTimeDelta, m_pTransformCom);
+    m_pBodyCom->MoveKinematic(fTimeDelta, m_pTransformCom);
+    m_pMidBodyCom->MoveKinematic(fTimeDelta, m_pTransformCom);
+    m_pTopBodyCom->MoveKinematic(fTimeDelta, m_pTransformCom);
+    m_pTriggerCom->MoveKinematic(fTimeDelta, m_pTransformCom);
+    //m_pBodyCom->Sync_Update(m_pTransformCom);
+    //m_pTriggerCom->Sync_Update(m_pTransformCom);
+
+    //m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
+    //m_pTriggerCom->Update(fTimeDelta, m_pTransformCom);
+
+    m_pEffect->Update(fTimeDelta);
 }
 
 void CElevatorL::Late_Update(_float fTimeDelta)
 {
     m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this);
+    m_pEffect->Late_Update(fTimeDelta);
 
     __super::Late_Update(fTimeDelta);
 }
@@ -177,6 +168,8 @@ void CElevatorL::Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4
         }
         case MOVE_STATE::DOWNTOUP:
             m_eMoveState = MOVE_STATE::UP;
+
+            SoundStop(TEXT("IP_ElevatorStone_Loop"));
 
             m_isActiveElevator = false;
 
@@ -286,29 +279,84 @@ HRESULT CElevatorL::Ready_PartObjects(void* pArg)
 HRESULT CElevatorL::Ready_Collision(void* pArg)
 {
 #pragma region 스태틱 몸체
-    CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-    BodyDesc.vExtent = _float3(17.f, 1.2f, 17.f);
+    CBody::BODY_CYLINDERSHAPE_DESC BodyDesc{};
+    BodyDesc.fRadius = 16.9f;
+    BodyDesc.fHeight = 2.f;
     BodyDesc.bIsTrigger = false;
     BodyDesc.bStartActive = true;
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::LinearCast;
-    BodyDesc.eShapeType = SHAPE::BOX;
+    BodyDesc.eShapeType = SHAPE::CYLINDER;
     BodyDesc.fFriction = 0.8f;
     BodyDesc.fMass = 1.0f;
     BodyDesc.fRestitution = 0.0f;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM);
 
     XMStoreFloat3(&BodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
-
     XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
-    BodyDesc.vShapeOffset = _float3(0.f, -0.95f, 0.f);
+    BodyDesc.vShapeOffset = _float3(0.f, -0.80f, 0.f);
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
+    m_tCollisionDesc.isForceVaildation = true;
+    m_tCollisionDesc.isMovePlatform = true;
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body"), reinterpret_cast<CComponent**>(&m_pBodyCom), &BodyDesc)))
+        return E_FAIL;
+
+    CBody::BODY_CYLINDERSHAPE_DESC MidBodyDesc{};
+    MidBodyDesc.fRadius = 11.5f;
+    MidBodyDesc.fHeight = 2.f;
+    MidBodyDesc.bIsTrigger = false;
+    MidBodyDesc.bStartActive = true;
+    MidBodyDesc.eMotion = EMotionType::Kinematic;
+    MidBodyDesc.eQuality = EMotionQuality::LinearCast;
+    MidBodyDesc.eShapeType = SHAPE::CYLINDER;
+    MidBodyDesc.fFriction = 0.8f;
+    MidBodyDesc.fMass = 1.0f;
+    MidBodyDesc.fRestitution = 0.0f;
+    MidBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM);
+
+    XMStoreFloat3(&MidBodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+
+    XMStoreFloat4(&MidBodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+
+    MidBodyDesc.vShapeOffset = _float3(0.f, -0.67f, 0.f);
+    m_CollisionMidDesc.pGameObject = this;
+    m_CollisionMidDesc.isForceVaildation = true;
+    m_CollisionMidDesc.isMovePlatform = true;
+    MidBodyDesc.pCollisionDesc = &m_CollisionMidDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body2"), reinterpret_cast<CComponent**>(&m_pMidBodyCom), &MidBodyDesc)))
+        return E_FAIL;
+
+    CBody::BODY_CYLINDERSHAPE_DESC TopBodyDesc{};
+    TopBodyDesc.fRadius = 5.f;
+    TopBodyDesc.fHeight = 2.f;
+    TopBodyDesc.bIsTrigger = false;
+    TopBodyDesc.bStartActive = true;
+    TopBodyDesc.eMotion = EMotionType::Kinematic;
+    TopBodyDesc.eQuality = EMotionQuality::LinearCast;
+    TopBodyDesc.eShapeType = SHAPE::CYLINDER;
+    TopBodyDesc.fFriction = 0.8f;
+    TopBodyDesc.fMass = 1.0f;
+    TopBodyDesc.fRestitution = 0.0f;
+    TopBodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM);
+
+    XMStoreFloat3(&TopBodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+
+    XMStoreFloat4(&TopBodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
+
+    TopBodyDesc.vShapeOffset = _float3(0.f, -0.59f, 0.f);
+    m_CollisionTopDesc.pGameObject = this;
+    m_CollisionTopDesc.isForceVaildation = true;
+    m_CollisionTopDesc.isMovePlatform = true;
+    TopBodyDesc.pCollisionDesc = &m_CollisionTopDesc;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
+        TEXT("Com_Body3"), reinterpret_cast<CComponent**>(&m_pTopBodyCom), &TopBodyDesc)))
         return E_FAIL;
 #pragma endregion
 
@@ -331,14 +379,28 @@ HRESULT CElevatorL::Ready_Collision(void* pArg)
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.isForceVaildation = true;
     //pCollDesc.pInfo = ?? // 작성하기
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    TriggerDesc.pCollisionDesc = &m_TriggerCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
         return E_FAIL;
 #pragma endregion
+
+    return S_OK;
+}
+
+HRESULT CElevatorL::Ready_Effect()
+{
+    m_pEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::EMBARS), TEXT("MapSpine")));
+
+    if (nullptr == m_pEffect)
+        return E_FAIL;
+
+    m_pEffect->ResetChildren(); 
+    m_pEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
 
     return S_OK;
 }
@@ -357,6 +419,19 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
         *m_pModelCom->Get_CurTrackPosition() = 50.f;
         m_isAnimChange = true;
         m_pModelCom->AnimationLoop(false);
+
+        switch (m_Event.eStep)
+        {
+        case EventHallElevator::STEP_1:
+            Sound_FadeIn(TEXT("IP_Embars_Event_01"), m_fInteract_Volume, 2.f, false);
+            break;
+        case EventHallElevator::STEP_2:
+            Sound_FadeIn(TEXT("IP_Embars_Event_02"), m_fInteract_Volume, 2.f, false);
+            break;
+        case EventHallElevator::STEP_3:
+            Sound_FadeIn(TEXT("IP_Embars_Event_03"), m_fInteract_Volume, 2.f, false);
+            break;
+        }
     }
     else if (ANIM_STATE::IDLE == m_eAnimState)
     {
@@ -365,8 +440,9 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
             m_eMoveState = MOVE_STATE::MIDTODOWN;
         }
 
-        if (m_isSwitchPressed && m_eMoveState == MOVE_STATE::DOWN)
+        if (m_isActiveElevator && m_eMoveState == MOVE_STATE::DOWN)
         {
+            SoundLoop(TEXT("IP_ElevatorStone_Loop"), m_fInteract_Volume);
             m_isSwitchPressed = false;
             m_eMoveState = MOVE_STATE::DOWNTOUP;
         }
@@ -385,34 +461,20 @@ void CElevatorL::Animation_Update(_float fTimeDelta)
             break;
         case MOVE_STATE::DOWNTOUP:
             if (true == m_isActiveElevator)
+            {             
                 Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 30.f);
+            }
             break;
         default:
             break;
         }
     }
+
 }
 
 void CElevatorL::Animation_Change(_float fTimeDelta)
 {
-    if (ANIM_STATE::INNER_STOPPING == m_eAnimState)
-    {
-        m_fLimitTimeAcc = 0.f;
-
-        m_isAnimChange = false;
-
-        m_eAnimState = ANIM_STATE::OUTER_STOPPING;
-        m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-        m_pModelCom->AnimationLoop(true);
-
-        m_isVerticalActive = true;
-        m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK1;
-
-        EventGimmick Gimmick = {};
-        Gimmick.Set_GimmickClear();
-        m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK1), Gimmick);
-    }
-    else if (true == m_isAnimChange)
+    if (true == m_isAnimChange)
     {
         m_fLimitTimeAcc = 0.f;
 
@@ -436,9 +498,16 @@ void CElevatorL::Animation_Change(_float fTimeDelta)
         }
         case ANIM_STATE::MID_STOP:
         {
-            m_eAnimState = ANIM_STATE::INNER_STOPPING;
+            m_eAnimState = ANIM_STATE::OUTER_STOPPING;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
-            m_pModelCom->AnimationLoop(false);
+            m_pModelCom->AnimationLoop(true);
+
+            m_isVerticalActive = true;
+            m_eGimmickType = EVENT_TYPE::EMBARS_GIMMICK1;
+
+            EventGimmick Gimmick = {};
+            Gimmick.Set_GimmickClear();
+            m_pGameInstance->Emit_Event<EventGimmick>(ENUM_CLASS(EVENT_TYPE::EMBARS_GIMMICK1), Gimmick);
             break;
         }
         case ANIM_STATE::OUTER_STOPPING:
@@ -527,6 +596,9 @@ void CElevatorL::Gimmick_Event_Skip(_float fTimeDelta)
     {
     case EventHallElevator::UNLOCK_STATE::STEP_1:
     {
+        if (IsPlayingSound(TEXT("IP_Embars_Event_01")))
+            SoundStop_FadeOut(TEXT("IP_Embars_Event_01"), 2.f);
+
         m_eAnimState = ANIM_STATE::MID_STOP;
         m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
         m_pModelCom->AnimationLoop(true);
@@ -540,6 +612,9 @@ void CElevatorL::Gimmick_Event_Skip(_float fTimeDelta)
     }
     case EventHallElevator::UNLOCK_STATE::STEP_2:
     {
+        if (IsPlayingSound(TEXT("IP_Embars_Event_02")))
+            SoundStop_FadeOut(TEXT("IP_Embars_Event_02"), 2.f);
+
         m_eAnimState = ANIM_STATE::OUTER_STOPPING;
         m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
         m_pModelCom->AnimationLoop(true);
@@ -553,6 +628,9 @@ void CElevatorL::Gimmick_Event_Skip(_float fTimeDelta)
     }
     case EventHallElevator::UNLOCK_STATE::STEP_3:
     {
+        if (IsPlayingSound(TEXT("IP_Embars_Event_03")))
+            SoundStop_FadeOut(TEXT("IP_Embars_Event_03"), 2.f);
+
         m_pModelCom->AnimationLoop(false);
 
         m_isAnimChange = true;
@@ -602,4 +680,5 @@ void CElevatorL::Free()
 
     Safe_Release(m_pBodyCom);
     Safe_Release(m_pTriggerCom);
+    Safe_Release(m_pEffect);
 }

@@ -8,6 +8,8 @@
 
 #include "ClientInstance.h"
 
+#include "Duimuk_Part.h"
+
 CNPC_Duimuk::CNPC_Duimuk(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
     , m_pClientInstance{ CClientInstance::GetInstance() }
@@ -35,11 +37,15 @@ HRESULT CNPC_Duimuk::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
+    CHECK_FAILED(Ready_PartObjects(pArg), E_FAIL);
+
     CHECK_FAILED(Ready_Collision(pArg), E_FAIL);
 
     CHECK_FAILED(Ready_Interaction_Guide(pArg), E_FAIL);
 
     CHECK_FAILED(Ready_3D_Talk_UI(pArg), E_FAIL);
+
+    CHECK_FAILED(Ready_OwnLight(pArg), E_FAIL);
 
     m_eAnimState = ANIM_STATE::IDLE1;
     m_pModelCom->Set_Animation(m_eAnimState);
@@ -62,6 +68,8 @@ void CNPC_Duimuk::Priority_Update(_float fTimeDelta)
     }
 
     m_pTraderTalkUI->Priority_Update(fTimeDelta);
+
+    __super::Priority_Update(fTimeDelta);
 }
 
 void CNPC_Duimuk::Update(_float fTimeDelta)
@@ -72,6 +80,8 @@ void CNPC_Duimuk::Update(_float fTimeDelta)
         Animation_Change(fTimeDelta);
 
     m_pTraderTalkUI->Update(fTimeDelta);
+
+    __super::Update(fTimeDelta);
 }
 
 void CNPC_Duimuk::Late_Update(_float fTimeDelta)
@@ -81,21 +91,70 @@ void CNPC_Duimuk::Late_Update(_float fTimeDelta)
     m_pTraderTalkUI->Late_Update(fTimeDelta);
 
     m_pTraderTalkUI->Update_UITransform(m_pTransformCom->Get_State(STATE::POSITION));
+
+    __super::Late_Update(fTimeDelta);
 }
 
 HRESULT CNPC_Duimuk::Render()
 {
     CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
+    _float fEdgeIntensity = 0.6f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fShadeIntensity = 0.2f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
+
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    // 1 : 눈
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        if (1 == i)
+        {
+            // 색상 계층 (절대 1.0 풀화이트 쓰면 안됨)
+            // 눈 흰자 – 완전 흰색 금지 (눈부심/플랫함 방지)
+            _float4 vEyeWhiteColor = { 3.5f, 3.5f, 3.5f, 1.f };
+            // 홍채 외각
+            _float4 vPupilCircle = { 0.35f, 0.25f, 0.1f, 1.f };
+            // 홍채 중간
+            _float4 vPupilRing = { 0.47f, 0.975f, 1.55f, 1.f };
+            // 홍채 내각
+            _float4 vPupilLens = { 0.25f, 0.15f, 0.06f, 1.f };
+
+            // 크기 계열 (캐릭터 고정값)
+            // 홍채 전체 크기
+            _float fIrisRadius = 0.23f;
+            // 동공 기본 크기
+            _float fPupilRadius = 0.11f;
+            // 테두리 두께
+            _float fRingWidth = 0.06f;
+
+            // 애니메이션용 (감정, 조명 반응)
+            _float fPupilScale = 0.85f;   // 0.6 ~ 1.0
+
+            m_pShaderCom->Bind_RawValue("g_vEyeWhiteColor", &vEyeWhiteColor, sizeof(_float4));
+            m_pShaderCom->Bind_RawValue("g_vPupilCircle", &vPupilCircle, sizeof(_float4));
+            m_pShaderCom->Bind_RawValue("g_vPupilLens", &vPupilLens, sizeof(_float4));
+            m_pShaderCom->Bind_RawValue("g_vPupilRing", &vPupilRing, sizeof(_float4));
+
+            m_pShaderCom->Bind_RawValue("g_IrisRadius", &fIrisRadius, sizeof(_float));
+            m_pShaderCom->Bind_RawValue("g_PupilRadius", &fPupilRadius, sizeof(_float));
+            m_pShaderCom->Bind_RawValue("g_RingWidth", &fRingWidth, sizeof(_float));
+            m_pShaderCom->Bind_RawValue("g_PupilScale", &fPupilScale, sizeof(_float));
+
+            m_pShaderCom->Begin(36); // Eye pass
+        }
+        else
+        {
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(34), E_FAIL);
+        }
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -117,6 +176,26 @@ HRESULT CNPC_Duimuk::Ready_Components(void* pArg)
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(eLevel), m_szModelName,
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr), E_FAIL);
+
+    return S_OK;
+}
+
+HRESULT CNPC_Duimuk::Ready_PartObjects(void* pArg)
+{
+    DUIMUK_DESC* pDesc = static_cast<DUIMUK_DESC*>(pArg);
+    CHECK_NULLPTR(pDesc, E_FAIL);
+
+    LEVEL eLevel = pDesc->eLevel;
+    CHECK_EQUAL_MSG(LEVEL::END, eLevel, TEXT("level==end"), E_FAIL);
+
+    CDuimuk_Part::DUIMUK_PART_DESC PartDesc = {};
+
+    PartDesc.eLevel = eLevel;
+    PartDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
+    PartDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Weapon_L");
+
+    CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Instrument"), ENUM_CLASS(eLevel),
+        TEXT("Prototype_GameObject_Prop_NPC_Duimuk_Part"), &PartDesc), E_FAIL);
 
     return S_OK;
 }
@@ -169,9 +248,9 @@ HRESULT CNPC_Duimuk::Ready_Collision(void* pArg)
     TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_TriggerCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.isForceVaildation = true;
+    TriggerDesc.pCollisionDesc = &m_TriggerCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
@@ -186,7 +265,7 @@ HRESULT CNPC_Duimuk::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("대화"), 1.5f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("대화"), 1.f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 
@@ -214,6 +293,26 @@ HRESULT CNPC_Duimuk::Ready_DefaultSetting(void* pArg)
     return S_OK;
 }
 
+HRESULT CNPC_Duimuk::Ready_OwnLight(void* pArg)
+{
+    LIGHT_DESC LightDesc = {};
+
+    LightDesc.eType = LIGHT_DESC::TYPE::POINT;
+
+    LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+    LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
+    XMStoreFloat4(&LightDesc.vPosition, Get_Position() + Get_Look() * 1.3f);
+    LightDesc.vPosition.y += 2.f;
+
+    LightDesc.fRange = 4.5f;
+    m_wstrLightTag = TEXT("Duimuk_OwnLight");
+
+    m_pGameInstance->Add_Light(m_wstrLightTag, ENUM_CLASS(LEVEL::EMBARS), LightDesc, true);
+
+    return S_OK;
+}
+
 HRESULT CNPC_Duimuk::Bind_Materials(_uint iMeshIndex)
 {
     m_iMtrlFlags = 0;
@@ -232,7 +331,7 @@ HRESULT CNPC_Duimuk::Bind_Materials(_uint iMeshIndex)
         m_iMtrlFlags |= M_ROUGHNESS;
 
     m_iMtrlFlags &= ~M_EMISSIVE;
-    m_iMtrlFlags &= ~M_SPECULAR;
+    //  m_iMtrlFlags &= ~M_SPECULAR;
 
     m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 
@@ -313,7 +412,7 @@ void CNPC_Duimuk::Animation_Update(_float fTimeDelta)
     }
     else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
     {
-        if (ANIM_STATE::TALK_IDLE == m_eAnimState)
+        if (ANIM_STATE::TALK_START == m_eAnimState || ANIM_STATE::TALK_IDLE == m_eAnimState)
         {
             m_eAnimState = ANIM_STATE::TALK_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));

@@ -29,6 +29,7 @@ float g_fToonShadeLevel;
 float g_fLightRange;
 float2 g_vSpecularPower;
 float g_fRimPower, g_fRimToonThreshold, g_fRimIntensity;
+float g_fSpecularAttuenation;
 
 // ===== Material =====
 vector g_vMtrlAmbient = { 1.f, 1.f, 1.f, 1.f }, g_vMtrlSpecular = { 1.f, 1.f, 1.f, 1.f };
@@ -62,12 +63,15 @@ float4 g_vFogColor;
 float2 g_vNoiseSpeed, g_vNoiseScale;
 float g_fNoiseStrength, g_fNoiseContrast;
 float g_fFogBaseHeight, g_fFogHeightDensity;
+float g_fSubColorStartHeight;
+float4 g_vFogSubColor;
+float g_fFogLightBleedStrength;
 
 // ===== Outline =====
 float g_fOutlineAlpha, g_fOutlineBias;
 
 // ===== Vignette =====
-float g_fVignettePower, g_fVignetteIntensity;
+float g_fVignettePower, g_fVignetteIntensity, g_fVignetteContrast;
 float3 g_vVignetteColor;
 
 // ===== Distortion =====
@@ -95,9 +99,11 @@ bool g_isEnableShadow = { true };
 bool g_isEnableSSAO = { true };
 bool g_isEnableFog = { true };
 bool g_isEnableFogNoise;
+bool g_isUseSubColor;
 bool g_isUseHeightFog;
 bool g_isEnableOutline;
 bool g_isEnableVignette;
+bool g_isUseVignetteNoise;
 bool g_isEnableRadialBlur;
 bool g_isEnableMotionBlur;
 bool g_isEnableLUT;

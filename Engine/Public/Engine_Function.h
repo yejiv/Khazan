@@ -220,6 +220,26 @@ namespace Engine
 	static inline Vec3 LoadVec3(const _float3& vVector) { return Vec3(vVector.x, vVector.y, vVector.z); }
 	static inline Vec3 LoadVec3(const _fvector& vVector) { return Vec3(vVector.m128_f32[0], vVector.m128_f32[1], vVector.m128_f32[2]); }
 
+    static inline Float3 StoreFloat3(const _float3& v) { return Float3(v.x, v.y, v.z); }
+    static inline Float3 StoreFloat3(const _fvector& v) { return Float3(v.m128_f32[0], v.m128_f32[1], v.m128_f32[2]); }
+
+    static inline Mat44 LoadMat44(const _float4x4& m)
+    {
+        return Mat44(
+            Vec4(m._11, m._21, m._31, m._41), // column 0
+            Vec4(m._12, m._22, m._32, m._42), // column 1
+            Vec4(m._13, m._23, m._33, m._43), // column 2
+            Vec4(m._14, m._24, m._34, m._44)  // column 3
+        );
+    }
+
+    static inline Mat44 LoadMat44(const _matrix& m)
+    {
+        _float4x4 temp;
+        DirectX::XMStoreFloat4x4(&temp, m);
+        return LoadMat44(temp);
+    }
+
 	static inline Quat LoadQuat(const _float4& vQuat) { return Quat(vQuat.x, vQuat.y, vQuat.z, vQuat.w); }
 	static inline Quat LoadQuat(const _fvector& vQuat) { return Quat(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]); }
 
@@ -374,6 +394,75 @@ namespace Engine
 			XMVectorSet(0, 0, 0, 1));
 		return XMQuaternionNormalize(XMQuaternionRotationMatrix(R));
 	}
+
+    static _matrix MakeMatrixFromBody(JPH::Body* body)
+    {
+        JPH::RVec3 p = body->GetPosition();
+        JPH::Quat  q = body->GetRotation();
+
+        XMVECTOR pos = XMVectorSet((float)p.GetX(), (float)p.GetY(), (float)p.GetZ(), 1.f);
+        XMVECTOR rotQ = XMVectorSet(q.GetX(), q.GetY(), q.GetZ(), q.GetW());
+        XMVECTOR scl = XMVectorSet(1.f, 1.f, 1.f, 0.f);
+
+        return XMMatrixAffineTransformation(scl, XMVectorZero(), rotQ, pos);
+    }
+
+    static _float4x4 BlendLocal(
+        const XMMATRIX& animLocal,
+        const XMFLOAT4X4& physLocal,
+        float alpha)
+    {
+        XMMATRIX A = animLocal;
+        XMMATRIX P = XMLoadFloat4x4(&physLocal);
+
+        XMVECTOR sA, rA, tA;
+        XMVECTOR sP, rP, tP;
+        XMMatrixDecompose(&sA, &rA, &tA, A);
+        XMMatrixDecompose(&sP, &rP, &tP, P);
+
+        // 위치는 애니메이션 값 그대로 유지
+        XMVECTOR t = tA;
+        // 스케일도 애니 그대로 (필요하면 이건 Lerp 해도 됨)
+        XMVECTOR s = sA;
+        // 회전만 물리 쪽으로 블렌딩
+        XMVECTOR r = XMQuaternionSlerp(rA, rP, alpha);
+
+        XMMATRIX out = XMMatrixAffineTransformation(s, XMVectorZero(), r, t);
+        _float4x4 res;
+        XMStoreFloat4x4(&res, out);
+        return res;
+    }
+
+    static XMVECTOR QuaternionFromTo(XMVECTOR vFrom, XMVECTOR vTo)
+    {
+        using namespace DirectX;
+
+        vFrom = XMVector3Normalize(vFrom);
+        vTo = XMVector3Normalize(vTo);
+
+        float cosTheta = XMVectorGetX(XMVector3Dot(vFrom, vTo));
+
+        // 180도 근처: 임의의 직교 축 선택
+        if (cosTheta < -0.9999f)
+        {
+            XMVECTOR axis = XMVector3Cross(vFrom, XMVectorSet(1.f, 0.f, 0.f, 0.f));
+            if (XMVector3LengthSq(axis).m128_f32[0] < 1e-6f)
+                axis = XMVector3Cross(vFrom, XMVectorSet(0.f, 1.f, 0.f, 0.f));
+            axis = XMVector3Normalize(axis);
+            return XMQuaternionRotationAxis(axis, XM_PI);
+        }
+
+        XMVECTOR axis = XMVector3Cross(vFrom, vTo);
+        float s = sqrtf((1.0f + cosTheta) * 2.0f);
+        float invs = 1.0f / s;
+
+        return XMVectorSet(
+            axis.m128_f32[0] * invs,
+            axis.m128_f32[1] * invs,
+            axis.m128_f32[2] * invs,
+            s * 0.5f
+        );
+    }
 
 	// 카메라용(정환)
 	inline _float EaseOutQuad(_float t) { return 1.f - (1.f - t) * (1.f - t); }

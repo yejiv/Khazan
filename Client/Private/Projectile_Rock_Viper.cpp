@@ -131,15 +131,20 @@ void CProjectile_Rock_Viper::Reset()
 
 void CProjectile_Rock_Viper::Enter_State(PRJSTATE eNextState)
 {
+    if (m_eState == eNextState)
+        return;
+
     m_eState = eNextState;
 
     switch (m_eState)
     {
     case Client::CProjectile::LOOP:
         m_pModelCom->Set_Animation(1);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_projectile_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 30.f);
         break;
     case Client::CProjectile::CRASHED:
         m_pModelCom->Set_Animation(0);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_exp_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 30.f);
         m_isActive = false;
         break;
     case Client::CProjectile::END:
@@ -180,7 +185,7 @@ HRESULT CProjectile_Rock_Viper::Ready_Colliders()
     m_tVIperRock_CollisionDesc.pGameObject = this;
     m_tVIperRock_CollisionDesc.strName = TEXT("Viper_Rock");
     m_tVIperRock_CollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    BodyDesc.pCollisionDesc = &m_tVIperRock_CollisionDesc;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_Viper_Rock"), reinterpret_cast<CComponent**>(&m_pBody), &BodyDesc)))

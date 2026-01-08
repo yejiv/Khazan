@@ -6,6 +6,8 @@
 #include "GiantGate_Part_R.h"
 
 #include "Interaction_Guide.h"
+#include "ClientInstance.h"
+#include "UI_HUD.h"
 
 CGiantGate::CGiantGate(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CProp_Interactive{ pDevice, pContext }
@@ -141,7 +143,7 @@ HRESULT CGiantGate::Ready_Collision(void* pArg)
 {
 #pragma region 스태틱 몸체
     CBody::BODY_BOXSHAPE_DESC StaticBodyDesc{};
-    StaticBodyDesc.vExtent = _float3(1.f, 1.f, 1.f);
+    StaticBodyDesc.vExtent = _float3(6.f, 3.f, 0.2f);
     StaticBodyDesc.bIsTrigger = false;
     StaticBodyDesc.bStartActive = true;
     StaticBodyDesc.eMotion = EMotionType::Static;
@@ -187,9 +189,9 @@ HRESULT CGiantGate::Ready_Collision(void* pArg)
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_TriggerCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.isForceVaildation = true;
+    TriggerDesc.pCollisionDesc = &m_TriggerCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
@@ -204,7 +206,7 @@ HRESULT CGiantGate::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("바이퍼 가자이"), 1.f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("열기"), 1.f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_UI"), m_pGuide);
 
@@ -227,6 +229,9 @@ void CGiantGate::Input_Interact_Event(_float fTimeDelta)
 
     if (true == isPressing)
     {
+        m_pStaticCom->Collision_Active(false);
+
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
         m_pGuide->Update_Visible(false);
 
         EventInteractType InteractType = {};
@@ -265,6 +270,8 @@ void CGiantGate::Animation_Update(_float fTimeDelta)
         {
             m_isUnLock = true;
 
+            SoundOnce(TEXT("IP_GiantGate_Open_Start"), m_fInteract_Volume);
+
             // 조각상 상호작용 시
             EventInteractType InteractType = {};
 
@@ -275,13 +282,19 @@ void CGiantGate::Animation_Update(_float fTimeDelta)
 
             _matrix OffSetMatrix = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Position_Ch")) * m_pTransformCom->Get_WorldMatrix();
 
+            _vector vChPosition = OffSetMatrix.r[3];
+
+            vChPosition -= XMVector3Normalize(Get_Look()) * 0.5f;
+
             XMStoreFloat4(&GiantGateEvent.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
-            XMStoreFloat4(&GiantGateEvent.vPlayerPosition, OffSetMatrix.r[3]);
+            XMStoreFloat4(&GiantGateEvent.vPlayerPosition, vChPosition);
 
             InteractType.GiantGateEvent = GiantGateEvent;
 
             // OPENING 중에는 UI, Player 용 Active 변수는 false, 상자 앞 위치랑 상자 위치 던지기
             m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+            // 예지 바이퍼 맵 넘어가는 문 열리는 이펙트 ( 한번 호출 )
 
             m_Event.None();
         }

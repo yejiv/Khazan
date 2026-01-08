@@ -28,56 +28,54 @@ HRESULT CInteraction_Item::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    if (FAILED(Ready_Effect()))
-        return E_FAIL;
-
-    if (FAILED(Ready_Guide()))
-        return E_FAIL;
-
-    if (FAILED(Ready_Collision()))
-        return E_FAIL;
-
     m_strName = "Interaction_Item";
 
-    m_NormalItemIndex.reserve(11);
+    // Normal Item    
+    Push_NormalItem(1001, 1);
+    Push_NormalItem(1002, 3);
+    Push_NormalItem(1003, 1);
+    Push_NormalItem(1004, 2);
+    Push_NormalItem(3001, 0);
+    Push_NormalItem(3002, 1);
+    Push_NormalItem(3003, 1);
+    Push_NormalItem(3004, 1);
+    Push_NormalItem(3005, 1);
+    Push_NormalItem(3006, 2);
+    Push_NormalItem(3007, 2);
 
-
-    // Normal Item
-    m_NormalItemIndex.push_back(1001);
-    m_NormalItemIndex.push_back(1002);
-    m_NormalItemIndex.push_back(1003);
-    m_NormalItemIndex.push_back(1004);
-    m_NormalItemIndex.push_back(3001);
-    m_NormalItemIndex.push_back(3002);
-    m_NormalItemIndex.push_back(3003);
-    m_NormalItemIndex.push_back(3004);
-    m_NormalItemIndex.push_back(3005);
-    m_NormalItemIndex.push_back(3006);
-    m_NormalItemIndex.push_back(3007);
+    // Equip Item
+    Push_NormalItem(5101, 2);
+    Push_NormalItem(5102, 2);
+    Push_NormalItem(5103, 2);
+    Push_NormalItem(5104, 2);
+    Push_NormalItem(5105, 2);
+    Push_NormalItem(6001, 1);
+    Push_NormalItem(6011, 1);
 
     // Special Item
-    m_SpecialItemIndex.emplace(TEXT("Precept"), 2001); // 호송 명령서
-    m_SpecialItemIndex.emplace(TEXT("Record"), 2002); // 어느 병사의 기록
-    m_SpecialItemIndex.emplace(TEXT("Handwriting"), 2003); // 도굴꾼의 수기
-    m_SpecialItemIndex.emplace(TEXT("Report"), 2004); // 용족에 대한 보고서
+    Push_SpecialItem(TEXT("Precept"), 2001, 3); // 호송 명령서
+    Push_SpecialItem(TEXT("Record"), 2002, 3); // 어느 병사의 기록
+    Push_SpecialItem(TEXT("Handwriting"), 2003, 0); // 도굴꾼의 수기
+    Push_SpecialItem(TEXT("Report"), 2004, 3); // 용족에 대한 보고서    
+
 
     return S_OK;
 }
 
 void CInteraction_Item::Priority_Update(_float fTimeDelta)
 {
-    //m_pEffect->Priority_Update(fTimeDelta);
+    m_pEffect->Priority_Update(fTimeDelta);
 }
 
 void CInteraction_Item::Update(_float fTimeDelta)
 {
-    //m_pEffect->Update(fTimeDelta);
+    m_pEffect->Update(fTimeDelta);
     Item_Check();
 }
 
 void CInteraction_Item::Late_Update(_float fTimeDelta)
 {
-   //m_pEffect->Late_Update(fTimeDelta);
+   m_pEffect->Late_Update(fTimeDelta);
 }
 
 HRESULT CInteraction_Item::Render()
@@ -92,36 +90,93 @@ void CInteraction_Item::Ready_Item(_uint iItemIndex, _vector vPos)
     m_pTransformCom->Set_State(STATE::POSITION, vPos);
     m_pBodyCom->Set_Pos(m_pTransformCom->Get_State(STATE::POSITION));    
     m_pEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
+
+    m_isShow = true;
 }
 
 void CInteraction_Item::RandNormal_Item(_vector vPos)
 {
     _int iRand = m_pGameInstance->Rand(0, 10);
-    m_iItemIndex = m_NormalItemIndex[iRand];
+    _int iIItemindex = {};
+    if (iRand >= 5)
+    {
+        // 0 ~ 10
+        iIItemindex = m_pGameInstance->Rand(0, 10);
+    }
+    else 
+    {
+        // 11 ~ 17
+        iIItemindex = m_pGameInstance->Rand(11, 17);
+    }
+
+    m_iItemIndex = m_NormalItem[iIItemindex].iItemIndex;
+    m_iItemGrade = m_NormalItem[iIItemindex].iGrade;
+    m_iItemType = NORMAL;
+    
     m_pTransformCom->Set_State(STATE::POSITION, vPos);
-    m_pBodyCom->Set_Pos(m_pTransformCom->Get_State(STATE::POSITION));
+
+    if (m_pGuide == nullptr) {
+        Ready_Guide();
+    }
+
+    if (m_pBodyCom == nullptr)
+    {
+        Ready_Collision();
+    }
+    if (m_pEffect == nullptr)
+    {
+        Ready_Effect(m_iItemGrade);
+    }
+
+    
+    m_pBodyCom->Set_Pos(m_pTransformCom->Get_State(STATE::POSITION));   
     m_pEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
+    m_isShow = true;
 }
 
 void CInteraction_Item::Special_Item(_wstring strNameTag, _vector vPos)
 {
-    auto iter = m_SpecialItemIndex.find(strNameTag);
+    auto iter = m_SpecialItem.find(strNameTag);
 
-    if (iter == m_SpecialItemIndex.end())
+    if (iter == m_SpecialItem.end())
         return;
+    m_iItemType = SPECIAL;
+    m_iItemIndex = iter->second.iItemIndex;
+    m_iItemGrade = iter->second.iGrade;
 
     m_pTransformCom->Set_State(STATE::POSITION, vPos);
+
+    if (m_pGuide == nullptr) {
+
+        Ready_Guide();
+    }
+
+    if (m_pBodyCom == nullptr)
+    {
+        Ready_Collision();
+    }
+    if (m_pEffect == nullptr)
+    {
+        Ready_Effect(m_iItemGrade);
+    }
+    
     m_pBodyCom->Set_Pos(m_pTransformCom->Get_State(STATE::POSITION));
     m_pEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
+
+    m_isShow = true;
 }
 
 void CInteraction_Item::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
+    if (m_isShow)
     {
-        m_pGuide->Update_Visible(true);
-        m_isGuideVisible = true;
+        if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
+        {
+            m_pGuide->Update_Visible(true);
+            m_isGuideVisible = true;
+        }
     }
+    
 }
 
 void CInteraction_Item::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -130,28 +185,37 @@ void CInteraction_Item::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObject
 
 void CInteraction_Item::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc)
 {
-    if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
+    if (m_isShow)
     {
-        m_pGuide->Update_Visible(false);
-        m_isGuideVisible = false;
+        if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::PLAYER))
+        {
+            m_pGuide->Update_Visible(false);
+            m_isGuideVisible = false;
+        }
     }
+    
 }
 
-HRESULT CInteraction_Item::Ready_Components()
+HRESULT CInteraction_Item::Ready_Components(void* pArg)
 {
 
     return S_OK;
 }
 
-HRESULT CInteraction_Item::Bind_ShaderResources()
+HRESULT CInteraction_Item::Bind_ShaderResources(void* pArg)
 {
 
     return S_OK;
 }
 
-HRESULT CInteraction_Item::Ready_Effect()
+HRESULT CInteraction_Item::Ready_Effect(_uint iGrade)
 {
-    m_pEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("ITEM_FX")));
+    if (iGrade == 0 || iGrade == 1)
+        m_pEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevelIndex, TEXT("ITEM_FX")));
+    else if (iGrade == 2)
+        m_pEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevelIndex, TEXT("ITEM_RARE_FX")));
+    else 
+        m_pEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_iLevelIndex, TEXT("ITEM_UNIQUE_FX")));
 
     if (m_pEffect)
         m_pEffect->ResetChildren();
@@ -163,11 +227,11 @@ HRESULT CInteraction_Item::Ready_Guide()
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::DEFAULT, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("가동"), 1.f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::DEFAULT, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("획득"), 1.f);
 
-    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
+    m_pGameInstance->Push_PoolObject_ToLayer(m_iLevelIndex, TEXT("Layer_UI"), m_pGuide);
 
-    m_pGuide->Update_Visible(false);
+     m_pGuide->Update_Visible(false);
 
     return S_OK;
 }
@@ -192,7 +256,8 @@ HRESULT CInteraction_Item::Ready_Collision()
     XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;    
+    m_tCollisionDesc.pGameObject = this;
+    m_tCollisionDesc.isForceVaildation = true;
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -200,6 +265,24 @@ HRESULT CInteraction_Item::Ready_Collision()
         return E_FAIL;
 
     return true;
+}
+
+void CInteraction_Item::Push_NormalItem(_uint iItemIndex, _uint iGrade)
+{
+    ITEM_INFO ItemInfo;
+    ItemInfo.iItemIndex = iItemIndex;
+    ItemInfo.iGrade = iGrade;
+    
+    m_NormalItem.push_back(ItemInfo);
+}
+
+void CInteraction_Item::Push_SpecialItem(_wstring strName, _uint iItemIndex, _uint iGrade)
+{
+    ITEM_INFO ItemInfo;
+    ItemInfo.iItemIndex = iItemIndex;
+    ItemInfo.iGrade = iGrade;
+
+    m_SpecialItem.emplace(strName, ItemInfo);
 }
 
 void CInteraction_Item::Item_Check()
@@ -219,26 +302,16 @@ void CInteraction_Item::Item_Check()
 
             Safe_Release(m_pBodyCom);
             Remove_Component(TEXT("Com_Body"));
+            m_pBodyCom = nullptr;
+
+            m_isShow = false;
         }
     }
 }
 
 void CInteraction_Item::Reset()
 {
-    if (m_pGuide == nullptr) {
-
-        Ready_Guide();            
-    }
-
-    if (m_pEffect == nullptr)
-    {
-        Ready_Effect();
-    }
-
-    if (m_pBodyCom == nullptr)
-    {
-        Ready_Collision();
-    }
+   
 }
 
 CInteraction_Item* CInteraction_Item::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -272,7 +345,7 @@ void CInteraction_Item::Free()
     __super::Free();
     if (m_pGuide)
     {
-        m_pGuide->Set_IsDead(true);
+        //m_pGuide->Set_IsDead(true);
         m_pGuide = nullptr;
     }
 

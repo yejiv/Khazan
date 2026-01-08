@@ -40,7 +40,7 @@ HRESULT CLevel_Shader::Initialize()
 	
 	CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
 
-    CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_Interact"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
+    //  CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_Interact"), TEXT("Test"), LEVEL::SHADER), E_FAIL);
 #pragma endregion
 
 	m_CascadeConfig.Splits.resize(m_iNumCascades);
@@ -333,37 +333,34 @@ HRESULT CLevel_Shader::Initialize()
 
 			if (m_isEnableVignette)
 			{
-				// 라디오 버튼으로 애니메이션 모드 고르기
-				_bool isChanged = {};
-				_int iVignetteMode = static_cast<_int>(m_VignetteConfig.eMode);
-
-				isChanged |= ImGui::RadioButton("Smooth_Smooth", &iVignetteMode, static_cast<_int>(VIGNETTE_CONFIG::SMOOTH_SMOOTH));
-				ImGui::SameLine();
-				isChanged |= ImGui::RadioButton("Smooth_Intant", &iVignetteMode, static_cast<_int>(VIGNETTE_CONFIG::SMOOTH_INTANT));
-				ImGui::SameLine();
-				isChanged |= ImGui::RadioButton("Intant_Smooth", &iVignetteMode, static_cast<_int>(VIGNETTE_CONFIG::INTANT_SMOOTH));
-				ImGui::SameLine();
-				isChanged |= ImGui::RadioButton("None", &iVignetteMode, static_cast<_int>(VIGNETTE_CONFIG::NONE));
-
-				if (true == isChanged)
-					m_VignetteConfig.eMode = static_cast<VIGNETTE_CONFIG::ANIMMODE>(iVignetteMode);
-
                 ImGui::ColorEdit3("Vignette Color", reinterpret_cast<_float*>(&m_VignetteConfig.vColor));
 
                 ImGui::SliderFloat("Vignette Power", &m_VignetteConfig.fPower, 0.f, 10.f, "%.2f");
 
-                ImGui::SliderFloat("Vignette Intensity", &m_VignetteConfig.fIntensity, 0.f, 10.f, "%.2f");
-
-				// 최대 강도
+                ImGui::SliderFloat("Vignette Min Intensity", &m_VignetteConfig.fMinIntensity, 0.f, 10.f, "%.2f");
                 ImGui::SliderFloat("Vignette Max Intensity", &m_VignetteConfig.fMaxIntensity, 0.f, 10.f, "%.2f");
-				
-				// 듀레이션
-				ImGui::SliderFloat("Vignette Duration", &m_fVignetteAnimDuration, 0.f, 5.f, "%.2f");
 
+                // 듀레이션
+                ImGui::SliderFloat("Vignette Duration", &m_VignetteConfig.fDuration, 0.f, 5.f, "%.2f");
+                ImGui::SliderFloat2("Radial Blur Fade Time", reinterpret_cast<_float*>(&m_VignetteConfig.vFadeTime), 0.f, 5.f, "%.1f");
+
+                // 노이즈 사용 여부
+                ImGui::Checkbox("Use Vignette Noise", &m_VignetteConfig.isUseNoise);
+
+                if (true == m_VignetteConfig.isUseNoise)
+                {
+                    // 텍스처 인덱스
+                    ImGui::SliderInt("Vignette Texture Index", reinterpret_cast<_int*>(&m_VignetteConfig.iTextureIndex), 0, 3);
+                    // 대비
+                    ImGui::SliderFloat("Vignette Contrast", &m_VignetteConfig.fContrast, 0.f, 10.f, "%.2f");
+                }
+                
 				// 스타트 버튼
 				if (ImGui::Button("Start Vignette"))
-					m_pGameInstance->Start_VignetteAnimation(m_fVignetteAnimDuration, m_VignetteConfig);
-			}
+					m_pGameInstance->Start_VignetteAnimation(m_VignetteConfig);
+                
+                ImGui::Separator();
+            }
 
             if (ImGui::Checkbox("LUT", &m_isEnableLUT))
                 m_pGameInstance->Set_EnableLUT(m_isEnableLUT);

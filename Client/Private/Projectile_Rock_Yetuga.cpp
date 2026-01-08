@@ -44,57 +44,65 @@ void CProjectile_Rock_Yetuga::Priority_Update(_float fTimeDelta)
 
 void CProjectile_Rock_Yetuga::Update(_float fTimeDelta)
 {
+
     if (m_isPicked)
     {
         m_pBody->Sync_Update(m_pTransformCom);
         m_pBody->Update(fTimeDelta, m_pTransformCom);
-#ifdef _DEBUG
-        //  m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
-#endif
     }
     else
     {
         m_pBody->Collision_Active(false);
     }
-   
+    
+
+    if (CProjectile::PRJSTATE::CRASHED == m_eState)
+    {
+        Enter_State(PRJSTATE::END);
+    }
 }
 
 void CProjectile_Rock_Yetuga::Late_Update(_float fTimeDelta)
 {
-	if(m_isVisible)
-		m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC,this);
+    if (m_isVisible)
+        m_pGameInstance->Add_RenderGroup(RENDERGROUP::STATIC, this);
+
+    
 
 }
 
 HRESULT CProjectile_Rock_Yetuga::Render()
 {
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
+    if (FAILED(Bind_ShaderResources()))
+        return E_FAIL;
 
-	_uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
+    _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-	for (size_t i = 0; i < iNumMeshes; i++)
-	{
-		m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
+    for (size_t i = 0; i < iNumMeshes; i++)
+    {
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
 
-		m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
 
-		if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
-			return E_FAIL;
+        if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
+            return E_FAIL;
 
-		m_pShaderCom->Begin(0);
+        m_pShaderCom->Begin(0);
+        m_pModelCom->Render(i);
+    }
+    
 
-		m_pModelCom->Render(i);
-	}
 	return S_OK;
 }
 
 void CProjectile_Rock_Yetuga::Reset()
 {
+ 
+    if (m_eState == CProjectile::PRJSTATE::CRASHED)
+        return;
 
     m_isPicked = true;
     m_pBody->Collision_Active(true);
-
 	m_fCurrentTime = 0.f;
 	_vector vDir = XMVector3Normalize(XMLoadFloat3(&m_vSpawnDir));
 
@@ -106,7 +114,7 @@ void CProjectile_Rock_Yetuga::Reset()
 	m_pTransformCom->Set_State(STATE::UP, vUp);
 	m_pTransformCom->Set_State(STATE::LOOK, vDir);
 
-	m_pTransformCom->Scale(_float3(1.5f, 1.5f, 1.5f));
+	//m_pTransformCom->Scale(_float3(1.5f, 1.5f, 1.5f));
 
 	m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(XMLoadFloat3(&m_vSpawnPoint), 1.f));
 
@@ -115,16 +123,16 @@ void CProjectile_Rock_Yetuga::Reset()
 
 void CProjectile_Rock_Yetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
+
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        {
-            //pTarget->Take_Damage();
-            m_isDead = true;
-            m_isVisible = false;
-            m_isPicked = false;
-        }
+        
+        // 데미지 주고
+        pTarget->Take_Damage(125.f,HITREACTION::KNOCKBACK_STRONG);
+        Enter_State(PRJSTATE::CRASHED);
+        
     }
 }
 
@@ -138,6 +146,41 @@ void CProjectile_Rock_Yetuga::Collision_Exit(COLLISION_DESC* pDesc, _uint iOther
 
 }
 
+void CProjectile_Rock_Yetuga::Enter_State(PRJSTATE eNextState)
+{
+    if (m_eState == eNextState)
+        return;
+
+    m_eState = eNextState;
+
+    switch (m_eState)
+    {
+    case CProjectile::PRJSTATE::IDLE:
+
+        break;
+    case CProjectile::PRJSTATE::LOOP:
+
+        break;
+    case CProjectile::PRJSTATE::CRASHED:
+        /*_vector vCurrentPos = m_pTransformCom->Get_State(STATE::POSITION);
+        _vector vOffset = vCurrentPos + XMVectorSet(0.f,100.f,0.f,0.f);*/
+        //m_pTransformCom->Set_State(STATE::POSITION, vOffset);
+        //m_pAnimModelCom->Set_Animation(2);
+        break;
+    case CProjectile::PRJSTATE::END:
+        //m_pAnimModelCom->Set_Animation(0);
+        m_pBody->Collision_Active(false);
+        m_pBody->Set_Pos(XMVectorSet(0.f, 0.f, 0.f, 1.f));
+        m_isDead = true;
+        m_isVisible = false;
+        m_isPicked = false;
+        break;
+    }
+
+
+
+}
+
 HRESULT CProjectile_Rock_Yetuga::Ready_Components()
 {
 	if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
@@ -148,6 +191,15 @@ HRESULT CProjectile_Rock_Yetuga::Ready_Components()
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
 		return E_FAIL;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ /*   if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
+        TEXT("Com_AnimShader"), reinterpret_cast<CComponent**>(&m_pAnimShaderCom), nullptr)))
+        return E_FAIL;
+
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Yetuga_Stone"),
+        TEXT("Com_AnimModel"), reinterpret_cast<CComponent**>(&m_pAnimModelCom), nullptr)))
+        return E_FAIL;*/
 
 	return S_OK;
 }
@@ -171,7 +223,7 @@ HRESULT CProjectile_Rock_Yetuga::Ready_Colliders()
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
-        TEXT("Com_Body_Yetuga_Stone"), reinterpret_cast<CComponent**>(&m_pBody), &BodyDesc)))
+        TEXT("Com_Body_Yetuga_Rock"), reinterpret_cast<CComponent**>(&m_pBody), &BodyDesc)))
         return E_FAIL;
 
     return S_OK;
@@ -192,6 +244,7 @@ HRESULT CProjectile_Rock_Yetuga::Bind_ShaderResources()
 
 	return S_OK;
 }
+
 
 CProjectile_Rock_Yetuga* CProjectile_Rock_Yetuga::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
@@ -222,4 +275,6 @@ void CProjectile_Rock_Yetuga::Free()
 	__super::Free();
 
     Safe_Release(m_pBody);
+    //Safe_Release(m_pAnimModelCom);
+    //Safe_Release(m_pAnimShaderCom);
 }

@@ -13,6 +13,8 @@ NS_BEGIN(Client)
 class CDoor_Gear final : public CPartObject
 {
 private:
+    enum MESH_TYPE { GEAR, RUNE };
+
     enum ANIM_STATE
     {
         ACTIVATION,
@@ -58,11 +60,23 @@ private:
 
     _int m_iEventID = {};
 
+    _float m_fAnimTimeAcc = {};
+
+    _bool m_isEffectOn = { false };
+
     EVENT_TYPE m_eEventType = { EVENT_TYPE::END };
 
     EventGateGear m_EventGate = {};
 
     _uint m_iEventLisID = { 0 };
+
+    _uint   m_iEffectIdx;
+
+    _float m_fTimeAcc = {};
+    _float m_fEmissiveIntensity = {};
+    _float m_fMinIntensity{}, m_fMaxIntensity{};
+
+    _bool m_isBlink = {};
 
 private:
     HRESULT Ready_Components(void* pArg);

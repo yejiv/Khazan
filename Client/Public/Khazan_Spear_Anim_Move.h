@@ -46,7 +46,6 @@ public:
     /* Moving*/
 	_bool	Try_ChangeAnimation(SPEAR_MOVE moveInfo);
 	void	Reserve_Animation(SPEAR_MOVE moveInfo);
-	_bool	IsEndMoveAnimantionFinished() const { return m_isEndAnimationFinished; }
 
     /* turn */
     _bool   Try_Turn180Animation(SPEAR_MOVE moveInfo);
@@ -54,13 +53,19 @@ public:
     /* Getter*/
     _bool	IsMoving() const { return m_isMoving; }
     _bool	IsDodgeing() const { return m_isDodging; }
+    _bool	IsReserve() const { return m_isReserve; }
     _bool   IsTurning180() const { return m_isTurning180; }
+    _bool	IsEndMoveAnimantionFinished() const { return m_isEndAnimationFinished; }
+    _bool   IsCurrentAnimationDodge();
+    _uint   Get_DodgeDirection();
 
     /* Clear */
     void    Clear_Reserve() { m_isReserve = false; m_eReserveInfo = {}; }
     void    Clear_Turn180() { m_isTurning180 = false; }
 
 private:
+    class CClientInstance* m_pClientInstance = { nullptr };
+    PLAYER_DATA* m_pPlayerData = { nullptr };
     SPEAR_MOVE	m_eReserveInfo = {};
 	FOOT_INFO	m_FootInfo[GetBitPosition(MOV::MOVE_END)]; // walk, run ,  Injured
 	FOOT		m_curFoot;
@@ -70,7 +75,7 @@ private:
 
 	_bool		m_isEndAnimationFinished = { false };
 	_bool		m_isMoving = { false };
-	_bool		m_isDodging = { false };
+    _bool		m_isDodging = { false };
 	_bool		m_isReserve = { false };
     _bool       m_isTurning180 = { false };
 

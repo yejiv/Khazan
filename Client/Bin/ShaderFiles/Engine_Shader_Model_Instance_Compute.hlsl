@@ -123,7 +123,6 @@ void CS_MOVE(uint3 DTid : SV_DispatchThreadID)
         }
     }
 	     
-    
     if (abs(Particle.vRight.x) <= 0.f)
     { 
         Particle.vRight = g_InputData[iIndex].vRight;
@@ -204,8 +203,8 @@ void CS_UPDATE_GRAVITY(uint3 DTid : SV_DispatchThreadID)
         SpeedData.fGravity = 0.f;
         return;
     }
-    SpeedData.fGravity += g_fTimeDelta * 2.6f;
-    Particle.vTranslation.y -= 4.8f * SpeedData.fGravity * g_fTimeDelta;
+    SpeedData.fGravity += g_fTimeDelta * 2.5f;
+    Particle.vTranslation.y -= 4.5f * SpeedData.fGravity * g_fTimeDelta;
     g_OutputData[iIndex] = Particle;
     g_SpeedData[iIndex].fGravity = SpeedData.fGravity;
 } 
@@ -249,9 +248,9 @@ void CS_TURBULENCE(uint3 DTid : SV_DispatchThreadID)
     float2 offset2 = float2(sin(g_TotalTime * 1.37f), cos(g_TotalTime * 1.91f)) * 0.5f;
     float2 offset3 = float2(sin(g_TotalTime * 0.77f), cos(g_TotalTime * 1.21f)) * 0.5f;
     
-    float forceX = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.yz * 0.1f + offset1, 0).r - 0.5f) * 2.f;
-    float forceY = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xz * 0.1f + offset2, 0).r - 0.5f) * 2.f;
-    float forceZ = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xy * 0.1f + offset3, 0).r - 0.5f) * 2.f;
+    float forceX = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.yz * g_TurblunceSampleSize + offset1, 0).r - 0.5f) * 2.f;
+    float forceY = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xz * g_TurblunceSampleSize + offset2, 0).r - 0.5f) * 2.f;
+    float forceZ = (g_NoiseTexture.SampleLevel(g_LinearWrapSampler, pos.xy * g_TurblunceSampleSize + offset3, 0).r - 0.5f) * 2.f;
 
     float3 noiseDir = normalize(float3(forceX, forceY, forceZ));
 

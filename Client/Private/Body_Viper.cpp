@@ -3,6 +3,9 @@
 #include "BlackBoard.h"
 #include "Viper.h"
 #include "AI_Controller.h"
+#include "Body.h"
+#include "ClothBody.h"
+#include "AS_CutScene_Start_Viper.h"
 
 _float3 CBody_Viper::Get_BonePoint(const _char* BoneName)
 {
@@ -91,10 +94,13 @@ HRESULT CBody_Viper::Initialize_Clone(void* pArg)
         return E_FAIL;
 
     if (FAILED(Ready_Components()))
-        return E_FAIL;
+        return E_FAIL; 
 
    /* if (FAILED(Ready_Colliders()))
         return E_FAIL;*/
+
+    m_fRimDuration = 3.f;
+    m_vRimColor = _float3(1.f, 0.8f, 0.6f);
 
     return S_OK;
 }
@@ -109,14 +115,54 @@ void CBody_Viper::Update(_float fTimeDelta)
     if (CViper::PHASE::PHASE1 == m_pOwner->Get_Phase())
     {
         Update_CombinedMatrix();
+
+        _matrix BoneMatrix = XMLoadFloat4x4(m_pClothBodyMatrix);
+
+        for (uint32_t i = 0; i < 3; i++)
+            BoneMatrix.r[i] = XMVector3Normalize(BoneMatrix.r[i]);
+
+        XMStoreFloat4x4(&m_pClothCombinedMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+
+        _matrix ClothWorld = XMLoadFloat4x4(&m_pClothCombinedMatrix);
+
+        _vector vScale, vQuat, vPos;
+        XMMatrixDecompose(&vScale, &vQuat, &vPos, ClothWorld);
+
+        m_pClothBody->Sync_Update(ClothWorld);
+        m_pClothBody->Update(fTimeDelta, ClothWorld, vQuat, vPos);
+
+        m_pFeelerBody->Priority_Update(fTimeDelta);
+
+        m_pFeelerBody->Update(fTimeDelta);
+
     }
 
+    if (true == m_isEnableRimLight)
+    {
+        m_fTimeAcc += fTimeDelta;
+
+        _float fRatio = m_fTimeAcc / m_fRimDuration;
+
+        if (fRatio >= 1.f)
+            fRatio = 1.f;
+
+        m_fRimIntensity = Lerp(m_fRimIntensity, m_fMaxRimIntensity, fRatio);
+    }
+
+    if (true == m_isBlinkRimLight)
+        m_vRimColor = _float3(1.f, 0.6f, 0.4f);
+
+    // Radial Blur 센터 설정
+    if (m_pOwner->Get_Viper_CutSceneState()->Get_State() == CUTSCENE_STATE::STAND)
+        m_pGameInstance->Set_RadialBlurCenter(Get_BoneMatrix("Bone_tongue_04").r[3]);
 }
 
 void CBody_Viper::Late_Update(_float fTimeDelta)
 {
     if (CViper::PHASE::PHASE1 == m_pOwner->Get_Phase())
     {
+        m_pFeelerBody->Late_Update(fTimeDelta);
+
         if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
             return;
     }
@@ -139,6 +185,40 @@ HRESULT CBody_Viper::Render()
 
     _float fEmissiveIntensity = 10.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableRimLight", &m_isEnableRimLight)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isBlinkRimLight", &m_isBlinkRimLight)))
+        return E_FAIL;
+
+    _float fRimPower = 2.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &m_fRimIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &m_vRimColor, sizeof(_float3))))
+        return E_FAIL;
+
+    _float fRimEmissive = 3.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fTimeDelta", &m_fTimeAcc, sizeof(_float))))
+        return E_FAIL;
+
+    _float fCycleSpeed = 30.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fCycleSpeed", &fCycleSpeed, sizeof(_float))))
+        return E_FAIL;
+
+    m_fMinRimIntensity = 0.7f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fMinRimIntensity", &m_fMinRimIntensity, sizeof(_float))))
         return E_FAIL;
 
     for (size_t i = 0; i < iNumMeshes; i++)
@@ -195,6 +275,50 @@ HRESULT CBody_Viper::Ready_Components()
         return E_FAIL;
 
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
+
+    m_tFeelerCollDesc.pGameObject = this;
+    CClothBody::CLOTH_BODY_DESC ClothDesc;
+    ClothDesc.pModel = m_pModelCom;
+    vector<_int> RootBoneIndices;
+    RootBoneIndices.push_back(m_pModelCom->Get_BoneIndex("Bone_Feeler01_R01"));
+    RootBoneIndices.push_back(m_pModelCom->Get_BoneIndex("Bone_Feeler01_L01"));
+    ClothDesc.RootBoneIndices = RootBoneIndices;
+    ClothDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::CLOTH);
+    ClothDesc.pOwnerTransform = m_pOwnerTransform;
+    ClothDesc.fGravity = 0.4f;
+    ClothDesc.fLinearDamping = 1.0f;
+    ClothDesc.fAngularDamping = 2.0f;
+    ClothDesc.fMass = 0.03f;
+    ClothDesc.fMinDistance = 0.98f;
+    ClothDesc.fMaxDistance = 1.02f;
+    ClothDesc.fSpringFrequency = 3.0f;
+    ClothDesc.fSpringDamping = 3.0f;
+    ClothDesc.eType = CLOTHTYPE::FEELER;
+    ClothDesc.pCollisionDesc = &m_tFeelerCollDesc;
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_ClothBody"),
+        TEXT("Com_Cloth"), reinterpret_cast<CComponent**>(&m_pFeelerBody), &ClothDesc)))
+        return E_FAIL;
+
+    // Bip001-Pelvis
+    m_tClothBodyCollDesc.pGameObject = this;
+
+    CBody::BODY_BOXSHAPE_DESC BodyDesc{};
+    BodyDesc.vExtent = { 6.f, 0.3f, 6.f };
+    BodyDesc.eMotion = EMotionType::Kinematic;
+    BodyDesc.eQuality = EMotionQuality::Discrete;
+    BodyDesc.eShapeType = SHAPE::BOX;
+    BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::CLOTHBODY);
+    BodyDesc.bIsTrigger = false;
+
+    m_pClothBodyMatrix = m_pModelCom->Get_BoneMatrix("Bip001-Pelvis");
+    XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(m_pClothBodyMatrix) * XMLoadFloat4x4(m_pParentMatrix));
+    BodyDesc.vPos = { m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43 };
+    XMStoreFloat4(&BodyDesc.vQuat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&m_CombinedWorldMatrix)));
+
+    BodyDesc.vShapeOffset = _float3(0.f, 0.7f, 0.f);
+    BodyDesc.pCollisionDesc = &m_tClothBodyCollDesc;
+
+    CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_ClothBody"), (CComponent**)&m_pClothBody, &BodyDesc), E_FAIL);
 
     return S_OK;
 
@@ -303,6 +427,8 @@ void CBody_Viper::Free()
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
     Safe_Release(m_pOwnerTransform);
+    Safe_Release(m_pClothBody);
+    Safe_Release(m_pFeelerBody);
 
     __super::Free();
 

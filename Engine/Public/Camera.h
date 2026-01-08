@@ -96,6 +96,27 @@ public:
 	void	Kill_FOVModifier(const _wstring& strID);
 	void	Update_FOVChannel(_float fTimeDelta);
 
+    void Play_FOVZoomSequence(
+        const _wstring& strID,
+        _float fZoomFOV,     // 줌인 목표 FOV (라디안)
+        _float fInDuration,  // 줌 인 시간
+        _float fHoldDuration,// 고정 시간
+        _float fOutDuration, // 줌 아웃 시간
+        _int   iPriority = 0 // PRIORITY 모드 우선순위
+    );
+    void Start_FOVHoldZoom(
+        const _wstring& strID,
+        _float fZoomFOV,     // 줌인 목표 FOV (라디안)
+        _float fInDuration,  // 줌 인 시간
+        _int   iPriority = 0 // PRIORITY 우선순위
+    );
+
+    // 홀드 해제 → 줌 아웃
+    void Release_FOVHoldZoom(
+        const _wstring& strID,
+        _float fOutDuration  // 줌 아웃 시간
+    );
+
 private:
 	_int	FindModIndexByID(const _wstring& strID) const;
 
@@ -159,8 +180,14 @@ protected:
 	_float				m_fBaseFOV = XMConvertToRadians(60.f);   // 기본 FOV
 	vector<FOVModifier> m_vFOVMods;
 	_float				m_fFOVSmooth = 20.f;   // 클수록 빠르게 따라감
-	_float				m_fFOVMin = XMConvertToRadians(30.f);
+	_float				m_fFOVMin = XMConvertToRadians(20.f);
 	_float				m_fFOVMax = XMConvertToRadians(110.f);
+    _bool               m_isFOVReturning = false;
+    _float              m_fFOVReturnTime = { 0.f };
+    _float              m_fFOVReturnDuration = { 0.3f };
+    _float              m_fFOVReturnFrom = { 0.f };
+    _float              m_fLastFOVOutDuration = { 0.f };
+
 	
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

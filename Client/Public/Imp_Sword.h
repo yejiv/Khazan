@@ -1,6 +1,6 @@
 #pragma once
 #include "Client_Defines.h"
-#include "PartObject.h"
+#include "WeaponObject.h"
 
 NS_BEGIN(Engine)
 class CShader;
@@ -10,7 +10,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CImp_Sword final : public CPartObject
+class CImp_Sword final : public CWeaponObject
 {
 public:
     typedef struct tagWeaponDesc : public PARTOBJECT_DESC
@@ -18,7 +18,8 @@ public:
         CTransform* pOwnerTransform = { nullptr };
         class CImp_Melee* pOwner = { nullptr };
         _float4x4* pSocketMatrix = { nullptr };
-
+        _bool* pDissolve = { nullptr };
+        _float* pDecreaseAlpha;
     }WEAPON_DESC;
 
 public:
@@ -50,6 +51,7 @@ private:
     HRESULT					Ready_Components();
     HRESULT                 Ready_Collision();
     HRESULT					Bind_ShaderResources();
+    HRESULT                 Bind_Dissolve();
 
 private:
     class CImp_Melee*       m_pOwner = { nullptr };
@@ -58,6 +60,7 @@ private:
     CShader*                m_pShaderCom = { nullptr };
     CModel*                 m_pModelCom = { nullptr };
     CTransform*             m_pOwnerTransform = { nullptr };
+    class CTexture* m_pDissolveCom = { nullptr };
 
     _bool					m_isOnAttackCollision = { false };
     CBody*                  m_pBodyComp = { nullptr };
@@ -65,6 +68,8 @@ private:
 
 private:
     _float4					m_vLockOnPoint = {};
+    _bool* m_pDissolve = { nullptr };
+    _float* m_pDecreaseAlpha = { nullptr };
 
 public:
     static CImp_Sword*      Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

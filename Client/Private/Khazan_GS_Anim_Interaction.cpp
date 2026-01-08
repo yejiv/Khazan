@@ -9,9 +9,12 @@ CKhazan_GS_Anim_Interaction::CKhazan_GS_Anim_Interaction()
     Safe_AddRef(m_pClientInstance);
 }
 
-HRESULT CKhazan_GS_Anim_Interaction::Initialize_Prototype()
+HRESULT CKhazan_GS_Anim_Interaction::Initialize()
 {
     m_pPlayerData = m_pClientInstance->Get_pInitailizePlayerData();
+
+    m_iLachrymaAnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_LacrimaInteraction");
+    m_iHealAnimIndex = m_pModel->Get_AnimIndexByName("CA_P_Kazan_Heal_01");
 
     return S_OK;
 }
@@ -54,6 +57,7 @@ _bool CKhazan_GS_Anim_Interaction::Try_TobStone(_bool isWeapon)
     else 
         m_pModel->Set_AnimationSet("Set_Tobstone");
 
+    m_pModel->AnimationSetIndexIncrease();
     return true;
 }
 
@@ -72,13 +76,14 @@ _bool CKhazan_GS_Anim_Interaction::Try_DamagedTS_Before(_bool isWeapon)
     else 
         m_pModel->Set_AnimationSet("Set_DamagedTS_Before");
 
+    m_pModel->AnimationSetIndexIncrease();
     return true;
 }
 
 _bool CKhazan_GS_Anim_Interaction::Try_DamagedTS_After(_bool isWeapon)
 {
-    if (!m_pModel->Check_MinAnimationTime())
-        return false;
+    //if (!m_pModel->Check_MinAnimationTime())
+    //    return false;
 
     if (isWeapon)
     {
@@ -90,15 +95,17 @@ _bool CKhazan_GS_Anim_Interaction::Try_DamagedTS_After(_bool isWeapon)
     else 
         m_pModel->Set_AnimationSet("Set_DamagedTS_After");
 
+    m_pModel->AnimationSetIndexIncrease();
+
     return true;
 }
 
 _bool CKhazan_GS_Anim_Interaction::Try_BoxOpen(_bool isUsedSet)
 {
-    if (!m_pModel->Check_MinAnimationTime())
-        return false;
 
-    
+    //if (!m_pModel->Check_MinAnimationTime())
+    //    return false;
+
 
     if (isUsedSet) {
         m_pModel->Set_AnimationSet("Set_OpenBox");  //무기 집어넣고 상자열고 다시 무기 들기
@@ -115,7 +122,7 @@ _bool CKhazan_GS_Anim_Interaction::Try_Lachryma()
     if (!m_pModel->Check_MinAnimationTime())
         return false;
 
-    m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_LacrimaInteraction"));
+    m_pModel->Set_Animation(m_iLachrymaAnimIndex);
 
     //노티파이에서 힐링 처리 
     //m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;
@@ -129,7 +136,7 @@ _bool CKhazan_GS_Anim_Interaction::Try_Heal()
 {
     if (!m_pModel->Check_MinAnimationTime())
         return false;
-    m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_Heal_01"));
+    m_pModel->Set_Animation(m_iHealAnimIndex);
 
     return true;
 }
@@ -173,8 +180,8 @@ _bool CKhazan_GS_Anim_Interaction::Try_Statue(_bool isUsedSet)
 
 _bool CKhazan_GS_Anim_Interaction::Try_IronGate(_bool isUsedSet)
 {
-    if (!m_pModel->Check_MinAnimationTime())
-        return false;
+    //if (!m_pModel->Check_MinAnimationTime())
+    //    return false;
 
     if (isUsedSet) {
         m_pModel->Set_AnimationSet("Set_OpenGateLock");
@@ -188,6 +195,23 @@ _bool CKhazan_GS_Anim_Interaction::Try_IronGate(_bool isUsedSet)
 
 _bool CKhazan_GS_Anim_Interaction::Try_UnLockGear(_bool isUsedSet)
 {
+
+    if (m_pModel->Get_CurAnimIndex() == m_pModel->Get_AnimIndexByName("CA_P_Kazan_GSword_Stand"))
+    {
+        if (isUsedSet) {
+            if (m_pClientInstance->Get_PlayerEquipment().isGSword)
+                m_pModel->Set_AnimationSet("Set_GSwordGearSwitch");
+            else
+                m_pModel->Set_AnimationSet("Set_SpearGearSwitch");
+
+            m_pModel->AnimationSetIndexIncrease();
+
+        }
+        else  m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_GearSwitch_001_Interation"));
+
+        return true;
+    }
+
     if (!m_pModel->Check_MinAnimationTime())
         return false;
 
@@ -207,8 +231,8 @@ _bool CKhazan_GS_Anim_Interaction::Try_UnLockGear(_bool isUsedSet)
 
 _bool CKhazan_GS_Anim_Interaction::Try_GiantGate(_bool isUsedSet)
 {
-    if (!m_pModel->Check_MinAnimationTime())
-        return false;
+    //if (!m_pModel->Check_MinAnimationTime())
+    //    return false;
 
     if (isUsedSet) {
         m_pModel->Set_AnimationSet("Set_OpenGiantGate");
@@ -220,17 +244,39 @@ _bool CKhazan_GS_Anim_Interaction::Try_GiantGate(_bool isUsedSet)
     return true;
 }
 
+_bool CKhazan_GS_Anim_Interaction::Try_Teleport()
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_Teleport_End"));
+
+    return true;
+}
+
+_bool CKhazan_GS_Anim_Interaction::Is_Lachryma() const
+{
+    return m_iLachrymaAnimIndex == m_pModel->Get_CurAnimIndex();
+}
+
+_bool CKhazan_GS_Anim_Interaction::Is_Heal() const
+{
+    return m_iHealAnimIndex == m_pModel->Get_CurAnimIndex();
+}
+
 CKhazan_GS_Anim_Interaction* CKhazan_GS_Anim_Interaction::Create()
 {
-    CKhazan_GS_Anim_Interaction* pInstance = new CKhazan_GS_Anim_Interaction();
+    return new CKhazan_GS_Anim_Interaction();
 
-    if (FAILED(pInstance->Initialize_Prototype()))
-    {
-        MSG_BOX(TEXT("Failed to Created : CKhazan_GS_Anim_Interaction"));
-        Safe_Release(pInstance);
-    }
+    //CKhazan_GS_Anim_Interaction* pInstance = new CKhazan_GS_Anim_Interaction();
 
-    return pInstance;
+    //if (FAILED(pInstance->Initialize_Prototype()))
+    //{
+    //    MSG_BOX(TEXT("Failed to Created : CKhazan_GS_Anim_Interaction"));
+    //    Safe_Release(pInstance);
+    //}
+
+    //return pInstance;
 }
 
 void CKhazan_GS_Anim_Interaction::Free()

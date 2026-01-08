@@ -42,6 +42,8 @@ namespace Engine
         bool            isReturnToStart;
 
         unsigned int    iBlinkCount;
+
+        function<void()> Callback;
     }LIGHT_TRANSITION_DESC;
 
 	typedef struct tagKeyFrame
@@ -214,17 +216,18 @@ namespace Engine
 
     typedef struct tagFogTransitionDesc
     {
-        float			fDensity;		// 지수용
-        float	        fBias;          // 원색 방지 보정용
-        XMFLOAT4		vColor;
-        bool            isUseHeight;
-        float           fBaseHeight;
-        bool            isUseNoise;
-        XMFLOAT2        vNoiseSpeed;
-        XMFLOAT2        vNoiseScale;
-        float           fNoiseStrength;
-        float           fNoiseContrast;
-        unsigned int    iNoiseIndex;
+        float			    fDensity;		// 지수용
+        float	            fBias;          // 원색 방지 보정용
+        XMFLOAT4		    vColor;
+        bool                isUseHeight;
+        float               fBaseHeight;
+        bool                isUseNoise;
+        XMFLOAT2            vNoiseSpeed;
+        XMFLOAT2            vNoiseScale;
+        float               fNoiseStrength;
+        float               fNoiseContrast;
+        unsigned int        iNoiseIndex;
+        function<void()>    Callback;       // 보간 끝날 시 실행할 함수
     }FOG_TRANSITION_DESC;
 
     typedef struct tagFogConfig
@@ -240,6 +243,10 @@ namespace Engine
         bool            isUseHeight;
         float			fBaseHeight;
         float			fHeightDensity;
+        bool            isUseSubColor;
+        float           fSubColorStartHeight;
+        XMFLOAT4        vSubColor;
+        float           fLightBleedStrength;
     }FOG_CONFIG;
 
     typedef struct tagOutlineConfig
@@ -252,13 +259,15 @@ namespace Engine
 
     typedef struct tagVignetteConfig
     {
-        enum ANIMMODE { SMOOTH_SMOOTH, SMOOTH_INTANT, INTANT_SMOOTH, NONE };
-
-        ANIMMODE	eMode;
-        XMFLOAT3	vColor;
-        float		fPower;
-        float		fIntensity;
-        float		fMaxIntensity;
+        XMFLOAT3	    vColor;
+        float		    fPower;
+        float		    fMinIntensity;
+        float		    fMaxIntensity;
+        float           fDuration;
+        XMFLOAT2        vFadeTime;
+        bool            isUseNoise;
+        unsigned int    iTextureIndex;
+        float           fContrast;
     }VIGNETTE_CONFIG;
 
     typedef struct tagDecalEmissiveDesc
@@ -283,6 +292,17 @@ namespace Engine
         bool                    isRandomTexture;
         unsigned int            iTextureIndex;
     }DECAL_DESC;
+
+    typedef struct tagStaticDecalDesc
+    {
+        DECALTYPE	            eType;
+        XMFLOAT3	            vPosition;
+        XMFLOAT3                vAngle;
+        XMFLOAT3	            vScale;
+        XMFLOAT3	            vColor;
+        unsigned int            iTextureIndex;
+
+    }STATIC_DECAL_DESC;
 
     typedef struct tagDistortionDesc
     {
@@ -367,49 +387,40 @@ namespace Engine
         float fTime = 0.f; // 경과 시간
         float fDuration = 0.f; // 전체 재생 시간
         float iPriority = 0.f; // 우선순위
+        float fOutDuration = 0.3f;
         bool isAlive = true; // 종료되면 false이면서 삭제
 
         std::function<float(float)> Ease;
     };
-
-    struct XPBD_Params
+    
+    struct CLOTH_VERTEX
     {
-        // 통합/댐핑/외력
-        float fDampingStill = 0.985f;  // 정지시
-        float fDampingMove = 0.90f;   // 이동 중
-        float fGravityY = -9.8f;   // 중력
-        float fAirLinear = 0.40f;   // v
-        float fAirQuadratic = 0.12f;   // |v| v
-        float fMaxSpeed = 20.0f;   // m/s
-
-        // XPBD (compliance: 0=무한강성)
-        float fStretchCompliance = 2e-5f; // 거리
-        float fBendCompliance = 1e-4f; // 곡률(거리-벤드)
-        float fShearCompliance = 5e-5f; // 2열 카드용(선택)
-
-        // 반복/서브스텝
-        int   iSolverIterations = 3;
-        int   iSubsteps = 1;
-
-        // 테더(루트~노드 최대 거리 / 소프트 복원)
-        float fTetherScale = 1.35f;
-        float fTetherSoftness = 0.30f;
-
-        // 루트 이월(깊이 가중)
-        float fAdvectPosRoot = 1.0f;
-        float fAdvectPosTip = 0.60f;
-        float fAdvectRotRoot = 0.70f;
-        float fAdvectRotTip = 0.35f;
-
-        float fSagBiasStill = 0.65f;  // 정지 시 루트→아래(-Y) 축으로 당기는 비율
-        float fSagBiasMove = 0.15f;  // 이동 중에는 낮게
+        XMFLOAT3 vBindPos; // 모델 로컬
+        unsigned int iBoneIndex[4];
+        float fBoneWeight[4];
     };
 
-    // 구 충돌 프록시
-    struct XPBD_Sphere
+    struct CLOTH_MESH_DATA
     {
-        XMVECTOR vCenterWS = XMVectorZero();
-        float    fRadius = 0.1f;
+        vector<CLOTH_VERTEX> vVertices;
+        vector<uint> vIndices;
+    };
+
+    struct CLOTH_DATA
+    {
+        vector<XMFLOAT3> vVertices;
+        vector<uint> vIndices;
+    };
+
+    struct JOINT_INFO
+    {
+        XMMATRIX matrixBindPoseModel; // 바인드포즈에서 이 조인트의 모델 공간 행렬
+        unsigned int iJointIndex; // 애니메이션 시스템에서 쓰는 index
+    };
+
+    struct SKELETON_DATA
+    {
+        vector<JOINT_INFO> vJoints;
     };
 
     typedef struct tagTrailPointDesc
@@ -769,6 +780,8 @@ namespace Engine
         class CGameObject* pGameObject = nullptr;
         unsigned int iObjectLayer;
         wstring strName;
+        bool isForceVaildation = false;
+        bool isMovePlatform = false;
         void* pInfo = nullptr;
     }COLLISION_DESC;
 

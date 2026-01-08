@@ -10,11 +10,13 @@ void CAS_Elamein_Groggy::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
     if (m_pMonData == nullptr)
         m_pMonData = &static_cast<CElamein*>(pOwner)->Get_Data();
-    m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isGroggy", true);
+    m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(m_pMonData->pOwner->Get_Name(), "isCanBrutalAttack", true);
 
     m_pMonData->iAnimIndex = 53;
     m_eState = START;
-
+    m_pMonData->fGloggyTime = 10.f;
+    m_pMonData->pOwner->BurutalUI_On(m_pMonData->fGloggyTime);
+    m_pMonData->isGuard = false;
 }
 
 void CAS_Elamein_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -35,21 +37,24 @@ void CAS_Elamein_Groggy::Update(CStateMachine* pFSM, CGameObject* pOwner, _float
         {
             m_eState = END;
             m_pMonData->iAnimIndex = 52;
+            m_pMonData->pOwner->BurutalUI_Off();
+            m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(m_pMonData->pOwner->Get_Name(), "isCanBrutalAttack", false);
         }
     }
     else
     {
         if (m_pMonData->isAnimFinash)
         {
-            *m_pMonData->pCulStamina = *m_pMonData->pMaxStamina;
+            m_pMonData->isStamina_Regen = true;
+            m_pMonData->eHitType = HITREACTION::END;
         }
     }
 }
 
 void CAS_Elamein_Groggy::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-    m_pMonData->fGloggyTime = 5.f;
-    m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(pOwner->Get_Name(), "isGroggy", false);
+    m_pMonData->pOwner->BurutalUI_Off();
+    m_pMonData->pOwner->Get_Controller()->Get_BlackBoard()->Set_Value<_bool>(m_pMonData->pOwner->Get_Name(), "isCanBrutalAttack", false);
 }
 
 CAS_Elamein_Groggy* CAS_Elamein_Groggy::Create()

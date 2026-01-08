@@ -27,20 +27,30 @@ public:
 	virtual void						Reset() override;
 
 public:
-    virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
-    virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
-    virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void                        Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void                        Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
+    virtual void                        Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
+
+private:
+    void						        Enter_State(PRJSTATE eNextState);
 
 private:
 	HRESULT								Ready_Components();
     HRESULT						        Ready_Colliders();
 	HRESULT								Bind_ShaderResources();
 
+
+
 private:
     CBody*                              m_pBody = { nullptr };
-
     _bool						        m_isPicked = { false };
+
+//private:
+//    CModel*                             m_pAnimModelCom = { nullptr };
+//    CShader*                            m_pAnimShaderCom = { nullptr };
+
+
 
 
 public:

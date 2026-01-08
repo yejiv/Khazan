@@ -81,11 +81,11 @@ public:
     /* 정보 */
     _uint				Get_NumMeshes() const { return m_iNumMeshes; }
     _uint				Get_BoneIndex(const _char* pBoneName);
-    _float4x4* Get_BoneMatrix(const _char* pBoneName);
-    _float4x4* Get_BoneMatrix(_int iBoneIndex);
-    _float4x4* Get_LocalBoneMatrix(const _char* pBoneName);
-    _float4x4* Get_LocalBoneMatrix(_int iBoneIndex);
-    _float4x4* Get_ContainNameBoneMatrix(const _char* pBoneName);
+    _float4x4*          Get_BoneMatrix(const _char* pBoneName);
+    _float4x4*          Get_BoneMatrix(_int iBoneIndex);
+    _float4x4*          Get_LocalBoneMatrix(const _char* pBoneName);
+    _float4x4*          Get_LocalBoneMatrix(_int iBoneIndex);
+    _float4x4*          Get_ContainNameBoneMatrix(const _char* pBoneName);
     _int				Get_CurAnimIndex() { return m_iCurrentAnimIndex; }
     _int				Get_AnimIndexByName(const string& strName);
     string				Get_CurAnimName() { return m_AnimationsSetup[m_iCurrentAnimIndex].strName; }
@@ -105,21 +105,24 @@ public:
 
     void Set_BoneLocalRotation(_int iBone, _vector vLocal);
     void Set_BoneWorldRotation(_int iBone, _vector vWorld);
-
+    void Set_PreTransformMatrix(_float4x4 PreTransformMatrix) { m_PreTransformMatrix = PreTransformMatrix; }
     vector<_float3>		Get_VerticesPos(_uint iIndex);		//졸트
     vector<_uint>		Get_Indices(_uint iIndex);			//졸트
+    class CBone*        Find_Bone(_int iIndex);             //졸트
 
     /* 애니메이션 기능  */
     _bool			Play_Animation(_float fTimeDelta);
     void			Set_Animation(_uint iIndex);
     void			Set_AnimationSet(const string& strKey);
     void			Set_AnimationLoop(_bool isLoop);
-    _bool			Check_MinAnimationTime();
+    _bool			Check_MinAnimationTime(_float fAddDesceaseTime = 0.f);
     _bool           Check_CanDodgeTime();
     void            AnimationSetIndexIncrease(); //애니메이션세트 강제로 다음으로 넘기기
     void            Set_AnimationBlend(_bool isBlend) { m_isBlendEnable = isBlend; }      // 애니메이션 보간할건지 여부
     void            AnimationLoop(_bool isLoop);
     void            Set_AnimBlendTime(_uint iAnimIndex, _float fBlendTime);
+    void            QuitAnimationSet() { Remove_State(ANIMSET_PLAYING | ANIMSET_NEXT); } // 애니메이션세트 끝내기
+    _bool           IsCurSetAnimation() { return Has_State(ANIMSET_PLAYING); }
 
     /* rootBone Combined  */
     void			Update_BoneCombinedMatrices();
@@ -138,7 +141,9 @@ public:
     const			vector<_float4x4>& Get_PartLocalBoneMatrices() const { return m_PartLocalBoneMatrices; }
     void            Build_PartToMasterMap();
     void			Update_PartLocalBones();
-
+    void            Reset_PartLocalBonesFlag() { m_isPartLocalBonesUpdated = false; }
+    void            Update_PartLocalBones_Once(_bool isUsedExclusivePartBones);  // 프레임당 1회만 실행
+    void            Update_PartLocalBones_Once();  // 프레임당 1회만 실행
 
 public: 
     /* 모든 뼈 정보 */
@@ -222,6 +227,8 @@ private:
     vector<_float4x4>					m_PartLocalBoneMatrices;  //파츠 로컬 본 행렬
     _bool								m_isMaterSkeleton = { false };
     _bool								m_isSharedSkeleton = { false };
+    _bool                               m_isPartLocalBonesUpdated = { false };
+    _bool                               m_isUsedExclusivePartBones = { false }; //파츠 전용 본 사용 할건지 말건지 (망토같은)
 
 	/* const val */
 	const _float					    m_fBaseRootMotionBlendTime = { 0.15f };   /* 만약 블랜딩 시간이 안써져있으면 사용할 기본 블랜딩 시간 */
@@ -260,7 +267,7 @@ private:
     inline void		Add_State(_uint i) { m_iState |= i; }
     inline void		Remove_State(MODEL_STATE s) { m_iState &= ~s; }
     inline void		Remove_State(_uint i) { m_iState &= ~i; }
-    inline _bool	Has_State(MODEL_STATE s) { return (m_iState & s) != 0; }
+     inline _bool	Has_State(MODEL_STATE s) { return (m_iState & s) != 0; }
     inline _bool	Has_State(_uint i) { return (m_iState & i) != 0; }
     inline _bool	Has_AllStates(_uint i) { return (m_iState & i) == i; }
     inline void		Clear_State() { m_iState = 0; }

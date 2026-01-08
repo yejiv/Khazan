@@ -13,7 +13,13 @@ NS_BEGIN(Client)
 class CDragonian_Rampage final : public CMonster
 {
 public:
-    enum class MONSTATE { ATTACK_DEFAULT, ATTACK_BACK, ATTACK_RUSH, DEAD, GRORRY, BRUTAL, DAMAGE, TURN, LOCKON, SLEEP, WALK, PAGE2, END };
+    typedef struct tagDragonianRampageTag : public CMonster::MONSTER_DESC
+    {
+        _bool isSleep = { false };
+
+    }DRAGON_RAMPAGE_MONSTER_DESC;
+
+    enum class MONSTATE { ATTACK_DEFAULT, ATTACK_BACK, ATTACK_RUSH, DEAD, GRORRY, BRUTAL, DAMAGE, TURN, LOCKON, SLEEP, WALK, END };
     enum class ATTACKSTATE { DEFAULT, RUSH, BACK, END};
     enum class ATTACK_BODY : _uint { HAND_L = 1 << 0, HAND_R = 1 << 1, TAIL = 1 << 2, END = 1 << 3 };
     enum class CLAW { LEFT_1, LEFT_2, LEFT_3, RIGHT_1, RIGHT_2, RIGHT_3, END };
@@ -35,7 +41,6 @@ public:
         _float4             fEdgeColor = {};
         //BT 판단용 변수
         _bool               isDamage = { false };
-        _bool               is2Page = { false };
         _bool               isPageChange = { false };
         _bool               isLockOn = { false };
         _bool               isWallCrushed = { false };
@@ -60,7 +65,12 @@ public:
         _float              fWarkSpeed = { 10.f };
         CDragonian_Rampage* pOwner = { nullptr };
 
+        _bool               isStamina_Regen = {};
         ATTACKSTATE         eAttack_State = { ATTACKSTATE::END };
+
+        _bool               isMotionSleep = {};
+
+        _bool               isSearch = { false };
     }MONDATA;
 
 private:
@@ -78,13 +88,16 @@ public:
     _bool                           Check_Ranage(_float fRange);
     TARGET_DIR                      Get_DIR();
 
-public:
+    void                            BurutalUI_On(_float fTime);
+    void                            BurutalUI_Off();
     virtual void                    Creature_Release() override;
+public:
     virtual HRESULT					Initialize_Prototype(_int iLevel);
     virtual HRESULT					Initialize_Clone(void* pArg) override;
     virtual void					Priority_Update(_float fTimeDelta) override;
     virtual void					Update(_float fTimeDelta) override;
     virtual void					Late_Update(_float fTimeDelta) override;
+    virtual HRESULT			        Render() override;
     virtual void				    Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) override;
 
 public:
@@ -107,10 +120,9 @@ private:
     class CMeshTrail*               m_pMeshTrail[ENUM_CLASS(CLAW::END)] = {};
 
     CBody*                          m_pHitBodyCom = { nullptr };
-    CBody*                          m_pTaileCom = { nullptr };
+    class CBody*                    m_pBodyComp = { nullptr };
 
     _float4x4*                      m_pBodySocketMatrix = { nullptr };
-    _float4x4*                      m_pTailSocketMatrix = { nullptr };
     _float4x4*                      m_pLockOnSocketMatrix = { nullptr };
     _float4                         m_vLockOnPos = {};
 
@@ -134,6 +146,11 @@ private:
     _float4                         m_vClawR_2_End = {};
     _float4                         m_vClawR_3_End = {};
 
+    class CTarget_BrutalAttack*     m_pBrutalAttack = { nullptr };
+    COLLISION_DESC				    m_tSearchCollisionDesc = {};
+    COLLISION_DESC				    m_tHitCollisionDesc = {};
+
+    _int                            m_iEventID = {};
 private:
     HRESULT                         Ready_Prototype();
 
@@ -154,6 +171,10 @@ private:
     void                            Update_MeshTrail_R();
     void                            Update_MeshTrail_L();
 
+    void                            Move_Sound();
+    void                            Run_Sound();
+
+    void                            ReSpown();
 public:
     static CDragonian_Rampage*      Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;

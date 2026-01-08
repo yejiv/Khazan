@@ -8,7 +8,7 @@
 NS_BEGIN(Engine)
 class CTransform;
 class CTexture;
-class CDecal;
+class CDecal_Static;
 NS_END
 
 NS_BEGIN(Editor)
@@ -68,6 +68,7 @@ private:
 	void Select_Add_LightPoint(_float fTimeDelta);
 	void Measure_Distance(_float fTimeDelta);
 	void Update_MultiFix(_float fTimeDelta);
+    void MapDecal_CleanUp();
 
 #pragma region 변수
 private:
@@ -99,6 +100,8 @@ private:
 
 	_int m_iBN_ID = {};
 	_int m_iFix_BN_ID = {};
+    _int m_iTS_ID = {};
+    _int m_iFix_TS_ID = {};
 
 	CMapObject::ITEMBOX_DESC m_ItemBox = {};
 	CMapObject::ITEMBOX_DESC m_FixItemBox = {};
@@ -332,15 +335,17 @@ private:
 
     _float m_fDecalThreshold = {};
 
-    vector<CDecal*> m_DecalList;
+    vector<CDecal_Static*> m_DecalList;
     _int m_iDecalListIndex = {};
 
-    _int m_iTextureIndex = {};
-    CDecal* m_pDecal = { nullptr };
-    CDecal* m_pFixDecal = { nullptr };
+    _bool m_isDecalDeleted = { false };
 
-    DECAL_DESC m_DecalDesc = {};
-    DECAL_DESC m_FixDecalDesc = {};
+    _int m_iTextureIndex = {};
+    CDecal_Static* m_pDecal = { nullptr };
+    CDecal_Static* m_pFixDecal = { nullptr };
+
+    STATIC_DECAL_DESC m_DecalDesc = {};
+    STATIC_DECAL_DESC m_FixDecalDesc = {};
     _float4x4 m_DecalWorldMatrix = {};
 
     _bool m_isDecalWireFrame = { false };

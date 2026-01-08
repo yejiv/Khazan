@@ -42,7 +42,7 @@ void CAS_LieDown_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLaye
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+        pTarget->Take_Damage(98.f, HITREACTION::KNOCKBACK_NORMAL);
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
         if (nullptr == pOwnerTransform)
             return;

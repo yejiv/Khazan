@@ -128,33 +128,6 @@ HRESULT CEmbars_Trigger::Ready_TriggerType(void* pArg)
         m_pKhazan = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Creature_Player")));
     }
 
-    /*
-    if (m_strTriggerKey == "CutScene")
-    {
-        m_pHeinMach_Field = CSequence_HeinMach_Field::Create(
-            dynamic_cast<CCamera_Compre*>(m_pClientInstance->Find_Camera(
-                ENUM_CLASS(LEVEL::HEINMACH),
-                CAMERATYPE::PLAYER))
-        );
-    }
-    else if (m_strTriggerKey == "Yetuga")
-    {
-        m_pHeinMach_Yetuga = CSequence_HeinMach_Yetuga::Create(
-            dynamic_cast<CCamera_Compre*>(m_pClientInstance->Find_Camera(ENUM_CLASS(LEVEL::HEINMACH), CAMERATYPE::PLAYER)),
-            dynamic_cast<CCreature*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")))
-        );
-
-        Load_SkyBoxBinaryFile(TEXT("HeinMach_Yetuga"));
-    }
-    */
-
-    /*
-    if (m_strTriggerKey == "Talk_03")
-    {
-        m_pHeinMach_Start_Chat = CSequence_HeinMach_Start_Chat::Create();
-    }
-    */
-
     return S_OK;
 }
 
@@ -174,6 +147,8 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
         }
         else if (m_strTriggerKey == "B1_Entry")
         {
+            m_pClientInstance->BGM_Embars_B1();
+
             // 지하 포그
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.05f;
@@ -181,10 +156,12 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             Desc.vColor = _float4(0.f, 0.058f, 0.117f, 1.f);
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
-            m_pGameInstance->Start_FogTransition(1.5f, Desc);            
+            m_pGameInstance->Start_FogTransition(1.5f, Desc);
         }
         else if (m_strTriggerKey == "B1_Exit")
         {
+            m_pClientInstance->BGM_Embars_1F();
+
             // 1층 포그
             FOG_TRANSITION_DESC FogDesc{};
             FogDesc.fDensity = 0.05f;
@@ -192,7 +169,13 @@ void CEmbars_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectL
             FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
             FogDesc.isUseHeight = false;
             FogDesc.isUseNoise = false;
-            m_pGameInstance->Start_FogTransition(1.5f, FogDesc);            
+            m_pGameInstance->Start_FogTransition(1.5f, FogDesc);
+        }
+        else if (m_strTriggerKey == "Feel_UnderWorld")
+        {
+            m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_TALK>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_TALK), EVENT_ANNOUNCE_TALK{ 21 });
+
+            m_isDead = true;
         }
         /*
         else if (m_strTriggerKey == "Talk_03")

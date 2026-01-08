@@ -3,7 +3,7 @@
 #include "Client_Defines.h"
 
 
-enum class IMP_SlEEP_STATE { SLEEP, WAKEUP, END, };
+enum class IMP_SlEEP_STATE { SLEEP, WAKEUP, BRUTALATTACK ,END, };
 
 NS_BEGIN(Client)
 

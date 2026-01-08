@@ -48,6 +48,9 @@ void CBody_Dragonian_Melee::Priority_Update(_float fTimeDelta)
 
 void CBody_Dragonian_Melee::Update(_float fTimeDelta)
 {
+    if (!m_pData->isSearch)
+        return;
+
     if (m_iPreAnim != m_pData->iAnimIndex)
     {
         m_pModelCom->Set_Animation(m_pData->iAnimIndex);
@@ -81,8 +84,6 @@ void CBody_Dragonian_Melee::Update(_float fTimeDelta)
 
 void CBody_Dragonian_Melee::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
-        return;
 }
 
 HRESULT CBody_Dragonian_Melee::Render()
@@ -94,7 +95,7 @@ HRESULT CBody_Dragonian_Melee::Render()
 
     _uint           iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    _float fEdgeIntensity = 0.8f;
+    _float fEdgeIntensity = 0.7f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
         return E_FAIL;
 

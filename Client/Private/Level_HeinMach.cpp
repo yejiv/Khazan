@@ -27,6 +27,11 @@
 
 #pragma region ITEM
 #include "Interaction_Item.h"
+//TEST
+#include "UI_Inven.h"
+
+#include "Destructible_Stone.h"
+#include "Chunk.h"
 #pragma endregion
 
 CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -38,25 +43,11 @@ CLevel_HeinMach::CLevel_HeinMach(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 HRESULT CLevel_HeinMach::Initialize()
 {
-#pragma region 수정된 코드
-
-    //m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-
-        //return S_OK;
-        //}));
-
     CHECK_FAILED(Ready_Layer_Item(), E_FAIL);
-
-    m_pGameInstance->Add_FireTask([&]() {
-        CHECK_FAILED(Ready_Layer_MapObject_DEST(TEXT("Layer_DEST"), TEXT(""), LEVEL::HEINMACH), E_FAIL);
-        return S_OK;
-        });
 
     CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL);
 
     m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-
-        //CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
 
         CHECK_FAILED(Ready_Layer_Decal(), E_FAIL);
 
@@ -64,7 +55,7 @@ HRESULT CLevel_HeinMach::Initialize()
 
         CHECK_FAILED(Ready_FireLights(TEXT("HeinMach_Point"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-        // CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
+        CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
         return S_OK;
 
@@ -90,7 +81,9 @@ HRESULT CLevel_HeinMach::Initialize()
 
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
 
-    CClientInstance::GetInstance()->Fade_Out();
+    CHECK_FAILED(Ready_SoundSetting(), E_FAIL);
+
+    CHECK_FAILED(Ready_ShaderSettings(), E_FAIL);
 
     if (!Wait_All_Futures())
         return E_FAIL;
@@ -102,101 +95,38 @@ HRESULT CLevel_HeinMach::Initialize()
             m_eNextLevel = static_cast<LEVEL>(e.iLevel);
         });
 
-#pragma endregion
+    m_pClientInstance->Set_PlayerInput(true);
 
-#pragma region 기존 코드
-
-    /*
-    CHECK_FAILED(Ready_Layer_UI(), E_FAIL);
-	m_futures.push_back(m_pGameInstance->Add_Task([this]() {
-		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		return S_OK;
-		}));
-
-	m_pGameInstance->Add_FireTask([this]() {
-		CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
-		if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-			return E_FAIL;
-		CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-        CHECK_FAILED(Ready_Map_Decal(TEXT("Layer_Decal"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-        if (FAILED(Ready_Layer_Decal()))
-            return E_FAIL;
-        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), HEINMACH_1ST_BLADENEXUS, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), HEINMACH_YETUGA, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		return S_OK;
-		});
-
-    m_pGameInstance->Add_FireTask([this]() { 
-        CHECK_FAILED(Ready_Layer_Effect(TEXT("Layer_Effect")), E_FAIL); 
-        return S_OK;
-        });
-	
-	m_pGameInstance->Add_FireTask([this]() {
-
-		CHECK_FAILED(Ready_Lights(TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-
-		CHECK_FAILED(Ready_Layer_Sky(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-
-		CHECK_FAILED(Ready_Layer_Cloud(TEXT("Layer_Sky"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		return S_OK;
-		});
-
-
-	m_pGameInstance->Add_FireTask([this]() {
-		for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
-		{
-			// 첫번째 서브 레벨 로드 주석 해제하면 여기서 스킵
-			if (HEINMACH_1ST_BLADENEXUS == i)
-				continue;
-
-			// 두번째 서브 레벨 로드 주석 해제하면 여기서 스킵
-			//if (HEINMACH_2ND_BLADENEXUS == i)
-			//	continue;
-
-			// 세번째 서브 레벨 로드 주석 해제하면 여기서 스킵
-			//if (HEINMACH_3RD_BLADENEXUS == i)
-			//	continue;
-
-			// 예투가 보스 맵 서브 레벨 로드 주석 해제하면 여기서 스킵
-			if (HEINMACH_YETUGA == i)
-				continue;
-			
-			CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-            CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_Monster"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		}		
-		return S_OK;
-		});
-
-    for (_uint i = 0; i < HEINMACH_SUBLV; ++i)
-    {
-        //CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-        //CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_MapObject"), TEXT("HeinMach"), i, LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-    }
-
-	m_pGameInstance->Add_FireTask([this]() mutable { 
-		CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL);
-		CHECK_FAILED(Ready_Layer_MapObject_Inst(TEXT("Layer_MapObject_Inst"), TEXT("HeinMach"), LEVEL::HEINMACH, KHAZAN_MAP::HEINMACH), E_FAIL); 
-		return S_OK;
-		});
-
-
-	CClientInstance::GetInstance()->Fade_Out();
-
-    if (!Wait_All_Futures())
-        return E_FAIL;
-
-	m_futures.clear();
-    */
-    //Ready_Layer_NorMonster(TEXT("Normal"));
-
-#pragma endregion
+    CClientInstance::GetInstance()->Fade_In([this]() {
+        
+        m_pClientInstance->Camera_MouseOnOff(true);
+        });    
 
 	return S_OK;
 }
 
 void CLevel_HeinMach::Update(_float fTimeDelta)
 {
+    if (m_fFadeTime < 0.2f)
+    {
+        m_fFadeTime += fTimeDelta;
+        
+        if (m_fFadeTime >= 0.2f)
+            m_pGameInstance->Decal_OnOff(true);
+
+    }
+
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+    {
+        CDestructible_Stone::STONE_DESC Desc;
+        Desc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
+        Desc.vPos = XMVectorSet(0.f, 1.f, 0.f, 1.f);
+
+        if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Chunk"),
+            ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Destructible_Stone"), TIME_CHANNEL::ENEMY, &Desc)))
+            return;
+    }
+
     if (m_pGameInstance->Key_Down(DIK_F1, INPUT_TYPE::FORCE))
     {
         m_pClientInstance->Camera_Switch_CameraMode(CAMERATYPE::FREE);
@@ -226,20 +156,6 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
     //    
     //}
 
-
-
-   if (!m_isStart)
-   {
-        m_isStart = true;
-        CSequence_HeinMach_Start* pSequence = CSequence_HeinMach_Start::Create();
-
-        SEQ_REQ_PLAY_DESC tPlayDesc{};
-        tPlayDesc.tId.iSeq = 100000;
-        tPlayDesc.pAsset = L"HeinMach_Start";
-        tPlayDesc.fStartTime = 0.f;
-
-        m_pGameInstance->SEQ_AdoptAndPlay(pSequence, tPlayDesc);
-   }
 
    /*if (m_pGameInstance->Key_Down(DIK_END, INPUT_TYPE::FORCE))
    {
@@ -319,7 +235,12 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 
     m_pClientInstance->Change_Camera(ENUM_CLASS(LEVEL::HEINMACH), ENUM_CLASS(CAMERATYPE::PLAYER));
 
-    /*if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+    /*
+    
+        CGameObject::GAMEOBJECT_DESC desc{};
+
+    desc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"), TIME_CHANNEL::PLAYER)))
         return E_FAIL;*/
 
@@ -334,13 +255,16 @@ HRESULT CLevel_HeinMach::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 HRESULT CLevel_HeinMach::Ready_Layer_Player(const _wstring& strLayerTag)
 {
-	if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-	    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
-	    return E_FAIL;
+    CGameObject::GAMEOBJECT_DESC Desc;
+    Desc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
 
-    //  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
-    //      ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
-    //      return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+	//    ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER, &Desc)))
+	//    return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+        ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER, &Desc)))
+        return E_FAIL;
 
 	return S_OK;
 }
@@ -400,6 +324,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), 10);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice"), 20);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice_Disappear"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), 30);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("BloodHit"), 100);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Open"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Breath"), 100);
@@ -415,6 +341,9 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GhostKnight_static_connect"), 4);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Smoke"), 100);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("ITEM_FX"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("ITEM_RARE_FX"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("ITEM_UNIQUE_FX"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("stone_blust"), 1);
 
     // [GS] 
 
@@ -440,13 +369,37 @@ HRESULT CLevel_HeinMach::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("GS_StrongATK"), 2);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Ghost_Dark_Shadow_Land"),1);
 
+    // [Player Ect] 
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Guard"),100);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("PerfectGaurd"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Lachryma"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Lachryma_Arm"), 3);
+
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Spear_BloodWind"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust11"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Sphere_Blood"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Spear_Crescent_Land"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("JumpSpear"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Blust12"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TrailParticle"), 100);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("TrailParticle_R"), 100);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Spear_FallAtk_Land"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Teleport"), 2);
+
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("brutal_hand"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("brutalParticle"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("blust_brutal"), 3);
+
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("blust_brutal_GS"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Brutal_Spark_GS"), 3);
+
     return S_OK;
 }
 
 HRESULT CLevel_HeinMach::Ready_Layer_Decal()
 {
     // Decal
-    if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Decal"),
+    if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal"),
         ENUM_CLASS(LEVEL::HEINMACH), TEXT("Pool_Decal"), nullptr, 100)))
         return E_FAIL;
 
@@ -455,6 +408,31 @@ HRESULT CLevel_HeinMach::Ready_Layer_Decal()
 
 HRESULT CLevel_HeinMach::Ready_Layer_Item()
 {
+    CGameObject::GAMEOBJECT_DESC desc{};
+
+    desc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
+
+    m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Item"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item"), &desc, 10);
+
+    CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Item")));
+
+    pItem->Special_Item(TEXT("Record"), XMVectorSet(345.309f, 0.674f, 378.588f, 1.f));
+
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Item"), pItem);
+
+    return S_OK;
+}
+
+HRESULT CLevel_HeinMach::Ready_SoundSetting()
+{
+    // 사운드 매니저 글로벌 볼륨
+    _float fGlobalVolume = m_pGameInstance->Get_Gloval_Volume();
+
+    // 글로벌 볼륨 세팅 후 환경음, BGM 사운드 세팅 및 재생
+    CClientInstance::GetInstance()->Set_Volume_BGM(0.65f);
+    CClientInstance::GetInstance()->Set_Volume_AMB(0.65f);
+    CClientInstance::GetInstance()->BGM_HeinMach_Entry();
+
     return S_OK;
 }
 
@@ -732,8 +710,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         {
             CMonster::MONSTER_DESC MonsterDesc{};
             MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fMaxHP = 18000.f;
+            MonsterDesc.fMaxStamina = 1200.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -749,9 +727,9 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         else if ("ImpRange" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fAttack = 100.f;
+            MonsterDesc.fMaxHP = 1200.f;
+            MonsterDesc.fMaxStamina = 500.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -767,9 +745,9 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
         else if ("ImpMelee" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            MonsterDesc.fAttack = 100.f;
+            MonsterDesc.fMaxHP = 1200.f;
+            MonsterDesc.fMaxStamina = 500.f;
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -780,6 +758,23 @@ HRESULT CLevel_HeinMach::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
                 ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Imp_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+                return E_FAIL;
+        }
+        else if ("Halberd" == MonsterData.MonsterKey[i])
+        {
+            CMonster::MONSTER_DESC MonsterDesc{};
+            MonsterDesc.fAttack = 150.f;
+            MonsterDesc.fMaxHP = 4500.f;
+            MonsterDesc.fMaxStamina = 550.f;
+            MonsterDesc.fMoveSpeed = 10.f;
+            MonsterDesc.fSpeedPerSec = 3.f;
+            MonsterDesc.fRotationPerSec = 180.f;
+
+            MonsterDesc.WorldMatrix = WorldMatrix;
+            MonsterDesc.strName = MonsterData.MonsterKey[i];
+            MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), strLayerTag,
+                ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Monster_Halberd"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
     }
@@ -835,6 +830,8 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
 	}
 	CHECK_EQUAL_MSG(INVALID_HANDLE_VALUE, hFile, TEXT("데이터 파일이 없거나 박준영 문제"), E_FAIL);
 
+    _uint iDestinyStoneIndex = { 0 };
+
 	// 1. 오브젝트의 총 개수
 	_uint iObjectCnt = {};
 	CHECK_FALSE(ReadFile(hFile, &iObjectCnt, sizeof(_uint), &dwByte, nullptr), E_FAIL);
@@ -887,17 +884,72 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_Interactive(const _wstring& strLa
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
-        case INTERACTIVE_TYPE::ELEVATOR:
-        {
-            CElevatorS::ELEVATOR_POS ElevatorPos = {};
-            CHECK_FALSE(ReadFile(hFile, &ElevatorPos, sizeof(CElevatorS::ELEVATOR_POS), &dwByte, nullptr), E_FAIL);
-            ObjectDesc.pOtherDesc = &ElevatorPos;
-            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_SmallElevator"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
-            break;
-        }
         case INTERACTIVE_TYPE::DANJIN:
         {
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_NPC_Danjin"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
+        case INTERACTIVE_TYPE::DESTINYSTONE:
+        {
+            ObjectDesc.pOtherDesc = &iDestinyStoneIndex;
+
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_DestinyStone"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+
+            ++iDestinyStoneIndex;
+
+            break;
+        }
+        case INTERACTIVE_TYPE::DESTRUCTIBLE:
+        {
+            CProp_Destructible::MODEL_TYPE eModelType = {};
+
+            CHECK_FALSE(ReadFile(hFile, &eModelType, sizeof(CProp_Destructible::MODEL_TYPE), &dwByte, nullptr), E_FAIL);
+
+            _matrix WorldMatrix = { XMLoadFloat4x4(&ObjectDesc.WorldMatrix) };
+
+            WorldMatrix.r[0] = XMVector3Normalize(WorldMatrix.r[0]);
+            WorldMatrix.r[1] = XMVector3Normalize(WorldMatrix.r[1]);
+            WorldMatrix.r[2] = XMVector3Normalize(WorldMatrix.r[2]);
+
+            switch (eModelType)
+            {
+            case CProp_Destructible::MODEL_TYPE::FENCE:
+            {
+                CFence::PROP_FENCE_DESC FenceDesc = {};
+
+                FenceDesc.eLevel = eCurrentLevel;
+
+                XMStoreFloat4x4(&FenceDesc.WorldMatrix, WorldMatrix);
+
+                // CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                //     TEXT("Prototype_GameObject_Prop_Fence"), TIME_CHANNEL::MAP, &FenceDesc), E_FAIL);
+                break;
+            }
+            case CProp_Destructible::MODEL_TYPE::POT:
+            {
+                CPot::PROP_POT_DESC PotDesc = {};
+
+                PotDesc.eLevel = eCurrentLevel;
+
+                XMStoreFloat4x4(&PotDesc.WorldMatrix, WorldMatrix);
+
+                // CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                //     TEXT("Prototype_GameObject_Prop_Pot"), TIME_CHANNEL::MAP, &PotDesc), E_FAIL);
+                break;
+            }
+            case CProp_Destructible::MODEL_TYPE::BARREL:
+            {
+                CBarrel::PROP_BARREL_DESC BarrelDesc = {};
+
+                BarrelDesc.eLevel = eCurrentLevel;
+
+                XMStoreFloat4x4(&BarrelDesc.WorldMatrix, WorldMatrix);
+
+                // CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                //     TEXT("Prototype_GameObject_Prop_Barrel"), TIME_CHANNEL::MAP, &BarrelDesc), E_FAIL);
+                break;
+            }
+            }
             break;
         }
 		default:
@@ -1062,9 +1114,7 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
 		m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
 	}
     
-
 	CloseHandle(hFile);
-
 
     LIGHT_DESC LightDesc1 = {};
     LightDesc1.eType = LIGHT_DESC::POINT;
@@ -1074,6 +1124,26 @@ HRESULT CLevel_HeinMach::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurren
     LightDesc1.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
     LightDesc1.fRange = 2.45f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Lantern"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc1, false)))
+        return E_FAIL;
+
+    LIGHT_DESC LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 9.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("BladeNexus_ActivateLight"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc, false)))
+        return E_FAIL;
+
+    LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 3.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Player_GuardLight"), ENUM_CLASS(LEVEL::HEINMACH), LightDesc, false)))
         return E_FAIL;
 
 	return S_OK;
@@ -1249,12 +1319,12 @@ HRESULT CLevel_HeinMach::Ready_Map_Decal(const _wstring& strLayerTag, const _tch
     // 데칼 총 개수만큼 순회
     for (_uint i = 0; i < iDecalCnt; ++i)
     {
-        CDecal* pDecal = static_cast<CDecal*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal")));
+        CDecal_Static* pDecal = static_cast<CDecal_Static*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal_Static")));
         CHECK_NULLPTR(pDecal, E_FAIL);
 
-        DECAL_DESC DecalDesc = {};
+        STATIC_DECAL_DESC DecalDesc = {};
         // 2. 데칼의 구조체 불러오기
-        CHECK_FALSE(ReadFile(hFile, &DecalDesc, sizeof(DECAL_DESC), &dwByte, nullptr), false);
+        CHECK_FALSE(ReadFile(hFile, &DecalDesc, sizeof(STATIC_DECAL_DESC), &dwByte, nullptr), false);
         pDecal->Set_Desc(DecalDesc);
 
         _float fThreshold = {};
@@ -1271,9 +1341,6 @@ HRESULT CLevel_HeinMach::Ready_Map_Decal(const _wstring& strLayerTag, const _tch
         // 5. 데칼의 월드 행렬 불러오기
         CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), false);
         pDecal->Set_WorldMatrix(WorldMatrix);
-
-        // 데코용 데칼 true
-        pDecal->Set_EnableDecoration(true);
 
         m_pGameInstance->Batch_Decal(pDecal);
     }
@@ -1335,10 +1402,25 @@ HRESULT CLevel_HeinMach::Ready_Layer_MapObject_DEST(const _wstring& strLayerTag,
     return S_OK;
 }
 
-HRESULT CLevel_HeinMach::Ready_Layer_UI()
+HRESULT CLevel_HeinMach::Ready_ShaderSettings()
 {
+    // Vignette
+    VIGNETTE_CONFIG Config{};
+    Config.vColor = _float3(0.25f, 0.f, 0.f);
+    Config.fPower = 3.5f;
+    Config.fMinIntensity = 5.f;
+    Config.fMaxIntensity = 10.f;
+    Config.fDuration = 1.5f;
+    Config.vFadeTime = _float2(0.75f, 0.75f);
+    Config.isUseNoise = true;
+    Config.iTextureIndex = 1;
+    Config.fContrast = 1.f;
+    m_pGameInstance->Set_VignetteConfig(Config);
 
-	return S_OK;
+    // 프리즈너 비네트 활성화
+    m_pGameInstance->Set_EnableVignette(true, 4.f);
+
+    return S_OK;
 }
 
 _bool CLevel_HeinMach::Wait_All_Futures()

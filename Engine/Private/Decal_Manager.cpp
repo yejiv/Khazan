@@ -2,6 +2,8 @@
 #include "Decal.h"
 #include "GameInstance.h"
 
+#include "Decal_Static.h"
+
 CDecal_Manager::CDecal_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : m_pDevice{ pDevice }
     , m_pContext{ pContext }
@@ -37,46 +39,59 @@ void CDecal_Manager::Update(_float fTimeDelta)
 
 HRESULT CDecal_Manager::Render()
 {
-    // 데칼의 월드, 카메라 뷰 투영, 뷰 역행렬, 투영 역행렬 바인딩
-    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
-        return E_FAIL;
-    
-    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW))))
-        return E_FAIL;
-
-    if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
-        return E_FAIL;
-
-    // 디퓨즈, 뎁스, 노말
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Diffuse"), m_pShader, "g_DiffuseTexture")))
-        return E_FAIL;
-
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
-        return E_FAIL;
-
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Normal"), m_pShader, "g_NormalTexture")))
-        return E_FAIL;
-
-    _uint           iNumViewports = { 1 };
-    D3D11_VIEWPORT  ViewportDesc{};
-    m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
-
-    // 스크린 사이즈
-    _float2 vScreenSize = _float2(ViewportDesc.Width, ViewportDesc.Height);
-    if (FAILED(m_pShader->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
-        return E_FAIL;
-
-    // 활성화된 데칼 개수만큼 순회, 해당 데칼의 월드, 뷰, 투영 바인딩
-    for (auto& pDecal : m_Decals)
+    if (m_isShow)
     {
-        if (pDecal->isCameraInDecalBox())
-            continue;
-
-        if (FAILED(pDecal->Bind_ShaderResources(m_pShader, m_pTexture, m_pVIBuffer)))
+        // 데칼의 월드, 카메라 뷰 투영, 뷰 역행렬, 투영 역행렬 바인딩
+        if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::VIEW))))
             return E_FAIL;
+
+        if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
+            return E_FAIL;
+
+        if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::VIEW))))
+            return E_FAIL;
+
+        if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", m_pGameInstance->Get_Transform_Float4x4_Inverse(D3DTS::PROJ))))
+            return E_FAIL;
+
+        // 디퓨즈, 뎁스, 노말
+        if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Diffuse"), m_pShader, "g_DiffuseTexture")))
+            return E_FAIL;
+
+        if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
+            return E_FAIL;
+
+        if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Normal"), m_pShader, "g_NormalTexture")))
+            return E_FAIL;
+
+        _uint           iNumViewports = { 1 };
+        D3D11_VIEWPORT  ViewportDesc{};
+        m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
+
+        // 스크린 사이즈
+        _float2 vScreenSize = _float2(ViewportDesc.Width, ViewportDesc.Height);
+        if (FAILED(m_pShader->Bind_RawValue("g_vScreenSize", &vScreenSize, sizeof(_float2))))
+            return E_FAIL;
+
+        // 활성화된 데칼 개수만큼 순회, 해당 데칼의 월드, 뷰, 투영 바인딩
+        for (auto& pDecal : m_Decals)
+        {
+            if (pDecal->isCameraInDecalBox())
+                continue;
+
+            if (FAILED(pDecal->Bind_ShaderResources(m_pShader, m_pTexture, m_pVIBuffer)))
+                return E_FAIL;
+        }
+
+        // 맵 데칼 개수만큼 순회, 해당 데칼의 월드, 뷰, 투영 바인딩
+        for (auto& pStaticDecal : m_StaticDecals)
+        {
+            //  if (pStaticDecal->isCameraInDecalBox())
+            //      continue;
+
+            if (FAILED(pStaticDecal->Bind_ShaderResources(m_pShader, m_pTexture, m_pVIBuffer)))
+                return E_FAIL;
+        }
     }
 
     return S_OK;
@@ -115,6 +130,28 @@ HRESULT CDecal_Manager::Spawn_Decal(const _wstring& strPoolTag, _uint iLayerLeve
     m_pGameInstance->Push_PoolObject_ToLayer(iLayerLevelIndex, strLayerTag, pDecal);
 
     return S_OK;
+}
+
+void CDecal_Manager::MapDecal_Clear()
+{
+    for (auto& pMapDecal : m_StaticDecals)
+        Safe_Release(pMapDecal);
+    m_StaticDecals.clear();
+}
+
+void CDecal_Manager::MapDecal_CleanUp()
+{
+    for (_uint i = 0; i < m_StaticDecals.size(); )
+    {
+        if (nullptr == m_StaticDecals[i] || true == m_StaticDecals[i]->Get_IsDead())
+        {
+            Safe_Release(m_StaticDecals[i]);
+            swap(m_StaticDecals[i], m_StaticDecals.back());
+            m_StaticDecals.pop_back();
+        }
+        else
+            ++i;
+    }
 }
 
 ID3D11ShaderResourceView* CDecal_Manager::Get_DecalTexture(DECALTYPE eType, _uint iIndex)
@@ -162,7 +199,7 @@ HRESULT CDecal_Manager::Ready_Components()
         TEXT("FT_Decal_Blood_A_000.png"),
         TEXT("FT_Decal_Blood_A_001.png"),
         TEXT("FT_Decal_Blood_A_002.png"),
-        TEXT("FT_Decal_Blood_A_003.png"),
+        //  TEXT("FT_Decal_Blood_A_003.png"),
         TEXT("FT_Decal_Blood_Linear_000.png"),
         TEXT("FT_Decal_Dirt_000.png"),
         TEXT("FT_Decal_Dirt_001.png"),
@@ -244,6 +281,10 @@ void CDecal_Manager::Free()
     for (auto& pDecal : m_Decals)
         Safe_Release(pDecal);
     m_Decals.clear();
+
+    for (auto& pStaticDecal : m_StaticDecals)
+        Safe_Release(pStaticDecal);
+    m_StaticDecals.clear();
 
     for (_uint i = 0; i < ENUM_CLASS(DECALTYPE::END); ++i)
         Safe_Release(m_pTexture[i]);

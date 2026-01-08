@@ -40,6 +40,8 @@ private:
 	HRESULT Ready_Layer_MapObject_Inst(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
 	HRESULT Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
+    HRESULT Ready_Lights(); // LDB : 임시 조명
+
 	HRESULT Ready_Trigger(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
     HRESULT Ready_Sequence();
 
@@ -48,6 +50,10 @@ private:
     HRESULT Ready_Layer_Effect(const _wstring& strLayerTag);
 
     HRESULT Ready_Shader_Settings();
+
+    HRESULT Ready_Item();
+    HRESULT Ready_Layer_Decal();
+    HRESULT Ready_SoundSetting();
 
     _bool Wait_All_Futures();
 

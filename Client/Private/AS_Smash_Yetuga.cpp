@@ -36,6 +36,8 @@ void CAS_Smash_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     }
     
     pModel->Set_Animation(animID);
+
+
 }
 
 void CAS_Smash_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -65,7 +67,7 @@ void CAS_Smash_Yetuga::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer,
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(0.5f, HITREACTION::KNOCKBACK_WEAK);
+        pTarget->Take_Damage(76.f, HITREACTION::KNOCKBACK_WEAK);
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
         if (nullptr == pOwnerTransform)
             return;

@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 
 #include "Client_Defines.h"
 #include "Level.h"
@@ -25,6 +25,8 @@ private:
 
     HRESULT Ready_Layer_Effect(const _wstring& strLayerTag);
     HRESULT Ready_Shader_Settings();
+    HRESULT Ready_Layer_Item();
+    HRESULT Ready_SoundSetting();
 
 #pragma region 맵 관련
 
@@ -48,6 +50,7 @@ private:
     // 파라미터 ( 1. 데이터 파일 이름 | 2. 현재 로드할 레벨 | 3. 맵 타입 ( 안넣으면 폴더 내부 X ) )
     // 조명 불러오기
     HRESULT Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
+    HRESULT Ready_Lights(); // 추가적인 조명
 
     // 파라미터 ( 1. 데이터 파일 이름 | 2. 현재 로드할 레벨 | 3. 맵 타입 ( 안넣으면 폴더 내부 X ) )
     // 조명 + 조명에 달리는 이펙트 불러오기 ( 작은 불 )
@@ -59,11 +62,13 @@ private:
     // 트리거 불러오기
     HRESULT Ready_Trigger(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
 
-    // 데칼 불러오기
+    // 맵 데칼 불러오기
     HRESULT Ready_Map_Decal(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
+    // 데칼 풀 준비
+    HRESULT Ready_Layer_Decal();
 
 #pragma endregion
-
+    HRESULT Ready_Layer_Pet(const _wstring& strLayerTag);
     _bool Wait_All_Futures();
 
 private:
@@ -83,6 +88,8 @@ private:
     LEVEL	m_eNextLevel = { LEVEL::END };
     _bool	m_isOpenLevel = { false };
 
+private:
+    void        Start_Event();
 public:
 	static CLevel_Embars* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

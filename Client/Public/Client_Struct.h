@@ -156,6 +156,7 @@ namespace Client
 
 	typedef struct tag_Player_Data
 	{
+        _int    iSouleCount = {};               //회복되는 소울
         _float  fMaxHp = {};                    //최대 체력
         _float  fCulHp = {};                    //현재 체력
         _float  fMaxStamina = {};               //최대 스태미나
@@ -198,6 +199,34 @@ namespace Client
         float	        fLifeTime;
         unsigned int    iTextureIdx;
         unsigned int    iDivisionCount;
-        XMFLOAT3        vColor;
+        XMFLOAT4        vColor;
+        XMFLOAT4        vSubColor;
     }TRAIL_CONFIG;
+
+    struct CAMERA_POSE
+    {
+        _float3 vPos;
+        _float3 vRight;
+        _float3 vUp;
+        _float3 vLook;
+    };
+
+    struct POSE_BLEND_STATE
+    {
+        _bool   isActive = false;
+        _float  fTime = 0.f;
+        _float  fDuration = 0.f;
+
+        CAMERA_POSE Start;
+        CAMERA_POSE Target;
+    };
+
+    typedef struct tagPlayerHealRimLightDesc
+    {
+        float	        fDuration;
+        float           fTimeAcc;
+        XMFLOAT2        vFadeTime;
+        float           fRimLightIntensity;
+        float           fTargetIntensity;
+    }PLAYER_HEAL_RIMLIGHT_DESC;
 }

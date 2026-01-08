@@ -1,5 +1,5 @@
 #include "AS_Dr_Melee_Brutal.h"
-
+#include "GameInstance.h"
 CAS_Dr_Melee_Brutal::CAS_Dr_Melee_Brutal()
 {
 }
@@ -31,8 +31,9 @@ void CAS_Dr_Melee_Brutal::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
         if (m_pMonData->isAnimFinash)
         {
             m_pMonData->eHitType = HITREACTION::END;
-            *m_pMonData->pCulStamina = *m_pMonData->pMaxStamina;
+            m_pMonData->isStamina_Regen = true;
             m_pMonData->iBrutalHit = 0;
+            *m_pMonData->pCulStamina = 0.f;
         }
     }
 }

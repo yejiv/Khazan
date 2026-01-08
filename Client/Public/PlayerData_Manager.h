@@ -68,7 +68,7 @@ public:
     {
         _uint   iSpear;
         _uint   iGSword;
-        _uint   iHead;
+        _uint   iHair;
         _uint   iTorso;
         _uint   iArm;
         _uint   iLeg;
@@ -153,7 +153,8 @@ public:
     _bool   Is_CurrentGSword() const { return m_isCurGSword; }
 
     /* Equipment */
-    void                        Set_ChangePlayerEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback) { m_OnChangePlayerEquipment = callback; }
+    void                        Set_ChangePlayerWeaponEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback) { m_OnChangePlayerEquipment[0] = callback; }
+    void                        Set_ChangePlayerArmorEquipmentCallBack(function<void(EQUIPMENTTYPE, const _wstring&)> callback) { m_OnChangePlayerEquipment[1] = callback; }
     void                        Change_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex);  // ui 장착버튼같은거 누를 시 사용해주세요 EQUIPMENTTYPE  enum class로 뺐음!!
     const PLAYER_EQUIPMENT&     Get_PlayerEquipment() const { return m_ePlayerEquipment; }
     void                        Set_PlayerEquipment(EQUIPMENTTYPE eType, _uint iEquipmentIndex);  // 테스트용 Setter 
@@ -169,7 +170,7 @@ private:
     /* Equipment */
     PLAYER_EQUIPMENT                            m_ePlayerEquipment{};
     unordered_map<_uint, _wstring>              m_CachedEquipments;
-    function<void(EQUIPMENTTYPE, const _wstring&)>      m_OnChangePlayerEquipment;   
+    function<void(EQUIPMENTTYPE, const _wstring&)>      m_OnChangePlayerEquipment[2] = { nullptr, nullptr };
 public:
 	static CPlayerData_Manager* Create();
 	virtual void Free() override;

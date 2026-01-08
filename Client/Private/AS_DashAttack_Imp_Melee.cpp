@@ -3,7 +3,7 @@
 #include "Imp_Melee.h"
 #include "BlackBoard.h"
 #include "AI_Controller.h"
-
+#include "GameInstance.h"
 
 CAS_DashAttack_Imp_Melee::CAS_DashAttack_Imp_Melee()
 {
@@ -85,7 +85,7 @@ void CAS_DashAttack_Imp_Melee::Update(CStateMachine* pFSM, CGameObject* pOwner, 
 
 void CAS_DashAttack_Imp_Melee::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-
+ 
 }
 
 void CAS_DashAttack_Imp_Melee::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)

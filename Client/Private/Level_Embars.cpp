@@ -16,6 +16,11 @@
 #include "MapObject_Header.h"
 #pragma endregion
 
+#include "UI_Announce_MapName.h"
+#include "Dragonian_Melee.h"
+#include "Dragonian_Rampage.h"
+#include "Interaction_Item.h"
+
 CLevel_Embars::CLevel_Embars(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel{ pDevice, pContext }
     , m_pClientInstance(CClientInstance::GetInstance())
@@ -32,6 +37,7 @@ HRESULT CLevel_Embars::Initialize()
 
         //return S_OK;
         //}));
+    CHECK_FAILED(Ready_Layer_Item(), E_FAIL);
 
     CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
 
@@ -45,6 +51,7 @@ HRESULT CLevel_Embars::Initialize()
 
 
     CHECK_FAILED(Ready_Lights(TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+    CHECK_FAILED(Ready_Lights(), E_FAIL);
 
     CHECK_FAILED(Ready_FireLights(TEXT("Embars_Point"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
@@ -55,7 +62,7 @@ HRESULT CLevel_Embars::Initialize()
     for (_uint i = 0; i < EMBARS_SUBLV; ++i)
     {
         CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Embars"), i, LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
-       // CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_MapObject"), TEXT("Embars"), i, LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_MapObject"), TEXT("Embars"), i, LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
     }
 
     CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
@@ -69,23 +76,26 @@ HRESULT CLevel_Embars::Initialize()
     CHECK_FAILED(Ready_Trigger(TEXT("Layer_Trigger"), TEXT("Embars"), LEVEL::EMBARS, KHAZAN_MAP::EMBARS), E_FAIL);
 
     CHECK_FAILED(Ready_Shader_Settings(), E_FAIL);
+    CHECK_FAILED(Ready_Layer_Decal(), E_FAIL);
 
-    CClientInstance::GetInstance()->Fade_In();
+    CClientInstance::GetInstance()->Fade_In([this]() {Start_Event(); });
+
+    CHECK_FAILED(Ready_SoundSetting(), E_FAIL);
 
     if (!Wait_All_Futures())
         return E_FAIL;
 
-    m_futures.clear();
-
-    CClientInstance::GetInstance()->Set_PlayerInput(true);
+    m_futures.clear();    
 
     m_iEventID = m_pGameInstance->Subscribe_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), [&](const EVENT_LEVEL_CHANGE& e)
         {
             m_eNextLevel = static_cast<LEVEL>(e.iLevel);
         });
 
+    m_pClientInstance->Set_PlayerInput(true);
 #pragma endregion
 
+    CHECK_FAILED(Ready_Layer_Pet(TEXT("Layer_Pet")), E_FAIL);
 	return S_OK;
 }
 
@@ -137,12 +147,15 @@ HRESULT CLevel_Embars::Ready_Layer_UI()
 
 HRESULT CLevel_Embars::Ready_Layer_Player(const _wstring& strLayerTag)
 {
+    CGameObject::GAMEOBJECT_DESC Desc;
+    Desc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
+
   /*  if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), strLayerTag,
-        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER)))
+        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER, &Desc)))
         return E_FAIL;*/
 
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), strLayerTag,
-        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER)))
+        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER, &Desc)))
         return E_FAIL;
     return S_OK;
 }
@@ -189,15 +202,89 @@ HRESULT CLevel_Embars::Ready_Layer_Effect(const _wstring& strLayerTag)
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust4"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust5"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust6"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust9"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Stamp"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("BlustSmall"), 3);
-    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Fire"), 38);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Fire"), 42);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Spawn"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("BloodHit"), 100);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Open"), 3);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GhostKnight"), 1);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GhostKnight_static"), 4);
     m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GhostKnight_static_connect"), 4);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Brazier"), 10);
+
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("DoorOpen"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("labber"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Statue_Dust"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On_Static"), 4);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("LeverGear_On"), 4);
+
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Jump"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Land_Shield"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Land_Sword"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Spark_Loop"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Elamein_Sword_Wind"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Smoke_Small"), 10);
+
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Gacha_Fail"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Gacha_Suceess"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("ITEM_FX"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("ITEM_RARE_FX"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("ITEM_UNIQUE_FX"), 5);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Item_normal_Gacha"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("item_rare_Gacha"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("item_unique_Gacha"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("item_blust"), 1);
+
+
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("FerociousMomentum0"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger0"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger1"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger_Smoke"), 50);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger_Trail"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Manifest_Strength_Land"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger_Smoke_Red"), 50);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("SpiningCharger_Trail_V"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Giant_Hunt_Land"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Giant_Roar"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("DarkShadow_Land_1"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("DarkShadow_Land_2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Body_Wind"), 4);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("particle"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("particle2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Inner_Range_Ground"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Dawn_BloodTrail1"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Dawn_BloodTrail2"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GS_StrongATK"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Ghost_Dark_Shadow_Land"), 1);
+
+    // [Player Ect]
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Guard"), 100);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("PerfectGaurd"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Lachryma"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Lachryma_Arm"), 3);
+
+    //[ Sphere Effect 추가 ]
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Spear_BloodWind"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust11"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Sphere_Blood"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Spear_Crescent_Land"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("JumpSpear"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Blust12"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("TrailParticle"), 100);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("TrailParticle_R"), 100);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Spear_FallAtk_Land"), 1);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Teleport"), 2);
+
+    //brutal
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("brutal_hand"), 2);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("brutalParticle"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("blust_brutal"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("blust_brutal_GS"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("Brutal_Spark_GS"), 3);
+    m_pGameInstance->Add_Effect_ToPool(ENUM_CLASS(LEVEL::EMBARS), TEXT("GrappleTrail"), 2);
 
     return S_OK;
 }
@@ -213,13 +300,69 @@ HRESULT CLevel_Embars::Ready_Shader_Settings()
     m_pGameInstance->Set_ShadowDesc(ShadowDesc);
 
     // 초기 Fog
-    FOG_TRANSITION_DESC FogDesc{};
-    FogDesc.fDensity = 0.05f;
-    FogDesc.fBias = 0.8f;
-    FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
-    FogDesc.isUseHeight = false;
-    FogDesc.isUseNoise = false;
-    m_pGameInstance->Start_FogTransition(0.f, FogDesc);
+    //  FOG_TRANSITION_DESC FogDesc{};
+    //  FogDesc.fDensity = 0.05f;
+    //  FogDesc.fBias = 0.8f;
+    //  FogDesc.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
+    //  FogDesc.isUseHeight = false;
+    //  FogDesc.isUseNoise = false;
+    //  m_pGameInstance->Start_FogTransition(0.f, FogDesc);
+
+    // 포그 라이트 블리드 1 설정
+    FOG_CONFIG FogConfig{};
+    FogConfig.eType = FOG_CONFIG::EXP;
+    FogConfig.fDensity = 0.05f;
+    FogConfig.fBias = 0.8f;
+    FogConfig.vColor = _float4(0.f, 0.176f, 0.341f, 1.f);
+    FogConfig.Noise.isEnable = false;
+    FogConfig.isUseHeight = false;
+    FogConfig.isUseSubColor = false;
+    FogConfig.fLightBleedStrength = 1.f;
+    m_pGameInstance->Set_FogConfig(FogConfig);
+
+    // 림 라이트 강도 줄이기
+    RIM_LIGHT_DESC RimDesc{};
+    RimDesc.fPower = 5.f;
+    RimDesc.isToonLight = false;
+    RimDesc.fToonThreshold = 1.f;
+    RimDesc.fIntensity = 0.15f;
+    m_pGameInstance->Set_RimLightDesc(RimDesc);
+
+    // 스페큘러 강도 줄이기
+    m_pGameInstance->Set_SpecularAttenuation(1.5f);
+
+    // MainLight Backup
+    m_pGameInstance->Backup_LightDesc(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()));
+
+    return S_OK;
+}
+
+HRESULT CLevel_Embars::Ready_Layer_Item()
+{
+    CGameObject::GAMEOBJECT_DESC desc{};
+
+    desc.iLevelIndex = ENUM_CLASS(LEVEL::EMBARS);
+
+    m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Item"), ENUM_CLASS(LEVEL::EMBARS), TEXT("Item"), &desc, 10);
+
+    CInteraction_Item* pItem = dynamic_cast<CInteraction_Item*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::EMBARS), TEXT("Item")));
+
+    pItem->Special_Item(TEXT("Handwriting"), XMVectorSet(109.18f, -83.451f, 52.09f, 1.f));
+
+    m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_Item"), pItem);
+
+    return S_OK;
+}
+
+HRESULT CLevel_Embars::Ready_SoundSetting()
+{
+    // 사운드 매니저 글로벌 볼륨
+    _float fGlobalVolume = m_pGameInstance->Get_Gloval_Volume();
+
+    // 글로벌 볼륨 세팅 후 환경음, BGM 사운드 세팅 및 재생
+    CClientInstance::GetInstance()->Set_Volume_BGM(0.65f);
+    CClientInstance::GetInstance()->Set_Volume_AMB(0.65f);
+    CClientInstance::GetInstance()->BGM_Embars_Entry();
 
     return S_OK;
 }
@@ -499,10 +642,10 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
 
         if ("Dragonian_Melee" == MonsterData.MonsterKey[i])
         {
-            CMonster::MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            CDragonian_Melee::DRAGON_MELEE_MONSTER_DESC MonsterDesc{};
+            MonsterDesc.fAttack = m_pGameInstance->Rand(50.f, 100.f);
+            MonsterDesc.fMaxHP = m_pGameInstance->Rand(2000.f, 2500.f);
+            MonsterDesc.fMaxStamina = m_pGameInstance->Rand(80.f, 140.f);
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -510,17 +653,17 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
             MonsterDesc.WorldMatrix = WorldMatrix;
             MonsterDesc.strName = "Dragonian_Melee";
             MonsterDesc.iLevelIndex = ENUM_CLASS(eCurrentLevel);
-
+            MonsterDesc.isSleep = false;
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
                 ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
         else if ("Dragonian_Claw" == MonsterData.MonsterKey[i])
         {
-            CMonster::MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 100.f;
-            MonsterDesc.fMaxStamina = 100.f;
+            CDragonian_Rampage::DRAGON_RAMPAGE_MONSTER_DESC MonsterDesc{};
+            MonsterDesc.fAttack = m_pGameInstance->Rand(80.f, 120.f);
+            MonsterDesc.fMaxHP = m_pGameInstance->Rand(3500.f, 4000.f);
+            MonsterDesc.fMaxStamina = m_pGameInstance->Rand(100.f, 150.f);
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -529,18 +672,56 @@ HRESULT CLevel_Embars::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, co
 
             MonsterDesc.strName = "Dragonian_Rampage";
             MonsterDesc.iLevelIndex = ENUM_CLASS(eCurrentLevel);
-
+            MonsterDesc.isSleep = false;
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
                 ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
 
                 return E_FAIL;
         }
+        else if ("Dragonian_Melee_Sleep" == MonsterData.MonsterKey[i])
+        {
+            CDragonian_Melee::DRAGON_MELEE_MONSTER_DESC MonsterDesc{};
+            MonsterDesc.fAttack = m_pGameInstance->Rand(50.f, 100.f);
+            MonsterDesc.fMaxHP = m_pGameInstance->Rand(2000.f, 2500.f);
+            MonsterDesc.fMaxStamina = m_pGameInstance->Rand(80.f, 140.f);
+            MonsterDesc.fMoveSpeed = 10.f;
+            MonsterDesc.fSpeedPerSec = 3.f;
+            MonsterDesc.fRotationPerSec = 180.f;
+
+            MonsterDesc.WorldMatrix = WorldMatrix;
+            MonsterDesc.strName = "Dragonian_Melee";
+            MonsterDesc.iLevelIndex = ENUM_CLASS(eCurrentLevel);
+            MonsterDesc.isSleep = true;
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+                ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Dragonian_Melee"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+                return E_FAIL;
+        }
+        else if ("Dragonian_Claw_Sleep" == MonsterData.MonsterKey[i])
+        {
+            CDragonian_Rampage::DRAGON_RAMPAGE_MONSTER_DESC MonsterDesc{};
+            MonsterDesc.fAttack = m_pGameInstance->Rand(80.f, 120.f);
+            MonsterDesc.fMaxHP = m_pGameInstance->Rand(3500.f, 4000.f);
+            MonsterDesc.fMaxStamina = m_pGameInstance->Rand(100.f, 150.f);
+            MonsterDesc.fMoveSpeed = 10.f;
+            MonsterDesc.fSpeedPerSec = 3.f;
+            MonsterDesc.fRotationPerSec = 180.f;
+
+            MonsterDesc.WorldMatrix = WorldMatrix;
+
+            MonsterDesc.strName = "Dragonian_Rampage";
+            MonsterDesc.iLevelIndex = ENUM_CLASS(eCurrentLevel);
+            MonsterDesc.isSleep = true;
+            if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), strLayerTag,
+                ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Monster_Dragonian_Rampage"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+                return E_FAIL;
+        }
         else if ("Elamein" == MonsterData.MonsterKey[i])
         {
             CMonster::MONSTER_DESC MonsterDesc{};
-            MonsterDesc.fAttack = 10.f;
-            MonsterDesc.fMaxHP = 2000.f;
-            MonsterDesc.fMaxStamina = 300.f;
+            MonsterDesc.fAttack = 100.f;
+            MonsterDesc.fMaxHP = 12000.f;
+            MonsterDesc.fMaxStamina = 1200.f;
+                                                                                            
             MonsterDesc.fMoveSpeed = 10.f;
             MonsterDesc.fSpeedPerSec = 3.f;
             MonsterDesc.fRotationPerSec = 180.f;
@@ -663,6 +844,14 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_BigChest"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
+        case INTERACTIVE_TYPE::TOMBSTONE:
+        {
+            _int iTombStoneID = {};
+            CHECK_FALSE(ReadFile(hFile, &iTombStoneID, sizeof(_int), &dwByte, nullptr), E_FAIL);
+            ObjectDesc.pOtherDesc = &iTombStoneID;
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_TombStone"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
         case INTERACTIVE_TYPE::ELEVATOR:
         {
             CElevatorS::ELEVATOR_POS ElevatorPos = {};
@@ -760,6 +949,11 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_GiantGate"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
+        case INTERACTIVE_TYPE::GACHANPC:
+        {
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_NPC_Gacha"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
+            break;
+        }
         case INTERACTIVE_TYPE::DAPHRONA:
         {
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_NPC_Daphrona"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
@@ -793,10 +987,83 @@ HRESULT CLevel_Embars::Ready_Layer_MapObject_Interactive(const _wstring& strLaye
             case CDanjinJar::DANJINJAR_TYPE::C:
                 strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_3rd");
                 break;
+            case CDanjinJar::DANJINJAR_TYPE::D:
+                strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_4th");
+                break;
+            case CDanjinJar::DANJINJAR_TYPE::E:
+                strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_5th");
+                break;
+            case CDanjinJar::DANJINJAR_TYPE::F:
+                strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_6th");
+                break;
+            case CDanjinJar::DANJINJAR_TYPE::G:
+                strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_7th");
+                break;
+            case CDanjinJar::DANJINJAR_TYPE::H:
+                strPrototypeTag = TEXT("Prototype_GameObject_Prop_NPC_Jar_8th");
+                break;
             }
 
             CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), strPrototypeTag, TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
 
+            break;
+        }
+        case INTERACTIVE_TYPE::DESTRUCTIBLE:
+        {
+            CProp_Destructible::MODEL_TYPE eModelType = {};
+
+            CHECK_FALSE(ReadFile(hFile, &eModelType, sizeof(CProp_Destructible::MODEL_TYPE), &dwByte, nullptr), E_FAIL);
+
+            _matrix WorldMatrix = { XMLoadFloat4x4(&ObjectDesc.WorldMatrix) };
+
+            WorldMatrix.r[0] = XMVector3Normalize(WorldMatrix.r[0]);
+            WorldMatrix.r[1] = XMVector3Normalize(WorldMatrix.r[1]);
+            WorldMatrix.r[2] = XMVector3Normalize(WorldMatrix.r[2]);
+
+            switch (eModelType)
+            {
+            case CProp_Destructible::MODEL_TYPE::FENCE:
+            {
+                CFence::PROP_FENCE_DESC FenceDesc = {};
+
+                FenceDesc.eLevel = eCurrentLevel;
+
+                XMStoreFloat4x4(&FenceDesc.WorldMatrix, WorldMatrix);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                    TEXT("Prototype_GameObject_Prop_Fence"), TIME_CHANNEL::MAP, &FenceDesc), E_FAIL);
+                break;
+            }
+            case CProp_Destructible::MODEL_TYPE::POT:
+            {
+                CPot::PROP_POT_DESC PotDesc = {};
+
+                PotDesc.eLevel = eCurrentLevel;
+
+                XMStoreFloat4x4(&PotDesc.WorldMatrix, WorldMatrix);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                    TEXT("Prototype_GameObject_Prop_Pot"), TIME_CHANNEL::MAP, &PotDesc), E_FAIL);
+                break;
+            }
+            case CProp_Destructible::MODEL_TYPE::BARREL:
+            {
+                CBarrel::PROP_BARREL_DESC BarrelDesc = {};
+
+                BarrelDesc.eLevel = eCurrentLevel;
+
+                XMStoreFloat4x4(&BarrelDesc.WorldMatrix, WorldMatrix);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(eCurrentLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel),
+                    TEXT("Prototype_GameObject_Prop_Barrel"), TIME_CHANNEL::MAP, &BarrelDesc), E_FAIL);
+                break;
+            }
+            }
+            break;
+        }
+        case INTERACTIVE_TYPE::ILLUSION_WALL:
+        {
+            CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(ObjectDesc.eLevel), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(eCurrentLevel), TEXT("Prototype_GameObject_Prop_Illusion_Wall"), TIME_CHANNEL::MAP, &ObjectDesc), E_FAIL);
             break;
         }
         default:
@@ -964,7 +1231,6 @@ HRESULT CLevel_Embars::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentL
 
     CloseHandle(hFile);
 
-
     LIGHT_DESC LightDesc1 = {};
     LightDesc1.eType = LIGHT_DESC::POINT;
     LightDesc1.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
@@ -973,6 +1239,78 @@ HRESULT CLevel_Embars::Ready_Lights(const _tchar* pDataFileName, LEVEL eCurrentL
     LightDesc1.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
     LightDesc1.fRange = 2.45f;
     if (FAILED(m_pGameInstance->Add_Light(TEXT("Lantern"), ENUM_CLASS(LEVEL::EMBARS), LightDesc1, false)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CLevel_Embars::Ready_Lights()
+{
+    LIGHT_DESC LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(2.f, 1.6f, 1.f, 1.f);
+    LightDesc.vAmbient = _float4(1.f, 0.8f, 0.5f, 1.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 1.f;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_1"), ENUM_CLASS(LEVEL::EMBARS), LightDesc)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_2"), ENUM_CLASS(LEVEL::EMBARS), LightDesc)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_3"), ENUM_CLASS(LEVEL::EMBARS), LightDesc)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_4"), ENUM_CLASS(LEVEL::EMBARS), LightDesc)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_5"), ENUM_CLASS(LEVEL::EMBARS), LightDesc)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_6"), ENUM_CLASS(LEVEL::EMBARS), LightDesc)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_7"), ENUM_CLASS(LEVEL::EMBARS), LightDesc)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_8"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect1"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect2"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("GachaSelect3"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("DanjinJar_Pet"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    LightDesc.vDiffuse = _float4(2.5f, 0.8f, 0.8f, 1.f);
+    LightDesc.vPosition = _float4(-67.325f, -90.f, -41.831f, 1.f);
+    LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 0.1f);
+    LightDesc.fRange = 17.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Mirroball"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 5.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("BladeNexus_ActivateLight"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
+        return E_FAIL;
+
+    LightDesc = {};
+    LightDesc.eType = LIGHT_DESC::POINT;
+    LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = LightDesc.vDiffuse;
+    LightDesc.fRange = 3.f;
+    if (FAILED(m_pGameInstance->Add_Light(TEXT("Player_GuardLight"), ENUM_CLASS(LEVEL::EMBARS), LightDesc, false)))
         return E_FAIL;
 
     return S_OK;
@@ -1106,7 +1444,7 @@ HRESULT CLevel_Embars::Ready_BrazierLights(const _tchar* pDataFileName, LEVEL eC
         // 조명 등록
         m_pGameInstance->Add_Light(szLightTag, ENUM_CLASS(eCurrentLevel), LightDesc, true);
 
-        //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Brazier"), XMLoadFloat4(&LightDesc.vPosition));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::EMBARS), TEXT("Brazier"), XMLoadFloat4(&LightDesc.vPosition));
     }
 
     CloseHandle(hFile);
@@ -1216,12 +1554,12 @@ HRESULT CLevel_Embars::Ready_Map_Decal(const _wstring& strLayerTag, const _tchar
     // 데칼 총 개수만큼 순회
     for (_uint i = 0; i < iDecalCnt; ++i)
     {
-        CDecal* pDecal = static_cast<CDecal*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal")));
+        CDecal_Static* pDecal = static_cast<CDecal_Static*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal_Static")));
         CHECK_NULLPTR(pDecal, E_FAIL);
 
-        DECAL_DESC DecalDesc = {};
+        STATIC_DECAL_DESC DecalDesc = {};
         // 2. 데칼의 구조체 불러오기
-        CHECK_FALSE(ReadFile(hFile, &DecalDesc, sizeof(DECAL_DESC), &dwByte, nullptr), false);
+        CHECK_FALSE(ReadFile(hFile, &DecalDesc, sizeof(STATIC_DECAL_DESC), &dwByte, nullptr), false);
         pDecal->Set_Desc(DecalDesc);
 
         _float fThreshold = {};
@@ -1237,15 +1575,45 @@ HRESULT CLevel_Embars::Ready_Map_Decal(const _wstring& strLayerTag, const _tchar
         _float4x4 WorldMatrix = {};
         // 5. 데칼의 월드 행렬 불러오기
         CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), false);
-        pDecal->Set_WorldMatrix(WorldMatrix);
-
-        // 데코용 데칼 true
-        pDecal->Set_EnableDecoration(true);
+        pDecal-> Set_WorldMatrix(WorldMatrix);
 
         m_pGameInstance->Batch_Decal(pDecal);
     }
 
     CloseHandle(hFile);
+
+    return S_OK;
+}
+
+HRESULT CLevel_Embars::Ready_Layer_Decal()
+{
+    // Decal
+    if (FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal"),
+        ENUM_CLASS(LEVEL::EMBARS), TEXT("Pool_Decal"), nullptr, 100)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CLevel_Embars::Ready_Layer_Pet(const _wstring& strLayerTag)
+{
+    CMonster::MONSTER_DESC MonsterDesc{};
+    MonsterDesc.fAttack = 100.f;
+    MonsterDesc.fMaxHP = 100.f;
+    MonsterDesc.fMaxStamina = 250.f;
+    MonsterDesc.fMoveSpeed = 10.f;
+    MonsterDesc.fSpeedPerSec = 3.f;
+    MonsterDesc.fRotationPerSec = 180.f;
+    XMStoreFloat4x4(&MonsterDesc.WorldMatrix, XMMatrixIdentity());
+    MonsterDesc.WorldMatrix.m[3][0] = -58.26f;
+    MonsterDesc.WorldMatrix.m[3][1] = -92.f;
+    MonsterDesc.WorldMatrix.m[3][2] = -38.42f;
+
+    MonsterDesc.strName = "Pet_Danjinjar";
+    MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::EMBARS);
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), strLayerTag,
+        ENUM_CLASS(LEVEL::EMBARS), TEXT("Prototype_GameObject_Pet_Danjinjar"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+        return E_FAIL;
 
     return S_OK;
 }
@@ -1273,6 +1641,23 @@ _bool CLevel_Embars::Wait_All_Futures()
 
     m_futures.clear();
     return all_ok;
+}
+
+void CLevel_Embars::Start_Event()
+{
+    //NPC 대사
+    m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_TALK>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_TALK), EVENT_ANNOUNCE_TALK{ 20 });
+
+    //맵 이름 표시
+    EVENT_ANNOUNCE_MAPNAME Desc = {};
+    Desc.fTime = 2.f;
+    Desc.iMapType = ENUM_CLASS(CUI_Announce_MapName::MAP_TYPE::EMBARS);
+    Desc.fFadeOutTime = 2.5f;
+    Desc.isDissovle = true;
+    m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
+
+    m_pClientInstance->Camera_MouseOnOff(true);
+    m_pGameInstance->Decal_OnOff(true);
 }
 
 CLevel_Embars* CLevel_Embars::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

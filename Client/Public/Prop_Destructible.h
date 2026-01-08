@@ -12,6 +12,8 @@ NS_BEGIN(Client)
 class CProp_Destructible : public CProp
 {
 public:
+    enum class MODEL_TYPE { FENCE, POT, BARREL, END };
+
     typedef struct tagPropDestructibleDesc : public CProp::PROP_DESC
     {
         _uint iIndex;
@@ -41,6 +43,9 @@ protected:
     _uint m_iIndex = {};
 
     vector<class CProp_Chunk*> m_Chunks;
+
+    _bool m_isPlayDestroy = { false };
+    _float m_fDestroyVolume = { 5.f };
 
 protected:
     HRESULT Ready_Components(void* pArg);

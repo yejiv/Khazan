@@ -98,6 +98,86 @@ HRESULT CProp_Interactive::Bind_Materials(_uint iMeshIndex)
     return S_OK;
 }
 
+void CProp_Interactive::SoundStop(const _tchar* pSoundKey)
+{
+    _wstring wstrAddWav = pSoundKey;
+    wstrAddWav += TEXT(".wav");
+
+    m_pGameInstance->StopByKey(wstrAddWav.c_str());
+}
+
+void CProp_Interactive::SoundStop_FadeOut(const _tchar* pSoundKey, _float fFadeTime)
+{
+    _wstring wstrAddWav = pSoundKey;
+    wstrAddWav += TEXT(".wav");
+
+    m_pGameInstance->StopByKey_FadeOut(wstrAddWav.c_str(), fFadeTime);
+}
+
+_bool CProp_Interactive::IsPlayingSound(const _tchar* pSoundKey)
+{
+    _wstring wstrAddWav = pSoundKey;
+    wstrAddWav += TEXT(".wav");
+
+    return m_pGameInstance->IsPlayingByKey(wstrAddWav.c_str());
+}
+
+void CProp_Interactive::Sound_FadeIn(const _tchar* pSoundKey, _float fVolume, _float fFadeTime, _bool isLoop, FMOD_CHANNEL** ppOutChannel)
+{
+    _wstring wstrAddWav = pSoundKey;
+    wstrAddWav += TEXT(".wav");
+
+    m_pGameInstance->PlaySound_FadeIn(wstrAddWav.c_str(), fVolume, fFadeTime, isLoop, ppOutChannel);
+}
+
+void CProp_Interactive::SoundOnce(const _tchar* pSoundKey, _float fVolume, FMOD_CHANNEL** ppOutChannel)
+{
+    _wstring wstrAddWav = pSoundKey;
+    wstrAddWav += TEXT(".wav");
+
+    m_pGameInstance->PlaySoundOnce(wstrAddWav.c_str(), fVolume, ppOutChannel);
+}
+
+void CProp_Interactive::SoundLoop(const _tchar* pSoundKey, _float fVolume, FMOD_CHANNEL** ppOutChannel)
+{
+    _wstring wstrAddWav = pSoundKey;
+    wstrAddWav += TEXT(".wav");
+
+    m_pGameInstance->PlaySoundLoop(wstrAddWav.c_str(), fVolume, ppOutChannel);
+}
+
+void CProp_Interactive::SoundOnce(const _tchar* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, _float fVolume)
+{
+    _wstring wstrAddWav = pSoundKey;
+    wstrAddWav += TEXT(".wav");
+
+    m_pGameInstance->PlaySoundOnce(wstrAddWav.c_str(), vPos, ppOutChannel, fVolume);
+}
+
+void CProp_Interactive::SoundOnce(const _tchar* pSoundKey, _vector vPos, _float3 vVel, _float fVolume, FMOD_CHANNEL** ppOutChannel)
+{
+    _wstring wstrAddWav = pSoundKey;
+    wstrAddWav += TEXT(".wav");
+
+    m_pGameInstance->PlaySoundOnce(wstrAddWav.c_str(), vPos, vVel, fVolume, ppOutChannel);
+}
+
+void CProp_Interactive::SoundLoop(const _tchar* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, _float fVolume)
+{
+    _wstring wstrAddWav = pSoundKey;
+    wstrAddWav += TEXT(".wav");
+
+    m_pGameInstance->PlaySoundLoop(wstrAddWav.c_str(), vPos, ppOutChannel, fVolume);
+}
+
+void CProp_Interactive::SoundLoop(const _tchar* pSoundKey, _vector vPos, _float3 vVel, _float fVolume, FMOD_CHANNEL** ppOutChannel)
+{
+    _wstring wstrAddWav = pSoundKey;
+    wstrAddWav += TEXT(".wav");
+
+    m_pGameInstance->PlaySoundLoop(wstrAddWav.c_str(), vPos, vVel, fVolume, ppOutChannel);
+}
+
 void CProp_Interactive::Free()
 {
     __super::Free();

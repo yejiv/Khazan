@@ -11,7 +11,7 @@ class CKhazan_GS_Anim_Move final : public CKhazan_GS_Animation
 public:
     typedef struct	tagKhazanGSwordAnimMove
     {
-        _uint				iWeapon = {};// 0 :barehand, 2: spear, 4: gsword
+        _uint				iWeapon = {};// 1 :barehand, 2: spear, 4: gsword
         _uint				iState = {};
         _uint				iCycle = {};
         _bool               isLockOn = {};
@@ -63,6 +63,7 @@ public:
     _bool	IsDodge() const { return m_isDodging; }
     _bool   IsTurning180() const { return m_isTurning180; }
     _bool	IsStopMoveAnimantionFinished() const { return m_isStopAnimationFinished; }
+    _bool   IsCurrentAnimationDodge();
 
     /* Clear */
     void    Clear();

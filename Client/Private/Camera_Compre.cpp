@@ -80,6 +80,22 @@ static inline void BuildSafeBasis(_vector vLookIn, _vector& outRight, _vector& o
     outUp = up;
 }
 
+static inline _vector LoadFloat3(const _float3& v)
+{
+    return XMLoadFloat3(&v);
+}
+
+static inline void StoreFloat3(_float3& out, _vector v)
+{
+    XMStoreFloat3(&out, v);
+}
+
+static inline float Smoothstep01(float t)
+{
+    t = Clamp(t, 0.f, 1.f);
+    return t * t * (3.f - 2.f * t);
+}
+
 CCamera_Compre::CCamera_Compre(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CCamera{ pDevice, pContext }
 {
@@ -107,16 +123,19 @@ HRESULT CCamera_Compre::Initialize_Clone(void* pArg)
         CHECK_FAILED(Ready_Body(), E_FAIL);
 
     m_isActive = false;
+    
+    InitStartPoseOnce();
 
     return S_OK;
 }
 
 void CCamera_Compre::Priority_Update(_float fTimeDelta)
 {
-    if (m_fStartTime < 2.f)
+    if (!m_isInitPose)
     {
-        m_fStartTime += fTimeDelta;
-        m_pTransformCom->LookAt(XMLoadFloat4(&m_vAt));
+        m_isInitPose = true;
+        InitStartPoseOnce();        
+        
     }
     if (!m_isCollTime)
     {
@@ -130,49 +149,67 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
     if (!m_isActive)
         return;
 
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    {
+        m_isMouseOn = true;
+    }
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    {
+        m_isMouseOn = false;
+    }
+
     //======================================================================================================
 
-    if (m_isAnimation)
+    if (m_tPoseBlend.isActive)
     {
-        __super::Play_Animation(fTimeDelta);
-    }
-    else if (m_isAniFix && !m_isAnimation)
-    {
-
+        Update_PoseBlend(fTimeDelta);
     }
     else
     {
-        if (m_isForceOrbit)
-            Update_ForceOrbit(fTimeDelta);
-        else if (m_isPostForceFrameRight || m_isPostFrameHold) {
-            Update_InteractFocus(fTimeDelta);
-        }
-        else if (m_isBlendBack)
+        if (m_isAnimation)
         {
-            if (m_iCameraType != ENUM_CLASS(CAMERATYPE::FREE))
-                Update_BlendBack(fTimeDelta);
-            else
-                m_isBlendBack = false;
+            __super::Play_Animation(fTimeDelta);
         }
-        else {
-            if (m_iCameraType == ENUM_CLASS(CAMERATYPE::FREE))
-                Update_Free(fTimeDelta);
-            else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
-            {
-                if (m_isCinematic)
-                    Update_Cinematic(fTimeDelta);
-                else if (m_isYetuga_Holding)
-                    Update_Yetuga_Holding(fTimeDelta);
-                else if (m_isNpcTalk)
-                    Update_NpcTalk(fTimeDelta);
-                else
-                    Update_Spring(fTimeDelta);
+        else if (m_isAniFix && !m_isAnimation)
+        {
+
+        }
+        else if (m_isNpcTalk)
+        {
+           
+        }
+        else
+        {
+            if (m_isForceOrbit)
+                Update_ForceOrbit(fTimeDelta);
+            else if (m_isPostForceFrameRight || m_isPostFrameHold) {
+                Update_InteractFocus(fTimeDelta);
             }
-                
-        }     
+            else if (m_isBlendBack)
+            {
+                if (m_iCameraType != ENUM_CLASS(CAMERATYPE::FREE))
+                    Update_BlendBack(fTimeDelta);
+                else
+                    m_isBlendBack = false;
+            }
+            else {
+                if (m_iCameraType == ENUM_CLASS(CAMERATYPE::FREE))
+                    Update_Free(fTimeDelta);
+                else if (m_iCameraType == ENUM_CLASS(CAMERATYPE::PLAYER))
+                {
+                    if (m_isCinematic)
+                        Update_Cinematic(fTimeDelta);
+                    else if (m_isYetuga_Holding)
+                        Update_Yetuga_Holding(fTimeDelta);
+                    else
+                        Update_Spring(fTimeDelta);
+                }
 
+            }
+
+        }
     }
-
+    
     {
         m_vShaking_BasePos = m_pTransformCom->Get_State(STATE::POSITION);
         m_vShaking_BaseRight = m_pTransformCom->Get_State(STATE::RIGHT);
@@ -195,7 +232,8 @@ void CCamera_Compre::Update(_float fTimeDelta)
         {
             if (m_isAnimation || m_isAniFix || m_isBlendBack ||
                 m_isForceOrbit || m_isYetuga_Holding ||
-                m_isPostForceFrameRight || m_isPostFrameHold || m_isNpcTalk)
+                m_isPostForceFrameRight || m_isPostFrameHold ||
+                m_isNpcTalk || m_tPoseBlend.isActive)
             {
                 return;
             }
@@ -226,19 +264,19 @@ void CCamera_Compre::Update_Free(_float fTimeDelta)
     
     if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta, INPUT_TYPE::FORCE))
     {
-        m_pTransformCom->Go_Straight(fTimeDelta * 1.5f);
+        m_pTransformCom->Go_Straight(fTimeDelta * 8.f);
     }
     if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta, INPUT_TYPE::FORCE))
     {
-        m_pTransformCom->Go_Backward(fTimeDelta * 1.5);
+        m_pTransformCom->Go_Backward(fTimeDelta * 8.f);
     }
     if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta, INPUT_TYPE::FORCE))
     {
-        m_pTransformCom->Go_Left(fTimeDelta * 1.5f);
+        m_pTransformCom->Go_Left(fTimeDelta * 8.f);
     }
     if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta, INPUT_TYPE::FORCE))
     {
-        m_pTransformCom->Go_Right(fTimeDelta * 1.5f);
+        m_pTransformCom->Go_Right(fTimeDelta * 8.f);
     }
 
     if (m_pGameInstance->Key_Pressing(DIK_NUMPAD7, fTimeDelta, INPUT_TYPE::FORCE))
@@ -361,20 +399,56 @@ HRESULT CCamera_Compre::Spring(_float fTimeDelta)
 
 HRESULT CCamera_Compre::RayCast(_float fTimeDelta)
 {
-    _vector vPos = m_pTransformCom->Get_State(STATE::POSITION) - XMVectorSetW(XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)), 0.f);
-    _vector vTargetPos = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
+    _vector vCamPos = m_pTransformCom->Get_State(STATE::POSITION);
 
-    _float fFraction;
-    _float4 vPosition;
+    _vector vTargetPos = XMVectorSet(
+        m_pObjMatrix->_41,
+        m_pObjMatrix->_42 + 1.5f,
+        m_pObjMatrix->_43,
+        1.f
+    );
+
+    _float desiredDist = m_fRadius;
+
+    _vector vLookN = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
+    _vector vRayEnd = vCamPos - XMVectorSetW(vLookN, 0.f);
+
+    _float  fFraction = 0.f;
+    _float4 vHitPos{};
 
     if (m_pGameInstance->RayCast(
         _float3(vTargetPos.m128_f32[0], vTargetPos.m128_f32[1], vTargetPos.m128_f32[2]),
-        _float3(vPos.m128_f32[0], vPos.m128_f32[1], vPos.m128_f32[2]),
+        _float3(vRayEnd.m128_f32[0], vRayEnd.m128_f32[1], vRayEnd.m128_f32[2]),
         fFraction,
-        vPosition
+        vHitPos
     ))
     {
-        m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&vPosition));
+        _float rayTotalDist = XMVectorGetX(XMVector3Length(vRayEnd - vTargetPos));
+
+        _float hitDist = fFraction * rayTotalDist;
+
+        const _float epsilon = 0.05f;
+        if (hitDist >= desiredDist - epsilon)
+        {
+            return S_OK;
+        }
+
+        const _float fWallOffset = 0.5f;
+        const _float fMinCamDist = 1.0f;
+        _float safeDist = hitDist - fWallOffset;
+        safeDist = Clamp(safeDist, fMinCamDist, desiredDist);
+
+        _vector vDir = XMVector3Normalize(vRayEnd - vTargetPos);
+        _vector vSafePos =
+            XMVectorMultiplyAdd(XMVectorReplicate(safeDist), vDir, vTargetPos);
+        vSafePos = XMVectorSetW(vSafePos, 1.f);
+
+        if (vSafePos.m128_f32[1] < m_pObjMatrix->_42)
+        {
+            vSafePos.m128_f32[1] = m_pObjMatrix->_42;
+        }
+
+        m_pTransformCom->Set_State(STATE::POSITION, vSafePos);
     }
 
     return S_OK;
@@ -382,56 +456,109 @@ HRESULT CCamera_Compre::RayCast(_float fTimeDelta)
 
 HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
 {
-    if (!m_pObjMatrix || !m_pLockMonster) return S_OK;
+    if (!m_pObjMatrix || !m_pLockMonster || fTimeDelta <= 0.f)
+        return S_OK;
 
     const _float playerEyeOffsetY = 1.5f;
 
-    const _vector playerWorldPosition = XMVectorSet(
+    const _vector vPlayerPosWS = XMVectorSet(
         m_pObjMatrix->_41,
         m_pObjMatrix->_42 + playerEyeOffsetY,
         m_pObjMatrix->_43,
         1.f
     );
 
-    _vector playerToTargetVector = XMVectorSubtract(XMLoadFloat4(m_pLockOnPos), playerWorldPosition);
-    _float playerToTargetDistance = XMVectorGetX(XMVector3Length(playerToTargetVector));
+    const _vector vTargetPosWS = XMLoadFloat4(m_pLockOnPos); 
+    _vector vToTarget = XMVectorSubtract(vTargetPosWS, vPlayerPosWS);
 
-    if (playerToTargetDistance < 1e-4f)
+    const _float dist = XMVectorGetX(XMVector3Length(vToTarget));
+    if (dist < 1e-4f)
         return S_OK;
 
-    _vector directionNormalized = XMVectorScale(playerToTargetVector, 1.0f / playerToTargetDistance);
+    _vector vToTargetN = XMVectorScale(vToTarget, 1.0f / dist);
 
-    _float normalizedX = XMVectorGetX(directionNormalized);
-    _float normalizedY = XMVectorGetY(directionNormalized) - 0.3f;
-    // 근접일수록 내려다보기 바이어스(-0.3f)를 0으로 완화
+    const _float targetHeightDiff = XMVectorGetY(vTargetPosWS) - XMVectorGetY(vPlayerPosWS);
+
+
+    const _float nx = XMVectorGetX(vToTargetN);
+    const _float nz = XMVectorGetZ(vToTargetN);
+    _float targetYaw = atan2f(nz, nx);
+
+
+    float targetPitch = m_fLockBasePitch;
+
+
     {
-        const _float rawY = XMVectorGetY(directionNormalized);
-        const _float yBiasFar = -0.3f;
-        // k = 근접일수록 1, 멀수록 0
-        const _float k = 1.f - Saturate((playerToTargetDistance - m_fTopClampNearDist) / (m_fTopClampFarDist - m_fTopClampNearDist));
-        const _float yBias = Lerp(0.0f, yBiasFar, 1.f - k); // 근접(k=1)→0, 멀(k=0)→-0.3
-        normalizedY = rawY + yBias;
+        _float kH = 0.f;
+        if (targetHeightDiff > m_fLockHeightAssistStart)
+        {
+            const _float denom = max(0.001f, (m_fLockHeightAssistFull - m_fLockHeightAssistStart));
+            kH = (targetHeightDiff - m_fLockHeightAssistStart) / denom;
+            kH = Smoothstep01(kH);
+        }
+
+        if (kH > 0.f)
+        {
+            const _float maxAssist = XMConvertToRadians(m_fLockHeightAssistMaxDeg);
+
+            targetPitch += maxAssist * kH;
+        }
     }
 
-    _float normalizedZ = XMVectorGetZ(directionNormalized);
-    _float targetYaw = atan2f(normalizedZ, normalizedX);
-    _float targetPitch = asinf(Clamp(normalizedY, -1.f, 1.f));
-
-    const _float topClampPitch = XMConvertToRadians(m_fTopViewClampDeg); // 예: -3도
-    // k = 근접일수록 1, 멀수록 0
-    const _float k = 1.f - Saturate((playerToTargetDistance - m_fTopClampNearDist) / (m_fTopClampFarDist - m_fTopClampNearDist));
-    if (k > 0.f && targetPitch < topClampPitch) {
-        // targetPitch가 너무 "내려가면"(음수 더 큼) 근접 비율(k)에 따라 topClampPitch 쪽으로 보간
-        targetPitch = Lerp(targetPitch, topClampPitch, k);
-    }
 
     targetPitch = Clamp(targetPitch, m_fPitchMin, m_fPitchMax);
 
+    _float yawSmoothTime = m_fLockYawSmoothBase;
+
+    {
+        // prev 포지션 없으면 저장만
+        if (!m_isPrevLockPlayerPos)
+        {
+            XMStoreFloat4(&m_vPrevLockPlayerPosWS, vPlayerPosWS);
+            m_isPrevLockPlayerPos = true;
+        }
+        else
+        {
+            _vector vPrev = XMLoadFloat4(&m_vPrevLockPlayerPosWS);
+            _vector vVel = XMVectorSubtract(vPlayerPosWS, vPrev);
+            XMStoreFloat4(&m_vPrevLockPlayerPosWS, vPlayerPosWS);
+
+            const float speed = XMVectorGetX(XMVector3Length(vVel)) / max(1e-4f, fTimeDelta);
+
+            // 속도 너무 작으면(정지) 지연 거의 0
+            if (speed > 0.05f)
+            {
+                _vector vMoveDir = XMVector3Normalize(vVel);
+
+                // "현재 카메라 yaw 기준" 오른쪽 벡터
+                _vector vWorldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+                _vector vCamForward = XMVectorSet(cosf(m_fYaw), 0.f, sinf(m_fYaw), 0.f);
+                _vector vCamRight = XMVector3Normalize(XMVector3Cross(vWorldUp, vCamForward));
+
+                _float side = XMVectorGetX(XMVector3Dot(vMoveDir, vCamRight)); // -1~1
+                _float sideAbs = fabsf(side);
+
+                // 측면 이동이 일정 이상이면 지연 가중
+                _float kSide = 0.f;
+                if (sideAbs > m_fLockSideLagStart)
+                {
+                    kSide = (sideAbs - m_fLockSideLagStart) / max(0.001f, (1.f - m_fLockSideLagStart));
+                    kSide = Smoothstep01(kSide);
+                }
+
+                yawSmoothTime = Lerp(m_fLockYawSmoothBase, m_fLockYawSmoothLag, kSide);
+            }
+        }
+    }
+
+    // -----------------------------
+    // 6) 스무딩 적용 (yaw는 상황에 따라 늦게, pitch는 고정+높이보정만)
+    // -----------------------------
     m_fYaw = SmoothDampAngle(
         m_fYaw,
         targetYaw,
         m_fSmoothingVelocityYaw,
-        0.08f,
+        yawSmoothTime,
         fTimeDelta
     );
 
@@ -439,9 +566,10 @@ HRESULT CCamera_Compre::LockOn(_float fTimeDelta)
         m_fPitch,
         targetPitch,
         m_fSmoothingVelocityPitch,
-        0.08f,
+        0.08f,          // pitch는 일정(원하면 멤버화)
         fTimeDelta
     );
+
     return S_OK;
 }
 
@@ -542,71 +670,44 @@ void CCamera_Compre::Update_InteractFocus(_float fTimeDelta)
 
 }
 
-void CCamera_Compre::Update_NpcTalk(_float fTimeDelta)
+void CCamera_Compre::Update_PoseBlend(_float fTimeDelta)
 {
-    if (!m_isNpcTalk || !m_pTransformCom)
+    if (!m_tPoseBlend.isActive || !m_pTransformCom)
         return;
 
-    if (fTimeDelta <= 0.f)
-        return;
+    m_tPoseBlend.fTime += fTimeDelta;
+    _float t = Clamp(m_tPoseBlend.fTime / max(0.001f, m_tPoseBlend.fDuration), 0.f, 1.f);
+    _float s = t * t * (3.f - 2.f * t);
 
-    _vector vCamTargetPos = XMLoadFloat3(&m_vNpcCamTargetPos);
-    _vector vLookDir = XMLoadFloat3(&m_vNpcCamLookAt);
+    auto LerpVec = [](_vector a, _vector b, float s)
+        {
+            return XMVectorLerp(a, b, s);
+        };
 
-    // 길이 체크 + fallback
-    float lenSq = XMVectorGetX(XMVector3LengthSq(vLookDir));
-    if (lenSq < 1e-6f)
-    {
-        vLookDir = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
-        if (XMVectorGetX(XMVector3LengthSq(vLookDir)) < 1e-6f)
-            vLookDir = XMVectorSet(0.f, 0.f, 1.f, 0.f);
-    }
-    else
-    {
-        vLookDir = XMVector3Normalize(vLookDir);
-    }
+    _vector sPos = LoadFloat3(m_tPoseBlend.Start.vPos);
+    _vector sRight = LoadFloat3(m_tPoseBlend.Start.vRight);
+    _vector sUp = LoadFloat3(m_tPoseBlend.Start.vUp);
+    _vector sLook = LoadFloat3(m_tPoseBlend.Start.vLook);
 
-    _vector vRightTarget, vUpTarget, vLookTarget;
-    BuildSafeBasis(vLookDir, vRightTarget, vUpTarget, vLookTarget);
+    _vector ePos = LoadFloat3(m_tPoseBlend.Target.vPos);
+    _vector eRight = LoadFloat3(m_tPoseBlend.Target.vRight);
+    _vector eUp = LoadFloat3(m_tPoseBlend.Target.vUp);
+    _vector eLook = LoadFloat3(m_tPoseBlend.Target.vLook);
 
-    // ===== 블렌드 비율(smoothstep) 계산 =====
-    m_fNpcTalkBlendTime += fTimeDelta;
-
-    _float t = 0.f;
-    if (m_fNpcTalkBlendDuration <= 0.f)
-        m_fNpcTalkBlendDuration = 0.001f; // 방어
-
-    t = Clamp(m_fNpcTalkBlendTime / m_fNpcTalkBlendDuration, 0.f, 1.f);
-    _float s = t * t * (3.f - 2.f * t); // smoothstep
-
-    // ===== 포즈 보간 =====
-    _vector vPos;
-    _vector vRight;
-    _vector vUp;
-    _vector vLook;
-
-    if (t < 1.f)
-    {
-        vPos = XMVectorLerp(m_vNpcTalkStartPos, vCamTargetPos, s);
-        vRight = XMVector3Normalize(
-            XMVectorLerp(m_vNpcTalkStartRight, vRightTarget, s));
-        vUp = XMVector3Normalize(
-            XMVectorLerp(m_vNpcTalkStartUp, vUpTarget, s));
-        vLook = XMVector3Normalize(
-            XMVectorLerp(m_vNpcTalkStartLook, vLookTarget, s));
-    }
-    else
-    {
-        vPos = vCamTargetPos;
-        vRight = vRightTarget;
-        vUp = vUpTarget;
-        vLook = vLookTarget;
-    }
+    _vector vPos = LerpVec(sPos, ePos, s);
+    _vector vRight = XMVector3Normalize(LerpVec(sRight, eRight, s));
+    _vector vUp = XMVector3Normalize(LerpVec(sUp, eUp, s));
+    _vector vLook = XMVector3Normalize(LerpVec(sLook, eLook, s));
 
     m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(vPos, 1.f));
     m_pTransformCom->Set_State(STATE::RIGHT, vRight);
     m_pTransformCom->Set_State(STATE::UP, vUp);
     m_pTransformCom->Set_State(STATE::LOOK, vLook);
+
+    if (t >= 1.f)
+    {
+        m_tPoseBlend.isActive = false;     
+    }
 }
 
 void CCamera_Compre::LockOn_Check(_float fTimeDelta)
@@ -615,9 +716,11 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
 
     if (m_isLockOn)
     {
-        if (m_pLockMonster == nullptr ||
-            m_pLockMonster->Get_IsDead() == true ||
-            m_pLockMonster->Get_IsActive() == false)
+        CMonster* pMonster = dynamic_cast<CMonster*>(m_pLockMonster);
+        if (pMonster == nullptr ||
+            pMonster->Get_IsDead() == true ||
+            pMonster->Get_IsActive() == false ||
+            pMonster->Get_CurrentHP() <= 0)
         {
             m_fLockOnDelay = 0.f;
             m_isLockOn = false;
@@ -626,8 +729,10 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
             m_iLockOrder = 0;
             m_fSmoothingVelocityYaw = 0.f;
             m_fSmoothingVelocityPitch = 0.f;
+            m_isPrevLockPlayerPos = false;
             return;
         }
+
         
         if (m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::WB))
         {
@@ -638,6 +743,7 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
             m_iLockOrder = 0;
             m_fSmoothingVelocityYaw = 0.f;
             m_fSmoothingVelocityPitch = 0.f;
+            m_isPrevLockPlayerPos = false;
             return;
         }
 
@@ -667,6 +773,7 @@ void CCamera_Compre::LockOn_Check(_float fTimeDelta)
                 m_iLockOrder = 0;
                 m_fSmoothingVelocityYaw = 0.f;
                 m_fSmoothingVelocityPitch = 0.f;
+                m_isPrevLockPlayerPos = false;
             }
         }
     }
@@ -695,11 +802,12 @@ CGameObject* CCamera_Compre::Pick_ClosetTarget()
     );
 
     vector<pair<_float, CGameObject*>> vCandidates;
-    vCandidates.reserve(m_CollMonsters.size());
 
     for (CGameObject* pObj : m_CollMonsters)
     {
-        if (!pObj || !pObj->Get_IsActive() || pObj->Get_IsDead())
+        CMonster* pMonster = dynamic_cast<CMonster*>(pObj);
+
+        if (!pObj || !pObj->Get_IsActive() || pObj->Get_IsDead() || pMonster->Get_CurrentHP() <= 0.f)
             continue;
 
         CTransform* pTransform = dynamic_cast<CTransform*>(
@@ -795,7 +903,7 @@ _vector CCamera_Compre::Cal_CamPos(_float fTimeDelta, _vector& vTargetPos, _vect
     );
 
     // 2) 마우스 회전 (락온 아닐 때)
-    if (!m_isLockOn)
+    if (!m_isLockOn && m_isMouseOn)
     {
         _int iMouseMoveX = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::X);
         _int iMouseMoveY = m_pGameInstance->Mouse_Move(MOUSEMOVESTATE::Y);
@@ -1214,6 +1322,101 @@ void CCamera_Compre::Exit_PostForceFrameRight(_bool isSmoothReturn, _float fRetu
     m_isPostForceFrameRight = true;    // 보간 활성화 (이미 true여도 상관없음)
 }
 
+CAMERA_POSE CCamera_Compre::CaptureCurrentPose() const
+{
+    CAMERA_POSE pose{};
+    StoreFloat3(pose.vPos, m_pTransformCom->Get_State(STATE::POSITION));
+    StoreFloat3(pose.vRight, m_pTransformCom->Get_State(STATE::RIGHT));
+    StoreFloat3(pose.vUp, m_pTransformCom->Get_State(STATE::UP));
+    StoreFloat3(pose.vLook, m_pTransformCom->Get_State(STATE::LOOK));
+    return pose;
+}
+
+void CCamera_Compre::ApplyPose(const CAMERA_POSE& tPose)
+{
+    _vector vPos = LoadFloat3(tPose.vPos);
+    _vector vRight = XMVector3Normalize(LoadFloat3(tPose.vRight));
+    _vector vUp = XMVector3Normalize(LoadFloat3(tPose.vUp));
+    _vector vLook = XMVector3Normalize(LoadFloat3(tPose.vLook));
+
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(vPos, 1.f));
+    m_pTransformCom->Set_State(STATE::RIGHT, vRight);
+    m_pTransformCom->Set_State(STATE::UP, vUp);
+    m_pTransformCom->Set_State(STATE::LOOK, vLook);
+}
+
+void CCamera_Compre::PushCurrentPose()
+{
+    if (!m_pTransformCom)
+        return;
+
+    m_PoseStack.push_back(CaptureCurrentPose());
+}
+
+void CCamera_Compre::PushPose(const CAMERA_POSE& pose)
+{
+    m_PoseStack.push_back(pose);
+}
+
+void CCamera_Compre::StartPoseBlendTo(const CAMERA_POSE& targetPose, _float fDuration, _bool bPushCurrent)
+{
+    if (!m_pTransformCom)
+        return;
+
+    if (fDuration <= 0.f)
+        fDuration = 0.001f;
+
+    if (bPushCurrent)
+        PushCurrentPose();
+
+    m_tPoseBlend.isActive = true;
+    m_tPoseBlend.fTime = 0.f;
+    m_tPoseBlend.fDuration = fDuration;
+
+    m_tPoseBlend.Start = CaptureCurrentPose();
+    m_tPoseBlend.Target = targetPose;
+}
+
+void CCamera_Compre::ReturnToPreviousPose(_float fDuration)
+{
+    if (!m_pTransformCom)
+        return;
+
+    if (m_PoseStack.empty())
+        return;
+
+    CAMERA_POSE target = m_PoseStack.back();
+    m_PoseStack.pop_back();
+
+    if (fDuration <= 0.f)
+        fDuration = 0.001f;
+
+    m_tPoseBlend.isActive = true;
+    m_tPoseBlend.fTime = 0.f;
+    m_tPoseBlend.fDuration = fDuration;
+
+    m_tPoseBlend.Start = CaptureCurrentPose();
+    m_tPoseBlend.Target = target;
+}
+
+void CCamera_Compre::Play_SubShotOnce(const CAMERA_POSE& subShotPose, _float fInDur, _float fOutDur)
+{
+    if (!m_pTransformCom)
+        return;
+
+    if (fInDur <= 0.f)  fInDur = 0.001f;
+    if (fOutDur <= 0.f) fOutDur = 0.001f;
+
+    PushCurrentPose();
+
+    m_tPoseBlend.isActive = true;
+    m_tPoseBlend.fTime = 0.f;
+    m_tPoseBlend.fDuration = fInDur;
+
+    m_tPoseBlend.Start = CaptureCurrentPose();
+    m_tPoseBlend.Target = subShotPose;
+}
+
 CCamera_Compre::CAMERA_COMPRE_DESC CCamera_Compre::Get_Desc()
 {
     CAMERA_COMPRE_DESC tDesc{};
@@ -1236,34 +1439,74 @@ void CCamera_Compre::Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos, _float3 vL
 
     if (m_isNpcTalk)
     {
-        m_vNpcCamTargetPos = vTargetPos;
-        m_vNpcCamLookAt = vLookAt;
+        // NPC 톡용 카메라 포즈 구성
+        _vector vPosWS = XMLoadFloat3(&vTargetPos);
+        _vector vDirWS = XMLoadFloat3(&vLookAt); // 방향 벡터(월드)
 
-        m_fNpcTalkBlendTime = 0.f;
+        _vector vR, vU, vL;
+        BuildSafeBasis(vDirWS, vR, vU, vL);
 
-        m_vNpcTalkStartPos = m_pTransformCom->Get_State(STATE::POSITION);
-        m_vNpcTalkStartRight = m_pTransformCom->Get_State(STATE::RIGHT);
-        m_vNpcTalkStartUp = m_pTransformCom->Get_State(STATE::UP);
-        m_vNpcTalkStartLook = m_pTransformCom->Get_State(STATE::LOOK);
+        CAMERA_POSE npcPose{};
+        StoreFloat3(npcPose.vPos, vPosWS);
+        StoreFloat3(npcPose.vRight, vR);
+        StoreFloat3(npcPose.vUp, vU);
+        StoreFloat3(npcPose.vLook, vL);
+
+        // (선택) NPC 톡 들어갈 때, 원래 플레이 카메라 포즈 스택에 저장
+        // PushCurrentPose();
+
+        // NPC 톡 포즈로 블렌드 시작
+        // m_fNpcTalkBlendDuration 를 기존 값 그대로 사용
+        StartPoseBlendTo(npcPose, m_fNpcTalkBlendDuration, true); // true면 지금 포즈를 자동 Push
     }
     else
     {
-        m_isBlendBack = true;
-        m_fBlendBackTime = 0.f;
-
-        m_vBlendStartPos = m_pTransformCom->Get_State(STATE::POSITION);
-        m_vBlendStartRight = m_pTransformCom->Get_State(STATE::RIGHT);
-        m_vBlendStartUp = m_pTransformCom->Get_State(STATE::UP);
-        m_vBlendStartLook = m_pTransformCom->Get_State(STATE::LOOK);
-
-        _vector vLookN = XMVector3Normalize(m_vBlendStartLook);
-        float x = XMVectorGetX(vLookN);
-        float y = XMVectorGetY(vLookN);
-        float z = XMVectorGetZ(vLookN);
-
-        m_fYaw = atan2f(z, x);
-        m_fPitch = Clamp(asinf(Clamp(y, -1.f, 1.f)), m_fPitchMin, m_fPitchMax);
+        // NPC 톡 종료 시: 바로 이전 포즈로 돌아가는 블렌드
+        ReturnToPreviousPose(m_fNpcTalkBlendDuration);
     }
+}
+
+void CCamera_Compre::InitStartPoseOnce()
+{
+    if (!m_pObjMatrix || !m_pTransformCom)
+        return;
+
+    // 1) 플레이어 기준 yaw(정면) 구하기
+    _vector vCharLook = XMVector3Normalize(XMVectorSet(m_pObjMatrix->_31, 0.f, m_pObjMatrix->_33, 0.f));
+    float fCharYaw = atan2f(XMVectorGetZ(vCharLook), XMVectorGetX(vCharLook));
+
+    // 2) 원하는 시작 각도/거리
+    m_fYaw = WrapAngle(fCharYaw);                 // 뒤에서 시작
+    m_fPitch = Clamp(m_fLockBasePitch, m_fPitchMin, m_fPitchMax);  // 예: -10도
+    // m_fRadius 는 이미 원하는 값으로 세팅돼 있다고 가정
+
+    // 3) 스무딩/이전값들 초기화(첫 프레임 튐 방지)
+    m_fSmoothingVelocityYaw = 0.f;
+    m_fSmoothingVelocityPitch = 0.f;
+    m_isPrevLockPlayerPos = false;
+    m_isHasPrevTargetPos = false;
+
+    // 4) 실제 Transform을 오비트 결과로 스냅
+    _vector vTargetPosWS = XMVectorSet(m_pObjMatrix->_41, m_pObjMatrix->_42 + 1.5f, m_pObjMatrix->_43, 1.f);
+
+    _vector vDir = XMVectorSet(
+        cosf(m_fPitch) * cosf(m_fYaw),
+        sinf(m_fPitch),
+        cosf(m_fPitch) * sinf(m_fYaw),
+        0.f
+    );
+    vDir = XMVector3Normalize(vDir);
+
+    _vector vCamPos = XMVectorMultiplyAdd(XMVectorReplicate(-m_fRadius), vDir, vTargetPosWS);
+
+    _vector vR, vU, vL;
+    _vector vLook = XMVector3Normalize(vTargetPosWS - vCamPos);
+    BuildSafeBasis(vLook, vR, vU, vL);
+
+    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSetW(vCamPos, 1.f));
+    m_pTransformCom->Set_State(STATE::RIGHT, vR);
+    m_pTransformCom->Set_State(STATE::UP, vU);
+    m_pTransformCom->Set_State(STATE::LOOK, vL);
 }
 
 void CCamera_Compre::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)

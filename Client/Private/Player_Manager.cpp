@@ -9,8 +9,10 @@ CPlayer_Manager::CPlayer_Manager()
 
 HRESULT CPlayer_Manager::Initialize()
 {
-    m_Data.fMaxHp = { 10000.f };
-    m_Data.fCulHp = { 10000.f };
+    m_Data.iSouleCount = 3;
+
+    m_Data.fMaxHp = { 1000.f };
+    m_Data.fCulHp = { 1000.f };
     m_Data.fMaxStamina = { 1000.f };
     m_Data.fCulStamina = { 1000.f };
     m_Data.fStaminaRegen = { 200.f };
@@ -20,16 +22,17 @@ HRESULT CPlayer_Manager::Initialize()
     m_Data.fDamage = 10;
     m_Data.fGuard = 0;
 
+
+    m_Data.iSkillLevel = { 10 };
+    m_Data.iSkilPoint = { 10 };
+    m_Data.fSkillLevel_EXP = { 0.f };
+
+
 	m_Data.iLevel = 1;
 	m_Data.iGold = 1000;
 	m_Data.iLachryma = 500;
     m_Data.iStone = 0;
     m_Data.iLevelStone = 0;
-
-    m_Data.iSkillLevel = { 10 };
-    m_Data.iSkilPoint = { 10 };
-    m_Data.fSkillLevel_EXP = { 0.f };
-    
     m_Data.iVitality = { 10 };
     m_Data.iEndurance = { 10 };
     m_Data.iPower = { 10 };
@@ -37,32 +40,35 @@ HRESULT CPlayer_Manager::Initialize()
     m_Data.iWill = { 10 };
 
     m_Data.fWeight = { 0.f };
+    //데이터 셋팅
+    //Setting_Data();
 
     m_UsedSpearSkill.assign(GetBitPosition(CPlayerData_Manager::SPEAR_END), false);
 
     m_UsedGSwordSkill.assign(GetBitPosition(CPlayerData_Manager::GSWORD_END), false);
 
     /* 임시  */
-    m_pClientInstance->UsedSpear();
-    BindSkillToButton(Q, CPlayerData_Manager::FULL_MOON);
-    BindSkillToButton(E, CPlayerData_Manager::SPIRAL_THRUST);
-    BindSkillToButton(R, CPlayerData_Manager::SHADOW_CLEAVE);
-
-    /* 임시 */
-    m_pClientInstance->UsedGSword();
-    BindSkillToButton(Q, CPlayerData_Manager::GIANTHUNT);   /* 거인 사냥 */
-    BindSkillToButton(E, CPlayerData_Manager::PHANTOM_SHADOWOFDARKNESS);    /* 귀신 : 어둠의 그림자*/
-    BindSkillToButton(R, CPlayerData_Manager::BREAK_THROUGH);   /* 정면 돌파 */
-    BindSkillToButton(CTRL_LB, CPlayerData_Manager::WARCRY);    /* 거대한 포효 */ 
-    BindSkillToButton(CTRL_RB, CPlayerData_Manager::INNER_FURY);    /* 내재된 분노 */
-
     //m_pClientInstance->UsedSpear();
+    //BindSkillToButton(Q, CPlayerData_Manager::FULL_MOON);
+    //BindSkillToButton(E, CPlayerData_Manager::SPIRAL_THRUST);
+    //BindSkillToButton(R, CPlayerData_Manager::SHADOW_CLEAVE);
+
+    ///* 임시 */
+    //m_pClientInstance->UsedGSword();
+    //BindSkillToButton(Q, CPlayerData_Manager::GIANTHUNT);   /* 거인 사냥 */
+    //BindSkillToButton(E, CPlayerData_Manager::PHANTOM_SHADOWOFDARKNESS);    /* 귀신 : 어둠의 그림자*/
+    //BindSkillToButton(R, CPlayerData_Manager::BREAK_THROUGH);   /* 정면 돌파 */
+    //BindSkillToButton(CTRL_LB, CPlayerData_Manager::WARCRY);    /* 거대한 포효 */ 
+    //BindSkillToButton(CTRL_RB, CPlayerData_Manager::INNER_FURY);    /* 내재된 분노 */
+
+    m_pClientInstance->UsedSpear();
 
 	return S_OK;
 }
 
 PLAYER_DATA* CPlayer_Manager::Get_pInitailizePlayerData()
 {
+    m_Data.iSouleCount = 3;
     m_Data.fCulHp = m_Data.fMaxHp;
     m_Data.fCulStamina = m_Data.fMaxStamina;
     m_Data.fCulDoggedness = static_cast<_float>(m_Data.iMaxDoggednessCount);
@@ -72,6 +78,7 @@ PLAYER_DATA* CPlayer_Manager::Get_pInitailizePlayerData()
 
 void CPlayer_Manager::Initialize_PlayerData()
 {
+    m_Data.iSouleCount = 3;
     m_Data.fCulHp = m_Data.fMaxHp;
     m_Data.fCulStamina = m_Data.fMaxStamina;
     m_Data.fCulDoggedness = static_cast<_float>(m_Data.iMaxDoggednessCount);
@@ -221,6 +228,25 @@ _bool CPlayer_Manager::Is_UsedSkill(_uint iSkill)
         return  m_UsedGSwordSkill[GetBitPosition(iSkill)];
     }
     return true;
+}
+
+void CPlayer_Manager::Setting_Data()
+{
+    //초기 데이터 셋팅용
+    
+    m_Data.iGold = 2000;
+    m_Data.iLachryma = 5100;
+    m_Data.iStone = 8;
+    m_Data.fSkillLevel_EXP = 50.f;
+    m_Data.iSkillLevel = 10;
+    m_Data.iSkilPoint = 0;
+
+    m_Data.iLevel = 10;
+    m_Data.iVitality = { 13 };
+    m_Data.iEndurance = { 16 };
+    m_Data.iPower = { 11 };
+    m_Data.iCompetency = { 10 };
+    m_Data.iWill = { 10 };
 }
 
 CPlayer_Manager* CPlayer_Manager::Create()

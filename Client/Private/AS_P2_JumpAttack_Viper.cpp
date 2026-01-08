@@ -18,6 +18,7 @@ void CAS_P2_JumpAttack_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
     pModel->Set_Animation(30);
+    pBB->Set_Value<_uint>(pViper->Get_Name(), "AttackCount", 0);
 
 }
 
@@ -37,6 +38,36 @@ void CAS_P2_JumpAttack_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _
 
 void CAS_P2_JumpAttack_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+  
+}
+
+void CAS_P2_JumpAttack_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CViper* pViper = static_cast<CViper*>(pOwner);
+        CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+        _uint iAttackCnt = pBB->Get_Value<_uint>(pViper->Get_Name(), "AttackCount");
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        if (nullptr == pOwnerTransform)
+            return;
+
+        if (iAttackCnt == 1)
+        {
+            pTarget->Take_Damage(50.f, HITREACTION::KNOCKBACK_STRONG);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            //pTarget->KnockBack(vLook, 20.f, 40.f);
+        }
+        else if (iAttackCnt == 2)
+        {
+            pTarget->Take_Damage(20.f, HITREACTION::KNOCKBACK_NORMAL);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vLook, 20.f, 40.f);
+        }
+    }
 }
 
 CAS_P2_JumpAttack_Viper* CAS_P2_JumpAttack_Viper::Create()

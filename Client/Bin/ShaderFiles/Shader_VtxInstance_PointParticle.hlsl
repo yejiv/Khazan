@@ -241,10 +241,12 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
         discard;
     
     vector vMask = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    vector vFinalColor = g_vSourceColor;
-    vFinalColor.a *= vMask.r;
     
-    //vFinalColor.a = max(max(vMask.r, vMask.g), vMask.b);
+    if (vMask.r <= 0)
+        discard;
+    
+    vector vFinalColor = g_vSourceColor;
+    vFinalColor.a = g_vSourceColor.a * vMask.r;
     
     if (vFinalColor.a <= 0)
         discard;
@@ -255,6 +257,9 @@ PS_OUT PS_MAIN(PS_DEFAULT_IN In)
     float fDecreaseAlpha;  
     
     fDecreaseAlpha = 1.0f - abs((In.vLifeTime.x / In.vLifeTime.y) * 2.0f - 1.0f); 
+    
+    if (vFinalColor.a <= 0)
+        discard;
     
     if (g_IsDisolve == false) //스프라이트 중에서, 라이프타임이 적은 건 안한다.
         vFinalColor.a *= fDecreaseAlpha;

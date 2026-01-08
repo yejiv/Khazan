@@ -23,6 +23,10 @@ namespace Client {
         HALL_ELEVATOR_UNLOCK,
         ELEVATOR_SKIP,
         BLADENEXUS_POP,
+        OBELISK_DESTRUCT,
+        PET,
+        RESPOWN,
+        ITEM_ACTIVE,
 		END };
 
 	// Structs
@@ -85,6 +89,9 @@ namespace Client {
 		bool isBNOpened{ false };
 	};
 
+    struct EventDestinyStone {
+        XMFLOAT4 vPosition{};
+    };
 	
 	struct EventChest {
 		XMFLOAT4 vPosition{};
@@ -97,6 +104,7 @@ namespace Client {
 	struct EventTombStone {
 		XMFLOAT4 vPosition{};
 		XMFLOAT4 vPlayerPosition{};
+        XMFLOAT4 vPlayerTPPos{};
 		bool isTSOpened{ false };
 	};
 
@@ -346,6 +354,7 @@ namespace Client {
         EventGiantGate GiantGateEvent{};
         EventNPC NPCEvent{};
         EventLadder LadderEvent{};
+        EventDestinyStone DSEvent{};
 
 		void End_Event() { isEvent = false; }
 
@@ -356,7 +365,8 @@ namespace Client {
         bool isNPC() {
             return (INTERACTIVE_TYPE::DANJIN == eInteractType ||
                 INTERACTIVE_TYPE::DAPHRONA == eInteractType ||
-                INTERACTIVE_TYPE::DUIMUK == eInteractType);
+                INTERACTIVE_TYPE::DUIMUK == eInteractType ||
+                INTERACTIVE_TYPE::GACHANPC == eInteractType);
         }
 	};
 
@@ -398,7 +408,7 @@ namespace Client {
         _int  iTalkIndex;
     };
 
-    struct EVENT_ANNOUNCE_RESULT { };
+    struct EVENT_ANNOUNCE_RESULT { _bool isElite = false; };
 
     struct EVENT_ANNOUNCE_WARNING {
         _wstring strText;
@@ -410,4 +420,15 @@ namespace Client {
         _bool   isEquip;
     };
     struct EVENT_SKILL_RESET { };
+
+    struct EVENT_OBELISK_DESTRUCT {
+        _bool   isDestruct;
+    };
+
+    struct EVENT_PET_STATE {
+        _bool isStart;
+    };
+
+    struct EVENT_RESPOWN {};
+    struct EVENT_ATICVE_ITEM { _int iIndex; };
 }

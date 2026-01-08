@@ -1,6 +1,6 @@
 #pragma once
 #include "Client_Defines.h"
-#include "PartObject.h"
+#include "WeaponObject.h"
 
 NS_BEGIN(Engine)
 class CShader;
@@ -11,7 +11,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CBody_Yetuga final : public CPartObject
+class CBody_Yetuga final : public CWeaponObject
 {
 public:
 	typedef struct tagBodyDesc : public PARTOBJECT_DESC
@@ -29,6 +29,7 @@ public:
 
 	void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
     void                    Set_AttackCollision_Back(_bool isToggle) { m_isOnAttackCollision_Back = isToggle; }
+
 private:
 	CBody_Yetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CBody_Yetuga(const CBody_Yetuga& Prototype);
@@ -57,9 +58,13 @@ private:
 	HRESULT					Bind_ShaderResources();
 	void					Carculate_Matrix(_float fTimeDelta);
     void                    Carculate_BakckMatrix(_float fTimeDelta);
+    HRESULT                 Bind_Ice_ShaderResources();
 
 private:
 	HRESULT					Ready_Colliders();
+    HRESULT                 Ready_Callback();
+
+
 
 private:
 	class CYetuga*			m_pOwner = { nullptr };
@@ -94,7 +99,7 @@ private:
 private:
     COLLISION_DESC				m_tCollision_RHDesc = {};
     COLLISION_DESC				m_tCollision_LHDesc = {};
-    COLLISION_DESC				m_tCollision_Desc = {};
+    COLLISION_DESC				m_tBackCollision_Desc = {};
 
 
 public:

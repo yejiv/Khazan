@@ -86,10 +86,8 @@ public:
 public:
 	void Set_EnableShadow(_bool isEnable);
 	void Set_EnableSSAO(_bool isEnable);
-	void Set_EnableFog(_bool isEnable);
 	void Set_EnableToonShade(_bool isEnable);
 	void Set_EnableOutline(_bool isEnable);
-    void Set_EnableRimLight(_bool isEnable);
 #endif
 
 public:
@@ -97,8 +95,11 @@ public:
 	OUTLINE_CONFIG Get_OutlineConfig();
 	void Set_OutlineConfig(OUTLINE_CONFIG Config);
     void Set_SpecularPower(_float2 vPower);
+    void Set_SpecularAttenuation(_float fAttenuation);
+    void Set_EnableRimLight(_bool isEnable);
     RIM_LIGHT_DESC Get_RimLightDesc();
     void Set_RimLightDesc(RIM_LIGHT_DESC Desc);
+    const RENDERGROUP& Get_CurrentRenderGroup();
 #pragma endregion
 
 #pragma region TIMER_MANAGER
@@ -219,7 +220,11 @@ public:
 	void Set_ObjectVsBPFilter(_uint iObjectLayer, _uint iBPLayer);
 	void Set_ObjectLayerFilter(_uint iObjectLayer, _bool isOn = true);
 	Body* CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
+    Body* CreateAndAdd_SoftBody(const SoftBodyCreationSettings& BodySetting, BodyInterface** pBodyInterface);
 	CharacterVirtual* CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface);	
+
+    void Add_Constraint(Constraint* pConstraint);
+    void Remove_Constraint(Constraint* pConstraint);
 
 	void CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter);
 	void CharVir_ExtendedUpdate(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter, CharacterVirtual::ExtendedUpdateSettings tSetting);
@@ -238,6 +243,12 @@ public:
 	void Reset_Gravity();
 
 	_bool RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal = nullptr);
+
+    PhysicsSystem* Get_Jolt();
+    BodyInterface* Get_BodyInterface();
+    const BodyLockInterfaceLocking* Get_BodyLockInterface();
+
+    _bool IsObjectLayerPairValid(_uint iObjectLayer1, _uint iObjectLayer2);
 #ifdef _DEBUG
 	void Jolt_Test();
 
@@ -369,7 +380,8 @@ public:
 
 #pragma region FOG
 	HRESULT						Bind_Fog_ShaderResources(class CShader* pShader);
-	FOG_CONFIG					Get_FogConfig();
+    void                        Set_EnableFog(_bool isEnable);
+    FOG_CONFIG					Get_FogConfig();
 	void						Set_FogConfig(FOG_CONFIG Config);
 	_uint						Get_NumFogNoiseTextures();
 	ID3D11ShaderResourceView*	Get_FogNoiseTexture(_uint iTextureIndex);
@@ -379,14 +391,14 @@ public:
 
 #pragma region VIGNETTE
 	HRESULT						Bind_Vignette_ShaderResources(class CShader* pShader);
-	void						Set_EnableVignette(_bool isEnable);
+	void						Set_EnableVignette(_bool isEnable, _float fIntensity = 0.f);
 	VIGNETTE_CONFIG				Get_VignetteConfig();
-	void						Set_VignetteConfig(VIGNETTE_CONFIG Config);
-	void						Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG Config);
+	void						Set_VignetteConfig(const VIGNETTE_CONFIG& Config);
+	void						Start_VignetteAnimation(const VIGNETTE_CONFIG& Config, _bool isReturnOff = true);
 #pragma endregion
 
 #pragma region SEQUENCE_MANAGER
-	HRESULT SEQ_AdoptAndPlay(class ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc);
+	HRESULT SEQ_AdoptAndPlay(class ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc, _bool isInit = false);
 	void    SEQ_EnqueueAdopt(class ISeqInstance* pSeq, const SEQ_REQ_PLAY_DESC& tDesc);
 
 	HRESULT SEQ_Play(const SEQ_REQ_PLAY_DESC& tDecs);
@@ -402,18 +414,26 @@ public:
     CTexture*                   Get_DecalTexture(DECALTYPE eType);
     ID3D11ShaderResourceView*   Get_DecalTexture(DECALTYPE eType, _uint iIndex);
     _uint                       Get_NumDecalTextures(DECALTYPE eType);
-    void                        Batch_Decal(class CDecal* pDecal);
+    void                        Batch_Decal(class CDecal_Static* pDecal);
     void                        Decal_Clear();
+    void                        MapDecal_Clear();
+    void                        MapDecal_CleanUp();
+    
+    void                        Decal_OnOff(_bool isDecalOn);
 #pragma endregion
 
 #pragma region EFFECT_MANAGER
 	void		Add_Effect_ToPool(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint iPoolSize);
 	_uint		Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector SpawnPos);
 	_uint		Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _fvector Quaternion, _gvector Position);
+	_uint		Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _matrix worldmatrix, _gvector Position);
 	void		Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpawnPos);
 	void		Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector Quaternion, _gvector Position);
+	void		Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _matrix worldmatrix, _gvector Position);
 	void		Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID);
 	void		Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag);
+	void		Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID);
+	void		Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag);
 #pragma endregion
 
 #pragma region DISTORTION
@@ -447,17 +467,35 @@ public:
 #pragma endregion
 
 #pragma region SOUND_MANAGER
+    _float                      Get_Gloval_Volume();
     void                        Set_Gloval_Volume(_float fVolume);
     void                        ADD_Gloval_Volume(_float fVolume);
 
+    void                        ListenerPosSet(_vector vPos, _vector vLook, _vector vUp, _float3 vVal = { 0.f, 0.f, 0.f });
+
+    void                        PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume = 1.0f, _float2 vDis = { 1.f, 25.f });
+    void                        PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume = 1.0f, _float2 vDis = { 1.f, 25.f });
+
+    void                        PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, _float3 vVel = { 0.f, 0.f, 0.f }, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr, _float2 vDis = { 1.f, 25.f });
+    void                        PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, _float3 vVel = { 0.f, 0.f, 0.f }, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr, _float2 vDis = { 1.f, 25.f });
+
     void                        PlaySoundOnce(const TCHAR* pSoundKey, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
     void                        PlaySoundLoop(const TCHAR* pSoundKey, float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
+
+    void                        PlaySound_FadeIn(const TCHAR* pSoundKey, float fVolume = 1.0f, float fFadeTime = 1.f, bool isLoop = true, FMOD_CHANNEL** ppOutChannel = nullptr);
+
     void                        StopAll();
 
     void                        StopByKey(const TCHAR* pSoundKey);
+    void                        StopByKey_FadeOut(const TCHAR* pSoundKey, _float fFadeTime = 1.f);
     void                        StopByChannel(FMOD_CHANNEL** ppOutChannel);
     bool                        IsPlayingByKey(const TCHAR* pSoundKey);
     void                        SetVolumeByKey(const TCHAR* pSoundKey, float fVolume);
+
+    void                        Sound_Resume(const TCHAR* pSoundKey);
+    void                        Sound_Resume_Fade(const TCHAR* pSoundKey, float fFadeTime = 1.f);
+    void                        Sound_Pause(const TCHAR* pSoundKey);
+    void                        Sound_Pause_Fade(const TCHAR* pSoundKey, float fFadeTime = 1.f);
 #pragma endregion
 
 private:

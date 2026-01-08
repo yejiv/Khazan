@@ -1,4 +1,5 @@
 #include "AS_Elamein_Guard.h"
+#include "GameInstance.h"
 
 CAS_Elamein_Guard::CAS_Elamein_Guard()
 {
@@ -11,6 +12,7 @@ void CAS_Elamein_Guard::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     m_pMonData->iAnimIndex = 48;
     m_eState = START;
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_elamein_efforts_greatguard_a_01 (Korean(KR)).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0), 3.f);
 
 }
 
@@ -33,6 +35,12 @@ void CAS_Elamein_Guard::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         {
             m_pMonData->iAnimIndex = 51;
             m_eState = COUNT;
+            m_pMonData->pOwner->Start_DefaultRadialBlur();
+            m_pMonData->pOwner->Start_DefaultVignette();
+            m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.2f, 0.003f, 2.5f);
+            m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.2f, 0.003f, 2.5f);
+            m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.2f, 0.003f, 2.5f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_elamein_guardcounter_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(1), 3.f);
         }
         else if (m_fAcctime >= 3.f)
         {
@@ -69,7 +77,8 @@ void CAS_Elamein_Guard::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_STRONG, nullptr);
+        pTarget->KnockBack(pOwner->Get_Look(), 13.5f, 45.f);
+        pTarget->Take_Damage(m_pGameInstance->Rand(m_pMonData->fAttackDamage * 0.8f, m_pMonData->fAttackDamage * 1.3f), HITREACTION::KNOCKBACK_STRONG, nullptr);
     }
 }
 

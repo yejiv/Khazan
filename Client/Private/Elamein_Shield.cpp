@@ -3,12 +3,12 @@
 #include "AI_Controller.h"
 
 CElamein_Shield::CElamein_Shield(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CPartObject{ pDevice,pContext }
+    :CWeaponObject{ pDevice,pContext }
 {
 }
 
 CElamein_Shield::CElamein_Shield(const CElamein_Shield& Prototype)
-    :CPartObject(Prototype)
+    :CWeaponObject(Prototype)
 {
 }
 
@@ -31,10 +31,16 @@ HRESULT CElamein_Shield::Initialize_Clone(void* pArg)
     CHECK_FAILED(__super::Initialize_Clone(pArg), E_FAIL);
     m_pTransformCom->Rotation(XMConvertToRadians(0.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
     CHECK_FAILED(Ready_Components(), E_FAIL);
+    _float4x4 PreTransformMatrix;
+    XMStoreFloat4x4(&PreTransformMatrix, XMMatrixScaling(0.00012f, 0.00012f, 0.00012f) * XMMatrixRotationY(XMConvertToRadians(180.0f)));
+    m_pModelCom->Set_PreTransformMatrix(PreTransformMatrix);
+
     CHECK_FAILED(Ready_Collision(), E_FAIL);
 
     m_pModelCom->Set_Animation(0.f);
     m_pModelCom->Play_Animation(0);
+
+    Set_JustGuardCallBack([this](_bool isJustGuard) { *m_pData->pCulStamina -= *m_pData->pMaxStamina * 0.1f; });
     return S_OK;
 }
 
@@ -50,7 +56,7 @@ void CElamein_Shield::Update(_float fTimeDelta)
         if (m_fChageValue <= 0.f)
             m_isReset = false;
     }
-    m_pTransformCom->Rotation(XMConvertToRadians(75.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
+    m_pTransformCom->Rotation(XMConvertToRadians(90.f), XMConvertToRadians(180.f), XMConvertToRadians(0.f));
 
     _matrix BoneMatrix = XMLoadFloat4x4(m_pSocketMatrix);
 
@@ -75,7 +81,6 @@ void CElamein_Shield::Update(_float fTimeDelta)
 
 void CElamein_Shield::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this),);
 }
 
 HRESULT CElamein_Shield::Render()
@@ -134,7 +139,7 @@ HRESULT CElamein_Shield::Ready_Components()
         TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom), nullptr), E_FAIL);
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom, nullptr), E_FAIL);
-    CHECK_FAILED(CGameObject::Add_Component(m_iPrototypeIndex, TEXT("Prototype_Component_Dragonian_Elamein_Shield"), TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr), E_FAIL);
+    CHECK_FAILED(CGameObject::Add_Component(m_iPrototypeIndex, TEXT("Prototype_Component_Elamein_Shield"), TEXT("Com_Model"), (CComponent**)&m_pModelCom, nullptr), E_FAIL);
 
     m_pModelCom->Set_OwnerTransform(&m_pOwnerTransform);
 

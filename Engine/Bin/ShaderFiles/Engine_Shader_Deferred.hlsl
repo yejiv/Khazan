@@ -42,7 +42,7 @@ struct PS_OUT_BACKBUFFER
 struct PS_OUT_WEIGHTBLEND   //MRT_PostScene의 Diffsue에 원래 Blend에서 그려줘야했던 내용들 합성해서 그려줌.
 {
     float4 vBackBufferColor : SV_TARGET0;
-    float4 vEmissiveColor : SV_TARGET1;
+    //  float4 vEmissiveColor : SV_TARGET1;
 };
 
 PS_OUT_BACKBUFFER PS_DEBUG(PS_IN In)
@@ -120,7 +120,8 @@ PS_OUT_LIGHT PS_DIRECTIONAL(PS_IN In)
     float fSpecularBase = max(dot(normalize(vReflect) * -1.f, vLook), 0.f);
     float fSpecular = pow(fSpecularBase, fShininess);
     
-    Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f;
+    float4 vResultSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f;
+    Out.vSpecular = pow(vResultSpecular, g_fSpecularAttuenation);
     
     if (0.f == vSpecularDesc.a)
         return Out;
@@ -159,7 +160,7 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     
     float fAtt = saturate((g_fLightRange - fDistance) / g_fLightRange);
     
-    float fShade = max(dot(vNormal * -1.f, normalize(g_vLightDir)), 0.f);
+    float fShade = max(dot(vNormal * -1.f, normalize(vLightDir)), 0.f);
 
     // 엠비언트 따로 계산
     float fAmbient = g_vLightAmbient * g_vMtrlAmbient;
@@ -185,7 +186,6 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     else
         Out.vShade = g_vLightDiffuse * (fLightIntensity + fAmbient) * fAtt;
 
-    
     // Specular
     vector vSpecularDesc = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     float fSpecularValue = vSpecularDesc.g;
@@ -198,7 +198,8 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     float fSpecularBase = max(dot(normalize(vReflect) * -1.f, vLook), 0.f);
     float fSpecular = pow(fSpecularBase, fShininess);
     
-    Out.vSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f * fAtt;
+    float4 vResultSpecular = g_vLightSpecular * fSpecular * fSpecularValue + g_vLightSpecular * fSpecular * fSpecularIntensity * 2.f * fAtt;
+    Out.vSpecular = pow(vResultSpecular, g_fSpecularAttuenation);
     
     if (0.f == vSpecularDesc.a)
         return Out;
@@ -226,6 +227,7 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
     vector vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
 
     if (1.f == vDiffuse.r && 1.f == vDiffuse.g && 1.f == vDiffuse.b && 0.f == vDiffuse.a)
         discard;
@@ -233,26 +235,101 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
     vector vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    Out.vColor = vDiffuse * vShade + vSpecular;
+    float4 vLitColor = vDiffuse * vShade + vEmissive;
+    Out.vColor = vLitColor + vSpecular;
+    
+    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
+    float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
+    float4 vWorldPos = Transform_ViewToWorld(vViewPos);
+    float fViewZ = vViewPos.z;
+    
+    // 포그
+    if (true == g_isEnableFog)
+    {
+        // Linear
+        float fLinear = saturate((fViewZ - g_fFogNear) / (g_fFogFar - g_fFogNear));
+    
+        // Exponential -> (1 - e^{-rho * d})
+        float fDistance = abs(fViewZ);
+        float fExp = saturate(1.f - exp(-g_fFogDensity * fDistance));
+    
+        // Exponential^2 -> (1 - e^{-(rho * d)^2})
+        float fOpticalDepth = g_fFogDensity * fDistance;
+        float fExpSquare = saturate(1.f - exp(-(fOpticalDepth * fOpticalDepth)));
+    
+        float4 vResultColor;
+        float fFogFactor = 0.f;
+        
+        if (0 == g_iFogMode)
+            fFogFactor = fLinear;
+        else if (1 == g_iFogMode)
+            fFogFactor = fExp;
+        else if (2 == g_iFogMode)
+            fFogFactor = fExpSquare;
+
+        fFogFactor = clamp(fFogFactor, 0.f, g_fFogBias);
+        
+        float fBrightness = max(vLitColor.r, max(vLitColor.g, vLitColor.b));
+        float fFogAtt = saturate(fBrightness * g_fFogLightBleedStrength);
+        
+        fFogFactor = saturate(fFogFactor - fFogAtt);
+        
+        if (true == g_isEnableFogNoise)
+        {
+            float2 vNoiseTexcoord;
+        
+            vNoiseTexcoord = In.vTexcoord * g_vNoiseScale;
+            vNoiseTexcoord.x += g_fTimeDelta * g_vNoiseSpeed.x;
+            vNoiseTexcoord.y += g_fTimeDelta * g_vNoiseSpeed.y;
+        
+            float fNoise = g_NoiseTexture.Sample(DefaultSampler, vNoiseTexcoord).r;
+            fNoise = pow(fNoise, g_fNoiseContrast);
+        
+            fFogFactor = lerp(fFogFactor, fFogFactor * fNoise, g_fNoiseStrength);
+        }
+        
+        if (true == g_isUseHeightFog)
+        {
+            // Height 계산
+            float fFogDiff = vWorldPos.y - g_fFogBaseHeight;
+            fFogDiff = max(fFogDiff, 0.f);
+            float fFogHeightFactor = saturate(exp(-fFogDiff * g_fFogHeightDensity));
+        
+            if (true == g_isUseSubColor)
+            {
+                float fRange = g_fSubColorStartHeight - g_fFogBaseHeight;
+                
+                if (fRange <= 1e-6)
+                {
+                    Out.vColor = lerp(Out.vColor, g_vFogColor, fFogFactor * fFogHeightFactor);
+                    return Out;
+                }
+                    
+                float fRatio = saturate((vWorldPos.y - g_fFogBaseHeight) / fRange);
+                
+                float4 vMixedColor = lerp(g_vFogColor, g_vFogSubColor, fRatio);
+                vResultColor = lerp(Out.vColor, vMixedColor, fFogFactor * fFogHeightFactor);
+            }
+            else
+                vResultColor = lerp(Out.vColor, g_vFogColor, fFogFactor * fFogHeightFactor);
+        }
+        else
+        {
+            vResultColor = lerp(Out.vColor, g_vFogColor, fFogFactor);
+        }
+    
+        Out.vColor = vResultColor;
+    }
     
     if (!g_isEnableShadow)
         return Out;
-    
-    // Pixel Depth
-    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
-    
-    float fCameraViewDepth = vViewPos.z;
 
-    if (fCameraViewDepth > g_fSplitFar)
+    if (fViewZ > g_fSplitFar)
     {
         Out.vColor = lerp(Out.vColor * g_fShadowIntensity, Out.vColor, 1.f);
         return Out;
     }
-    
-    float4 vWorldPos = Transform_ViewToWorld(vViewPos);
-    
+
     float4 vLightProjPos = Transform_WorldToProj(vWorldPos, g_LightViewMatrix, g_LightProjMatrix);
     vLightProjPos /= vLightProjPos.w;
     
@@ -294,16 +371,17 @@ PS_OUT_BLUR_X PS_BRIGHTNESS(PS_IN In)
 {
     PS_OUT_BLUR_X Out;
 
-    float4 vEmissive = g_EmissiveTexture.SampleLevel(ClampSampler, In.vTexcoord, 0.f);
-    float3 vEmissiveColor = vEmissive.rgb * vEmissive.a;
+    //  float3 vEmissiveColor = g_EmissiveTexture.SampleLevel(ClampSampler, In.vTexcoord, 0.f).rgb;
+    //  float3 vEmissiveColor = vEmissive.rgb * vEmissive.a;
 
     float3 vPostSceneColor = g_PostSceneTexture.SampleLevel(ClampSampler, In.vTexcoord, 0.f).rgb;
 
     float3 vBrightColor = max(vPostSceneColor - 1.f, 0.f);
-        
-    float3 vCombinedColor = vEmissiveColor + vBrightColor;
+    //  float3 vBrightEmissiveColor = max(vEmissiveColor - 1.f, 0.f);
 
-    Out.vBlurX = float4(vCombinedColor, 1.f);
+    //  float3 vCombinedColor = vBrightEmissiveColor + vBrightColor;
+
+    Out.vBlurX = float4(vBrightColor, 1.f);
     
     return Out;
 }
@@ -431,12 +509,12 @@ PS_OUT_BACKBUFFER PS_COMBINED(PS_IN In)
     if (1.f == vPostSceneDesc.r && 1.f == vPostSceneDesc.g && 1.f == vPostSceneDesc.b && 0.f == vPostSceneDesc.a)
         discard;
 
-    float4 vFinalColor;
+    float4 vFinalColor = vPostSceneDesc + vBloomDesc;
     
-    if (true == g_isEnableFog)
-        vFinalColor = vFogDesc + vBloomDesc;
-    else
-        vFinalColor = vPostSceneDesc + vBloomDesc;
+    //  if (true == g_isEnableFog)
+    //      vFinalColor = vFogDesc + vBloomDesc;
+    //  else
+    //      vFinalColor = vPostSceneDesc + vBloomDesc;
 
     // Outline
     if (g_isEnableOutline)
@@ -455,9 +533,21 @@ PS_OUT_BACKBUFFER PS_COMBINED(PS_IN In)
     if (g_isEnableVignette)
     {
         float fDistance = length(In.vTexcoord - 0.5f);
-        float fVignetteFactor = 1.f - pow(fDistance, g_fVignettePower) * g_fVignetteIntensity;
+        float fVignetteFactor = pow(fDistance, g_fVignettePower);
+        
+        if (g_isUseVignetteNoise)
+        {
+            float2 vNoiseTexcoord = { 0.f, 0.f };
+            vNoiseTexcoord.x += In.vTexcoord.x * 2.5f;
+            vNoiseTexcoord.y += In.vTexcoord.y * 2.f;
+            float fNoise = g_NoiseTexture.Sample(DefaultSampler, vNoiseTexcoord).r;
+            fNoise = saturate(pow(fNoise, g_fVignetteContrast));
+            fVignetteFactor *= fNoise;
+        }
 
-        vFinalColor.rgb = lerp(g_vVignetteColor, vFinalColor.rgb, fVignetteFactor);
+        fVignetteFactor *= g_fVignetteIntensity;
+        
+        vFinalColor.rgb = lerp(g_vVignetteColor, vFinalColor.rgb, saturate(1.f - fVignetteFactor));
         vFinalColor.a = vPostSceneDesc.a;
     }
     

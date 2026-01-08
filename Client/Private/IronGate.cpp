@@ -75,8 +75,25 @@ void CIronGate::Update(_float fTimeDelta)
 
     if (true == m_isUnLock)
     {
+        if (false == IsPlayingSound(TEXT("IP_IronGate_UnLock")))
+        {
+            if (false == m_isOpen)
+            {
+                m_isOpen = true;
+
+                SoundOnce(TEXT("IP_IronGate_Open"), m_fInteract_Volume);
+            }
+        }
+
         if (true == m_pModelCom->Play_Animation(fTimeDelta))
         {
+            if (false == m_isEnd)
+            {
+                m_isEnd = true;
+
+                SoundOnce(TEXT("IP_IronGate_End"), m_fInteract_Volume);
+            }
+
             Animation_Change(fTimeDelta);
         }
     }
@@ -133,6 +150,8 @@ HRESULT CIronGate::Ready_PartObjects(void* pArg)
     PartLeftDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     PartLeftDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Door_Pivot_L");
 
+    PartLeftDesc.pUnLock = &m_isUnLock;
+
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Gate_L"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_IronGate_Part_L"), &PartLeftDesc), E_FAIL);
 
@@ -141,6 +160,8 @@ HRESULT CIronGate::Ready_PartObjects(void* pArg)
     PartRightDesc.eLevel = eLevel;
     PartRightDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     PartRightDesc.pSocketMatrix = m_pModelCom->Get_BoneMatrix("Door_Pivot_R");
+
+    PartRightDesc.pUnLock = &m_isUnLock;
 
     CHECK_FAILED(__super::Add_PartObject(TEXT("Part_Gate_R"), ENUM_CLASS(eLevel),
         TEXT("Prototype_GameObject_Prop_IronGate_Part_R"), &PartRightDesc), E_FAIL);
@@ -198,9 +219,9 @@ HRESULT CIronGate::Ready_Collision(void* pArg)
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_TriggerCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.isForceVaildation = true;
+    TriggerDesc.pCollisionDesc = &m_TriggerCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
@@ -215,7 +236,7 @@ HRESULT CIronGate::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("열어이"), 1.f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, 10.f), TEXT("해제"), 1.f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::EMBARS), TEXT("Layer_UI"), m_pGuide);
 
@@ -275,6 +296,8 @@ void CIronGate::Animation_Update(_float fTimeDelta)
         if (false == m_isUnLock)
         {
             m_isUnLock = true;
+
+            SoundOnce(TEXT("IP_IronGate_UnLock"), m_fInteract_Volume);
 
             // 조각상 상호작용 시
             EventInteractType InteractType = {};

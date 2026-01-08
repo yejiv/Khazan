@@ -207,6 +207,8 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(3.f, Desc);
 
+            m_pClientInstance->BGM_HeinMach_CutScene();
+
             m_isDead = true;
         }
         else if (m_strTriggerKey == "Yetuga")
@@ -258,6 +260,8 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma region 동굴 정방향
         else if (m_strTriggerKey == "CaveEntry")
         {
+            m_pClientInstance->BGM_HeinMach_Cave();
+
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.035f;
             Desc.fBias = 1.f;
@@ -291,10 +295,31 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(2.f, Desc);
+
+#pragma region 뚫린 동굴 들어갈때 ( 정방향 ) 플레이어 isInCave = false;
+
+            EventInteractType InteractType = {};
+
+            InteractType.eState = EventInteractType::NONE;
+            InteractType.CaveOut();
+
+            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+#pragma endregion
         }
         else if (m_strTriggerKey == "CaveExit")
         {
+            m_pClientInstance->BGM_HeinMach_Day();
+
             Start_SkyTransition(m_Sky_Desc, m_Cloud_Desc, 7.f);
+
+            // Split 65로 변경
+            SHADOW_DESC ShadowDesc{};
+            ShadowDesc.fSplit = 65.f;
+            ShadowDesc.vLightDir = { 1.f, -1.f, 1.f };
+            ShadowDesc.fBias = 0.001f;
+            ShadowDesc.fIntensity = 1.f;
+            m_pGameInstance->Set_ShadowDesc(ShadowDesc);
 
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.025f;
@@ -302,18 +327,10 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             Desc.vColor = _float4(0.631f, 0.522f, 0.471f, 1.f);
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
-            //  Desc.isUseHeight = true;
-            //  Desc.fBaseHeight = 3000.f;
-            //  Desc.isUseNoise = true;
-            //  Desc.vNoiseSpeed = _float2(0.01f, 0.f);
-            //  Desc.vNoiseScale = _float2(1.f, 1.f);
-            //  Desc.fNoiseStrength = 0.5f;
-            //  Desc.fNoiseContrast = 1.f;
-            //  Desc.iNoiseIndex = 8;
             m_pGameInstance->Start_FogTransition(15.f, Desc);
 
             // 그림자 보간 추가
-            m_pGameInstance->Start_ShadowTransition(15.f, 0.6f);
+            m_pGameInstance->Start_ShadowTransition(15.f, 0.9f);
 
 #pragma region 동굴 나갈때 플레이어 isInCave = false;
 
@@ -330,6 +347,8 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma region 동굴 역방향
         else if (m_strTriggerKey == "CaveEntry_Rev")
         {
+            m_pClientInstance->BGM_HeinMach_Dawn();
+
             // 동굴 전 포그
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.05f;
@@ -364,9 +383,22 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             Desc.isUseHeight = false;
             Desc.isUseNoise = false;
             m_pGameInstance->Start_FogTransition(2.f, Desc);
+
+#pragma region 동굴 들어갈때 ( 역방향 ) 플레이어 isInCave = true;
+
+            EventInteractType InteractType = {};
+
+            InteractType.eState = EventInteractType::NONE;
+            InteractType.CaveIn();
+
+            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+#pragma endregion
         }
         else if (m_strTriggerKey == "CaveExit_Rev")
         {
+            m_pClientInstance->BGM_HeinMach_Cave();
+
             Start_SkyTransition(m_Sky_Desc, m_Cloud_Desc, 2.f);
             
             // 동굴 중간 ~ 출구 포그
@@ -393,8 +425,51 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
 #pragma endregion
         }
 #pragma endregion
+        else if (m_strTriggerKey == "CaveSnow_On")
+        {
+#pragma region 뚫린 동굴 들어갈때 ( 역방향 ) 플레이어 isInCave = false;
+
+            EventInteractType InteractType = {};
+
+            InteractType.eState = EventInteractType::NONE;
+            InteractType.CaveOut();
+
+            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+#pragma endregion
+        }
+        else if (m_strTriggerKey == "CaveSnow_Off")
+        {
+#pragma region 뚫린 동굴 나갈때 ( 정방향 ) 플레이어 isInCave = true;
+
+            EventInteractType InteractType = {};
+
+            InteractType.eState = EventInteractType::NONE;
+            InteractType.CaveIn();
+
+            m_pGameInstance->Emit_Event<EventInteractType>(ENUM_CLASS(EVENT_TYPE::INTERACT_TYPE), InteractType);
+
+#pragma endregion
+        }
+        else if (m_strTriggerKey == "Shadow_Restore")
+        {
+            // Split 35로 변경 -> 동굴 밖 두둥실 아래 트리거에서 그림자 원복 시 호출할 함수
+            SHADOW_DESC ShadowDesc{};
+            ShadowDesc.fSplit = 35.f;
+            ShadowDesc.vLightDir = { 1.f, -1.f, 1.f };
+            ShadowDesc.fBias = 0.001f;
+            ShadowDesc.fIntensity = 0.9f;
+            m_pGameInstance->Set_ShadowDesc(ShadowDesc);
+
+            // 그림자 보간 추가
+            m_pGameInstance->Start_ShadowTransition(3.f, 0.6f);
+
+            m_isDead = true;
+        }
         else if (m_strTriggerKey == "Talk_03")
         {
+            m_pClientInstance->BGM_HeinMach_Entry();
+
             SEQ_REQ_PLAY_DESC tPlayDesc{};
             tPlayDesc.tId.iSeq = 1100;
             tPlayDesc.pAsset = L"Start_Chat";
@@ -489,7 +564,7 @@ void CHeinMach_Trigger::Free()
     __super::Free();
 
     Safe_Release(m_pClientInstance);
-    //Safe_Release(m_pHeinMach_Field);
-    //Safe_Release(m_pHeinMach_Yetuga);
-    //Safe_Release(m_pHeinMach_Start_Chat);
+    /*Safe_Release(m_pHeinMach_Field);
+    Safe_Release(m_pHeinMach_Yetuga);
+    Safe_Release(m_pHeinMach_Start_Chat);*/
 }

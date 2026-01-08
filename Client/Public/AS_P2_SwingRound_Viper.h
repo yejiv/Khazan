@@ -15,10 +15,15 @@ public:
     virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
     virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
+public:
+    virtual void OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
+
+private:
+    void                                Set_ViperBerserkerStart_ShaderSettings();
 
 public:
-    static CAS_P2_SwingRound_Viper*         Create();
-    virtual void                            Free() override;
+    static CAS_P2_SwingRound_Viper*     Create();
+    virtual void                        Free() override;
 
 };
 

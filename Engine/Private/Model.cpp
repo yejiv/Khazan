@@ -184,7 +184,7 @@ _float4x4* CModel::Get_BoneMatrix(const _char* pBoneName)
 
 _float4x4* CModel::Get_BoneMatrix(const _int iBoneIndex)
 {
-    if (m_Bones.size() > iBoneIndex || 0 < iBoneIndex)
+    if (m_Bones.size() <= iBoneIndex || 0 > iBoneIndex)
         return nullptr;
 
     return m_Bones[iBoneIndex]->Get_CombinedTransformationMatrixPtr();
@@ -306,6 +306,14 @@ vector<_float3> CModel::Get_VerticesPos(_uint iIndex)
 vector<_uint> CModel::Get_Indices(_uint iIndex)
 {
     return m_Meshes[iIndex]->Get_Indices();
+}
+
+CBone* CModel::Find_Bone(_int iIndex)
+{
+    if (m_Bones.size() < iIndex || iIndex < 0)
+        return nullptr;
+    
+    return m_Bones[iIndex];
 }
 
 HRESULT CModel::Bind_Materials(class CShader* pShader, const _char* pConstantName, _uint iMeshIndex, _uint iTextureType, _uint iIndex)
@@ -632,14 +640,14 @@ void CModel::Set_AnimationLoop(_bool isLoop)
         Add_State(ANIM_LOOP);
 }
 
-_bool CModel::Check_MinAnimationTime()
+_bool CModel::Check_MinAnimationTime(_float fAddDesceaseTime)
 {
  
-    if (m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime < 1.f )
+    if (m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime < 1.f + fAddDesceaseTime)
         return true;
     //if (m_fCurrentTrackPosition >= m_Animations[m_iCurrentAnimIndex]->Get_Duration())
     //    return false;
-    return m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime <= m_fCurrentTrackPosition;
+    return m_AnimationsSetup[m_iCurrentAnimIndex].fBlendOutTime - fAddDesceaseTime <= m_fCurrentTrackPosition;
 }
 
 _bool CModel::Check_CanDodgeTime()
@@ -810,51 +818,6 @@ void CModel::Build_PartToMasterMap()
 
 void CModel::Update_PartLocalBones()
 {
-    //if (!m_isSharedSkeleton || nullptr == m_pMasterSkeleton)
-    //    return;
-
-    //m_PartLocalBoneMatrices.clear();
-    //m_PartLocalBoneMatrices.resize(m_Bones.size());
-
-    //// 중요: 순차적으로 처리 (부모 -> 자식 순서)
-    //for (size_t i = 0; i < m_Bones.size(); ++i)
-    //{
-    //    CBone* pBone = m_Bones[i];
-    //    _wstring boneName = pBone->Get_Name();
-
-    //    // 마스터에 있는 본인지 확인
-    //    _bool foundInMaster = false;
-    //    for (size_t j = 0; j < m_pMasterSkeleton->m_Bones.size(); ++j)
-    //    {
-    //        if (m_pMasterSkeleton->m_Bones[j]->Compare_Name(boneName))
-    //        {
-    //            // 마스터 본: 마스터의 Combined Matrix 사용
-    //            m_PartLocalBoneMatrices[i] =
-    //                *m_pMasterSkeleton->m_Bones[j]->Get_CombinedTransformationMatrixPtr();
-    //            foundInMaster = true;
-    //            break;
-    //        }
-    //    }
-
-    //    // 파츠 전용 본 처리
-    //    if (!foundInMaster)
-    //    {
-    //        _int iParentIndex = pBone->Get_ParentBoneIndex();
-
-    //        if (iParentIndex >= 0 && iParentIndex < m_PartLocalBoneMatrices.size())
-    //        {
-    //            // 핵심: 부모 Combined * 자신의 Local
-    //            _matrix matParent = XMLoadFloat4x4(&m_PartLocalBoneMatrices[iParentIndex]);
-    //            _matrix matLocal = pBone->Get_TransformationMatrix();  // 초기 로컬 변환
-
-    //            XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], matLocal * matParent);
-    //        }
-    //        else
-    //        {
-    //            XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], XMMatrixIdentity());
-    //        }
-    //    }
-    //}
 
     if (!m_isSharedSkeleton || m_pMasterSkeleton == nullptr)
         return;
@@ -895,8 +858,11 @@ void CModel::Update_PartLocalBones()
                 const _matrix localMatrix =
                     pBone->Get_TransformationMatrix(); // 파츠 로컬
 
-                // DirectX 스켈레톤 컨벤션: Combined = Local * ParentCombined
-                XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], localMatrix * ParentCombinedMatrix);
+                // 스켈레톤 컨벤션: Combined = Local * ParentCombined
+                if(m_isUsedExclusivePartBones)
+                    XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], localMatrix * ParentCombinedMatrix);
+                else
+                    XMStoreFloat4x4(&m_PartLocalBoneMatrices[i],  ParentCombinedMatrix);
             }
             else
             {
@@ -904,11 +870,20 @@ void CModel::Update_PartLocalBones()
                 // 여기선 파츠 루트면 자기 로컬(또는 identity)로 처리
                 const _matrix localMatrix = pBone->Get_TransformationMatrix();
                 XMStoreFloat4x4(&m_PartLocalBoneMatrices[i], localMatrix);
-                // 필요하면 XMMatrixIdentity()로 바꿔도 됨 (디자인 선택)
+
             }
         }
     }
 
+}
+
+void CModel::Update_PartLocalBones_Once(_bool isUsedExclusivePartBones)
+{
+    if (m_isPartLocalBonesUpdated)
+        return;
+    m_isUsedExclusivePartBones = isUsedExclusivePartBones;
+    Update_PartLocalBones();
+    m_isPartLocalBonesUpdated = true;
 }
 
 void CModel::Capture_CurrentFrameMatrices(vector<_float4x4>& OutBoneMatrices, _float4x4* pOutWorldMatrix)
@@ -930,6 +905,43 @@ void CModel::Capture_CurrentFrameMatrices(vector<_float4x4>& OutBoneMatrices, _f
             else
                 *pOutWorldMatrix = *m_pTransformMatrix;
         }
+
+
+          // 디버그
+        //if (nullptr != pOutWorldMatrix)
+        //{
+        //    if (nullptr != m_pOwnerTransform)
+        //    {
+        //        OutputDebugStringA("[Capture] Using m_pOwnerTransform\n");
+        //        *pOutWorldMatrix = *m_pOwnerTransform->Get_WorldMatrixPtr();
+        //    }
+        //    else if (nullptr != m_pTransformMatrix)
+        //    {
+        //        OutputDebugStringA("[Capture] Using m_pTransformMatrix\n");
+        //        *pOutWorldMatrix = *m_pTransformMatrix;
+        //    }
+        //    else if (nullptr != m_pOwnerTransformMatrix)
+        //    {
+        //        OutputDebugStringA("[Capture] Using m_pOwnerTransformMatrix\n");
+        //        *pOutWorldMatrix = *m_pOwnerTransformMatrix;
+        //    }
+        //    else
+        //    {
+        //        OutputDebugStringA("[Capture] WARNING: No world matrix source!\n");
+        //        XMStoreFloat4x4(pOutWorldMatrix, XMMatrixIdentity());
+        //    }
+
+        //    // 스케일 확인
+        //    _vector vScale, vRot, vTrans;
+        //    XMMatrixDecompose(&vScale, &vRot, &vTrans, XMLoadFloat4x4(pOutWorldMatrix));
+
+        //    XMFLOAT3 scale;
+        //    XMStoreFloat3(&scale, vScale);
+
+        //    char buf[256];
+        //    sprintf_s(buf, "[Capture] Scale: (%.6f, %.6f, %.6f)\n", scale.x, scale.y, scale.z);
+        //    OutputDebugStringA(buf);
+        //}
     }
 }
 
@@ -1171,7 +1183,7 @@ void CModel::Check_WaitForComplete()
 void CModel::Setup_Events()
 {
     if (!m_AnimationsSetup[m_iCurrentAnimIndex].isEvent) {
-        m_CurrentEvents.clear();
+                   m_CurrentEvents.clear();
         m_PrevFrameInRange.clear();
         Remove_State(EVENT);
         return;

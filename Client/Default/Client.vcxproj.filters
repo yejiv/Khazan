@@ -7,15 +7,6 @@
     <Filter Include="00.MainApp">
       <UniqueIdentifier>{c63a6ee7-b489-4d81-aba4-7ddf5b8337ce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Levels">
-      <UniqueIdentifier>{ccf6878b-78ca-4842-ae64-0a877924ff47}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\Loading">
-      <UniqueIdentifier>{7a99902d-21e3-45e9-8b26-4bd13c2c8d7a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\Loading\Loader">
-      <UniqueIdentifier>{2791bcc1-bc3d-498f-8eca-63a1bae0259d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject">
       <UniqueIdentifier>{85081ef4-12c5-4457-a79f-32e32125ccd1}</UniqueIdentifier>
     </Filter>
@@ -30,9 +21,6 @@
     </Filter>
     <Filter Include="96.pch">
       <UniqueIdentifier>{8449da29-2176-4b0c-9e4e-be50fb0732b0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\Title">
-      <UniqueIdentifier>{3b48192d-e33f-4d1d-b0c2-1a87fd3b50f8}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\Player">
       <UniqueIdentifier>{2fafdf7c-7e26-40c0-9c7e-200ecb984707}</UniqueIdentifier>
@@ -294,18 +282,6 @@
     </Filter>
     <Filter Include="02.GameObject\Creature\Khazan\Sample\Weapon">
       <UniqueIdentifier>{3beaf210-4418-4b5f-8dba-cf71731a9a86}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\HeinMach">
-      <UniqueIdentifier>{4230c53b-dd46-4d38-8626-e6d9f39edccc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\Crevice">
-      <UniqueIdentifier>{c5e80620-0a56-4112-8d9c-340aac0ef0b9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\Embars">
-      <UniqueIdentifier>{66178168-e7e6-49c4-bc25-67a3c0d66b42}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\Viper">
-      <UniqueIdentifier>{663bf125-288a-4167-aca7-71e9e34d56d9}</UniqueIdentifier>
     </Filter>
     <Filter Include="94.ClientInstance">
       <UniqueIdentifier>{7a63893c-daa7-4abb-bec1-4e58e468f354}</UniqueIdentifier>
@@ -579,9 +555,6 @@
     </Filter>
     <Filter Include="02.GameObject\UI\Skill_Tree\Tap\Skill_Slot_Panel">
       <UniqueIdentifier>{d867245e-67c6-4dd3-9887-177b55c11097}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\Test">
-      <UniqueIdentifier>{59b05a38-249f-445f-bb87-bf72ea8b8d0d}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObject\MapObject\01.Trigger\01.Embars">
       <UniqueIdentifier>{28ff4c9d-284a-4e4a-9bf2-52e3b66dfc59}</UniqueIdentifier>
@@ -1282,9 +1255,6 @@
     <Filter Include="92.AI\State\Dragonian_Rampage\Turn">
       <UniqueIdentifier>{a535e22e-dbd8-43ed-ab7a-e9554d399a27}</UniqueIdentifier>
     </Filter>
-    <Filter Include="92.AI\State\Dragonian_Rampage\Page_2">
-      <UniqueIdentifier>{96765157-c7f0-4431-a78c-7b22b7670c33}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04.Sequence\HeinMach\Yetuga\CutScene">
       <UniqueIdentifier>{1bffd182-9a09-49c3-bb28-36325e0076c1}</UniqueIdentifier>
     </Filter>
@@ -1404,6 +1374,171 @@
     </Filter>
     <Filter Include="02.GameObject\NPC\DanjinJar\Jar_3rd">
       <UniqueIdentifier>{200a2cf0-b07d-470b-9d80-979fa4f8d6e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Halberd">
+      <UniqueIdentifier>{274ddad8-6114-474b-9964-3b8a7d3f3e47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Halberd\Body">
+      <UniqueIdentifier>{9d347d5b-b234-4082-a09c-7096cf547a3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\Halberd\Weapon">
+      <UniqueIdentifier>{a8777267-b6b1-4796-ac8e-c24efd8179b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Halberd">
+      <UniqueIdentifier>{ae802008-d8b1-486c-8f9c-ec02e67d23dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd">
+      <UniqueIdentifier>{9ce69278-8cc6-4b5a-a261-046b79c5749d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Attack_Default">
+      <UniqueIdentifier>{729508f2-cb6e-4348-83a6-73da0615f567}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Attack_Long">
+      <UniqueIdentifier>{fc8c7d10-44f2-4acd-93df-37ac57dce06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Brutal">
+      <UniqueIdentifier>{8c59cbe7-893b-49f3-9f76-1b034436b4f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Damage">
+      <UniqueIdentifier>{74f4574e-883d-4031-b15c-8dea61d9bf58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Dead">
+      <UniqueIdentifier>{6bf4490a-6aa6-4eb4-b99a-22fab39268b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Groggy">
+      <UniqueIdentifier>{45b99253-931c-4630-ad71-c05d12030126}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\LockOn">
+      <UniqueIdentifier>{5f037e99-e1ee-438a-a3d7-30e05b8383ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Sleep">
+      <UniqueIdentifier>{7ecb190c-b116-4d23-81d6-d87ffc5f6363}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Halberd\Trun">
+      <UniqueIdentifier>{49a7cbdb-5ec0-400d-88f3-d0291504abb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\20.Dead">
+      <UniqueIdentifier>{2e896ed2-eb24-4a20-b7ac-6d943906e184}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Viper\Phase2\21.BerserkerJump">
+      <UniqueIdentifier>{802c0476-eaa3-4985-985e-67355fc54671}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar\Jar_4th">
+      <UniqueIdentifier>{987feae8-b343-4c23-91e1-d9730ba76b4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar\Jar_5th">
+      <UniqueIdentifier>{94a9f9d4-9a64-43bc-87e1-b9e7c6a05a9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar\Jar_6th">
+      <UniqueIdentifier>{b0b19b77-d129-48b3-ba26-d68935fccc77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar\Jar_7th">
+      <UniqueIdentifier>{733eeea8-f6f8-4a29-8079-c1c8d8760145}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\DanjinJar\Jar_8th">
+      <UniqueIdentifier>{d6fe23d1-ccbc-46d6-b4b0-406802d9b95c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone">
+      <UniqueIdentifier>{6cd3e261-1a65-4bc4-8348-b4250b4209b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone\Gem">
+      <UniqueIdentifier>{b6f4ef15-03ef-4fe9-a52d-863c4e10a3aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Part Object">
+      <UniqueIdentifier>{4897fbff-6693-4e00-a677-11b568e6c9ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Part Object\Weapon">
+      <UniqueIdentifier>{e3683a3e-77d2-44ac-be33-f4754c5ee95c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Khazan\Sound">
+      <UniqueIdentifier>{f4674566-2961-488c-86e5-81e3a816f105}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\NPC\Gacha">
+      <UniqueIdentifier>{4871b972-f1b3-43a7-a923-e75d4ec13fce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.MiniGame">
+      <UniqueIdentifier>{18ff468f-e40f-4dcb-be03-2f02d5c7d199}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.MiniGame\Gacha">
+      <UniqueIdentifier>{7b00fcf9-677a-408f-8162-c88c9159fd07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.MiniGame\Gacha\RamdomBox">
+      <UniqueIdentifier>{cd1f998d-cd3d-48c3-bb9d-39a265fc2789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.MiniGame\Gacha\SeleteUI">
+      <UniqueIdentifier>{007d416f-1406-482b-b6f5-846f0360d88e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\UI\Talk\Gacha">
+      <UniqueIdentifier>{9964e281-dd7f-4521-9304-87973c358457}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\DajinJar_Pet">
+      <UniqueIdentifier>{f8dcc684-140f-4761-93d0-0b34529e4558}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Creature\Monster\DajinJar_Pet\Body">
+      <UniqueIdentifier>{f216cd22-ffdf-4f2b-a3a7-343c5f873b13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Pet_Danjinjar">
+      <UniqueIdentifier>{92cb877a-e996-4d1f-9816-420245012ff8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\Controller\Pet_Danjinjar">
+      <UniqueIdentifier>{1cbf49ee-2c0f-4abe-8098-a0fb5079eab5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Pet_Danjinjar\Idle">
+      <UniqueIdentifier>{dd7bc3a2-ee4a-4459-8826-6744911c1c12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Pet_Danjinjar\Move">
+      <UniqueIdentifier>{507bb1ca-4a88-4303-986e-390dcb677881}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Pet_Danjinjar\TP">
+      <UniqueIdentifier>{a62575b1-1af8-413b-b748-cfd24897967e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="92.AI\State\Pet_Danjinjar\Damage">
+      <UniqueIdentifier>{8429aa00-843d-4dab-a8ce-b38cca4a5ade}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="94.ClientInstance\BGM">
+      <UniqueIdentifier>{1e20612b-95ca-4ae1-bf18-fc34af90623e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels">
+      <UniqueIdentifier>{ccf6878b-78ca-4842-ae64-0a877924ff47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Loading">
+      <UniqueIdentifier>{7a99902d-21e3-45e9-8b26-4bd13c2c8d7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Loading\Loader">
+      <UniqueIdentifier>{2791bcc1-bc3d-498f-8eca-63a1bae0259d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Title">
+      <UniqueIdentifier>{3b48192d-e33f-4d1d-b0c2-1a87fd3b50f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\HeinMach">
+      <UniqueIdentifier>{4230c53b-dd46-4d38-8626-e6d9f39edccc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Crevice">
+      <UniqueIdentifier>{c5e80620-0a56-4112-8d9c-340aac0ef0b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Embars">
+      <UniqueIdentifier>{66178168-e7e6-49c4-bc25-67a3c0d66b42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Viper">
+      <UniqueIdentifier>{663bf125-288a-4167-aca7-71e9e34d56d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\Test">
+      <UniqueIdentifier>{59b05a38-249f-445f-bb87-bf72ea8b8d0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\MapObject\00.Prop\03.Interactive\15.Illusion_Wall">
+      <UniqueIdentifier>{56f48e69-a95c-4eb3-9f0f-6499f4cb6013}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.MiniGame\Gacha\Mirrorball">
+      <UniqueIdentifier>{5585f41e-a3c8-4b35-baf5-740ee79aad50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Destructible">
+      <UniqueIdentifier>{0cf5ba16-ca5b-4ccc-894b-f8eef582bbfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Destructible\Stone">
+      <UniqueIdentifier>{3fcced6d-d961-4fe5-9592-54f24389d043}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\Destructible\Chunk">
+      <UniqueIdentifier>{a7345738-b87e-4aee-b800-c9ba0d9c1af1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2598,9 +2733,6 @@
     <ClInclude Include="..\Public\AS_Dr_Rampage_Turn.h">
       <Filter>92.AI\State\Dragonian_Rampage\Turn</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\AS_Dr_Rampage_Page2.h">
-      <Filter>92.AI\State\Dragonian_Rampage\Page_2</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Sequence_Yetuga_CutScene.h">
       <Filter>04.Sequence\HeinMach\Yetuga\CutScene</Filter>
     </ClInclude>
@@ -2717,6 +2849,129 @@
     </ClInclude>
     <ClInclude Include="..\Public\Jar_3rd.h">
       <Filter>02.GameObject\NPC\DanjinJar\Jar_3rd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Halberd.h">
+      <Filter>02.GameObject\Creature\Monster\Halberd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Halberd_Weapon.h">
+      <Filter>02.GameObject\Creature\Monster\Halberd\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Halberd.h">
+      <Filter>02.GameObject\Creature\Monster\Halberd\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AI_Controller_Halberd.h">
+      <Filter>92.AI\Controller\Halberd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Attack_default.h">
+      <Filter>92.AI\State\Halberd\Attack_Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Attack_Long.h">
+      <Filter>92.AI\State\Halberd\Attack_Long</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Brutal.h">
+      <Filter>92.AI\State\Halberd\Brutal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Damage.h">
+      <Filter>92.AI\State\Halberd\Damage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Dead.h">
+      <Filter>92.AI\State\Halberd\Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Groggy.h">
+      <Filter>92.AI\State\Halberd\Groggy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Turn.h">
+      <Filter>92.AI\State\Halberd\Trun</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_Sleep.h">
+      <Filter>92.AI\State\Halberd\Sleep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_Halberd_LockOn.h">
+      <Filter>92.AI\State\Halberd\LockOn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_Dead_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\20.Dead</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\AS_P2_BerserkerJump_Viper.h">
+      <Filter>92.AI\State\Viper\Phase2\21.BerserkerJump</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jar_4th.h">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_4th</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jar_5th.h">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_5th</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jar_6th.h">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_6th</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jar_7th.h">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_7th</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Jar_8th.h">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_8th</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DestinyStone.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DestinyGem.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone\Gem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\WeaponObject.h">
+      <Filter>02.GameObject\Part Object\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\NPC_Gacha.h">
+      <Filter>02.GameObject\NPC\Gacha</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\MiniGame_Gacha.h">
+      <Filter>03.MiniGame\Gacha</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\RandomBox.h">
+      <Filter>03.MiniGame\Gacha\RamdomBox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Gacha_Selete.h">
+      <Filter>03.MiniGame\Gacha\SeleteUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Talk_Gacha.h">
+      <Filter>02.GameObject\UI\Talk\Gacha</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Pet_Danjinjar.h">
+      <Filter>02.GameObject\Creature\Monster\DajinJar_Pet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Body_Pet_Danjinjar.h">
+      <Filter>02.GameObject\Creature\Monster\DajinJar_Pet\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AI_Controller_Pet_Danjinjar.h">
+      <Filter>92.AI\Controller\Pet_Danjinjar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Pet_Danjinjar_Idle.h">
+      <Filter>92.AI\State\Pet_Danjinjar\Idle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Pet_Danjinjar_Move.h">
+      <Filter>92.AI\State\Pet_Danjinjar\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Pet_Danjinjar_Damage.h">
+      <Filter>92.AI\State\Pet_Danjinjar\Damage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AS_Pet_Danjinjar_TP.h">
+      <Filter>92.AI\State\Pet_Danjinjar\TP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\BGM_Manager.h">
+      <Filter>94.ClientInstance\BGM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Khazan_SoundHelper.h">
+      <Filter>02.GameObject\Creature\Khazan\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Illusion_Wall.h">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\15.Illusion_Wall</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Minigame_Mirrorball.h">
+      <Filter>03.MiniGame\Gacha\Mirrorball</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Destructible_Stone.h">
+      <Filter>02.GameObject\Destructible\Stone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Chunk.h">
+      <Filter>02.GameObject\Destructible\Chunk</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3891,9 +4146,6 @@
     <ClCompile Include="..\Private\AS_Dr_Rampage_Turn.cpp">
       <Filter>92.AI\State\Dragonian_Rampage\Turn</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\AS_Dr_Rampage_Page2.cpp">
-      <Filter>92.AI\State\Dragonian_Rampage\Page_2</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Sequence_Yetuga_CutScene.cpp">
       <Filter>04.Sequence\HeinMach\Yetuga\CutScene</Filter>
     </ClCompile>
@@ -3981,9 +4233,6 @@
     <ClCompile Include="..\Private\Interaction_Object.cpp">
       <Filter>02.GameObject\Interation_Object</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Interaction_Item.cpp">
-      <Filter>02.GameObject\Interation_Object\Item</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\AS_P2_LockOn_Viper.cpp">
       <Filter>92.AI\State\Viper\Phase2\19.Lockon</Filter>
     </ClCompile>
@@ -4010,6 +4259,132 @@
     </ClCompile>
     <ClCompile Include="..\Private\Jar_3rd.cpp">
       <Filter>02.GameObject\NPC\DanjinJar\Jar_3rd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Halberd.cpp">
+      <Filter>02.GameObject\Creature\Monster\Halberd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Halberd_Weapon.cpp">
+      <Filter>02.GameObject\Creature\Monster\Halberd\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Halberd.cpp">
+      <Filter>02.GameObject\Creature\Monster\Halberd\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AI_Controller_Halberd.cpp">
+      <Filter>92.AI\Controller\Halberd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Attack_default.cpp">
+      <Filter>92.AI\State\Halberd\Attack_Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Attack_Long.cpp">
+      <Filter>92.AI\State\Halberd\Attack_Long</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Brutal.cpp">
+      <Filter>92.AI\State\Halberd\Brutal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Damage.cpp">
+      <Filter>92.AI\State\Halberd\Damage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Dead.cpp">
+      <Filter>92.AI\State\Halberd\Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Groggy.cpp">
+      <Filter>92.AI\State\Halberd\Groggy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Turn.cpp">
+      <Filter>92.AI\State\Halberd\Trun</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_Sleep.cpp">
+      <Filter>92.AI\State\Halberd\Sleep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_Halberd_LockOn.cpp">
+      <Filter>92.AI\State\Halberd\LockOn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_Dead_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\20.Dead</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_P2_BerserkerJump_Viper.cpp">
+      <Filter>92.AI\State\Viper\Phase2\21.BerserkerJump</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jar_4th.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_4th</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jar_5th.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_5th</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jar_6th.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_6th</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jar_7th.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_7th</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Jar_8th.cpp">
+      <Filter>02.GameObject\NPC\DanjinJar\Jar_8th</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DestinyStone.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DestinyGem.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\14.DestinyStone\Gem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\WeaponObject.cpp">
+      <Filter>02.GameObject\Part Object\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\NPC_Gacha.cpp">
+      <Filter>02.GameObject\NPC\Gacha</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MiniGame_Gacha.cpp">
+      <Filter>03.MiniGame\Gacha</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\RandomBox.cpp">
+      <Filter>03.MiniGame\Gacha\RamdomBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Gacha_Selete.cpp">
+      <Filter>03.MiniGame\Gacha\SeleteUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Talk_Gacha.cpp">
+      <Filter>02.GameObject\UI\Talk\Gacha</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Pet_Danjinjar.cpp">
+      <Filter>02.GameObject\Creature\Monster\DajinJar_Pet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Body_Pet_Danjinjar.cpp">
+      <Filter>02.GameObject\Creature\Monster\DajinJar_Pet\Body</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AI_Controller_Pet_Danjinjar.cpp">
+      <Filter>92.AI\Controller\Pet_Danjinjar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Pet_Danjinjar_Idle.cpp">
+      <Filter>92.AI\State\Pet_Danjinjar\Idle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Pet_Danjinjar_Move.cpp">
+      <Filter>92.AI\State\Pet_Danjinjar\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Pet_Danjinjar_Damage.cpp">
+      <Filter>92.AI\State\Pet_Danjinjar\Damage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AS_Pet_Danjinjar_TP.cpp">
+      <Filter>92.AI\State\Pet_Danjinjar\TP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\BGM_Manager.cpp">
+      <Filter>94.ClientInstance\BGM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Khazan_SoundHelper.cpp">
+      <Filter>02.GameObject\Creature\Khazan\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Interaction_Item.cpp">
+      <Filter>02.GameObject\Interation_Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Illusion_Wall.cpp">
+      <Filter>02.GameObject\MapObject\00.Prop\03.Interactive\15.Illusion_Wall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Minigame_Mirrorball.cpp">
+      <Filter>03.MiniGame\Gacha\Mirrorball</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Destructible_Stone.cpp">
+      <Filter>02.GameObject\Destructible\Stone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Chunk.cpp">
+      <Filter>02.GameObject\Destructible\Chunk</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

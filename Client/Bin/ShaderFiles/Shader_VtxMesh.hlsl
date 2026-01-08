@@ -15,6 +15,7 @@ static const unsigned int M_METALIC = (1 << 4);
 static const unsigned int M_ROUGHNESS = (1 << 5);
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+matrix g_LightViewMatrix, g_LightProjMatrix;
 
 /*재질*/
 Texture2D g_DiffuseTexture;
@@ -58,6 +59,15 @@ float g_fDiffusePower = 1.f;
 
 // 바이퍼
 float g_fEmissiveIntensity = 1.f;
+
+// 잼스톤
+float g_fDiffuseRedPower;
+float4 g_vGemColor;
+
+// 블링크
+float g_fTimeDelta, g_fCycleSpeed, g_fRimEmissive;
+float g_fRimPower, g_fRimLightIntensity;
+float3 g_vRimColor;
 
 struct VS_IN
 {
@@ -133,7 +143,6 @@ struct VS_OUT_SHADOW
     float4 vProjPos : TEXCOORD0;
 };
 
-
 VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
 {
     VS_OUT_SHADOW Out;
@@ -141,8 +150,8 @@ VS_OUT_SHADOW VS_MAIN_SHADOW(VS_IN In)
     
     float4x4 matWV, matWVP;
     
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
+    matWV = mul(g_WorldMatrix, g_LightViewMatrix);
+    matWVP = mul(matWV, g_LightProjMatrix);
     
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP); // In.vPosition 은 float3 짜리이므로 w = 1.f 넣어서 행렬과 곱 가능하게
     Out.vProjPos = Out.vPosition;
@@ -227,20 +236,6 @@ struct PS_IN_SHADOW
     float4 vPosition : SV_POSITION;
     float4 vProjPos : TEXCOORD0;
 };
-
-struct PS_OUT_SHADOW
-{
-    float4 vLightDepth : SV_TARGET0;
-};
-
-PS_OUT_SHADOW PS_MAIN_SHADOW(PS_IN_SHADOW In)
-{
-    PS_OUT_SHADOW Out = (PS_OUT_SHADOW) 0;
-    
-    Out.vLightDepth = float4(In.vProjPos.w / g_fFar, 0.f, 0.f, 0.f);
-    
-    return Out;
-}
 
 PS_OUT PS_MAP(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
 {
@@ -341,59 +336,113 @@ PS_OUT PS_MAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽셀 
 PS_OUT PS_SNOWMAP(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
 {
     PS_OUT Out = (PS_OUT) 0;
-    
-    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
-    if (IsFlag(M_DIFFUSE))
-        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-        
+
+    float4 vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     if (vMtrlDiffuse.a <= 0.3f)
         discard;
-        
-    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+
+    float2 xy = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord).xy * 2.f - 1.f;
+    float3 normalTS = float3(
+        xy.x,
+        -xy.y,
+        sqrt(saturate(1.f - dot(xy, xy)))
+    );
+
+    float3x3 worldMat = float3x3(
+        In.vTangent.xyz,
+        In.vBinormal.xyz * -1.f,
+        In.vNormal.xyz
+    );
+
+    float3 normalWS = normalize(mul(normalTS, worldMat));
+
+    float up = saturate(dot(normalWS, float3(0.f, 1.f, 0.f)));
+
+    float snow = saturate((up * g_fSnowAmount - 0.2f) * 1.5f);
+    snow *= snow;
+
+    float dist = distance(g_vCamPosition.xyz, In.vWorldPos.xyz);
+    float distFade = lerp(0.35f, 1.0f, saturate(1.f - dist / 30.f));
+    snow *= distFade;
+
+    float3 color = lerp(vMtrlDiffuse.rgb, g_vSnowColor, snow);
+
+    float3 flatUp = float3(0.f, 1.f, 0.f);
+    float3 finalNormal = normalize(lerp(normalWS, flatUp, snow * 0.85f));
+    
+    Out.vDiffuse = float4(color, vMtrlDiffuse.a);
+    Out.vNormal = float4(finalNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    
+    Out.vSpecular = float4(0.02f, 0.02f, 0.02f, 0.f);
+    Out.vEmissive = 0.f;
+
+    return Out;
+}
+
+PS_OUT PS_SNOWMAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float4 vMtrlDiffuse = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    // BC5 노멀 복원
     vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
     if (IsFlag(M_NORMAL))
         vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
     float2 xy = vNormalDesc.xy * 2.f - 1.f;
-    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
-    
-    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
-    vNormal = mul(vNormal, WorldMatrix);
-    
-    //float3 vWorldNormal = normalize(In.vNormal.rgb);
-    float3 vWorldNormal = normalize(vNormal.xyz);
-    float upFactor = saturate(dot(vWorldNormal, float3(0.f, 1.f, 0.f)));
-    
-    float fSnowMask = 0.8f;
-    
-    float fSnowBlend = saturate(upFactor * fSnowMask * g_fSnowAmount);
-    
-    float3 vSnowColor = g_vSnowColor;
-    
-    float3 vFinalColor = lerp(vMtrlDiffuse.rgb, vSnowColor, fSnowBlend);
-    
-    // Specular Test
-    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    float3 normalTS = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+
+    float3x3 worldMat = float3x3(
+        In.vTangent.xyz,
+        In.vBinormal.xyz * -1.f,
+        In.vNormal.xyz
+    );
+
+    float3 normalWS = normalize(mul(normalTS, worldMat));
+
+    // 카메라 반사 계산 (기존 ICE 로직 유지)
+    float3 vToCamera = normalize(g_vCamPosition.xyz - In.vWorldPos.xyz);
+    float fReflectPower = pow(saturate(1.f - dot(normalWS, vToCamera)), 4.f);
+    float3 vReflectColor = float3(0.45f, 0.65f, 0.9f);
+    float3 vIceColor = lerp(vMtrlDiffuse.rgb, vReflectColor, fReflectPower * 0.1f);
+
+    // 위쪽 방향 눈 마스크
+    float up = saturate(dot(normalWS, float3(0.f, 1.f, 0.f)));
+
+    float rawSnow = up * g_fSnowAmount;
+    float snow = saturate((rawSnow - 0.2f) * 1.5f);
+    snow = snow * snow;
+
+    // 눈 색 블렌딩 (기존 ICE 유지)
+    float3 finalColor = lerp(vIceColor, g_vSnowColor, snow);
+
+    // 핵심: 눈이 쌓인 부분에서 노멀 평탄화
+    float3 flatUp = float3(0.f, 1.f, 0.f);
+    float3 finalNormal = normalize(lerp(normalWS, flatUp, snow * 0.85f));
+
+    // 알파 기존 방식 유지
+    float fAlpha = saturate(0.6f + fReflectPower * 0.3f);
+
+    float4 spec = float4(0.f, 0.f, 0.f, 0.f);
     if (IsFlag(M_SPECULAR))
-        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    // Emissive Test
-    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
-    if (IsFlag(M_EMISSIVE))
-        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
-    
-    Out.vDiffuse = float4(vFinalColor, vMtrlDiffuse.a);
-    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
-    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+        spec = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    Out.vDiffuse = float4(finalColor, fAlpha);
+    Out.vNormal = float4(finalNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
-    Out.vSpecular.rgb = vMtrlSpecular.rgb;
-    Out.vSpecular.a = 0.f;
-    // Out.vEmissive = vMtrlEmissive;
-    
+    Out.vSpecular = float4(spec.rgb, 0.f);
+    Out.vEmissive = 0.f;
+
     return Out;
 }
 
-PS_OUT PS_SNOWMAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+PS_OUT PS_DESTINYSTONE(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
 {
     PS_OUT Out = (PS_OUT) 0;
     
@@ -402,53 +451,81 @@ PS_OUT PS_SNOWMAP_ICE(PS_IN In)                       // 맵 오브젝트용 픽
         vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
         
     /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
-    vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
     if (IsFlag(M_NORMAL))
-        vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    float2 xy = vNormalDesc.xy * 2.f - 1.f;
+    float2 xy = vMtrlNormal.xy * 2.f - 1.f;
     float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
     
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
-    
-    float3 vToCamera = normalize(g_vCamPosition.xyz - In.vWorldPos.xyz);
-    
-    float fReflectPower = pow(saturate(1.f - dot(vNormal, vToCamera)), 4.f);
-    
-    float3 vReflectColor = float3(0.45f, 0.65f, 0.9f);
-    
-    float3 vIceColor = lerp(vMtrlDiffuse.rgb, vReflectColor, fReflectPower * 0.1f);
-    
-    float3 vWorldNormal = normalize(vNormal);
-    float upFactor = saturate(dot(vWorldNormal, float3(0.f, 1.f, 0.f)));
-    
-    float fSnowMask = 0.8f;
 
-    float fSnowBlend = saturate(upFactor * fSnowMask * g_fSnowAmount);
-    float3 vSnowColor = g_vSnowColor;
-    
-    float3 vFinalColor = lerp(vIceColor, vSnowColor, fSnowBlend);
-    
-    float fAlpha = saturate(0.6f + fReflectPower * 0.3f);
-    
-    // Specular Test
     vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
     if (IsFlag(M_SPECULAR))
         vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    // Emissive Test
     vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
     if (IsFlag(M_EMISSIVE))
         vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
-    Out.vDiffuse = float4(vFinalColor, fAlpha);
+    if (vMtrlDiffuse.a <= 0.9f)
+        vMtrlDiffuse = g_vGemColor;
+
+    Out.vDiffuse = vMtrlDiffuse * g_fEmissiveIntensity;
+    Out.vDiffuse.r *= g_fDiffuseRedPower;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
     Out.vWorld = In.vWorldPos;
     Out.vSpecular.rgb = vMtrlSpecular.rgb;
-    Out.vSpecular.a = 0.f;
-    // Out.vEmissive = Out.vDiffuse * 0.1f;
+    Out.vSpecular.a = 1.f;
+
+    return Out;
+}
+
+PS_OUT PS_DESTINYGEM(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float2 xy = vMtrlNormal.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+    
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    if (vMtrlDiffuse.a <= 0.9f)
+        vMtrlDiffuse = g_vGemColor;
+
+    Out.vDiffuse = vMtrlDiffuse * g_fEmissiveIntensity;
+    Out.vDiffuse.r *= g_fDiffuseRedPower;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 1.f;
+    
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+    
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
 
     return Out;
 }
@@ -482,7 +559,8 @@ PS_OUT PS_SWORD_EMISSIVE(PS_IN In)
     if (vEmissive.g >= 0.95f)
     {
         float3 vColor = { 2.455f, 1.937f, 2.784f };
-        Out.vDiffuse.rgb = Out.vDiffuse.rgb + vColor * 0.3f * g_fEmissiveValue;
+        //  Out.vDiffuse.rgb = Out.vDiffuse.rgb + vColor * 0.3f * g_fEmissiveValue;
+        Out.vEmissive.rgb = Out.vDiffuse.rgb + vColor * 0.3f * g_fEmissiveValue;
     }
     
     Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
@@ -559,6 +637,11 @@ PS_OUT PS_IMP_WEAPON(PS_IN In)
 
     // Diffuse 어두운 문제로 임의값 곱해주기 3~5
     Out.vDiffuse *= g_fDiffusePower;
+
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
     
     return Out;
 }
@@ -595,6 +678,214 @@ PS_OUT PS_VIPER_WEAPON(PS_IN In)
 
     Out.vDiffuse = vMtrlDiffuse;
     
+    return Out;
+}
+PS_OUT PS_MAPOBJECT_DISSOLVE(PS_IN In)                       // 맵 오브젝트 디졸브 용 픽셀 쉐이더
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    if (vMtrlDiffuse.a <= 0.3f)
+        discard;
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float2 xy = vMtrlNormal.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 1.f;
+    
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+    
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
+
+    return Out;
+}
+
+PS_OUT PS_MAP_BLINK(PS_IN In)                       // 맵 오브젝트용 픽셀 쉐이더
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    if (vMtrlDiffuse.a <= 0.3f)
+        discard;
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vNormalDesc = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+        vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float2 xy = vNormalDesc.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    // Specular Test
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    // Emissive Test
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    // Rim Light
+    vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+    float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+    fRim = pow(fRim, g_fRimPower);
+    
+    // Blink Cycle = cos = (-1 ~ 1) + 1 -> (0 ~ 2) * RimIntensity / 2 => 0 ~ 1
+    float fFinalIntensity = g_fRimLightIntensity / 2.f * (1.f + cos(g_fTimeDelta * g_fCycleSpeed));
+
+    float3 vRimColor = g_vRimColor * fRim * fFinalIntensity;
+    
+    Out.vDiffuse.rgb = vMtrlDiffuse.rgb + vRimColor * g_fRimEmissive; // Rim Emissive
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 0.f;
+    
+    return Out;
+}
+
+PS_OUT PS_DESTINYSTONE_BLINK(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float2 xy = vMtrlNormal.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    if (vMtrlDiffuse.a <= 0.9f)
+        vMtrlDiffuse = g_vGemColor;
+
+    Out.vDiffuse = vMtrlDiffuse * g_fEmissiveIntensity;
+    Out.vDiffuse.r *= g_fDiffuseRedPower;
+    
+    // Rim Light
+    vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+    float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+    fRim = pow(fRim, g_fRimPower);
+    
+    // Blink Cycle = cos = (-1 ~ 1) + 1 -> (0 ~ 2) * RimIntensity / 2 => 0 ~ 1
+    float fFinalIntensity = g_fRimLightIntensity / 2.f * (1.f + cos(g_fTimeDelta * g_fCycleSpeed));
+
+    float3 vRimColor = g_vRimColor * fRim * fFinalIntensity;
+    
+    Out.vDiffuse.rgb = Out.vDiffuse.rgb + vRimColor * g_fRimEmissive; // Rim Emissive
+    
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 1.f;
+
+    return Out;
+}
+
+PS_OUT PS_DESTINYGEM_BLINK(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    /* 노멀 벡터 하나를 정의하기위한 독립적인 로컬스페이스를 만들고 그 공간안에서의 방향벡터를 정의 */
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float2 xy = vMtrlNormal.xy * 2.f - 1.f;
+    float3 vNormal = float3(xy.x, -xy.y, sqrt(saturate(1.f - dot(xy, xy))));
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    if (vMtrlDiffuse.a <= 0.9f)
+        vMtrlDiffuse = g_vGemColor;
+
+    Out.vDiffuse = vMtrlDiffuse * g_fEmissiveIntensity;
+    Out.vDiffuse.r *= g_fDiffuseRedPower;
+    
+    // Rim Light
+    vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+    float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+    fRim = pow(fRim, g_fRimPower);
+    
+    // Blink Cycle = cos = (-1 ~ 1) + 1 -> (0 ~ 2) * RimIntensity / 2 => 0 ~ 1
+    float fFinalIntensity = g_fRimLightIntensity / 2.f * (1.f + cos(g_fTimeDelta * g_fCycleSpeed));
+
+    float3 vRimColor = g_vRimColor * fRim * fFinalIntensity;
+    
+    Out.vDiffuse.rgb = Out.vDiffuse.rgb + vRimColor * g_fRimEmissive; // Rim Emissive
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 1.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = vMtrlSpecular.rgb;
+    Out.vSpecular.a = 1.f;
+    
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+    
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
+
     return Out;
 }
 
@@ -636,7 +927,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_SOLIDFRAME();
     }
 
-    pass Shadow             // 그림자 ( 3번 )
+    pass Cascade             // 그림자 ( 3번 )
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -644,7 +935,7 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN_SHADOW();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
+        PixelShader = NULL;
     }
 
     pass MapPass                        // 맵 오브젝트용 패스 ( 4번 ) ( 눈 X )
@@ -732,5 +1023,71 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_VIPER_WEAPON();
+    }
+
+    pass DestinyStonePass // 귀석 받침 패스 ( 12번 )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_DESTINYSTONE();
+    }
+
+    pass DestinyGemPass // 귀석 젬 패스 ( 13번 )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_DESTINYGEM();
+    }
+
+    pass MapObjectDissolvePass // Static 맵 오브젝트 디졸브 패스 ( 14번 )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAPOBJECT_DISSOLVE();
+    }
+    
+    pass MapPassBlink // 맵 오브젝트용 블링크 패스 ( 15번 ) ( 눈 X )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAP_BLINK();
+    }
+
+    pass DestinyStoneBlink // 귀석 받침 블링크 패스 ( 16번 )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_DESTINYSTONE_BLINK();
+    }
+
+    pass DestinyGemBlink // 귀석 젬 블링크 패스 ( 17번 )
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAPOBJECT();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_DESTINYGEM_BLINK();
     }
 }

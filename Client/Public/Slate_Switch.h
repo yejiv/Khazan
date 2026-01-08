@@ -71,11 +71,19 @@ private:
 
     _bool m_isSocket = { false };
 
+    // Blink Rim Light Shader
+    _float m_fBlinkTimeAcc = {};
+
+private:
+    class CEffect_Prefab* m_pEffect = { nullptr };
+
 private:
     HRESULT Ready_Components(void* pArg);
+    HRESULT Ready_Effect();
 
     HRESULT Bind_ShaderResources();
     HRESULT Bind_Materials(_uint iMeshIndex);
+    HRESULT Bind_Blink_ShaderResources();
 
 public:
     static CSlate_Switch* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

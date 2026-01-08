@@ -77,24 +77,6 @@ void CEffect_Prefab::Priority_Update(_float fTimeDelta)
 
     m_fCurTime += fTimeDelta;
 
-    /* [DEBUG] */
-    if (m_pGameInstance->Key_Pressing(DIK_UP, fTimeDelta))
-    {
-        m_pTransformCom->Go_Straight(fTimeDelta);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_DOWN, fTimeDelta))
-    {
-        m_pTransformCom->Go_Backward(fTimeDelta);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_LEFT, fTimeDelta))
-    {
-        m_pTransformCom->Go_Left(fTimeDelta);
-    }
-    if (m_pGameInstance->Key_Pressing(DIK_RIGHT, fTimeDelta))
-    {
-        m_pTransformCom->Go_Right(fTimeDelta);
-    }
-
     for (size_t i = 0; i < m_eEventTracks.size(); ++i)
     {
         EFFECT_EVENT track = m_eEventTracks[i];
@@ -365,6 +347,26 @@ void CEffect_Prefab::RemoveEffect(_uint ChildIdx)
 
     Safe_Release(m_Children[ChildIdx]);
     m_Children.erase(m_Children.begin() + ChildIdx);
+}
+
+void CEffect_Prefab::CopyEffect(_uint ChildIdx)
+{
+    //_uint Effecttype = m_Children[ChildIdx]->Get_EffectType();
+    //
+    //if (Effecttype == ENUM_CLASS(EffectType::POINT_INSTANCE))
+    //{
+    //    CEffect_Point_Instance::PARTICLE_DESC data;
+    //}
+    //else if (Effecttype == ENUM_CLASS(EffectType::MESH_INSTANCE))
+    //{
+    //    CEffect_Mesh_Instance::PARTICLE_DESC data;
+    //
+    //}
+    //else if (Effecttype == ENUM_CLASS(EffectType::SPRITE))
+    //{
+    //    CEffect_Sprite::SPRITE_DESC data;
+    //
+    //}
 }
 
 _float CEffect_Prefab::Get_MaxTrack()

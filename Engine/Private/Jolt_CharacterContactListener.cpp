@@ -17,20 +17,61 @@ CJolt_CharacterContactListener::~CJolt_CharacterContactListener()
 
 bool CJolt_CharacterContactListener::OnContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2)
 {
+    if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static)
+        return true;
 
-    return true;
+    COLLISION_DESC* pCharDesc1 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
+    COLLISION_DESC* pBody1Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inBodyID2)));
+
+    if (pCharDesc1 == nullptr || pCharDesc1->pGameObject == nullptr || pBody1Desc == nullptr || pBody1Desc->pGameObject == nullptr)
+        return false;
+
+    //OutputDebugStringA(("Layer1: " + to_string(pCharDesc1->iObjectLayer) + "Layer2: " + to_string(pBody1Desc->iObjectLayer) + "\n").c_str());
+
+    if (!m_pGameInstance->IsObjectLayerPairValid(pCharDesc1->iObjectLayer, pBody1Desc->iObjectLayer))
+    {
+        return false;
+    }
+    
+    if (m_pBodyInterface->IsSensor(inBodyID2))
+        return false;
+
+    if (pCharDesc1->isForceVaildation || pBody1Desc->isForceVaildation)
+        return true;
+
+    if (!pCharDesc1->pGameObject->Get_IsGhost() && !pBody1Desc->pGameObject->Get_IsGhost() && m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Kinematic)
+        return true;
+
+    return false;
 }
 
 bool CJolt_CharacterContactListener::OnCharacterContactValidate(const JPH::CharacterVirtual* inCharacter, const JPH::CharacterVirtual* inOtherCharacter, const JPH::SubShapeID& inSubShapeID2)
 {
+    COLLISION_DESC* pCharDesc1 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inCharacter->GetUserData()));
+    COLLISION_DESC* pCharDesc2 = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(inOtherCharacter->GetUserData()));
+
+    if (!m_pGameInstance->IsObjectLayerPairValid(pCharDesc1->iObjectLayer, pCharDesc2->iObjectLayer))
+    {
+        return false;
+    }
+
+    if (pCharDesc1->pGameObject->Get_IsGhost() || pCharDesc2->pGameObject->Get_IsGhost())
+    {
+        return false;
+    }
+
     return true;
 }
 
 void CJolt_CharacterContactListener::OnContactAdded(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2, JPH::RVec3Arg inContactPosition, JPH::Vec3Arg inContactNormal, JPH::CharacterContactSettings& ioSettings)
 {
-    if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static)
-        ioSettings.mCanPushCharacter = true;
+    ioSettings.mCanPushCharacter = false;
+    COLLISION_DESC* pBody1Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inBodyID2)));
 
+    if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static
+        || pBody1Desc->isForceVaildation == true)
+        ioSettings.mCanPushCharacter = true;
+    
     ioSettings.mCanReceiveImpulses = false;
     
 
@@ -62,7 +103,12 @@ void CJolt_CharacterContactListener::OnContactAdded(const JPH::CharacterVirtual*
 
 void CJolt_CharacterContactListener::OnContactPersisted(const JPH::CharacterVirtual* inCharacter, const JPH::BodyID& inBodyID2, const JPH::SubShapeID& inSubShapeID2, JPH::RVec3Arg inContactPosition, JPH::Vec3Arg inContactNormal, JPH::CharacterContactSettings& ioSettings)
 {
-    if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static)
+    ioSettings.mCanPushCharacter = false;
+
+    COLLISION_DESC* pBody1Desc = reinterpret_cast<COLLISION_DESC*>(static_cast<std::uintptr_t>(m_pBodyInterface->GetUserData(inBodyID2)));
+
+    if (m_pBodyInterface->GetMotionType(inBodyID2) == EMotionType::Static
+        || pBody1Desc->isForceVaildation == true)
         ioSettings.mCanPushCharacter = true;
 
     ioSettings.mCanReceiveImpulses = false;

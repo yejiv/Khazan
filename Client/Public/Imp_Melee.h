@@ -17,8 +17,8 @@ private:
 
 public:
     virtual _float4* Get_LockOnPosition();
-    class   CBody_Imp_Melee* Get_Body() { return m_pBody; }
-
+    class   CBody_Imp_Melee*    Get_Body() { return m_pBody; }
+    class   CImp_Sword*         Get_Sword() { return m_pWeapon; }
 
 public:
     virtual HRESULT					Initialize_Prototype() override;
@@ -36,13 +36,22 @@ public:
 
 public:
     void                            HPUI_Dead();
+    void                            Dissolve_On();
 
 private:
     HRESULT							Ready_Components();
     HRESULT							Ready_PartObjects();
     HRESULT							Ready_AnimEvent();
+    HRESULT                         Ready_SFX();
+    
     void                            Update_SwordPos();
     void                            Update_MeshTrail();
+    void                            SFX_Move();
+    void                            SFX_HIT();
+    void                            SFX_DEAD();
+    void                            SFX_REALIZE();
+    void                            SFX_SLEEP();
+
 
 private:
     class CBody_Imp_Melee*          m_pBody = { nullptr };
@@ -55,6 +64,11 @@ private:
     _float							m_fTurnSpeed = { 10.f };
 
     _float4                         m_vSwordStart{}, m_vSwordEnd{};
+    COLLISION_DESC                  m_tImpMeleeColliderDesc = {};
+
+    _bool                           m_isDissolve = { false };
+    _bool                           m_isDissolveEnd = { false };
+    _float                          m_fDecreaseAlpha = {};
 
 public:
     static CImp_Melee*              Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

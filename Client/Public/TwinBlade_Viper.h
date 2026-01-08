@@ -1,6 +1,6 @@
 #pragma once
 #include "Client_Defines.h"
-#include "PartObject.h"
+#include "WeaponObject.h"
 
 NS_BEGIN(Engine)
 class CShader;
@@ -10,7 +10,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CTwinBlade_Viper final : public CPartObject
+class CTwinBlade_Viper final : public CWeaponObject
 {
 public:
     typedef struct tagWeaponDesc : public PARTOBJECT_DESC
@@ -21,7 +21,6 @@ public:
 
     }WEAPON_DESC;
 
-//m_vRightTipPos
 public:
     _float4*                Get_BonePointEX(const _char* pBoneName);
     _matrix					Get_BoneMatrix(const _char* pBoneName);
@@ -33,14 +32,13 @@ public:
         m_isROnAttackCollision = isToggle;
         m_isLOnAttackCollision = isToggle;
     }
-    _float4                 Get_RightSwordTip() const { return m_vRightTipPos; }
-    _float4                 Get_LeftSwordTip() const { return m_vLeftTipPos; }
-    _float4                 Get_RightSowrdStartPos() const { return m_vRightBladeStartPos; }
-    _float4                 Get_LeftSwordStartPos() const { return m_vLeftBladeStartPos; }
+    _vector                 Get_RightSwordTip() const { return XMLoadFloat4(&m_vRightTipPos); }
+    _vector                 Get_LeftSwordTip() const { return XMLoadFloat4(&m_vLeftTipPos); }
+    _vector                 Get_RightSwordStartPos() const { return XMLoadFloat4(&m_vRightBladeStartPos); }
+    _vector                 Get_LeftSwordStartPos() const { return XMLoadFloat4(&m_vLeftBladeStartPos); }
 
 
     _float4                 Get_GrabPos() const { return m_vGrabPos; }
-
     _matrix                 Get_CombinedMatrixEX() const { return XMLoadFloat4x4(&m_CombinedWorldMatrix); }
 
 private:
@@ -66,6 +64,8 @@ private:
     HRESULT					Ready_Components();
     HRESULT                 Ready_Collision();
     HRESULT					Bind_ShaderResources();
+    HRESULT                 Ready_Effect();
+    HRESULT                 Ready_Callback();
 
 private:
     class CViper*           m_pOwner = { nullptr };
@@ -96,9 +96,13 @@ private:
 
     _float4                 m_vGrabPos = {};
     _float3                 m_vLocalOffset = {};
+    _float3                 m_VDebugRot = {};
 
     COLLISION_DESC          m_tRightBladeDesc = {};
     COLLISION_DESC          m_tLeftBladeDesc = {};
+
+private:
+    class                   CEffect_Prefab* m_pEffect[2];
 
 public:
     static CTwinBlade_Viper*    Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

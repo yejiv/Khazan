@@ -41,10 +41,10 @@ HRESULT CSpear_Khazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    m_pClientInstance->Set_ChangePlayerEquipmentCallBack([this](EQUIPMENTTYPE type, const _wstring& strPartName) {Change_Weapon(type, strPartName); });
+    m_pClientInstance->Set_ChangePlayerWeaponEquipmentCallBack([this](EQUIPMENTTYPE type, const _wstring& strPartName) {Change_Weapon(type, strPartName); });
 
     m_matOffset = XMMatrixRotationX(XMConvertToRadians(-90.0f));
-    int a = m_pModelCom->Get_BoneIndex("Weapon_R");
+    //int a = m_pModelCom->Get_BoneIndex("Weapon_R");
     m_pModelCom->Set_RootBone(0);
     m_pModelCom->Set_Transform(&m_CombinedWorldMatrix);
 
@@ -81,6 +81,40 @@ void CSpear_Khazan_Spear::Update(_float fTimeDelta)
     if (m_isActiveMotionTrail)
         m_pMotionTrailCom->Start_MotionTrail(fTimeDelta);
 
+    // Heal RimLight
+    if (m_isEnableHealRimLight)
+    {
+        m_HealRimLightDesc.fTimeAcc += fTimeDelta;
+
+        if (m_HealRimLightDesc.fDuration <= m_HealRimLightDesc.fTimeAcc)
+        {
+            m_isEnableHealRimLight = false;
+            m_isFinishedHealRimLight = true;
+            m_HealRimLightDesc.fTimeAcc = 0.f;
+            m_HealRimLightDesc.fTargetIntensity = 0.f;
+        }
+
+        _float fIntensityRatio = 1.f;
+
+        // 페이드 아웃 계산
+        if (m_HealRimLightDesc.fTimeAcc > m_HealRimLightDesc.vFadeTime.y)
+        {
+            _float fFadeDuration = m_HealRimLightDesc.fDuration - m_HealRimLightDesc.vFadeTime.y;
+            _float fFadeTimeAcc = m_HealRimLightDesc.fTimeAcc - m_HealRimLightDesc.vFadeTime.y;
+            _float fRatio = (fFadeTimeAcc / fFadeDuration);
+            fIntensityRatio = 1.f - fRatio;
+            fIntensityRatio = max(0.f, fIntensityRatio);
+        }
+
+        // Fade In
+        if (m_HealRimLightDesc.fTimeAcc < m_HealRimLightDesc.vFadeTime.x)
+        {
+            fIntensityRatio = m_HealRimLightDesc.fTimeAcc / m_HealRimLightDesc.vFadeTime.x;
+            fIntensityRatio = min(1.f, fIntensityRatio);
+        }
+
+        m_HealRimLightDesc.fRimLightIntensity = m_HealRimLightDesc.fTargetIntensity * fIntensityRatio;
+    }
 }
 
 void CSpear_Khazan_Spear::Late_Update(_float fTimeDelta)
@@ -105,17 +139,60 @@ HRESULT CSpear_Khazan_Spear::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+    _float fEdgeIntensity = 1.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fShadeIntensity = 0.5f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    // Heal RimLight
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableHealRimLight", &m_isEnableHealRimLight)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", m_pGameInstance->Get_CamPosition(), sizeof(_float4))))
+        return E_FAIL;
+
+    _float fRimPower = 2.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &m_HealRimLightDesc.fRimLightIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRimEmissive = 2.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float))))
+        return E_FAIL;
+
+    _float3 vRimColor = _float3(1.f, 0.f, 0.f);
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3))))
+        return E_FAIL;
+
     for (size_t i = 0; i < iNumMeshes; i++)
     {
         m_pModelCom->Bind_Materials(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
-
-        /*if (FAILED(m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_DIFFUSE, 0)
-            return E_FAIL;        */
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_NormalTexture", i, aiTextureType_NORMALS, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
+        m_pModelCom->Bind_Materials(m_pShaderCom, "g_EmissiveTexture", i, aiTextureType_EMISSIVE, 0);
 
         if (FAILED(m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             return E_FAIL;
 
-        m_pShaderCom->Begin(1);
+        if (m_pClientInstance->Is_CurrentSpear())
+        {
+            if (m_pClientInstance->Get_PlayerEquipment().iSpear == 4011) //섬광일상
+            {
+                _float fDiffusePower = 10.f;
+                if (FAILED(m_pShaderCom->Bind_RawValue("g_fDiffusePower", &fDiffusePower, sizeof(_float))))
+                    return E_FAIL;
+
+                m_pShaderCom->Begin(31);
+            }
+            else if (m_pClientInstance->Get_PlayerEquipment().iSpear == 4012) //연단된 징벌의 창
+                m_pShaderCom->Begin(28);
+        }
 
         m_pModelCom->Render(i);
     }
@@ -175,6 +252,18 @@ void CSpear_Khazan_Spear::Start_MotionTrail(_float fDuration)
     m_pMotionTrailCom->Start_MotionTrail(fDuration);
 }
 
+void CSpear_Khazan_Spear::Start_HealRimLight(_float fDuration, const _float2& vFadeTime, _float fMaxIntensity)
+{
+    if (true == m_isFinishedHealRimLight)
+        return;
+
+    m_isEnableHealRimLight = true;
+    m_HealRimLightDesc.fDuration = fDuration;
+    m_HealRimLightDesc.vFadeTime = vFadeTime;
+    m_HealRimLightDesc.vFadeTime.y = m_HealRimLightDesc.fDuration - m_HealRimLightDesc.vFadeTime.y;
+    m_HealRimLightDesc.fTargetIntensity = fMaxIntensity;
+}
+
 void CSpear_Khazan_Spear::Change_Weapon(EQUIPMENTTYPE type, const _wstring& strPartName)
 {
     if (m_pModelCom)
@@ -192,6 +281,9 @@ void CSpear_Khazan_Spear::Change_Weapon(EQUIPMENTTYPE type, const _wstring& strP
         isGSword = true;
     }
     else if (strPartName == TEXT("Flash_Spear")) {
+        m_pModelCom = m_pModelCom_Punish_Spear;
+        m_pModelCom->Update_BoneCombinedMatrices();
+
         m_pModelCom = m_pModelCom_Flash_Spear;
         isSpear = true;
     }
@@ -201,6 +293,7 @@ void CSpear_Khazan_Spear::Change_Weapon(EQUIPMENTTYPE type, const _wstring& strP
     }
     Safe_AddRef(m_pModelCom);
 
+   // m_pModelCom->Set_Transform(&m_CombinedWorldMatrix);
 /*    if (isGSword)
     {
         *m_pParentStatus |= CKhazan_Spear::PLAYER_STATUS::GSWORD;
@@ -217,6 +310,7 @@ void CSpear_Khazan_Spear::Change_Weapon(EQUIPMENTTYPE type, const _wstring& strP
         *m_pParentStatus &= ~(/*CKhazan_Spear::PLAYER_STATUS::GSWORD |*/ CKhazan_Spear::PLAYER_STATUS::SPEAR);
     }
 
+    m_isEnble = true;
 }
 
 HRESULT CSpear_Khazan_Spear::Ready_Components()
@@ -247,17 +341,22 @@ HRESULT CSpear_Khazan_Spear::Ready_Components()
         m_pModelCom = equipment.iGSword == 4001 ? m_pModelCom_Meteor_GSword : m_pModelCom_Execution_GSword;
     Safe_AddRef(m_pModelCom);
 
+    m_pModelCom_Punish_Spear->Set_Transform(&m_CombinedWorldMatrix);
+    m_pModelCom_Flash_Spear->Set_Transform(&m_CombinedWorldMatrix);
+    m_pModelCom_Meteor_GSword->Set_Transform(&m_CombinedWorldMatrix);
+    m_pModelCom_Execution_GSword->Set_Transform(&m_CombinedWorldMatrix);
+
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};
     MTDesc.pOwnerMasterModel = m_pModelCom;
     MTDesc.HasPartModels = false;
     MTDesc.Config.vLifeTime = { 0.f, 0.3f };
-    MTDesc.Config.vStartColor = { 1.f, 1.f, 1.f };
-    MTDesc.Config.vTargetColor = { 1.f, 1.f, 1.f };
+    MTDesc.Config.vStartColor = { 0.25f, 0.25f, 0.5f };
+    MTDesc.Config.vTargetColor = { 0.5f, 0.5f, 0.5f };
     MTDesc.Config.fRimPower = 2.f;
     MTDesc.Config.fRimIntensity = 1.f;
     MTDesc.Config.fEmissiveIntensity = 2.f;
     MTDesc.Config.isIndividualColor = true;
-    MTDesc.Config.fColorUpdateSpeed = 1000.f;
+    MTDesc.Config.fColorUpdateSpeed = 1500.f;
     MTDesc.Config.fInterval = 0.1f;
     MTDesc.Config.iMaxFrames = 10.f;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),

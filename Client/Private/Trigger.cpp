@@ -93,7 +93,7 @@ HRESULT CTrigger::Ready_Collision(void* pArg)
     TriggerDesc.bIsTrigger = true;
     TriggerDesc.bStartActive = true;
     TriggerDesc.eMotion = EMotionType::Kinematic;
-    TriggerDesc.eQuality = EMotionQuality::LinearCast;
+    TriggerDesc.eQuality = EMotionQuality::Discrete;
     TriggerDesc.eShapeType = SHAPE::BOX;
     TriggerDesc.fFriction = 0.8f;
     TriggerDesc.fMass = 1.0f;
@@ -108,7 +108,7 @@ HRESULT CTrigger::Ready_Collision(void* pArg)
     TriggerDesc.vQuat = vQuat;
     TriggerDesc.vShapeOffset = _float3(0.f, 0.0f, 0.f);
     m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
+    m_tCollisionDesc.isForceVaildation = true;
     TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),

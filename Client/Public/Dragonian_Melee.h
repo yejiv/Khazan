@@ -5,6 +5,7 @@
 
 NS_BEGIN(Engine)
 class CModel;
+class CBody;
 NS_END
 
 NS_BEGIN(Client)
@@ -13,6 +14,12 @@ class CDragonian_Melee final : public CMonster
 {
 public:
     enum class MONSTATE { DEAD, GRORRY, BRUTAL, ATTACK, DAMAGE, LOCKON, SLEEP, TURN, END };
+
+    typedef struct tagDragonianMeleeTag : public CMonster::MONSTER_DESC
+    {
+        _bool isSleep = { false };
+
+    }DRAGON_MELEE_MONSTER_DESC;
 
     typedef struct TagMonData{
         //Anim
@@ -52,6 +59,11 @@ public:
         _float              fWarkSpeed = { 10.f };
         CDragonian_Melee*   pOwner = { nullptr };
  
+        _bool               isStamina_Regen = {};
+
+        _bool               isMotionSleep = {};
+
+        _bool               isSearch = { false };
     }MONDATA;
 
 private:
@@ -71,12 +83,16 @@ public:
     _bool                           Check_Ranage(_float fRange);
     TARGET_DIR                      Get_DIR();
 
+    void                            BurutalUI_On(_float fTime);
+    void                            BurutalUI_Off();
+    virtual void                    Creature_Release() override;
 public:
     virtual HRESULT					Initialize_Prototype(_int iLevel);
     virtual HRESULT					Initialize_Clone(void* pArg) override;
     virtual void					Priority_Update(_float fTimeDelta) override;
     virtual void					Update(_float fTimeDelta) override;
     virtual void					Late_Update(_float fTimeDelta) override;
+    virtual HRESULT			        Render() override;
     virtual void				    Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) override;
 
 public:
@@ -91,27 +107,12 @@ public:
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
 private:
-    HRESULT                         Ready_Prototype();
-      
-    HRESULT                         Ready_ETC();
-    HRESULT							Ready_Components();
-    HRESULT							Ready_PartObjects();
-    HRESULT							Ready_AnimEvent();
-
-    HRESULT							Ready_MonData();
-
-    void                            Update_UIHp();
-    void                            Update_WalkSpeed();
-    void                            Update_MeshTrail();
-
-    void                            Attack_Move();
-
-private:
     class CBody_Dragonian_Melee*    m_pBody = { nullptr };
     class CBlackBoard*              m_pBlackBoard = { nullptr };
     class CDragonian_Sword*         m_pWeapon = { nullptr };
     class CMon_HP*                  m_pUI_HP = { nullptr };
     class CMeshTrail*               m_pMeshTrail = { nullptr };
+    class CBody*                    m_pBodyComp = { nullptr };
 
     _float4                         m_vHpPos = {};
     _float4x4*                      m_pHeadMatrix = { nullptr };
@@ -125,6 +126,30 @@ private:
     _float4                         m_vSword_Start = {};
     _float4                         m_vSword_End = {};
 
+    class CTarget_BrutalAttack*     m_pBrutalAttack = { nullptr };
+
+    COLLISION_DESC				    m_tSearchCollisionDesc = {};
+
+    _int                            m_iEventID = {};
+ private:
+        HRESULT                         Ready_Prototype();
+
+        HRESULT                         Ready_ETC();
+        HRESULT							Ready_Components();
+        HRESULT							Ready_PartObjects();
+        HRESULT							Ready_AnimEvent();
+
+        HRESULT							Ready_MonData();
+
+        void                            Update_UIHp();
+        void                            Update_WalkSpeed();
+        void                            Update_MeshTrail();
+
+        void                            Attack_Move();
+        void                            Attack_Sound(_bool isASound);
+        void                            Move_Sound();
+
+        void                            ReSpown();
 public:
     static CDragonian_Melee*        Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;

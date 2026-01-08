@@ -66,23 +66,48 @@ void CElevatorS::Update(_float fTimeDelta)
 
     if (true == m_isActiveElevator)
     {
-        if (ELEVATOR_STATE::UP == m_eState)
+        if (false == m_isStart)
         {
-            Lerp_ElevatorMove(fTimeDelta, m_vUpPos, m_vDownPos, 15.f);
+            m_isStart = true;
+
+            //SoundOnce(TEXT("IP_Elevator_Start"), m_fInteract_Volume);
         }
-        else if (ELEVATOR_STATE::DOWN == m_eState)
+        
+        if (IsPlayingSound(TEXT("IP_Elevator_Start")))
         {
-            Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 15.f);
+
+        }
+        else
+        {
+            if (false == m_isLoop)
+            {
+                m_isLoop = true;
+
+                SoundLoop(TEXT("IP_Elevator_Loop"), m_fInteract_Volume);
+            }
+        }
+
+        if (true == m_isLoop)
+        {
+            if (ELEVATOR_STATE::UP == m_eState)
+            {
+                Lerp_ElevatorMove(fTimeDelta, m_vUpPos, m_vDownPos, 25.f);
+            }
+            else if (ELEVATOR_STATE::DOWN == m_eState)
+            {
+                Lerp_ElevatorMove(fTimeDelta, m_vDownPos, m_vUpPos, 25.f);
+            }
         }
     }
 
     __super::Update(fTimeDelta);
+    m_pBodyCom->MoveKinematic(fTimeDelta, m_pTransformCom);
+    m_pTriggerCom->MoveKinematic(fTimeDelta, m_pTransformCom);
+    //m_pBodyCom->Sync_Update(m_pTransformCom);
+    //m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
 
-    m_pBodyCom->Sync_Update(m_pTransformCom);
-    m_pBodyCom->Update(fTimeDelta, m_pTransformCom);
-
-    m_pTriggerCom->Sync_Update(m_pTransformCom);
-    m_pTriggerCom->Update(fTimeDelta, m_pTransformCom);
+    //m_pTriggerCom->Sync_Update(m_pTransformCom);
+    //m_pTriggerCom->Update(fTimeDelta, m_pTransformCom);
 }
 
 void CElevatorS::Late_Update(_float fTimeDelta)
@@ -126,7 +151,12 @@ void CElevatorS::Lerp_ElevatorMove(_float fTimeDelta, _float4 vStartPos, _float4
 
     if (0.1f > fDistance)
     {
+        SoundStop_FadeOut(TEXT("IP_Elevator_Loop"), 0.5f);
+        SoundOnce(TEXT("IP_Elevator_End"), m_fInteract_Volume);
+
         m_isActiveElevator = false;
+        m_isLoop = false;
+        m_isStart = false;
 
         m_fTimeAcc = 0.f;
 
@@ -212,25 +242,28 @@ HRESULT CElevatorS::Ready_PartObjects(void* pArg)
 
 HRESULT CElevatorS::Ready_Collision(void* pArg)
 {
-    CBody::BODY_BOXSHAPE_DESC BodyDesc{};
-    BodyDesc.vExtent = _float3(10.f, 1.f, 10.f);
+    CBody::BODY_CYLINDERSHAPE_DESC BodyDesc{};
+    BodyDesc.fRadius = 7.7f;
+    BodyDesc.fHeight = 1.f;
     BodyDesc.bIsTrigger = false;
     BodyDesc.bStartActive = true;
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::LinearCast;
-    BodyDesc.eShapeType = SHAPE::BOX;
+    BodyDesc.eShapeType = SHAPE::CYLINDER;
     BodyDesc.fFriction = 0.8f;
     BodyDesc.fMass = 1.0f;
     BodyDesc.fRestitution = 0.0f;
     BodyDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MAP_MOVE_PLATFORM);
 
     XMStoreFloat3(&BodyDesc.vPos, m_pTransformCom->Get_State(STATE::POSITION) + XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * 1.f);
-    BodyDesc.vPos.y += BodyDesc.vExtent.y;
+    //BodyDesc.vPos.y += BodyDesc.vExtent.y;
 
     XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
-    BodyDesc.vShapeOffset = _float3(0.f, -0.95f, 0.f);
+    BodyDesc.vShapeOffset = _float3(0.f, -0.57f, 0.f);
     m_tCollisionDesc.pGameObject = this;
+    m_tCollisionDesc.isMovePlatform = true;
+    m_tCollisionDesc.isForceVaildation = true;
     //pCollDesc.pInfo = ?? // 작성하기
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
@@ -257,9 +290,9 @@ HRESULT CElevatorS::Ready_Collision(void* pArg)
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_TriggerCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.isForceVaildation = true;
+    TriggerDesc.pCollisionDesc = &m_TriggerCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))

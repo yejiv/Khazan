@@ -150,7 +150,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, ID3D11De
 	if (nullptr == m_pDistortion)
 		return E_FAIL;
 
-	m_pVignette = CVignette::Create();
+	m_pVignette = CVignette::Create(*ppDevice, *ppContext);
 	if (nullptr == m_pVignette)
 		return E_FAIL;
 
@@ -253,6 +253,8 @@ void CGameInstance::Update_Engine(TIME_DELTA tTimeDelta)
 	m_pLevel_Manager->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 
 	m_pComputeShader_Manager->Execute_Job(COMPUTEJOB::UPDATE);
+
+    m_pSound_Manager->Update();
 
 #ifdef _DEBUG
 
@@ -530,15 +532,6 @@ void CGameInstance::Set_EnableOutline(_bool isEnable)
 	m_pRenderer->Set_EnableOutline(isEnable);
 }
 
-void CGameInstance::Set_EnableRimLight(_bool isEnable)
-{
-    m_pRenderer->Set_EnableRimLight(isEnable);
-}
-
-void CGameInstance::Set_EnableFog(_bool isEnable)
-{
-	m_pRenderer->Set_EnableFog(isEnable);
-}
 #endif
 
 void CGameInstance::Set_ToonShadeLevel(_float fLevel)
@@ -561,6 +554,16 @@ void CGameInstance::Set_SpecularPower(_float2 vPower)
     m_pRenderer->Set_SpecularPower(vPower);
 }
 
+void CGameInstance::Set_SpecularAttenuation(_float fAttenuation)
+{
+    m_pRenderer->Set_SpecularAttenuation(fAttenuation);
+}
+
+void CGameInstance::Set_EnableRimLight(_bool isEnable)
+{
+    m_pRenderer->Set_EnableRimLight(isEnable);
+}
+
 RIM_LIGHT_DESC CGameInstance::Get_RimLightDesc()
 {
     return m_pRenderer->Get_RimLightDesc();
@@ -569,6 +572,11 @@ RIM_LIGHT_DESC CGameInstance::Get_RimLightDesc()
 void CGameInstance::Set_RimLightDesc(RIM_LIGHT_DESC Desc)
 {
     m_pRenderer->Set_RimLightDesc(Desc);
+}
+
+const RENDERGROUP& CGameInstance::Get_CurrentRenderGroup()
+{
+    return m_pRenderer->Get_CurrentRenderGroup();
 }
 
 #pragma endregion
@@ -972,9 +980,22 @@ Body* CGameInstance::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, 
 {
 	return m_pJolt_Manager->CreateAndAdd_Body(BodySetting, pBodyInterface);
 }
+Body* CGameInstance::CreateAndAdd_SoftBody(const SoftBodyCreationSettings& BodySetting, BodyInterface** pBodyInterface)
+{
+    return m_pJolt_Manager->CreateAndAdd_SoftBody(BodySetting, pBodyInterface);
+}
 CharacterVirtual* CGameInstance::CreateCharacterVirtual(const CharacterVirtualSettings* inSettings, RVec3Arg inPosition, QuatArg inRotation, uint64 inUserData, BodyInterface** pBodyInterface)
 {
 	return m_pJolt_Manager->CreateCharacterVirtual(inSettings, inPosition, inRotation, inUserData, pBodyInterface);
+}
+
+void CGameInstance::Add_Constraint(Constraint* pConstraint)
+{
+    return m_pJolt_Manager->Add_Constraint(pConstraint);
+}
+void CGameInstance::Remove_Constraint(Constraint* pConstraint)
+{
+    return m_pJolt_Manager->Remove_Constraint(pConstraint);
 }
 
 void CGameInstance::CharVir_Update(_float fTimeDelta, CharacterVirtual* pCharVir, Vec3 vGravity, _uint iObjectLayer, BodyFilter* pBodyFilter, ShapeFilter* pShapeFilter)
@@ -1035,6 +1056,24 @@ void CGameInstance::Reset_Gravity()
 _bool CGameInstance::RayCast(_float3 vStart, _float3 vEnd, _float& outFraction, _float4& outPosition, _float3* outNormal)
 {
 	return m_pJolt_Manager->RayCast(vStart, vEnd, outFraction, outPosition, outNormal);
+}
+
+PhysicsSystem* CGameInstance::Get_Jolt()
+{
+    return m_pJolt_Manager->Get_Jolt();
+}
+BodyInterface* CGameInstance::Get_BodyInterface()
+{
+    return m_pJolt_Manager->Get_BodyInterface();
+}
+const BodyLockInterfaceLocking* CGameInstance::Get_BodyLockInterface()
+{
+    return m_pJolt_Manager->Get_BodyLockInterface();
+}
+
+_bool CGameInstance::IsObjectLayerPairValid(_uint iObjectLayer1, _uint iObjectLayer2)
+{
+	return m_pJolt_Manager->IsObjectLayerPairValid(ObjectLayer(iObjectLayer1), ObjectLayer(iObjectLayer2));
 }
 
 #ifdef _DEBUG
@@ -1359,6 +1398,10 @@ HRESULT CGameInstance::Bind_Fog_ShaderResources(CShader* pShader)
 {
 	return m_pFog->Bind_Fog_ShaderResources(pShader);
 }
+void CGameInstance::Set_EnableFog(_bool isEnable)
+{
+    m_pFog->Set_EnableFog(isEnable);
+}
 FOG_CONFIG CGameInstance::Get_FogConfig()
 {
 	return m_pFog->Get_FogConfig();
@@ -1391,9 +1434,9 @@ HRESULT CGameInstance::Bind_Vignette_ShaderResources(CShader* pShader)
 	return m_pVignette->Bind_Vignette_ShaderResources(pShader);
 }
 
-void CGameInstance::Set_EnableVignette(_bool isEnable)
+void CGameInstance::Set_EnableVignette(_bool isEnable, _float fIntensity)
 {
-	m_pVignette->Set_EnableVignette(isEnable);
+	m_pVignette->Set_EnableVignette(isEnable, fIntensity);
 }
 
 VIGNETTE_CONFIG CGameInstance::Get_VignetteConfig()
@@ -1401,20 +1444,20 @@ VIGNETTE_CONFIG CGameInstance::Get_VignetteConfig()
 	return m_pVignette->Get_VignetteConfig();
 }
 
-void CGameInstance::Set_VignetteConfig(VIGNETTE_CONFIG Config)
+void CGameInstance::Set_VignetteConfig(const VIGNETTE_CONFIG& Config)
 {
 	m_pVignette->Set_VignetteConfig(Config);
 }
-void CGameInstance::Start_VignetteAnimation(_float fDuration, VIGNETTE_CONFIG Config)
+void CGameInstance::Start_VignetteAnimation(const VIGNETTE_CONFIG& Config, _bool isReturnOff)
 {
-	m_pVignette->Start_VignetteAnimation(fDuration, Config);
+	m_pVignette->Start_VignetteAnimation(Config, isReturnOff);
 }
 #pragma endregion
 
 #pragma region SEQUENCE_MANAGER
-HRESULT CGameInstance::SEQ_AdoptAndPlay(ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc)
+HRESULT CGameInstance::SEQ_AdoptAndPlay(ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc, _bool isInit)
 {
-	return m_pSequence_Manager->AdoptAndPlay(pSeq, tDesc);
+	return m_pSequence_Manager->AdoptAndPlay(pSeq, tDesc, isInit);
 }
 
 void CGameInstance::SEQ_EnqueueAdopt(ISeqInstance* pSeq, const SEQ_REQ_PLAY_DESC& tDesc)
@@ -1476,7 +1519,7 @@ _uint CGameInstance::Get_NumDecalTextures(DECALTYPE eType)
     return m_pDecal_Manager->Get_NumDecalTextures(eType);
 }
 
-void CGameInstance::Batch_Decal(CDecal* pDecal)
+void CGameInstance::Batch_Decal(CDecal_Static* pDecal)
 {
     m_pDecal_Manager->Batch_Decal(pDecal);
 }
@@ -1484,6 +1527,21 @@ void CGameInstance::Batch_Decal(CDecal* pDecal)
 void CGameInstance::Decal_Clear()
 {
     m_pDecal_Manager->Decal_Clear();
+}
+
+void CGameInstance::MapDecal_Clear()
+{
+    m_pDecal_Manager->MapDecal_Clear();
+}
+
+void CGameInstance::MapDecal_CleanUp()
+{
+    m_pDecal_Manager->MapDecal_CleanUp();
+}
+
+void CGameInstance::Decal_OnOff(_bool isDecalOn)
+{
+    m_pDecal_Manager->Decal_OnOff(isDecalOn);
 }
 
 #pragma endregion
@@ -1505,6 +1563,11 @@ _uint CGameInstance::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPro
  	return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, Quaternion, Position);
 }
 
+_uint CGameInstance::Spawn_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _matrix worldmatrix, _gvector Position)
+{
+    return m_pEffect_Manager->Spawn_Effect(iLayerLevelIndex, strPrototypeTag, worldmatrix, Position);
+}
+
 void CGameInstance::Update_Effect_Position(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _fvector SpawnPos)
 {
 	m_pEffect_Manager->Update_Effect_Position(iLayerLevelIndex, strPrototypeTag, ID, SpawnPos);
@@ -1515,6 +1578,11 @@ void CGameInstance::Update_Effect_World(_uint iLayerLevelIndex, const _wstring& 
 	m_pEffect_Manager->Update_Effect_World(iLayerLevelIndex, strPrototypeTag, ID, Quaternion, Position);
 }
 
+void CGameInstance::Update_Effect_World(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID, _matrix worldmatrix, _gvector Position)
+{
+    m_pEffect_Manager->Update_Effect_World(iLayerLevelIndex, strPrototypeTag, ID, worldmatrix, Position);
+}
+
 void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)
 {
 	m_pEffect_Manager->Stop_Effect(iLayerLevelIndex, strPrototypeTag, ID);
@@ -1523,6 +1591,16 @@ void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strProto
 void CGameInstance::Stop_Effect(_uint iLayerLevelIndex, const _wstring& strPrototypeTag)
 {
     m_pEffect_Manager->Stop_Effect(iLayerLevelIndex, strPrototypeTag);
+}
+
+void CGameInstance::Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag, _uint ID)
+{
+    m_pEffect_Manager->Stop_Effect_Force(iLayerLevelIndex, strPrototypeTag, ID);
+}
+
+void CGameInstance::Stop_Effect_Force(_uint iLayerLevelIndex, const _wstring& strPrototypeTag)
+{
+    m_pEffect_Manager->Stop_Effect_Force(iLayerLevelIndex, strPrototypeTag);
 }
 
 #pragma endregion
@@ -1631,6 +1709,11 @@ void CGameInstance::Set_EnableMotionBlur(_bool isEnable)
     m_pMotionBlur->Set_EnableMotionBlur(isEnable);
 }
 
+_float CGameInstance::Get_Gloval_Volume()
+{
+	return m_pSound_Manager->Get_Gloval_Volume();
+}
+
 void CGameInstance::Set_Gloval_Volume(_float fVolume)
 {
     m_pSound_Manager->Set_Gloval_Volume(fVolume);
@@ -1639,6 +1722,31 @@ void CGameInstance::Set_Gloval_Volume(_float fVolume)
 void CGameInstance::ADD_Gloval_Volume(_float fVolume)
 {
     m_pSound_Manager->ADD_Gloval_Volume(fVolume);
+}
+
+void CGameInstance::ListenerPosSet(_vector vPos, _vector vLook, _vector vUp, _float3 vVal)
+{
+    m_pSound_Manager->ListenerPosSet(vPos, vLook, vUp, vVal);
+}
+
+void CGameInstance::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume, _float2 vDis)
+{
+    m_pSound_Manager->PlaySoundOnce(pSoundKey, vPos, ppOutChannel, fVolume, vDis);
+}
+
+void CGameInstance::PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume, _float2 vDis)
+{
+    m_pSound_Manager->PlaySoundLoop(pSoundKey, vPos, ppOutChannel, fVolume, vDis);
+}
+
+void CGameInstance::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel, _float2 vDis)
+{
+    m_pSound_Manager->PlaySoundOnce(pSoundKey, vPos, vVel, fVolume, ppOutChannel, vDis);
+}
+
+void CGameInstance::PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel, _float2 vDis)
+{
+    m_pSound_Manager->PlaySoundLoop(pSoundKey, vPos, vVel, fVolume, ppOutChannel, vDis);
 }
 
 void CGameInstance::PlaySoundOnce(const TCHAR* pSoundKey, float fVolume, FMOD_CHANNEL** ppOutChannel)
@@ -1651,6 +1759,14 @@ void CGameInstance::PlaySoundLoop(const TCHAR* pSoundKey, float fVolume, FMOD_CH
     m_pSound_Manager->PlaySoundLoop(pSoundKey, fVolume, ppOutChannel);
 }
 
+void CGameInstance::PlaySound_FadeIn(const TCHAR* pSoundKey, float fVolume, float fFadeTime, bool isLoop, FMOD_CHANNEL** ppOutChannel)
+{
+    if (isLoop)
+        m_pSound_Manager->PlaySoundLoop_FadeIn(pSoundKey, fVolume, fFadeTime, ppOutChannel);
+    else
+        m_pSound_Manager->PlaySoundOnce_FadeIn(pSoundKey, fVolume, fFadeTime, ppOutChannel);
+}
+
 void CGameInstance::StopAll()
 {
     m_pSound_Manager->StopAll();
@@ -1661,6 +1777,11 @@ void CGameInstance::StopByKey(const TCHAR* pSoundKey)
     m_pSound_Manager->StopByKey(pSoundKey);
 }
 
+void CGameInstance::StopByKey_FadeOut(const TCHAR* pSoundKey, _float fFadeTime)
+{
+    m_pSound_Manager->StopByKey_FadeOut(pSoundKey, fFadeTime);
+}
+
 void CGameInstance::StopByChannel(FMOD_CHANNEL** ppOutChannel)
 {
     m_pSound_Manager->StopByChannel(ppOutChannel);
@@ -1668,12 +1789,32 @@ void CGameInstance::StopByChannel(FMOD_CHANNEL** ppOutChannel)
 
 bool CGameInstance::IsPlayingByKey(const TCHAR* pSoundKey)
 {
-    return m_pSound_Manager->IsPlayingByKey(pSoundKey);;
+    return m_pSound_Manager->IsPlayingByKey(pSoundKey);
 }
 
 void CGameInstance::SetVolumeByKey(const TCHAR* pSoundKey, float fVolume)
 {
     m_pSound_Manager->SetVolumeByKey(pSoundKey, fVolume);
+}
+
+void CGameInstance::Sound_Resume(const TCHAR* pSoundKey)
+{
+    m_pSound_Manager->Resume(pSoundKey);
+}
+
+void CGameInstance::Sound_Resume_Fade(const TCHAR* pSoundKey, float fFadeTime)
+{
+    m_pSound_Manager->Resume_Fade(pSoundKey, fFadeTime);
+}
+
+void CGameInstance::Sound_Pause(const TCHAR* pSoundKey)
+{
+    m_pSound_Manager->Pause(pSoundKey);
+}
+
+void CGameInstance::Sound_Pause_Fade(const TCHAR* pSoundKey, float fFadeTime)
+{
+    m_pSound_Manager->Pause_Fade(pSoundKey, fFadeTime);
 }
 
 #pragma endregion
@@ -1744,8 +1885,7 @@ void CGameInstance::Release_Engine()
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pRenderer);
-	Safe_Release(m_pObject_Manager);
-    Safe_Release(m_pEffect_Manager);
+	Safe_Release(m_pObject_Manager);    
 	Safe_Release(m_pPrototype_Manager);	
 	Safe_Release(m_pLevel_Manager);
     Safe_Release(m_pPool_Manager);

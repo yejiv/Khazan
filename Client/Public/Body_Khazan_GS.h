@@ -7,6 +7,7 @@ class CShader;
 class CModel;
 class CBody;
 class CMotionTrail;
+class CTexture;
 NS_END
 
 NS_BEGIN(Client)
@@ -19,9 +20,11 @@ public:
         _uint* pState = { nullptr };
         _uint* pStatus = { nullptr };
         _uint* pHitReation = { nullptr };
+        _uint*  pHealIndex = { nullptr };
         _float4* pGuardRotationTarget = { nullptr };
         class CTransform* pParentTransform = { nullptr };
 
+        _bool*   pParentIsCanStaminaRecovery = { nullptr };
     }BODY_KHAZAN_GS_DESC;
 
 private:
@@ -64,9 +67,11 @@ public:
     _bool*              Get_FinishedAnimation() { return &m_isFinishedAnimation; }
     CModel*             Get_Model() { return m_pModelCom; }
     OUTLINE_CONFIG      Get_OutlineConfig() { return m_OutlineConfig; }
+    _bool               IsAttackActive() { return m_isAttackActive; }           // 검 충돌체 활성화 되어있는지 여부 return ( Update 마지막 줄에서 수행 중 )
 
 public:
     void                Set_IsGuarding(_bool* pIsGuarding) { m_pIsGuarding = pIsGuarding; }
+    void                Set_IsLadderRotationEvent (_bool* pIs) { m_isLadderRotationEvent = pIs;}
     void                Set_GSword(class CGSword_Khazan_GS* pGS);
     void                Set_OutlineConfig(OUTLINE_CONFIG Config){ m_OutlineConfig.vColor = Config.vColor; m_OutlineConfig.fSize = Config.fSize; }
     void		        Set_matGSword(_float4x4* mat) { m_pGSword_Matrix = mat; }
@@ -75,9 +80,10 @@ public:
    // _bool               Is_SpearFullExtension() const { return m_isSpearFullExtension; }
 
 public:
-    void                Search_BrutalTarget(_float fTimeDelta); //부르탈 타겟 찾기 
-    _bool               Check_BrutalAttack(_float fTimeDelta);  //부르탈 체크
-    void                AllAttackCollisionActive_Off();         //어택 콜리젼 다 끄기 
+    void                        Search_BrutalTarget(_float fTimeDelta); //부르탈 타겟 찾기 
+    _bool                       Check_BrutalAttack(_float fTimeDelta);  //부르탈 체크
+    void                        AllAttackCollisionActive_Off();         //어택 콜리젼 다 끄기 
+    void                        Set_AllPlaySound(_bool isPlaySound) { m_isPlaySound = isPlaySound; }
 
     /* Shader */
     void                        Set_EnableEdge(_bool isEnable) { m_isEnableEdge = isEnable; }
@@ -89,26 +95,36 @@ public:
     void                        Set_MotionTrailCallBack(function<void(const _wstring&, _bool)> callback) { m_OnMotionTrailCallBack = callback; }
     void                        Trigger_MotionTrail(const _wstring& strKey, _bool isActive) { if (m_OnMotionTrailCallBack)m_OnMotionTrailCallBack(strKey, isActive); }
     void                        On_MotionTrail(const _wstring strKey, _bool isActive) { m_pMotionTrailCom->Set_Config(strKey); m_isActiveMotionTrail = isActive; }
+    void                        Start_HealRimLight(_float fDuration, const _float2& vFadeTime, _float fMaxIntensity);
+    void                        Reset_HealRimLightFlag() { m_isFinishedHealRimLight = false; }
+
+public:
+    const TRAIL_CONFIG&         Get_TrailConfig() const;
+    void                        Set_TrailConfig(const TRAIL_CONFIG& Config);
+    _uint                       Get_NumTrailTextures();
+    ID3D11ShaderResourceView*   Get_TrailTexture(_uint iIndex);
 
 private:
     class CClientInstance*      m_pClientInstance = { nullptr };
     class CTransform*           m_pParentTransform = { nullptr };
     class CGSword_Khazan_GS*    m_pGSword = { nullptr };
     class CTarget_BrutalAttack* m_pBrutalAttack = { nullptr };
+    class CKhazan_SoundHelper*  m_pSoundHelper = { nullptr };
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
     CShader*                    m_pShaderCom = { nullptr };
+    CTexture*                   m_pTextureCom = { nullptr };
 
     CModel*                                 m_pModelCom = { nullptr }; // 매쉬없는 전체 모델
     unordered_map<_wstring, CModel*>        m_AllParts; // 모든 모델 파츠 모음 <파츠이름, 모델클래스>
     unordered_map<EQUIPMENTTYPE, _wstring>  m_EquippedParts;   // 현재 파츠 <파츠종류, 파츠 이름>
     vector<CModel*>                         m_RenderParts;    // 빠른 렌더링을 위한 캐시 (렌더링할 파츠들만)
 
-    CBody*                      m_pBodyCom_Attack = { nullptr };            //검 공격시 사용하는 졸트 바디
-    CBody*                      m_pBodyCom_RangeAttack = { nullptr };   //범위 공격에 졸트 바디
-    CBody*                      m_pBodyCom_BodyAttack = { nullptr };   //플레이어 바디에 붙이는 졸트바디 (공격용)
-    CBody*                      m_pBodyCom_Guard = { nullptr };         //검 방어에 사용하는 졸트 바디
-    CBody*                      m_pBodyCom_Search = { nullptr };        //몬스터 서치에 사용하는 졸트 바디 
+    CBody*                      m_pBodyCom_Attack        = { nullptr };            //검 공격시 사용하는 졸트 바디
+    CBody*                      m_pBodyCom_RangeAttack  = { nullptr };   //범위 공격에 졸트 바디
+    CBody*                      m_pBodyCom_BodyAttack    = { nullptr };   //플레이어 바디에 붙이는 졸트바디 (공격용)
+    CBody*                      m_pBodyCom_Guard         = { nullptr };         //검 방어에 사용하는 졸트 바디
+    CBody*                      m_pBodyCom_Search        = { nullptr };        //몬스터 서치에 사용하는 졸트 바디 
 
     PLAYER_DATA*                m_pPlayerData;
     COLLISION_DESC				m_tAttackCollisionDesc = {};
@@ -122,11 +138,14 @@ private:
     _bool                       m_isCollBodyAttack_Active = { true };
     _bool                       m_isCollGuard_Active = { true };
 
+    _bool*                       m_pParentIsCanStaminaRecovery = { nullptr };
+
     _float4x4*                  m_pGSword_Matrix = { nullptr };
 
     _uint*                      m_pParentState = { nullptr };
     _uint*                      m_pParentStatus = { nullptr };
     _uint*                      m_pHitReaction = { nullptr };
+    _uint*                      m_pHealIndex = { nullptr };
     _uint				        m_iCurState = {  };
     _uint                       m_iCollState = {};          //어떤 콜라이더가 켜질 것인가에대한 상태 
 
@@ -136,7 +155,7 @@ private:
     _bool*                      m_pIsGuarding = { nullptr }; //가드중인지 체크4
     _bool                       m_isNotifyAttacking = { false };    //어택중에 콜라이더 onoff 알림 
     _bool                       m_isBrutalSuccess = { false };
-
+    _bool*                      m_isLadderRotationEvent = { nullptr };
 
      /* 뼈 위치 */
     _float4x4*                  m_pMatGSwordBody = { nullptr }; // 칼 중앙 로컬행렬
@@ -144,6 +163,7 @@ private:
     _float4x4                   m_matWorldGSwordBody_nJolt;
     _float4x4*                  m_pMatGSwordTip = { nullptr };  // 칼 끝 로컬행렬
     _float4x4			        m_matWorldGSwordTip;                 // 칼 끝 월드행렬
+    _float4x4			        m_matWorldGSwordTip_nJolt;
 
 
     _matrix				        m_Offset_Matrix = {};   //블랜더와 축이 달라서 사용.
@@ -155,7 +175,7 @@ private:
 
     /* 가드 */
     _bool                       m_isJustGuardOnce = { false };
-    _float2                     m_fJustGuardTime = { 0.f, 0.83f };
+    _float2                     m_fJustGuardTime = { 0.f, 1.6f };
     _float4*                    m_pGuardRotationTarget = { nullptr };
 
     /* Monster Search, Brutal */
@@ -174,13 +194,33 @@ private:
     _bool                       m_isCollision;
     _float4                     m_fCollisionPos;
 
-    // Shader
+    _bool                       m_isAttackActive = { false };                       // 검 충돌체 활성화 되어있는지 여부
+
+    /* Shader */
     _bool                       m_isEnableEdge = { true };
     _bool                       m_isActiveMotionTrail = { false };
-    _bool                       m_isEnableMotionTrail = {};
-    _uint                       m_iCurMotionTrailAnimIndex = {};
+    _bool                       m_isEnableAnimEvent = {};
+    _uint                       m_iCurAnimEventIndex = {};
     OUTLINE_CONFIG              m_OutlineConfig = { _float3(1.f, 0.f, 1.f), 0.001f, 0.f, 0.f };
     function<void(const _wstring&, _bool)>  m_OnMotionTrailCallBack;
+    _bool                       m_isEnableHealRimLight = { false };
+    _bool                       m_isFinishedHealRimLight = { false };
+    PLAYER_HEAL_RIMLIGHT_DESC   m_HealRimLightDesc;
+
+    /* event */
+    _bool                       m_isEableGiantHuntEvent= { false };
+    //_bool                       m_isEableWeakAtk1Event = { false };
+
+    /* Dissolve */
+    _float                      m_fDissolveEdgeWidth = { 0.2f };
+    _float2                      m_fDissolveDecreaseAlphaTime = { 0.01f, 8.f };
+    _float                      m_fDissolveDecreaseAlphaValue = { 0.f };
+    const _float4               m_fDissolveColor = { 0.8f, 0.65f, 0.4f, 1.0f };
+
+    /* Sound */
+    vector<FMOD_CHANNEL*>       m_pChannel;
+    _bool                       m_isPlaySound = { true };
+  
 
     /*  mutex */
     mutex                       m_CollMonsterMutex;
@@ -189,14 +229,18 @@ private :
     _uint                       m_iFXIdx_Spining;
     _uint                       m_iFXIdx_BodyWind;
     _uint                       m_iFXIdx_Trail;
-    //_float                      m_SmokeSpawnTIme;
+    _bool                       m_bGuradFX[2];
+    _uint                       m_iTrailType;
+    _float                      m_TrailParticleTime;
 
 private:
+    _bool            Update_Dead(_float fTimeDelta);
     void			Update_Colliders(_float fTimeDelta);
     void            Check_Guarding(_float fTimeDelta);              //부모클래스가 가드를 했다고 알려줌
     void            Update_GuardRotation(_float fTimeDelta);        //가드시 충돌방향으로 회전
     void            Start_GuardRotation(_float3 vContactPoint);     //가드시 충돌방향으로 회전을 위한 초기화
     void            Exception_Animaition(); // 애니메이션 이상한 것들 처리 
+    FMOD_CHANNEL**  Get_SoundChannel(_int iIndex);
 
     /* notify */
  private:
@@ -205,10 +249,12 @@ private:
 
 private:
     HRESULT             Bind_ShaderResources();
+    HRESULT             Bind_Dissolve();
     HRESULT             Ready_Components();
     HRESULT             Ready_Colliders();
     HRESULT             Ready_AnimationEvents();
-    HRESULT             Initialize_Equipment();
+    HRESULT				Ready_AnimationEvent_SFX();
+    HRESULT             Ready_Equipment();
     void                Equip_Part(EQUIPMENTTYPE eType, const _wstring& strPartName); //파츠 갈아 입기
     void                Update_QuickRenderCache();  //빠른 랜더용 파츠모음 (모션트레일도 여기서 랜더용 파츠 갈아끼우기)
 
@@ -246,6 +292,13 @@ private:
     void Start_LongDistortion();
     void Start_DefaultDistortion();
     void Start_FullScreenDistortion();
+    void FX_Trail();
+    void Set_BaseTrail();
+    void Set_BrightTrail();
+    void Spawn_Guard_FX();
+    _vector BodyCenter();
+    void    BrutalAtk_ScreenEffect0();
+    void    BrutalAtk_ScreenEffect1();
 
 public:
     static CBody_Khazan_GS* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

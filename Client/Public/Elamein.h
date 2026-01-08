@@ -62,9 +62,11 @@ public:
         _float*             pMaxStamina = { nullptr };
         _float*             pCulStamina = { nullptr };
 
+        _bool               isStamina_Regen = {};
         _float              fWarkSpeed = { 10.f };
         CElamein* pOwner = { nullptr };
 
+        _bool               isSearch = { false };
     }MONDATA;
 private:
     CElamein(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -72,9 +74,13 @@ private:
     virtual ~CElamein() = default;
 
 public:
+    void                            Start_DefaultRadialBlur();
+    void                            Start_DefaultVignette();
+
     void                            LockOnLerp(_float fTimeDetla, _float fSpeed);
     void                            LockOn();
-
+    void                            BurutalUI_On(_float fTime);
+    void                            BurutalUI_Off();
     void                            Rush();
 
     MONDATA&                        Get_Data();
@@ -89,7 +95,7 @@ public:
     void                            Reset_Charge();
     _float                          Get_TrackPotion();
     virtual void				    Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject = nullptr) override;
-
+    virtual void                    Creature_Release() override;
 public:
     const TRAIL_CONFIG&             Get_TrailConfig() const;
     void                            Set_TrailConfig(const TRAIL_CONFIG& Config);
@@ -97,13 +103,13 @@ public:
     ID3D11ShaderResourceView*       Get_TrailTexture(_uint iIndex);
 
 public:
-    virtual void                    Creature_Release() override;
     virtual HRESULT					Initialize_Prototype(_int iLevel);
     virtual HRESULT					Initialize_Clone(void* pArg) override;
     virtual void					Priority_Update(_float fTimeDelta) override;
     virtual void					Update(_float fTimeDelta) override;
     virtual void					Late_Update(_float fTimeDelta) override;
-
+    virtual HRESULT			        Render() override;
+    virtual void				KnockBack(_vector vDir, _float fPower, _float fLoss) override;
 public:
     virtual void Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
     virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
@@ -118,10 +124,9 @@ private:
     class CMeshTrail*               m_pMeshTrail = { nullptr };
 
     CBody*                          m_pHitBodyCom = { nullptr };
-    CBody*                          m_pLeftLegCom = { nullptr };
+    CBody*                          m_pBodyComp = { nullptr };
 
     _float4x4*                      m_pBodySocketMatrix = { nullptr };
-    _float4x4*                      m_pLeftLegSocketMatrix = { nullptr };
     _float4x4*                      m_pLockOnSocketMatrix = { nullptr };
     _float4                         m_vLockOnPos = {};
 
@@ -137,9 +142,12 @@ private:
     _float4                         m_vSword_End = {};
     _float4                         m_vSword_Start = {};
 
-
-    //UI테스트
-    class CUI_Talk_Danjinjar*       m_pTalk = { nullptr };
+    class CTarget_BrutalAttack*     m_pBrutalAttack = { nullptr };
+    COLLISION_DESC				    m_tSearchCollisionDesc = {};
+    COLLISION_DESC				    m_tHitCollisionDesc = {};
+private :
+    _uint                           m_iFXIdx;
+    _int                            m_iEventID = {};
 
 private:
     HRESULT                         Ready_Prototype();
@@ -155,6 +163,14 @@ private:
     void                            Update_Body(_float fTimeDelta);
     void                            Update_MeshTrail();
 
+    void                            Set_DefaultTrail();
+    void                            Set_EnchantTrail();
+
+    void                            Move_Sound();
+    void                            Run_Sound();
+    void                            Damage_Sound();
+
+    void                            ReSpown();
 public:
     static CElamein*                Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _int iLevel);
     virtual CGameObject*            Clone(void* pArg) override;

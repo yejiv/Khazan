@@ -4,6 +4,8 @@
 
 #include "UI_Atlas_Icon.h"
 #include "UI_TextBox.h"
+
+#include "Amount.h"
 CUI_QuickSlot_Item::CUI_QuickSlot_Item(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CUI_Slot{ pDevice, pContext }
 {
@@ -41,6 +43,7 @@ HRESULT CUI_QuickSlot_Item::Initialize_Clone(void* pArg)
     m_iState = ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM);
 
     m_pGameInstance->Subscribe_Event<EVENT_HUD_QUICKSLOT>(ENUM_CLASS(EVENT_TYPE::UI_QUICK_SLOT), [&](const EVENT_HUD_QUICKSLOT& e) {Add_Item(e); });
+    m_pGameInstance->Subscribe_Event<EVENT_ATICVE_ITEM>(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), [&](const EVENT_ATICVE_ITEM& e) {Input_KeyState(e.iIndex); });
 
     return S_OK;
 }
@@ -69,7 +72,10 @@ void CUI_QuickSlot_Item::Late_Update(_float fTimeDelta)
     if (m_iState != ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM))
     {
         m_pIcon->Late_Update(fTimeDelta);
-        m_pTextBox->Set_Text(to_wstring(*m_iItemCount));
+        if(m_iItemCount != nullptr)
+            m_pTextBox->Set_Text(to_wstring(*m_iItemCount));
+        else
+            m_pTextBox->Set_Text(to_wstring(0));
         m_pTextBox->Late_Update(fTimeDelta);
     }
 
@@ -252,7 +258,7 @@ void CUI_QuickSlot_Item::Add_Item(EVENT_HUD_QUICKSLOT pItem)
 
 void CUI_QuickSlot_Item::Input_KeyState()
 {
-    if(m_iState == ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM))
+    if (m_iState == ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM))
         return;
 
     _int iInputIndex = { -1 };
@@ -279,7 +285,7 @@ void CUI_QuickSlot_Item::Input_KeyState()
     {
         _bool isAticv = false;
 
-        if(*m_iItemCount > 0)
+        if (*m_iItemCount > 0)
             isAticv = true;
 
         if (!isAticv)
@@ -288,21 +294,70 @@ void CUI_QuickSlot_Item::Input_KeyState()
         {
             if (iInputIndex == 0)
             {
-                m_pGameInstance->StopByKey(TEXT("UI_item_consume_assassinportion_01 (SFX).wav"));
-                m_pGameInstance->PlaySoundOnce(TEXT("UI_item_consume_assassinportion_01 (SFX).wav"));
+                if (*m_iItemCount > 0 && CClientInstance::GetInstance()->Get_PlayerData().fCulHp < CClientInstance::GetInstance()->Get_PlayerData().fMaxHp)
+                {
+                    --*m_iItemCount;
+                    m_pGameInstance->StopByKey(TEXT("UI_item_consume_assassinportion_01 (SFX).wav"));
+                    m_pGameInstance->PlaySoundOnce(TEXT("UI_item_consume_assassinportion_01 (SFX).wav"));
+                }
             }
-            else if(m_iItemIndex >= 1001 && m_iItemIndex <= 1004)
+        }
+    }
+}
+
+void CUI_QuickSlot_Item::Input_KeyState(_int iIndex)
+{
+    if (m_iState == ENUM_CLASS(QUICKITMESLOTSTATE::NONITEM))
+        return;
+
+    _int iInputIndex = iIndex;
+
+    if (m_iIndex != iInputIndex)
+        return;
+
+    if (m_iItemCount != nullptr)
+    {
+        _bool isAticv = false;
+
+        if (*m_iItemCount > 0)
+            isAticv = true;
+
+        if (!isAticv)
+            m_vFxColor.w = 1.f;
+        else
+        {
+            if (m_iItemIndex >= 1001 && m_iItemIndex <= 1004)
             {
                 --*m_iItemCount;
                 if (*m_iItemCount <= 0)
                 {
                     Update_State();
                     m_bIsItemZero = true;
+                    m_iItemCount = 0;
+                }
+                switch (m_iItemIndex)
+                {
+                case 1001:
+                    CClientInstance::GetInstance()->Get_ptrPlayerData().fCulHp += 300.f;
+                    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, 400);
+                    break;
+                case 1002:
+                    CClientInstance::GetInstance()->Get_ptrPlayerData().fCulHp += 700.f;
+                    static_cast<CAmount*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Amount")))->Add_Value(CAmount::AMOUNT_TYPE::LACHRYMA, 10000);
+                    break;
+                case 1003:
+                    CClientInstance::GetInstance()->Get_ptrPlayerData().fCulDoggedness += CClientInstance::GetInstance()->Get_ptrPlayerData().iMaxDoggednessCount * 0.3f;
+                    break;
+                case 1004:
+                    CClientInstance::GetInstance()->Get_ptrPlayerData().fCulDoggedness += CClientInstance::GetInstance()->Get_ptrPlayerData().iMaxDoggednessCount * 0.5f;                    break;
+                    break;
                 }
                 if (m_iItemIndex == 1001 || m_iItemIndex == 1002)
                 {
                     m_pGameInstance->StopByKey(TEXT("UI_item_tearsummons_01 (SFX).wav"));
                     m_pGameInstance->PlaySoundOnce(TEXT("UI_item_tearsummons_01 (SFX).wav"));
+
+
                 }
                 else
                 {
@@ -312,7 +367,7 @@ void CUI_QuickSlot_Item::Input_KeyState()
 
             }
 
-            
+
         }
     }
 }

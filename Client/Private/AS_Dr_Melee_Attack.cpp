@@ -16,12 +16,13 @@ void CAS_Dr_Melee_Attack::Enter(CStateMachine* pFSM, CGameObject* pOwner)
         m_pMonData->iAnimIndex = 20;
 
     m_isAttackChange ? m_isAttackChange = false : m_isAttackChange = true;
+
 }
 
 void CAS_Dr_Melee_Attack::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
     m_pMonData->pOwner->LockOnLerp(fTimeDelta, 3.f);
-    if (m_pMonData->isAnimFinash)
+    if (m_pMonData->isAnimFinash || m_pMonData->eHitType != HITREACTION::END)
     {
         m_pMonData->isAttack = false;
     }
@@ -38,7 +39,8 @@ void CAS_Dr_Melee_Attack::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLay
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(m_pMonData->fAttackDamage, HITREACTION::KNOCKBACK_WEAK, nullptr);
+        pTarget->KnockBack(pOwner->Get_Look(), 10.f, 50.f);
+        pTarget->Take_Damage(m_pGameInstance->Rand(m_pMonData->fAttackDamage * 0.8f, m_pMonData->fAttackDamage * 1.3f), HITREACTION::KNOCKBACK_STRONG, nullptr);
     }
 }
 

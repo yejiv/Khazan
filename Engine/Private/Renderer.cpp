@@ -85,8 +85,8 @@ HRESULT CRenderer::Initialize()
     //      return E_FAIL;
     //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Depth"), 1350.0f, 750.0f, 300.f, 300.f)))
     //      return E_FAIL;
-    //  if (FAILED(m_pGameInstance->Ready_Shadow_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
-    //      return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_Shadow_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
 #endif
 
     return S_OK;
@@ -160,18 +160,6 @@ HRESULT CRenderer::Draw()
         MSG_BOX(TEXT("Failed To Render Dynamic"));
         return E_FAIL;
     }
-
-    if (FAILED(Render_DynamicVelocity()))
-    {
-        MSG_BOX(TEXT("Failed To Render Dynamic Velocity"));
-        return E_FAIL;
-    }
-
-    //  if (FAILED(Render_Outline()))
-    //  {
-    //      MSG_BOX(TEXT("Failed To Render Outline"));
-    //      return E_FAIL;
-    //  }
     
     if (isEnableSSAO())
         if (FAILED(Render_SSAO()))
@@ -216,12 +204,6 @@ HRESULT CRenderer::Draw()
         return E_FAIL;
     }
 
-    if (FAILED(Render_Fog()))
-    {
-        MSG_BOX(TEXT("Failed To Render Fog"));
-        return E_FAIL;
-    }
-    
     if (FAILED(Render_Brightness()))
     {
         MSG_BOX(TEXT("Failed To Render Brightness"));
@@ -284,6 +266,8 @@ HRESULT CRenderer::Draw()
 
 HRESULT CRenderer::Render_Priority()
 {
+    m_CurRenderGroup = RENDERGROUP::PRIORITY;
+
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"))))
         return E_FAIL;
 
@@ -305,6 +289,8 @@ HRESULT CRenderer::Render_Priority()
 
 HRESULT CRenderer::Render_Shadow()
 {
+    m_CurRenderGroup = RENDERGROUP::SHADOW;
+
     if (FAILED(SetUp_Viewport(g_iMaxWidth, g_iMaxHeight)))
         return E_FAIL;
 
@@ -335,6 +321,8 @@ HRESULT CRenderer::Render_Shadow()
 
 HRESULT CRenderer::Render_Static()
 {
+    m_CurRenderGroup = RENDERGROUP::STATIC;
+
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
         return E_FAIL;
 
@@ -411,6 +399,8 @@ HRESULT CRenderer::Render_Decal()
 
 HRESULT CRenderer::Render_Dynamic()
 {
+    m_CurRenderGroup = RENDERGROUP::DYNAMIC;
+
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"), false)))
         return E_FAIL;
 
@@ -454,6 +444,8 @@ HRESULT CRenderer::Render_DynamicVelocity()
 
 HRESULT CRenderer::Render_Outline()
 {
+    m_CurRenderGroup = RENDERGROUP::OUTLINE;
+
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Outline"))))
         return E_FAIL;
 
@@ -537,6 +529,9 @@ HRESULT CRenderer::Render_Lights()
     if (FAILED(m_pShader->Bind_RawValue("g_fRimIntensity", &m_RimLightDesc.fIntensity, sizeof(_float))))
         return E_FAIL;
 
+    if (FAILED(m_pShader->Bind_RawValue("g_fSpecularAttuenation", &m_fSpecularAttenuation, sizeof(_float))))
+        return E_FAIL;
+
 	_bool isSSAO = isEnableSSAO();
 	if (FAILED(m_pShader->Bind_Bool("g_isEnableSSAO", &isSSAO)))
 		return E_FAIL;
@@ -563,6 +558,9 @@ HRESULT CRenderer::Render_PostScene()
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Diffuse"), m_pShader, "g_DiffuseTexture")))
         return E_FAIL;
 
+    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Emissive"), m_pShader, "g_EmissiveTexture")))
+        return E_FAIL;
+
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Shade"), m_pShader, "g_ShadeTexture")))
         return E_FAIL;
 
@@ -570,6 +568,9 @@ HRESULT CRenderer::Render_PostScene()
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Depth"), m_pShader, "g_DepthTexture")))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Bind_Fog_ShaderResources(m_pShader)))
         return E_FAIL;
 
 #ifdef _DEBUG
@@ -608,7 +609,9 @@ HRESULT CRenderer::Render_PostScene()
 
 HRESULT CRenderer::Render_NonLight()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+    m_CurRenderGroup = RENDERGROUP::NONLIGHT;
+
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
 
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::NONLIGHT)])
@@ -629,7 +632,7 @@ HRESULT CRenderer::Render_NonLight()
 
 HRESULT CRenderer::Render_MotionTrail()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
 
     for (auto& pComponent : m_RenderComponents)
@@ -650,6 +653,8 @@ HRESULT CRenderer::Render_MotionTrail()
 
 HRESULT CRenderer::Render_WeightBlend()
 {
+    m_CurRenderGroup = RENDERGROUP::WEIGHT_BLEND;
+
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_WeightBlend"))))
         return E_FAIL;
 
@@ -669,7 +674,7 @@ HRESULT CRenderer::Render_WeightBlend()
 
     // [2] AccColor, AccAlpha Resolve
 
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_AccumColor"), m_pShader, "g_AccumColorTexture")))
@@ -690,7 +695,9 @@ HRESULT CRenderer::Render_WeightBlend()
 
 HRESULT CRenderer::Render_Blend()
 {
-    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_EmissiveAcc"), false)))
+    m_CurRenderGroup = RENDERGROUP::BLEND;
+
+    if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_PostScene"), false)))
         return E_FAIL;
 
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::BLEND)])
@@ -742,8 +749,8 @@ HRESULT CRenderer::Render_Brightness()
     if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Brightness"))))
         return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Emissive"), m_pShader, "g_EmissiveTexture")))
-        return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_Emissive"), m_pShader, "g_EmissiveTexture")))
+    //      return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_RT_ShaderResource(TEXT("RT_PostScene"), m_pShader, "g_PostSceneTexture")))
         return E_FAIL;
@@ -845,8 +852,8 @@ HRESULT CRenderer::Render_Combined()
 #ifdef _DEBUG
     if (FAILED(m_pShader->Bind_Bool("g_isEnableShadow", &m_isEnableShadow)))
         return E_FAIL;
-    if (FAILED(m_pShader->Bind_Bool("g_isEnableFog", &m_isEnableFog)))
-        return E_FAIL;
+    //  if (FAILED(m_pShader->Bind_Bool("g_isEnableFog", &m_isEnableFog)))
+    //      return E_FAIL;
     if (FAILED(m_pShader->Bind_Bool("g_isEnableOutline", &m_isEnableOutline)))
         return E_FAIL;
     if (FAILED(m_pShader->Bind_Bool("g_isEnableDistortion", &m_isEnableDistortion)))
@@ -959,6 +966,8 @@ HRESULT CRenderer::Render_Distortion()
 
 HRESULT CRenderer::Render_UI()
 {
+    m_CurRenderGroup = RENDERGROUP::UI;
+
     for (auto& pRenderObject : m_RenderObjects[ENUM_CLASS(RENDERGROUP::UI)])
     {
         if (nullptr != pRenderObject)
@@ -1102,11 +1111,11 @@ HRESULT CRenderer::Ready_MRTs()
         return E_FAIL;
 
     /* MRT_EmissiveAcc : Emissive 결과 누적, Blur 적용할 객체들을 설정하는 타겟 */
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_EmissiveAcc"), TEXT("RT_PostScene"))))
-        return E_FAIL;
-
-    if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_EmissiveAcc"), TEXT("RT_Emissive"))))
-        return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_EmissiveAcc"), TEXT("RT_PostScene"))))
+    //      return E_FAIL;
+    //  
+    //  if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_EmissiveAcc"), TEXT("RT_Emissive"))))
+    //      return E_FAIL;
 
     /* MRT_Bloom */
     if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Brightness"), TEXT("RT_Brightness"))))
@@ -1352,15 +1361,6 @@ _bool CRenderer::isEnableSSAO()
 {
 #ifdef _DEBUG
     return m_isEnableSSAO;
-#else
-    return true;
-#endif
-}
-
-_bool CRenderer::isEnableFog()
-{
-#ifdef _DEBUG
-    return m_isEnableFog;
 #else
     return true;
 #endif

@@ -12,6 +12,7 @@
 #include "UI_BladeNexus.h"
 
 #include "Khazan_Spear.h"
+#include "Khazan_GSword.h"
 #include "UI_Announce_MapName.h"
 
 CUI_BladeNexus_Map::CUI_BladeNexus_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -109,6 +110,7 @@ void CUI_BladeNexus_Map::Priority_Update(_float fTimeDelta)
 
     UI_Animation(fTimeDelta);
     m_pBackGround->Priority_Update(fTimeDelta);
+    __super::Priority_Update(fTimeDelta);
 }
 
 void CUI_BladeNexus_Map::Update(_float fTimeDelta)
@@ -348,6 +350,7 @@ void CUI_BladeNexus_Map::Bubble_EventCall(BUBBLEEVENT* pArg)
         if (m_iNexusIndex > -1)
         {
             CClientInstance::GetInstance()->Fade_Out([this]() {this->Move_Player(); });
+            //  Move_Player();
         }
            
         m_IsUpdate = false;
@@ -449,22 +452,75 @@ void CUI_BladeNexus_Map::UI_Animation(_float fTimeDelta)
 
 void CUI_BladeNexus_Map::Move_Player()
 {
-    CClientInstance::GetInstance()->Fade_Out();
-    CKhazan_Spear* pKhazan = static_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Creature_Player"), 0));
-    if (pKhazan == nullptr)
-        MSG_BOX(TEXT("플레이어 없음"));
-    pKhazan->Set_Position(CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->vPos);
+    m_pGameInstance->Emit_Event<EventObject>(ENUM_CLASS(EVENT_TYPE::OBJECT_INTERACT), { EventObject::OffEvent() });
 
+    m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 
-    CClientInstance::GetInstance()->Fade_In();
+    
 
-    EVENT_ANNOUNCE_MAPNAME Desc = {};
-    Desc.fTime = 2.f;
-    Desc.iMapType = ENUM_CLASS(CUI_Announce_MapName::MAP_TYPE::DEFAULT);
-    Desc.fFadeOutTime = 1.0f;
-    Desc.isDissovle = true;
-    Desc.wstrName = CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->strName;
-    m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
+    if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH))
+    {
+        CKhazan_Spear* pKhazan = static_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Creature_Player"), 0));
+        if (pKhazan == nullptr)
+            MSG_BOX(TEXT("플레이어 없음"));
+        pKhazan->Set_Position(CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->vPos);        
+    }
+    else if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::EMBARS))
+    {
+        CKhazan_GSword* pKhazan = static_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(m_pGameInstance->Get_CurrentLevelID(), TEXT("Layer_Creature_Player"), 0));
+        if (pKhazan == nullptr)
+            MSG_BOX(TEXT("플레이어 없음"));
+        pKhazan->Set_Position(CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->vPos);
+    }
+    else
+        return;
+
+    CClientInstance::GetInstance()->DeactivateCamera_InteractMove();
+    CClientInstance::GetInstance()->Camera_InitStartPoseOnce();
+    CClientInstance::GetInstance()->Fade_In([this]() {
+        EVENT_ANNOUNCE_MAPNAME Desc = {};
+        Desc.fTime = 2.f;
+        Desc.iMapType = ENUM_CLASS(CUI_Announce_MapName::MAP_TYPE::DEFAULT);
+        Desc.fFadeOutTime = 1.0f;
+        Desc.isDissovle = true;
+        Desc.wstrName = CClientInstance::GetInstance()->Find_BladeNexus(m_iNexusIndex)->strName;
+        m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
+        });
+
+    LIGHT_DESC LightBackup = *m_pGameInstance->Get_LightDesc(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()));
+    FOG_CONFIG FogBackup = m_pGameInstance->Get_FogConfig();
+
+    // 암전
+    LIGHT_DESC LightDesc{};
+    LightDesc.eType = LightBackup.eType;
+    LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vSpecular = _float4(0.f, 0.f, 0.f, 0.f);
+    LightDesc.vDirection = LightBackup.vDirection;
+    m_pGameInstance->Set_LightDesc(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
+   
+    // 포그 검정
+    FOG_CONFIG BlackFogConfig{};
+    BlackFogConfig = FogBackup;
+    BlackFogConfig.vColor = _float4(0.f, 0.f, 0.f, 0.f);
+    m_pGameInstance->Set_FogConfig(BlackFogConfig);
+
+    // 천천히 밝아지기
+    _float fDuration = 5.f;
+
+    FOG_TRANSITION_DESC FogDesc{};
+    FogDesc.fDensity = FogBackup.fDensity;
+    FogDesc.fBias = FogBackup.fBias;
+    FogDesc.vColor = FogBackup.vColor;
+    FogDesc.isUseHeight = FogBackup.isUseHeight;
+    FogDesc.isUseNoise = false;
+    m_pGameInstance->Start_FogTransition(fDuration, FogDesc);
+
+    LIGHT_TRANSITION_DESC LightTransDesc{};
+    LightTransDesc.fDuration = fDuration;
+    LightTransDesc.vFadeTime = _float2(fDuration, 0.f);
+    LightTransDesc.isReturnToStart = false;
+    m_pGameInstance->Start_LightTransition(TEXT("MainLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightTransDesc, true);
 }
 
 CUI_BladeNexus_Map* CUI_BladeNexus_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iLevel)

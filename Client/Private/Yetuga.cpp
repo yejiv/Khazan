@@ -13,6 +13,7 @@
 #include "Viper.h"
 #include "FSM_Yetuga.h"
 #include "AS_CutScene_Yetuga.h"
+#include "Destructible_Stone.h"
 
 CYetuga::CYetuga(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{ pDevice, pContext }
@@ -26,9 +27,6 @@ CYetuga::CYetuga(const CYetuga& Prototype)
 
 _float4* CYetuga::Get_LockOnPosition()
 {
-    //m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
-    //m_vLockOnPosition = m_pBody->Get_BonePointEX("Holding");
-
     return m_vLockOnPosition;
 }
 
@@ -47,6 +45,22 @@ CAS_CutScene_Yetuga* CYetuga::Get_Yetuga_CutSceneState()
     CFSM_Yetuga* pFSM = static_cast<CFSM_Yetuga*>(m_pController->Get_State_Machine());
     CAS_CutScene_Yetuga* pCutSceneState = pFSM->Get_CutScene_Yetuga();
     return pCutSceneState;
+}
+
+void CYetuga::KnockBack(_vector vDir, _float fPower, _float fLoss)
+{
+    
+    m_isKnockBack = true;
+    m_fKnockBackDir = vDir;
+    m_fKnockBackPower = fPower * 0.5f;
+    m_fKnockBackLoss = fLoss;
+
+    if (m_isBrutalKnockback)
+        return;
+
+    if (Get_IsGroggy() || m_isSuperArmmor)
+        m_isKnockBack = false;
+
 }
 
 
@@ -75,6 +89,21 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimEvent()))
         return E_FAIL;
 
+    m_IceBreathSounds.resize(10);
+
+    m_IceBreathSounds =
+    {
+        TEXT("Mon_efx_yetuga_icebreath_obj_idle_01 (SFX).wav"),
+        TEXT("Mon_efx_yetuga_icebreath_obj_idle_02 (SFX).wav"),
+        TEXT("Mon_efx_yetuga_icebreath_obj_idle_03 (SFX).wav"),
+        TEXT("Mon_efx_yetuga_icebreath_obj_idle_04 (SFX).wav"),
+        TEXT("Mon_efx_yetuga_icebreath_obj_idle_05 (SFX).wav"),
+        TEXT("Mon_efx_yetuga_icebreath_obj_idle_06 (SFX).wav"),
+    };
+
+    if (FAILED(Ready_SFX()))
+        return E_FAIL;
+
 
     m_pController = CAI_Controller_Yetuga::Create(this);
     if (nullptr == m_pController)
@@ -84,6 +113,21 @@ HRESULT CYetuga::Initialize_Clone(void* pArg)
         m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
 
     m_fRecoveryPerSec = 5.f;
+
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::LINEAR)] = { 4.f, 6.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CIRCLE)] = { 5.f, 7.f };
+    m_vDecalSize[ENUM_CLASS(DECALTYPE::CURVE)] = { 4.f, 6.f };
+
+
+    for (size_t i = 0; i < 5; i++)
+    {
+        CDestructible_Stone::STONE_DESC Desc;
+        Desc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
+        Desc.vPos = XMVectorSet(1000.f, 1000.f, 1000.f, 1.f);
+
+        CDestructible_Stone* pStone = dynamic_cast<CDestructible_Stone*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Destructible_Stone"), &Desc));
+        m_pYetugaStones.push_back(pStone);
+    }    
 
     return S_OK;
 }
@@ -130,15 +174,21 @@ void CYetuga::Update(_float fTimeDelta)
 {
     m_pController->Update(this, fTimeDelta);
     
-    if (m_isLookAt)
+    if (m_fCurrentHP > 0.f)
     {
-        CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
-        if (nullptr == pModel)
+        if (this->Get_IsGroggy())
             return;
-        _float fRatio = pModel->MakeRatio();
-        Look_Target_Lerp(fTimeDelta,fRatio,m_fTurnSpeed);
+
+        if (m_isLookAt)
+        {
+            CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+            if (nullptr == pModel)
+                return;
+            _float fRatio = pModel->MakeRatio();
+            Look_Target_Lerp(fTimeDelta, fRatio, m_fTurnSpeed);
+        }
+
     }
-        
 
     if (m_isLanding)
     {
@@ -153,16 +203,12 @@ void CYetuga::Update(_float fTimeDelta)
     // Radial Blur Focus Update
     if (m_pController->Get_BlackBoard()->Get_Value<_bool>(m_strName, "isDetected"))
         m_pGameInstance->Set_RadialBlurCenter(m_pTransformCom->Get_State(STATE::POSITION), 5.f);
-    
-#ifdef _DEBUG
-    //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
-#endif // _DEBUG
-
-    //if (m_pGameInstance->Key_Down(DIK_Z))
-    //{
-    //    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.947f, -11.952f, 226.f, 1.f));
-    //    m_pCharVirCom->Set_Position(XMVectorSet(516.947f, -11.952f, 226.f, 1.f));
-    //}
+   
+    if (m_pGameInstance->Key_Down(DIK_Z))
+    {
+        m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(516.947f, -11.952f, 226.f, 1.f));
+        m_pCharVirCom->Set_Position(XMVectorSet(516.947f, -11.952f, 226.f, 1.f));
+    }
 }
 
 void CYetuga::Late_Update(_float fTimeDelta)
@@ -215,27 +261,27 @@ void CYetuga::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _f
 
         }
 
-        // Decal Spawn
-        _vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
-        _float fOffset = 2.f;
-        _float fPosX = XMVectorGetX(vDecalPos);
-        _float fPosZ = XMVectorGetZ(vDecalPos);
-        vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
-        vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
-        DECAL_DESC Desc{};
-        Desc.fLifeTime = 8.f;
-        Desc.vFadeTime = _float2(0.2f, 0.2f);
-        Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::END)));
-        XMStoreFloat3(&Desc.vPosition, vDecalPos);
-        Desc.vScale = _float3(
-            m_pGameInstance->Rand(4.f, 8.f),
-            2.f, 
-            m_pGameInstance->Rand(4.f, 8.f)
-            );
-        Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
-        Desc.isRandomTexture = true;
+        //// Decal Spawn
+        //_vector vDecalPos = m_pTransformCom->Get_State(STATE::POSITION);
+        //_float fOffset = 2.f;
+        //_float fPosX = XMVectorGetX(vDecalPos);
+        //_float fPosZ = XMVectorGetZ(vDecalPos);
+        //vDecalPos = XMVectorSetX(vDecalPos, m_pGameInstance->Rand(fPosX - fOffset, fPosX + fOffset));
+        //vDecalPos = XMVectorSetZ(vDecalPos, m_pGameInstance->Rand(fPosZ - fOffset, fPosZ + fOffset));
+        //DECAL_DESC Desc{};
+        //Desc.fLifeTime = 8.f;
+        //Desc.vFadeTime = _float2(0.2f, 0.2f);
+        //Desc.eType = static_cast<DECALTYPE>(m_pGameInstance->Rand(0.f, static_cast<_float>(DECALTYPE::EMISSIVE)));
+        //XMStoreFloat3(&Desc.vPosition, vDecalPos);
+        //Desc.vScale = _float3( m_pGameInstance->Rand(4.f, 8.f), 2.f, m_pGameInstance->Rand(4.f, 8.f));
+        //Desc.vColor = _float3(0.2745f, 0.08f, 0.08f);
+        //Desc.isRandomTexture = true;
 
-        m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+        //m_pGameInstance->Spawn_Decal(TEXT("Pool_Decal"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Decal"), Desc);
+        _uint iIndex = m_pController->Get_State_Machine()->Get_CurrentState()->Get_StateIndex();
+        if(iIndex == ENUM_CLASS(YETUGA_STATE::GROGGY) || iIndex == ENUM_CLASS(YETUGA_STATE::HIT))
+            m_pController->Get_State_Machine()->OnCollision(pDesc, iOtherObjectLayer, this);
+
     }
 }
 
@@ -329,6 +375,10 @@ void CYetuga::Pick_Stone()
         TEXT("Layer_Yetuga_Stone"),
         m_pHoldStone
     );
+
+
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_fastball_start_01 (SFX).wav"),1.f);
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_fastball_start_01 (SFX).wav"), 1.f);
 }
 
 void CYetuga::Hold_Stone()
@@ -369,6 +419,10 @@ void CYetuga::Throw_Stone()
 
     CModel* pModel = static_cast<CModel*>(m_pHoldStone->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(1);
+
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_fastball_shoot_01 (SFX).wav"), 1.f);
+    m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_fastball_shoot_01 (SFX).wav"), 1.f);
+
 }
 
 void CYetuga::Grab_Check_Begin(const _char* pBoneName)
@@ -402,7 +456,7 @@ void CYetuga::Pick_Rock()
 
     _vector vLH = XMLoadFloat3(&vLHTemp);
     _vector vRH = XMLoadFloat3(&vRHTemp);
-    _vector vCenterOffset = XMVectorSet(0.f, -0.7f, 0.f, 0.f);
+    _vector vCenterOffset = XMVectorSet(0.f, -1.f, 0.f, 0.f);
     _vector vSpawnTemp = (vLH + vRH) * 0.5f + vCenterOffset;
     _float3 vSpawnPoint = {};
 
@@ -569,6 +623,7 @@ void CYetuga::Breath_Start()
         ENUM_CLASS(LEVEL::HEINMACH),
         TEXT("Layer_Yetuga_Breath"),
         m_pBreath
+
     );
 }
 
@@ -645,10 +700,12 @@ HRESULT CYetuga::Ready_Components()
     //tCharVirDesc.iMaxConstraintIterations = 20;
     //tCharVirDesc.fCollisionTolerance = 0.03f;
     //tCharVirDesc.fPenetrationRecoverySpeed = 1.7f;
-
-    m_tCollisionDesc.pGameObject = this;
+    
+    m_tYetugaChaVir.pGameObject = this;
+    m_tYetugaChaVir.strName = TEXT("tYetugaChaVir");
+    m_tYetugaChaVir.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
     //pCollDesc.pInfo = ?? // 작성하기
-    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+    tCharVirDesc.pCollisionDesc = &m_tYetugaChaVir;
    
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
@@ -778,12 +835,16 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
         m_fTurnSpeed = 40.f;
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         m_pBody->Set_OnAttackCollision(true);
         m_isLookAt = true;
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 0.5f);
         });
     pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
         m_pBody->Set_OnAttackCollision(false);
+
+
         m_isLookAt = false; });
 
     pModel->Register_Event("2Hit_One", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
@@ -798,6 +859,8 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
         m_isLookAt = true; });
     pModel->Register_Event("2Hit_Two", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
         m_pBody->Set_OnAttackCollision(false);
@@ -898,14 +961,14 @@ HRESULT CYetuga::Ready_AnimEvent()
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
         m_isLookAt = true;
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
 
     pModel->Register_Event("Side_L_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(false);
         m_isLookAt = false;
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
 
 
@@ -938,14 +1001,14 @@ HRESULT CYetuga::Ready_AnimEvent()
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(true);
         m_isLookAt = true;
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
 
     pModel->Register_Event("Side_R_Attack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_fTurnSpeed = 40.f;
         m_pBody->Set_OnAttackCollision(false);
         m_isLookAt = false;
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
 
 
@@ -966,6 +1029,10 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Dampsey_First", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
         //Abort_Node(true);
+
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
@@ -991,8 +1058,12 @@ HRESULT CYetuga::Ready_AnimEvent()
 
         Abort_Node(false);
 
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
+
 
         });
     pModel->Register_Event("Dampsey_Second", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -1017,6 +1088,9 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Dampsey_Third", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
        
         Abort_Node(false);
+
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
 
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
@@ -1044,6 +1118,9 @@ HRESULT CYetuga::Ready_AnimEvent()
 
         Abort_Node(false);
 
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
+
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
 
@@ -1069,6 +1146,9 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Dampsey_Final", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
         Abort_Node(false);
+
+        _uint iAttackCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "AttackCount");
+        m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "AttackCount", iAttackCnt + 1);
 
         m_isLookAt = true;
         m_pBody->Set_OnAttackCollision(true);
@@ -1113,13 +1193,13 @@ HRESULT CYetuga::Ready_AnimEvent()
 
     pModel->Register_Event("BackSmashOne", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
         { 
-            m_pBody->Set_OnAttackCollision(true);
+            m_pBody->Set_AttackCollision_Back(true);
             m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
             m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
         });
     pModel->Register_Event("BackSmashOne", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() 
         { 
-            m_pBody->Set_OnAttackCollision(false);
+            m_pBody->Set_AttackCollision_Back(false);
         });
 
     pModel->Register_Event("BackSmashTwo", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
@@ -1170,14 +1250,22 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 #pragma region JumpGrab
 
-   /* "Grab_Hand",
-        "Grab_Hold"*/
+    pModel->Register_Event("Grab_Collider", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pBody->Set_OnAttackCollision(true);
 
+        });
+
+    pModel->Register_Event("Grab_Collider", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pBody->Set_OnAttackCollision(false);
+
+        });
 
     pModel->Register_Event("Jump_Grab_Jump", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "JumpNotify", true);
-            m_pBody->Set_OnAttackCollision(true);
+            //m_pBody->Set_OnAttackCollision(true);
 
             // Radial Blur
             RADIAL_BLUR_DESC Desc{};
@@ -1191,6 +1279,9 @@ HRESULT CYetuga::Ready_AnimEvent()
             Desc.fDuration = 1.5f;
             Desc.vFadeTime = _float2(0.3f, 1.f);
             m_pGameInstance->Start_RadialBlur(Desc);
+
+            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), m_pTransformCom->Get_State(STATE::POSITION));
+
         });
 
     pModel->Register_Event("Jump_Grab_Jump", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -1201,8 +1292,9 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isGhost = true;
-            m_pBody->Set_OnAttackCollision(false);
-
+            
+            CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
+            pTarget->Take_Damage(0.f, HITREACTION::GRAB);
         });
 
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
@@ -1236,6 +1328,12 @@ HRESULT CYetuga::Ready_AnimEvent()
             //  Desc.fSpeed = 2.f;
             //  Desc.iNoiseIndex = 14;
             //  m_pGameInstance->Start_Distortion(Desc);
+
+            CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
+            pTarget->Take_Damage(300.f, HITREACTION::GRAB_FINISHED);
+            CClientInstance::GetInstance()->Set_PlayerInput(true);
+
+
         });
 
     //Grab_After
@@ -1243,8 +1341,8 @@ HRESULT CYetuga::Ready_AnimEvent()
         {
             // 타겟 풀어주기
             m_isGhost = false;
-            CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
-            pTarget->Take_Damage(5.f,HITREACTION::GRAB_FINISHED,nullptr);
+            //CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
+            //pTarget->Take_Damage(5.f,HITREACTION::GRAB_FINISHED,nullptr);
             
         });
 
@@ -1258,6 +1356,9 @@ HRESULT CYetuga::Ready_AnimEvent()
             m_pHead->Set_OnAttackCollision(true);
             m_pBody->Set_AttackCollision_Back(true);
             m_isGhost = true;
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_charge_tackle_run_01 (SFX).wav"), 1.f);
+
+
         });
 
     pModel->Register_Event("RushCheck", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -1265,7 +1366,16 @@ HRESULT CYetuga::Ready_AnimEvent()
             m_pHead->Set_OnAttackCollision(false);
             m_pBody->Set_AttackCollision_Back(false);
             m_isGhost = false;
+
         });
+
+    //charge attack - 달리기 전에 왼발 구르기
+    pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+   
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_charge_tackle_start_01 (SFX).wav"), 1.f);
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        });
+
 
 
 #pragma endregion
@@ -1320,16 +1430,30 @@ HRESULT CYetuga::Ready_AnimEvent()
         CClientInstance::GetInstance()->ActiveCamera_Shaking(3.5f, 1.5f);
         });
 
+    pModel->Register_Event("AMG_SmashEvent", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {       
+        CDestructible_Stone* pStone = m_pYetugaStones.back();
+        m_pYetugaStones.pop_back();
+        pStone->Set_Pos(m_pHoldRock->Get_Transform()->Get_State(STATE::POSITION));
+        m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Stone"), pStone, TIME_CHANNEL::ENEMY);
+        });
+
+
+
 #pragma endregion
 
 #pragma region IceBreath
-    pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Breath_Start(); m_iBreathCount = 0; m_iBreathRotation = -80.f;});
+
+    pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+        Breath_Start(); m_iBreathCount = 0; m_iBreathRotation = -80.f;
+        });
     pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Breath_Loop(); 
 
-    ++ m_iBreathCount ;
-    m_iBreathRotation += 1.5f;
+    Set_SuperArmor(true);
 
-    if (m_iBreathCount > 10)
+    ++ m_iBreathCount ;
+    m_iBreathRotation += 0.8f;
+
+    if (m_iBreathCount > 15)
         m_iBreathCount = 0;
     else
         return;
@@ -1380,12 +1504,52 @@ HRESULT CYetuga::Ready_AnimEvent()
     Q = XMQuaternionMultiply(Q, Q_Yaw);
 
     m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice"), Q, m_pTransformCom->Get_State(STATE::POSITION)); 
+    m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isIceCreate", true);
+
     });
 
     //pModel->Register_Event("IceBreath", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Breath_Start(); }); 
+   
 
-    /*pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Breath_Start(); });
-    pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Breath_Loop(); });*/
+
+    pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        { 
+            Set_SuperArmor(false);
+            CBlackBoard* pBB = m_pController->Get_BlackBoard();
+
+            DIRECTION_INFO Info = {};
+            Info.iDirFlag = pBB->Get_Value<_uint>(m_strName, "TargetDirection");
+            if (Info.Check_Flag(DIRECTION_INFO::F) || Info.Check_Flag(DIRECTION_INFO::L) || Info.Check_Flag(DIRECTION_INFO::R))
+            {
+                if (Info.Check_Flag(DIRECTION_INFO::B))
+                    return;
+
+                _float fDist = pBB->Get_Value<_float>(m_strName, "TargetDist");
+                if (fDist <= 410.f)
+                {
+                    CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
+                    _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+                    _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
+                    _float fDist = pBB->Get_Value<_float>(m_strName, "TargetDist");
+
+                    _float fMinSpeed = 40.f;
+                    _float fMaxSpeed = 20.f;
+                    _float fMinDist = 50.f;
+                    _float fMaxDist = 410.f;
+
+                    _float t = (fDist - fMinDist) / (fMaxDist - fMinDist);
+                    t = clamp(t, 0.f, 1.f);
+                    _float fSpeed = fMinSpeed + (fMaxSpeed - fMinSpeed) * t;
+                    CClientInstance::GetInstance()->ActiveCamera_Shaking(3.f, 0.5f);
+                    CCreature* pDamagedTarget = static_cast<CCreature*>(m_pTarget);
+                    _vector vDir = XMVector3Normalize(vTargetPos - vPosition);
+                    pDamagedTarget->KnockBack(vDir, fSpeed, 60.f);
+                    pDamagedTarget->Take_Damage(150.f, HITREACTION::KNOCKBACK_STRONG);
+                }
+
+            }
+        });
+    //pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { Breath_Loop(); });
     //pModel->Register_Event("IceBreath_Melee", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Breath_Start(); });
 #pragma endregion
 
@@ -1502,13 +1666,17 @@ HRESULT CYetuga::Ready_AnimEvent()
 
 #pragma endregion
 
-
     return S_OK;
     
 }
 
 HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
 {
+
+    CModel* pAnimModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+    if (nullptr == pModel)
+        return E_FAIL;
+
     //5연타 
 
     pModel->Register_Event("Dampsey_First_Snow", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
@@ -1577,58 +1745,58 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
 
-    //charge attack - 달리기 전에 왼발 구르기
-    //pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
-    //    }); 
-
 #pragma region FOOT
     pModel->Register_Event("ChargeTackle_StampFoot_Run0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         Start_DefaultRadialBlur();
+        SFX_Move(1);
+        
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        SFX_Move(1);
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
+        SFX_Move(1);
+
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        SFX_Move(1);
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
+        SFX_Move(1);
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        SFX_Move(1);
         });
-    pModel->Register_Event("ChargeTackle_StampFoot_Run6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+ /*   pModel->Register_Event("ChargeTackle_StampFoot_Run6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
-        });
+        SFX_Move(1);
+        });*/
     pModel->Register_Event("ChargeTackle_StampFoot_Run7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
+        SFX_Move(1);
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        SFX_Move(1);
+
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
+        SFX_Move(1);
         });
     pModel->Register_Event("ChargeTackle_StampFoot_Run10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        SFX_Move(1);
+
         });
 #pragma endregion
 
-
-    ////charge attack - 달리기 전에 왼발 구르기
-    //pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Roar_L"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
-    //    });
-
-    ////charge attack - 달리기 전에 오른발 구르기
-    //pModel->Register_Event("ChargeTackle _StampFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-    //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Roar_R"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
-    //    });
 
     //pModel->Register_Event("BreathMashTwo ", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
     //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), m_pTransformCom->Get_State(STATE::POSITION)));
@@ -1638,10 +1806,7 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     //    m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
     //    });
 
-    //Armageddon 바위던지기
-    //        pModel->Register_Event("Armageddon_RightHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-    //            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
-    //            });
+    //Armageddon 바위던지기 
     //        
     //        pModel->Register_Event("Armageddon_LeftHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
     //            m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_L")));
@@ -1655,6 +1820,10 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
     pModel->Register_Event("IceBreath_Ground", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice"));
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath_obj_exp_04 (SFX).wav"), 1.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath_obj_exp_01 (SFX).wav"), 1.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath_obj_exp_05 (SFX).wav"), 1.f);
+
         _matrix W = m_pTransformCom->Get_WorldMatrix();
         _vector S, Q, T;
 
@@ -1677,13 +1846,13 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Ice_Disappear"), Q, W.r[3]);
         });
 
-    pModel->Register_Event("RushGrab_LandSnow", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    pModel->Register_Event("RushGrab_LandSnow ", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), m_pTransformCom->Get_State(STATE::POSITION));
         });
     pModel->Register_Event("RushGrab_JumpUp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Up"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_SnowUp"), m_pTransformCom->Get_State(STATE::POSITION));
         });
-    pModel->Register_Event("RushGrab_Land", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    pModel->Register_Event("RushGrab_Land ", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), m_pTransformCom->Get_State(STATE::POSITION));
         });
 
@@ -1691,11 +1860,11 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Big"), m_pTransformCom->Get_State(STATE::POSITION));
         });
     pModel->Register_Event("JumpBackPress_StandFoot", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-L-Foot")));
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointEX("Bip001-R-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
         });
     pModel->Register_Event("JumpBackPress_HandSmash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointEX("Weapon_R")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
 
     //Dodge
@@ -1803,6 +1972,7 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
 
+    //Armageddon 바위던지기
     pModel->Register_Event("Armageddon_RightHand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
         });
@@ -1810,14 +1980,638 @@ HRESULT CYetuga::Ready_AnimEffectEvent(CModel* pModel)
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
     pModel->Register_Event("Armageddon_Jump", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), m_pTransformCom->Get_State(STATE::POSITION));
+        //손 중간이어야됨
+        //m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), m_pTransformCom->Get_State(STATE::POSITION)); 
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), m_pHoldRock->Get_Transform()->Get_WorldMatrix().r[3]);
         });
     pModel->Register_Event("Armageddon_Jump", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
         });
+
+    pModel->Register_Event("Walk_FootL0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        });
+    pModel->Register_Event("Walk_FootR0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
+        });
+    pModel->Register_Event("Run_FootL0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        });
+    pModel->Register_Event("Run_FootR0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
+        });
+    pModel->Register_Event("TurnL_FootL0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        });
+    pModel->Register_Event("TurnL_FootR0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
+        });
+
+    //pModel->Register_Event("Roar0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+    //    });
+    //pModel->Register_Event("Roar0_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+    //    });
+    //pModel->Register_Event("Roar0_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+    //    });
+
+    pModel->Register_Event("A_LHand0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
+        });
+    pModel->Register_Event("A_LHand1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
+        });
+    pModel->Register_Event("A_LHand2_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
+        });
+    pModel->Register_Event("A_LHand3_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
+        });
+    pModel->Register_Event("A_RHand0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
+        });
+    pModel->Register_Event("A_RHand1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
+        });
+    pModel->Register_Event("A_RHand2_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
+        });
+    pModel->Register_Event("A_RHand3_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
+        });
+
+    pModel->Register_Event("Roar2_LHand0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
+        });
+    pModel->Register_Event("Roar2_LHand1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
+        });
+    pModel->Register_Event("Roar2_LHand2_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
+        });
+    pModel->Register_Event("Roar2_LHand3_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
+        });
+    pModel->Register_Event("Roar2_LHand4_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_L")));
+        });
+    pModel->Register_Event("Roar2_RHand0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
+        });
+    pModel->Register_Event("Roar2_RHand1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
+        });
+    pModel->Register_Event("Roar2_RHand2_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
+        });
+    pModel->Register_Event("Roar2_RHand3_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
+        });
+    pModel->Register_Event("Roar2_RHand4_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_DropSnow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
+        });
+
+    pModel->Register_Event("RushGrab_Foot_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        });
+     
+    pModel->Register_Event("Roar2_Ground_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
+        });
+
+    //        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Focus"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-Head")));
+
+    
+    pModel->Register_Event("Roar0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_iFX_ID_Roar = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), m_pBody->Get_BoneMatrix("Bip001-Head"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-Head")));
+        });
+    pModel->Register_Event("Roar0_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        //m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), m_iFX_ID_Roar, m_pBody->Get_BoneMatrix("Bip001-Head"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-Head")));
+        });
+    pModel->Register_Event("Roar0_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        //m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), m_iFX_ID_Roar);
+        });
+    pModel->Register_Event("Roar1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_iFX_ID_Roar = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), m_pBody->Get_BoneMatrix("Bip001-Head"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-Head")));
+        });
+    pModel->Register_Event("Roar1_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        //m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), m_iFX_ID_Roar, m_pBody->Get_BoneMatrix("Bip001-Head"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-Head")));
+        });
+    pModel->Register_Event("Roar1_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        //m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), m_iFX_ID_Roar);
+        });
+    pModel->Register_Event("A_Roar_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_iFX_ID_Roar = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), m_pBody->Get_BoneMatrix("Bip001-Head"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-Head")));
+        });
+    pModel->Register_Event("A_Roar_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        //m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), m_iFX_ID_Roar, m_pBody->Get_BoneMatrix("Bip001-Head"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-Head")));
+        });
+    pModel->Register_Event("A_Roar_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        //m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), m_iFX_ID_Roar);
+        });
+    pModel->Register_Event("StaminaRecover_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_iFX_ID_Roar = m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), m_pBody->Get_BoneMatrix("Bip001-Head"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-Head")));
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        });
+    pModel->Register_Event("StaminaRecover_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
+        m_pGameInstance->Update_Effect_World(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), m_iFX_ID_Roar, m_pBody->Get_BoneMatrix("Bip001-Head"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-Head")));
+        });
+    pModel->Register_Event("StaminaRecover_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        //m_pGameInstance->Stop_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Roar"), m_iFX_ID_Roar);
+        });
+
+
+    pModel->Register_Event("ChargeTackle_StunSmoke", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-Head")));
+        });
+    pModel->Register_Event("ChargeTackle_StunStamp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        });
+    pModel->Register_Event("Run_StunDown_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Weapon_R")));
+        });
+    pModel->Register_Event("ChargeTackle_FootL0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        });
+    pModel->Register_Event("ChargeTackle_FootL1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-L-Foot")));
+        });
+    pModel->Register_Event("ChargeTackle_FootR0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pGameInstance->Spawn_Effect(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Yetuga_Snow_Small"), XMLoadFloat4(m_pBody->Get_BonePointVFX("Bip001-R-Foot")));
+        });
+
     return S_OK;
 
 }
+
+
+
+HRESULT CYetuga::Ready_SFX()
+{
+    //Mon_vo_yetuga_dmg_weak_01 (SFX).wav
+    CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+    if (nullptr == pModel)
+        return E_FAIL;
+
+
+#pragma region RUN
+
+    pModel->Register_Event("SFX_Run_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_Move(1); });
+    pModel->Register_Event("SFX_Run_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_Move(1); });
+
+#pragma endregion
+
+#pragma region SPRINT
+
+    pModel->Register_Event("SFX_Sprint_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_Move(2); });
+    pModel->Register_Event("SFX_Sprint_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_Move(2); });
+
+#pragma endregion
+
+#pragma region LOCKON
+
+    pModel->Register_Event("SFX_LockOn_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_Move(3); });
+    pModel->Register_Event("SFX_LockOn_R", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_Move(3); });
+
+
+    pModel->Register_Event("SFX_LockOn_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_Move(4); });
+    pModel->Register_Event("SFX_LockOn_L", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_Move(4); });
+
+#pragma endregion
+
+#pragma region 2Hit
+  
+    pModel->Register_Event("SFX_NormalAttack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_normal_atk1_01 (SFX).wav"), 1.f);
+        });
+    pModel->Register_Event("SFX_NormalAttack_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+        { 
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_normal_atk2_02 (SFX).wav"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_NormalAttackVO", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_normal_atk2_01 (SFX).wav"), 1.f);
+        });
+    pModel->Register_Event("SFX_NormalAttackVO", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_normal_atk2_02 (SFX).wav"), 1.f);
+        });
+
+#pragma endregion
+
+#pragma region BACKMOVE
+
+    pModel->Register_Event("SFX_BackMove1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_01 (SFX).wav"), 1.f);
+        });
+    pModel->Register_Event("SFX_BackMove2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_02 (SFX).wavs"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_Dodge", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move1_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_move1_03 (SFX).wav"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_BackMove2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_move2_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_icebreath_back_jump_01 (SFX).wav"), 1.f);
+        });
+
+#pragma endregion
+
+#pragma region BACKJUMP
+    pModel->Register_Event("SFX_BackJump1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_back_jump_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_back_jump_01 (SFX).wav"), 1.f);
+        });
+#pragma endregion
+
+#pragma region COUNTERATTACK
+    pModel->Register_Event("SFX_CounterAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_counter_atk_impact2_01 (SFX).wav"), 1.f);
+        });
+    pModel->Register_Event("SFX_CounterAttack1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_counter_atk_impact1_01 (SFX).wav"), 1.f);
+        });
+    pModel->Register_Event("SFX_CounterAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_counter_atk_foley_01 (SFX).wav"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_CounterAttackVO", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_counter_atk_01 (SFX).wav"), 1.f);
+        });
+
+#pragma endregion
+
+#pragma region TURNATTACK
+
+    pModel->Register_Event("SFX_TrunAttack1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_turn_atk_01 (SFX).wav"), 1.f);
+        });
+    pModel->Register_Event("SFX_TrunAttack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_turn_atk_whoosh_01 (SFX).wav"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_TurnAttackVO", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_turn_atk_01 (SFX).wav"), 1.f);
+        });
+    
+#pragma endregion
+
+#pragma region SIDEMOVELONG
+
+    pModel->Register_Event("SFX_SideMoveLong_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_side_move_long_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_side_move_long_01 (SFX).wav"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_SideMoveLong_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_side_move_long_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_side_move_long_01 (SFX).wav"), 1.f);
+        });
+
+#pragma endregion
+
+#pragma region BACKPRESS
+
+    pModel->Register_Event("SFX_BackPress", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_jump_back_press_01 (SFX).wav"), 1.f);
+        });
+
+
+    pModel->Register_Event("SFX_BackPressVO", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_jump_back_press_1_01 (SFX).wav"), 1.f);
+
+        });
+
+    pModel->Register_Event("SFX_BackPressVO", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_jump_back_press_2_01 (SFX).wav"), 1.f);
+        });
+
+#pragma endregion
+
+#pragma region THROWBALL
+
+    pModel->Register_Event("SFX_ThrowBallEnd", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_fastball_end1_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath2_01 (SFX).wav"), 1.f);
+        });
+
+#pragma endregion
+
+#pragma region DASHATTACK
+
+    pModel->Register_Event("SFX_DashAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_dash_atk_foley_01 (SFX).wav"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_DashAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_dash_atk_impact_01(SFX).wav"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_DashAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dash_atk_01 (SFX).wav"), 1.f);
+        });
+
+#pragma endregion
+
+#pragma region ARMAGEDDON
+
+    pModel->Register_Event("SFX_Armageddon_Start_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_armageddon_start_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_armageddon_start_01 (SFX).wav"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_Armageddon_Start_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_armageddon_start_impact1_01 (SFX).wav"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_Armageddon_Start_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_armageddon_start_impact2_01 (SFX).wav"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_Armageddon_Start_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_armageddon_start_up_01 (SFX).wav"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_Armageddon_JumpStart1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_armageddon_jump_start_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_armageddon_jump_start_01 (SFX).wav"), 1.f);
+         
+        });
+
+    pModel->Register_Event("SFX_Armageddon_JumpStart2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_armageddon_wing_whoosh_01 (SFX).wav"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_Armageddon_JumpEnd", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_armageddon_jump_end_foley_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_armageddon_jump_end_01 (SFX).wav"), 1.f);
+        });
+
+    pModel->Register_Event("SFX_ArmageddonEndVO", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_armageddon_end_01 (SFX).wav"), 1.f);
+        });
+
+#pragma endregion
+
+#pragma region ICEBREATH
+
+    pModel->Register_Event("SFX_IceBreathEnd", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_icebreath2_01 (SFX).wav"), 1.f);
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isIceCreate", false);
+
+           
+        });
+    pModel->Register_Event("SFX_IceBreathVO_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_icebreath1_01 (SFX).wav"), 1.f);
+
+        });
+
+    pModel->Register_Event("SFX_IceBreathVO_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_icebreath1_roar_01 (SFX).wav"), 1.f);
+
+        });
+
+    pModel->Register_Event("SFX_IceBreathVO_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_icebreath_end_01 (SFX).wav"), 1.f);
+
+        });
+
+#pragma endregion
+
+#pragma region ROAR
+
+    pModel->Register_Event("SFX_Roar", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            //m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_roar2_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 8.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_roar2_02 (SFX).wav"), 1.f);
+        });
+    pModel->Register_Event("SFX_Roar", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_roar2_01 (SFX).wav"), 1.f);
+
+        });
+
+#pragma endregion
+
+#pragma region JUMPGRAB
+ 
+    pModel->Register_Event("SFX_GrabSuccess_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_rush_grab_success_up_01 (SFX).wav"), 1.f);
+        });
+    pModel->Register_Event("SFX_GrabSuccess_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_rush_grab_success_jump_01 (SFX).wav"), 1.f);
+        });
+
+
+    pModel->Register_Event("SFX_GrabSuccess_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_rush_grab_success_down_01 (SFX).wav"), 1.f);
+        });
+    pModel->Register_Event("SFX_GrabSuccess_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_rush_grab_success_end_01 (SFX).wav"), 1.f);
+        });
+
+#pragma endregion
+
+#pragma region STAMINARECOVER
+
+    pModel->Register_Event("SFX_StaminaRecover", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_stamina_recover_roar_01 (SFX).wav"), 1.f);
+        });
+
+#pragma endregion
+
+    return S_OK;
+}
+
+
+void CYetuga::SFX_Move(_uint iIndex)
+{
+
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 6);
+
+
+    switch (iIndex)
+    {
+    case 1 :
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_run_foot_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_run_foot_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_run_foot_03 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 3)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_run_foot_04 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 4)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_run_foot_05 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 5)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_run_foot_06 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 6)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_run_foot_07 (SFX).wav"), 1.f);
+
+        break;
+
+    case 2:
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_sprint_foot_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_sprint_foot_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_sprint_foot_03 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 3)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_sprint_foot_04 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 4)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_sprint_foot_05 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 5)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_sprint_foot_06 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 6)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_sprint_foot_07 (SFX).wav"), 1.f);
+
+        break;
+
+    case 3:
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_down_01(SFX).wav"), 1.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_down_02(SFX).wav"), 1.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_down_03(SFX).wav"), 1.f);
+        else if (iSoundIndex == 3)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_down_04(SFX).wav"), 1.f);
+        else if (iSoundIndex == 4)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_down_05(SFX).wav"), 1.f);
+        else if (iSoundIndex == 5)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_down_06(SFX).wav"), 1.f);
+        else if (iSoundIndex == 6)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_down_01(SFX).wav"), 1.f);
+        break;
+
+
+    case 4:
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_up_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_up_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_up_03 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 3)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_up_04 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 4)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_up_05 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 5)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_up_06 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 6)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_yetuga_lookonmove_foot_l_r_up_02 (SFX).wav"), 1.f);
+        break;
+
+
+
+    }
+}
+
+void CYetuga::SFX_HIT(_uint iHitIndex)
+{
+
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 5);
+
+    if (iHitIndex == 0)
+    {
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_weak_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_weak_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_weak_03 (SFX).wav"), 1.f);
+
+        else if (iSoundIndex == 3)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_weak_04 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 4)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_weak_05 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 5)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_weak_06 (SFX).wav"), 1.f);
+
+    }
+    else if (iHitIndex == 1)
+    {
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_nomal_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_nomal_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_nomal_03 (SFX).wav"), 1.f);
+
+        else if (iSoundIndex == 3)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_nomal_04 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 4)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_nomal_05 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 5)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_nomal_06 (SFX).wav"), 1.f);
+    }
+
+
+    else if (iHitIndex == 2)
+    {
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_strong_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_strong_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_strong_03 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 3)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_strong_04 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 4)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_strong_05 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 5)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_dmg_strong_06 (SFX).wav"), 1.f);
+    }
+
+}
+
 
 CYetuga* CYetuga::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
@@ -1854,7 +2648,6 @@ void CYetuga::Free()
 
     if (m_pBreath)
         m_pBreath->Set_IsDead(true);
-
 
     __super::Free();
 }

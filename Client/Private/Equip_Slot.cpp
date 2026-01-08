@@ -20,7 +20,7 @@ CEquip_Slot::CEquip_Slot(const CEquip_Slot& Prototype)
 {
 }
 
-_bool CEquip_Slot::Add_Item(_int iItemIndex, CItem_Slot* pItem)
+_bool CEquip_Slot::Add_Item(_int iItemIndex, CItem_Slot* pItem, _bool isSetting)
 {
     if (m_pItem_Slot == pItem)
     {
@@ -63,7 +63,7 @@ _bool CEquip_Slot::Add_Item(_int iItemIndex, CItem_Slot* pItem)
             EventDesc.iItemCount = m_pItem_Slot->Get_ptrItemCount();
             m_pGameInstance->Emit_Event<EVENT_HUD_QUICKSLOT>(ENUM_CLASS(EVENT_TYPE::UI_QUICK_SLOT), EventDesc);
         }
-        else
+        else if (isSetting)
         {
             EQUIPITEM_DATA pEquipData = *CClientInstance::GetInstance()->Get_Data<EQUIPITEM_DATA>(ItemData.iEffect_ID);
             Setting_EquipData(pEquipData);
@@ -104,15 +104,15 @@ void CEquip_Slot::Release_Item(CItem_Slot* pItem)
         Setting_UnEquipData(pEquipData);
 
         if (pEquipData.iType == ENUM_CLASS(EQUIPMENTTYPE::HEAD))
-            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 1);
+            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 21);
         else if (pEquipData.iType == ENUM_CLASS(EQUIPMENTTYPE::TORSO))
-            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 2);
+            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 30);
         else if (pEquipData.iType == ENUM_CLASS(EQUIPMENTTYPE::ARM))
-            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 3);
+            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 40);
         else if (pEquipData.iType == ENUM_CLASS(EQUIPMENTTYPE::LEG))
-            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 4);
+            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 50);
         else if (pEquipData.iType == ENUM_CLASS(EQUIPMENTTYPE::SHOES))
-            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 5);
+            CClientInstance::GetInstance()->Change_PlayerEquipment((EQUIPMENTTYPE)pEquipData.iType, 60);
     }
     Safe_Release(m_pItem_Slot);
     m_pItem_Slot = nullptr;
@@ -313,7 +313,7 @@ HRESULT CEquip_Slot::Ready_Children()
         EVENT_HUD_QUICKSLOT EventDesc = {};
         EventDesc.isEquip = true;
         EventDesc.iIndex = 0;
-        EventDesc.iItemCount = &m_iSouleCount;
+        EventDesc.iItemCount = &CClientInstance::GetInstance()->Get_ptrPlayerData().iSouleCount;
         m_pGameInstance->Emit_Event<EVENT_HUD_QUICKSLOT>(ENUM_CLASS(EVENT_TYPE::UI_QUICK_SLOT), EventDesc);
     }
     return S_OK;

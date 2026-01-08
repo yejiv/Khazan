@@ -3,6 +3,9 @@
 #include "UI_Announce_MapName.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
+#include "UI_HUD.h"
+#include "Khazan_Spear.h"
+#include "Body_Khazan_Spear.h"
 
 CSequence_HeinMach_Field::CSequence_HeinMach_Field(CCamera_Compre* pCamera)
     : m_pCamera_Compre { pCamera }
@@ -19,6 +22,7 @@ HRESULT CSequence_HeinMach_Field::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 
 	string filePath = "../../Client/Bin/Data/Camera/Animation/HeinMach";
     CClientInstance::GetInstance()->Camera_Set_Animation_Json(filePath);
+    CClientInstance::GetInstance()->Set_PlayerInput(false, true);    
 
     return S_OK;
 }
@@ -30,34 +34,49 @@ void CSequence_HeinMach_Field::Update(_float fTimeDelta)
 
     if (!m_isCameraStart)
     {
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
         m_pCamera_Compre->Set_Animation(TEXT("HeinMach"));
-
+        CKhazan_Spear* pPlayer = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")));
+        pPlayer->Get_Khazan_Body()->Set_AllPlaySound(false);
         m_isCameraStart = true;
     }
 
     if (m_fTime >= 5.f && !m_isFieldName)
     {
 		EVENT_ANNOUNCE_MAPNAME Desc = {};
-		//화면에 표시할 시간
 		Desc.fTime = 2.f;
 
-		//표시할 지역 이름
 		Desc.iMapType = ENUM_CLASS(CUI_Announce_MapName::MAP_TYPE::HEINMACH);
 
-		//페이드 아웃 시간
 		Desc.fFadeOutTime = 2.0f;
 
-		//디죨부 처리 여부
 		Desc.isDissovle = true;
 
-		//이벤트 발생시키기	
 		m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_MAPNAME>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_MAPNAME), Desc);
 
 		m_isFieldName = true;
     }
 
+    if (m_fTime >= 8.f && !m_isSoundChange)
+    {
+        m_isSoundChange = true;
+
+        CClientInstance::GetInstance()->BGM_HeinMach_Dawn(6.3f);
+    }
+
+    if (m_fTime > 14.3f && !m_isPlayerInput)
+    {
+        CClientInstance::GetInstance()->Set_PlayerInput(true);
+        static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+    }
+
     if (m_fTime >= 16.f)
+    {              
+        CKhazan_Spear* pPlayer = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Creature_Player")));
+        pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
         m_State = STATE::End;
+    }
+        
 }
 
 void CSequence_HeinMach_Field::Pause()

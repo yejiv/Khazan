@@ -30,6 +30,20 @@ HRESULT CLoadingObj_BN::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(pArg), E_FAIL);
 
+    LIGHT_DESC LightDesc = {};
+
+    LightDesc.eType = LIGHT_DESC::TYPE::POINT;
+
+    LightDesc.vDiffuse = _float4(0.9f, 0.05f, 0.05f, 1.f);
+    LightDesc.vAmbient = _float4(0.28f, 0.18f, 0.18f, 1.f);
+    LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
+    XMStoreFloat4(&LightDesc.vPosition, m_pTransformCom->Get_State(STATE::POSITION));
+    LightDesc.vPosition.y += 2.f;
+
+    LightDesc.fRange = 7.5f;
+
+    m_pGameInstance->Add_Light(TEXT("BladeNexus_Loading"), ENUM_CLASS(LEVEL::LOADING), LightDesc, true);
+
     m_eAnimState = ANIM_STATE::AFTER_IDLE;
     m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
     m_pModelCom->Set_AnimationLoop(true);
@@ -62,7 +76,7 @@ HRESULT CLoadingObj_BN::Render()
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-    _float fIntensity = 10.f;
+    _float fIntensity = 5.f;
     if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fIntensity, sizeof(_float))))
         return E_FAIL;
 
@@ -82,13 +96,19 @@ HRESULT CLoadingObj_BN::Render()
     for (_uint i = 0; i < iNumMeshes; ++i)
     {
         Bind_Materials(i);
-
-        _bool isBNEye = { 5 == i };
-        m_pShaderCom->Bind_RawValue("g_isBNEye", &isBNEye, sizeof(_bool));
-
+        
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(8), E_FAIL);
+        if (i == 1)
+        {
+            _float4 vCristalColor = _float4(3.5f, 1.f, 1.f, 1.f);
+            if (FAILED(m_pShaderCom->Bind_RawValue("g_vCristalColor", &vCristalColor, sizeof(_float4))))
+                return E_FAIL;
+
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(27), E_FAIL);
+        }
+        else
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(8), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -143,6 +163,7 @@ void CLoadingObj_BN::Animation_Update(_float fTimeDelta)
         // 해금 전 IDLE 상태
         if (ANIM_STATE::BEFORE_IDLE == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_TS_On"), m_fInteract_Volume);
             // 처음 상호 작용 시
             m_eAnimState = ANIM_STATE::BEFORE_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));
@@ -151,6 +172,7 @@ void CLoadingObj_BN::Animation_Update(_float fTimeDelta)
         // 해금 후 IDLE 상태
         else if (ANIM_STATE::AFTER_IDLE == m_eAnimState)
         {
+            SoundOnce(TEXT("IP_TS_On"), m_fInteract_Volume);
             // 2번 이상의 상호 작용 시
             m_eAnimState = ANIM_STATE::AFTER_START;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));

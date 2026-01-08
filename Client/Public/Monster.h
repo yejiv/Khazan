@@ -48,7 +48,7 @@ protected:
 	virtual ~CMonster() = default;
 
 public:
-	CAI_Controller*				Get_Controller() const { return m_pController; }
+ 	CAI_Controller*				Get_Controller() const { return m_pController; }
 	_float						Get_CoolTimeAcc() const { return m_fCoolTimeAcc; }
 	const string&				Get_Name() const { return m_strName; }
 	virtual _float4*			Get_LockOnPosition() const { return m_vLockOnPosition; }
@@ -58,6 +58,7 @@ public:
     void						CheckMinDistanceWithPlayer(_float MinDist, _float fAnimRatio);
     _bool                       Get_isSleep();
     _bool                       Get_IsGroggy();
+    void                        Set_SuperArmor(_bool isToggle);
 
 public:
 	virtual void				Take_Damage(_float fDamage, HITREACTION eHitreaction,CGameObject* pGameObject = nullptr) override;
@@ -79,13 +80,11 @@ public:
 
 
 protected:
-	//CRigidBody*						m_pRigidBodyCom = { nullptr };
-
-protected:
 	class CAI_Controller*			m_pController = { nullptr };
 	class CGameObject*				m_pTarget = { nullptr };
 
 protected:
+    _float4x4                       m_OriginMat = {};
 	unordered_map<string, _float>	m_CoolDowns;
 	_float							m_fCoolTimeAcc = {};
 	_float4*						m_vLockOnPosition = {};
@@ -102,6 +101,11 @@ protected:
 
     _bool                           m_isDeadFlag = { false };
 
+    _float2                         m_vDecalSize[ENUM_CLASS(DECALTYPE::END)] = {};
+
+    _float                          m_fDissolveTime = {};
+    _bool                           m_isDissolve = {};
+    _bool                           m_isSuperArmmor = { false };
 //private:
 //	HRESULT Ready_Components();
 

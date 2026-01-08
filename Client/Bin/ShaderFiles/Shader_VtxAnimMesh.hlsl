@@ -31,9 +31,6 @@ bool g_isSpecular = false;
 bool g_isMetalic = false;
 bool g_isRoughness = false;
 
-// 귀검 관련 전역 변수
-bool g_isBNEye = false;
-
 /* 모델 전체 뼈기준(x) */
 /* 특정 메시에 영향ㅇ르 주는 뼈들 */
 matrix g_BoneMatrices[512];
@@ -58,6 +55,7 @@ float g_fRimPower, g_fRimLightIntensity;
 // 귀검
 float g_fColorRatio;
 float3 g_vRimColor;
+float4 g_vCristalColor;
 
 // Blink RimLight
 float g_fTimeDelta;
@@ -75,10 +73,37 @@ float4  g_fEdgeColor;
 // Viper
 bool g_HasEmissive;
 float g_fGreenIntensity = 1.f;
+bool g_isEnableRimLight, g_isBlinkRimLight;
+float g_fMinRimIntensity;
+bool g_isMaskDiffuse = false;
 
 // Imp
 float g_fDiffusePower = 1.f;
 float g_fBluePower = 1.f;
+
+//눈 관련 값
+float4 g_vEyeWhiteColor;            //눈 흰자
+float4 g_vPupilCircle;              //홍채
+float4 g_vPupilLens;                //홍채 내부
+float4 g_vPupilRing;                //홍채 외곽 강조
+float4 g_vShadingColor;             //조명 조정 및 빛 반사
+float g_PupilScale;                 //동공 크기
+
+float g_IrisRadius;
+float g_PupilRadius;
+float g_RingWidth;
+
+// Player
+bool g_isEnableHealRimLight;
+
+// TombStone
+float g_fDiffuseBluePower;
+
+// Gear
+float3 g_vRuneColor;
+
+// Yetuga
+float g_fAlpha;
 
 struct VS_IN
 {
@@ -262,7 +287,6 @@ PS_OUT PS_MAIN_NONPICK(PS_IN In)
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
     float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
-    
     float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
     vNormal = mul(vNormal, WorldMatrix);
     
@@ -455,18 +479,13 @@ PS_OUT PS_BLADENEXUS(PS_IN In)
         vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
     }
     
-    //  Out.vDiffuse = vMtrlDiffuse * vMtrlSpecular * g_fEmissiveIntensity;
     vMtrlDiffuse.g = 0.f;
-    Out.vDiffuse = lerp(vMtrlDiffuse, vMtrlSpecular, g_fColorRatio) * g_fEmissiveIntensity;
-    //  Out.vDiffuse = vMtrlMetalic;
-    // Out.vDiffuse = vMtrlSpecular * 10.f;
-    
+    //  Out.vDiffuse = lerp(vMtrlDiffuse, vMtrlSpecular, g_fColorRatio) * g_fEmissiveIntensity;    
     Out.vNormal = vector(vMtrlNormal);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
     Out.vWorld = In.vWorldPos;
-    //  Out.vEmissive = vMtrlEmissive;
-    
-    //  Out.vEmissive = vMtrlSpecular * 2.f;
+    // Test
+    Out.vEmissive = lerp(vMtrlDiffuse, vMtrlSpecular, g_fColorRatio) * g_fEmissiveIntensity;
 
     return Out;
 }
@@ -510,11 +529,12 @@ PS_OUT PS_MAP_ANIM(PS_IN In)
         vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
     }
     
-    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
-    if (IsFlag(M_ROUGHNESS))
-    {
-        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
-    }
+    // 미사용으로 주석 처리
+    //vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    //if (IsFlag(M_ROUGHNESS))
+    //{
+    //    vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    //}
     
     Out.vDiffuse = vMtrlDiffuse;
     Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
@@ -523,6 +543,33 @@ PS_OUT PS_MAP_ANIM(PS_IN In)
     Out.vSpecular = vMtrlSpecular;
     Out.vSpecular.a = 0.f;
     Out.vEmissive = vMtrlEmissive;
+
+    return Out;
+}
+
+PS_OUT PS_RUNE_EMISSIVE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    float4 vMaskTexture = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    float fRuneMask = vMaskTexture.r;
+    float fGreenMask = vMaskTexture.g;
+    float fBlueMask = vMaskTexture.b;
+
+    float4 vResultColor = float4(0.f, 0.f, 0.f, 1.f);
+    
+    if (IsFlag(M_EMISSIVE))
+    {
+        vResultColor = float4(g_vRuneColor, 1.f) * fRuneMask * g_fEmissiveIntensity;
+        vResultColor *= fGreenMask * fBlueMask;
+    }
+
+    Out.vDiffuse = vResultColor;
+    Out.vNormal = float4(0.f, 0.f, 0.f, 0.f);
+    Out.vSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
 
     return Out;
 }
@@ -550,7 +597,7 @@ PS_OUT PS_LANTERN(PS_IN In)
     float fEmissvie = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord).g;
 
     Out.vEmissive = float4(fEmissvie, fEmissvie, fEmissvie, 1.f);
-    //  Out.vEmissive *= 2.f;
+    Out.vEmissive *= g_fEmissiveIntensity;
     
     return Out;
 }
@@ -826,7 +873,8 @@ PS_OUT PS_MAIN_SHIELD_EMISSIVE(PS_IN In)
     if (vEmissive.g >= 0.95f)
     {
         float3 vColor = { 2.455f, 1.937f, 2.784f };
-        Out.vDiffuse.rgb = Out.vDiffuse.rgb + vColor * 0.3f * g_fEmissiveValue;
+        //  Out.vDiffuse.rgb = Out.vDiffuse.rgb + vColor * 0.3f * g_fEmissiveValue;
+        Out.vEmissive.rgb = Out.vDiffuse.rgb + vColor * 0.3f * g_fEmissiveValue;
     }
     
     Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
@@ -910,6 +958,25 @@ PS_OUT PS_VIPER(PS_IN In)
 
     Out.vDiffuse = vMtrlDiffuse;
     
+    // Rim Light
+    if (g_isEnableRimLight)
+    {
+        vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+        float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+        fRim = pow(fRim, g_fRimPower);
+        float fFinalIntensity = g_vRimColor * fRim * g_fRimLightIntensity;
+        
+        if (g_isBlinkRimLight)
+        {
+            fFinalIntensity = g_fRimLightIntensity / 2.f * (1.f + cos(g_fTimeDelta * g_fCycleSpeed));
+            fFinalIntensity = clamp(fFinalIntensity, g_fMinRimIntensity, 1.f);
+        }
+        
+        float3 vRimColor = g_vRimColor * fRim * fFinalIntensity;
+
+        Out.vDiffuse.rgb = vMtrlDiffuse.rgb + vRimColor * g_fRimEmissive; // Rim Emissive
+    }
+
     return Out;
 }
 
@@ -945,7 +1012,609 @@ PS_OUT PS_IMP(PS_IN In)
     // Diffuse 어두운 문제로 임의값 곱해주기 3~5
     Out.vDiffuse.b *= g_fBluePower;
     Out.vDiffuse *= g_fDiffusePower;
+
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, Out.vDiffuse);
+
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
     
+    return Out;
+}
+
+PS_OUT PS_DANJINJAR(PS_IN In)
+{    
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+
+    // Rim Light
+    vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+    float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+    fRim = pow(fRim, g_fRimPower);
+
+    float3 vRimColor = g_vRimColor * fRim * g_fRimLightIntensity;
+    
+    Out.vDiffuse = vMtrlDiffuse + float4(vRimColor, 1.f) * g_fRimEmissive;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.a = 0.f;
+    Out.vEmissive = vMtrlDiffuse * g_fDiffusePower;
+    
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMtrlMetalic.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMtrlMetalic.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+
+    return Out;
+}
+
+PS_OUT PS_MAIN_DISSOLVE_EYE_ELAMEIN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float4 EyeWhiteColor = float4(0.760417, 0.760417, 0.760417, 1.0);
+    float4 PupilRing = float4(0.291254, 0.223749, 0.427083, 1.0);
+    float4 ShadingColor = float4(1.081201, 0.62283, 1.2, 1.0);
+
+    float pupilScale = 0.18 * 0.75f; // 0.75 들어감
+    float irisScale = 0.34;
+
+    float dist = distance(In.vTexcoord, float2(0.5, 0.5));
+    float4 color = EyeWhiteColor;
+
+    color = lerp(color, PupilRing * 10.f, color);
+    color.rgb *= ShadingColor.rgb;
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, color);
+    
+    
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
+    return Out;
+}
+
+PS_OUT PS_MAIN_DISSOLVE_EYE_DEFAULT(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+        
+    float pupilScale = 0.18 * g_PupilScale; // 0.75 들어감
+    float irisScale = 0.34;
+
+    float dist = distance(In.vTexcoord, float2(0.5, 0.5));
+    float4 color = g_vEyeWhiteColor;
+    color = lerp(color, g_vPupilCircle * 5.f, smoothstep(irisScale, irisScale - 0.05, dist));
+    color = lerp(color, g_vPupilLens, smoothstep(pupilScale, pupilScale - 0.03, dist));
+    float ring = smoothstep(pupilScale + 0.02, pupilScale, dist);
+    color = lerp(color, g_vPupilRing, color);
+    color.rgb *= g_vShadingColor.rgb;
+    Out.vDiffuse = Dissolve(g_fDecreaseAlpha, g_DissolveTexture.Sample(PointSampler, In.vTexcoord).r, g_fEdgeWidth, g_fEdgeColor, color);
+    
+    
+    if (Out.vDiffuse.a <= 0.f)
+        discard;
+    return Out;
+}
+
+PS_OUT PS_VIPER_WEAPON(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+
+    float4 vEmissiveDesc = float4(0.f, 0.f, 0.f, 0.f);
+    if (g_HasEmissive)
+        vEmissiveDesc = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 0.f;
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    vMtrlDiffuse *= fEdgeMask;
+    vMtrlDiffuse *= fShadeMask;
+    
+    vMtrlDiffuse.g *= g_fGreenIntensity;
+    
+    float fMask = vEmissiveDesc.g;
+    vMtrlDiffuse += vMtrlDiffuse * fMask * g_fEmissiveIntensity;
+
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vDiffuse.a = vMtrlDiffuse.r;
+    
+    // Rim Light
+    if (g_isEnableRimLight)
+    {
+        vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+        float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+        fRim = pow(fRim, g_fRimPower);
+        float fFinalIntensity = g_vRimColor * fRim * g_fRimLightIntensity;
+        
+        if (g_isBlinkRimLight)
+        {
+            fFinalIntensity = g_fRimLightIntensity / 2.f * (1.f + cos(g_fTimeDelta * g_fCycleSpeed));
+            fFinalIntensity = clamp(fFinalIntensity, g_fMinRimIntensity, 1.f);
+        }
+        
+        float3 vRimColor = g_vRimColor * fRim * fFinalIntensity;
+
+        Out.vDiffuse.rgb = vMtrlDiffuse.rgb + vRimColor * g_fRimEmissive; // Rim Emissive
+    }
+
+    return Out;
+}
+
+PS_OUT PS_BLADENEXUS_CRISTAL(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+        float3 vNormal = vMtrlNormal.xyz * 2.f - 1.f;
+        
+        float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+        vNormal = mul(vNormal, WorldMatrix);
+        
+        vMtrlNormal = float4(normalize(vNormal.xyz), 0.f);
+    }
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+        vMtrlSpecular.a = 0.f;
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+        //  float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMtrlMetalic.r);
+        //  float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMtrlMetalic.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+        
+        float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMtrlMetalic.r);
+        float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMtrlMetalic.g);
+        
+        Out.vDiffuse *= fEdgeMask;
+        Out.vDiffuse *= fShadeMask;
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_ROUGHNESS))
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    //  Out.vDiffuse = g_vCristalColor;
+    Out.vNormal = float4(vMtrlNormal);
+    Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vEmissive = g_vCristalColor;
+    
+    return Out;
+}
+
+PS_OUT PS_PLAYER(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 1.f;
+    //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+
+    // Heal Rim Light
+    if (g_isEnableHealRimLight)
+    {
+        vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+        float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+        fRim = pow(fRim, g_fRimPower);
+
+        float3 vRimColor = g_vRimColor * fRim * g_fRimLightIntensity;
+    
+        Out.vDiffuse = vMtrlDiffuse + float4(vRimColor, 1.f) * g_fRimEmissive;
+    }
+
+    return Out;
+}
+
+PS_OUT PS_TOMBSTONE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlRoughness = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_ROUGHNESS))
+    {
+        vMtrlRoughness = g_RoughnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    if (vMtrlDiffuse.b >= 0.4f)
+        vMtrlDiffuse *= g_fDiffuseBluePower;
+    
+    float fMask = vMtrlEmissive.b;
+    vMtrlDiffuse += vMtrlDiffuse * fMask * g_fEmissiveIntensity;
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular * 0.1f;
+    Out.vSpecular.a = 0.f;
+    //  Out.vEmissive = vMtrlEmissive;
+
+    return Out;
+}
+
+PS_OUT PS_MAP_ANIM_BLINK(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+
+    // Rim Light
+    vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+    float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+    fRim = pow(fRim, g_fRimPower);
+    
+    // Blink Cycle = cos = (-1 ~ 1) + 1 -> (0 ~ 2) * RimIntensity / 2 => 0 ~ 1
+    float fFinalIntensity = g_fRimLightIntensity / 2.f * (1.f + cos(g_fTimeDelta * g_fCycleSpeed));
+
+    float3 vRimColor = g_vRimColor * fRim * fFinalIntensity;
+
+    Out.vDiffuse.rgb = vMtrlDiffuse.rgb + vRimColor * g_fRimEmissive; // Rim Emissive
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.a = 0.f;
+    Out.vEmissive = vMtrlEmissive;
+
+    return Out;
+}
+
+PS_OUT PS_EPIC_WEAPON(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+
+    vMtrlDiffuse *= g_fDiffusePower;
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = vector(0.f, 0.f, 0.f, 0.f);
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 1.f;
+    //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+
+    // Heal Rim Light
+    if (g_isEnableHealRimLight)
+    {
+        vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+        float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+        fRim = pow(fRim, g_fRimPower);
+
+        float3 vRimColor = g_vRimColor * fRim * g_fRimLightIntensity;
+    
+        Out.vDiffuse = vMtrlDiffuse + float4(vRimColor, 1.f) * g_fRimEmissive;
+    }
+
+    return Out;
+}
+
+PS_OUT PS_YETUGA_ICE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+
+    // Rim Light
+    vector vLook = normalize(g_vCamPosition - In.vWorldPos);
+    float fRim = 1.f - saturate(dot(float4(vNormal, 0.f), vLook));
+    fRim = pow(fRim, g_fRimPower);
+
+    float3 vRimColor = g_vRimColor * fRim * g_fRimLightIntensity;
+    
+    Out.vDiffuse = vMtrlDiffuse + float4(vRimColor, 1.f) * g_fRimEmissive;
+    Out.vDiffuse.a = g_fAlpha;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 0.f;
+    
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+    
+    return Out;
+}
+
+PS_OUT PS_YETUGA_BODY(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    float3 vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = mul(vNormal, WorldMatrix);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+
+    Out.vDiffuse = vMtrlDiffuse * g_fDiffusePower;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vSpecular.a = 0.f;
+    
+    float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
+        
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+    
+    return Out;
+}
+
+PS_OUT PS_NPC(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    if (IsFlag(M_DIFFUSE))
+        vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vMtrlNormal = vector(In.vNormal.xyz, 0.f);
+    if (IsFlag(M_NORMAL))
+    {
+        vMtrlNormal = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    float3 vNormal = normalize(vMtrlNormal.xyz * 2.f - 1.f);
+    
+    float3x3 WorldMatrix = float3x3(In.vTangent.xyz, In.vBinormal.xyz * -1.f, In.vNormal.xyz);
+    vNormal = normalize(mul(vNormal, WorldMatrix));
+    
+    vector vMtrlEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_EMISSIVE))
+    {
+        vMtrlEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_SPECULAR))
+    {
+        vMtrlSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    vector vMtrlMetalic = float4(0.f, 0.f, 0.f, 0.f);
+    if (IsFlag(M_METALIC))
+    {
+        vMtrlMetalic = g_MetalicTexture.Sample(DefaultSampler, In.vTexcoord);
+    }
+    
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w, 0.f, 0.f);
+    Out.vWorld = In.vWorldPos;
+    Out.vSpecular = vMtrlSpecular;
+    Out.vSpecular.a = 1.f;
+
+    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMtrlMetalic.r);
+    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMtrlMetalic.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+    Out.vDiffuse *= fEdgeMask;
+    Out.vDiffuse *= fShadeMask;
+    
+    return Out;
+}
+
+PS_OUT PS_NPC_EYE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    float2 uv = In.vTexcoord;
+    float dist = distance(uv, float2(0.5, 0.5));
+
+    float irisRadius = g_IrisRadius;
+    float pupilRadius = g_PupilRadius * g_PupilScale;
+    float ringWidth = g_RingWidth;
+
+    // 기본 흰자
+    float3 color = g_vEyeWhiteColor.rgb;
+
+    // 홍채
+    float irisMask = 1.0 - smoothstep(irisRadius - 0.04, irisRadius, dist);
+    color = lerp(color, g_vPupilCircle.rgb, irisMask);
+
+    // 동공
+    float pupilMask = 1.0 - smoothstep(pupilRadius - 0.02, pupilRadius, dist);
+    color = lerp(color, g_vPupilLens.rgb, pupilMask);
+
+    // 테두리 (도넛)
+    float ringOuter = 1.0 - smoothstep(pupilRadius,pupilRadius + ringWidth, dist);
+    float ringInner = 1.0 - smoothstep(pupilRadius - ringWidth, pupilRadius, dist);
+    float ringMask = saturate(ringOuter - ringInner);
+    color = lerp(color, g_vPupilRing.rgb, ringMask);
+
+    // Eye는 Unlit에 가깝게
+    Out.vDiffuse = float4(color, 1.0f);
     return Out;
 }
 
@@ -1127,7 +1796,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_ELEVATOR_L();
     }
 
-    // 이미시브 추가         ( 15번 )
+    // 엘라메인 헤어 패스         ( 15번 )
     pass PS_MAIN_HAIR_EMISSIVE_15
     {
         SetRasterizerState(RS_Default);
@@ -1138,7 +1807,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_HAIR_EMISSIVE();
     }
-    // 이미시브 추가         ( 16번 )
+    // 엘라메인 쉴드 패스        ( 16번 )
     pass PS_MAIN_SHIELD_EMISSIVE_16
     {
         SetRasterizerState(RS_Default);
@@ -1149,7 +1818,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SHIELD_EMISSIVE();
     }
-    // 이미시브 추가         ( 17번 )
+    // 디죨브         ( 17번 )
     pass PS_MAIN_DISSOLVE_17
     {
         SetRasterizerState(RS_Default);
@@ -1184,4 +1853,223 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_IMP();
     }
+
+    // 항아리 요정 패스        ( 20번 )
+    pass DanjinJar
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_DANJINJAR();
+    }
+
+    //눈 엘라메인 (21번)
+    pass PS_MAIN_DISSOLVE_EYE_ELAMEIN_21
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE_EYE_ELAMEIN();
+    }
+
+    // 디죨브 컬 논       ( 22번 )
+    pass PS_MAIN_DISSOLVE_22
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE();
+    }
+
+    //공용 눈 (23번)
+    pass PS_MAIN_DISSOLVE_EYE_DEFAULT_23
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE_EYE_DEFAULT();
+    }
+
+    // 룬 문자 (24번)
+    pass PS_RUNE_EMISSIVE_24
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_RUNE_EMISSIVE();
+    }
+
+    // 바이퍼 무기 마스크 패스        ( 25번 )
+    pass Viper_Weapon
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_VIPER_WEAPON();
+    }
+  
+    // 맵 애님 패스 ( 논 컬 )        ( 26번 )
+    pass MapAnimNonCullPass
+    {
+
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAP_ANIM();
+    }
+
+    // 귀검 크리스탈 패스        ( 27번 )
+    pass BladeNexus_Cristal
+    {
+
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_BLADENEXUS_CRISTAL();
+    }
+
+    // 플레이어 패스 ( 28번 )
+    pass Player
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_PLAYER();
+    }
+
+    // 툼스톤 ( 29번 )
+    pass TombStone
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_TOMBSTONE();
+    }
+
+    // 맵 애님 오브젝트 블링크 패스 ( 30번 )
+    pass MapAnimBlink
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAP_ANIM_BLINK();
+    }
+
+    // 카잔 에픽 무기 패스 ( 31번 )
+    pass EpicWeapon
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_EPIC_WEAPON();
+    }
+
+    // 예투가 뿔 패스 ( 32번 )
+    pass YetugaIce
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_YETUGA_ICE();
+    }
+
+    // 예투가 바디 패스 ( 33번 )
+    pass YetugaBody
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_YETUGA_BODY();
+    }
+
+    // NPC 패스 ( 34번 )
+    pass Npc
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_NPC();
+    }
+
+    // NPC None Culling 패스 ( 35번 )
+    pass NpcCullNone
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_NPC();
+    }
+
+    // NPC Eye 패스 ( 36번 )
+    pass NpcEyePass
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_NPC_EYE();
+    }
+
+    // 플레이어 패스 (37번 )
+    pass Player_NonCull
+    {
+        SetRasterizerState(RS_Cull_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_PLAYER();
+    }
+
 }

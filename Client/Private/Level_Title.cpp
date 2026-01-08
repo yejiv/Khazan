@@ -43,6 +43,7 @@ void CLevel_Title::Update(_float fTimeDelta)
         m_isPlayerSound = true;
         m_pGameInstance->PlaySoundLoop(TEXT("bgm_Title.wav"), 0.5f);
     }
+    
 	//if (m_pGameInstance->Key_Down(DIK_F8, INPUT_TYPE::UI))
 	//{
 	//	if (!m_isOpenLevel) {

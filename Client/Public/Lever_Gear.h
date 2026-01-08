@@ -8,6 +8,8 @@ NS_BEGIN(Client)
 class CLever_Gear final : public CProp_Interactive
 {
 private:
+    enum MESH_TYPE { GEAR, RUNE };
+
     enum ANIM_STATE
     {
         ACTIVATION1,
@@ -43,11 +45,18 @@ private:
     EventGateGear m_EventGate = {};
     _uint m_iEventID = { 0 };
 
+    // Blink Rim Light Shader
+    _float m_fBlinkTimeAcc = {};
+
 private:
     virtual HRESULT Ready_Components(void* pArg) override;
 
+    virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
+
     void Animation_Update(_float fTimeDelta);
     void Animation_Change(_float fTimeDelta);
+
+    HRESULT Bind_Blink_ShaderResources();
 
 public:
     static CLever_Gear* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

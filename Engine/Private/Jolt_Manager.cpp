@@ -57,8 +57,7 @@ HRESULT CJolt_Manager::Initialize(_uint iNumObjectLayer)
     m_DrawFilter = new DrawOnlyLayers();
     m_pDebugRenderer = new CJolt_DebugRenderer(m_pDevice, m_pContext);
 
-#endif
-
+#endif    
     return S_OK;
 }
 
@@ -72,6 +71,21 @@ void CJolt_Manager::Update(_float fDeltaTime)
 Body* CJolt_Manager::CreateAndAdd_Body(const BodyCreationSettings& BodySetting, BodyInterface** pBodyInterface)
 {
     Body* body = m_pPhysics->GetBodyInterface().CreateBody(BodySetting);
+    if (body == nullptr)
+        return nullptr;
+
+    m_pPhysics->GetBodyInterface().AddBody(body->GetID(), EActivation::Activate);
+
+    *pBodyInterface = &m_pPhysics->GetBodyInterface();
+
+    m_BodyDescs.emplace(body->GetID(), body->GetUserData());
+
+    return body;
+}
+
+Body* CJolt_Manager::CreateAndAdd_SoftBody(const SoftBodyCreationSettings& BodySetting, BodyInterface** pBodyInterface)
+{
+    Body* body = m_pPhysics->GetBodyInterface().CreateSoftBody(BodySetting);
     if (body == nullptr)
         return nullptr;
 
@@ -100,6 +114,19 @@ CharacterVirtual* CJolt_Manager::CreateCharacterVirtual(const CharacterVirtualSe
     pCharVir->AddRef();
 
     return pCharVir;
+}
+
+void CJolt_Manager::Add_Constraint(Constraint* pConstraint)
+{
+    m_pPhysics->AddConstraint(pConstraint);
+
+    m_Constraints.push_back(pConstraint);
+}
+
+void CJolt_Manager::Remove_Constraint(Constraint* pConstraint)
+{
+    m_pPhysics->RemoveConstraint(pConstraint);
+
 }
 
 HRESULT CJolt_Manager::Set_PhysicsSystem()
@@ -377,6 +404,8 @@ void CJolt_Manager::Debug_Render()
     m_pPhysics->DrawBodies(m_DrawSetting, m_pDebugRenderer, m_DrawFilter);
     for (RayCastDesc RC : m_RayCasts)
         m_pDebugRenderer->DrawLine(LoadVec3(RC.vStart), LoadVec3(RC.vEnd), RC.vColor);
+    //m_pPhysics->DrawConstraints(m_pDebugRenderer);
+
     // 디버그 렌더 패스 종료
     m_pDebugRenderer->EndFrame();
 }
@@ -416,6 +445,10 @@ void CJolt_Manager::Free()
             bi.DestroyBody(id);
         }
     }*/
+
+    for (auto pConstraint : m_Constraints)
+        m_pPhysics->RemoveConstraint(pConstraint);
+
     m_BodyDescs.clear();
 
 #ifdef _DEBUG

@@ -97,14 +97,46 @@ _bool CKhazan_Spear_Anim_Interaction::Try_Lachryma()
 
     m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_LacrimaInteraction"));
 
-    m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;
-    if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
-        m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
+    //m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;
+    //if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
+    //    m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
 
     return true;
 }
 
+_bool CKhazan_Spear_Anim_Interaction::Try_Heal()
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
 
+    m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_Heal_01"));
+
+    //m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen * 1.5f;
+    //if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
+    //    m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp;
+
+    return true;
+}
+
+_bool CKhazan_Spear_Anim_Interaction::Try_Teleport()
+{
+    if (!m_pModel->Check_MinAnimationTime())
+        return false;
+
+    m_pModel->Set_Animation(m_pModel->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Getup_F"));
+
+    return true;
+}
+
+_bool CKhazan_Spear_Anim_Interaction::Is_Lachryma() const
+{
+    return m_pModel->Get_CurAnimIndex() == m_pModel->Get_AnimIndexByName("CA_P_Kazan_LacrimaInteraction");
+}
+
+_bool CKhazan_Spear_Anim_Interaction::Is_Heal() const
+{
+    return m_pModel->Get_CurAnimIndex() == m_pModel->Get_AnimIndexByName("CA_P_Kazan_Heal_01");
+}
 
 CKhazan_Spear_Anim_Interaction* CKhazan_Spear_Anim_Interaction::Create()
 {

@@ -103,7 +103,7 @@ void CLadder::Set_PlayerPosition()
         m_vPlayerPosition = m_vUpPlayerPos;
         Set_GuideMatrix(m_vPlayerPosition);
         m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, &m_matGuide,
-            _float2(0.f, 10.f), TEXT("타기"), 1.5f);
+            _float2(0.f, 10.f), TEXT("타기"), 1.f);
         m_pGuide->Update_Visible(true);
         break;
     case LADDER_POINT::DOWN_POS_CH:
@@ -111,7 +111,7 @@ void CLadder::Set_PlayerPosition()
         m_vPlayerPosition = m_vDownPlayerPos;
         Set_GuideMatrix(m_vPlayerPosition);
         m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, &m_matGuide,
-            _float2(0.f, 10.f), TEXT("타기"), 1.5f);
+            _float2(0.f, 10.f), TEXT("타기"), 1.f);
         m_pGuide->Update_Visible(true);
         break;
     }
@@ -238,9 +238,11 @@ HRESULT CLadder::Ready_Collision(void* pArg)
 
     _vector vUpDir = vLadderPos - vUpPos;
 
-    _float fUpOffset = XMVectorGetX(XMVector4Length(vUpDir));
+    _float fUpOffset = 1.5f;
 
-    fUpOffset *= 0.075f;            // OffSet
+    //_float fUpOffset = XMVectorGetX(XMVector4Length(vUpDir));
+
+    //fUpOffset *= 0.0375f;            // OffSet
 
     XMStoreFloat4(&m_vUpPlayerPos, vUpPos + XMVector3Normalize(vUpDir) * fUpOffset);
 
@@ -248,6 +250,7 @@ HRESULT CLadder::Ready_Collision(void* pArg)
 
     TriggerUpPosDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::UP_POS_CH)].pGameObject = this;
+    m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::UP_POS_CH)].isForceVaildation = true;
     m_eLadderPoints[ENUM_CLASS(LADDER_POINT::UP_POS_CH)] = LADDER_POINT::UP_POS_CH;
     m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::UP_POS_CH)].pInfo = &m_eLadderPoints[ENUM_CLASS(LADDER_POINT::UP_POS_CH)];
     TriggerUpPosDesc.pCollisionDesc = &m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::UP_POS_CH)];
@@ -287,6 +290,7 @@ HRESULT CLadder::Ready_Collision(void* pArg)
 
     TriggerDownPosDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
     m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)].pGameObject = this;
+    m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)].isForceVaildation = true;
     m_eLadderPoints[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)] = LADDER_POINT::DOWN_POS_CH;
     m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)].pInfo = &m_eLadderPoints[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)];
     TriggerDownPosDesc.pCollisionDesc = &m_tCollisionDesc[ENUM_CLASS(LADDER_POINT::DOWN_POS_CH)];
@@ -305,7 +309,7 @@ HRESULT CLadder::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("타기"), 1.5f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("타기"), 1.f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 

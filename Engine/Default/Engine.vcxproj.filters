@@ -52,9 +52,6 @@
     <Filter Include="01.Utility\04.Prototypes">
       <UniqueIdentifier>{ed302dd2-ef7d-4d86-a247-b9658d5f090c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\02.GameObject\UIObject">
-      <UniqueIdentifier>{5c88d794-9383-4a8a-8347-680051d0a38c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Component\Transform">
       <UniqueIdentifier>{8bf04c38-7325-4a7a-8f27-7272b9148467}</UniqueIdentifier>
     </Filter>
@@ -177,9 +174,6 @@
     </Filter>
     <Filter Include="01.Utility\03.Component\VIBuffer\Instance\Mesh">
       <UniqueIdentifier>{2b9ab067-39b0-4d29-bbf5-98929792d67e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utility\02.GameObject\UIObject\Parent">
-      <UniqueIdentifier>{54f95aaf-6316-4314-94d9-df09f0191430}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Utility\95.AI">
       <UniqueIdentifier>{131fd22b-e9d4-4072-9982-a851e9e8a3e1}</UniqueIdentifier>
@@ -427,6 +421,30 @@
     <Filter Include="01.Utility\03.Component\RigidBody\Shader">
       <UniqueIdentifier>{e739e434-8c33-41c4-a3ef-ee49c6ed7cf2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Component\SoftBody">
+      <UniqueIdentifier>{96a24e00-8664-41a7-b947-97a90bddcc42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\SoftBody\Util">
+      <UniqueIdentifier>{3176078f-f937-4990-afe6-b993f0f4544b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\ClothBody">
+      <UniqueIdentifier>{94599ad2-c22c-40c1-80bd-37fd0f19be65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\ClothBody\Child">
+      <UniqueIdentifier>{8f5ae98b-9f15-436a-9139-9aac9e28edd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Component\ClothBody\Root">
+      <UniqueIdentifier>{1a850bb0-79d0-4f95-9cfc-4813ea937a7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\18.Decal\Map">
+      <UniqueIdentifier>{dac4b490-ec59-4818-a32a-011590004b52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\Pool\UIObject">
+      <UniqueIdentifier>{5c88d794-9383-4a8a-8347-680051d0a38c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\02.GameObject\Pool\UIObject\Parent">
+      <UniqueIdentifier>{54f95aaf-6316-4314-94d9-df09f0191430}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Timer.cpp">
@@ -466,7 +484,7 @@
       <Filter>01.Utility\04.Prototypes</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UIObject.cpp">
-      <Filter>01.Utility\02.GameObject\UIObject</Filter>
+      <Filter>01.Utility\02.GameObject\Pool\UIObject</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Transform.cpp">
       <Filter>01.Utility\03.Component\Transform</Filter>
@@ -628,7 +646,7 @@
       <Filter>01.Utility\03.Component\VIBuffer\Instance\UI</Filter>
     </ClCompile>
     <ClCompile Include="..\private\UIParent.cpp">
-      <Filter>01.Utility\02.GameObject\UIObject\Parent</Filter>
+      <Filter>01.Utility\02.GameObject\Pool\UIObject\Parent</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Mesh_Instance.cpp">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
@@ -801,6 +819,24 @@
     <ClCompile Include="..\private\MotionTrail.cpp">
       <Filter>01.Utility\03.Component\MotionTrail</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\SoftBody.cpp">
+      <Filter>01.Utility\03.Component\SoftBody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SoftBody_Creator.cpp">
+      <Filter>01.Utility\03.Component\SoftBody\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ClothBody.cpp">
+      <Filter>01.Utility\03.Component\ClothBody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ChildBody.cpp">
+      <Filter>01.Utility\03.Component\ClothBody\Child</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RootBody.cpp">
+      <Filter>01.Utility\03.Component\ClothBody\Root</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Decal_Static.cpp">
+      <Filter>01.Utility\18.Decal\Map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -861,7 +897,7 @@
       <Filter>01.Utility\04.Prototypes</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UIObject.h">
-      <Filter>01.Utility\02.GameObject\UIObject</Filter>
+      <Filter>01.Utility\02.GameObject\Pool\UIObject</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Transform.h">
       <Filter>01.Utility\03.Component\Transform</Filter>
@@ -1029,7 +1065,7 @@
       <Filter>01.Utility\03.Component\VIBuffer\Instance\UI</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UIParent.h">
-      <Filter>01.Utility\02.GameObject\UIObject\Parent</Filter>
+      <Filter>01.Utility\02.GameObject\Pool\UIObject\Parent</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Mesh_Instance.h">
       <Filter>01.Utility\03.Component\VIBuffer\Instance\Mesh</Filter>
@@ -1226,6 +1262,24 @@
     <ClInclude Include="..\Public\Debug_Header.h">
       <Filter>97.Debug\Header</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SoftBody_Creator.h">
+      <Filter>01.Utility\03.Component\SoftBody\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SoftBody.h">
+      <Filter>01.Utility\03.Component\SoftBody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ClothBody.h">
+      <Filter>01.Utility\03.Component\ClothBody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\ChildBody.h">
+      <Filter>01.Utility\03.Component\ClothBody\Child</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RootBody.h">
+      <Filter>01.Utility\03.Component\ClothBody\Root</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Decal_Static.h">
+      <Filter>01.Utility\18.Decal\Map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">
@@ -1254,10 +1308,10 @@
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Model_Instance_Compute.hlsl">
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Decal.hlsl">
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_MotionTrail.hlsl">
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_MotionTrail.hlsl">
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Decal.hlsl">
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

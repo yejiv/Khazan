@@ -25,7 +25,6 @@ void CAS_Sleep_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 {
     CImp_Range* pImp = static_cast<CImp_Range*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pImp->Get_Body()->Get_Component(TEXT("Com_Model")));
-    //CBlackBoard* pBB = m_pGameInstance->Get_BlackBoard();
     CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
 
     switch (m_eState)
@@ -36,9 +35,25 @@ void CAS_Sleep_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
             if (!m_isChanged)
             {
                 pModel->Set_Animation(2);
+                pImp->SFX_REALIZE();
                 m_eState = IMP_SlEEP_STATE::WAKEUP;
             }
         }
+
+        else
+        {
+            HITREACTION eHitreaction = static_cast<HITREACTION>(pBB->Get_Value<_uint>(pImp->Get_Name(), "DamageType"));
+            if (eHitreaction != HITREACTION::NONE)
+            {
+                m_eState = IMP_SlEEP_STATE::END;
+                m_isChanged = false;
+                pBB->Set_Value<_bool>(pImp->Get_Name(), "isSleepFinished", true);
+                pFSM->Change_State(ENUM_CLASS(IMPRANGE_STATE::HIT), pImp);
+            }
+        }
+
+
+
         break;
     case IMP_SlEEP_STATE::WAKEUP:
         break;
@@ -60,6 +75,14 @@ void CAS_Sleep_Imp_Range::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 void CAS_Sleep_Imp_Range::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
 
+}
+
+void CAS_Sleep_Imp_Range::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    if (pDesc->strName == TEXT("AttackCollisionDesc"))
+    {
+
+    }
 }
 
 CAS_Sleep_Imp_Range* CAS_Sleep_Imp_Range::Create()

@@ -22,8 +22,11 @@
 #include "Texture_Atlas.h"
 #include "VIBuffer_Instance_UI.h"
 #include "Decal.h"
+#include "Decal_Static.h"
 #include "Model.h"
 #include "MotionTrail.h"
+#include "SoftBody.h"
+#include "ClothBody.h"
 /* 원형객체(게임오브젝트, 컴포넌트)를 레벨별로 구분하여 보관한다. */
 /* 복제하여 만들어진 사본객체를 리턴. */
 

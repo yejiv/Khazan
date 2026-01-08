@@ -41,6 +41,8 @@ HRESULT CNPC_Danjin::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_3D_Talk_UI(pArg), E_FAIL);
 
+    CHECK_FAILED(Ready_OwnLight(pArg), E_FAIL);
+
     m_eAnimState = ANIM_STATE::IDLE;
     m_pModelCom->Set_Animation(m_eAnimState);
     m_pModelCom->Set_AnimationLoop(true);
@@ -91,6 +93,14 @@ HRESULT CNPC_Danjin::Render()
 {
     CHECK_FAILED_MSG(Bind_ShaderResources(), TEXT("CProp_Object : Bind_ShaderResources 함수 E_FAIL"), E_FAIL);
 
+    _float fEdgeIntensity = 0.2f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    _float fShadeIntensity = 0.2f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+        return E_FAIL;
+
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
     for (_uint i = 0; i < iNumMeshes; ++i)
@@ -99,7 +109,7 @@ HRESULT CNPC_Danjin::Render()
 
         m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(9), E_FAIL);
+        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(35), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -173,9 +183,9 @@ HRESULT CNPC_Danjin::Ready_Collision(void* pArg)
     TriggerDesc.vPos.y += TriggerDesc.vExtent.y;
     XMStoreFloat4(&TriggerDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
     TriggerDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
-    TriggerDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_TriggerCollisionDesc.pGameObject = this;
+    m_TriggerCollisionDesc.isForceVaildation = true;
+    TriggerDesc.pCollisionDesc = &m_TriggerCollisionDesc;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Trigger"), reinterpret_cast<CComponent**>(&m_pTriggerCom), &TriggerDesc)))
@@ -190,7 +200,7 @@ HRESULT CNPC_Danjin::Ready_Interaction_Guide(void* pArg)
     m_pGuide = static_cast<CInteraction_Guide*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide")));
     CHECK_NULLPTR(m_pGuide, E_FAIL);
 
-    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("대화"), 1.5f);
+    m_pGuide->Setting_Guide(CInteraction_Guide::GUIDE_TYPE::PROGRESS, m_pTransformCom->Get_WorldMatrixPtr(), _float2(0.f, m_pTransformCom->Get_State(STATE::POSITION).m128_f32[1] + 1.f), TEXT("대화"), 1.f);
 
     m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_UI"), m_pGuide);
 
@@ -218,6 +228,26 @@ HRESULT CNPC_Danjin::Ready_DefaultSetting(void* pArg)
     return S_OK;
 }
 
+HRESULT CNPC_Danjin::Ready_OwnLight(void* pArg)
+{
+    LIGHT_DESC LightDesc = {};
+
+    LightDesc.eType = LIGHT_DESC::TYPE::POINT;
+
+    LightDesc.vDiffuse = _float4(0.7f, 0.7f, 0.7f, 1.f);
+    LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.f);
+    LightDesc.vSpecular = _float4(0.2f, 0.2f, 0.2f, 1.f);
+    XMStoreFloat4(&LightDesc.vPosition, Get_Position() + Get_Look() * 1.3f);
+    LightDesc.vPosition.y += 2.f;
+
+    LightDesc.fRange = 4.5f;
+    m_wstrLightTag = TEXT("Danjin_OwnLight");
+
+    m_pGameInstance->Add_Light(m_wstrLightTag, ENUM_CLASS(LEVEL::HEINMACH), LightDesc, true);
+
+    return S_OK;
+}
+
 HRESULT CNPC_Danjin::Bind_Materials(_uint iMeshIndex)
 {
     m_iMtrlFlags = 0;
@@ -236,7 +266,7 @@ HRESULT CNPC_Danjin::Bind_Materials(_uint iMeshIndex)
         m_iMtrlFlags |= M_ROUGHNESS;
 
     m_iMtrlFlags &= ~M_EMISSIVE;
-    m_iMtrlFlags &= ~M_SPECULAR;
+    //  m_iMtrlFlags &= ~M_SPECULAR;
 
     m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
 
@@ -317,7 +347,7 @@ void CNPC_Danjin::Animation_Update(_float fTimeDelta)
     }
     else if (m_Event.isOff())         // 끈다는 신호 ( 내가 받기만 하면 됨
     {
-        if (ANIM_STATE::TALK_IDLE == m_eAnimState)
+        if (ANIM_STATE::TALK_START == m_eAnimState || ANIM_STATE::TALK_IDLE == m_eAnimState)
         {
             m_eAnimState = ANIM_STATE::TALK_END;
             m_pModelCom->Set_Animation(ENUM_CLASS(m_eAnimState));

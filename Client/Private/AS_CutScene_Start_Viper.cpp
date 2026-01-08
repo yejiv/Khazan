@@ -4,6 +4,9 @@
 #include "Viper.h"
 #include "Body_Viper.h"
 #include "GameInstance.h"
+#include "ClientInstance.h"
+#include "UI_HUD.h"
+
 
 CAS_CutScene_Start_Viper::CAS_CutScene_Start_Viper()
 {
@@ -16,9 +19,12 @@ void CAS_CutScene_Start_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
     CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     pTransform->Rotation(0,XMConvertToRadians(180.f),0.f);
-    m_fTimeHelper = 0.09f;
+    _vector vCutSceneLook = pTransform->Get_State(STATE::LOOK);
+    _float3 vTempLook = {};
+    XMStoreFloat3(&vTempLook, vCutSceneLook);
+    pViper->Set_CutSceneLook(vTempLook);
+    m_fTimeHelper = 0.03f;
     pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::SIT));
-    
 }
 
 void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -27,6 +33,17 @@ void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, 
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
 
     
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    {
+        if (m_pGameInstance->Key_Down(DIK_0))
+            ViperScene_Sit(pViper);
+        else if (m_pGameInstance->Key_Down(DIK_1))
+            ViperScene_Jump(pViper);
+        else if (m_pGameInstance->Key_Down(DIK_2))
+            ViperScene_Land(pViper);
+        else if (m_pGameInstance->Key_Down(DIK_3))
+            ViperScene_Roar(pViper);
+    }
 
 
     if (pModel->Play_Animation(fTimeDelta * m_fTimeHelper))
@@ -40,6 +57,8 @@ void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, 
         else if (m_eState == CUTSCENE_STATE::STAND)
         {
             pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneJump", false);
+            static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
+
         }
     }
    
@@ -47,6 +66,7 @@ void CAS_CutScene_Start_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, 
 
 void CAS_CutScene_Start_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
+    static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
 
 }
 
@@ -98,9 +118,6 @@ void CAS_CutScene_Start_Viper::Change_CutSceneState(CUTSCENE_STATE eNextState , 
     {
         pModel->Set_Animation(ENUM_CLASS(CUTSCENE_STATE::JUMP));        
         pViper->Set_Teleport(XMVectorSet(-30.838f, -5.35f, 199.893f, 1.f));
-        //pViper->Set_ViperPosition(XMVectorSet(-30.838f, -8.453f, 199.893f, 1.f));
-        pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneSit", false);
-        pBB->Set_Value<_bool>(pViper->Get_Name(), "isStartCutSceneJump", true);
         break;
     }        
     case Client::CUTSCENE_STATE::LAND:

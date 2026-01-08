@@ -30,9 +30,6 @@ public:
     SEQ_ID  GetId() const override { return m_Id; }
 
 public:
-    void Push_Obelisk(class CObelisk* pObelisk);
-
-public:
     void Set_Skip(_bool isSkip) { m_isSkip = true; }
 
 public:
@@ -42,6 +39,8 @@ private:
     SEQ_ID m_Id{};
     _float  m_fTime{ 0.f };
     _float  m_fSkipTime = { 0.f };
+
+    _bool m_isPlayerInpusBlock = { false };
 
     _bool m_isFadeOut1 = { false };
     _bool m_isFadeIn1 = { false };
@@ -60,48 +59,36 @@ private:
     _bool m_isFadeOut8 = { false };
     _bool m_isFadeIn8 = { false };
 
-    _bool m_isScene1 = { false };
+    _bool m_isScene1 = { false };    
+    _bool m_isScene2 = { false };    
+    _bool m_isScene3 = { false };    
+    _bool m_isScene4 = { false };    
+    _bool m_isScene5 = { false };      
+
     _bool m_isCameraSet1 = { false };
-    _bool m_isScene2 = { false };
     _bool m_isCameraSet2 = { false };
-    _bool m_isScene3 = { false };
     _bool m_isCameraSet3 = { false };
-    _bool m_isScene4 = { false };
     _bool m_isCameraSet4 = { false };
-    _bool m_isScene5 = { false };
     _bool m_isCameraSet5 = { false };
-    _bool m_isScene6 = { false };
     _bool m_isCameraSet6 = { false };
-    _bool m_isScene7 = { false };
     _bool m_isCameraSet7 = { false };
-    _bool m_isScene8 = { false };
     _bool m_isCameraSet8 = { false };
-    _bool m_isScene9 = { false };
-    _bool m_isCameraSet9 = { false };
-    _bool m_isScene10 = { false };
+    _bool m_isCameraSet9 = { false };    
     _bool m_isCameraSet10 = { false };
-    _bool m_isScene11 = { false };
     _bool m_isCameraSet11 = { false };
-    _bool m_isScene12 = { false };
     _bool m_isCameraSet12 = { false };
-
-
-
-
-
-
-
-
-
-
-
-    queue<class CObelisk*> m_Obelisks;
+    _bool m_isCameraSet13 = { false };
+    _bool m_isCameraSet14 = { false };
+    _bool m_isCameraSet15 = { false };
 
     _bool   m_isSkip = { false };
     _bool   m_isSkipFadeOut = { false };
     _bool   m_isSkipCameraSet = { false };
     _bool   m_isSkipFadeIn = { false };
     _bool   m_isSkipKey = { false };
+
+    _bool   m_isViperHismaLook = { false };
+    _bool   m_isViperPickUp = { false };
 
     _bool   m_isEnd = { false };
 
@@ -111,6 +98,9 @@ private:
     class CCamera_Compre* m_pCamera = { nullptr };
     class CSkipButton* m_pSkipButton = { nullptr };
     class CKhazan_GSword* m_pKhazan = { nullptr };
+
+private:
+    void Set_Viper2Phase_ShaderSettings();
 
 public:
     static CSequence_Viper_SecondPhase* Create(class CViper* pViper, class CKhazan_GSword* pKhazan);

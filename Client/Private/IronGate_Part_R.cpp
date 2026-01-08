@@ -30,6 +30,8 @@ HRESULT CIronGate_Part_R::Initialize_Clone(void* pArg)
 
     m_pSocketMatrix = pDesc->pSocketMatrix;
 
+    m_pUnLock = pDesc->pUnLock;
+
     m_pTransformCom->Scale(_float3(0.01f, 0.01f, 0.01f));
 
     _float4 vPos = {};
@@ -57,6 +59,8 @@ void CIronGate_Part_R::Update(_float fTimeDelta)
     }
 
     XMStoreFloat4x4(&m_CombinedWorldMatrix, m_pTransformCom->Get_WorldMatrix() * BoneMatrix * XMLoadFloat4x4(m_pParentMatrix));
+
+    m_fBlinkTimeAcc += fTimeDelta;
 }
 
 void CIronGate_Part_R::Late_Update(_float fTimeDelta)
@@ -74,7 +78,15 @@ HRESULT CIronGate_Part_R::Render()
     {
         Bind_Materials(i);
 
-        CHECK_FAILED_ASSERT(m_pShaderCom->Begin(4), E_FAIL);
+        if (false == *m_pUnLock)
+        {
+            if (FAILED(Bind_Blink_ShaderResources()))
+                return E_FAIL;
+
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(15), E_FAIL);
+        }
+        else
+            CHECK_FAILED_ASSERT(m_pShaderCom->Begin(4), E_FAIL);
 
         CHECK_FAILED_ASSERT(m_pModelCom->Render(i), E_FAIL);
     }
@@ -130,6 +142,35 @@ HRESULT CIronGate_Part_R::Bind_Materials(_uint iMeshIndex)
     m_iMtrlFlags &= ~M_SPECULAR;
 
     m_pShaderCom->Bind_RawValue("g_MtrlFlags", &m_iMtrlFlags, sizeof(_uint));
+
+    return S_OK;
+}
+
+HRESULT CIronGate_Part_R::Bind_Blink_ShaderResources()
+{
+    _float fRimPower = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimPower", &fRimPower, sizeof(_float))))
+        return E_FAIL;
+
+    _float fRimIntensity = 1.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimLightIntensity", &fRimIntensity, sizeof(_float))))
+        return E_FAIL;
+
+    // 반짝이는 림라이트 이미시브
+    _float fRimEmissive = 5.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fRimEmissive", &fRimEmissive, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fTimeDelta", &m_fBlinkTimeAcc, sizeof(_float))))
+        return E_FAIL;
+
+    _float fCycleSpeed = 3.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fCycleSpeed", &fCycleSpeed, sizeof(_float))))
+        return E_FAIL;
+
+    _float3 vRimColor = _float3(1.f, 1.f, 1.f);
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3))))
+        return E_FAIL;
 
     return S_OK;
 }

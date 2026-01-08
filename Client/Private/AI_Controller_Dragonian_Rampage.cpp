@@ -15,7 +15,6 @@
 #include "AS_Dr_Rampage_Groggy.h"
 #include "AS_Dr_Rampage_Sleep.h"
 #include "AS_Dr_Rampage_Turn.h"
-#include "AS_Dr_Rampage_Page2.h"
 
 CAI_Controller_Dragonian_Rampage::CAI_Controller_Dragonian_Rampage()
 {
@@ -51,10 +50,6 @@ void CAI_Controller_Dragonian_Rampage::Update(CGameObject* pOwner, _float fTimeD
     else if (*m_pMonData->pCulStamina <= 0.f)
     {
         m_pFSM->Change_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::GRORRY), pOwner);
-    }
-    else if (!m_pMonData->is2Page && m_pMonData->isPageChange)
-    {
-        m_pFSM->Change_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::PAGE2), pOwner);
     }
     else
     {
@@ -176,6 +171,9 @@ PERCEPTIONCALLBACK CAI_Controller_Dragonian_Rampage::GetCallBackPerception(CGame
 
                         if (m_pMonData->eHitType != HITREACTION::BRUTAL_ATTACK)
                             m_pMonData->eHitType = static_cast<HITREACTION>(m_pBB->Get_Value<_uint>(m_strMonstertag, "DamageType"));
+
+                        if (m_pMonData->eHitType == HITREACTION::BRUTAL_ATTACK)
+                           m_pMonData->iBrutalHit++;
                     }
                 }
             };
@@ -190,7 +188,6 @@ HRESULT CAI_Controller_Dragonian_Rampage::Ready_FSM(class CCreature* pOwner)
 
     CHECK_NULLPTR(pFsm, E_FAIL);
 
-    CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::PAGE2), CAS_Dr_Rampage_Page2::Create()), E_FAIL);
     CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_BACK), CAS_Dr_Rampage_Attack_Back::Create()), E_FAIL);
     CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_RUSH), CAS_Dr_Rampage_Attack_Rush::Create()), E_FAIL);
     CHECK_FAILED(pFsm->Add_State(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_DEFAULT), CAS_Dr_Rampage_Attack_Default::Create()), E_FAIL);
@@ -273,8 +270,11 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Check(CGameObject* pOwner)
     }
     else if (m_pMonData->pOwner->Check_Ranage("AttackRange"))
     {
-        if(eDir == TARGET_DIR::FL || eDir == TARGET_DIR::FR || eDir == TARGET_DIR::F)
+        if (eDir == TARGET_DIR::FL || eDir == TARGET_DIR::FR || eDir == TARGET_DIR::F)
+        {
             m_pMonData->eAttack_State = CDragonian_Rampage::ATTACKSTATE::DEFAULT;
+            return BTNODESTATE::SUCCESS;
+        }
         else
             return BTNODESTATE::FAILURE;
     }  
@@ -289,6 +289,7 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Check(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Back(CGameObject* pOwner)
 {
+    m_pMonData->eHitType = HITREACTION::END;
     if (m_pMonData->eAttack_State == CDragonian_Rampage::ATTACKSTATE::BACK)
     {
         if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_BACK)))
@@ -302,6 +303,7 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Back(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Rush(CGameObject* pOwner)
 {
+    m_pMonData->eHitType = HITREACTION::END;
     if (m_pMonData->eAttack_State == CDragonian_Rampage::ATTACKSTATE::RUSH)
     {
         if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_RUSH)))
@@ -315,6 +317,7 @@ BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Rush(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Dragonian_Rampage::Attack_Default(CGameObject* pOwner)
 {
+    m_pMonData->eHitType = HITREACTION::END;
     if (m_pMonData->eAttack_State == CDragonian_Rampage::ATTACKSTATE::DEFAULT)
     {
         if (!m_pFSM->Check_Flag(ENUM_CLASS(CDragonian_Rampage::MONSTATE::ATTACK_DEFAULT)))

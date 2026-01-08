@@ -13,7 +13,7 @@ private:
 
 
 public:
-    HRESULT			Initialize_Prototype();
+    HRESULT			Initialize();
 
 public:
     void Enter() override;
@@ -33,11 +33,14 @@ public:
     _bool            Try_IronGate(_bool isUsedSet);
     _bool            Try_UnLockGear(_bool isUsedSet);
     _bool            Try_GiantGate(_bool isUsedSet);
+    _bool            Try_Teleport();
 
 public:
     _bool           Is_Interaction() const { return m_isInteraction; }
-    
 
+    _bool           Is_Lachryma() const;
+    _bool           Is_Heal() const;
+    
 private:
     class CClientInstance*  m_pClientInstance = { nullptr };
     PLAYER_DATA*            m_pPlayerData = { nullptr };
@@ -46,7 +49,8 @@ private:
     _bool           m_isInteraction = { false };
     //_bool           m_isReserve = { false };
 
-    
+    _uint           m_iLachrymaAnimIndex = {};
+    _uint           m_iHealAnimIndex = {};
 
 
 public:

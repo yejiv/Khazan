@@ -10,7 +10,10 @@
 #include "CharacterVirtual.h"
 #include "Khazan_GSword.h"
 #include "AI_Controller_Viper.h"
-#include "SkipButton.h"
+#include "SkipButton.h""
+#include "UI_HUD.h"
+#include "Khazan_GSword.h"
+#include "Body_Khazan_GS.h"
 
 CSequence_Viper_CutScene::CSequence_Viper_CutScene(CViper* pViper, CKhazan_GSword* pKhazan)
     : m_pGameInstance{ CGameInstance::GetInstance() }
@@ -25,9 +28,6 @@ CSequence_Viper_CutScene::CSequence_Viper_CutScene(CViper* pViper, CKhazan_GSwor
 HRESULT CSequence_Viper_CutScene::Initialize(const SEQ_REQ_PLAY_DESC& tDesc)
 {
     m_pCamera = dynamic_cast<CCamera_Compre*>(m_pClientInstance->Get_ActiveCamera());    
-    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_1Phase_CutScene");
-    m_pClientInstance->Camera_Set_Animation_Json("../../Client/Bin/Data/Camera/Animation/Viper_1Phase_CutScene2");
-
     return S_OK;
 }
 
@@ -43,7 +43,12 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         // 1차 페이드 아웃
         if (m_fTime > 0.f && !m_isFadeOut)
         {
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(false);
             m_pClientInstance->Fade_Out();
+            static_cast<CUI_HUD*>(m_pClientInstance->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
+            m_pClientInstance->Set_PlayerInput(false);
+            m_pKhazan->Set_Idle();
             m_isFadeOut = true;
         }
 
@@ -60,6 +65,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         // 1차 페이드 인
         if (m_fTime > 1.5f && !m_isFadeIn)
         {
+            m_pClientInstance->BGM_Viper_1PhaseCutScene();
+
             m_pClientInstance->Fade_In(nullptr, 3.f);
             m_isFadeIn = true;
         }
@@ -109,6 +116,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         // 착지하여 살짝 보고 페이드아웃
         if (m_fTime > 40.f && !m_isSecondFadeOut)
         {
+            m_pClientInstance->BGM_Viper_1Phase(5.f);
+
             m_pClientInstance->Fade_Out(nullptr, 5.f);
             m_isSecondFadeOut = true;
         }
@@ -145,8 +154,6 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
             Desc.iNoiseIndex = 17;
             m_pGameInstance->Start_Distortion(Desc);
 
-
-
             RADIAL_BLUR_DESC RadialDesc{};
             RadialDesc.vCenterUV = _float2(0.5f, 0.5f);
             RadialDesc.fSampleRadius = 0.05f;
@@ -155,8 +162,8 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
             RadialDesc.iNumSamples = 16;
             RadialDesc.fAttenuation = 0.1f;
             RadialDesc.fStrength = 1.f;
-            RadialDesc.fDuration = 2.f;
-            RadialDesc.vFadeTime = _float2(0.05f, 0.25f);
+            RadialDesc.fDuration = 2.5f;
+            RadialDesc.vFadeTime = _float2(0.7f, 0.5f);
             m_pGameInstance->Start_RadialBlur(RadialDesc);
 
             m_isRoarEffect = true;
@@ -165,7 +172,11 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
 
         if (m_fTime >= 45.f)
         {
-            dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);        
+            Start_FogTransition();
+            dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);  
+            m_pClientInstance->Set_PlayerInput(true);
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_isEnd = true;
         }
     }
@@ -190,11 +201,19 @@ void CSequence_Viper_CutScene::Update(_float fTimeDelta)
         {
             m_pClientInstance->Fade_In();
             m_isSkipFadeIn = true;
+
+            m_pClientInstance->BGM_Viper_1Phase(2.f);
         }
 
         if (m_fSkipTime > 3.f && !m_isEnd)
         {
+            Start_FogTransition();
+            CCharacterVirtual* pCharVir = dynamic_cast<CCharacterVirtual*>(m_pViper->Get_Component(TEXT("Com_CharacterVirtual")));
+            pCharVir->Teleport(XMVectorSet(-31.938f, -29.986f, 198.162f, 1.f), m_pViper->Get_Transform()->Get_Rotation_Quat(), m_pViper->Get_Transform());
             dynamic_cast<CAI_Controller_Viper*>(m_pViper->Get_Controller())->Set_ControllerActivate(true);
+            m_pClientInstance->Set_PlayerInput(true);
+            CKhazan_GSword* pPlayer = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Creature_Player")));
+            pPlayer->Get_Khazan_Body()->Set_AllPlaySound(true);
             m_isEnd = true;
         }
     }
@@ -245,6 +264,18 @@ void CSequence_Viper_CutScene::Skip_KeyInput(_float fTimeDelta)
     }
 
 
+}
+
+void CSequence_Viper_CutScene::Start_FogTransition()
+{
+    FOG_TRANSITION_DESC Desc{};
+    Desc.fDensity = 0.03f;
+    Desc.fBias = 0.95f;
+    Desc.vColor = _float4(0.055f, 0.110f, 0.157f, 1.f);
+    Desc.isUseHeight = true;
+    Desc.fBaseHeight = -145.f;
+    Desc.isUseNoise = false;
+    m_pGameInstance->Start_FogTransition(3.f, Desc);
 }
 
 CSequence_Viper_CutScene* CSequence_Viper_CutScene::Create(CViper* pViper, CKhazan_GSword* pKhazan)

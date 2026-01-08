@@ -12,7 +12,7 @@ NS_BEGIN(Client)
 class CDanjinJar abstract : public CProp_Interactive
 {
 public:
-    enum class DANJINJAR_TYPE { A, B, C, END };
+    enum class DANJINJAR_TYPE { A, B, C, D, E, F, G, H, END };
 
     typedef struct tagDanjinJarMoveStep {
         _float4 vStep1{};       // 시작 지점
@@ -135,6 +135,7 @@ protected:
     virtual HRESULT Ready_Components(void* pArg) override;
     HRESULT Ready_Collision(void* pArg);
     virtual HRESULT Bind_Materials(_uint iMeshIndex) override;
+    virtual HRESULT Bind_ShaderResources() override;
 
 protected:
     void AnimChange(ANIM_STATE eAnimState, _bool isLoop = false, _bool isCheck = false);
@@ -148,6 +149,9 @@ protected:
 
     void Set_Duration();
     _float Calculate_StepDistance(_float4 vPosition1, _float4 vPosition2);
+    _float Calculate_Distance(_vector vPosition1, _vector vPosition2);
+
+    void Check_OnPanel_TalkUI(_uint iTalkIndex, _float fLimitDistance = 0.f);
 
 public:
     virtual CGameObject* Clone(void* pArg) = 0;

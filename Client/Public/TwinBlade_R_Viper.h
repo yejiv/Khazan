@@ -1,16 +1,17 @@
 #pragma once
 #include "Client_Defines.h"
-#include "PartObject.h"
+#include "WeaponObject.h"
 
 NS_BEGIN(Engine)
 class CShader;
 class CModel;
 class CBody;
+class CMotionTrail;
 NS_END
 
 NS_BEGIN(Client)
 
-class CTwinBlade_R_Viper final : public CPartObject
+class CTwinBlade_R_Viper final : public CWeaponObject
 {
 public:
     typedef struct tagWeaponDesc : public PARTOBJECT_DESC
@@ -26,8 +27,9 @@ public:
     _matrix					Get_BoneMatrix(const _char* pBoneName);
     _float4x4               Get_CombinedMatrix() const { return m_CombinedWorldMatrix; }
     void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
-    _float4                 Get_SwordTip() const { return m_vTipPos; }
 
+    _vector                 Get_BladeTipPos() const { return XMLoadFloat4(&m_vBladeTipPos); }
+    _vector                 Get_BladeStartPos() const { return XMLoadFloat4(&m_vBladeStartPos); }
 
 private:
     CTwinBlade_R_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -47,11 +49,14 @@ public:
     virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
+public:
+    void                    Set_EnableMotionTrail(_bool isEnable);
 
 private:
     HRESULT					Ready_Components();
     HRESULT                 Ready_Collision();
     HRESULT					Bind_ShaderResources();
+    HRESULT                 Ready_Callback();
 
 private:
     class CViper*           m_pOwner = { nullptr };
@@ -60,16 +65,19 @@ private:
     CShader*                m_pShaderCom = { nullptr };
     CModel*                 m_pModelCom = { nullptr };
     CTransform*             m_pOwnerTransform = { nullptr };
+    CMotionTrail*           m_pMotionTrailCom = { nullptr };
 
     _bool					m_isOnAttackCollision = { false };
     CBody*                  m_pBodyComp = { nullptr };
     _float4x4*              m_pSocketMatrix = { nullptr };
 
-    _float4                 m_vTipPos = {};
+    _float4                 m_vBladeStartPos{}, m_vBladeTipPos{};
+
     _float4x4               m_matOffset = {};
     _float4                 m_vOffsetRot = {};
 
     _float3                 m_vLocalOffset = {};
+    COLLISION_DESC          m_tTwinBladeCollisionDesc{};
 
 public:
     static CTwinBlade_R_Viper*      Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

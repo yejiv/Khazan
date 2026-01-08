@@ -47,11 +47,32 @@ protected:
 
 	_bool m_isCollision = { false };
 
+    _float m_fInteract_Volume = { 0.75f };
+
 protected:
 	virtual HRESULT Ready_Components(void* pArg) { return S_OK; }
 	virtual HRESULT Bind_ShaderResources();
 
 	virtual HRESULT Bind_Materials(_uint iMeshIndex);
+
+protected:
+    void SoundStop(const _tchar* pSoundKey);
+    void SoundStop_FadeOut(const _tchar* pSoundKey, _float fFadeTime = 1.f);
+
+    _bool IsPlayingSound(const _tchar* pSoundKey);
+
+    void Sound_FadeIn(const _tchar* pSoundKey, _float fVolume = 1.0f, _float fFadeTime = 1.0f, _bool isLoop = true, FMOD_CHANNEL** ppOutChannel = nullptr);
+
+    // 2D Sound
+    void SoundOnce(const _tchar* pSoundKey, _float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
+    void SoundLoop(const _tchar* pSoundKey, _float fVolume = 1.0f, FMOD_CHANNEL** ppOutChannel = nullptr);
+
+    // 3D Sound
+    void SoundOnce(const _tchar* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, _float fVolume = 1.f);
+    void SoundOnce(const _tchar* pSoundKey, _vector vPos, _float3 vVel = { 0.f, 0.f, 0.f }, _float fVolume = 1.f, FMOD_CHANNEL** ppOutChannel = nullptr);
+
+    void SoundLoop(const _tchar* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, _float fVolume = 1.f);
+    void SoundLoop(const _tchar* pSoundKey, _vector vPos, _float3 vVel = { 0.f, 0.f, 0.f }, _float fVolume = 1.f, FMOD_CHANNEL** ppOutChannel = nullptr);
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

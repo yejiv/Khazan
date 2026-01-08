@@ -55,33 +55,64 @@ void CAS_5HitCombo_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLay
         {
             pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-            pTarget->KnockBack(vLook, 10.f, 60.f);
+            pTarget->KnockBack(vLook, 15.f, 60.f);
         }
         else if (iAttackCnt == 2)
         {
             pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-            pTarget->KnockBack(vLook, 10.f, 60.f);
+            pTarget->KnockBack(vLook, 15.f, 60.f);
         }
+
         else if (iAttackCnt == 3)
         {
             pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-            pTarget->KnockBack(vLook, 10.f, 60.f);
+            pTarget->KnockBack(vLook, 20.f, 60.f);
         }
         else if (iAttackCnt == 4)
         {
+            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vLook, 20.f, 60.f);
+        }
+        else if (iAttackCnt == 5)
+        {
+            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vLook, 20.f, 60.f);
+        }
+        else if (iAttackCnt == 6)
+        {
+            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG);
+            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vLook, 25.f, 60.f);
+        }
+        else if (iAttackCnt == 7)
+        {
+            // 여기서 저가 판단
+            
             pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 30.f, 60.f);
         }
-        else if (iAttackCnt == 5)
-        {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG);
-            _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
-            pTarget->KnockBack(vLook, 40.f, 60.f);
-        }
 
+
+    }
+}
+
+void CAS_5HitCombo_Viper::On_JustGuard(CGameObject* pOwner)
+{
+    CViper* pViper = static_cast<CViper*>(pOwner);
+    CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
+
+    _uint iAttackCnt = pBB->Get_Value<_uint>(pViper->Get_Name(), "AttackCount");
+    if (iAttackCnt == 7)
+    {
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isP1_5HitComboFinished", true);
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isJustGuard", true);
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "isGroggy", true);
+        pBB->Set_Value<_uint>(pViper->Get_Name(), "AttackCount", 0);
 
     }
 }

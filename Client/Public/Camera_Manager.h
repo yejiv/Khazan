@@ -34,6 +34,26 @@ public:
 	void ActiveCamera_Shaking(_float fPower, _float fDuration);
 	void ActiveCamera_PushFOVModifier(const FOVModifier& tNewModifier);
 	void ActiveCamera_KillFov(const _wstring& strID);
+    void Play_FOVZoomSequence(
+        const _wstring& strID,
+        _float fZoomFOV,     // 줌인 목표 FOV (라디안)
+        _float fInDuration,  // 줌 인 시간
+        _float fHoldDuration,// 고정 시간
+        _float fOutDuration, // 줌 아웃 시간
+        _int   iPriority = 0 // PRIORITY 모드 우선순위
+    );
+    void Start_FOVHoldZoom(
+        const _wstring& strID,
+        _float fZoomFOV,     // 줌인 목표 FOV (라디안)
+        _float fInDuration,  // 줌 인 시간
+        _int   iPriority = 0 // PRIORITY 우선순위
+    );
+    // 홀드 해제 → 줌 아웃
+    void Release_FOVHoldZoom(
+        const _wstring& strID,
+        _float fOutDuration  // 줌 아웃 시간
+    );
+
     void Start_ForceOrbit(CAMERA_FORCE_DIR eForceDir);
     void ActiveCamera_InteractMove();
     void DeactivateCamera_InteractMove();
@@ -51,17 +71,28 @@ public:
 
     void Set_NpcTalk(_bool isNpcTalk, _float3 vTargetPos = _float3(0.f, 0.f, 0.f), _float3 vLookAt = _float3(0.f, 0.f, 0.f));
 
+    void Play_SubShotOnce(const CAMERA_POSE& subShotPose, _float fInDur, _float fOutDur);
+
+    CAMERA_POSE MakePose(const _float3& vPos, const _float3& vLookDir);
+    CAMERA_POSE MakePose_FromTarget(const _float3& vPos, const _float3& vTargetPos);
+
+    void ReturnToPreviousPose(_float fDuration);
+
 public:
     void Force_AniEnd();
 
 public:
     void Switch_CameraMode(CAMERATYPE eType);
+    void MouseOnOff(_bool isOn);
 
+public:
+    void InitStartPoseOnce();
 private:
 	class CGameInstance* m_pGameInstance = { nullptr };
 	_uint m_iNumLevels = {};
 	vector<class CCamera*> m_pCameras[ENUM_CLASS(LEVEL::END)];
 	class CCamera* m_pActiveCamera = { nullptr };
+
 
 public:
 	static CCamera_Manager* Create(_uint iNumLevels);

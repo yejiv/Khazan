@@ -59,6 +59,8 @@ HRESULT CUI_Manager::Initialize()
 
 	m_pGameInstance->Push_GameObject_ToLayer(ENUM_CLASS(LEVEL::STATIC), TEXT("Layer_UI"), m_pFadeUI);
     Safe_AddRef(m_pFadeUI);
+
+    m_isUIRanderAll = true;
 	return S_OK;
 }
 
@@ -342,9 +344,16 @@ void CUI_Manager::UIObjectToRenderer()
 	m_pWorldRenderGroup->Add_Renderer();
 	for (_int i = 0; i < (_int)m_pRenderUI.size(); ++i)
 	{
-		m_pRenderUI[i]->Add_Renderer();
+        if(m_isUIRanderAll)
+    		m_pRenderUI[i]->Add_Renderer();
 		Safe_Release(m_pRenderUI[i]);
 	}
+
+    if (!m_isUIRanderAll)
+    {
+        for (auto pAtlasGroup : m_pAtlasRenderGroup)
+            pAtlasGroup->Reset_Buffer();
+    }
 
 	m_pRenderUI.clear();
 }

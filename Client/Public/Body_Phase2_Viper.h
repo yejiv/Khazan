@@ -1,17 +1,19 @@
 #pragma once
 #include "Client_Defines.h"
-#include "PartObject.h"
+#include "WeaponObject.h"
 
 NS_BEGIN(Engine)
 class CShader;
 class CModel;
 class CBody;
+class CClothBody;
+class CMotionTrail;
 NS_END
 
 
 NS_BEGIN(Client)
 
-class CBody_Phase2_Viper final : public CPartObject
+class CBody_Phase2_Viper final : public CWeaponObject
 {
 public:
     typedef struct tagBodyDesc : public PARTOBJECT_DESC
@@ -49,12 +51,16 @@ public:
     virtual void Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc = nullptr) override;
     virtual void Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLLISION_DESC* pMyDesc = nullptr) override;
 
+public:
+    void                    Set_EnableMotionTrail(_bool isEnable);
 
 private:
     HRESULT					Ready_Components();
     HRESULT					Bind_ShaderResources();
+    HRESULT                 Ready_Callback();
+
     void					Carculate_Matrix(_float fTimeDelta);
-    void                    Carculate_BakckMatrix(_float fTimeDelta);
+    //void                    Carculate_BakckMatrix(_float fTimeDelta);
 
 private:
     HRESULT					Ready_Colliders();
@@ -66,6 +72,8 @@ private:
     CShader*                m_pShaderCom = { nullptr };
     CModel*                 m_pModelCom = { nullptr };
     CTransform*             m_pOwnerTransform = { nullptr };
+    CBody*                  m_pLeftHandBody = { nullptr };
+    CMotionTrail*           m_pMotionTrailCom = { nullptr };
 
 private:
     _float3					m_vThrowPoint = {};
@@ -73,6 +81,15 @@ private:
     _float4x4               m_LeftHandMatrix = {};
 private:
     _bool					m_isOnAttackCollision = { false };
+    COLLISION_DESC          m_tPhase2CollisionDesc = {};
+
+private:
+    class CClothBody* m_pFeelerBody = { nullptr };
+    COLLISION_DESC m_tFeelerCollDesc = {};
+    class CBody* m_pClothBody = { nullptr };
+    COLLISION_DESC m_tClothBodyCollDesc = {};
+    _float4x4* m_pClothBodyMatrix = { nullptr };
+    _float4x4 m_pClothCombinedMatrix;
 
 public:
     static CBody_Phase2_Viper*  Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -3,12 +3,12 @@
 #include "AI_Controller.h"
 
 CDragonian_Claw_R::CDragonian_Claw_R(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CPartObject{ pDevice,pContext }
+    :CWeaponObject{ pDevice,pContext }
 {
 }
 
 CDragonian_Claw_R::CDragonian_Claw_R(const CDragonian_Claw_R& Prototype)
-    :CPartObject(Prototype)
+    :CWeaponObject(Prototype)
 {
 }
 
@@ -33,6 +33,7 @@ HRESULT CDragonian_Claw_R::Initialize_Clone(void* pArg)
 
     CHECK_FAILED(Ready_Components(), E_FAIL);
     CHECK_FAILED(Ready_Collision(), E_FAIL);
+    Set_JustGuardCallBack([this](_bool isJustGuard) { *m_pData->pCulStamina -= *m_pData->pMaxStamina * 0.1f; });
 
     return S_OK;
 }
@@ -68,7 +69,6 @@ void CDragonian_Claw_R::Update(_float fTimeDelta)
 
 void CDragonian_Claw_R::Late_Update(_float fTimeDelta)
 {
-    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this),);
 }
 
 HRESULT CDragonian_Claw_R::Render()
@@ -135,7 +135,7 @@ HRESULT CDragonian_Claw_R::Ready_Collision()
     m_tCollisionDesc.pGameObject = this;
 
     CBody::BODY_SPHERESHAPE_DESC BodyDesc{};
-    BodyDesc.fRadius = 1.f;
+    BodyDesc.fRadius = 1.5f;
     BodyDesc.eMotion = EMotionType::Kinematic;
     BodyDesc.eQuality = EMotionQuality::Discrete;
     BodyDesc.eShapeType = SHAPE::SPHERE;
@@ -146,7 +146,7 @@ HRESULT CDragonian_Claw_R::Ready_Collision()
     BodyDesc.vPos = { m_CombinedWorldMatrix._41, m_CombinedWorldMatrix._42, m_CombinedWorldMatrix._43 };
     XMStoreFloat4(&BodyDesc.vQuat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&m_CombinedWorldMatrix)));
 
-    BodyDesc.vShapeOffset = _float3(-0.3f, -0.3f, 0.f);
+    BodyDesc.vShapeOffset = _float3(-1.f, -0.f, 0.f);
     BodyDesc.pCollisionDesc = &m_tCollisionDesc;
 
     CHECK_FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"), TEXT("Com_Body"), (CComponent**)&m_pBodyComp, &BodyDesc), E_FAIL);

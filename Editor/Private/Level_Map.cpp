@@ -46,6 +46,7 @@ void CLevel_Map::Update(_float fTimeDelta)
 	Select_Add_LightPoint(fTimeDelta);
 	Measure_Distance(fTimeDelta);
 	Update_MultiFix(fTimeDelta);
+    MapDecal_CleanUp();
 
 	return;
 }
@@ -387,6 +388,16 @@ void CLevel_Map::Update_MultiFix(_float fTimeDelta)
 	}
 }
 
+void CLevel_Map::MapDecal_CleanUp()
+{
+    if (true == m_isDecalDeleted)
+    {
+        m_pGameInstance->MapDecal_CleanUp();
+
+        m_isDecalDeleted = false;
+    }
+}
+
 HRESULT CLevel_Map::Ready_DefaultImGui_For_MapTool()
 {
 	CHECK_FAILED(Ready_Main_Window(), E_FAIL);
@@ -425,7 +436,7 @@ HRESULT CLevel_Map::Ready_Main_Window()
 		if (m_isMainWindow)
 		{
 			ImGui::Begin("MAIN WINDOW", &m_isMainWindow, ImGuiWindowFlags_AlwaysAutoResize);
-			ImGui::Text("INFORMAION");
+			ImGui::Text("INFORMATION");
 			if (ImGui::Button("ON/OFF##information"))
 				m_isInformation = !m_isInformation;
 
@@ -458,12 +469,17 @@ HRESULT CLevel_Map::Ready_Main_Window()
 
 					SEPARATOR;
 
-					ImGui::Text("PICKED POS");
-					ImGui::Text("X : %.3f", m_vPickedPos.x);
-                    ImGui::Text("Y : %.3f", m_vPickedPos.y); SAMELINE;
+                    _float3 vPickedPos = m_vPickedPos;
+
+                    ImGui::Text("PICKED POS");
+                    ImGui::Text("X : "); SAMELINE;
+                    ImGui::InputFloat("##x_pick_pos", &vPickedPos.x);
+                    ImGui::Text("Y : "); SAMELINE;
+                    ImGui::InputFloat("##y_pick_pos", &vPickedPos.y); SAMELINE;
                     if (ImGui::Button("COPY"))
                         m_fAddPositionY = m_vPickedPos.y;
-					ImGui::Text("Z : %.3f", m_vPickedPos.z);
+                    ImGui::Text("Z : "); SAMELINE;
+                    ImGui::InputFloat("##z_pick_pos", &vPickedPos.z);
 
 					SEPARATOR;
 
@@ -947,7 +963,11 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
     m_Prototypes_Inter.push_back("NPC_Daphrona");
     m_Prototypes_Inter.push_back("NPC_Duimuk");
     m_Prototypes_Inter.push_back("NPC_Danjin");
+    m_Prototypes_Inter.push_back("NPC_Gacha");
     m_Prototypes_Inter.push_back("DanjinJar");
+    m_Prototypes_Inter.push_back("DestinyStone");
+    m_Prototypes_Inter.push_back("DestructibleProp");
+    m_Prototypes_Inter.push_back("Illusion_Wall");
 
 #ifdef _DEBUG
 	m_pGameInstance->AddWidget(TEXT("Map"), [this]() {
@@ -1306,7 +1326,22 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Danjin"), TIME_CHANNEL::WORLD, &DanjinDesc), );
-                        }
+                }
+                else if ("NPC_Gacha" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CNPC_Gacha::GACHA_NPC_DESC GachaNPCDesc = {};
+
+                    GachaNPCDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    GachaNPCDesc.eLevel = LEVEL::MAP;
+                    memcpy(GachaNPCDesc.szModelName, strModelTag.c_str(), sizeof(GachaNPCDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&GachaNPCDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    GachaNPCDesc.eInteractiveType = INTERACTIVE_TYPE::GACHANPC;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Gacha"), TIME_CHANNEL::WORLD, &GachaNPCDesc), );
+                }
                 else if ("DanjinJar" == m_Prototypes_Inter[m_iIndex_PrtInter])
                 {
                     CDanjinJar::DANJINJAR_DESC DanjinJarDesc = {};
@@ -1321,6 +1356,57 @@ HRESULT CLevel_Map::Ready_Interactive_Prototype_List_Window()
 
                     CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                         ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DanjinJar"), TIME_CHANNEL::WORLD, &DanjinJarDesc), );
+                }
+                else if ("DestinyStone" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CDestinyStone::DESTINYSTONE_DESC DestinyStoneDesc = {};
+
+                    DestinyStoneDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    DestinyStoneDesc.eLevel = LEVEL::MAP;
+                    memcpy(DestinyStoneDesc.szModelName, strModelTag.c_str(), sizeof(DestinyStoneDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&DestinyStoneDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    DestinyStoneDesc.eInteractiveType = INTERACTIVE_TYPE::DESTINYSTONE;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DestinyStone"), TIME_CHANNEL::WORLD, &DestinyStoneDesc), );
+                }
+                else if ("DestructibleProp" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CDestructible_Prop::DESTRUCTIBLE_PROP_DESC DestructiblePropDesc = {};
+
+                    DestructiblePropDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    DestructiblePropDesc.eLevel = LEVEL::MAP;
+                    memcpy(DestructiblePropDesc.szModelName, TEXT("DestructibleProp"), sizeof(DestructiblePropDesc.szModelName));		// 프로토타입 태그명
+
+                    WorldMatrix.r[0] *= 0.005f;
+                    WorldMatrix.r[1] *= 0.005f;
+                    WorldMatrix.r[2] *= 0.005f;
+
+                    XMStoreFloat4x4(&DestructiblePropDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    DestructiblePropDesc.eInteractiveType = INTERACTIVE_TYPE::DESTRUCTIBLE;										// 상호 작용 오브젝트 타입
+
+                    DestructiblePropDesc.eModelType = CDestructible_Prop::MODEL_TYPE::FENCE;
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Destructible"), TIME_CHANNEL::WORLD, &DestructiblePropDesc), );
+                }
+                else if ("Illusion_Wall" == m_Prototypes_Inter[m_iIndex_PrtInter])
+                {
+                    CIllusion_Wall::ILLUSION_WALL_DESC IllusionWallDesc = {};
+
+                    IllusionWallDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                    IllusionWallDesc.eLevel = LEVEL::MAP;
+                    memcpy(IllusionWallDesc.szModelName, strModelTag.c_str(), sizeof(IllusionWallDesc.szModelName));		// 프로토타입 태그명
+
+                    XMStoreFloat4x4(&IllusionWallDesc.WorldMatrix, WorldMatrix);										// 행렬
+
+                    IllusionWallDesc.eInteractiveType = INTERACTIVE_TYPE::ILLUSION_WALL;										// 상호 작용 오브젝트 타입
+
+                    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                        ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Illusion_Wall"), TIME_CHANNEL::WORLD, &IllusionWallDesc), );
                 }
 #pragma endregion
 
@@ -1602,27 +1688,42 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
 
 				m_pFixPropObj->Set_BladeNexus_ID(m_iFix_BN_ID);
 			}
-			if (INTERACTIVE_TYPE::CHEST == m_pFixPropObj->Get_InteractiveType())
-			{
-				ImGui::Text("== CHEST INFORMATION ==");
-				ImGui::Text("BEFORE");
+            if (INTERACTIVE_TYPE::CHEST == m_pFixPropObj->Get_InteractiveType())
+            {
+                ImGui::Text("== CHEST INFORMATION ==");
+                ImGui::Text("BEFORE");
 
-				ImGui::Text("FIRST ITEM : %d", m_ItemBox.iItem_0);
-				ImGui::Text("SECOND ITEM : %d", m_ItemBox.iItem_1);
-				ImGui::Text("THIRD ITEM : %d", m_ItemBox.iItem_2);
-				SEPARATOR;
-				ImGui::Text("FIX ITEM");
-				ImGui::Text("FIX FIRST ITEM : "); SAMELINE;
-				ImGui::InputInt("##item_list_fix_0", &m_FixItemBox.iItem_0);
-				ImGui::Text("FIX SECOND ITEM : "); SAMELINE;
-				ImGui::InputInt("##item_list_fix_1", &m_FixItemBox.iItem_1);
-				ImGui::Text("FIX THIRD ITEM : "); SAMELINE;
-				ImGui::InputInt("##item_list_fix_2", &m_FixItemBox.iItem_2);
+                ImGui::Text("FIRST ITEM : %d", m_ItemBox.iItem_0);
+                ImGui::Text("SECOND ITEM : %d", m_ItemBox.iItem_1);
+                ImGui::Text("THIRD ITEM : %d", m_ItemBox.iItem_2);
+                SEPARATOR;
+                ImGui::Text("FIX ITEM");
+                ImGui::Text("FIX FIRST ITEM : "); SAMELINE;
+                ImGui::InputInt("##item_list_fix_0", &m_FixItemBox.iItem_0);
+                ImGui::Text("FIX SECOND ITEM : "); SAMELINE;
+                ImGui::InputInt("##item_list_fix_1", &m_FixItemBox.iItem_1);
+                ImGui::Text("FIX THIRD ITEM : "); SAMELINE;
+                ImGui::InputInt("##item_list_fix_2", &m_FixItemBox.iItem_2);
 
-				m_pFixPropObj->Set_ItemBox(m_FixItemBox);
+                m_pFixPropObj->Set_ItemBox(m_FixItemBox);
 
-				SEPARATOR;
-			}
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::TOMBSTONE == m_pFixPropObj->Get_InteractiveType())
+            {
+                ImGui::Text("== TOMBSTONE INFORMATION ==");
+                ImGui::Text("BEFORE");
+
+                ImGui::Text("TOMBSTONE ID : %d", m_iTS_ID);
+                SEPARATOR;
+                ImGui::Text("FIX ID");
+                ImGui::Text("FIX ID : "); SAMELINE;
+                ImGui::InputInt("##ts_id_fix", &m_iFix_TS_ID);
+
+                m_pFixPropObj->Set_TombStone_ID(m_iFix_TS_ID);
+
+                SEPARATOR;
+            }
             if (INTERACTIVE_TYPE::TRIGGER == m_pFixPropObj->Get_InteractiveType())
             {
                 ImGui::Text("== TRIGGER INFORMATION ==");
@@ -1841,6 +1942,13 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
                 ImGui::Text("== DANJIN ==");
                 SEPARATOR;
             }
+            if (INTERACTIVE_TYPE::GACHANPC == m_pFixPropObj->Get_InteractiveType())
+            {
+                CNPC_Gacha* pGachaNPC = static_cast<CNPC_Gacha*>(m_pFixPropObj);
+
+                ImGui::Text("== GACHA NPC ==");
+                SEPARATOR;
+            }
             if (INTERACTIVE_TYPE::DANJINJAR == m_pFixPropObj->Get_InteractiveType())
             {
                 CDanjinJar* pDanjinJar = static_cast<CDanjinJar*>(m_pFixPropObj);
@@ -1854,6 +1962,21 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
                 SAMELINE;
                 if (ImGui::Button("MODEL TYPE C"))
                     pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::C);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE D"))
+                    pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::D);
+                SEPARATOR;
+                if (ImGui::Button("MODEL TYPE E"))
+                    pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::E);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE F"))
+                    pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::F);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE G"))
+                    pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::G);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE H"))
+                    pDanjinJar->Set_DanjinJar_ModelType(CDanjinJar::DANJINJAR_TYPE::H);
                 SEPARATOR;
 
                 ImGui::Text("SETTING STEP");
@@ -1893,6 +2016,42 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_Fix_Window()
                 if (ImGui::Button("STEP 14##move")) pDanjinJar->MoveStepPosition(13); SAMELINE;
                 if (ImGui::Button("STEP 15##move")) pDanjinJar->MoveStepPosition(14); SAMELINE;
                 if (ImGui::Button("STEP 16##move")) pDanjinJar->MoveStepPosition(15); SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::DESTINYSTONE == m_pFixPropObj->Get_InteractiveType())
+            {
+                CDestinyStone* pDestinyStone = static_cast<CDestinyStone*>(m_pFixPropObj);
+
+                ImGui::Text("== DESTINY STONE ==");
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::DESTRUCTIBLE == m_pFixPropObj->Get_InteractiveType())
+            {
+                CDestructible_Prop* pDestructibleProp = static_cast<CDestructible_Prop*>(m_pFixPropObj);
+
+                string strCurrentModelType = pDestructibleProp->Get_Destructible_ModelType_ByString();
+
+                ImGui::Text("== DESTRUCTIBLE PROP ==");
+
+                ImGui::Text("CURRENT MODEL TYPE : %s", strCurrentModelType.c_str());
+
+                if (ImGui::Button("MODEL TYPE FENCE"))
+                    pDestructibleProp->Set_Destructible_ModelType(CDestructible_Prop::MODEL_TYPE::FENCE);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE POT"))
+                    pDestructibleProp->Set_Destructible_ModelType(CDestructible_Prop::MODEL_TYPE::POT);
+                SAMELINE;
+                if (ImGui::Button("MODEL TYPE BARREL"))
+                    pDestructibleProp->Set_Destructible_ModelType(CDestructible_Prop::MODEL_TYPE::BARREL);
+                SEPARATOR;
+
+                SEPARATOR;
+            }
+            if (INTERACTIVE_TYPE::ILLUSION_WALL == m_pFixPropObj->Get_InteractiveType())
+            {
+                CIllusion_Wall* pIllusionWall = static_cast<CIllusion_Wall*>(m_pFixPropObj);
+
+                ImGui::Text("== ILLUSION WALL ==");
+                SEPARATOR;
             }
 
 #pragma endregion
@@ -2352,6 +2511,16 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
                     ImGui::Text("MONSTER SUB LEVEL : %d", static_cast<CMap_Spawn*>(m_InteractiveList[m_iInteractiveListIndex])->Get_SubLevel());
                     SEPARATOR;
                 }
+                if (INTERACTIVE_TYPE::DANJINJAR == m_InteractiveList[m_iInteractiveListIndex]->Get_InteractiveType())
+                {
+                    ImGui::Text("DANJIN JAR TYPE : %s", static_cast<CDanjinJar*>(m_InteractiveList[m_iInteractiveListIndex])->Get_DanjinJar_ModelType_ByString().c_str());
+                    SEPARATOR;
+                }
+                if (INTERACTIVE_TYPE::DESTRUCTIBLE == m_InteractiveList[m_iInteractiveListIndex]->Get_InteractiveType())
+                {
+                    ImGui::Text("DESTRUCTIBLE MODEL TYPE : %s", static_cast<CDestructible_Prop*>(m_InteractiveList[m_iInteractiveListIndex])->Get_Destructible_ModelType_ByString().c_str());
+                    SEPARATOR;
+                }
 			}
 			if (0 != m_InteractiveList.size())
 			{
@@ -2384,10 +2553,15 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 							m_iFix_BN_ID = m_iBN_ID = m_pFixPropObj->Get_BladeNexus_ID();
 						}
 
-						if (INTERACTIVE_TYPE::CHEST == m_pFixPropObj->Get_InteractiveType())
-						{
-							m_FixItemBox = m_ItemBox = m_pFixPropObj->Get_ItemBox();
-						}
+                        if (INTERACTIVE_TYPE::CHEST == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            m_FixItemBox = m_ItemBox = m_pFixPropObj->Get_ItemBox();
+                        }
+
+                        if (INTERACTIVE_TYPE::TOMBSTONE == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            m_iFix_TS_ID = m_iTS_ID = m_pFixPropObj->Get_TombStoneID();
+                        }
 
                         if (INTERACTIVE_TYPE::TRIGGER == m_pFixPropObj->Get_InteractiveType())
                         {
@@ -2482,7 +2656,8 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
 
                         if (INTERACTIVE_TYPE::DAPHRONA == m_pFixPropObj->Get_InteractiveType() ||
                             INTERACTIVE_TYPE::DUIMUK == m_pFixPropObj->Get_InteractiveType() ||
-                            INTERACTIVE_TYPE::DANJIN == m_pFixPropObj->Get_InteractiveType())
+                            INTERACTIVE_TYPE::DANJIN == m_pFixPropObj->Get_InteractiveType() ||
+                            INTERACTIVE_TYPE::GACHANPC == m_pFixPropObj->Get_InteractiveType())
                         {
                             // NPC 일단 빈칸
                         }
@@ -2490,6 +2665,21 @@ HRESULT CLevel_Map::Ready_Interactive_Prop_List_Window()
                         if (INTERACTIVE_TYPE::DANJINJAR == m_pFixPropObj->Get_InteractiveType())
                         {
                             //  항아리 일단 빈칸
+                        }
+
+                        if (INTERACTIVE_TYPE::DESTINYSTONE == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            //  귀석 일단 빈칸
+                        }
+
+                        if (INTERACTIVE_TYPE::DESTRUCTIBLE == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            // 파괴 가능 오브젝트 일단 빈칸
+                        }
+
+                        if (INTERACTIVE_TYPE::ILLUSION_WALL == m_pFixPropObj->Get_InteractiveType())
+                        {
+                            // 신기루 벽 오브젝트 일단 빈칸
                         }
 
 						m_isFixInteractObjectWindow = true;
@@ -2767,12 +2957,15 @@ HRESULT CLevel_Map::Ready_Light_Window()
 
 					ImGui::EndListBox();
 				} SEPARATOR;
-                _bool isEnable = m_pGameInstance->Is_LightEnable(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP));
-                if (true == isEnable)
-                    ImGui::Text("ENABLE");
-                else
-                    ImGui::Text("DISABLE");
-                SEPARATOR;
+                if (0 != m_LightTags.size())
+                {
+                    _bool isEnable = m_pGameInstance->Is_LightEnable(AnsiToWString(m_LightTags[m_iLightTagIndex]), ENUM_CLASS(LEVEL::MAP));
+                    if (true == isEnable)
+                        ImGui::Text("ENABLE");
+                    else
+                        ImGui::Text("DISABLE");
+                    SEPARATOR;
+                }
 				if (0 != m_LightTags.size() && ImGui::Button("TURN ON"))
 				{
 					m_isFixLight = false;
@@ -3273,7 +3466,9 @@ HRESULT CLevel_Map::Ready_SkySphere_Window()
 
 			ImGui::Text("SKY COLOR");
 			ImGui::Text("COLOR PALHETT");
-			ImGui::ColorPicker3("##r_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorR));
+            ImGui::ColorPicker3("##r_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorR));
+            ImGui::ColorPicker3("##g_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorG));
+            ImGui::ColorPicker3("##b_edit", reinterpret_cast<_float*>(&m_FixSkyDesc.vNebulaColorB));
 			SEPARATOR;
 
 			ImGui::Text("MOON SIZE"); SAMELINE;
@@ -3736,10 +3931,8 @@ HRESULT CLevel_Map::Ready_Map_Decal_Window()
             {
                 if (0 == m_DecalList.size()) m_isDecalListWindow = true;
 
-                CDecal* pDecal = static_cast<CDecal*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal")));
+                CDecal_Static* pDecal = static_cast<CDecal_Static*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal")));
                 CHECK_NULLPTR(pDecal, false);
-
-                pDecal->Set_EnableDecoration(true);
 
                 pDecal->Set_Desc(m_DecalDesc);
 
@@ -3826,6 +4019,7 @@ HRESULT CLevel_Map::Ready_Map_Decal_Window()
                             {
                                 swap(m_DecalList[m_iDecalListIndex], m_DecalList.back());
                                 m_DecalList.pop_back();
+                                m_isDecalDeleted = true;
                                 break;
                             }
                             else
@@ -3869,7 +4063,7 @@ HRESULT CLevel_Map::Ready_Map_Decal_Window()
                 {
                     m_pGameInstance->Clear_GizmoObject();
 
-                    ZeroMemory(&m_DecalDesc, sizeof(DECAL_DESC));
+                    ZeroMemory(&m_DecalDesc, sizeof(STATIC_DECAL_DESC));
 
                     m_isDecalFixWindow = false;
                 } SAMELINE;
@@ -4838,7 +5032,9 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
 			}
             if (INTERACTIVE_TYPE::TOMBSTONE == eType)
             {
-                _int o_ing = 0;
+                _int iTombStoneID = {};
+                iTombStoneID = pProp->Get_TombStoneID();
+                WriteFile(hObjectFile, &iTombStoneID, sizeof(_int), &dwByte, nullptr);
             }
             if (INTERACTIVE_TYPE::ELEVATOR == eType)
             {
@@ -4919,7 +5115,8 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
             }
             if (INTERACTIVE_TYPE::DAPHRONA == eType ||
                 INTERACTIVE_TYPE::DUIMUK == eType ||
-                INTERACTIVE_TYPE::DANJIN == eType)
+                INTERACTIVE_TYPE::DANJIN == eType ||
+                INTERACTIVE_TYPE::GACHANPC == eType)
             {
                 // NPC 일단 공백
             }
@@ -4934,6 +5131,22 @@ _bool CLevel_Map::Interactive_Object_Save_Binary()
                 CDanjinJar::DANJINJAR_STEP StepPosition = { pDanjinJar->Get_StepPosition() };
 
                 WriteFile(hObjectFile, &StepPosition, sizeof(CDanjinJar::DANJINJAR_STEP), &dwByte, nullptr);
+            }
+            if (INTERACTIVE_TYPE::DESTINYSTONE == eType)
+            {
+                // 귀석 일단 공백
+            }
+            if (INTERACTIVE_TYPE::DESTRUCTIBLE == eType)
+            {
+                CDestructible_Prop* pDestructibleProp = static_cast<CDestructible_Prop*>(pProp);
+
+                CDestructible_Prop::MODEL_TYPE eModelType = { pDestructibleProp->Get_Destructible_ModelType() };
+
+                WriteFile(hObjectFile, &eModelType, sizeof(CDestructible_Prop::MODEL_TYPE), &dwByte, nullptr);
+            }
+            if (INTERACTIVE_TYPE::ILLUSION_WALL == eType)
+            {
+                // 신기루 벽 일단 공백
             }
 		}
 	}
@@ -5222,10 +5435,10 @@ _bool CLevel_Map::Decals_Save_Binary()
 
         for (auto& pDecal : m_DecalList)
         {
-            DECAL_DESC DecalDesc = pDecal->Get_Desc();
+            STATIC_DECAL_DESC DecalDesc = pDecal->Get_Desc();
 
             // 2. 데칼의 구조체 저장
-            WriteFile(hFile, &DecalDesc, sizeof(DECAL_DESC), &dwByte, nullptr);
+            WriteFile(hFile, &DecalDesc, sizeof(STATIC_DECAL_DESC), &dwByte, nullptr);
 
             _float fThreshold = pDecal->Get_Threshold();
 
@@ -5513,6 +5726,8 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 TombStoneDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
 
+                CHECK_FALSE(ReadFile(hObjectFile, &TombStoneDesc.iTombStone_ID, sizeof(_int), &dwByte, nullptr), false);
+
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_TombStone"), TIME_CHANNEL::WORLD, &TombStoneDesc), false);
             }
@@ -5755,6 +5970,21 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Danjin"), TIME_CHANNEL::WORLD, &DanjinDesc), false);
             }
+            else if (INTERACTIVE_TYPE::GACHANPC == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CNPC_Gacha::GACHA_NPC_DESC GachaNPCDesc = {};
+
+                GachaNPCDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                GachaNPCDesc.eLevel = LEVEL::MAP;
+                memcpy(GachaNPCDesc.szModelName, TEXT("Prototype_Component_Model_NPC_Gacha"), sizeof(GachaNPCDesc.szModelName));		// 프로토타입 태그명
+
+                GachaNPCDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                GachaNPCDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_NPC_Gacha"), TIME_CHANNEL::WORLD, &GachaNPCDesc), false);
+            }
             else if (INTERACTIVE_TYPE::DANJINJAR == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
             {
                 CDanjinJar::DANJINJAR_DESC DanjinJarDesc = {};
@@ -5777,6 +6007,55 @@ _bool CLevel_Map::Interactive_Objects_Load_Binary()
 
                 CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
                     ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DanjinJar"), TIME_CHANNEL::WORLD, &DanjinJarDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::DESTINYSTONE == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CDestinyStone::DESTINYSTONE_DESC DestinyStoneDesc = {};
+
+                DestinyStoneDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                DestinyStoneDesc.eLevel = LEVEL::MAP;
+                memcpy(DestinyStoneDesc.szModelName, TEXT("Prototype_Component_Model_DestinyStone"), sizeof(DestinyStoneDesc.szModelName));		// 프로토타입 태그명
+
+                DestinyStoneDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                DestinyStoneDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_DestinyStone"), TIME_CHANNEL::WORLD, &DestinyStoneDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::DESTRUCTIBLE == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CDestructible_Prop::DESTRUCTIBLE_PROP_DESC DestructiblePropDesc = {};
+
+                DestructiblePropDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                DestructiblePropDesc.eLevel = LEVEL::MAP;
+                memcpy(DestructiblePropDesc.szModelName, TEXT("DestructibleProp"), sizeof(DestructiblePropDesc.szModelName));		// 프로토타입 태그명
+
+                DestructiblePropDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                DestructiblePropDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CDestructible_Prop::MODEL_TYPE eModelType = {};
+
+                CHECK_FALSE(ReadFile(hObjectFile, &DestructiblePropDesc.eModelType, sizeof(CDestructible_Prop::MODEL_TYPE), &dwByte, nullptr), false);
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Destructible"), TIME_CHANNEL::WORLD, &DestructiblePropDesc), false);
+            }
+            else if (INTERACTIVE_TYPE::ILLUSION_WALL == eType) // 상호작용 계속 추가 예정 ( 이 함수 위쪽도 )
+            {
+                CIllusion_Wall::ILLUSION_WALL_DESC IllusionWallDesc = {};
+
+                IllusionWallDesc.iMapObjectID = m_iMapObjectCnt++;					// 사실상 의미 X
+                IllusionWallDesc.eLevel = LEVEL::MAP;
+                memcpy(IllusionWallDesc.szModelName, TEXT("Prototype_Component_Model_Illusion_Wall"), sizeof(IllusionWallDesc.szModelName));		// 프로토타입 태그명
+
+                IllusionWallDesc.WorldMatrix = WorldMatrix;									// 행렬
+
+                IllusionWallDesc.eInteractiveType = eType;										// 상호 작용 오브젝트 타입
+
+                CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive"),
+                    ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Prop_Illusion_Wall"), TIME_CHANNEL::WORLD, &IllusionWallDesc), false);
             }
 
 			CProp* pInteractive_Prop = static_cast<CProp*>(m_pGameInstance->Get_BackGameObject(ENUM_CLASS(LEVEL::MAP), TEXT("Layer_MapObj_Interactive")));
@@ -5987,12 +6266,12 @@ _bool CLevel_Map::Decals_Load_Binary()
 
         for (_uint i = 0; i < iDecalCnt; ++i)
         {
-            CDecal* pDecal = static_cast<CDecal*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal")));
+            CDecal_Static* pDecal = static_cast<CDecal_Static*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::MAP), TEXT("Prototype_GameObject_Decal")));
             CHECK_NULLPTR(pDecal, false);
 
-            DECAL_DESC DecalDesc = {};
+            STATIC_DECAL_DESC DecalDesc = {};
             // 2. 데칼의 구조체 불러오기
-            CHECK_FALSE(ReadFile(hFile, &DecalDesc, sizeof(DECAL_DESC), &dwByte, nullptr), false);
+            CHECK_FALSE(ReadFile(hFile, &DecalDesc, sizeof(STATIC_DECAL_DESC), &dwByte, nullptr), false);
             pDecal->Set_Desc(DecalDesc);
 
             _float fThreshold = {};
@@ -6009,9 +6288,7 @@ _bool CLevel_Map::Decals_Load_Binary()
             // 5. 데칼의 월드 행렬 불러오기
             CHECK_FALSE(ReadFile(hFile, &WorldMatrix, sizeof(_float4x4), &dwByte, nullptr), false);
             pDecal->Set_WorldMatrix(WorldMatrix);
-
-            pDecal->Set_EnableDecoration(true);
-
+            \
             m_DecalList.push_back(pDecal);
             m_pGameInstance->Batch_Decal(pDecal);
         }

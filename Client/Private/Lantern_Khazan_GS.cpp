@@ -2,6 +2,7 @@
 #include "Khazan_Sample.h"
 #include "GameInstance.h"
 #include "ClientInstance.h"
+#include "Effect_Prefab.h"
 
 CLantern_Khazan_GS::CLantern_Khazan_GS(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     : CPartObject{ pDevice, pContext }
@@ -35,6 +36,10 @@ HRESULT CLantern_Khazan_GS::Initialize_Clone(void* pArg)
     m_matOffset = XMMatrixRotationX(XMConvertToRadians(-90.0f));
     m_pModelCom->Set_RootBone(0);
 
+    m_pEffect = dynamic_cast<CEffect_Prefab*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, m_pGameInstance->Get_NextLevelID(), TEXT("lantern")));
+    if (m_pEffect) 
+        m_pEffect->ResetChildren();
+
     return S_OK;
 }
 
@@ -42,6 +47,8 @@ void CLantern_Khazan_GS::Priority_Update(_float fTimeDelta)
 {
     if (!m_isEnble)
         return;
+
+    m_pEffect->Priority_Update(fTimeDelta);
 }
 
 void CLantern_Khazan_GS::Update(_float fTimeDelta)
@@ -81,7 +88,8 @@ void CLantern_Khazan_GS::Update(_float fTimeDelta)
     _float4 vPos = *reinterpret_cast<_float4*>(m_CombinedWorldMatrix.m[3]);
 
     m_pGameInstance->Set_LightPosition(TEXT("Lantern"), ENUM_CLASS(m_eCurrentLevel), vPos);
-
+    m_pEffect->UpdatePosition(XMLoadFloat4(&vPos));
+    m_pEffect->Update(fTimeDelta);
 }
 
 void CLantern_Khazan_GS::Late_Update(_float fTimeDelta)
@@ -91,7 +99,7 @@ void CLantern_Khazan_GS::Late_Update(_float fTimeDelta)
 
     if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
         return;
-
+    m_pEffect->Late_Update(fTimeDelta);
 }
 
 HRESULT CLantern_Khazan_GS::Render()
@@ -100,6 +108,10 @@ HRESULT CLantern_Khazan_GS::Render()
         return E_FAIL;
 
     _uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+    _float fEmissiveIntensity = 3.f;
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEmissiveIntensity", &fEmissiveIntensity, sizeof(_float))))
+        return E_FAIL;
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
@@ -200,4 +212,5 @@ void CLantern_Khazan_GS::Free()
     Safe_Release(m_pParentTransform);
     Safe_Release(m_pModelCom);
     Safe_Release(m_pShaderCom);
+    Safe_Release(m_pEffect);
 }

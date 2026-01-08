@@ -61,49 +61,6 @@ HRESULT CMainApp::Initialize()
 
 void CMainApp::Update(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
-	{
-		//m_pClientInstance->ActiveCamera_Shaking(1.5f, 1.f);
-
-		//m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.3f, 0.003f, 3.f);
-		//m_pGameInstance->Fix_HitStop(TIME_CHANNEL::ENEMY);
-		//FOVModifier tMod{};
-
-		// PRIORITY
-		//tMod.strID = TEXT("Hit");
-		//tMod.eMode = FOVModifier::FOV_MODE::PRIORITY;
-		//tMod.fDuration = 0.f;
-		//tMod.fFrom = 0.f;
-		//tMod.fTo = XMConvertToRadians(50.f);
-		//tMod.iPriority = 5.f;
-		//tMod.Ease = EaseOutQuad;
-
-		// ADD
-		//tMod.eMode = FOVModifier::FOV_MODE::ADD;
-		//tMod.fDuration = 5.f;
-		//tMod.fFrom = 0.f;
-		//tMod.fTo = XMConvertToRadians(80.f);
-		//tMod.iPriority = 5.f;
-		//tMod.Ease = EaseOutQuad;
-
-		// Multiply
-		//tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
-		//tMod.fDuration = 5.f;
-		//tMod.fFrom = XMConvertToRadians(60.f);
-		//tMod.fTo = XMConvertToRadians(80.f);
-		//tMod.iPriority = 5.f;
-		//tMod.Ease = EaseOutQuad;
-
-		//m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
-
-        //m_pClientInstance->Find_MapBladeNexus(KHAZAN_MAP::HEINMACH);
-	}
-	if (m_pGameInstance->Key_Down(DIK_RCONTROL))
-	{
-		//m_pClientInstance->ActiveCamera_KillFov(L"Hit");
-		//m_pGameInstance->UnFix_HitStop(TIME_CHANNEL::ENEMY);
-	}
-
 	TIME_DELTA      tTimeDelta = {};
 
 	const _float fDt_World = m_pGameInstance->Get_ScaledDelta(TEXT("Timer_60"), TIME_CHANNEL::WORLD);
@@ -149,10 +106,6 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
         CVIBuffer_Point::Create(m_pDevice, m_pContext))))
         return E_FAIL;
 
-	/* Prototype_Component_VIBuffer_Terrain */
-	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Terrain/Height.bmp")))))
-		return E_FAIL;
 
 	/* Prototype_Component_VIBuffer_Cube */
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Cube"),
@@ -249,6 +202,16 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
 		CBody::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+    /* Prototype_Component_SoftBody*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_SoftBody"),
+        CSoftBody::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    /* Prototype_Component_ClothBody*/
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_ClothBody"),
+        CClothBody::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -350,10 +313,14 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
 #pragma endregion
 
 #pragma region 맵 데칼
-    /* Prototype_GameObject_Prop_Trigger */
-    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal"),
+    /* Prototype_GameObject_Decal_Static */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal_Static"),
         CDecal::Create(m_pDevice, m_pContext)), E_FAIL);
 #pragma endregion
+
+    /* Prototype_GameObject_Decal */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_Decal"),
+        CDecal::Create(m_pDevice, m_pContext)), E_FAIL);
 
     /* Prototype_Component_MotionTrail */
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
@@ -560,6 +527,9 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Dangin"),
         CUI_Talk_Dangin::Create(m_pDevice, m_pContext)), E_FAIL);
 
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Gacha"),
+        CUI_Talk_Gacha::Create(m_pDevice, m_pContext, ENUM_CLASS(LEVEL::STATIC))), E_FAIL);
+
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Talk_Trader"),
         CUI_Talk_Trader::Create(m_pDevice, m_pContext)), E_FAIL);
 
@@ -643,7 +613,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_UI()
 	Desc.fDepth = 8.f;
 
 	CHECK_FAILED(m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Interaction_Guide"),
-		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide"), &Desc, 25), E_FAIL);
+		ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Key_Guide"), &Desc, 50), E_FAIL);
 
 	Desc.vLocalSize = { 52.f, 52.f };
 	Desc.vLocalPos = { 0.f, 0.f };
@@ -696,15 +666,15 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
 
 	/* Prototype_Component_Texture_Trail */
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Slash"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/SowardTrailTexture/Slash_%d.png"), 34)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/SowardTrailTexture/Slash_%d.png"), 47)), E_FAIL);
 
 	// Prototype_Component_Texture_TestParticle
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Particle_Prototype"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/particle/particle%d.png"), 10)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/particle/particle%d.png"), 14)), E_FAIL);
 
 	// Prototype_Component_Texture_TestSpriteImage
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sprite_Effect"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Sprite/Sprite%d.png"), 10)), E_FAIL);
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Sprite/Sprite%d.png"), 12)), E_FAIL);
 
 	// Prototype_Component_Texture_MeshEffect(Masking)
 	CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Masking"),
@@ -712,7 +682,7 @@ HRESULT CMainApp::Ready_Prototype_ForStatic_Effect()
 
 	// Prototype_Component_Texture_MeshEffect(Dissolve)
 	if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Dissolve"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Dissolve/Dissolve%d.png"), 5))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Dissolve/Dissolve%d.png"), 6))))
 		return E_FAIL;
 
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MeshEffect_Normal"),

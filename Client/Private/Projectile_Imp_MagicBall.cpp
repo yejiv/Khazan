@@ -23,9 +23,6 @@ HRESULT CProjectile_Imp_MagicBall::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-   /* if (FAILED(Ready_Components()))
-        return E_FAIL;*/
-
     if (FAILED(Ready_Colliders()))
         return E_FAIL;
 
@@ -44,7 +41,7 @@ HRESULT CProjectile_Imp_MagicBall::Initialize_Clone(void* pArg)
     Desc.fLifeTime = 2.f;
     Desc.iDivisionCount = 5.f;
     Desc.iTextureIdx = 28;
-    Desc.vColor = _float3(1.084f, 1.f, 4.f);
+    Desc.vColor = _float4(1.084f, 1.f, 4.f, 1.f);
     m_pLineTrail = static_cast<CLineTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_LineTrail"), &Desc));
 
     return S_OK;
@@ -62,12 +59,13 @@ void CProjectile_Imp_MagicBall::Update(_float fTimeDelta)
 
     if (m_fCurrentTime >= m_fLifeTime)
     {
+        m_pBody->Set_Pos(XMVectorSet(0.f, 0.f, 0.f, 1.f));
+
         m_pBody->Collision_Active(false);
-        // 풀로 돌아가고
-        m_isDead = true;
-        // Active 끄고
         m_isActive = false;
         m_isCrashed = true;
+        m_isDead = true;
+
     }
 
     if (m_isActive)
@@ -91,8 +89,9 @@ void CProjectile_Imp_MagicBall::Update(_float fTimeDelta)
 
     m_fEffect->UpdatePosition(m_pTransformCom->Get_State(STATE::POSITION));
     m_fEffect->Update(fTimeDelta);
-    m_pLineTrail->Update(fTimeDelta);
     m_pLineTrail->Add_ControlPoint(m_pTransformCom->Get_State(STATE::POSITION));
+    m_pLineTrail->Update(fTimeDelta);
+    
 }
 
 void CProjectile_Imp_MagicBall::Late_Update(_float fTimeDelta)
@@ -138,14 +137,35 @@ void CProjectile_Imp_MagicBall::Enter_State(PRJSTATE eNextState)
     switch (m_eState)
     {
     case Client::CProjectile::LOOP:
+        m_pGameInstance->PlaySoundLoop(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Loop (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 20.f);
         break;
     case Client::CProjectile::CRASHED:
+    {
+
+        _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Exp_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 20.f);
+
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Exp_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 20.f);
+
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Obj_Exp_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 20.f);
         m_isActive = false;
         break;
+    }
     case Client::CProjectile::END:
         m_isDead = true;
+        m_pBody->Collision_Active(false);
+        m_pBody->Set_Pos(XMVectorSet(0.f, 0.f, 0.f, 1.f));
         break;
     }
+}
+
+void CProjectile_Imp_MagicBall::StopSound()
+{
+    m_pGameInstance->StopByChannel(Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)));
 }
 
 HRESULT CProjectile_Imp_MagicBall::Ready_Components()
@@ -175,8 +195,10 @@ HRESULT CProjectile_Imp_MagicBall::Ready_Colliders()
     XMStoreFloat4(&BodyDesc.vQuat, m_pTransformCom->Get_Rotation_Quat());
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_tMagicBallColliderDesc.pGameObject = this;
+    m_tMagicBallColliderDesc.strName = TEXT("MagicBallCollider");
+    m_tMagicBallColliderDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    BodyDesc.pCollisionDesc = &m_tMagicBallColliderDesc;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_ImpRange_MagicBall"), reinterpret_cast<CComponent**>(&m_pBody), &BodyDesc)))
@@ -215,10 +237,16 @@ void CProjectile_Imp_MagicBall::Collision_Stay(COLLISION_DESC* pDesc, _uint iOth
             CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
             if (nullptr == pTarget)
                 return;
-            pTarget->Take_Damage(10.f,HITREACTION::KNOCKBACK_NORMAL,nullptr);
+            pTarget->Take_Damage(100.f,HITREACTION::KNOCKBACK_NORMAL,nullptr);
             
-
         }
+
+        else if (pDesc->strName == TEXT("GuardCollisionDesc"))
+        {
+            
+        }
+
+
     }
 }
 

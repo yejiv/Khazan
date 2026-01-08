@@ -91,6 +91,9 @@ private:
     _float m_fOffSetHeight = {};
 
 private:
+    COLLISION_DESC m_TriggerCollisionDesc;
+
+private:
     void Set_GuideMatrix(_float4 vGuidePos);
     void Set_PlayerPosition();
 

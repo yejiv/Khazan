@@ -21,9 +21,11 @@ public:
         _uint* pState = { nullptr };
         _uint* pStatus = { nullptr };
         _uint* pHitReation = { nullptr };
+        _uint* pHealIndex = { nullptr };
         //_bool* pIsGuarding = { nullptr };
         _float4* pGuardRotationTarget = { nullptr };
         class CTransform* pParentTransform = { nullptr };
+        _bool* pParentIsCanStaminaRecovery = { nullptr };
 
     }BODY_KHAZAN_SPEAR_DESC;
 
@@ -84,16 +86,26 @@ public:
     void                        Set_MotionTrailCallBack(function<void(const _wstring&, _bool)> callback) { m_OnMotionTrailCallBack = callback; }
     void                        Trigger_MotionTrail(const _wstring& strKey, _bool isActive) { if (m_OnMotionTrailCallBack)m_OnMotionTrailCallBack(strKey, isActive); }
     void                        On_MotionTrail(const _wstring strKey, _bool isActive) { m_pMotionTrailCom->Set_Config(strKey); m_isActiveMotionTrail = isActive; }
+    void                        Start_HealRimLight(_float fDuration, const _float2& vFadeTime, _float fMaxIntensity);
+    void                        Reset_HealRimLightFlag() { m_isFinishedHealRimLight = false; }
 
+public:
+    const TRAIL_CONFIG&         Get_TrailConfig() const;
+    void                        Set_TrailConfig(const TRAIL_CONFIG& Config);
+    _uint                       Get_NumTrailTextures();
+    ID3D11ShaderResourceView*   Get_TrailTexture(_uint iIndex);
 
-    _bool       Is_SpearFullExtension() const { return m_isSpearFullExtension; }
-    _bool       Get_IsAttackCollisionActive() { return m_isSpearTipActive; }
-    void        AllAttackCollisionActive_Off();
+    _bool                       Is_SpearFullExtension() const { return m_isSpearFullExtension; }
+    _bool                       Get_IsAttackCollisionActive() { return m_isSpearTipActive; }
+    void                        AllAttackCollisionActive_Off();
+
+    void                        Set_AllPlaySound(_bool isPlaySound) { m_isPlaySound = isPlaySound; }
 
 private:
     class CClientInstance*      m_pClientInstance = { nullptr };
 	class CTransform*           m_pParentTransform = { nullptr };   
     class CSpear_Khazan_Spear*  m_pSpear = { nullptr };
+    class CKhazan_SoundHelper*  m_pSoundHelper = { nullptr };
     CMotionTrail*               m_pMotionTrailCom = { nullptr };
 
     CShader*            m_pShaderCom = { nullptr };
@@ -104,6 +116,7 @@ private:
 
     CBody*              m_pBodyCom_SpearTip1 = { nullptr };
     CBody*              m_pBodyCom_SpearPole = { nullptr };
+    CBody*              m_pBodyCom_BodyAttack = { nullptr };
     CBody*              m_pBodyCom_Search = { nullptr };
 
     _float4x4*          m_pSpearFX_Matrix = { nullptr };
@@ -114,17 +127,21 @@ private:
     _uint*              m_pParentState = { nullptr };
     _uint*              m_pParentStatus = { nullptr };
     _uint*              m_pHitReaction = { nullptr };
+    _uint*              m_pHealIndex = { nullptr };
     _uint				m_iCurState = {  };
 
 
     _bool				m_isFinishedAnimation = { false };
-    _uint				m_iCurSetAnimIndex = { 0 };
+    _uint				m_iCurAnimIndex = { 0 };
     _bool               m_isSpearFullExtension = { false }; //창을 완전히 뻗는 타이밍부터 true 
     _bool*              m_pIsGuarding = { nullptr }; //가드중인지 체크
+
+    _bool*              m_pParentIsCanStaminaRecovery = { nullptr };
 
     /* 뼈 위치 */
     _float4x4*          m_pSpearTip1_Matrix = { nullptr };
     _float4x4			m_pSpearTip1_MatrixW;
+    _float4x4            m_pSpearTip1_MatrixW_nJolt;
     _float4x4*          m_pSpearPole_Matrix = { nullptr };
     _float4x4			m_pSpearPole_MatrixW;
 
@@ -138,6 +155,7 @@ private:
 
     _bool               m_isSpearTipActive = { true };
     _bool               m_isSpearPoleActive = { true };
+    _bool               m_isBodyAttackActive = { true };
 
     /* 가드 */
     _bool               m_isJustGuardOnce = { false };
@@ -173,24 +191,40 @@ private:
     _bool               m_isEnableEdge = { true };
     _bool               m_isEnableMotionTrail = {};
     _uint               m_iCurMotionTrailAnimIndex = {};
+    _bool                       m_isEnableHealRimLight = { false };
+    _bool                       m_isFinishedHealRimLight = { false };
+    PLAYER_HEAL_RIMLIGHT_DESC   m_HealRimLightDesc;
 
+    /* Sound */
+    vector<FMOD_CHANNEL*>       m_pChannel;
 
     COLLISION_DESC      m_tSearchCollisionDesc = {};
+    COLLISION_DESC      m_tAttackCollisionDesc = {};
+    COLLISION_DESC      m_tBodyAttackCollisionDesc = {};
+    COLLISION_DESC      m_tGuardCollisionDesc = {};
+    _bool               m_isPlaySound = { true };
 
     mutex m_CollMonsterMutex;
 
+    _bool               m_bGuradFX[2];
+   
+    _bool               m_isHitSound;
+    _float              m_TrailParticleTime;
+    _uint               m_iTrailType;
 private:
     void				Update_Collider(_float fTimeDelta);                     
     void                Check_Guarding(_float fTimeDelta);
     void                Update_GuardRotation(_float fTimeDelta);
     void                Start_GuardRotation(_float3 vContactPoint);
+    FMOD_CHANNEL**      Get_SoundChannel(_int iIndex);
 
 private:
     HRESULT				Ready_Components();
     HRESULT				Ready_AnimationEvent();
+    HRESULT				Ready_AnimationEvent_SFX();
     HRESULT				Ready_Collider();
     HRESULT				Bind_ShaderResources();
-    HRESULT             Initialize_Equipment();
+    HRESULT             Ready_Equipment();
     void                Equip_Part(EQUIPMENTTYPE eType, const _wstring& strPartName); //파츠 갈아 입기
     void                Update_QuickRenderCache();  //빠른 랜더용 파츠모음 (모션트레일도 여기서 랜더용 파츠 갈아끼우기)
 
@@ -198,7 +232,9 @@ private:
 private:
     void	FX_Trail();
     void	UpdateSpearWind(_bool isEnableRadialBlur);
+    void	UpdateSpearRedWind(_bool isEnableRadialBlur);
     void	SpawnSpearWind();
+    void	SpawnSpearRedWind();
     void	FX_StrongAtk_Charge_Blust1(_fvector pos);
     void	FX_StrongAtk_Charge_Blust2(_fvector pos);
     void	FX_StrongAtk_Charge_Blust3(_fvector pos);
@@ -207,7 +243,18 @@ private:
     void	FX_StrongAtk_Charge_Blust6(_fvector pos);
     void	FX_StrongAtk_Charge_BlustSmall(_fvector pos);
     void	Spear_Spike();
+    void    Set_BaseTrail();
+    void    Set_BlueTrail();
+    void    Set_RedTrail();
 
+    void    Spawn_Guard_FX();
+    _vector BodyCenter();
+
+    void    BrutalAtk_ScreenEffect0();
+    void    BrutalAtk_ScreenEffect1();
+
+private:
+    _vector Decompose_Rotation(_matrix W, _vector localRot = { 0.f, 0.f, 0.f, 0.f }, _vector offset = { 0.f, 0.f, 0.f, 1.f });
     //void	UpdateTrail();
 
 private:
@@ -221,6 +268,9 @@ private:
     inline void		Toggle_Status(_uint i) { *m_pParentStatus ^= i; }
     inline void		Remove_Status(_uint i) { *m_pParentStatus &= ~i; }
     inline _bool	Has_Status(_uint i) { return (*m_pParentStatus & i) != 0; }
+
+    
+
   
 public:
     static CBody_Khazan_Spear* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

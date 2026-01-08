@@ -51,6 +51,12 @@ void CPrefab::SetClose()
         child->SetLoopOff();
 }
 
+void CPrefab::SetClose_Force()
+{
+    for (auto child : m_Children)
+        child->SetStop_Force();
+}
+
 
 void CPrefab::Free()
 {

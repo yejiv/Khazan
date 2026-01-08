@@ -3,7 +3,7 @@
 #include "Client_Defines.h"
 
 
-enum class IMP_SlEEP_STATE { SLEEP, WAKEUP, LOAR, END, };
+enum class IMP_SlEEP_STATE { SLEEP, WAKEUP, LOAR, BRUTALATTACK ,END, };
 
 NS_BEGIN(Client)
 
@@ -19,7 +19,7 @@ public:
     virtual void					Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
 public:
-    virtual void					OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) {};
+    virtual void					OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, class CGameObject* pOwner = nullptr) override;
 
 private:
     IMP_SlEEP_STATE				    m_eState = { IMP_SlEEP_STATE::END };

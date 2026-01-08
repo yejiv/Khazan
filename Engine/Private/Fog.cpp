@@ -28,6 +28,14 @@ HRESULT CFog::Initialize()
     m_Config.fBaseHeight = 1120.f;
     m_Config.fHeightDensity = 0.001f;
 
+    m_Config.isUseSubColor = false;
+    m_Config.fSubColorStartHeight = 1500.f;
+    m_Config.vSubColor = _float4(1.f, 0.f, 1.f, 1.f);
+    
+    m_Config.fLightBleedStrength = 0.f;
+
+    m_isEnable = true;
+
     if (FAILED(Ready_NoiseTexture()))
         return E_FAIL;
 
@@ -45,10 +53,24 @@ void CFog::Update(_float fTimeDelta)
     m_fTransTimeAcc += fTimeDelta;
 
 	_float fRatio = m_fTransTimeAcc / m_fDuration;
+
 	if (fRatio >= 1.f)
 	{
 		fRatio = 1.f;
-		m_isTransition = false;
+
+        m_Config.vColor = m_TargetFog.vColor;
+        m_Config.fDensity = m_TargetFog.fDensity;
+        m_Config.fBias = m_TargetFog.fBias;
+
+        m_isTransition = false;
+
+        if (nullptr != m_Callback)
+        {
+            m_Callback();
+            m_Callback = nullptr;
+        }
+
+        return;
 	}
 
     m_Config.fDensity = Lerp(m_StartFog.fDensity, m_TargetFog.fDensity, fRatio);
@@ -58,6 +80,9 @@ void CFog::Update(_float fTimeDelta)
 
 HRESULT CFog::Bind_Fog_ShaderResources(CShader* pShader)
 {
+    if (FAILED(pShader->Bind_Bool("g_isEnableFog", &m_isEnable)))
+        return E_FAIL;
+
     _uint iFogMode = static_cast<_uint>(m_Config.eType);
     if (FAILED(pShader->Bind_RawValue("g_iFogMode", &iFogMode, sizeof(_uint))))
         return E_FAIL;
@@ -107,6 +132,18 @@ HRESULT CFog::Bind_Fog_ShaderResources(CShader* pShader)
     if (FAILED(pShader->Bind_RawValue("g_fFogHeightDensity", &m_Config.fHeightDensity, sizeof(_float))))
         return E_FAIL;
 
+    if (FAILED(pShader->Bind_Bool("g_isUseSubColor", &m_Config.isUseSubColor)))
+        return E_FAIL;
+
+    if (FAILED(pShader->Bind_RawValue("g_fSubColorStartHeight", &m_Config.fSubColorStartHeight, sizeof(_float))))
+        return E_FAIL;
+
+    if (FAILED(pShader->Bind_RawValue("g_vFogSubColor", &m_Config.vSubColor, sizeof(_float4))))
+        return E_FAIL;
+
+    if (FAILED(pShader->Bind_RawValue("g_fFogLightBleedStrength", &m_Config.fLightBleedStrength, sizeof(_float))))
+        return E_FAIL;
+
 	return S_OK;
 }
 
@@ -122,7 +159,11 @@ ID3D11ShaderResourceView* CFog::Get_FogNoiseTexture(_uint iTextureIndex)
 
 void CFog::Start_FogTransition(_float fDuration, const FOG_TRANSITION_DESC& Desc)
 {
+    m_isEnable = true;
 	m_isTransition = true;
+
+    m_Callback = Desc.Callback;
+
     m_fTransTimeAcc = 0.f;
 	m_fDuration = fDuration;
 	m_TargetFog = Desc;

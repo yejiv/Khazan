@@ -36,6 +36,18 @@ void CDamage_Text::Priority_Update(_float fTimeDelta)
 
 void CDamage_Text::Update(_float fTimeDelta)
 {
+    if (m_isSetting)
+    {
+        m_iLength = m_strDamage.length();
+        m_vDamage_UV.clear();
+        m_vDamage_UV.resize(m_iLength);
+        for (_int i = 0; i < m_iLength; ++i)
+        {
+            _float4 vUV = Mapping_Number(m_strDamage[i] - '0');
+            m_vDamage_UV[i] = vUV;
+        }
+        m_isSetting = false;
+    }
 	m_fAccTime -= fTimeDelta;
 	
 	if (m_fAccTime <= 0.f)
@@ -91,18 +103,9 @@ _bool CDamage_Text::Render_Damage(DAMAGE_TYPE eDamageType, _vector vPos, _uint i
 		Update_Scaling(1.f);
 		m_vColor = { 1.f, 0.f, 0.f, 1.f };
 	}
-
-	string strDamage = to_string(iDamage);
-	m_iLength = strDamage.length();
-    m_vDamage_UV.resize(m_iLength);
-	for (_int i = 0; i < m_iLength; ++i)
-	{
-        _float4 vUV = Mapping_Number(strDamage[i] - '0');
-        m_vDamage_UV[i] = vUV;
-	}
-
+    m_strDamage = to_string(iDamage);
 	XMStoreFloat4(&m_vWorldTranslation, vPos);
-
+    m_isSetting = true;
 	return true;
 }
 

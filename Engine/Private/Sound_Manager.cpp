@@ -8,12 +8,31 @@ HRESULT CSound_Manager::Initialize()
     FMOD_System_Create(&m_pSystem, FMOD_VERSION);
     FMOD_System_Init(m_pSystem, m_iMaxChannels, FMOD_INIT_NORMAL, nullptr);
     LoadSoundFile();
+    FMOD_System_GetMasterChannelGroup
+    (m_pSystem, &pMaster);
+
+    FMOD_System_CreateChannelGroup(m_pSystem, "2D", &m_pGroup2D);
+    FMOD_System_CreateChannelGroup(m_pSystem, "3D", &m_pGroup3D);
+
+    FMOD_ChannelGroup_AddGroup(pMaster, m_pGroup2D, false, nullptr);
+    FMOD_ChannelGroup_AddGroup(pMaster, m_pGroup3D, false, nullptr);
+
     return S_OK;
 }
 
 void CSound_Manager::Update()
 {
     if (m_pSystem) FMOD_System_Update(m_pSystem);
+}
+
+void CSound_Manager::ListenerPosSet(_vector vPos, _vector vLook, _vector vUp, _float3 vVal)
+{
+    FMOD_VECTOR fmvListenerPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
+    FMOD_VECTOR fmvListenerForward = { XMVectorGetX(vLook), XMVectorGetY(vLook), XMVectorGetZ(vLook) };
+    FMOD_VECTOR fmvListenerUp = { XMVectorGetX(vUp), XMVectorGetY(vUp), XMVectorGetZ(vUp) };
+    FMOD_VECTOR fmvListenerVel = { vVal.x, vVal.y, vVal.z };
+
+    FMOD_System_Set3DListenerAttributes(m_pSystem, 0, &fmvListenerPos, &fmvListenerVel, &fmvListenerForward, &fmvListenerUp);
 }
 
 void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, float fVolume, FMOD_CHANNEL** ppOutChannel)
@@ -28,6 +47,7 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, float fVolume, FMOD_C
         if (pCh)
         {
             FMOD_Channel_SetMode(pCh, FMOD_DEFAULT);
+            FMOD_Channel_SetChannelGroup(pCh, m_pGroup2D);
             FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
             if (ppOutChannel) *ppOutChannel = pCh;
         }
@@ -42,10 +62,98 @@ void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, float fVolume, FMOD_C
 
         FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, ppOutChannel);
         FMOD_Channel_SetMode(*ppOutChannel, FMOD_DEFAULT);
+        FMOD_Channel_SetChannelGroup(*ppOutChannel, m_pGroup2D);
         FMOD_Channel_SetVolume(*ppOutChannel, fVolume * m_fGloval_Volume);
 
     }
-    FMOD_System_Update(m_pSystem);
+}
+
+void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel, _float2 vDis)
+{
+    FMOD_SOUND* pSound = nullptr;
+    if (!FindSound(pSoundKey, &pSound)) return;
+
+    if (ppOutChannel == nullptr)
+    {
+        FMOD_CHANNEL* pCh = nullptr;
+        FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, &pCh);
+        if (pCh)
+        {
+            FMOD_Channel_SetMode(pCh, FMOD_3D | FMOD_3D_LINEARROLLOFF);
+            FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
+
+            FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
+            FMOD_VECTOR fmVel = { vVel.x, vVel.y, vVel.z };
+            FMOD_Channel_SetChannelGroup(pCh, m_pGroup3D);
+            FMOD_Channel_Set3DMinMaxDistance(pCh, vDis.x, vDis.y);
+            FMOD_Channel_Set3DAttributes(pCh, &fmPos, &fmVel);
+            if (ppOutChannel) *ppOutChannel = pCh;
+        }
+    }
+    else
+    {
+        FMOD_BOOL bPlay = false;
+        FMOD_Channel_IsPlaying(*ppOutChannel, &bPlay);
+
+        if (bPlay)
+            FMOD_Channel_Stop(*ppOutChannel);
+
+        FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, ppOutChannel);
+
+        FMOD_Channel_SetMode(*ppOutChannel, FMOD_3D | FMOD_3D_LINEARROLLOFF);
+        FMOD_Channel_SetChannelGroup(*ppOutChannel, m_pGroup3D);
+        FMOD_Channel_SetVolume(*ppOutChannel, fVolume * m_fGloval_Volume);
+
+        FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
+        FMOD_VECTOR fmVel = { vVel.x, vVel.y, vVel.z };
+        FMOD_Channel_Set3DAttributes(*ppOutChannel, &fmPos, &fmVel);
+        FMOD_Channel_Set3DMinMaxDistance(*ppOutChannel, vDis.x, vDis.y);
+
+    }
+}
+
+void CSound_Manager::PlaySoundOnce(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume, _float2 vDis)
+{
+    FMOD_SOUND* pSound = nullptr;
+    if (!FindSound(pSoundKey, &pSound)) return;
+
+    if (ppOutChannel == nullptr)
+    {
+        FMOD_CHANNEL* pCh = nullptr;
+        FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, &pCh);
+        if (pCh)
+        {
+            FMOD_Channel_SetMode(pCh, FMOD_3D | FMOD_3D_LINEARROLLOFF);
+            FMOD_Channel_SetChannelGroup(pCh, m_pGroup3D);
+            FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
+
+            FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
+            FMOD_VECTOR fmVel = { 0.f, 0.f, 0.f };
+            FMOD_Channel_Set3DAttributes(pCh, &fmPos, &fmVel);
+            FMOD_Channel_Set3DMinMaxDistance(pCh, vDis.x, vDis.y);
+
+            if (ppOutChannel) *ppOutChannel = pCh;
+        }
+    }
+    else
+    {
+        FMOD_BOOL bPlay = false;
+        FMOD_Channel_IsPlaying(*ppOutChannel, &bPlay);
+
+        if (bPlay)
+            FMOD_Channel_Stop(*ppOutChannel);
+
+        FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, ppOutChannel);
+
+        FMOD_Channel_SetMode(*ppOutChannel, FMOD_3D | FMOD_3D_LINEARROLLOFF);
+        FMOD_Channel_SetChannelGroup(*ppOutChannel, m_pGroup3D);
+        FMOD_Channel_SetVolume(*ppOutChannel, fVolume * m_fGloval_Volume);
+
+        FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
+        FMOD_VECTOR fmVel = { 0.f, 0.f, 0.f };
+        FMOD_Channel_Set3DAttributes(*ppOutChannel, &fmPos, &fmVel);
+        FMOD_Channel_Set3DMinMaxDistance(*ppOutChannel, vDis.x, vDis.y);
+    }
 }
 
 void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, float fVolume, FMOD_CHANNEL** ppOutChannel)
@@ -57,12 +165,60 @@ void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, float fVolume, FMOD_C
     FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, &pCh);
     if (pCh)
     {
-        FMOD_Channel_SetMode(pCh, FMOD_LOOP_NORMAL);
+        FMOD_Channel_SetMode(pCh, FMOD_2D | FMOD_LOOP_NORMAL);
+        FMOD_Channel_SetChannelGroup(pCh, m_pGroup2D);
         FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
         if (ppOutChannel) *ppOutChannel = pCh;
     }
-    FMOD_System_Update(m_pSystem);
+}
 
+void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, _float3 vVel, float fVolume, FMOD_CHANNEL** ppOutChannel, _float2 vDis)
+{
+    FMOD_SOUND* pSound = nullptr;
+    if (!FindSound(pSoundKey, &pSound)) return;
+
+    FMOD_Sound_SetMode(pSound, FMOD_3D);
+
+    FMOD_CHANNEL* pCh = nullptr;
+    FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, &pCh);
+
+    if (pCh)
+    {
+        FMOD_Channel_SetMode(pCh, FMOD_3D | FMOD_3D_LINEARROLLOFF | FMOD_LOOP_NORMAL);
+        FMOD_Channel_SetChannelGroup(pCh, m_pGroup3D);
+        FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
+
+        FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
+        FMOD_VECTOR fmVel = { vVel.x, vVel.y, vVel.z };
+        FMOD_Channel_Set3DAttributes(pCh, &fmPos, &fmVel);
+        FMOD_Channel_Set3DMinMaxDistance(pCh, vDis.x, vDis.y);
+
+        if (ppOutChannel) *ppOutChannel = pCh;
+    }
+}
+
+void CSound_Manager::PlaySoundLoop(const TCHAR* pSoundKey, _vector vPos, FMOD_CHANNEL** ppOutChannel, float fVolume, _float2 vDis)
+{
+    FMOD_SOUND* pSound = nullptr;
+    if (!FindSound(pSoundKey, &pSound)) return;
+
+    FMOD_Sound_SetMode(pSound, FMOD_3D);
+
+    FMOD_CHANNEL* pCh = nullptr;
+    FMOD_System_PlaySound(m_pSystem, pSound, nullptr, FALSE, &pCh);
+
+    if (pCh)
+    {
+        FMOD_Channel_SetMode(pCh, FMOD_3D | FMOD_3D_LINEARROLLOFF | FMOD_LOOP_NORMAL);
+        FMOD_Channel_SetVolume(pCh, fVolume * m_fGloval_Volume);
+
+        FMOD_VECTOR fmPos = { XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos) };
+        FMOD_VECTOR fmVel = { 0.f, 0.f, 0.f };
+        FMOD_Channel_Set3DAttributes(pCh, &fmPos, &fmVel);
+        FMOD_Channel_Set3DMinMaxDistance(pCh, vDis.x, vDis.y);
+
+        if (ppOutChannel) *ppOutChannel = pCh;
+    }
 }
 
 void CSound_Manager::StopByKey(const TCHAR* pSoundKey)
@@ -78,13 +234,133 @@ void CSound_Manager::StopByKey(const TCHAR* pSoundKey)
                 FMOD_Channel_Stop(ch);
             }
         });
-    FMOD_System_Update(m_pSystem);
 }
 
 void CSound_Manager::StopByChannel(FMOD_CHANNEL** ppOutChannel)
 {
     if (ppOutChannel != nullptr)
         FMOD_Channel_Stop(*ppOutChannel);
+}
+
+void CSound_Manager::PlaySoundOnce_FadeIn(const TCHAR* pSoundKey, float fVolume, float fFadeTime, FMOD_CHANNEL** ppOutChannel)
+{
+    FMOD_SOUND* pSound = nullptr;
+    if (!FindSound(pSoundKey, &pSound)) return;
+
+    if (ppOutChannel && *ppOutChannel)
+    {
+        FMOD_BOOL bPlay = FALSE;
+        FMOD_Channel_IsPlaying(*ppOutChannel, &bPlay);
+        if (bPlay) FMOD_Channel_Stop(*ppOutChannel);
+    }
+
+    FMOD_CHANNEL* pCh = nullptr;
+
+    FMOD_System_PlaySound(m_pSystem, pSound, nullptr, TRUE, &pCh);
+    if (!pCh) return;
+
+    FMOD_Channel_SetMode(pCh, FMOD_DEFAULT);
+
+    unsigned long long dspClock = 0;
+    FMOD_Channel_GetDSPClock(pCh, 0, &dspClock);
+
+    int iSampleRate = 48000;
+    FMOD_System_GetSoftwareFormat(m_pSystem, &iSampleRate, nullptr, nullptr);
+
+    float fTargetVolume = fVolume * m_fGloval_Volume;
+    unsigned long long fadeEnd = dspClock + (unsigned long long)(fFadeTime * iSampleRate);
+
+    FMOD_Channel_SetVolume(pCh, 1.0f);
+
+    FMOD_Channel_AddFadePoint(pCh, dspClock, 0.0f);
+    FMOD_Channel_AddFadePoint(pCh, fadeEnd, fTargetVolume);
+
+    FMOD_Channel_SetPaused(pCh, FALSE);
+
+    if (ppOutChannel)
+        *ppOutChannel = pCh;
+}
+
+void CSound_Manager::PlaySoundLoop_FadeIn(const TCHAR* pSoundKey, float fVolume, float fFadeTime, FMOD_CHANNEL** ppOutChannel)
+{
+    FMOD_SOUND* pSound = nullptr;
+    if (!FindSound(pSoundKey, &pSound)) return;
+
+    if (ppOutChannel && *ppOutChannel)
+    {
+        FMOD_BOOL bPlay = FALSE;
+        FMOD_Channel_IsPlaying(*ppOutChannel, &bPlay);
+        if (bPlay) FMOD_Channel_Stop(*ppOutChannel);
+    }
+
+    FMOD_CHANNEL* pCh = nullptr;
+
+    FMOD_System_PlaySound(m_pSystem, pSound, nullptr, TRUE, &pCh);
+    if (!pCh) return;
+
+    FMOD_Channel_SetMode(pCh, FMOD_LOOP_NORMAL);
+
+    unsigned long long dspClock = 0;
+    FMOD_Channel_GetDSPClock(pCh, 0, &dspClock);
+
+    int iSampleRate = 48000;
+    FMOD_System_GetSoftwareFormat(m_pSystem, &iSampleRate, nullptr, nullptr);
+
+    float fTargetVolume = fVolume * m_fGloval_Volume;
+    unsigned long long fadeEnd = dspClock + (unsigned long long)(fFadeTime * iSampleRate);
+
+    FMOD_Channel_SetVolume(pCh, 1.0f);
+
+    FMOD_Channel_AddFadePoint(pCh, dspClock, 0.0f);
+    FMOD_Channel_AddFadePoint(pCh, fadeEnd, fTargetVolume);
+
+    FMOD_Channel_SetPaused(pCh, FALSE);
+
+    if (ppOutChannel)
+        *ppOutChannel = pCh;
+}
+
+void CSound_Manager::StopByKey_FadeOut(const TCHAR* pSoundKey, float fFadeTime)
+{
+    FMOD_SOUND* pTarget = nullptr;
+    if (!FindSound(pSoundKey, &pTarget))
+        return;
+
+    ForEachPlayingChannel([&](FMOD_CHANNEL* ch)
+        {
+            FMOD_SOUND* cur = nullptr;
+            if (FMOD_Channel_GetCurrentSound(ch, &cur) == FMOD_OK && cur == pTarget)
+            {
+                float fCurrentAudibility = 0.0f;
+                FMOD_Channel_GetAudibility(ch, &fCurrentAudibility);
+
+                FMOD_Channel_RemoveFadePoints(ch, 0, ULLONG_MAX);
+
+                FMOD_Channel_SetVolume(ch, 1.0f);
+
+                float fLocalStartVolume = fCurrentAudibility;
+                if (m_fGloval_Volume != 0.0f) {
+                    fLocalStartVolume = fCurrentAudibility / m_fGloval_Volume;
+                }
+
+                if (fLocalStartVolume > 1.0f)
+                    fLocalStartVolume = 1.0f;
+
+                unsigned long long dspClock = 0;
+                FMOD_Channel_GetDSPClock(ch, nullptr, &dspClock);
+
+                int iSampleRate = 48000;
+                FMOD_System_GetSoftwareFormat(m_pSystem, &iSampleRate, nullptr, nullptr);
+
+                unsigned long long fadeEnd = dspClock + (unsigned long long)(fFadeTime * iSampleRate);
+
+                FMOD_Channel_AddFadePoint(ch, dspClock, fLocalStartVolume);
+
+                FMOD_Channel_AddFadePoint(ch, fadeEnd, 0.0f);
+
+                FMOD_Channel_SetDelay(ch, 0, fadeEnd, false);
+            }
+        });
 }
 
 bool CSound_Manager::IsPlayingByKey(const TCHAR* pSoundKey)
@@ -120,7 +396,113 @@ void CSound_Manager::SetVolumeByKey(const TCHAR* pSoundKey, float fVolume)
                 FMOD_Channel_SetVolume(ch, fVolume * m_fGloval_Volume);
             }
         });
-    FMOD_System_Update(m_pSystem);
+}
+
+void CSound_Manager::Resume(const TCHAR* pSoundKey)
+{
+    FMOD_SOUND* pTarget = nullptr;
+    if (!FindSound(pSoundKey, &pTarget))
+        return;
+
+    ForEachPlayingChannel([&](FMOD_CHANNEL* ch) {
+            FMOD_SOUND* cur = nullptr;
+            if (FMOD_Channel_GetCurrentSound(ch, &cur) == FMOD_OK && cur == pTarget)
+            {
+                FMOD_Channel_SetPaused(ch, FALSE);
+            }
+        });
+}
+
+void CSound_Manager::Resume_Fade(const TCHAR* pSoundKey, float fFadeTime)
+{
+    FMOD_SOUND* pTarget = nullptr;
+    if (!FindSound(pSoundKey, &pTarget))
+        return;
+
+    ForEachPlayingChannel([&](FMOD_CHANNEL* ch)
+        {
+            FMOD_SOUND* cur = nullptr;
+            if (FMOD_Channel_GetCurrentSound(ch, &cur) == FMOD_OK && cur == pTarget)
+            {
+                FMOD_Channel_RemoveFadePoints(ch, 0, ULLONG_MAX);
+
+                FMOD_Channel_SetPaused(ch, FALSE);
+
+                unsigned long long dspClock = 0;
+                FMOD_Channel_GetDSPClock(ch, nullptr, &dspClock);
+
+                int iSampleRate = 48000;
+                FMOD_System_GetSoftwareFormat(m_pSystem, &iSampleRate, nullptr, nullptr);
+
+                unsigned long long fadeEnd =
+                    dspClock + (unsigned long long)(fFadeTime * iSampleRate);
+
+                float fTargetVolume = m_fGloval_Volume;
+
+                FMOD_Channel_SetVolume(ch, 0.0f);
+
+                FMOD_Channel_AddFadePoint(ch, dspClock, 0.0f);
+                FMOD_Channel_AddFadePoint(ch, fadeEnd, fTargetVolume);
+            }
+        });
+}
+
+void CSound_Manager::Pause(const TCHAR* pSoundKey)
+{
+    FMOD_SOUND* pTarget = nullptr;
+    if (!FindSound(pSoundKey, &pTarget))
+        return;
+
+    ForEachPlayingChannel([&](FMOD_CHANNEL* ch) {
+            FMOD_SOUND* cur = nullptr;
+            if (FMOD_Channel_GetCurrentSound(ch, &cur) == FMOD_OK && cur == pTarget)
+            {
+                FMOD_Channel_SetPaused(ch, TRUE);
+            }
+        });
+}
+
+void CSound_Manager::Pause_Fade(const TCHAR* pSoundKey, float fFadeTime)
+{
+    FMOD_SOUND* pTarget = nullptr;
+    if (!FindSound(pSoundKey, &pTarget))
+        return;
+
+    ForEachPlayingChannel([&](FMOD_CHANNEL* ch)
+        {
+            FMOD_SOUND* cur = nullptr;
+            if (FMOD_Channel_GetCurrentSound(ch, &cur) == FMOD_OK && cur == pTarget)
+            {
+                float fCurrentAudibility = 0.0f;
+                FMOD_Channel_GetAudibility(ch, &fCurrentAudibility);
+
+                FMOD_Channel_RemoveFadePoints(ch, 0, ULLONG_MAX);
+                FMOD_Channel_SetVolume(ch, 1.0f);
+
+                float fLocalStartVolume = fCurrentAudibility;
+                if (m_fGloval_Volume != 0.0f)
+                    fLocalStartVolume = fCurrentAudibility / m_fGloval_Volume;
+
+                if (fLocalStartVolume > 1.0f)
+                    fLocalStartVolume = 1.0f;
+
+                unsigned long long dspClock = 0;
+                FMOD_Channel_GetDSPClock(ch, nullptr, &dspClock);
+
+                int iSampleRate = 48000;
+                FMOD_System_GetSoftwareFormat(m_pSystem, &iSampleRate, nullptr, nullptr);
+
+                unsigned long long fadeEnd =
+                    dspClock + (unsigned long long)(fFadeTime * iSampleRate);
+
+                FMOD_Channel_AddFadePoint(ch, dspClock, fLocalStartVolume);
+                FMOD_Channel_AddFadePoint(ch, fadeEnd, 0.0f);
+
+                FMOD_Channel_SetDelay(ch, 0, fadeEnd, false);
+
+                FMOD_Channel_SetPaused(ch, TRUE);
+            }
+        });
 }
 
 void CSound_Manager::StopAll()
@@ -130,7 +512,6 @@ void CSound_Manager::StopAll()
     {
         FMOD_ChannelGroup_Stop(pMaster);
     }
-    FMOD_System_Update(m_pSystem);
 }
 
 bool CSound_Manager::FindSound(const TCHAR* pSoundKey, FMOD_SOUND** ppOutSound)
@@ -193,15 +574,14 @@ void CSound_Manager::LoadSoundFile()
                 wkey.resize(wlen - 1);
                 MultiByteToWideChar(CP_ACP, 0, fd.name, -1, wkey.data(), wlen);
             }
-
             m_mapSound.emplace(move(wkey), pSound);
         }
 
         iResult = _findnext(handle, &fd);
     }
 
-    FMOD_System_Update(m_pSystem);
     _findclose(handle);
+
 }
 
 CSound_Manager* CSound_Manager::Create()

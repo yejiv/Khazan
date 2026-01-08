@@ -10,6 +10,7 @@
 
 #include "UI_Inven.h"
 #include "UI_State.h"
+#include "UI_HUD.h"
 
 #include "UI_BladeNexus_Map.h"
 
@@ -34,7 +35,12 @@ void CUI_BladeNexus::On_Panel(ONTYPE eType, _wstring strMapName)
 
 		m_iListeType = ENUM_CLASS(eType);
         CClientInstance::GetInstance()->ActiveCamera_InteractMove();
-	}
+        if (!m_isTalk && ONTYPE::EMBARS == eType)
+        {
+            m_isTalk = true;
+            m_pGameInstance->Emit_Event<EVENT_ANNOUNCE_TALK>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_TALK), EVENT_ANNOUNCE_TALK{ 15 });
+        }
+    }
 	
 	m_iSeleteIndex = 0;
 	for (_int i = 0; i < ENUM_CLASS(MENULIST::END); ++i)
@@ -128,14 +134,14 @@ void CUI_BladeNexus::Late_Update(_float fTimeDelta)
 		isKeyInput = true;
 
 		if (m_iSeleteIndex < 0)
-			m_iSeleteIndex = ENUM_CLASS(MENULIST::END) - 1;
+			m_iSeleteIndex = m_iListeType- 1;
 	}
 	else if (m_pGameInstance->Key_Down(DIK_S, INPUT_TYPE::UI))
 	{
 		m_iSeleteIndex += 1;
 		isKeyInput = true;
 
-		if (m_iSeleteIndex >= ENUM_CLASS(MENULIST::END))
+		if (m_iSeleteIndex >= m_iListeType )
 			m_iSeleteIndex = 0;
 	}
 
@@ -499,8 +505,16 @@ void CUI_BladeNexus::Next_Event()
 	}
 	else if (m_eNextEvent == MENULIST::WARP)
 	{
-        static_cast<CUI_BladeNexus_Map*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus_Map")))->On_Panel(
-            CUI_BladeNexus_Map::ONTYPE::HEINMACH);
+        if (m_pGameInstance->Get_CurrentLevelID() == ENUM_CLASS(LEVEL::HEINMACH))
+        {
+            static_cast<CUI_BladeNexus_Map*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus_Map")))->On_Panel(
+                CUI_BladeNexus_Map::ONTYPE::HEINMACH);
+        }
+        else
+        {
+            static_cast<CUI_BladeNexus_Map*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("BladeNexus_Map")))->On_Panel(
+                CUI_BladeNexus_Map::ONTYPE::EMBARS);
+        }
 	}
 	else if (m_eNextEvent == MENULIST::CREVICE)
 	{
@@ -508,9 +522,12 @@ void CUI_BladeNexus::Next_Event()
 		//m_eAnimState = UIANIMSTATE::OFF;
 		//m_fAccTime = 1.f;
 
+        CClientInstance::GetInstance()->Fade_Out([this](){ 
+            static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(false);
         m_pGameInstance->Emit_Event<EVENT_LEVEL_CHANGE>(ENUM_CLASS(EVENT_TYPE::LEVEL_CHANGE), { ENUM_CLASS(LEVEL::EMBARS) });
+        m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY); 
+            });
 
-		m_pGameInstance->Change_InputType(INPUT_TYPE::GAMEPLAY);
 	}
 
 }
