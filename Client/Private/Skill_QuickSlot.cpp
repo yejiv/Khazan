@@ -245,12 +245,12 @@ HRESULT CSkill_QuickSlot::Load_UI(nlohmann::json& pInData, _uint iPrototypeLevel
         m_pList[i]->Update_Pos(i, vPos, 110.f);
 
         //데이터 셋팅
-        //if(i == 0)
-        //    m_pList[i]->Setting_Data(i, 106);
-        //else if (i == 1)
-        //    m_pList[i]->Setting_Data(i, 114);
-        //else if (i == 2)
-        //    m_pList[i]->Setting_Data(i, 103);
+        if(i == 3)
+            m_pList[i]->Setting_Data(i, 104);
+        else if (i == 4)
+            m_pList[i]->Setting_Data(i, 106);
+        else if (i == 5)
+            m_pList[i]->Setting_Data(i, 114);
 
     }
     __super::Update_Transform(nullptr, m_vLocalPos);

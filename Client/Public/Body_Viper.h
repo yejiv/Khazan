@@ -88,7 +88,6 @@ private:
     _float3                 m_vRimColor = {};
     _float                  m_fRimDuration = {};
 
-
 private:
     class CClothBody*       m_pFeelerBody = { nullptr };
     COLLISION_DESC          m_tFeelerCollDesc = {};

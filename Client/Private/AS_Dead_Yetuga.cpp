@@ -15,6 +15,8 @@ CAS_Dead_Yetuga::CAS_Dead_Yetuga()
 
 void CAS_Dead_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 {
+    CClientInstance::GetInstance()->Add_SkillExp(200.f);
+
     CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
     m_pGameInstance->Emit_Event< EVENT_ANNOUNCE_RESULT>(ENUM_CLASS(EVENT_TYPE::ANNOUNCE_RESULT), {});
@@ -26,7 +28,6 @@ void CAS_Dead_Yetuga::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_pGameInstance->Emit_Event<EventPopBN>(ENUM_CLASS(EVENT_TYPE::BLADENEXUS_POP), { true });
     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_yetuga_roar_die_01 (SFX).wav"), pYetuga->Get_Position(), pYetuga->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 50.f);
 
-    CClientInstance::GetInstance()->Add_SkillExp(200.f);
     CClientInstance::GetInstance()->BGM_HeinMach_Day(4.f);
 }
 

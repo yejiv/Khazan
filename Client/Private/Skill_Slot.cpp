@@ -235,8 +235,8 @@ void CSkill_Slot::Update(_float fTimeDelta)
                             CSkill_QuickSlot::SKILLQUICK_DESC Desc = {};
                             Desc.iSkillIndex = m_iSkillIndex;
                             CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkillSlot_Quick"),&Desc);
-                        }
-                        if (m_pSkilData->iType == 0 && m_pSkilData->iIndex < 99)
+                        }                        
+                        if (m_pSkilData->iType == 1)
                         {
                             CClientInstance::GetInstance()->Unlock_Skill(1 << m_pSkilData->iIndex);
                         }

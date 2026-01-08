@@ -1718,12 +1718,14 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
         EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), world, world.r[3]);
         BrutalAtk_ScreenEffect0();
         });
-
     m_pModelCom->Register_Event("Grapple_ChargeArm_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
         _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
         m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear, world, world.r[3]);
         });
+    //m_pModelCom->Register_Event("Grapple_ChargeArm_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+    //    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear);
+    //    });
 
     m_pModelCom->Register_Event("Grapple_Sting_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutalParticle"), m_pParentTransform->Get_WorldMatrix(), XMLoadFloat4x4(&m_matWorldGSwordBody_nJolt).r[3]);
@@ -2461,8 +2463,8 @@ void CBody_Khazan_GS::BrutalAtk_ScreenEffect0()
     RBDesc.iNumSamples = 16;
     RBDesc.fAttenuation = 0.1f;
     RBDesc.fStrength = 0.7f;       // == Target Strength(0 ~ 1) -> 이 강도를 최대값으로 사용하여 보간 적용됨
-    RBDesc.fDuration = 2.f;
-    RBDesc.vFadeTime = _float2(1.5f, 0.5f);
+    RBDesc.fDuration = 1.5f;
+    RBDesc.vFadeTime = _float2(1.f, 0.5f);
     m_pGameInstance->Start_RadialBlur(RBDesc);
 
     // Fov 좁게
@@ -2480,8 +2482,8 @@ void CBody_Khazan_GS::BrutalAtk_ScreenEffect0()
     Config.fPower = 3.5f;
     Config.fMinIntensity = 0.f;
     Config.fMaxIntensity = 4.f;
-    Config.fDuration = 2.f;
-    Config.vFadeTime = _float2(1.5f, 0.5f);
+    Config.fDuration = 1.5f;
+    Config.vFadeTime = _float2(1.f, 0.5f);
     m_pGameInstance->Start_VignetteAnimation(Config);
 }
 

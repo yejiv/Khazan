@@ -2,7 +2,7 @@
 #include "GameInstance.h"
 #include "Viper.h"
 #include "AI_Controller.h"
-#include "FSM_Viper.h"
+
 
 
 
@@ -14,12 +14,12 @@ _matrix CTwinBlade_R_Viper::Get_BoneMatrix(const _char* pBoneName)
 }
 
 CTwinBlade_R_Viper::CTwinBlade_R_Viper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    :CWeaponObject{ pDevice,pContext }
+    :CPartObject{ pDevice,pContext }
 {
 }
 
 CTwinBlade_R_Viper::CTwinBlade_R_Viper(const CTwinBlade_R_Viper& Prototype)
-    :CWeaponObject{ Prototype }
+    :CPartObject{ Prototype }
 {
 }
 
@@ -337,23 +337,6 @@ HRESULT CTwinBlade_R_Viper::Bind_ShaderResources()
     if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix",
         m_pGameInstance->Get_Transform_Float4x4(D3DTS::PROJ))))
         return E_FAIL;
-
-    return S_OK;
-}
-
-HRESULT CTwinBlade_R_Viper::Ready_Callback()
-{
-    Set_JustGuardCallBack([this](_bool isJustGuard)
-        {
-            if (isJustGuard)
-            {
-                CFSM_Viper* pFSM = static_cast<CFSM_Viper*>(m_pOwner->Get_Controller()->Get_State_Machine());
-                if (nullptr == pFSM)
-                    return E_FAIL;
-
-                static_cast<CMonster*>(m_pOwner)->Consume_Stamina(m_pOwner->Get_MaxStamina() * 0.05f);
-            }
-        });
 
     return S_OK;
 }

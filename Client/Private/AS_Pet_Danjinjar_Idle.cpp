@@ -26,8 +26,8 @@ void CAS_Pet_Danjinjar_Idle::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAS_Pet_Danjinjar_Idle::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
-    if (m_pMonData->isEnd)
-    {
+    /*if (m_pMonData->isEnd)*/
+/*    {
         if (m_eEndState == ENDSTATE::END)
         {
             m_pMonData->pOwner->isTalk(true, 1006);
@@ -43,7 +43,7 @@ void CAS_Pet_Danjinjar_Idle::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
         else if(m_eEndState == ENDSTATE::ACTION && m_pMonData->isAnimFinash)
             pOwner->Set_IsActive(false);
     }
-    else {
+    else */{
         m_fAccTime -= fTimeDelta;
         if (m_pMonData->isAnimFinash)
         {

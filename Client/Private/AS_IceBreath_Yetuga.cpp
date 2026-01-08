@@ -91,7 +91,7 @@ void CAS_IceBreath_Yetuga::Update(CStateMachine* pFSM, CGameObject* pOwner, _flo
             CBlackBoard* BB = pYetuga->Get_Controller()->Get_BlackBoard();
             BB->Set_Value<_bool>(pYetuga->Get_Name(), "isIceBreathFinished", true);
         }
-
+         
     }
 
 

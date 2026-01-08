@@ -1,6 +1,6 @@
 #pragma once
 #include "Client_Defines.h"
-#include "WeaponObject.h"
+#include "PartObject.h"
 
 NS_BEGIN(Engine)
 class CShader;
@@ -11,7 +11,7 @@ NS_END
 
 NS_BEGIN(Client)
 
-class CTwinBlade_R_Viper final : public CWeaponObject
+class CTwinBlade_R_Viper final : public CPartObject
 {
 public:
     typedef struct tagWeaponDesc : public PARTOBJECT_DESC
@@ -56,7 +56,6 @@ private:
     HRESULT					Ready_Components();
     HRESULT                 Ready_Collision();
     HRESULT					Bind_ShaderResources();
-    HRESULT                 Ready_Callback();
 
 private:
     class CViper*           m_pOwner = { nullptr };

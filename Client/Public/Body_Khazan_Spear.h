@@ -141,7 +141,7 @@ private:
     /* 뼈 위치 */
     _float4x4*          m_pSpearTip1_Matrix = { nullptr };
     _float4x4			m_pSpearTip1_MatrixW;
-    _float4x4            m_pSpearTip1_MatrixW_nJolt;
+    _float4x4			m_pSpearTip1_MatrixW_nJolt;
     _float4x4*          m_pSpearPole_Matrix = { nullptr };
     _float4x4			m_pSpearPole_MatrixW;
 

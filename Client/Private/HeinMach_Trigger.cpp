@@ -12,15 +12,15 @@
 #include "MapObject_Header.h"
 
 CHeinMach_Trigger::CHeinMach_Trigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CTrigger { pDevice, pContext }
-    , m_pClientInstance { CClientInstance::GetInstance() }
+    : CTrigger{ pDevice, pContext }
+    , m_pClientInstance{ CClientInstance::GetInstance() }
 {
     Safe_AddRef(m_pClientInstance);
 }
 
 CHeinMach_Trigger::CHeinMach_Trigger(const CHeinMach_Trigger& Prototype)
-    : CTrigger { Prototype }
-    , m_pClientInstance { Prototype.m_pClientInstance }
+    : CTrigger{ Prototype }
+    , m_pClientInstance{ Prototype.m_pClientInstance }
 {
     Safe_AddRef(m_pClientInstance);
 }
@@ -400,7 +400,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             m_pClientInstance->BGM_HeinMach_Cave();
 
             Start_SkyTransition(m_Sky_Desc, m_Cloud_Desc, 2.f);
-            
+
             // 동굴 중간 ~ 출구 포그
             FOG_TRANSITION_DESC Desc{};
             Desc.fDensity = 0.015f;
@@ -479,7 +479,7 @@ void CHeinMach_Trigger::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjec
             m_isDead = true;
         }
     }
-    
+
 }
 
 void CHeinMach_Trigger::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)

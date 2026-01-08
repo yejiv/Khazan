@@ -63,10 +63,10 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
-    /* ë¶?ëª? ?Š¸?œ?Š¤?¼ ?—°ê²? */
+    /* ë¶€ëª¨ íŠ¸ëœìŠ¤í¼ ì—°ê²° */
     m_pModelCom->Set_OwnerTransform(&m_pParentTransform);
 
-    /* ?‚¬?š´?“œ ?—¬?¼  */
+    /* ì‚¬ìš´ë“œ í—¬í¼  */
     m_pSoundHelper = CKhazan_SoundHelper::Create();
 
     if (FAILED(Ready_Equipment()))
@@ -78,10 +78,10 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimationEvent_SFX()))
         return E_FAIL;
 
-    /* ?ŒŒì¸? ??™ ?—…?°?´?Š¸  */
+    /* íŒŒì¸  ìë™ ì—…ë°ì´íŠ¸  */
     m_pClientInstance->Set_ChangePlayerArmorEquipmentCallBack([this](EQUIPMENTTYPE type, const _wstring& strPartName) {Equip_Part(type, strPartName); });
 
-    /* ë¼? ?–‰? ¬ ê°?ì§?ê³ ì˜¤ê¸? */
+    /* ë¼ˆ í–‰ë ¬ ê°€ì§€ê³ ì˜¤ê¸° */
     m_pSpearTip1_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R_SpearTip");
     m_pSpearPole_Matrix = m_pModelCom->Get_BoneMatrix("Weapon_R");
 
@@ -140,7 +140,7 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
     if (m_isActiveMotionTrail)
         m_pMotionTrailCom->Start_MotionTrail(fTimeDelta);
 
-    /* ëª¨ì…˜?Š¸? ˆ?¼ì¤? ?‹¤ë¥? ?• ?‹ˆë©”ì´?…˜?´ ?‚˜?˜¬ ?‹œ ?„ê¸?  */
+    /* ëª¨ì…˜íŠ¸ë ˆì¼ì¤‘ ë‹¤ë¥¸ ì• ë‹ˆë©”ì´ì…˜ì´ ë‚˜ì˜¬ ì‹œ ë„ê¸°  */
     if (m_isEnableMotionTrail && m_iCurMotionTrailAnimIndex != m_pModelCom->Get_CurAnimIndex())
     {
         m_isEnableMotionTrail = false;
@@ -172,7 +172,7 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
 
         _float fIntensityRatio = 1.f;
 
-        // ?˜?´?“œ ?•„?›ƒ ê³„ì‚°
+        // í˜ì´ë“œ ì•„ì›ƒ ê³„ì‚°
         if (m_HealRimLightDesc.fTimeAcc > m_HealRimLightDesc.vFadeTime.y)
         {
             _float fFadeDuration = m_HealRimLightDesc.fDuration - m_HealRimLightDesc.vFadeTime.y;
@@ -191,9 +191,19 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
 
         m_HealRimLightDesc.fRimLightIntensity = m_HealRimLightDesc.fTargetIntensity * fIntensityRatio;
     }
-    m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Teleport"), 0, BodyCenter());
 
-    /*  ?–´?ƒì½œë¼?´?” on -> ?‹¤ë¥? ?• ?‹ˆë©”ì´?…˜ ?“¤?–´?˜¤ë©? ?„ê¸? */
+    //í…ŒìŠ¤íŠ¸ìš©! ë°œê²¬ ì‹œ ì§€ì›Œì£¼ì…”ë„ ë©ë‹ˆë‹¤
+    if (m_pGameInstance->Key_Down(DIK_H, INPUT_TYPE::FORCE))
+    {
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Teleport"), BodyCenter());
+    }
+    if (m_pGameInstance->Key_Down(DIK_J, INPUT_TYPE::FORCE))
+    {
+        m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Teleport"), 0, BodyCenter());
+        m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Teleport"), 1, BodyCenter());
+    }
+
+    /*  ì–´íƒì½œë¼ì´ë” on -> ë‹¤ë¥¸ ì• ë‹ˆë©”ì´ì…˜ ë“¤ì–´ì˜¤ë©´ ë„ê¸° */
     if (m_isSpearTipActive && m_iCurAnimIndex != m_pModelCom->Get_CurAnimIndex()) {
         m_isNotifyAttacking = false;
         m_isSpearTipActive = false;
@@ -201,7 +211,7 @@ void CBody_Khazan_Spear::Update(_float fTimeDelta)
         m_pBodyCom_SpearTip1->Collision_Active(false);
     }
 
-    /*  ë°”ë””?–´?ƒì½œë¼?´?” on -> ?‹¤ë¥? ?• ?‹ˆë©”ì´?…˜ ?“¤?–´?˜¤ë©? ?„ê¸? */
+    /*  ë°”ë””ì–´íƒì½œë¼ì´ë” on -> ë‹¤ë¥¸ ì• ë‹ˆë©”ì´ì…˜ ë“¤ì–´ì˜¤ë©´ ë„ê¸° */
     if (m_isBodyAttackActive && m_iCurAnimIndex != m_pModelCom->Get_CurAnimIndex()) {
         m_isBodyAttackActive = false;
         m_isNotifyAttacking = false;
@@ -351,7 +361,7 @@ HRESULT CBody_Khazan_Spear::Render_MotionVector()
     //  if (FAILED(Bind_ShaderResources()))
     //      return E_FAIL;
 
-    // ?´? „ ?”„? ˆ?„ ?›”?“œ, ë·?, ?ˆ¬?˜ ë°”ì¸?“œ ?•´ì¤˜ì•¼ ?•¨
+    // ì´ì „ í”„ë ˆì„ ì›”ë“œ, ë·°, íˆ¬ì˜ ë°”ì¸ë“œ í•´ì¤˜ì•¼ í•¨
     if (FAILED(m_pTransformCom->Bind_PrevWorldMatrix(m_pShaderCom, "g_PrevWorldMatrix")))
         return E_FAIL;
 
@@ -405,7 +415,7 @@ void CBody_Khazan_Spear::Render_Part(CModel* pModel)
         pModel->Bind_Materials(m_pShaderCom, "g_SpecularTexture", i, aiTextureType_SPECULAR, 0);
         pModel->Bind_Materials(m_pShaderCom, "g_MetalnessTexture", i, aiTextureType_METALNESS, 0);
 
-        // ë§ˆìŠ¤?„°?˜ ë³¸ì„ ??™?œ¼ë¡? ?‚¬?š©
+        // ë§ˆìŠ¤í„°ì˜ ë³¸ì„ ìë™ìœ¼ë¡œ ì‚¬ìš©
         if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             continue;
 
@@ -423,7 +433,7 @@ void CBody_Khazan_Spear::Render_Part_Shadow(CModel* pModel)
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
-        // ë§ˆìŠ¤?„°?˜ ë³¸ì„ ??™?œ¼ë¡? ?‚¬?š©
+        // ë§ˆìŠ¤í„°ì˜ ë³¸ì„ ìë™ìœ¼ë¡œ ì‚¬ìš©
         if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             continue;
 
@@ -441,7 +451,7 @@ void CBody_Khazan_Spear::Render_Part_Outline(CModel* pModel)
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
-        // ë§ˆìŠ¤?„°?˜ ë³¸ì„ ??™?œ¼ë¡? ?‚¬?š©
+        // ë§ˆìŠ¤í„°ì˜ ë³¸ì„ ìë™ìœ¼ë¡œ ì‚¬ìš©
         if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             continue;
 
@@ -463,14 +473,14 @@ void CBody_Khazan_Spear::Render_Part_MotionVector(CModel* pModel)
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {
-        // ë§ˆìŠ¤?„°?˜ ë³¸ì„ ??™?œ¼ë¡? ?‚¬?š©
+        // ë§ˆìŠ¤í„°ì˜ ë³¸ì„ ìë™ìœ¼ë¡œ ì‚¬ìš©
         if (FAILED(pModel->Bind_PrevBoneMatrices(m_pShaderCom, "g_PrevBoneMatrices", i)))
             continue;
 
         if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             continue;
 
-        // ?…°?´?” ë°”ê¿”?•¼ ?•¨
+        // ì…°ì´ë” ë°”ê¿”ì•¼ í•¨
         //  m_pShaderCom->Begin(11);
         pModel->Render(i);
     }
@@ -480,7 +490,7 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 {
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTER))
     {
-        /* ê³µê²© ì½œë¼?´?” */
+        /* ê³µê²© ì½œë¼ì´ë” */
         if (m_isSpearTipActive && pMyDesc->strName == TEXT("AttackCollisionDesc"))
         {
             CCreature* pMonster = static_cast<CCreature*>(pDesc->pGameObject);
@@ -490,7 +500,7 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
             pMonster->Take_Damage(m_pPlayerData->fBonusDamage, static_cast<HITREACTION>(*m_pHitReaction), this);
             //pMonster->Take_Damage(m_pPlayerData->fDamage , static_cast<HITREACTION>(*m_pHitReaction), nullptr);
 
-            /* ë¸Œë£¨?ƒˆ ?–´?ƒ??? ?„‰ë°? ë§‰ê¸° */
+            /* ë¸Œë£¨íƒˆ ì–´íƒì€ ë„‰ë°± ë§‰ê¸° */
             _uint iBrutalAtkAnimIndex[2] = { m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_GrappleAtk01"),m_pModelCom->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_GrappleAtk02") };
             _uint iCurAnimIndex = m_pModelCom->Get_CurAnimIndex();
             if (iCurAnimIndex != iBrutalAtkAnimIndex[0] && iCurAnimIndex != iBrutalAtkAnimIndex[1])
@@ -509,7 +519,7 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 
         }
 
-        /* ë°”ë”” ê³µê²© ì½œë¼?´?”  */
+        /* ë°”ë”” ê³µê²© ì½œë¼ì´ë”  */
         if (m_isBodyAttackActive && pMyDesc->strName == TEXT("Player_BodyAttack"))
         {
             CCreature* pMonster = static_cast<CCreature*>(pDesc->pGameObject);
@@ -533,7 +543,7 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
         }
 
 
-        /*  ?ƒì§? */
+        /*  íƒì§€ */
         if (pMyDesc->strName == TEXT("Player_Search"))
         {
             CGameObject* pObj = pDesc->pGameObject;
@@ -548,18 +558,18 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 
     if (iOtherObjectLayer == ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK))
     {
-        /* ë°©ì–´ ì½œë¼?´?”  */
+        /* ë°©ì–´ ì½œë¼ì´ë”  */
         if (m_isSpearPoleActive && pMyDesc->strName == TEXT("GuardCollisionDesc"))
         {
             _matrix mat = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
             *m_pParentStatus |= CKhazan_Spear::GUARD;
 
-            /* ????Š¤?Š¸ ê°??“œ ????´ë°? */
+            /* ì €ìŠ¤íŠ¸ ê°€ë“œ íƒ€ì´ë° */
             if (!m_isJustGuardOnce && m_fJustGuardTime.x <= m_fJustGuardTime.y) {
                 *m_pParentStatus |= CKhazan_Spear::JUST_GUARD;
                 m_isJustGuardOnce = true;
 
-                /* ëª¬ìŠ¤?„°?•œ?…Œ ????Š¤?Š¸ ê°??“œ ????´ë°? ê±´ë‚´ì£¼ê¸°  */
+                /* ëª¬ìŠ¤í„°í•œí…Œ ì €ìŠ¤íŠ¸ ê°€ë“œ íƒ€ì´ë° ê±´ë‚´ì£¼ê¸°  */
                 if (pDesc->pGameObject == nullptr) return;
 
                 CWeaponObject* pMonster = dynamic_cast<CWeaponObject*>(pDesc->pGameObject);
@@ -581,7 +591,7 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
                 Config.vFadeTime = _float2(0.25f, 0.25f);
                 m_pGameInstance->Start_VignetteAnimation(Config);
 
-                // ?•‘?¬ ë³´ë¼ ì¡°ëª…
+                // í•‘í¬ ë³´ë¼ ì¡°ëª…
                 LIGHT_TRANSITION_DESC LightDesc{};
                 LightDesc.fDuration = 0.5f;
                 LightDesc.vFadeTime = _float2(0.2f, 0.2f);
@@ -592,7 +602,7 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
                 //LightDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false); };
                 m_pGameInstance->Start_LightTransition(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
 
-                // FOV ì¤Œì¸?•„?›ƒ
+                // FOV ì¤Œì¸ì•„ì›ƒ
                 FOVModifier tMod{};
                 tMod.eMode = FOVModifier::FOV_MODE::MULTIPLY;
                 tMod.fDuration = 0.25f;
@@ -602,7 +612,7 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
                 tMod.Ease = EaseOutQuad;
                 m_pClientInstance->ActiveCamera_PushFOVModifier(tMod);
 
-                //?ˆ?Š¸?Š¤?ƒ‘
+                //íˆíŠ¸ìŠ¤íƒ‘
                 m_pGameInstance->Start_HitStop(TIME_CHANNEL::EFFECT, 0.2f, 0.003f, 0.6f);
                 m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.2f, 0.003f, 0.6f);
                 m_pGameInstance->Start_HitStop(TIME_CHANNEL::PLAYER, 0.2f, 0.003f, 0.6f);
@@ -611,7 +621,7 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
 
             m_bGuradFX[1] = true;
 
-            // ê·¸ëƒ¥ ?…¸??? ì¡°ëª…
+            // ê·¸ëƒ¥ ë…¸ë€ ì¡°ëª…
             LIGHT_TRANSITION_DESC LightDesc{};
             LightDesc.fDuration = 0.5f;
             LightDesc.vFadeTime = _float2(0.2f, 0.2f);
@@ -622,14 +632,14 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
             //LightDesc.Callback = [&]() { m_pGameInstance->Set_LightEnable(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false); };
             m_pGameInstance->Start_LightTransition(TEXT("Player_GuardLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
 
-            /* ê°??“œ?›„ ì¶©ëŒ?˜ë©? ì¶©ëŒ?œ ì§??  ë´ë¼ë³´ê²Œ*/
+            /* ê°€ë“œí›„ ì¶©ëŒë˜ë©´ ì¶©ëŒëœ ì§€ì  ë´ë¼ë³´ê²Œ*/
             Start_GuardRotation(vContactPoint);
 
-            /* ?‚¬?š´?“œ */
+            /* ì‚¬ìš´ë“œ */
             m_isHitSound = true;
 
-            /* ?Š¤?ƒœë¯¸ë‚˜ ê°ì†Œ */
-            /* ?Š¤?ƒœë¯¸ë‚˜ ê°ì†Œ */
+            /* ìŠ¤íƒœë¯¸ë‚˜ ê°ì†Œ */
+            /* ìŠ¤íƒœë¯¸ë‚˜ ê°ì†Œ */
             m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina * 0.3f;
             *m_pParentIsCanStaminaRecovery = false;
         }
@@ -658,7 +668,7 @@ void CBody_Khazan_Spear::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjec
 
 void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
 {
-    /* ë¸Œë£¨?ƒˆ ê°œì²´?Š” ?•˜?‚˜ë§? */
+    /* ë¸Œë£¨íƒˆ ê°œì²´ëŠ” í•˜ë‚˜ë§Œ */
     if (Has_Status(CKhazan_Spear::BRUTAL_BEGIN))
         return;
 
@@ -689,10 +699,10 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
 
         _vector  vDiff = vPlayerPos - vMonsterPos;
         _float  fDistSq = XMVectorGetX(XMVector3LengthSq(vDiff));
-        /* ?¼? • ë²”ìœ„?— ?‹¤ê°?ê°?ë©?  */
+        /* ì¼ì • ë²”ìœ„ì— ë‹¤ê°€ê°€ë©´  */
         if (fDistSq < 15.f * 15.f)
         {
-            /* ?›„ë°? */
+            /* í›„ë°© */
             if (!pCreatureMoster->Get_isSleep()) {
                 _float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(monster->Get_Look()), XMVector3Normalize(vDiff)));
 
@@ -712,7 +722,7 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
                 }
             }
 
-            /*  ëª¬ìŠ¤?„° ê·¸ë¡œê¸? ?ƒ?ƒœ */
+            /*  ëª¬ìŠ¤í„° ê·¸ë¡œê¸° ìƒíƒœ */
             if (pCreatureMoster->Get_IsGroggy())
             {
                 m_pBrutalmonster = monster;
@@ -730,7 +740,7 @@ void CBody_Khazan_Spear::Search_BrutalTarget(_float fTimeDelta)
 
 _bool CBody_Khazan_Spear::Check_BrutalAttack(_float fTimeDelta)
 {
-    /* ì»¨í…Œ?´?„ˆ ì²´í¬  */
+    /* ì»¨í…Œì´ë„ˆ ì²´í¬  */
     lock_guard<mutex> lock(m_CollMonsterMutex);
     for (auto it = m_CollMonsters.begin(); it != m_CollMonsters.end(); )
     {
@@ -741,12 +751,12 @@ _bool CBody_Khazan_Spear::Check_BrutalAttack(_float fTimeDelta)
             ++it;
     }
 
-    /* ë²”ìœ„ ?‚´?— ë¸Œë£¨?ƒˆ ê°??Š¥ ê°œì²´ê°? ?—†?œ¼ë©?  */
+    /* ë²”ìœ„ ë‚´ì— ë¸Œë£¨íƒˆ ê°€ëŠ¥ ê°œì²´ê°€ ì—†ìœ¼ë©´  */
     if (!Has_Status(CKhazan_Spear::BRUTAL_BEGIN)) {
         return false;
     }
 
-    /* ë¸Œë£¨?ƒˆ ?–´?ƒ ?„±ê³? ?›„ ?•„?´ì½? ì§??š°ê¸? */
+    /* ë¸Œë£¨íƒˆ ì–´íƒ ì„±ê³µ í›„ ì•„ì´ì½˜ ì§€ìš°ê¸° */
     if (Has_Status(CKhazan_Spear::BRUTAL_SUCCESS))
     {
         Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
@@ -760,7 +770,7 @@ _bool CBody_Khazan_Spear::Check_BrutalAttack(_float fTimeDelta)
         return false;
     }
 
-    /* ëª¬ìŠ¤?„°ê°? ì£½ìœ¼ë©?  */
+    /* ëª¬ìŠ¤í„°ê°€ ì£½ìœ¼ë©´  */
     if (!m_pBrutalmonster || m_pBrutalmonster->Get_IsDead()) {
         Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
         if (m_isBackBrutal) {
@@ -773,7 +783,7 @@ _bool CBody_Khazan_Spear::Check_BrutalAttack(_float fTimeDelta)
         return false;
     }
 
-    /*  ëª¬ìŠ¤?„°ê°? ?Š¬ë¦½ì´ ???ë¦¬ë©´ */
+    /*  ëª¬ìŠ¤í„°ê°€ ìŠ¬ë¦½ì´ í’€ë¦¬ë©´ */
     if (static_cast<CMonster*>(m_pBrutalmonster)->Get_isSleep() == true && m_isBackBrutal)
     {
         Remove_Status(CKhazan_Spear::BRUTAL_BEGIN | CKhazan_Spear::BRUTAL_READY | CKhazan_Spear::BRUTAL_SUCCESS);
@@ -786,7 +796,7 @@ _bool CBody_Khazan_Spear::Check_BrutalAttack(_float fTimeDelta)
         return false;
     }
 
-    /* ë¸Œë£¨?ƒˆ ê°??Š¥ ë²”ìœ„?¸ì§? ?•„?‹Œì§? ì²´í¬ */
+    /* ë¸Œë£¨íƒˆ ê°€ëŠ¥ ë²”ìœ„ì¸ì§€ ì•„ë‹Œì§€ ì²´í¬ */
     _float  fDistSq = XMVectorGetX(XMVector3LengthSq(XMVectorSet(m_pParentMatrix->_41, m_pParentMatrix->_42, m_pParentMatrix->_43, 1.f) - m_pBrutalmonster->Get_Position()));
     if (fDistSq < 15.f * 15.f) {
         if (!Has_Status(CKhazan_Spear::BRUTAL_READY)) {
@@ -897,6 +907,7 @@ void CBody_Khazan_Spear::Update_Collider(_float fTimeDelta)
     m_pBodyCom_BodyAttack->Sync_Update(matParent);
 
 }
+
 void CBody_Khazan_Spear::Check_Guarding(_float fTimeDelta)
 {
     if (m_isSpearPoleActive)
@@ -917,19 +928,19 @@ void CBody_Khazan_Spear::Check_Guarding(_float fTimeDelta)
 
 void CBody_Khazan_Spear::Update_GuardRotation(_float fTimeDelta)
 {
-    /* ?‚¬?š© xx ë¶?ëª¨ì—?„œ ì§ì ‘ ì²˜ë¦¬?• ê±°ì„ !! */
+    /* ì‚¬ìš© xx ë¶€ëª¨ì—ì„œ ì§ì ‘ ì²˜ë¦¬í• ê±°ì„ !! */
 
     //if (!m_isGuardRotating)
     //    return;
 
     //m_fGuardRotationTime += fTimeDelta;
 
-    //// ?šŒ? „ ?‹œê°„ì´ ??‚¬?œ¼ë©? ? •?™•?ˆ ëª©í‘œ ë°©í–¥?œ¼ë¡? ?„¤? •
+    //// íšŒì „ ì‹œê°„ì´ ëë‚¬ìœ¼ë©´ ì •í™•íˆ ëª©í‘œ ë°©í–¥ìœ¼ë¡œ ì„¤ì •
     //if (m_fGuardRotationTime >= m_fGuardRotationDuration)
     //{
     //    m_isGuardRotating = false;
 
-    //    // ? •?™•?ˆ ëª©í‘œ ë°©í–¥?œ¼ë¡? ?„¤? •
+    //    // ì •í™•íˆ ëª©í‘œ ë°©í–¥ìœ¼ë¡œ ì„¤ì •
     //    _vector vRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_vTargetRotationDir));
     //    _vector vUp = XMVector3Normalize(XMVector3Cross(m_vTargetRotationDir, vRight));
 
@@ -940,14 +951,14 @@ void CBody_Khazan_Spear::Update_GuardRotation(_float fTimeDelta)
     //    return;
     //}
 
-    //// Ease-Out ë³´ê°„ (ì²˜ìŒ?—” ë¹ ë¥´ê²?, ??œ¼ë¡? ê°ˆìˆ˜ë¡? ì²œì²œ?ˆ)
+    //// Ease-Out ë³´ê°„ (ì²˜ìŒì—” ë¹ ë¥´ê²Œ, ëìœ¼ë¡œ ê°ˆìˆ˜ë¡ ì²œì²œíˆ)
     //_float fRatio = m_fGuardRotationTime / m_fGuardRotationDuration;
     //fRatio = 1.f - (1.f - fRatio) * (1.f - fRatio); // Ease-Out Quadratic
 
-    //// ?˜„?¬ ê°ë„ ê³„ì‚°
+    //// í˜„ì¬ ê°ë„ ê³„ì‚°
     //_float fCurrentAngle = m_fStartAngle + (m_fTargetAngle - m_fStartAngle) * fRatio;
 
-    //// ë°©í–¥ ë²¡í„° ?ƒ?„±
+    //// ë°©í–¥ ë²¡í„° ìƒì„±
     //_vector vNewLook = XMVectorSet(cosf(fCurrentAngle), 0.f, sinf(fCurrentAngle), 0.f);
     //vNewLook = XMVector3Normalize(vNewLook);
 
@@ -955,7 +966,7 @@ void CBody_Khazan_Spear::Update_GuardRotation(_float fTimeDelta)
     //_vector vRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vNewLook));
     //_vector vUp = XMVector3Normalize(XMVector3Cross(vNewLook, vRight));
 
-    //// Transform?— ? ?š©
+    //// Transformì— ì ìš©
     //m_pParentTransform->Set_State(STATE::RIGHT, vRight);
     //m_pParentTransform->Set_State(STATE::UP, vUp);
     //m_pParentTransform->Set_State(STATE::LOOK, vNewLook);
@@ -963,12 +974,12 @@ void CBody_Khazan_Spear::Update_GuardRotation(_float fTimeDelta)
 
 void CBody_Khazan_Spear::Start_GuardRotation(_float3 vContactPoint)
 {
-    // 1. ìºë¦­?„°?˜ ?œ„ì¹?
+    // 1. ìºë¦­í„°ì˜ ìœ„ì¹˜
     _vector vCharacterPos = m_pParentTransform->Get_State(STATE::POSITION);
 
-    // 2. ìºë¦­?„° -> ? ‘ì´‰ì  ë°©í–¥ ë²¡í„° ê³„ì‚°
+    // 2. ìºë¦­í„° -> ì ‘ì´‰ì  ë°©í–¥ ë²¡í„° ê³„ì‚°
     _vector vHitDir = XMLoadFloat3(&vContactPoint) - vCharacterPos;
-    vHitDir = XMVectorSetY(vHitDir, 0.f); // XZ ?‰ë©´ìœ¼ë¡? ?ˆ¬?˜
+    vHitDir = XMVectorSetY(vHitDir, 0.f); // XZ í‰ë©´ìœ¼ë¡œ íˆ¬ì˜
     if (XMVectorGetX(XMVector3Length(vHitDir)) < 1e-4f)
     {
         vHitDir = m_pParentTransform->Get_State(STATE::LOOK);
@@ -978,20 +989,20 @@ void CBody_Khazan_Spear::Start_GuardRotation(_float3 vContactPoint)
     else
         vHitDir = XMVector3Normalize(vHitDir);
 
-    /* ë¶?ëª¨ì—?„œ ì§ì ‘ ?šŒ? „ */
+    /* ë¶€ëª¨ì—ì„œ ì§ì ‘ íšŒì „ */
     *m_pParentStatus |= CKhazan_Spear::GUARD_ROTATION_REQUEST;
     XMStoreFloat4(m_pGuardRotationTarget, vHitDir);
 
-    //// 3. ?˜„?¬ ìºë¦­?„°?˜ Forward ë°©í–¥
+    //// 3. í˜„ì¬ ìºë¦­í„°ì˜ Forward ë°©í–¥
     //_vector vCurrentForward = m_pParentTransform->Get_State(STATE:: LOOK);
     //vCurrentForward = XMVectorSetY(vCurrentForward, 0.f);
     //vCurrentForward = XMVector3Normalize(vCurrentForward);
 
-    //// 4. ?˜„?¬ ê°ë„??? ëª©í‘œ ê°ë„ ê³„ì‚°
+    //// 4. í˜„ì¬ ê°ë„ì™€ ëª©í‘œ ê°ë„ ê³„ì‚°
     //m_fStartAngle = atan2f(XMVectorGetZ(vCurrentForward), XMVectorGetX(vCurrentForward));
     //m_fTargetAngle = atan2f(XMVectorGetZ(vHitDir), XMVectorGetX(vHitDir));
 
-    //// 5. ìµœë‹¨ ê±°ë¦¬ë¡? ?šŒ? „?•˜?„ë¡? ê°ë„ ë³´ì • (-?? ~ ??)
+    //// 5. ìµœë‹¨ ê±°ë¦¬ë¡œ íšŒì „í•˜ë„ë¡ ê°ë„ ë³´ì • (-Ï€ ~ Ï€)
     //_float fAngleDiff = m_fTargetAngle - m_fStartAngle;
     //if (fAngleDiff > XM_PI)
     //    fAngleDiff -= XM_2PI;
@@ -1000,7 +1011,7 @@ void CBody_Khazan_Spear::Start_GuardRotation(_float3 vContactPoint)
 
     //m_fTargetAngle = m_fStartAngle + fAngleDiff;
 
-    //// 6. ?šŒ? „ ?‹œ?‘
+    //// 6. íšŒì „ ì‹œì‘
     //m_isGuardRotating = true;
     //m_fGuardRotationTime = 0.f;
     //m_vTargetRotationDir = vHitDir;
@@ -1094,7 +1105,7 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
      
     };
 
-    // ëª¨ë“  ?ŒŒì¸? ë¡œë“œ
+    // ëª¨ë“  íŒŒì¸  ë¡œë“œ
     for (const auto& info : partInfos)
     {
         CModel* pModel = nullptr;
@@ -1177,7 +1188,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Stamp"), V_FinalPosition); }
     );
 
-    /*ë³´ë¦„?‹¬ ?Š¸? ˆ?¼*/
+    /*ë³´ë¦„ë‹¬ íŠ¸ë ˆì¼*/
     m_pModelCom->Register_Event("Full_Moon_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Set_BlueTrail();
 
@@ -1196,15 +1207,15 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         Set_BaseTrail();
         m_pClientInstance->ActiveCamera_KillFov(TEXT("FullMoon"));
         });
-    /*ë³´ë¦„?‹¬ Blust*/
+    /*ë³´ë¦„ë‹¬ Blust*/
     m_pModelCom->Register_Event("Full_Moon_Spike0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust3(m_pParentTransform->Get_WorldMatrix().r[3]); });
     m_pModelCom->Register_Event("Full_Moon_Spike1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {Spear_Spike(); });
-    /*?‹¬ë¹? ë² ê¸°*/
+    /*ë‹¬ë¹› ë² ê¸°*/
     m_pModelCom->Register_Event("LightningSpear_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_RedTrail(); });
     m_pModelCom->Register_Event("LightningSpear_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {FX_Trail(); });
     m_pModelCom->Register_Event("LightningSpear_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
     m_pModelCom->Register_Event("LightningSpear_Blust", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {FX_StrongAtk_Charge_Blust6(m_pParentTransform->Get_WorldMatrix().r[3]); });
-    /*?‚˜?„  ì°Œë¥´ê¸?*/
+    /*ë‚˜ì„  ì°Œë¥´ê¸°*/
     m_pModelCom->Register_Event("SpiralSpear_Spike_Tmp", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
         EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Sphere_Blood"), XMLoadFloat4x4(&m_pSpearPole_MatrixW).r[3]);
@@ -1262,7 +1273,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         RBDesc.fExponent = 1.f;
         RBDesc.iNumSamples = 16;
         RBDesc.fAttenuation = 0.1f;
-        RBDesc.fStrength = 0.5f;       // == Target Strength(0 ~ 1) -> ?´ ê°•ë„ë¥? ìµœë??ê°’ìœ¼ë¡? ?‚¬?š©?•˜?—¬ ë³´ê°„ ? ?š©?¨
+        RBDesc.fStrength = 0.5f;       // == Target Strength(0 ~ 1) -> ì´ ê°•ë„ë¥¼ ìµœëŒ€ê°’ìœ¼ë¡œ ì‚¬ìš©í•˜ì—¬ ë³´ê°„ ì ìš©ë¨
         RBDesc.fDuration = 1.2f;
         RBDesc.vFadeTime = _float2(0.25f, 0.5f);
         m_pGameInstance->Start_RadialBlur(RBDesc);
@@ -1285,24 +1296,24 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     m_pModelCom->Register_Event("SprintAtk_Fast_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
     m_pModelCom->Register_Event("SprintAtk_Fast_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
 
-    /* ê¸‰ì†Œ ???ê²? */
+    /* ê¸‰ì†Œ íƒ€ê²© */
     m_pModelCom->Register_Event("SprintAtk_Strong_Trail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_BlueTrail(); });
     m_pModelCom->Register_Event("SprintAtk_Strong_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
     m_pModelCom->Register_Event("SprintAtk_Strong_Trail", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
 
-    /* ?‚˜?„  ì°Œë¥´ê¸? */
+    /* ë‚˜ì„  ì°Œë¥´ê¸° */
     m_pModelCom->Register_Event("Tempest_Wind", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { UpdateSpearRedWind(true); });
     m_pModelCom->Register_Event("Tempest_Wind", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SpawnSpearRedWind();  });
     m_pModelCom->Register_Event("Tempest_SpiralSpear_Charge_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust11"), m_pParentTransform->Get_WorldMatrix().r[3]); });
     //        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust11"), m_pParentTransform->Get_WorldMatrix().r[3]);
 
-    /* ê¸‰ì†Œ ???ê²? */
+    /* ê¸‰ì†Œ íƒ€ê²© */
     m_pModelCom->Register_Event("Crescent_Land", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_Crescent_Land"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_Crescent_Land"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
         });
 
-    /* ?‚˜?„  ì°Œë¥´ê¸? :: ?†Œ?š©?Œ?´*/
+    /* ë‚˜ì„  ì°Œë¥´ê¸° :: ì†Œìš©ëŒì´*/
 
     m_pModelCom->Register_Event("Tempest_TwisterSpear_SphereWind_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { UpdateSpearRedWind(true); });
     m_pModelCom->Register_Event("Tempest_TwisterSpear_SphereWind_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SpawnSpearRedWind();  });
@@ -1311,17 +1322,17 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust11"), m_pParentTransform->Get_WorldMatrix().r[3]); });
 
     m_pModelCom->Register_Event("PureMind_Pin", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("JumpSpear"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]); });
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("JumpSpear"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]); });
 
 
-    // ?•½ê³? ?Š¤?‚¬ ?‘ë²ˆì?°êº¼
+    // ì•½ê³µ ìŠ¤í‚¬ ë‘ë²ˆì¨°êº¼
     m_pModelCom->Register_Event("FastBlust0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        //?‹¬ë¹? ?ƒœ?„¸ ë°°ì› ?œ¼ë©?
+        //ë‹¬ë¹› íƒœì„¸ ë°°ì› ìœ¼ë©´
         if (m_pClientInstance->Is_UsedSkill(CPlayerData_Manager::SPEARSKILL::MOONLIGHT_STANCE))
             m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust5"), BodyCenter()); });
 
     m_pModelCom->Register_Event("FastBlust1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        //?‹¬ë¹? ?ƒœ?„¸ ë°°ì› ?œ¼ë©?
+        //ë‹¬ë¹› íƒœì„¸ ë°°ì› ìœ¼ë©´
         if (m_pClientInstance->Is_UsedSkill(CPlayerData_Manager::SPEARSKILL::MOONLIGHT_STANCE))
             m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust12"), BodyCenter()); });
 
@@ -1331,80 +1342,9 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     m_pModelCom->Register_Event("FastBlust3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Spear_Spike(); });
 
     m_pModelCom->Register_Event("FallATK_Land", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-                //m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_FallAtk_Land"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_FallAtk_Land"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
         CClientInstance::GetInstance()->ActiveCamera_Shaking(1.25f, 0.5f);
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_FallAtk_Land"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
-
         });
-
-    //brutal
-    // m_pModelCom->Register_Event("Brutal_FX0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-    //     _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
-    //     //Decompose_Rotation(mat_arm, XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90));
-    //     _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
-    //     EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), world, world.r[3]);
-    //     });
-    // m_pModelCom->Register_Event("Brutal_FX0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-    //     _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
-    //     _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
-    //     m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear, world, world.r[3]);
-    //     });
-    // m_pModelCom->Register_Event("Brutal_FX0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-    //     m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear);
-    //     m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutalParticle"), m_pParentTransform->Get_WorldMatrix(), XMLoadFloat4x4(&m_pSpearPole_MatrixW).r[3]);
-    //     m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("blust_brutal"), XMLoadFloat4x4(&m_pSpearPole_MatrixW).r[3]);
-    //     });
-
-    // m_pModelCom->Register_Event("Brutal_FX1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-    //     m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("blust_brutal"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
-    //     });
-
-    // m_pModelCom->Register_Event("Brutal_FX1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-    //     m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust12"), m_pParentTransform->Get_WorldMatrix().r[3]);
-    //     });
-
-    // m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
-    // m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_RedTrail(); });
-    // m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
-
-    // m_pModelCom->Register_Event("Brutal_Trail1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
-    // m_pModelCom->Register_Event("Brutal_Trail1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_RedTrail(); });
-    // m_pModelCom->Register_Event("Brutal_Trail1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
-
-    //brutal
-    //m_pModelCom->Register_Event("Brutal_FX0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-    //    _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
-    //    //Decompose_Rotation(mat_arm, XMQuaternionRotationRollPitchYaw(0.f, 0.f, XMConvertToRadians(-90));
-    //    _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
-    //    EffectID_SpiralSpear = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), world, world.r[3]);
-    //    });
-    //m_pModelCom->Register_Event("Brutal_FX0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
-    //    _matrix mat_arm = XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("Muscle_R_ForeTwist1"));
-    //    _matrix world = mat_arm * XMLoadFloat4x4(m_pParentMatrix);
-    //    m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear, world, world.r[3]);
-    //    });
-    //m_pModelCom->Register_Event("Brutal_FX0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-    //    m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutal_hand"), EffectID_SpiralSpear);
-    //    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("brutalParticle"), m_pParentTransform->Get_WorldMatrix(), XMLoadFloat4x4(&m_pSpearPole_MatrixW).r[3]);
-    //    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("blust_brutal"), XMLoadFloat4x4(&m_pSpearPole_MatrixW).r[3]);
-    //    });
-
-    //m_pModelCom->Register_Event("Brutal_FX1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-    //    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("blust_brutal"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
-    //    });
-
-    //m_pModelCom->Register_Event("Brutal_FX1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
-    //    m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust12"), m_pParentTransform->Get_WorldMatrix().r[3]);
-    //    });
-
-    //m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
-    //m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_RedTrail(); });
-    //m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
-
-    //m_pModelCom->Register_Event("Brutal_Trail1", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
-    //m_pModelCom->Register_Event("Brutal_Trail1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_RedTrail(); });
-    //m_pModelCom->Register_Event("Brutal_Trail1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { Set_BaseTrail(); });
-
 
     //brutal
     m_pModelCom->Register_Event("Brutal_FX0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -1433,8 +1373,8 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Blust12"), m_pParentTransform->Get_WorldMatrix().r[3]);
         });
 
-    // 0 : ?Œ” ?œ˜ê°ëŠ” ê±? ?‹œ?‘ ?—”?„°, ??‚˜?Š” ê±? ?—‘?‹œ?Š¸ ?„°ì§??Š” ?ŒŒ?‹°?´
-    // 1 : ì°½ì—?„œ ?„°ì§??Š” ê²? ?—”?„° ëª¸ì—?„œ ?„°ì§??Š”ê²? ?—‘?‹œ?Š¸
+    // 0 : íŒ” íœ˜ê°ëŠ” ê±° ì‹œì‘ ì—”í„°, ëë‚˜ëŠ” ê±° ì—‘ì‹œíŠ¸ í„°ì§€ëŠ” íŒŒí‹°í´
+    // 1 : ì°½ì—ì„œ í„°ì§€ëŠ” ê²Œ ì—”í„° ëª¸ì—ì„œ í„°ì§€ëŠ”ê²Œ ì—‘ì‹œíŠ¸
 
     m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_Trail(); });
     m_pModelCom->Register_Event("Brutal_Trail0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { Set_RedTrail(); });
@@ -1451,7 +1391,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
 #pragma region ScreenEffect
 
-    // ê¸‰ì†Œ ???ê²?
+    // ê¸‰ì†Œ íƒ€ê²©
     m_pModelCom->Register_Event("SprintAtk_Strong_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
         Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
@@ -1464,7 +1404,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         RBDesc.fExponent = 1.f;
         RBDesc.iNumSamples = 16;
         RBDesc.fAttenuation = 0.1f;
-        RBDesc.fStrength = 0.4f;       // == Target Strength(0 ~ 1) -> ?´ ê°•ë„ë¥? ìµœë??ê°’ìœ¼ë¡? ?‚¬?š©?•˜?—¬ ë³´ê°„ ? ?š©?¨
+        RBDesc.fStrength = 0.4f;       // == Target Strength(0 ~ 1) -> ì´ ê°•ë„ë¥¼ ìµœëŒ€ê°’ìœ¼ë¡œ ì‚¬ìš©í•˜ì—¬ ë³´ê°„ ì ìš©ë¨
         RBDesc.fDuration = 1.2f;
         RBDesc.vFadeTime = _float2(0.25f, 0.5f);
         m_pGameInstance->Start_RadialBlur(RBDesc);
@@ -1489,7 +1429,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_isEnableMotionTrail = false;
         });
 
-    // ê°•ê³µê²?
+    // ê°•ê³µê²©
     m_pModelCom->Register_Event("StrongAtk01_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
         // Distortion
@@ -1540,7 +1480,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         RBDesc.fExponent = 1.f;
         RBDesc.iNumSamples = 16;
         RBDesc.fAttenuation = 0.1f;
-        RBDesc.fStrength = 0.7f;       // == Target Strength(0 ~ 1) -> ?´ ê°•ë„ë¥? ìµœë??ê°’ìœ¼ë¡? ?‚¬?š©?•˜?—¬ ë³´ê°„ ? ?š©?¨
+        RBDesc.fStrength = 0.7f;       // == Target Strength(0 ~ 1) -> ì´ ê°•ë„ë¥¼ ìµœëŒ€ê°’ìœ¼ë¡œ ì‚¬ìš©í•˜ì—¬ ë³´ê°„ ì ìš©ë¨
         RBDesc.fDuration = 1.f;
         RBDesc.vFadeTime = _float2(0.25f, 0.5f);
         m_pGameInstance->Start_RadialBlur(RBDesc);
@@ -1561,7 +1501,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 0.5f, 0.2f, 0.5f);
         });
 
-    // ê°•ê³µê²? ì°¨ì??
+    // ê°•ê³µê²© ì°¨ì§€
     m_pModelCom->Register_Event("StrongAtk_Charge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_RedDefault"), true);
 
@@ -1611,7 +1551,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         RBDesc.fExponent = 1.f;
         RBDesc.iNumSamples = 16;
         RBDesc.fAttenuation = 0.1f;
-        RBDesc.fStrength = 0.5f;       // == Target Strength(0 ~ 1) -> ?´ ê°•ë„ë¥? ìµœë??ê°’ìœ¼ë¡? ?‚¬?š©?•˜?—¬ ë³´ê°„ ? ?š©?¨
+        RBDesc.fStrength = 0.5f;       // == Target Strength(0 ~ 1) -> ì´ ê°•ë„ë¥¼ ìµœëŒ€ê°’ìœ¼ë¡œ ì‚¬ìš©í•˜ì—¬ ë³´ê°„ ì ìš©ë¨
         RBDesc.fDuration = 1.25f;
         RBDesc.vFadeTime = _float2(0.25f, 0.5f);
         m_pGameInstance->Start_RadialBlur(RBDesc);
@@ -1637,7 +1577,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_pClientInstance->ActiveCamera_KillFov(TEXT("SprintAtk"));
         });
 
-    // ê·¸ë¦¼? ì°¸ê²©
+    // ê·¸ë¦¼ì ì°¸ê²©
     m_pModelCom->Register_Event("Tempest_MoonVeil_ScreenEffect", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
         RADIAL_BLUR_DESC RBDesc{};
@@ -1648,7 +1588,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         RBDesc.fExponent = 1.f;
         RBDesc.iNumSamples = 16;
         RBDesc.fAttenuation = 0.1f;
-        RBDesc.fStrength = 0.4f;       // == Target Strength(0 ~ 1) -> ?´ ê°•ë„ë¥? ìµœë??ê°’ìœ¼ë¡? ?‚¬?š©?•˜?—¬ ë³´ê°„ ? ?š©?¨
+        RBDesc.fStrength = 0.4f;       // == Target Strength(0 ~ 1) -> ì´ ê°•ë„ë¥¼ ìµœëŒ€ê°’ìœ¼ë¡œ ì‚¬ìš©í•˜ì—¬ ë³´ê°„ ì ìš©ë¨
         RBDesc.fDuration = 1.5f;
         RBDesc.vFadeTime = _float2(0.25f, 0.5f);
         m_pGameInstance->Start_RadialBlur(RBDesc);
@@ -1682,7 +1622,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_pGameInstance->Start_Distortion(Desc);
         });
 
-    // ?‹·ì§?
+    // ë‹·ì§€
     m_pModelCom->Register_Event("Dodge_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
         m_isEnableMotionTrail = true;
@@ -1705,7 +1645,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         m_pClientInstance->ActiveCamera_KillFov(TEXT("Dodge"));
         });
 
-    // ?‹·ì§? ?–´?ƒ
+    // ë‹·ì§€ ì–´íƒ
     m_pModelCom->Register_Event("DodgeAtk_MotionTrail", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Trigger_MotionTrail(TEXT("MT_Common_BlueGray"), true);
         m_isEnableMotionTrail = true;
@@ -1741,7 +1681,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
     m_pModelCom->Register_Event("HeaL1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_pPlayerData->fCulHp += m_pPlayerData->fLachrymaItemRegen;
         if (m_pPlayerData->fCulHp > m_pPlayerData->fMaxHp)
-            m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp; }); //?¼?¬ë¦¬ë§ˆ
+            m_pPlayerData->fCulHp = m_pPlayerData->fMaxHp; }); //ë¼í¬ë¦¬ë§ˆ
     m_pModelCom->Register_Event("Heal2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
 
         if (*m_pHealIndex == 1)
@@ -1759,10 +1699,10 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
         if (*m_pHealIndex == 6) 
             m_pGameInstance->Emit_Event(ENUM_CLASS(EVENT_TYPE::ITEM_ACTIVE), EVENT_ATICVE_ITEM{ 5 });
 
-        }); //??…œ
+        }); //íí…œ
 #pragma endregion
 
-    // ?”„ë¦¬ì¦ˆ?„ˆ
+    // í”„ë¦¬ì¦ˆë„ˆ
     m_pModelCom->Register_Event("Injure_VignetteAnimation", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         // Vignette
         VIGNETTE_CONFIG Config{};
@@ -1786,7 +1726,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
 HRESULT CBody_Khazan_Spear::Ready_AnimationEvent_SFX()
 {
-    /* (?…¸?‹°?ŒŒ?´ ?‚¤ ê°? , ?…¸?‹°?ŒŒ?´ ìµœë?? ?ˆ˜, ì§„ì…? , ?‚¬?š´?“œ ê·¸ë£¹ ????…, ë³¼ë¥¨, ?–´?–¤ ì±„ë„?‚¬?š© ) */
+    /* (ë…¸í‹°íŒŒì´ í‚¤ ê°’ , ë…¸í‹°íŒŒì´ ìµœëŒ€ ìˆ˜, ì§„ì…ì , ì‚¬ìš´ë“œ ê·¸ë£¹ íƒ€ì…, ë³¼ë¥¨, ì–´ë–¤ ì±„ë„ì‚¬ìš© ) */
     auto Register_EventGroup = [&](const string& strEventKey, _int iCount, ANIM_EVENT_TRIGGERTYPE eTrigger, SOUND_TYPE eSoundType, _float fVolume, SOUND_CHANNEL eChannelType) {
 
         if (iCount <= 0) return;
@@ -1871,7 +1811,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent_SFX()
     Register_EventGroup("SFX_Guard_On_Spear", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_ON_SPEAR, 1.f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Guard_Off_Spear", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_OFF_SPEAR, 1.f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Guard_Foley", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_FOLEY, 1.f, SOUND_CHANNEL::EFFECT1);
-    //Register_EventGroup("SFX_Guard_Success", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_SUCCESS, 1.f, SOUND_CHANNEL::WEAPON);  ì§ì ‘ ì²˜ë¦¬ ?…¸?‹°?ŒŒ?´x
+    //Register_EventGroup("SFX_Guard_Success", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_SUCCESS, 1.f, SOUND_CHANNEL::WEAPON);  ì§ì ‘ ì²˜ë¦¬ ë…¸í‹°íŒŒì´x
     Register_EventGroup("SFX_Justguard_Effect", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::JUSTGUARD_EFFECT, 1.f, SOUND_CHANNEL::EFFECT2);
     Register_EventGroup("SFX_Justguard", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::JUSTGUARD, 1.f, SOUND_CHANNEL::WEAPON);
 
@@ -1894,7 +1834,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         TipBoxDesc.eMotion = EMotionType::Kinematic;
         TipBoxDesc.eQuality = EMotionQuality::Discrete; // ê¸°ë³¸ ëª¨ë“œ
         TipBoxDesc.eShapeType = SHAPE::BOX;
-        TipBoxDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK); // ì¶”í›„?— Enum Monster attack ë³?ê²? ?• ?ˆ˜?„
+        TipBoxDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK); // ì¶”í›„ì— Enum Monster attack ë³€ê²½ í• ìˆ˜ë„
 
         XMStoreFloat4x4(&m_pSpearTip1_MatrixW, XMLoadFloat4x4(m_pSpearTip1_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
         _vector vScale, vQuat, vTrans;
@@ -1924,7 +1864,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         BodyBoxDesc.eMotion = EMotionType::Kinematic;
         BodyBoxDesc.eQuality = EMotionQuality::Discrete; // ê¸°ë³¸ ëª¨ë“œ
         BodyBoxDesc.eShapeType = SHAPE::BOX;
-        BodyBoxDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK); // ì¶”í›„?— Enum Monster attack ë³?ê²? ?• ?ˆ˜?„
+        BodyBoxDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_ATTACK); // ì¶”í›„ì— Enum Monster attack ë³€ê²½ í• ìˆ˜ë„
 
         XMStoreFloat4x4(&m_pSpearPole_MatrixW, XMLoadFloat4x4(m_pSpearPole_Matrix) * XMLoadFloat4x4(m_pParentMatrix));
         _vector vScale, vQuat, vTrans;
@@ -1981,7 +1921,7 @@ HRESULT CBody_Khazan_Spear::Ready_Collider()
         m_tSearchCollisionDesc.pGameObject = this;
         m_tSearchCollisionDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::PLAYER_SEARCH);
         m_tSearchCollisionDesc.strName = TEXT("Player_Search");
-        //pCollDesc.pInfo = ?? // ?‘?„±?•˜ê¸?
+        //pCollDesc.pInfo = ?? // ì‘ì„±í•˜ê¸°
         BodyDesc.pCollisionDesc = &m_tSearchCollisionDesc;
 
         if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
@@ -2014,7 +1954,7 @@ HRESULT CBody_Khazan_Spear::Ready_Equipment()
 
     const auto& equipData = m_pClientInstance->Get_PlayerEquipment();
 
-    // ê°? ?Š¬ë¡?ë³? ì´ˆê¸° ?¥ë¹? ?„¤? •
+    // ê° ìŠ¬ë¡¯ë³„ ì´ˆê¸° ì¥ë¹„ ì„¤ì •
     struct SlotMapping {
         EQUIPMENTTYPE type;
         _uint equipIndex;
@@ -2046,7 +1986,7 @@ void CBody_Khazan_Spear::Equip_Part(EQUIPMENTTYPE eType, const _wstring& strPart
         || eType == EQUIPMENTTYPE::NONE)
         return;
 
-    // ê¸°ì¡´ ?¥ì°? ?ŒŒì¸? ?•´? œ
+    // ê¸°ì¡´ ì¥ì°© íŒŒì¸  í•´ì œ
     auto iter = m_EquippedParts.find(eType);
     if (iter != m_EquippedParts.end())
     {
@@ -2059,7 +1999,7 @@ void CBody_Khazan_Spear::Equip_Part(EQUIPMENTTYPE eType, const _wstring& strPart
         m_EquippedParts.erase(iter);
     }
 
-    // ?ƒˆ ?ŒŒì¸? ?¥ì°?
+    // ìƒˆ íŒŒì¸  ì¥ì°©
     if (!strPartName.empty())
     {
         auto partIter = m_AllParts.find(strPartName);
@@ -2071,7 +2011,7 @@ void CBody_Khazan_Spear::Equip_Part(EQUIPMENTTYPE eType, const _wstring& strPart
         }
     }
 
-    // ë¹ ë¥¸ ? Œ?”?š© 
+    // ë¹ ë¥¸ ë Œë”ìš© 
     Update_QuickRenderCache();
 }
 
@@ -2081,7 +2021,7 @@ void CBody_Khazan_Spear::Update_QuickRenderCache()
         Safe_Release(pModel);
     m_RenderParts.clear();
 
-    /* ? Œ?” ?ˆœ?„œ ? ?š© ê°??Š¥ */
+    /* ë Œë” ìˆœì„œ ì ìš© ê°€ëŠ¥ */
     static const vector<EQUIPMENTTYPE> renderOrder = {
         EQUIPMENTTYPE::SHOES,
         EQUIPMENTTYPE::LEG,
@@ -2105,13 +2045,13 @@ void CBody_Khazan_Spear::Update_QuickRenderCache()
         }
     }
 
-    /* todo !! ?—¬ê¸°ì— ëª¨ì…˜?Š¸? ˆ?¼ì»´í¬?„Œ?Š¸?—  ?œ?”?š© ?ŒŒì¸ ëª¨?¸ ë°”ê¼ˆ?‹¤ê³? ?„˜ê²¨ì£¼ê¸?. */
-    // Part Model?´ ?ˆ?Š” ê²½ìš°!!
+    /* todo !! ì—¬ê¸°ì— ëª¨ì…˜íŠ¸ë ˆì¼ì»´í¬ë„ŒíŠ¸ì—  ëœë”ìš© íŒŒì¸ ëª¨ë¸ ë°”ê¼ˆë‹¤ê³  ë„˜ê²¨ì£¼ê¸°. */
+    // Part Modelì´ ìˆëŠ” ê²½ìš°!!
     m_pMotionTrailCom->Update_PartModels(m_RenderParts);
 
 
 
-    // Part Model?´ ?—†ê³? Master Modelë§? ?ˆ?Š” ê²½ìš°!! (ë¬´ê¸°)
+    // Part Modelì´ ì—†ê³  Master Modelë§Œ ìˆëŠ” ê²½ìš°!! (ë¬´ê¸°)
     //  m_pMotionTrailCom->Update_MasterModel(m_pModelCom);
 }
 
@@ -2121,11 +2061,11 @@ void CBody_Khazan_Spear::FX_Trail()
     _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 
-    if (m_TrailParticleTime > 3.f)
+    if (m_iTrailType)
     {
-        (m_iTrailType == 1) ?
-            m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3])
-            : m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle_R"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
+        m_TrailParticleTime += 1.f;
+        if (m_TrailParticleTime > 5.f)
+            m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
     }
     else
         m_TrailParticleTime = 0.f;
@@ -2319,7 +2259,6 @@ void CBody_Khazan_Spear::Set_RedTrail()
     Config.iDivisionCount = 10;
     Config.vColor = _float4(3.529f, 2.569f, 2.569f, 1.f);
     m_pTrail->Set_TrailConfig(Config);
-    m_iTrailType = 2;
 }
 
 void CBody_Khazan_Spear::Spawn_Guard_FX()
@@ -2346,7 +2285,7 @@ _vector CBody_Khazan_Spear::BodyCenter()
 
 void CBody_Khazan_Spear::BrutalAtk_ScreenEffect0()
 {
-    // ? ˆ?””?–¼ ë¸”ëŸ¬ ì§§ê²Œ
+    // ë ˆë””ì–¼ ë¸”ëŸ¬ ì§§ê²Œ
     RADIAL_BLUR_DESC RBDesc{};
     RBDesc.vCenterUV = _float2(0.5f, 0.5f);
     RBDesc.fSampleRadius = 0.05f;
@@ -2354,7 +2293,7 @@ void CBody_Khazan_Spear::BrutalAtk_ScreenEffect0()
     RBDesc.fExponent = 1.f;
     RBDesc.iNumSamples = 16;
     RBDesc.fAttenuation = 0.1f;
-    RBDesc.fStrength = 0.7f;       // == Target Strength(0 ~ 1) -> ?´ ê°•ë„ë¥? ìµœë??ê°’ìœ¼ë¡? ?‚¬?š©?•˜?—¬ ë³´ê°„ ? ?š©?¨
+    RBDesc.fStrength = 0.7f;       // == Target Strength(0 ~ 1) -> ì´ ê°•ë„ë¥¼ ìµœëŒ€ê°’ìœ¼ë¡œ ì‚¬ìš©í•˜ì—¬ ë³´ê°„ ì ìš©ë¨
     RBDesc.fDuration = 2.f;
     RBDesc.vFadeTime = _float2(1.5f, 0.5f);
     m_pGameInstance->Start_RadialBlur(RBDesc);
@@ -2433,7 +2372,7 @@ _vector CBody_Khazan_Spear::Decompose_Rotation(_matrix W, _vector localRot, _vec
 
 void CBody_Khazan_Spear::UpdateSpearWind(_bool isEnableRadialBlur)
 { 
-    m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearWind"), EffectID_SpearWind, XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
+    m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearWind"), EffectID_SpearWind, XMLoadFloat4x4(&m_pSpearTip1_MatrixW), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
 
     DISTORTION_DESC Desc{};
     _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
@@ -2452,7 +2391,8 @@ void CBody_Khazan_Spear::UpdateSpearWind(_bool isEnableRadialBlur)
 
 void CBody_Khazan_Spear::UpdateSpearRedWind(_bool isEnableRadialBlur)
 {
-    m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_BloodWind"), EffectID_SpearWind, XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
+    m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_BloodWind"), EffectID_SpearWind, XMLoadFloat4x4(&m_pSpearTip1_MatrixW), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
+    _matrix W = XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt);
 
     DISTORTION_DESC Desc{};
     _vector vCenterPos = m_pParentTransform->Get_WorldMatrix().r[3];
@@ -2471,7 +2411,7 @@ void CBody_Khazan_Spear::UpdateSpearRedWind(_bool isEnableRadialBlur)
 
 void CBody_Khazan_Spear::SpawnSpearWind()
 { 
-    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearWind"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
+    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearWind"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
 
     // Distortion
     DISTORTION_DESC Desc{};
@@ -2491,7 +2431,7 @@ void CBody_Khazan_Spear::SpawnSpearWind()
 
 void CBody_Khazan_Spear::SpawnSpearRedWind()
 {
-    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_BloodWind"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt), XMLoadFloat4x4(&m_pSpearTip1_MatrixW_nJolt).r[3]);
+    EffectID_SpearWind = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Spear_BloodWind"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
 
     // Distortion
     DISTORTION_DESC Desc{};
@@ -2511,7 +2451,7 @@ void CBody_Khazan_Spear::SpawnSpearRedWind()
 
 void CBody_Khazan_Spear::Event_AttackTiming(_bool isAttackStart)
 {
-    /* ê³µê²© ë§ì•„?„œ ì¤‘ê°„?— ?Šê¸? ê²½ìš°?Š”? */
+    /* ê³µê²© ë§ì•„ì„œ ì¤‘ê°„ì— ëŠê¸¸ ê²½ìš°ëŠ”? */
     if (isAttackStart)
     {
         m_isNotifyAttacking = true;
@@ -2571,7 +2511,7 @@ void CBody_Khazan_Spear::Free()
     if (m_pBrutalAttack)
         Safe_Release(m_pBrutalAttack);
 
-    //?˜„?¬ Safe_AddRef ?•˜ì§? ?•Šê³? ????„œ ?„ ë°–ì•„?‘ 
+    //í˜„ì¬ Safe_AddRef í•˜ì§€ ì•Šê³  ì™€ì„œ ë„ ë°–ì•„ë‘ 
     m_pBrutalmonster = nullptr;
     //if (m_pBrutalmonster)
     //    Safe_Release(m_pBrutalmonster);

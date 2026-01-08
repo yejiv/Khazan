@@ -41,7 +41,7 @@ HRESULT CPlayer_Manager::Initialize()
 
     m_Data.fWeight = { 0.f };
     //데이터 셋팅
-    //Setting_Data();
+    Setting_Data();
 
     m_UsedSpearSkill.assign(GetBitPosition(CPlayerData_Manager::SPEAR_END), false);
 
@@ -234,17 +234,17 @@ void CPlayer_Manager::Setting_Data()
 {
     //초기 데이터 셋팅용
     
-    m_Data.iGold = 2000;
-    m_Data.iLachryma = 5100;
-    m_Data.iStone = 8;
+    m_Data.iGold = 26250;
+    m_Data.iLachryma = 1870;
+    m_Data.iStone = 15;
     m_Data.fSkillLevel_EXP = 50.f;
-    m_Data.iSkillLevel = 10;
-    m_Data.iSkilPoint = 0;
+    m_Data.iSkillLevel = 20;
+    m_Data.iSkilPoint = 10;
 
-    m_Data.iLevel = 10;
-    m_Data.iVitality = { 13 };
-    m_Data.iEndurance = { 16 };
-    m_Data.iPower = { 11 };
+    m_Data.iLevel = 8;
+    m_Data.iVitality = { 10 };
+    m_Data.iEndurance = { 10 };
+    m_Data.iPower = { 17 };
     m_Data.iCompetency = { 10 };
     m_Data.iWill = { 10 };
 }

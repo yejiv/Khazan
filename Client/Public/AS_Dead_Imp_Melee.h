@@ -15,7 +15,7 @@ public:
     virtual void Update(class CStateMachine* pFSM, class CGameObject* pOwner, _float fTimeDelta) override;
     virtual void Exit(class CStateMachine* pFSM, class CGameObject* pOwner) override;
 
-    
+
 public:
     static CAS_Dead_Imp_Melee*  Create();
     virtual void				Free() override;
