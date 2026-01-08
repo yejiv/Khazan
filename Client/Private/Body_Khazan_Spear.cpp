@@ -101,6 +101,7 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     m_bGuradFX[0] = false;
     m_bGuradFX[1] = false;
     m_iTrailType = 0;
+    m_TrailParticleTime = 0.f;
 
     return S_OK;
 }
@@ -2121,14 +2122,23 @@ void CBody_Khazan_Spear::FX_Trail()
     _matrix hand = XMLoadFloat4x4(&m_pSpearPole_MatrixW);
     m_pTrail->Add_ControlPoint(tip.r[3], hand.r[3]);
 
-    if (m_TrailParticleTime > 3.f)
-    {
-        (m_iTrailType == 1) ?
-            m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3])
-            : m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle_R"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
-    }
-    else
-        m_TrailParticleTime = 0.f;
+    //if (m_iTrailType)
+    //    m_TrailParticleTime += 1.f;
+    //
+    //if (m_TrailParticleTime > 3.f)
+    //{
+    //    (m_iTrailType == 1) ?
+    //        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3])
+    //        : m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle_R"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
+    //}
+    //else
+    //    m_TrailParticleTime = 0.f;
+    //
+
+    if (m_iTrailType == 1)
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
+    else if(m_iTrailType == 2)
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("TrailParticle_R"), XMLoadFloat4x4(&m_pSpearTip1_MatrixW).r[3]);
 }
 
 void CBody_Khazan_Spear::FX_StrongAtk_Charge_Blust1(_fvector pos)
