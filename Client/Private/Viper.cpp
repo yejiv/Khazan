@@ -5241,9 +5241,8 @@ _float CViper::Clamp_TargetDistance()
     _float fMaxDist = pBB->Get_Value<_float>(m_strName, "ChaseRange");
 
     _float fResult = UtilityScore::DistanceScore(fDist, fMinDist, fMaxDist);
-
-
-    return fResult + 0.7f;
+    
+     return fResult += 0.6f;
 
 }
 
@@ -5437,19 +5436,19 @@ void CViper::SFX_Move()
     _uint iSoundIndex = m_pGameInstance->Rand(0, 6);
 
     if (iSoundIndex == 0)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_01 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_01 (SFX).wav"), Clamp_TargetDistance());
     else if (iSoundIndex == 1)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_02 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_02 (SFX).wav"), Clamp_TargetDistance());
     else if (iSoundIndex == 2)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_03 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_03 (SFX).wav"), Clamp_TargetDistance());
     else if (iSoundIndex == 3)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_04 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), Clamp_TargetDistance());
     else if (iSoundIndex == 4)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_05 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_05 (SFX).wav"), Clamp_TargetDistance());
     else if (iSoundIndex == 5)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_06 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_06 (SFX).wav"), Clamp_TargetDistance());
     else if (iSoundIndex == 6)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_01 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_b_01 (SFX).wav"), Clamp_TargetDistance());
 
 }
 
