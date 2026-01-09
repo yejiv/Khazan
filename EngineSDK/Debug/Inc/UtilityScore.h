@@ -19,23 +19,17 @@ namespace UtilityScore
 
     inline _float Utility_Remap(_float fValue, _float fMinValue, _float fMaxValue, _bool isInvert = false)
     {
-        // Min ~ Max 援ш컙??媛믪쓣 0 ~ 1 濡?留듯븨 ?댁＜???⑥닔
-        // Invert媛 True硫??ㅼ쭛?댁꽌 ?묒쓣 ?섎줉 ?먯닔媛 ?щ씪媛???뺥깭濡??ъ슜?쒕떎.
-
         if (fMaxValue - fMinValue <= 0.00001f)
             return 0.f;
 
-        _float t = (fValue - fMinValue) / (fMaxValue - fMinValue); // 0~1 ?뺢퇋??怨듭떇
-        t = Utility_Clamp(t); // ?덉쟾?섍쾶 0~1?ъ씠濡?議곗젙?섎뒗 ?묒뾽
+        _float t = (fValue - fMinValue) / (fMaxValue - fMinValue);
+        t = Utility_Clamp(t); 
 
-        return isInvert ? (1.f - t) : t; // 留뚯빟 ?ㅼ쭛???듭뀡??二쇰㈃ ?ㅼ쭛?댁꽌 諛섑솚 ?섎룄濡??섎뒗 ?묒뾽
+        return isInvert ? (1.f - t) : t; 
     }
 
     inline _float DistanceScore(_float fDist, _float MinDist, _float MaxDist)
     {
-        // 媛源뚯슱 ?섎줉 ?믪? ?먯닔瑜?諛섑솚?섎룄濡?(fMinDist ??媛源뚯슱?섎줉 ?먯닔媛 ?믪븘吏꾨떎.)
-        // ?덈???硫?MinDist媛 洹쇱젒 怨듦꺽 踰붿쐞 ?대㈃ 嫄곌린??媛源뚯썙吏硫??먯닔媛 ?믪븘吏怨?
-        // MinDist 媛 以묎굅由?怨듦꺽??媛源뚯썙吏硫??먯닔媛 ?щ씪媛???좏깮?섎뒗 援ъ“媛꾨맂??
         return Utility_Remap(fDist,MinDist,MaxDist,true);
     }
 

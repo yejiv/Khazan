@@ -2,13 +2,20 @@
 
 #include "Shader.h"
 #include "VIBuffer_Rect.h"
+#include "GameInstance.h"
 
 CRenderTarget::CRenderTarget(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice{ pDevice }
 	, m_pContext{ pContext }
+#ifdef _DEBUG
+    , m_pGameInstance { CGameInstance::GetInstance() }
+#endif
 {
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
+#ifdef _DEBUG
+    Safe_AddRef(m_pGameInstance);
+#endif
 }
 
 HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vClearColor)
@@ -39,6 +46,12 @@ HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixel
 		return E_FAIL;
 
 	m_vClearColor = vClearColor;
+
+#ifdef _DEBUG
+    m_pShader = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Font.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements);
+    if (nullptr == m_pShader)
+        return E_FAIL;
+#endif
 
 	return S_OK;
 }
@@ -90,6 +103,11 @@ HRESULT CRenderTarget::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 	pVIBuffer->Bind_Resources();
 	pVIBuffer->Render();
 
+    // Font 출력
+    m_pShader->Begin(0);
+
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_18"), TEXT("boo"), m_WorldMatrix._41, m_WorldMatrix._42, _float4(1.f, 0.f, 0.f, 1.f));
+
 	return S_OK;
 }
 
@@ -111,6 +129,11 @@ CRenderTarget* CRenderTarget::Create(ID3D11Device* pDevice, ID3D11DeviceContext*
 void CRenderTarget::Free()
 {
 	__super::Free();
+
+#ifdef _DEBUG
+    Safe_Release(m_pShader);
+    Safe_Release(m_pGameInstance);
+#endif
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
