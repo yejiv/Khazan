@@ -15,15 +15,15 @@ void CAS_Dr_Melee_Sleep::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_pMonData->isMotionSleep ? m_pMonData->iAnimIndex = 34 : m_pMonData->iAnimIndex = 41;
 
     m_eState = SLEEP;
+    if (!m_pGameInstance->IsPlayingByKey(TEXT("Mon_dragonian_foley_rattle_a_02 (SFX).wav")))
+    {
+        m_pGameInstance->PlaySoundLoop(TEXT("Mon_dragonian_foley_rattle_a_02 (SFX).wav"), pOwner->Get_Position());
+    }
 }
 
 void CAS_Dr_Melee_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
-    if (m_eState == SLEEP && m_pMonData->isSleep)
-    {
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_dragonian_foley_rattle_a_02 (SFX).wav"), pOwner->Get_Position());
-    }
-    else if (m_eState == SLEEP && !m_pMonData->isSleep)
+    if (m_eState == SLEEP && !m_pMonData->isSleep)
     {
         if (m_pMonData->isMotionSleep)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_dragonian_wakeup_01 (SFX).wav"), pOwner->Get_Position());
