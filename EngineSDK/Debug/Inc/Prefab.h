@@ -25,19 +25,26 @@ public:
 	void							Add_Effect_Element(class CEffect_Element* newElement);
 
 	void							SetID(_uint ID) { m_iID = ID; }
-	_uint							GetID() { return m_iID; }
+    _uint							GetID() { return m_iID; }
+    //void                            SetName(const _wstring& name) { m_sName = name; }
+    //_wstring                        GetName() { return m_sName; }
+    void                            SetPool(vector<CPrefab*>* address) { m_pPool = address;}
+    void                            ReturnToPool() { m_pPool->push_back(this);}
 	_bool							IsActive() {return m_bPlaying; }
 	void							SetClose();
+	void							SetClose_Force();
 
 
 protected:
 	vector<class CEffect_Element*>	m_Children;
 	_float							m_fCurTime;
 	_uint							m_iID;
+    //_wstring                        m_sName;
 	_bool							m_bPlaying;
 
 	_float4x4						m_CombinedWorldMatrix = {};
 
+    vector<CPrefab*>*               m_pPool = nullptr;
 
 public:
 	virtual CGameObject*			Clone(void* pArg) PURE;

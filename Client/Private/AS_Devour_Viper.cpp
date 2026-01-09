@@ -54,12 +54,12 @@ void CAS_Devour_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float f
             if (fDist < m_fMinRange)
             {
                 CCreature* pDamagedTarget = static_cast<CCreature*>(pTarget);
-                
-               
+
+
                 CClientInstance::GetInstance()->Set_PlayerInput(false);
-                pDamagedTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+                pDamagedTarget->Take_Damage(50.f, HITREACTION::KNOCKBACK_WEAK);
                 m_fDevourAcc = 0.f;
-                
+
             }
         }
 

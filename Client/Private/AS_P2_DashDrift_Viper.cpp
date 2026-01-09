@@ -21,7 +21,7 @@ void CAS_P2_DashDrift_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     pModel->Set_Animation(22);
 
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
-  
+
     m_fMoveSpeed = 18.f;
 
     m_fAttackRange = pBB->Get_Value<_float>(pViper->Get_Name(), "AttackRange");
@@ -46,11 +46,11 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
         CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
         _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
         _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-        pViper->Get_Controller()->AI_MoveTo(pViper,pTarget,10.f, m_fMoveSpeed,fTimeDelta);
+        pViper->Get_Controller()->AI_MoveTo(pViper, pTarget, 10.f, m_fMoveSpeed, fTimeDelta);
 
         _float fDist = pBB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
 
-        if (fDist < 10 +0.1f)
+        if (fDist < 10 + 0.1f)
         {
             m_eState = DRIFTSTATE::FINISH;
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_end_atk_whoosh_01 (SFX).wav"), 1.f);
@@ -72,10 +72,10 @@ void CAS_P2_DashDrift_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _f
             pModel->Set_Animation(21);
         }
         break;
-      
+
         case Client::DRIFTSTATE::FINISH:
         {
-            pBB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_DashDriftFinished",true);
+            pBB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_DashDriftFinished", true);
             pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2_Dash_Abort", false);
             pViper->Set_IsGhost(false);
         }
@@ -105,7 +105,7 @@ void CAS_P2_DashDrift_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollision
         if (nullptr == pOwnerTransform)
             return;
 
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+        pTarget->Take_Damage(153.f, HITREACTION::KNOCKBACK_NORMAL);
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
         pTarget->KnockBack(vLook, 20.f, 60.f);
 

@@ -23,7 +23,7 @@ public:
 
 public:
 	// 클라이언트가 생성한 인스턴스를 매니저가 소유/재생 시작
-	HRESULT AdoptAndPlay(ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc);
+	HRESULT AdoptAndPlay(ISeqInstance* pSeq, SEQ_REQ_PLAY_DESC tDesc, _bool isInit);
 	// 다음 프레임 처리용 큐
 	void    EnqueueAdopt(ISeqInstance* pSeq, const SEQ_REQ_PLAY_DESC& tDesc);
 

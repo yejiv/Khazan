@@ -39,7 +39,7 @@ void CAS_StingGrab_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
         m_eState = VIPERGRAB_STATE::SUCCESS;
         m_isGrabbed = true;
     }
-    
+
 
     if (pBB->Get_Value<_bool>(pViper->Get_Name(), "isP1_StingGrab_StepBack"))
     {
@@ -55,7 +55,7 @@ void CAS_StingGrab_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        
+
         if (m_eState == VIPERGRAB_STATE::SUCCESS || m_eState == VIPERGRAB_STATE::FAIL)
         {
             pBB->Set_Value<_bool>(pViper->Get_Name(), "isP1_StingGrabFinished", true);
