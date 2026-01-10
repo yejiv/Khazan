@@ -22,7 +22,8 @@ private:
     HRESULT Ready_Layer_BackGround(const _wstring& strLayerTag);
     HRESULT Ready_Layer_Sky(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
     HRESULT Ready_Layer_Cloud(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
-    HRESULT Ready_Layer_Player(const _wstring& strLayerTag);
+    HRESULT Ready_Layer_PlayerSpear(const _wstring& strLayerTag);
+    HRESULT Ready_Layer_PlayerGSword(const _wstring& strLayerTag);
     HRESULT Ready_Layer_Monster(const _wstring& strLayerTag);
     HRESULT Ready_Layer_Effect(const _wstring& strLayerTag);
     HRESULT Ready_Layer_Decal();

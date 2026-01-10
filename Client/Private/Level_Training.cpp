@@ -52,7 +52,8 @@ HRESULT CLevel_Training::Initialize()
 
         }));
 
-    CHECK_FAILED(Ready_Layer_Player(TEXT("Layer_Creature_Player")), E_FAIL);
+    //CHECK_FAILED(Ready_Layer_PlayerGSword(TEXT("Layer_Creature_Player")), E_FAIL);
+    CHECK_FAILED(Ready_Layer_PlayerSpear(TEXT("Layer_Creature_Player")), E_FAIL);
 
     CHECK_FAILED(Ready_Layer_Camera(TEXT("Layer_Camera")), E_FAIL);
 
@@ -111,6 +112,8 @@ void CLevel_Training::Update(_float fTimeDelta)
     {
         // 비네트 끄기
         m_pGameInstance->Set_EnableVignette(false);
+        static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(4002);
+        static_cast<CUI_Inven*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("Inven")))->Add_Item(4012);
     }
 
     if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
@@ -226,17 +229,25 @@ HRESULT CLevel_Training::Ready_Layer_Camera(const _wstring& strLayerTag)
     return S_OK;
 }
 
-HRESULT CLevel_Training::Ready_Layer_Player(const _wstring& strLayerTag)
+HRESULT CLevel_Training::Ready_Layer_PlayerSpear(const _wstring& strLayerTag)
 {
     CGameObject::GAMEOBJECT_DESC Desc;
-    Desc.iLevelIndex = ENUM_CLASS(LEVEL::VIPER);
-
-    //if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TRAINING), strLayerTag,
-    //    ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER, &Desc)))
-    //    return E_FAIL;
+    Desc.iLevelIndex = ENUM_CLASS(LEVEL::TRAINING);
 
     if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TRAINING), strLayerTag,
         ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_GameObject_Khazan_Spear"), TIME_CHANNEL::PLAYER, &Desc)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CLevel_Training::Ready_Layer_PlayerGSword(const _wstring& strLayerTag)
+{
+    CGameObject::GAMEOBJECT_DESC Desc;
+    Desc.iLevelIndex = ENUM_CLASS(LEVEL::TRAINING);
+
+    if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TRAINING), strLayerTag,
+        ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_GameObject_Khazan_GSword"), TIME_CHANNEL::PLAYER, &Desc)))
         return E_FAIL;
 
     return S_OK;
