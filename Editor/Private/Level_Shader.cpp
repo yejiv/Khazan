@@ -88,6 +88,9 @@ HRESULT CLevel_Shader::Initialize()
 	{
 		ImGui::Begin("Shader Settings");
 
+        if (ImGui::Checkbox("Unlit", &m_isUnlitMode))
+            m_pGameInstance->Set_UnlitMode(m_isUnlitMode);
+
 		if (ImGui::CollapsingHeader("Frame Per Second"), ImGuiTreeNodeFlags_DefaultOpen)
 		{
 			ImGui::SetWindowFontScale(2.f);

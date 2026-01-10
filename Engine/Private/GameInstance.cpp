@@ -579,6 +579,11 @@ const RENDERGROUP& CGameInstance::Get_CurrentRenderGroup()
     return m_pRenderer->Get_CurrentRenderGroup();
 }
 
+void CGameInstance::Set_UnlitMode(_bool isEnable)
+{
+    m_pRenderer->Set_UnlitMode(isEnable);
+}
+
 #pragma endregion
 
 #pragma region TIMER_MANAGER

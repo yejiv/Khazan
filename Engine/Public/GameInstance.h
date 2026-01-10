@@ -100,6 +100,7 @@ public:
     RIM_LIGHT_DESC Get_RimLightDesc();
     void Set_RimLightDesc(RIM_LIGHT_DESC Desc);
     const RENDERGROUP& Get_CurrentRenderGroup();
+    void Set_UnlitMode(_bool isEnable);
 #pragma endregion
 
 #pragma region TIMER_MANAGER

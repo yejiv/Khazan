@@ -116,7 +116,7 @@ HRESULT CRenderer::Draw()
         MSG_BOX(TEXT("Failed To Render Dynamic"));
         return E_FAIL;
     }
-    
+
     if (isEnableSSAO())
         if (FAILED(Render_SSAO()))
         {
@@ -527,6 +527,9 @@ HRESULT CRenderer::Render_PostScene()
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_Fog_ShaderResources(m_pShader)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Bool("g_isUnlitMode", &m_isUnlitMode)))
         return E_FAIL;
 
 #ifdef _DEBUG
@@ -1193,11 +1196,11 @@ HRESULT CRenderer::Ready_DebugRender()
     //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Velocity"), 1350.f, 450.f, 300.f, 300.f)))
     //      return E_FAIL;
 
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Brightness"), 1350.0f, 150.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Brightness"), 1350.0f, 150.0f, 200.f, 200.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_BlurX"), 1350.0f, 450.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_BlurX"), 1350.0f, 450.0f, 200.f, 200.f)))
         return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Bloom"), 1350.0f, 750.0f, 300.f, 300.f)))
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Bloom"), 1350.0f, 750.0f, 200.f, 200.f)))
         return E_FAIL;
 
     //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_AccumColor"), 1350.0f, 150.0f, 300.f, 300.f)))

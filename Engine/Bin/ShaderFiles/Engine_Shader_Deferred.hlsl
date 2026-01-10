@@ -227,6 +227,14 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
     vector vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    
+    // Unlit Test
+    if (g_isUnlitMode)
+    {
+        Out.vColor = vDiffuse;
+        return Out;
+    }
+    
     vector vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
 
     if (1.f == vDiffuse.r && 1.f == vDiffuse.g && 1.f == vDiffuse.b && 0.f == vDiffuse.a)

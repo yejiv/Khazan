@@ -110,3 +110,4 @@ bool g_isEnableLUT;
 bool g_isEnableDistortion;
 bool g_isEnableRimLight;
 bool g_isToonLight;
+bool g_isUnlitMode;

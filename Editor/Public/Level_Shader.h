@@ -121,6 +121,9 @@ private:
 
     LIGHT_TRANSITION_DESC   m_TargetLightDesc = {};
 
+    // Shader On / Off
+    _bool                   m_isUnlitMode = {};
+
 private:
 	// 파라미터 ( 1. 등록할 레이어 태그 | 2. 데이터 파일 이름 | 3. 현재 로드할 레벨 | 4. 맵 타입 ( 안넣으면 폴더 내부 X ) )
 	HRESULT Ready_Layer_MapObject(const _wstring& strLayerTag, const _tchar* pDataFileName, LEVEL eCurrentLevel, KHAZAN_MAP eMap = KHAZAN_MAP::END);
