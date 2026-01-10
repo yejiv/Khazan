@@ -21,7 +21,7 @@ void CAS_SlashBackJump_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
     _vector vPosition = pOwnerTransform->Get_State(STATE::POSITION);
     XMStoreFloat3(&m_vStartPos, vPosition);
-    
+
     _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
     _vector vDir = XMVector3Normalize(vPosition - vTargetPos);
     _float fJumpDist = 30.f;
@@ -46,7 +46,7 @@ void CAS_SlashBackJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
         _vector vStart = XMLoadFloat3(&m_vStartPos);
         _vector vEnd = XMLoadFloat3(&m_vGoalPos);
-        _vector vNewPos = XMVectorLerp(vStart,vEnd,fAnimRatio);
+        _vector vNewPos = XMVectorLerp(vStart, vEnd, fAnimRatio);
 
         pOwnerTransform->Set_State(STATE::POSITION, vNewPos);
     }
@@ -70,7 +70,7 @@ void CAS_SlashBackJump_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisio
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+        pTarget->Take_Damage(120.f, HITREACTION::KNOCKBACK_NORMAL);
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
         if (nullptr == pOwnerTransform)
             return;

@@ -20,6 +20,7 @@ void CAS_StingGrab_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     //pModel->Set_Animation(59);
     m_eState = VIPERGRAB_STATE::NONE;
 
+
 }
 
 void CAS_StingGrab_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -36,10 +37,12 @@ void CAS_StingGrab_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     {
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isP1_StingGrab_Rush", false);
         pModel->Set_Animation(59);
+        CClientInstance::GetInstance()->Set_PlayerInput(false);
+        CCreature* pTarget = static_cast<CCreature*>(pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target"));
         m_eState = VIPERGRAB_STATE::SUCCESS;
         m_isGrabbed = true;
     }
-    
+
 
     if (pBB->Get_Value<_bool>(pViper->Get_Name(), "isP1_StingGrab_StepBack"))
     {
@@ -55,7 +58,7 @@ void CAS_StingGrab_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
     if (pModel->Play_Animation(fTimeDelta))
     {
-        
+
         if (m_eState == VIPERGRAB_STATE::SUCCESS || m_eState == VIPERGRAB_STATE::FAIL)
         {
             pBB->Set_Value<_bool>(pViper->Get_Name(), "isP1_StingGrabFinished", true);
