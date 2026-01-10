@@ -31,9 +31,6 @@ HRESULT CGomdol::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-    //-4 0 27
-    m_pTransformCom->Set_State(STATE::POSITION, XMVectorSet(513.f, -11.f, 225.f, 1.f));
-
     if (FAILED(Ready_Components()))
         return E_FAIL;
 
@@ -47,10 +44,14 @@ HRESULT CGomdol::Initialize_Clone(void* pArg)
     if (nullptr == m_pController)
         return E_FAIL;
 
-   
+    if (nullptr != m_pController)
+    {
+        m_pController->Get_BlackBoard()->Set_Value(m_strName, "Target", m_pTarget);
+    }
 
     // HP 등록
 
+    m_pTransformCom->Rotation(XMVectorSet(0.f,1.f,0.f,0.f),XMConvertToRadians(180.f));
 
     return S_OK;
 }
@@ -125,7 +126,7 @@ HRESULT CGomdol::Ready_PartObjects()
     BodyDesc.pOwnerTransform = m_pTransformCom;
     BodyDesc.pOwner = this;
 
-    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Gomdol_Body"), &BodyDesc)))
+    if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body"), ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_PartObject_Gomdol_Body"), &BodyDesc)))
         return E_FAIL;
 
     CPartObject* pBody = Find_PartObject(TEXT("Part_Body"));
@@ -134,22 +135,6 @@ HRESULT CGomdol::Ready_PartObjects()
 
     m_pBody = dynamic_cast<CBody_Gomdol*>(pBody);
     Safe_AddRef(m_pBody);
-
-    //CHead_Yetuga::HEAD_DESC HeadDesc{};
-    //HeadDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
-    //HeadDesc.pOwnerTransform = m_pTransformCom;
-    //HeadDesc.pOwner = this;
-
-    //if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Head"), ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_PartObject_Yetuga_Head"), &HeadDesc)))
-    //    return E_FAIL;
-
-    //CPartObject* pHead = Find_PartObject(TEXT("Part_Head"));
-    //if (nullptr == pHead)
-    //    return E_FAIL;
-
-    //m_pHead = dynamic_cast<CHead_Yetuga*>(pHead);
-    //Safe_AddRef(m_pHead);
-
 
     return S_OK;
 }
@@ -184,6 +169,5 @@ CGameObject* CGomdol::Clone(void* pArg)
 void CGomdol::Free()
 {
     Safe_Release(m_pBody);
-    //Safe_Release(m_pHead);
     __super::Free();
 }

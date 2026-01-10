@@ -3454,30 +3454,11 @@ HRESULT CLoader::Loading_For_Training_Model()
 
 #pragma endregion
 
-#pragma region YETUGA
-
-    // Prototype_Component_Model_Yetuga
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Yetuga"),
-        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Yetuga/Yetuga.dat"))))
-        return E_FAIL;
-
-    // Prototype_Component_Model_Yetuga_Stone
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Yetuga_Stone"),
-        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Yetuga/Yetuga_Stone/Yetuga_Stone.dat"))))
-        return E_FAIL;
-
-    // Prototype_Component_Model_Yetuga_Rock
-    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Yetuga_Rock"),
-        CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/Yetuga/Yetuga_Rock/Yetuga_Rock.dat"))))
-        return E_FAIL;
-
-#pragma endregion
-
 #pragma region Gomdol
-    //// Prototype_Component_Model_Gomdel
-    //if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Gomdol"),
-    //	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/BigBear/BigBear.dat"))))
-    //	return E_FAIL;
+    // Prototype_Component_Model_Gomdel
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Gomdol"),
+    	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/BigBear/BigBear/BigBear.dat"))))
+    	return E_FAIL;
 #pragma endregion
 
 #pragma region Imp_Range
@@ -3595,6 +3576,19 @@ HRESULT CLoader::Loading_For_Training_GameObject()
         return E_FAIL;
 
 #pragma endregion
+  
+#pragma region GOMDOL
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_GameObject_Monster_Gomdol"),
+        CGomdol::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_PartObject_Gomdol_Body"),
+        CBody_Gomdol::Create(m_pDevice, m_pContext))))
+        return E_FAIL;
+
+#pragma endregion
+
 
     /* Prototype_GameObject_Prop_Object */
     CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_GameObject_Prop_Object"),

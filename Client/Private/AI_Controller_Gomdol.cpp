@@ -28,15 +28,18 @@ HRESULT CAI_Controller_Gomdol::Initialize(CCreature* pOwner)
 
 void CAI_Controller_Gomdol::Update(CGameObject* pOwner, _float fTimeDelta)
 {
-    m_pPerception->Update(pOwner, m_pBB,fTimeDelta);
+    m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
+    _float fPrevTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
 
-    _float fPervTime = m_pBB->Get_Value<_float>("Gomdol", "CurrentTime");
-    if (m_pBB->Get_Value<_bool>("Gomdol", "isDetected"))
-        m_pBB->Set_Value<_float>("Gomdol", "CurrentTime", fPervTime + fTimeDelta);
+    if (m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected"))
+    {
+        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", fPrevTime + fTimeDelta);
+    }
     else
         m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-    m_pBT->Update();
+    if (!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
+        m_pBT->Update();
 
     m_pFSM->Update(pOwner, fTimeDelta);
 }
