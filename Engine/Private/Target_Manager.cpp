@@ -175,7 +175,10 @@ HRESULT CTarget_Manager::Ready_Debug(const _wstring& strTargetTag, _float fX, _f
 	if (nullptr == pRenderTarget)
 		return E_FAIL;
 
-	return  pRenderTarget->Ready_Debug(fX, fY, fSizeX, fSizeY);
+    pRenderTarget->Set_Name(strTargetTag);
+    pRenderTarget->Set_LTPos(fX - (fSizeX * 0.5f), fY - (fSizeY * 0.5f));
+
+	return pRenderTarget->Ready_Debug(fX, fY, fSizeX, fSizeY);
 }
 
 HRESULT CTarget_Manager::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)

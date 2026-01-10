@@ -68,7 +68,7 @@ void CAS_P2_BackJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
 
 void CAS_P2_BackJump_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-   
+
 }
 
 void CAS_P2_BackJump_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
@@ -78,7 +78,7 @@ void CAS_P2_BackJump_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionL
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_WEAK);
+        pTarget->Take_Damage(81.f, HITREACTION::KNOCKBACK_WEAK);
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
         if (nullptr == pOwnerTransform)
             return;

@@ -142,7 +142,7 @@ BTNODESTATE CAI_Controller_Pet_Danjinjar::TP(CGameObject* pOwner)
 
 BTNODESTATE CAI_Controller_Pet_Danjinjar::Damage(CGameObject* pOwner)
 {
-    if (m_pMonData->isDamage && !m_pMonData->isEnd)
+    if (m_pMonData->isDamage)
     {
         if (!m_pFSM->Check_Flag(ENUM_CLASS(CPet_Danjinjar::MONSTATE::DAMAGE)))
             m_pFSM->Change_State(ENUM_CLASS(CPet_Danjinjar::MONSTATE::DAMAGE), pOwner);
@@ -171,9 +171,6 @@ BTNODESTATE CAI_Controller_Pet_Danjinjar::Idle(CGameObject* pOwner)
 {
     if (!m_pFSM->Check_Flag(ENUM_CLASS(CPet_Danjinjar::MONSTATE::IDLE)))
         m_pFSM->Change_State(ENUM_CLASS(CPet_Danjinjar::MONSTATE::IDLE), pOwner);
-
-    if(m_pMonData->isEnd)
-        return BTNODESTATE::RUNNING;
 
     return BTNODESTATE::SUCCESS;
 }

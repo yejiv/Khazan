@@ -53,7 +53,7 @@ void CAS_P2_HandSwing2Hit_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iColli
         if (nullptr == pOwnerTransform)
             return;
 
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+        pTarget->Take_Damage(170.f, HITREACTION::KNOCKBACK_NORMAL);
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
         pTarget->KnockBack(vLook, 20.f, 60.f);
     }

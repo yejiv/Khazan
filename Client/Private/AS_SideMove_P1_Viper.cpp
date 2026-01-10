@@ -29,13 +29,13 @@ void CAS_SideMove_P1_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     _vector vOwnerRight = pOwnerTransform->Get_State(STATE::RIGHT);
     _vector vTargetLook = pTargetTransform->Get_State(STATE::LOOK);
 
-    _float fDot = XMVectorGetX(XMVector3Dot(vOwnerRight,vTargetLook));
+    _float fDot = XMVectorGetX(XMVector3Dot(vOwnerRight, vTargetLook));
     if (fDot < -0.1f)
         pModel->Set_Animation(44);
-    
+
     else
         pModel->Set_Animation(45);
-       
+
 }
 
 void CAS_SideMove_P1_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
@@ -54,8 +54,8 @@ void CAS_SideMove_P1_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _fl
             CTransform* pTargetTransform = static_cast<CTransform*>(pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
             pOwnerTransform->LookAt(vTargetPos);
-            
-            pModel->Set_Animation(55); 
+
+            pModel->Set_Animation(55);
             pModel->Set_BlendTime(0.05f);
             m_pGameInstance->Start_HitStop(TIME_CHANNEL::ENEMY, 1.f, 0.1f, 0.25f);
             m_eState = P1SIDEMOVESTATE::ATTACK;

@@ -77,6 +77,11 @@ public:
 		m_ObjectLayerFilter[iDst][iSrc] = true;
 	}
 
+    _bool IsObjectLayerPairValid(ObjectLayer a, ObjectLayer b) const
+    {
+        return ShouldCollide(a, b);
+    }
+
 private:
 	_uint	m_iNumObjectLayer = {};
 	_bool** m_ObjectLayerFilter = { nullptr };

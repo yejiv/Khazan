@@ -52,7 +52,7 @@ void CAS_P2_BerserkerJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
         {
             pModel->Set_Animation(21);
             pViper->SFX_DASHDRIFT();
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_roar_02 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_roar_02 (SFX).wav"), 1.f);
 
             m_eState = BSJUMPSTATE::FRONTJUMP;
         }
@@ -67,7 +67,7 @@ void CAS_P2_BerserkerJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
         _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
         _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
         _float fDist = pBB->Get_Value<_float>(pViper->Get_Name(), "TargetDist");
-        
+
         _float fMinSpeed = 6.f;
         _float fMaxSpeed = 22.f;
         _float fMinDist = 3.f;
@@ -83,8 +83,8 @@ void CAS_P2_BerserkerJump_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner
         if (fDist < 10 + 0.1f)
         {
             m_eState = BSJUMPSTATE::ATTACK;
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_end_atk_whoosh_01 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 3.f);
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_roar_02 (SFX).wav"), pViper->Get_Position(), pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 3.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_end_atk_whoosh_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_roar_02 (SFX).wav"), 1.f);
 
             pModel->Set_Animation(20);
         }
@@ -138,7 +138,7 @@ void CAS_P2_BerserkerJump_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iColli
         if (nullptr == pOwnerTransform)
             return;
 
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+        pTarget->Take_Damage(199.f, HITREACTION::KNOCKBACK_NORMAL);
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
         pTarget->KnockBack(vLook, 20.f, 60.f);
 

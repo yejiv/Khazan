@@ -150,8 +150,16 @@ void CPet_Danjinjar::Late_Update(_float fTimeDelta)
     if (!m_isActive)
         return;
 
+    CHECK_FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this), );
+
     m_pTalk->Late_Update(fTimeDelta);
     CContainerObject::Late_Update(fTimeDelta);
+}
+
+HRESULT CPet_Danjinjar::Render()
+{
+    m_pBody->Render();
+    return S_OK;
 }
 
 void CPet_Danjinjar::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameObject* pGameObject)
@@ -283,10 +291,6 @@ void CPet_Danjinjar::State_Change(_bool isStart)
     {
         m_pGameInstance->Set_LightEnable(TEXT("DanjinJar_Pet"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), true);
         m_isActive = true;
-    }
-    else
-    {
-        m_Data.isEnd = true;
     }
 }
 

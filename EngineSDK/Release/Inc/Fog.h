@@ -15,7 +15,8 @@ public:
 
 public:
 	HRESULT						Bind_Fog_ShaderResources(class CShader* pShader);
-	FOG_CONFIG					Get_FogConfig() { return m_Config; }
+    void                        Set_EnableFog(_bool isEnable) { m_isEnable = isEnable; }
+    FOG_CONFIG					Get_FogConfig() { return m_Config; }
 	void						Set_FogConfig(FOG_CONFIG Config) { m_Config = Config; }
 	_uint						Get_NumFogNoiseTextures();
 	ID3D11ShaderResourceView*	Get_FogNoiseTexture(_uint iTextureIndex);
@@ -28,6 +29,7 @@ private:
 	ID3D11DeviceContext*		m_pContext = { nullptr };
 
 	FOG_CONFIG					m_Config = {};
+    _bool                       m_isEnable = { true };
 
 	// Noise
 	class CTexture*				m_pTextureCom = { nullptr };
@@ -40,6 +42,9 @@ private:
 	_float						m_fTransTimeAcc = {};
 	FOG_TRANSITION_DESC			m_StartFog = {};
 	FOG_TRANSITION_DESC			m_TargetFog = {};
+
+    // Callback
+    function<void()>            m_Callback = { nullptr };
 
 private:
 	HRESULT						Ready_NoiseTexture();
