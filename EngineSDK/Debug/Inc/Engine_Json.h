@@ -247,6 +247,171 @@ namespace Engine
 
     }MESH_DATA;
 
+    typedef struct tagSoftBodyVertexData
+    {
+        _uint                       iOriginalIndex;     // 원본 메시에서의 정점 인덱스
+        FLOAT3_DATA                 position;           // 바인드 포즈 위치 (로컬)
+        FLOAT3_DATA                 normal;
+        FLOAT2_DATA                 texcoord;
+        _bool                       isFixed;            // 고정점 여부
+        _float                      fFixedWeight;       // 고정 강도 (0.0 = 완전 자유, 1.0 = 완전 고정)
+        _uint                       iClosestFixedBone;  // 가장 가까운 고정 뼈 인덱스 (고정점일 경우)
+
+        void SaveBinary(std::ofstream& ofs) const
+        {
+            ofs.write((char*)&iOriginalIndex, sizeof(iOriginalIndex));
+            ofs.write((char*)&position, sizeof(position));
+            ofs.write((char*)&normal, sizeof(normal));
+            ofs.write((char*)&texcoord, sizeof(texcoord));
+            ofs.write((char*)&isFixed, sizeof(isFixed));
+            ofs.write((char*)&fFixedWeight, sizeof(fFixedWeight));
+            ofs.write((char*)&iClosestFixedBone, sizeof(iClosestFixedBone));
+        }
+        void LoadBinary(std::ifstream& ifs)
+        {
+            ifs.read((char*)&iOriginalIndex, sizeof(iOriginalIndex));
+            ifs.read((char*)&position, sizeof(position));
+            ifs.read((char*)&normal, sizeof(normal));
+            ifs.read((char*)&texcoord, sizeof(texcoord));
+            ifs.read((char*)&isFixed, sizeof(isFixed));
+            ifs.read((char*)&fFixedWeight, sizeof(fFixedWeight));
+            ifs.read((char*)&iClosestFixedBone, sizeof(iClosestFixedBone));
+        }
+
+    }SOFTBODY_VERTEX_DATA;
+
+    typedef struct tagSoftbodyExtractData
+    {
+        std::string                         strMeshName;
+        std::vector<SOFTBODY_VERTEX_DATA>   vecVertices;
+        std::vector<UINT3_DATA>             vecTriangles;           // Softbody 내부 인덱스로 재매핑
+        std::vector<_uint>                  vecOriginalToSoftbody;  // 원본 → Softbody 매핑 (UINT_MAX = 미포함)
+        std::vector<_uint>                  vecSoftbodyToOriginal;  // Softbody → 원본 매핑
+        _uint                               iNumFixedVertices = 0;
+        _uint                               iNumDynamicVertices = 0;
+
+        void SaveBinary(std::ofstream& ofs) const
+        {
+            uint32_t len = static_cast<uint32_t>(strMeshName.size());
+            ofs.write((char*)&len, sizeof(len));
+            ofs.write(strMeshName.data(), len);
+
+            uint32_t count = static_cast<uint32_t>(vecVertices.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (const auto& v : vecVertices)
+                v.SaveBinary(ofs);
+
+            count = static_cast<uint32_t>(vecTriangles.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (const auto& t : vecTriangles)
+                ofs.write((char*)&t, sizeof(UINT3_DATA));
+
+            count = static_cast<uint32_t>(vecSoftbodyToOriginal.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (const auto& idx : vecSoftbodyToOriginal)
+                ofs.write((char*)&idx, sizeof(_uint));
+
+            ofs.write((char*)&iNumFixedVertices, sizeof(iNumFixedVertices));
+            ofs.write((char*)&iNumDynamicVertices, sizeof(iNumDynamicVertices));
+        }
+        void LoadBinary(std::ifstream& ifs)
+        {
+            uint32_t len;
+            ifs.read((char*)&len, sizeof(len));
+            strMeshName.resize(len);
+            ifs.read(&strMeshName[0], len);
+
+            uint32_t count;
+            ifs.read((char*)&count, sizeof(count));
+            vecVertices.resize(count);
+            for (auto& v : vecVertices)
+                v.LoadBinary(ifs);
+
+            ifs.read((char*)&count, sizeof(count));
+            vecTriangles.resize(count);
+            for (auto& t : vecTriangles)
+                ifs.read((char*)&t, sizeof(UINT3_DATA));
+
+            ifs.read((char*)&count, sizeof(count));
+            vecSoftbodyToOriginal.resize(count);
+            for (auto& idx : vecSoftbodyToOriginal)
+                ifs.read((char*)&idx, sizeof(_uint));
+
+            ifs.read((char*)&iNumFixedVertices, sizeof(iNumFixedVertices));
+            ifs.read((char*)&iNumDynamicVertices, sizeof(iNumDynamicVertices));
+        }
+
+    }SOFTBODY_EXTRACT_DATA;
+
+    // 천 뼈 설정 구조체
+    typedef struct tagClothBoneConfig
+    {
+        std::vector<std::string>    vecClothBonePatterns;   // 모든 천 뼈 패턴(이름)
+        std::vector<std::string>    vecFixedBonePatterns;   // 고정점 뼈 패턴 (시작점)
+        _float                      fClothWeightThreshold = 0.0001f;    // Softbody 포함 임계값
+        _float                      fFixedWeightThreshold = 0.5f;       // 고정점 판별 임계값
+        _float                      fDynamicWeightThreshold = 0.3f;     // 동적 정점 판별 임계값
+
+        void SaveBinary(std::ofstream& ofs) const
+        {
+            auto write_string = [&](const std::string& s) {
+                uint32_t len = static_cast<uint32_t>(s.size());
+                ofs.write((char*)&len, sizeof(len));
+                ofs.write(s.data(), len);
+                };
+
+            uint32_t count = static_cast<uint32_t>(vecClothBonePatterns.size());
+
+            ofs.write((char*)&count, sizeof(count));
+            for (const auto& key : vecClothBonePatterns)
+            {
+                write_string(key);
+            }
+
+            count = static_cast<uint32_t>(vecFixedBonePatterns.size());
+            ofs.write((char*)&count, sizeof(count));
+            for (const auto& key : vecFixedBonePatterns)
+            {
+                write_string(key);
+            }
+
+            ofs.write((char*)&fClothWeightThreshold, sizeof(fClothWeightThreshold));
+            ofs.write((char*)&fFixedWeightThreshold, sizeof(fFixedWeightThreshold));
+            ofs.write((char*)&fDynamicWeightThreshold, sizeof(fDynamicWeightThreshold));
+        }
+        void LoadBinary(std::ifstream& ifs)
+        {
+            auto read_string = [&]() -> std::string {
+                uint32_t len;
+                ifs.read((char*)&len, sizeof(len));
+                std::string s(static_cast<size_t>(len), '\0');
+                ifs.read(&s[0], len);
+                return s;
+                };
+
+            uint32_t count;
+
+            ifs.read((char*)&count, sizeof(count));
+            vecClothBonePatterns.resize(static_cast<size_t>(count));
+            for (auto& key : vecClothBonePatterns)
+            {
+                key = read_string();
+            }
+            ifs.read((char*)&count, sizeof(count));
+            vecFixedBonePatterns.resize(static_cast<size_t>(count));
+            for (auto& key : vecFixedBonePatterns)
+            {
+                key = read_string();
+            }
+
+            ifs.read((char*)&fClothWeightThreshold, sizeof(fClothWeightThreshold));
+            ifs.read((char*)&fFixedWeightThreshold, sizeof(fFixedWeightThreshold));
+            ifs.read((char*)&fDynamicWeightThreshold, sizeof(fDynamicWeightThreshold));
+        }
+
+    }CLOTH_BONE_CONFIG;
+
+
     typedef struct tagMaterialDataSet
     {
         std::vector<unsigned int>					iNumTextures;
