@@ -269,14 +269,14 @@ HRESULT CImp_Range::Ready_AnimEvent()
     pModel->Register_Event("CastSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = true;
         Cast_MagicBall(0);
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 15.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Cast (SFX).wav"), 1.f);
 
         });
 
 
     pModel->Register_Event("CastSpell2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         Cast_MagicBall(1);
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 15.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Cast (SFX).wav"), 1.f);
 
         });
 
@@ -284,14 +284,14 @@ HRESULT CImp_Range::Ready_AnimEvent()
     pModel->Register_Event("CastSpell3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = true;
         Cast_MagicBall(2);
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Cast (SFX).wav"), 1.f);
 
         });
 
     pModel->Register_Event("ShotSpell1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = false;
         Shoot_MagicBall(0);
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Shot (SFX).wav"), 1.f);
 
         });
 
@@ -299,7 +299,7 @@ HRESULT CImp_Range::Ready_AnimEvent()
     pModel->Register_Event("ShotSpell2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = false;
         Shoot_MagicBall(1);
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Shot (SFX).wav"), 1.f);
 
         });
 
@@ -307,7 +307,7 @@ HRESULT CImp_Range::Ready_AnimEvent()
     pModel->Register_Event("ShotSpell3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_isLookAt = false;
         Shoot_MagicBall(2);
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_GuidedMagic_Shot (SFX).wav"), 1.f);
 
         });
 
@@ -318,7 +318,7 @@ HRESULT CImp_Range::Ready_AnimEvent()
     pModel->Register_Event("CastBoomarang", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         
         Cast_Boomarang();
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Cast (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 15.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Cast (SFX).wav"), 0.8f);
 
         });
     pModel->Register_Event("HoldBoomarang", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
@@ -329,7 +329,7 @@ HRESULT CImp_Range::Ready_AnimEvent()
         Shoot_Boomarang();
         if (nullptr == m_pTarget)
             Look_Target();
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Shot (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 10.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Shot (SFX).wav"), 0.8f);
 
         });
 

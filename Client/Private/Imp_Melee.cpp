@@ -476,11 +476,11 @@ void CImp_Melee::SFX_Move()
     _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
 
     if (iSoundIndex == 0)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 40.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_03 (SFX).wav"), 1.f);
     else if (iSoundIndex == 1)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 40.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_02 (SFX).wav"), 1.f);
     else if (iSoundIndex == 2)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 40.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpSword_Movement_S_01 (SFX).wav"), 1.f);
 }
 
 void CImp_Melee::SFX_HIT()
@@ -488,11 +488,11 @@ void CImp_Melee::SFX_HIT()
     _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
 
     if (iSoundIndex == 0)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Dmg_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 5.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Dmg_01 (SFX).wav"), 1.f);
     else if (iSoundIndex == 1)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Dmg_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 5.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Dmg_02 (SFX).wav"), 1.f);
     else if (iSoundIndex == 2)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Dmg_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::HITVO)), 5.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Dmg_03 (SFX).wav"), 1.f);
 }
 
 void CImp_Melee::SFX_DEAD()
@@ -500,11 +500,11 @@ void CImp_Melee::SFX_DEAD()
     _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
 
     if (iSoundIndex == 0)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Die_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::DEAD)), 8.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Die_01 (SFX).wav"), 1.f);
     else if (iSoundIndex == 1)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Die_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::DEAD)), 8.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Die_02 (SFX).wav"), 1.f);
     else if (iSoundIndex == 2)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Die_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::DEAD)), 8.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Die_03 (SFX).wav"), 1.f);
 }
 
 void CImp_Melee::SFX_REALIZE()
@@ -512,11 +512,11 @@ void CImp_Melee::SFX_REALIZE()
     _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
 
     if (iSoundIndex == 0)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Charge_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Charge_01 (SFX).wav"), 1.f);
     else if (iSoundIndex == 1)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Charge_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Charge_02 (SFX).wav"), 1.f);
     else if (iSoundIndex == 2)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Charge_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 10.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Charge_03 (SFX).wav"), 1.f);
 }
 
 void CImp_Melee::SFX_SLEEP()
@@ -524,11 +524,11 @@ void CImp_Melee::SFX_SLEEP()
     _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
 
     if (iSoundIndex == 0)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Idle_01 (SFX)"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 20.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Idle_01 (SFX)"), 1.f);
     else if (iSoundIndex == 1)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Idle_01 (SFX)"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 20.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Idle_01 (SFX)"), 1.f);
     else if (iSoundIndex == 2)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Idle_01 (SFX)"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::REALIZE)), 20.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_Vo_DemonImpElite_Idle_01 (SFX)"), 1.f);
 }
 
 void CImp_Melee::Dissolve_On()
