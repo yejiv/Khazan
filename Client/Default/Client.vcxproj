@@ -379,6 +379,7 @@
     <ClInclude Include="..\Public\Ladder_Support.h" />
     <ClInclude Include="..\Public\Ladder_Top.h" />
     <ClInclude Include="..\Public\Lantern_Khazan_GS.h" />
+    <ClInclude Include="..\Public\Level_Training.h" />
     <ClInclude Include="..\Public\Lever.h" />
     <ClInclude Include="..\Public\Lever_Gear.h" />
     <ClInclude Include="..\public\Khazan_Spear_Anim_Fall.h" />
@@ -861,6 +862,7 @@
     <ClCompile Include="..\Private\Ladder_Support.cpp" />
     <ClCompile Include="..\Private\Ladder_Top.cpp" />
     <ClCompile Include="..\Private\Lantern_Khazan_GS.cpp" />
+    <ClCompile Include="..\Private\Level_Training.cpp" />
     <ClCompile Include="..\Private\Lever.cpp" />
     <ClCompile Include="..\Private\Lever_Gear.cpp" />
     <ClCompile Include="..\private\Khazan_Spear_Anim_Fall.cpp" />

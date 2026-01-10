@@ -3141,7 +3141,6 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("Hand_Stomp_Strong_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         SpwanLand();
         cout << "----------------------- Hand_Stomp_Strong_FX::EXIT ----------------------" << endl;
-
         // 이미시브 데칼 스폰
         Spawn_EmissiveCrackDecal(m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
@@ -3341,6 +3340,8 @@ HRESULT CViper::Ready_AnimEffectEvent()
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
+
+    pModel->Register_Event("MeshTrail_Hand15", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SpwanLand(); });
 
     ///----------///
 

@@ -16,28 +16,37 @@ public:
 
 public:
 	HRESULT Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vClearColor);
-	HRESULT Bind_ShaderResource(class CShader* pShader, const _char* pConstantName);	void Clear();
+	HRESULT Bind_ShaderResource(class CShader* pShader, const _char* pConstantName);	
+    void Clear();
 	HRESULT Copy_Resource(ID3D11Texture2D* pDestTexture);
 
 #ifdef _DEBUG
 public:
 	HRESULT Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
+    void Set_Name(const _wstring& strName) { m_strName = strName; }
+    void Set_LTPos(_float fLeft, _float fTop) { m_vLTPos = { fLeft, fTop }; }
 #endif
 
 private:
-	ID3D11Device* m_pDevice = { nullptr };
-	ID3D11DeviceContext* m_pContext = { nullptr };
-	ID3D11Texture2D* m_pTexture2D = { nullptr };
-	ID3D11RenderTargetView* m_pRTV = { nullptr };
-	ID3D11ShaderResourceView* m_pSRV = { nullptr };
+	ID3D11Device*               m_pDevice = { nullptr };
+	ID3D11DeviceContext*        m_pContext = { nullptr };
+	ID3D11Texture2D*            m_pTexture2D = { nullptr };
+	ID3D11RenderTargetView*     m_pRTV = { nullptr };
+	ID3D11ShaderResourceView*   m_pSRV = { nullptr };
 
 private:
-	_float4		m_vClearColor = {};
+	_float4		                m_vClearColor = {};
 
 #ifdef _DEBUG
 private:
-	_float4x4		m_WorldMatrix = {};
+	_float4x4		            m_WorldMatrix = {};
+    _wstring                    m_strName = {};
+
+    _float2                     m_vLTPos = {};
+
+    class CShader*              m_pShader = { nullptr };
+    class CGameInstance*        m_pGameInstance = { nullptr };
 #endif
 
 public:
