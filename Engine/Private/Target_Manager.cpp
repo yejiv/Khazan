@@ -176,6 +176,7 @@ HRESULT CTarget_Manager::Ready_Debug(const _wstring& strTargetTag, _float fX, _f
 		return E_FAIL;
 
     pRenderTarget->Set_Name(strTargetTag);
+    pRenderTarget->Set_LTPos(fX - (fSizeX * 0.5f), fY - (fSizeY * 0.5f));
 
 	return pRenderTarget->Ready_Debug(fX, fY, fSizeX, fSizeY);
 }

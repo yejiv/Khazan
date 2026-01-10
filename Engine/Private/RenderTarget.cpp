@@ -106,8 +106,8 @@ HRESULT CRenderTarget::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
     // Font 출력
     m_pShader->Begin(0);
 
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_18"), TEXT("boo"), m_WorldMatrix._41, m_WorldMatrix._42, _float4(1.f, 0.f, 0.f, 1.f));
-
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_18"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 40.f : m_vLTPos.y + 20.f, _float4(1.f, 1.f, 1.f, 1.f));
+    
 	return S_OK;
 }
 

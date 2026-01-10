@@ -25,6 +25,7 @@ public:
 	HRESULT Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
     void Set_Name(const _wstring& strName) { m_strName = strName; }
+    void Set_LTPos(_float fLeft, _float fTop) { m_vLTPos = { fLeft, fTop }; }
 #endif
 
 private:
@@ -41,6 +42,9 @@ private:
 private:
 	_float4x4		            m_WorldMatrix = {};
     _wstring                    m_strName = {};
+
+    _float2                     m_vLTPos = {};
+
     class CShader*              m_pShader = { nullptr };
     class CGameInstance*        m_pGameInstance = { nullptr };
 #endif
