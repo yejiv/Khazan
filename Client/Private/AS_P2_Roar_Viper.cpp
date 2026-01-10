@@ -21,7 +21,7 @@ void CAS_P2_Roar_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
     pModel->Set_Animation(43);
     m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_combo_stand_roar_01 (SFX).wav"), 1.f);
-    
+
     // 로어 애니메이션 시작
     Set_ViperBerserkerEnd_ShaderSettings();
 }
@@ -37,7 +37,7 @@ void CAS_P2_Roar_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float 
         CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
         pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pViper);
         pBB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_RoarFinished", true);
-        pBB->Set_Value<_uint>(pViper->Get_Name(), "BerserkerIndex",0);
+        pBB->Set_Value<_uint>(pViper->Get_Name(), "BerserkerIndex", 0);
         pBB->Set_Value<_bool>(pViper->Get_Name(), "is_P2Loar", false);
 
         // 애니메이션 종료

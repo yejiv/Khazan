@@ -19,13 +19,11 @@ public:
 public:
 	HRESULT								Add_UIInstance(const VTXINSTANCE_UI* pUIData);
 	HRESULT								Update_Buffer();
-
+    HRESULT								Reset();
 private:
 	VTXINSTANCE_UI*						m_pInstanceVertices = { nullptr };
 	_uint								m_iRenderCount = {};
 
-private:
-	HRESULT								Reset();
 public:
 	static CVIBuffer_Instance_UI*		Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const INSTANCE_DESC* pDesc);
 	virtual CComponent*					Clone(void* pArg) override;

@@ -21,6 +21,9 @@ public:
 
 
 public:
+    class CAI_State*    Get_CurrentState() const { return m_pCurrentState; }
+
+public:
 	HRESULT				Change_State(_uint iStateIndex, class CGameObject* pOwner);
 	void				OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer ,class CGameObject* pOwner = nullptr);
 

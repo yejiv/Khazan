@@ -534,6 +534,7 @@ call Copy.bat</Command>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Cell.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Decal.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Font.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Model_Instance_Compute.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_MotionTrail.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Point_Instance_Compute.hlsl" />

@@ -1540,6 +1540,9 @@
     <Filter Include="02.GameObject\Destructible\Chunk">
       <UniqueIdentifier>{a7345738-b87e-4aee-b800-c9ba0d9c1af1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels\Training">
+      <UniqueIdentifier>{17e4307a-81e5-4459-ab20-d4ac18deb2f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2973,6 +2976,9 @@
     <ClInclude Include="..\Public\Chunk.h">
       <Filter>02.GameObject\Destructible\Chunk</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Level_Training.h">
+      <Filter>01.Levels\Training</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4385,6 +4391,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Chunk.cpp">
       <Filter>02.GameObject\Destructible\Chunk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Training.cpp">
+      <Filter>01.Levels\Training</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

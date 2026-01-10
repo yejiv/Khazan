@@ -30,69 +30,69 @@ void CAS_CutScene_2Phase_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 void CAS_CutScene_2Phase_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
     CViper* pViper = static_cast<CViper*>(pOwner);
-    
+
 
     CViper::PHASE ePhase = pViper->Get_Phase();
 
 
-    
-        switch (ePhase)
-        {
-        case Client::CViper::PHASE::PHASE1:
-        {
-            CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
 
-            if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
-            {
-                if (m_pGameInstance->Key_Down(DIK_0))
-                    ViperScene_Down(pViper);
-                else if (m_pGameInstance->Key_Down(DIK_1))
-                    ViperScene_PickUp(pViper);
-                else if (m_pGameInstance->Key_Down(DIK_2))
-                    ViperScene_Injure(pViper);
-                else if (m_pGameInstance->Key_Down(DIK_3))
-                    ViperScene_Heptysis(pViper);
-            }
-            pModel->Play_Animation(fTimeDelta);
+    switch (ePhase)
+    {
+    case Client::CViper::PHASE::PHASE1:
+    {
+        CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
+
+        if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+        {
+            if (m_pGameInstance->Key_Down(DIK_0))
+                ViperScene_Down(pViper);
+            else if (m_pGameInstance->Key_Down(DIK_1))
+                ViperScene_PickUp(pViper);
+            else if (m_pGameInstance->Key_Down(DIK_2))
+                ViperScene_Injure(pViper);
+            else if (m_pGameInstance->Key_Down(DIK_3))
+                ViperScene_Heptysis(pViper);
         }
-        break;
+        pModel->Play_Animation(fTimeDelta);
+    }
+    break;
 
-        case Client::CViper::PHASE::CINEMATIC:
+    case Client::CViper::PHASE::CINEMATIC:
+    {
+        CModel* pModel = static_cast<CModel*>(pViper->Get_Cinematic_Body()->Get_Component(TEXT("Com_Model")));
+
+        if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
         {
-            CModel* pModel = static_cast<CModel*>(pViper->Get_Cinematic_Body()->Get_Component(TEXT("Com_Model")));
-
-            if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
-            {
-                if (m_pGameInstance->Key_Down(DIK_1))
-                    ViperScene_Congestion(pViper);
-                else if (m_pGameInstance->Key_Down(DIK_2))
-                    ViperScene_HandDn(pViper);
-            }
-
-            pModel->Play_Animation(fTimeDelta);
-
+            if (m_pGameInstance->Key_Down(DIK_1))
+                ViperScene_Congestion(pViper);
+            else if (m_pGameInstance->Key_Down(DIK_2))
+                ViperScene_HandDn(pViper);
         }
-        break;
 
-        case Client::CViper::PHASE::PHASE2:
+        pModel->Play_Animation(fTimeDelta);
+
+    }
+    break;
+
+    case Client::CViper::PHASE::PHASE2:
+    {
+        CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
+
+        if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
         {
-            CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
-
-            if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
-            {
-                if (m_pGameInstance->Key_Down(DIK_1))
-                    ViperScene_PullOut(pViper);
-                else if (m_pGameInstance->Key_Down(DIK_2))
-                    ViperScene_Walk(pViper);
-            }
-            if (pModel->Play_Animation(fTimeDelta))
-            {
-               
-            }
+            if (m_pGameInstance->Key_Down(DIK_1))
+                ViperScene_PullOut(pViper);
+            else if (m_pGameInstance->Key_Down(DIK_2))
+                ViperScene_Walk(pViper);
         }
-        break;
+        if (pModel->Play_Animation(fTimeDelta))
+        {
 
         }
+    }
+    break;
+
+    }
 }
 
 
@@ -106,7 +106,7 @@ void CAS_CutScene_2Phase_Viper::Change_CutSceneState(P2CUTSCENE_STATE eNextState
     if (m_eState == eNextState)
         return;
 
- 
+
     m_eState = eNextState;
 
     switch (m_eState)
@@ -116,7 +116,7 @@ void CAS_CutScene_2Phase_Viper::Change_CutSceneState(P2CUTSCENE_STATE eNextState
         pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 188.961f, 1.f));
         break;
     case Client::P2CUTSCENE_STATE::PICKUP:
-        
+
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::PICKUP));
         pViper->Set_PhaseWeapon_Cinematic();
         pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
@@ -147,7 +147,7 @@ void CAS_CutScene_2Phase_Viper::Change_CutSceneState(P2CUTSCENE_STATE eNextState
         pViper->Set_ViperPosition(XMVectorSet(-30.103f, -29.9f, 185.861f, 1.f));
         m_pGameInstance->PlaySoundOnce(TEXT("Mon_CIN_Embars_BE_SFX_01 (SFX).wav"), 30.f, pViper->Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)));
         break;
-    }      
+    }
     case Client::P2CUTSCENE_STATE::WALK:
     {
         pModel->Set_Animation(ENUM_CLASS(P2CUTSCENE_STATE::WALK));
@@ -158,10 +158,10 @@ void CAS_CutScene_2Phase_Viper::Change_CutSceneState(P2CUTSCENE_STATE eNextState
         m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_CIN_Embars_BE_SFX_01 (SFX).wav"), 3.f);
         break;
     }
-       
+
 
     }
-   
+
 }
 
 void CAS_CutScene_2Phase_Viper::ViperScene_Down(CViper* pViper)

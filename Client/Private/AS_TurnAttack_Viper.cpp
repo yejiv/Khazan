@@ -57,13 +57,13 @@ void CAS_TurnAttack_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLa
 
         if (iAttackCnt == 1)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+            pTarget->Take_Damage(56.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 20.f, 60.f);
         }
         else if (iAttackCnt == 2)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG);
+            pTarget->Take_Damage(199.f, HITREACTION::KNOCKBACK_STRONG);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 25.f, 50.f);
         }

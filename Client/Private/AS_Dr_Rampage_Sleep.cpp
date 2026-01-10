@@ -13,16 +13,15 @@ void CAS_Dr_Rampage_Sleep::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     m_pMonData->pOwner->Hp_Visivle(false);
     m_pMonData->isMotionSleep ? m_pMonData->iAnimIndex = 8 : m_pMonData->iAnimIndex = 9;
     m_eState = SLEEP;
-
+    if (!m_pGameInstance->IsPlayingByKey(TEXT("Mon_dragonian_foley_rattle_a_02 (SFX).wav")))
+    {
+        m_pGameInstance->PlaySoundLoop(TEXT("Mon_dragonian_foley_rattle_a_02 (SFX).wav"), pOwner->Get_Position());
+    }
 }
 
 void CAS_Dr_Rampage_Sleep::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
-    if (m_eState == SLEEP && m_pMonData->isSleep)
-    {
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_dragonian_foley_rattle_a_02 (SFX).wav"), pOwner->Get_Position());
-    }
-    else if (m_eState == SLEEP && !m_pMonData->isSleep)
+    if (m_eState == SLEEP && !m_pMonData->isSleep)
     {
         m_pGameInstance->PlaySoundOnce(TEXT("Mon_dragonian_wakeup_01 (SFX).wav"), pOwner->Get_Position(), m_pMonData->pOwner->Get_SoundChannel(0));
         m_pMonData->isMotionSleep ? m_pMonData->iAnimIndex = 6 : m_pMonData->iAnimIndex = 7;

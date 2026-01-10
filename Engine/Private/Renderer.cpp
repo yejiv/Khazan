@@ -41,51 +41,7 @@ HRESULT CRenderer::Initialize()
     m_threadCLs.resize(m_pGameInstance->Get_ThreadCount(), nullptr);
 
 #ifdef _DEBUG
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Diffuse"), 150.0f, 150.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Normal"), 150.0f, 450.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Specular"), 150.0f, 750.0f, 300.f, 300.f)))
-        return E_FAIL;
-    
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Shade"), 450.0f, 150.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_SSAO"), 450.0f, 450.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_SpecularLight"), 450.0f, 750.0f, 300.f, 300.f)))
-        return E_FAIL;
-    
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_PostScene"), 750.0f, 150.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Outline"), 750.0f, 450.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Emissive"), 750.0f, 750.0f, 300.f, 300.f)))
-        return E_FAIL;
-    
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Fog"), 1050.0f, 150.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Combined"), 1050.0f, 450.0f, 300.f, 300.f)))
-        return E_FAIL;
-
-    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_StaticVelocity"), 1350.f, 150.f, 300.f, 300.f)))
-    //      return E_FAIL;
-    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Velocity"), 1350.f, 450.f, 300.f, 300.f)))
-    //      return E_FAIL;
-
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Brightness"), 1350.0f, 150.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_BlurX"), 1350.0f, 450.0f, 300.f, 300.f)))
-        return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Bloom"), 1350.0f, 750.0f, 300.f, 300.f)))
-        return E_FAIL;
-
-    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_AccumColor"), 1350.0f, 150.0f, 300.f, 300.f)))
-    //      return E_FAIL;
-    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_AccumAlpha"), 1350.0f, 450.0f, 300.f, 300.f)))
-    //      return E_FAIL;
-    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Depth"), 1350.0f, 750.0f, 300.f, 300.f)))
-    //      return E_FAIL;
-    if (FAILED(m_pGameInstance->Ready_Shadow_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
+    if (FAILED(Ready_DebugRender()))
         return E_FAIL;
 #endif
 
@@ -1201,6 +1157,61 @@ HRESULT CRenderer::Ready_Matrices()
 
     return S_OK;
 }
+
+#ifdef _DEBUG
+
+HRESULT CRenderer::Ready_DebugRender()
+{
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Diffuse"), 150.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Normal"), 150.0f, 450.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Specular"), 150.0f, 750.0f, 300.f, 300.f)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Shade"), 450.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_SSAO"), 450.0f, 450.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_SpecularLight"), 450.0f, 750.0f, 300.f, 300.f)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_PostScene"), 750.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Outline"), 750.0f, 450.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Emissive"), 750.0f, 750.0f, 300.f, 300.f)))
+        return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Fog"), 1050.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Combined"), 1050.0f, 450.0f, 300.f, 300.f)))
+        return E_FAIL;
+
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_StaticVelocity"), 1350.f, 150.f, 300.f, 300.f)))
+    //      return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Velocity"), 1350.f, 450.f, 300.f, 300.f)))
+    //      return E_FAIL;
+
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Brightness"), 1350.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_BlurX"), 1350.0f, 450.0f, 300.f, 300.f)))
+        return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Bloom"), 1350.0f, 750.0f, 300.f, 300.f)))
+        return E_FAIL;
+
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_AccumColor"), 1350.0f, 150.0f, 300.f, 300.f)))
+    //      return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_AccumAlpha"), 1350.0f, 450.0f, 300.f, 300.f)))
+    //      return E_FAIL;
+    //  if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Depth"), 1350.0f, 750.0f, 300.f, 300.f)))
+    //      return E_FAIL;
+    if (FAILED(m_pGameInstance->Ready_Shadow_Debug(m_fViewportWidth - 150.0f, 150.0f, 300.f, 300.f)))
+        return E_FAIL;
+
+    return S_OK;
+}
+#endif
 
 HRESULT CRenderer::SetUp_Viewport(_float fWidth, _float fHeight)
 {
