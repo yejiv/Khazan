@@ -532,6 +532,12 @@ HRESULT CRenderer::Render_PostScene()
     if (FAILED(m_pShader->Bind_Bool("g_isUnlitMode", &m_isUnlitMode)))
         return E_FAIL;
 
+    if (FAILED(m_pShader->Bind_Bool("g_isLitMode", &m_isLitMode)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableSpecular", &m_isEnableSpecular)))
+        return E_FAIL;
+
 #ifdef _DEBUG
     if (FAILED(m_pShader->Bind_Bool("g_isEnableShadow", &m_isEnableShadow)))
         return E_FAIL;
@@ -806,6 +812,9 @@ HRESULT CRenderer::Render_Combined()
         return E_FAIL;
 
     if (FAILED(m_pGameInstance->Bind_Vignette_ShaderResources(m_pShader)))
+        return E_FAIL;
+
+    if (FAILED(m_pShader->Bind_Bool("g_isEnableBloom", &m_isEnableBloom)))
         return E_FAIL;
 
 #ifdef _DEBUG

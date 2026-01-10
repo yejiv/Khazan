@@ -91,6 +91,15 @@ HRESULT CLevel_Shader::Initialize()
         if (ImGui::Checkbox("Unlit", &m_isUnlitMode))
             m_pGameInstance->Set_UnlitMode(m_isUnlitMode);
 
+        if (ImGui::Checkbox("Lit", &m_isLitMode))
+            m_pGameInstance->Set_LitMode(m_isLitMode);
+
+        if (ImGui::Checkbox("Specular", &m_isEnableSpecular))
+            m_pGameInstance->Set_EnableSpecular(m_isEnableSpecular);
+
+        if (ImGui::Checkbox("Bloom", &m_isEnableBloom))
+            m_pGameInstance->Set_EnableBloom(m_isEnableBloom);
+
 		if (ImGui::CollapsingHeader("Frame Per Second"), ImGuiTreeNodeFlags_DefaultOpen)
 		{
 			ImGui::SetWindowFontScale(2.f);

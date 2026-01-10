@@ -101,6 +101,9 @@ public:
     void Set_RimLightDesc(RIM_LIGHT_DESC Desc);
     const RENDERGROUP& Get_CurrentRenderGroup();
     void Set_UnlitMode(_bool isEnable);
+    void Set_LitMode(_bool isEnable);
+    void Set_EnableSpecular(_bool isEnable);
+    void Set_EnableBloom(_bool isEnable);
 #pragma endregion
 
 #pragma region TIMER_MANAGER

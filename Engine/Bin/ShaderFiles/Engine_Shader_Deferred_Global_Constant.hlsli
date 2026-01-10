@@ -111,3 +111,6 @@ bool g_isEnableDistortion;
 bool g_isEnableRimLight;
 bool g_isToonLight;
 bool g_isUnlitMode;
+bool g_isLitMode;
+bool g_isEnableSpecular;
+bool g_isEnableBloom;
