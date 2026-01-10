@@ -37,7 +37,7 @@ void CAS_P2_HandStompStr_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner,
 
 void CAS_P2_HandStompStr_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-   
+
 }
 
 void CAS_P2_HandStompStr_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
@@ -54,10 +54,10 @@ void CAS_P2_HandStompStr_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollis
         if (nullptr == pOwnerTransform)
             return;
 
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG);
+        pTarget->Take_Damage(280.f, HITREACTION::KNOCKBACK_STRONG);
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
         pTarget->KnockBack(vLook, 20.f, 60.f);
-      
+
     }
 }
 

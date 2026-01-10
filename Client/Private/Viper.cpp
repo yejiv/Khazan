@@ -28,7 +28,7 @@ CViper::CViper(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 CViper::CViper(const CViper& Prototype)
     :CMonster{ Prototype }
-{ 
+{
 }
 
 _float4* CViper::Get_LockOnPosition()
@@ -157,7 +157,7 @@ ID3D11ShaderResourceView* CViper::Get_TrailTexture(_uint iIndex)
     ID3D11ShaderResourceView* pSRV = { nullptr };
 
     if (PHASE::PHASE1 == m_ePhase)
-        pSRV =  m_p1PhaseTrail[ENUM_CLASS(TWINBLADE::LEFT)]->Get_TrailTexture(iIndex);
+        pSRV = m_p1PhaseTrail[ENUM_CLASS(TWINBLADE::LEFT)]->Get_TrailTexture(iIndex);
     else if (PHASE::PHASE2 == m_ePhase)
         pSRV = m_p2PhaseTrail[ENUM_CLASS(TWINBLADE_R::SWORD)]->Get_TrailTexture(iIndex);
 
@@ -175,7 +175,7 @@ HRESULT CViper::Initialize_Clone(void* pArg)
     if (FAILED(__super::Initialize_Clone(pArg)))
         return E_FAIL;
 
-     if (FAILED(Ready_Components()))
+    if (FAILED(Ready_Components()))
         return E_FAIL;
 
     if (FAILED(Ready_PartObjects()))
@@ -275,7 +275,7 @@ void CViper::Priority_Update(_float fTimeDelta)
             CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("BossHp"), &HPDesc);
 
         }
-        
+
         else if (m_ePhase == PHASE::PHASE2)
         {
             m_isUIHp = true;
@@ -336,6 +336,10 @@ void CViper::Update(_float fTimeDelta)
 
     m_pController->Update(this, fTimeDelta);
 
+    /*if (m_isDissolve)
+        m_fDecreaseAlpha += fTimeDelta * 0.7f;*/
+
+
     if (m_fCurrentHP >= 0.f)
     {
 
@@ -361,7 +365,7 @@ void CViper::Update(_float fTimeDelta)
                 _float fRatio = pModel->MakeRatio();
                 Look_Target_Lerp(fTimeDelta, fRatio, m_fTurnSpeed);
             }
-          
+
         }
     }
 
@@ -402,9 +406,9 @@ void CViper::Update(_float fTimeDelta)
 
     __super::Update(fTimeDelta);
 
-    if(m_ePhase == PHASE::PHASE1)
+    if (m_ePhase == PHASE::PHASE1)
         m_vLockOnPosition = m_pBody->Get_BonePointEX("Bip001-Spine2");
-    else if(m_ePhase == PHASE::PHASE2)
+    else if (m_ePhase == PHASE::PHASE2)
         m_vLockOnPosition = m_pPahse2Body->Get_BonePointEX("Bip001-Spine2");
 
     if (PHASE::PHASE1 == m_ePhase)
@@ -480,7 +484,7 @@ void CViper::Late_Update(_float fTimeDelta)
         for (auto& pTrail : m_p2PhaseTrail)
             pTrail->Late_Update(fTimeDelta);
     }
-     
+
     for (auto& pTrail : m_pLineTrail)
         pTrail->Late_Update(fTimeDelta);
 }
@@ -570,7 +574,7 @@ void CViper::Collision_Exit(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, COLL
 
 HRESULT CViper::Ready_Components()
 {
-   
+
     CCharacterVirtual::CV_CAPSULESHAPE_DESC tCharVirDesc{};
     _float3 vPos{};
     _float4 vQuat{};
@@ -626,7 +630,7 @@ HRESULT CViper::Ready_PartObjects()
 
     if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Weapon"), ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Weapon_TwinBlade"), &WeaponDesc)))
         return E_FAIL;
-  
+
     CPartObject* pWeapon = Find_PartObject(TEXT("Part_Weapon"));
     if (nullptr == pWeapon)
         return E_FAIL;
@@ -676,6 +680,8 @@ HRESULT CViper::Ready_PartObjects()
     Phase2BodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
     Phase2BodyDesc.pOwnerTransform = m_pTransformCom;
     Phase2BodyDesc.pOwner = this;
+    //Phase2BodyDesc.pDissolve = &m_isDissolve;
+    //Phase2BodyDesc.pDecreaseAlpha = &m_fDecreaseAlpha;
 
     if (FAILED(CContainerObject::Add_PartObject(TEXT("Part_Body_Phase2"), ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_PartObject_Body_Phase2_Viper"), &Phase2BodyDesc)))
         return E_FAIL;
@@ -719,10 +725,10 @@ HRESULT CViper::Ready_Projectiles()
     m_pGameInstance->Add_PoolObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Prototype_Projectile_Viper_Rock"),
         ENUM_CLASS(LEVEL::VIPER), TEXT("Viper_Rock"), &Desc, 5);
 
-   
+
     m_pThrowMatrix = m_pPahse2Body->Get_BoneMatrix_Ptr("Bip001-L-Hand");
-    
-    
+
+
     return S_OK;
 }
 
@@ -744,7 +750,7 @@ void CViper::Grab_Check_Begin()
     CModel* pTargetModel = static_cast<CModel*>(pTargetBody->Get_Component(TEXT("Com_Model")));
     if (nullptr == pTargetModel)
         return;
-    
+
 
     // 그랩 애니메이션 실행시 위치 뼈
     _float4x4* BoneLocal = m_pBody->Get_BoneMatrix_Ptr("Bone_Wp_Hold");
@@ -764,13 +770,13 @@ void CViper::Grab_Check_Begin()
     _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
 
     vTargetPos += vDelta;
-  
+
     pTargetTransform->Set_State(STATE::POSITION, vTargetPos);
 
     _vector vStabLook = XMVector3Normalize(OwnerBoneWorld.r[2]);
 
     _matrix TargetRot = XMMatrixRotationX(XMConvertToRadians(-30.f)) * XMMatrixRotationY(-30.f);
-    
+
 
     _vector vTargetLook =
         XMVector3Normalize(XMVector3TransformNormal(vStabLook, TargetRot));
@@ -824,8 +830,8 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("WalkStepEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            _uint iStepCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName,"WalkStepCount");
-            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName,"WalkStepCount", iStepCnt + 1);
+            _uint iStepCnt = m_pController->Get_BlackBoard()->Get_Value<_uint>(m_strName, "WalkStepCount");
+            m_pController->Get_BlackBoard()->Set_Value<_uint>(m_strName, "WalkStepCount", iStepCnt + 1);
             SFX_Move();
         });
 
@@ -840,7 +846,7 @@ HRESULT CViper::Ready_AnimEvent()
 #pragma endregion
 
 #pragma region RUN
-   
+
     pModel->Register_Event("RunStepEvent", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             SFX_Move();
@@ -855,7 +861,7 @@ HRESULT CViper::Ready_AnimEvent()
 #pragma endregion
 
 #pragma region QUICK2HIT
-   
+
     pModel->Register_Event("Quick2Hit_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
@@ -1050,6 +1056,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("ThrowBlade_Start", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = true;
+            m_fTurnSpeed = 30.f;
             m_pWeapon->Set_OnAttackCollision(true);
         });
 
@@ -1063,6 +1070,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("ThrowBlade_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = false;
+            m_fTurnSpeed = 8.f;
             m_pWeapon->Set_OnAttackCollision(true);
         });
 
@@ -1158,12 +1166,12 @@ HRESULT CViper::Ready_AnimEvent()
 
             CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            m_pCharVirCom->Jump(50.f,7.f);
+            m_pCharVirCom->Jump(50.f, 7.f);
 
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_light_01 (SFX).wav"), 1.f);
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_jump_01 (SFX).wav"), 1.f);
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_step_foley1_01 (SFX).wav"), 1.f);
-            
+
         });
 
 
@@ -1177,7 +1185,7 @@ HRESULT CViper::Ready_AnimEvent()
         {
             CTransform* pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_Component(TEXT("Com_Transform")));
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-            m_pCharVirCom->Start_Dive(vTargetPos,80.f);
+            m_pCharVirCom->Start_Dive(vTargetPos, 80.f);
         });
 
 
@@ -1208,9 +1216,9 @@ HRESULT CViper::Ready_AnimEvent()
             //_float fOffset = 40.f;
             //_vector vLandPos = vTargetPos + vDir * fOffset;
             //m_pCharVirCom->Start_Dive(vTargetPos, 1.f);
-            m_pWeapon->Set_OnAttackCollision(true);   
+            m_pWeapon->Set_OnAttackCollision(true);
 
-             });
+        });
 
 
     pModel->Register_Event("P1_LandShake", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
@@ -1295,9 +1303,9 @@ HRESULT CViper::Ready_AnimEvent()
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
 
             _vector vDir = XMVector3Normalize(vTargetPos - vPosition);
-            
+
             pDamagedTarget->KnockBack(vDir, 40.f, 60.f);
-            pDamagedTarget->Take_Damage(50.f, HITREACTION::KNOCKBACK_STRONG);
+            pDamagedTarget->Take_Damage(300.f, HITREACTION::KNOCKBACK_STRONG);
         });
 
 
@@ -1325,6 +1333,7 @@ HRESULT CViper::Ready_AnimEvent()
             m_isLookAt = true;
             m_pWeapon->Set_OnAttackCollision_L(true);
             m_fTurnSpeed = 10.f;
+
         });
 
 
@@ -1339,8 +1348,9 @@ HRESULT CViper::Ready_AnimEvent()
         {
             m_isLookAt = true;
             m_fTurnSpeed = 20.f;
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_Grapple_Atk02_Sccu (SFX).wav"));
 
-            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isP1_StingGrab_StepBack",true);
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isP1_StingGrab_StepBack", true);
 
 
         });
@@ -1379,10 +1389,6 @@ HRESULT CViper::Ready_AnimEvent()
         });
 
 
-
-
-
-
     pModel->Register_Event("StingGrab_Hold", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
         {
             m_isLookAt = false;
@@ -1393,7 +1399,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("StingGrab_Hold", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
             CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
-            pTarget->Take_Damage(0.f,HITREACTION::GRAB_FINISHED);
+            pTarget->Take_Damage(350.f, HITREACTION::GRAB_FINISHED);
         });
 
 
@@ -1521,7 +1527,7 @@ HRESULT CViper::Ready_AnimEvent()
             m_pWeapon->Set_OnAttackCollision(false);
         });
 
- 
+
 #pragma endregion
 
 #pragma region DOWN
@@ -1538,7 +1544,7 @@ HRESULT CViper::Ready_AnimEvent()
             m_pCore->Set_IsActive(false);
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_cn_embars_be_01_sfx_02 (SFX).wav"), 1.f);
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_roar_01 (SFX).wav"), 1.f);
-           
+
         });
 
 #pragma endregion
@@ -1548,10 +1554,10 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("Viper_StartCutScene_Jump_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            
-             m_pCharVirCom->Set_Gravity(0.f);
-             m_pCharVirCom->Set_Velocity(XMVectorSet(0.f,0.f,0.f,0.f));
-             m_vGravity = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+
+            m_pCharVirCom->Set_Gravity(0.f);
+            m_pCharVirCom->Set_Velocity(XMVectorSet(0.f, 0.f, 0.f, 0.f));
+            m_vGravity = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 
         });
 
@@ -1562,9 +1568,9 @@ HRESULT CViper::Ready_AnimEvent()
 
     pModel->Register_Event("ViperStartCutScene_Jump", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            
+
             _vector vPosition = XMVectorSet(-31.938f, -29.986f, 190.162f, 1.f);
-            m_pCharVirCom->Jump_ToTarget(vPosition,10.f,80.f);
+            m_pCharVirCom->Jump_ToTarget(vPosition, 10.f, 80.f);
         });
 
     pModel->Register_Event("ViperStartCutScene_Jump", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
@@ -1594,7 +1600,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("HandStomp_Look", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            
+
         });
 
 
@@ -1673,7 +1679,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("HandSwing2Hit_Look2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-           
+
         });
 
     pP2Model->Register_Event("HandSwing2Hit_Attack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
@@ -1699,7 +1705,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("HandSwing2Hit_Look3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-           
+
         });
     pP2Model->Register_Event("HandSwing2Hit_Attack2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
@@ -1729,7 +1735,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("HandUpperLook1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-           
+
         });
 
 
@@ -1758,7 +1764,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("DashUpperLook", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            
+
         });
 
 
@@ -1786,7 +1792,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("DashUpperLook2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            
+
         });
 
 
@@ -1821,7 +1827,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("DashUpperStrLook", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-           
+
         });
 
 
@@ -1853,8 +1859,8 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("FakeRunAttackLook", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            
-            
+
+
         });
 
 
@@ -1905,7 +1911,7 @@ HRESULT CViper::Ready_AnimEvent()
             // 무기 공격 콜라이더 OFF
             m_isLookAt = false;
             m_fTurnSpeed = 30.f;
-            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName,"isFakeAttac_Movement1",true);
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isFakeAttac_Movement1", true);
 
         });
 
@@ -1978,7 +1984,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("SlashDoubleLook1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            
+
         });
 
 
@@ -2006,7 +2012,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("SlashDoubleLook2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-           
+
         });
 
 
@@ -2039,7 +2045,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("SlashStompLook1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-           
+
         });
 
 
@@ -2070,7 +2076,7 @@ HRESULT CViper::Ready_AnimEvent()
 
     pP2Model->Register_Event("SlashStompLook2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-           
+
         });
 
 
@@ -2294,14 +2300,14 @@ HRESULT CViper::Ready_AnimEvent()
             Pick_ViperRock();
             m_isLookAt = true;
             m_fTurnSpeed = 10.f;
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_pull_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_pull_01 (SFX).wav"), 0.7f);
 
         });
 
     pP2Model->Register_Event("P2_ThrowRock_Loop", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
 
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_grab_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_grab_01 (SFX).wav"), 0.7f);
 
         });
 
@@ -2310,7 +2316,7 @@ HRESULT CViper::Ready_AnimEvent()
             Throw_ViperRock();
             m_isLookAt = false;
             m_fTurnSpeed = 8.f;
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_throw_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_throwing_rock_throw_01 (SFX).wav"), 0.7f);
 
         });
 
@@ -2323,7 +2329,7 @@ HRESULT CViper::Ready_AnimEvent()
 #pragma endregion
 
 #pragma region P2_SIDEJUMP_L
-    pP2Model->Register_Event("P2_SideJumpL_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this,pP2Model]()
+    pP2Model->Register_Event("P2_SideJumpL_Look", ANIM_EVENT_TRIGGERTYPE::ENTER, [this, pP2Model]()
         {
             m_isLookAt = true;
             m_fTurnSpeed = 30.f;
@@ -2393,7 +2399,7 @@ HRESULT CViper::Ready_AnimEvent()
     pP2Model->Register_Event("DashDrift_Pause", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
         {
 
-            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName,"isP2_Dash_Abort", true);
+            m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isP2_Dash_Abort", true);
 
         });
 
@@ -2542,7 +2548,7 @@ HRESULT CViper::Ready_AnimEvent()
             _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
             m_pTransformCom->LookAt(vTargetPos);
             m_pTransformCom->Set_SpeedPerSec(0.65f);
-            
+
         });
 
     pP2Model->Register_Event("SwingCombo_Rush", ANIM_EVENT_TRIGGERTYPE::EXIT, [this, pP2Model]()
@@ -2652,7 +2658,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         });
 
     pModel->Register_Event("Devour_Start_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
-        m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Rot_Start"), m_pTransformCom->Get_State(STATE::POSITION));        
+        m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Rot_Start"), m_pTransformCom->Get_State(STATE::POSITION));
         });
 
     pModel->Register_Event("Devour_Start_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
@@ -2812,16 +2818,16 @@ HRESULT CViper::Ready_AnimEffectEvent()
         //m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[0]);
         });
 
-    pModel->Register_Event("GSFire0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {  
+    pModel->Register_Event("GSFire0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_iFireFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_fire2"), m_pCore->Get_CoreCenter());
         });
-    pModel->Register_Event("GSFire0_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { 
+    pModel->Register_Event("GSFire0_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_fire2"), m_iFireFX_Idx, m_pCore->Get_CoreCenter());
         });
-    pModel->Register_Event("GSFire1_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { 
+    pModel->Register_Event("GSFire1_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_fire2"), m_iFireFX_Idx, m_pCore->Get_CoreCenter());
         });
-    pModel->Register_Event("GSFire1_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { 
+    pModel->Register_Event("GSFire1_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_fire2"), m_iFireFX_Idx);
         });
 
@@ -2834,7 +2840,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         //여기서 파티클들 휘몰아쳐야됨
 
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle_Blust"), m_pTransformCom->Get_State(STATE::POSITION));
-       
+
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Point_Particle_Blust"), m_pCore->Get_CoreTip());
         });
 
@@ -2848,7 +2854,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[0], m_pBody->Get_BoneMatrix("Bip001-L-Forearm").r[3]);
         //m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle"), m_iBodyParticleFX_Idx, m_pTransformCom->Get_State(STATE::POSITION));
         });
-    
+
     pModel->Register_Event("Sting_BloodLoop2_FX", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() {
         m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[0], m_pBody->Get_BoneMatrix("Bip001-L-Forearm").r[3]);
         //m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Body_Particle"), m_iBodyParticleFX_Idx, m_pTransformCom->Get_State(STATE::POSITION));
@@ -2865,7 +2871,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood_once"), rot, m_pBody->Get_BoneMatrix("Bone_tongue_04").r[3]);
         CClientInstance::GetInstance()->ActiveCamera_Shaking(0.8f, 0.8f);
-        
+
         // HDR 노란빛 조명
         LIGHT_TRANSITION_DESC LightDesc{};
         LightDesc.fDuration = 3.f;
@@ -2875,7 +2881,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         LightDesc.vSpecular = _float4(1.5f, 1.5f, 1.f, 1.f);
         LightDesc.isReturnToStart = false;
         m_pGameInstance->Start_LightTransition(TEXT("Viper_CutScene_PointLight"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), LightDesc);
-        
+
         });
 
     pModel->Register_Event("BloodMouth1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -2905,7 +2911,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         CClientInstance::GetInstance()->ActiveCamera_Shaking(0.8f, 0.8f);
         m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_dmg_strong_01 (SFX).wav"), 1.f);
 
-        
+
         // 어두운 흰 조명
         LIGHT_TRANSITION_DESC LightDesc{};
         LightDesc.fDuration = 1.f;
@@ -3046,7 +3052,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("CoreLightOn", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         // 조명 키기, 블링크 조명
         m_pGameInstance->Set_LightEnable(TEXT("Viper_Core"), ENUM_CLASS(LEVEL::VIPER), true);
-        
+
         LIGHT_TRANSITION_DESC LightDesc{};
         LightDesc.fDuration = 30.f;
         LightDesc.vFadeTime = _float2(0.f, 0.f);
@@ -3110,7 +3116,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("StingSlashEnd_Trail", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]() { FX_1PhaseTrail(); });
 
     // ======================================== [ 2 Phase ] ========================================
-    
+
     pModel = static_cast<CModel*>(m_pPahse2Body->Get_Component(TEXT("Com_Model")));
     if (nullptr == pModel)
         return E_FAIL;
@@ -3123,7 +3129,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailRL"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-    
+
     pModel->Register_Event("Hand_Stomp_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         cout << "----------------------- Hand_Stomp_FX::EXIT ----------------------" << endl;
@@ -3131,10 +3137,10 @@ HRESULT CViper::Ready_AnimEffectEvent()
         // 이미시브 데칼 스폰
         Spawn_EmissiveCrackDecal(m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
-    
+
     pModel->Register_Event("Hand_Stomp_Strong_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         SpwanLand();
-            cout << "----------------------- Hand_Stomp_Strong_FX::EXIT ----------------------" << endl;
+        cout << "----------------------- Hand_Stomp_Strong_FX::EXIT ----------------------" << endl;
 
         // 이미시브 데칼 스폰
         Spawn_EmissiveCrackDecal(m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
@@ -3142,7 +3148,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     pModel->Register_Event("MeshTrail_Hand0", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         SpwanLand();
-            cout << "----------------------- MeshTrail_Hand0::CONTINUE ----------------------" << endl;
+        cout << "----------------------- MeshTrail_Hand0::CONTINUE ----------------------" << endl;
 
         });
 
@@ -3257,7 +3263,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     pModel->Register_Event("JumpAtk_Roar_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), m_iRotFX_Idx);
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_jump_atk_start_roar_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_jump_atk_start_roar_01 (SFX).wav"), 1.f);
 
         });
 
@@ -3270,12 +3276,12 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_jump_atk_jump_ready_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
 
         });
-    
+
     pModel->Register_Event("JumpAtk_Stamp_RightHand_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SphereTrail_V"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-    
+
     pModel->Register_Event("JumpAtk_Stamp_RightHand_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         cout << "----------------------- JumpAtk_Stamp_RightHand_FX::EXIT ----------------------" << endl;
@@ -3283,54 +3289,54 @@ HRESULT CViper::Ready_AnimEffectEvent()
         // 이미시브 데칼 스폰
         Spawn_EmissiveCrackDecal(m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
-    
+
     pModel->Register_Event("Roar_2Phase_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream_hight"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-    
+
     pModel->Register_Event("Roar_2Phase_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream_hight"), m_iRotFX_Idx);
         });
-    
+
     pModel->Register_Event("DashDrift_Roar_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-    
+
     pModel->Register_Event("DashDrift_Roar_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), m_iRotFX_Idx);
         });
-    
+
     pModel->Register_Event("Swing_Combo_Roar_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-    
+
     pModel->Register_Event("Swing_Combo_Roar_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("scream"), m_iRotFX_Idx);
         });
-    
+
     pModel->Register_Event("Swing_Combo_SpearTrail_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("SpearTrailRL"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-    
+
     pModel->Register_Event("Swing_Combo_HandTrail_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-    
+
     pModel->Register_Event("Swing_Combo_HandTrail_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailRL"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-    
+
     pModel->Register_Event("Swing_Combo_HandTrail2_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-    
+
     pModel->Register_Event("Swing_Combo_HandTrail2_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrailLR"), rot, m_pTransformCom->Get_State(STATE::POSITION));
@@ -3342,16 +3348,16 @@ HRESULT CViper::Ready_AnimEffectEvent()
         _vector pos = m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3];
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), pos);
         });
-    
+
     pModel->Register_Event("RockThrow_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_V"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
-    
+
     pModel->Register_Event("RockThrow_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land"), m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         });
-    
+
     pModel->Register_Event("DASwrd_Atk1_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_Up"), rot, m_pTransformCom->Get_State(STATE::POSITION));
@@ -3490,7 +3496,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     pModel->Register_Event("DownTrail0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         _vector rot = Decompose_Rotation(m_pTransformCom->Get_WorldMatrix());
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_V"), rot,m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("HandTrail_V"), rot, m_pTransformCom->Get_State(STATE::POSITION));
         });
 
     pModel->Register_Event("Cutscene_LastRoar_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -3602,14 +3608,14 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     // 버서커 모드
     // 번!!!!개!!!!!
-    pModel->Register_Event("DashDrift_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
-        if (m_isBerserker) 
-        { 
-            Start_Thunder(0.3f, 3); 
+    pModel->Register_Event("DashDrift_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        if (m_isBerserker)
+        {
+            Start_Thunder(0.3f, 3);
             m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_01 (SFX).wav"), 1.5f);
             m_pPahse2Body->Set_EnableMotionTrail(true);
             m_pP2Weapon->Set_EnableMotionTrail(true);
-        } 
+        }
         });
     pModel->Register_Event("DashDrift_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("DashDrift_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
@@ -3621,7 +3627,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("DashDriftEnd_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("DashDriftEnd_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("DashDriftEnd_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("DashDriftEnd_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+    pModel->Register_Event("DashDriftEnd_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         if (m_isBerserker)
         {
             Start_Thunder(0.3f, 3);
@@ -3630,20 +3636,20 @@ HRESULT CViper::Ready_AnimEffectEvent()
         }
         });
 
-    pModel->Register_Event("DashUpper_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
-        if (m_isBerserker) 
+    pModel->Register_Event("DashUpper_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        if (m_isBerserker)
         {
-            Start_Thunder(0.2f, 2); 
+            Start_Thunder(0.2f, 2);
             m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_03 (SFX).wav"), 1.5f);
             m_pPahse2Body->Set_EnableMotionTrail(true);
             m_pP2Weapon->Set_EnableMotionTrail(true);
-        } 
+        }
         });
     pModel->Register_Event("DashUpper_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("DashUpper_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("DashUpper_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("DashUpper_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("DashUpper_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+    pModel->Register_Event("DashUpper_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         if (m_isBerserker)
         {
             Start_Thunder(0.3f, 3);
@@ -3660,7 +3666,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("JumpAttack_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) { Start_Thunder(0.3f, 3); m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_04 (SFX).wav"), 1.5f); } });
     pModel->Register_Event("JumpAttack_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("JumpAttack_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
-    pModel->Register_Event("JumpAttack_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+    pModel->Register_Event("JumpAttack_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         if (m_isBerserker)
         {
             Start_Thunder(0.2f, 2);
@@ -3672,7 +3678,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("JumpAttack_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("JumpAttack_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("JumpAttack_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("JumpAttack_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+    pModel->Register_Event("JumpAttack_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         if (m_isBerserker)
         {
             Start_Thunder(0.3f, 3);
@@ -3684,23 +3690,23 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("JumpAttack_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
 
     pModel->Register_Event("SwingCombo_Thunder0", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) { Start_Thunder(0.2f, 2); m_pGameInstance->PlaySoundOnce(TEXT("efx_viper_p2_thunder_large_05 (SFX).wav"), 1.5f); } });
-    pModel->Register_Event("SwingCombo_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
-        { 
-            if (m_isBerserker) Start_Thunder(0.3f, 3); 
+    pModel->Register_Event("SwingCombo_Thunder1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            if (m_isBerserker) Start_Thunder(0.3f, 3);
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_round_start_layer_01 (SFX).wav"), 1.f);
         });
     pModel->Register_Event("SwingCombo_Thunder2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("SwingCombo_Thunder3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
     pModel->Register_Event("SwingCombo_Thunder4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
     pModel->Register_Event("SwingCombo_Thunder5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
-    pModel->Register_Event("SwingCombo_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
-        { 
-            if (m_isBerserker) Start_Thunder(0.2f, 2); 
+    pModel->Register_Event("SwingCombo_Thunder6", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            if (m_isBerserker) Start_Thunder(0.2f, 2);
             SFX_HAND_SWISH(1);
 
         });
     pModel->Register_Event("SwingCombo_Thunder7", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.3f, 3); });
-    pModel->Register_Event("SwingCombo_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+    pModel->Register_Event("SwingCombo_Thunder8", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         if (m_isBerserker)
         {
             Start_Thunder(0.2f, 2);
@@ -3709,7 +3715,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         }
         });
     pModel->Register_Event("SwingCombo_Thunder9", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { if (m_isBerserker) Start_Thunder(0.2f, 2); });
-    pModel->Register_Event("SwingCombo_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { 
+    pModel->Register_Event("SwingCombo_Thunder10", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         if (m_isBerserker)
         {
             Start_Thunder(0.2f, 2);
@@ -3741,20 +3747,20 @@ HRESULT CViper::Ready_AnimEffectEvent()
 
     pModel->Register_Event("StartEnvi_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         //휘몰아치는 눈 계속 켜는 거
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_snow2"), m_pTransformCom->Get_State(STATE::POSITION)); 
-        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_ChangeSnow"), m_pTransformCom->Get_State(STATE::POSITION)); 
-        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("snow_viper")); 
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_snow2"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_ChangeSnow"), m_pTransformCom->Get_State(STATE::POSITION));
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("snow_viper"));
         //mist1번 (단발)
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("mist1"), m_pTransformCom->Get_State(STATE::POSITION));
         });
-    
+
     pModel->Register_Event("Start_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         // 뭐 몸에서 파티클 더 나오거나 하기 
         //소용돌이
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Tornado"), m_pTransformCom->Get_State(STATE::POSITION));
-                //여기 팔 몇몇군데에서 피 루프 시작
+        //여기 팔 몇몇군데에서 피 루프 시작
         m_iBloodFX_Idx[0] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_pCinematicBody->Get_BoneMatrix("Bip001-L-Forearm").r[3]);
-        m_iBloodFX_Idx[1]= m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_pCinematicBody->Get_BoneMatrix("Muscle_L_ForeTwist001").r[3]);
+        m_iBloodFX_Idx[1] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_pCinematicBody->Get_BoneMatrix("Muscle_L_ForeTwist001").r[3]);
         m_iBloodFX_Idx[2] = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_pCinematicBody->Get_BoneMatrix("Muscle_L_ForeTwist").r[3]);
         });
 
@@ -3764,13 +3770,13 @@ HRESULT CViper::Ready_AnimEffectEvent()
         m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[2], m_pCinematicBody->Get_BoneMatrix("Muscle_L_ForeTwist").r[3]);
 
         });
-    
+
     pModel->Register_Event("Start_FX", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Tornado"), m_iRotFX_Idx);
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[0]);
         m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[1]);
-        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[2]); 
-                //위의 팔 피 루프 끝내기
+        m_pGameInstance->Stop_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_loop"), m_iBloodFX_Idx[2]);
+        //위의 팔 피 루프 끝내기
         });
 
     pModel->Register_Event("Hurt_Arm0_S_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -3788,11 +3794,11 @@ HRESULT CViper::Ready_AnimEffectEvent()
     pModel->Register_Event("Hurt_Arm2_S_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_once"), m_pCinematicBody->Get_BoneMatrix("Muscle_L_ForeTwist").r[3]);
         });
-    
+
     pModel->Register_Event("Hurt_Arm4_S_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_once"), m_pCinematicBody->Get_BoneMatrix("Bip001-L-Forearm").r[3]);
         });
-    
+
     pModel->Register_Event("Hurt_Arm5_E_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
         m_iRotFX_Idx = m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_blood2_once"), m_pCinematicBody->Get_BoneMatrix("Muscle_L_ForeTwist001").r[3]);
         });
@@ -3888,9 +3894,9 @@ HRESULT CViper::Ready_SFX_P1()
 
 #pragma region QUICK2HIT
 
-    pModel->Register_Event("SFX_Quick2Hit", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
-        { 
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_tb_atk_whoosh1_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+    pModel->Register_Event("SFX_Quick2Hit", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_tb_atk_whoosh1_01 (SFX).wav"), 1.f);
         }
     );
 
@@ -3996,113 +4002,113 @@ HRESULT CViper::Ready_SFX_P1()
         }
     );
 
-     pModel->Register_Event("SFX_Slow3Hit_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_tb_whoosh2_01 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_Slow3Hit_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_tb_whoosh2_01 (SFX).wav"), 1.f);
+        }
+    );
 
-     pModel->Register_Event("SFX_VO_Slow3Hit", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             SFX_ATTACK();
-         }
-     );
+    pModel->Register_Event("SFX_VO_Slow3Hit", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            SFX_ATTACK();
+        }
+    );
 
-     pModel->Register_Event("SFX_VO_Slow3Hit", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             SFX_ATTACK();
+    pModel->Register_Event("SFX_VO_Slow3Hit", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            SFX_ATTACK();
 
-         }
-     );
+        }
+    );
 
-     pModel->Register_Event("SFX_VO_Slow3Hit_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             SFX_ATTACK();
+    pModel->Register_Event("SFX_VO_Slow3Hit_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            SFX_ATTACK();
 
-         }
-     );
+        }
+    );
 
-     pModel->Register_Event("SFX_VO_Slow3Hit_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             SFX_ATTACK_END();
+    pModel->Register_Event("SFX_VO_Slow3Hit_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            SFX_ATTACK_END();
 
-         }
-     );
+        }
+    );
 
 #pragma endregion
 
 #pragma region STINGSLASH
 
-     pModel->Register_Event("SFX_Sting_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_loop_tb_whoosh_01 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_Sting_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_loop_tb_whoosh_01 (SFX).wav"), 1.f);
+        }
+    );
 
-     pModel->Register_Event("SFX_Sting_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_loop_tb_whoosh_02 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_Sting_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_loop_tb_whoosh_02 (SFX).wav"), 1.f);
+        }
+    );
 
-     pModel->Register_Event("SFX_Sting_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_short_tb_whoosh_01 (SFX).wav"), 1.f);
-         }
-     );
-
-
-     //Mon_efx_viper_string_loop_tb_whoosh_01(SFX).wav
-    //Mon_efx_viper_string_loop_tb_whoosh_01(SFX).wav = Sting2
-    //Mon_efx_viper_string_short_tb_whoosh_01(SFX).wav = StingENd
-
-     pModel->Register_Event("SFX_VO_Sting_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             SFX_ATTACK();
-
-         }
-     );
-
-     pModel->Register_Event("SFX_VO_Sting_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             SFX_ATTACK();
-
-         }
-     );
+    pModel->Register_Event("SFX_Sting_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_short_tb_whoosh_01 (SFX).wav"), 1.f);
+        }
+    );
 
 
+    //Mon_efx_viper_string_loop_tb_whoosh_01(SFX).wav
+   //Mon_efx_viper_string_loop_tb_whoosh_01(SFX).wav = Sting2
+   //Mon_efx_viper_string_short_tb_whoosh_01(SFX).wav = StingENd
 
-     pModel->Register_Event("SFX_VO_Sting_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             SFX_ATTACK();
-         }
-     );
+    pModel->Register_Event("SFX_VO_Sting_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            SFX_ATTACK();
+
+        }
+    );
+
+    pModel->Register_Event("SFX_VO_Sting_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            SFX_ATTACK();
+
+        }
+    );
+
+
+
+    pModel->Register_Event("SFX_VO_Sting_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            SFX_ATTACK();
+        }
+    );
 
 
 
 #pragma endregion
 
 #pragma region THROWBLADE
-    
-     pModel->Register_Event("SFX_ThrowBlade", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_throw_blade_tb_throw_01 (SFX).wav"), 1.f);
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_throw_blade_tb_roll_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 10.f);
-         }
-     );
 
-     pModel->Register_Event("SFX_ThrowBlade", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_throw_blade_tb_grab_01 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_ThrowBlade", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_throw_blade_tb_throw_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_throw_blade_tb_roll_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)), 10.f);
+        }
+    );
 
-     pModel->Register_Event("SFX_VO_ThorwBlade", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_tb_throw_01 (SFX).wav"), 1.f);
+    pModel->Register_Event("SFX_ThrowBlade", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_throw_blade_tb_grab_01 (SFX).wav"), 1.f);
+        }
+    );
 
-         }
-     );
+    pModel->Register_Event("SFX_VO_ThorwBlade", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_tb_throw_01 (SFX).wav"), 1.f);
+
+        }
+    );
 
 
 #pragma endregion
@@ -4110,438 +4116,438 @@ HRESULT CViper::Ready_SFX_P1()
 #pragma region BACKJUMPSLASH
 
 
-     pModel->Register_Event("SFX_BackJump_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_backstep_tb_whoosh_01 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_BackJump_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_backstep_tb_whoosh_01 (SFX).wav"), 1.f);
+        }
+    );
 
-     pModel->Register_Event("SFX_BackJump_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_backstep_foley_01 (SFX).wav"), Clamp_TargetDistance());
+    pModel->Register_Event("SFX_BackJump_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_backstep_foley_01 (SFX).wav"), Clamp_TargetDistance());
 
-             
-         }
-     );
 
-     pModel->Register_Event("SFX_BackJump_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_backstep_bodyfall_01 (SFX).wav"), Clamp_TargetDistance());
-         }
-     );
+        }
+    );
 
-     pModel->Register_Event("SFX_VO_BackJumpSlash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_slash_backstep_01 (SFX).wav"), Clamp_TargetDistance());
+    pModel->Register_Event("SFX_BackJump_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_backstep_bodyfall_01 (SFX).wav"), Clamp_TargetDistance());
+        }
+    );
 
-         }
-     );
+    pModel->Register_Event("SFX_VO_BackJumpSlash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_slash_backstep_01 (SFX).wav"), Clamp_TargetDistance());
+
+        }
+    );
 
 #pragma endregion
 
 #pragma region SIDEMOVE
 
-     pModel->Register_Event("SFX_SideStep_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_sidestep_r1_tb_whoosh_01 (SFX).wav"), 1.f);
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_sidestep_r1_foley2_01 (SFX).wav"), Clamp_TargetDistance());
-         }
-     );
+    pModel->Register_Event("SFX_SideStep_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_sidestep_r1_tb_whoosh_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_sidestep_r1_foley2_01 (SFX).wav"), Clamp_TargetDistance());
+        }
+    );
 
-     pModel->Register_Event("SFX_SideStep_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_sidestep_r1_tb_whoosh_01 (SFX).wav"), 1.f);
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_sidestep_r1_foley2_01 (SFX).wav"), Clamp_TargetDistance());
-         }
-     );
-
-
-     pModel->Register_Event("SFX_VO_SideMove_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_dash_01 (SFX).wav"), 1.f);
-
-         }
-     );
-
-     pModel->Register_Event("SFX_VO_SideMove_L", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_sidestep_land_01 (SFX).wav"), Clamp_TargetDistance());
-
-         }
-     );
+    pModel->Register_Event("SFX_SideStep_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_sidestep_r1_tb_whoosh_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_sidestep_r1_foley2_01 (SFX).wav"), Clamp_TargetDistance());
+        }
+    );
 
 
-     pModel->Register_Event("SFX_VO_SideMove_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_dash_02 (SFX).wav"), 1.f);
+    pModel->Register_Event("SFX_VO_SideMove_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_dash_01 (SFX).wav"), 1.f);
 
-         }
-     );
+        }
+    );
 
-     pModel->Register_Event("SFX_VO_SideMove_L", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_sidestep_land_01 (SFX).wav"), 1.f);
+    pModel->Register_Event("SFX_VO_SideMove_L", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_sidestep_land_01 (SFX).wav"), Clamp_TargetDistance());
 
-         }
-     );
+        }
+    );
+
+
+    pModel->Register_Event("SFX_VO_SideMove_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_dash_02 (SFX).wav"), 1.f);
+
+        }
+    );
+
+    pModel->Register_Event("SFX_VO_SideMove_L", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_sidestep_land_01 (SFX).wav"), 1.f);
+
+        }
+    );
 
 
 #pragma endregion
 
 #pragma region TURNATTACK
 
-     pModel->Register_Event("SFX_TurnSlash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_tb_whoosh1_01 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_TurnSlash", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_tb_whoosh1_01 (SFX).wav"), 1.f);
+        }
+    );
 
-     pModel->Register_Event("SFX_TurnSlash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_tb_whoosh2_01 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_TurnSlash", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_tb_whoosh2_01 (SFX).wav"), 1.f);
+        }
+    );
 
 
-     pModel->Register_Event("SFX_VO_TurnAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_ATTACK(); });
-     pModel->Register_Event("SFX_VO_TurnAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_ATTACK(); });
-     pModel->Register_Event("SFX_VO_TurnAttack_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_ATTACK_END(); });
+    pModel->Register_Event("SFX_VO_TurnAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_ATTACK(); });
+    pModel->Register_Event("SFX_VO_TurnAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() { SFX_ATTACK(); });
+    pModel->Register_Event("SFX_VO_TurnAttack_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() { SFX_ATTACK_END(); });
 
 
 #pragma endregion
 
 #pragma region DEVOUR
 
-     pModel->Register_Event("SFX_SwingWide1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_swing_wide_cast2_01 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_SwingWide1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_swing_wide_cast2_01 (SFX).wav"), 1.f);
+        }
+    );
 
-     pModel->Register_Event("SFX_SwingWide2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_swing_wide_tb_roll_01 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_SwingWide2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_swing_wide_tb_roll_01 (SFX).wav"), 1.f);
+        }
+    );
 
-     pModel->Register_Event("SFX_SwingWide2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_efx_viper_swing_wide_tb_roll_01 (SFX).wav"),1.f);
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_swing_wide_exp_01 (SFX).wav"), 1.f);
-         }
-     );
-
-
-     pModel->Register_Event("SFX_VO_SwingRound_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_swing_wide_01 (SFX).wav"), 1.f);
-
-         }
-     );
-
-     pModel->Register_Event("SFX_VO_SwingRound_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_swing_wide_01 (SFX).wav"), 1.f);
-
-         }
-     );
+    pModel->Register_Event("SFX_SwingWide2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->StopByKey_FadeOut(TEXT("Mon_efx_viper_swing_wide_tb_roll_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_swing_wide_exp_01 (SFX).wav"), 1.f);
+        }
+    );
 
 
-     pModel->Register_Event("SFX_VO_SwingRound_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_swing_wide_loop_end_01 (SFX).wav"), 1.f);
+    pModel->Register_Event("SFX_VO_SwingRound_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_swing_wide_01 (SFX).wav"), 1.f);
 
-         }
-     );
+        }
+    );
 
-     pModel->Register_Event("SFX_VO_SwingRound_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_swing_wide_end_01(SFX).wav"), 1.f);
+    pModel->Register_Event("SFX_VO_SwingRound_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_swing_wide_01 (SFX).wav"), 1.f);
 
-         }
-     );
+        }
+    );
+
+
+    pModel->Register_Event("SFX_VO_SwingRound_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_swing_wide_loop_end_01 (SFX).wav"), 1.f);
+
+        }
+    );
+
+    pModel->Register_Event("SFX_VO_SwingRound_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_swing_wide_end_01(SFX).wav"), 1.f);
+
+        }
+    );
 
 
 #pragma endregion
 
 #pragma region STINGGRAB
 
-     //SFX_StringGrabSuccess_VO
+    //SFX_StringGrabSuccess_VO
 
 
-     pModel->Register_Event("SFX_StringGrab", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_grab_tb_whoosh_01 (SFX).wav"), 1.f);
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_grab_tb_impact_01"), 1.f);
+    pModel->Register_Event("SFX_StringGrab", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_grab_tb_whoosh_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_grab_tb_impact_01"), 1.f);
 
-         }
-     );
-
-
-     pModel->Register_Event("SFX_StringGrabSuccess_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_cn_grab_hit_02 (SFX).wav"), 1.f);
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_grab_success_01 (SFX).wav"), 1.f);
-             
-         }
-     );
+        }
+    );
 
 
-     pModel->Register_Event("SFX_StringGrabSuccess_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_grab_fail_foley_01 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_StringGrabSuccess_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_cn_grab_hit_02 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_grab_success_01 (SFX).wav"), 1.f);
 
-     pModel->Register_Event("SFX_VO_StingGrab_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_sting_start_01 (SFX).wav"), 1.f);
-
-         }
-     );
+        }
+    );
 
 
-     pModel->Register_Event("SFX_VO_StingGrab_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_string_grab_success_01 (SFX).wav"), 1.f);
+    pModel->Register_Event("SFX_StringGrabSuccess_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_string_grab_fail_foley_01 (SFX).wav"), 1.f);
+        }
+    );
 
-         }
-     );
+    pModel->Register_Event("SFX_VO_StingGrab_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_sting_start_01 (SFX).wav"), 1.f);
+
+        }
+    );
+
+
+    pModel->Register_Event("SFX_VO_StingGrab_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_string_grab_success_01 (SFX).wav"), 1.f);
+
+        }
+    );
 
 
 #pragma endregion
 
 #pragma region SLASHCOMBO
 
-     pModel->Register_Event("SFX_SlashCombo_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_tb_roll_whoosh1_01 (SFX).wav"), 1.f);
+    pModel->Register_Event("SFX_SlashCombo_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_tb_roll_whoosh1_01 (SFX).wav"), 1.f);
 
-         }
-     );
+        }
+    );
 
-     pModel->Register_Event("SFX_SlashCombo_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_roar_foley_01 (SFX).wav"), 1.f);
+    pModel->Register_Event("SFX_SlashCombo_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_roar_foley_01 (SFX).wav"), 1.f);
 
-         }
-     );
+        }
+    );
 
-     pModel->Register_Event("SFX_SlashCombo_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_roll_whoosh1_01 (SFX).wav"), 1.f);
+    pModel->Register_Event("SFX_SlashCombo_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_roll_whoosh1_01 (SFX).wav"), 1.f);
 
-         }
-     );
+        }
+    );
 
-     pModel->Register_Event("SFX_SlashCombo_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_tb_atk_whoosh1_01 (SFX).wav"), 1.f);
+    pModel->Register_Event("SFX_SlashCombo_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_tb_atk_whoosh1_01 (SFX).wav"), 1.f);
 
-         }
-     );
-
-
-     pModel->Register_Event("SFX_SlashCombo_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_tb_atk_whoosh4_01 (SFX).wav"), 1.f);
-
-         }
-     );
-
-     pModel->Register_Event("SFX_SlashCombo_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_roll_whoosh2_01 (SFX).wav"), 1.f);
-
-         }
-     );
-
-     pModel->Register_Event("SFX_SlashCombo_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_tb_atk_whoosh3_01 (SFX).wav"), 1.f);
-
-         }
-     );
-
-     pModel->Register_Event("SFX_SlashCombo_4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_tb_whoosh2_01 (SFX).wav"), 1.f);
-
-         }
-     );
-
-     pModel->Register_Event("SFX_SlashCombo_5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_roll_whoosh2_01 (SFX).wav"), 1.f);
-
-         }
-     );
-
-     pModel->Register_Event("SFX_VO_StingCombo_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_slash_combo_atk_a (SFX).wav"), 1.f);
-
-         }
-     );
+        }
+    );
 
 
-     pModel->Register_Event("SFX_VO_StingCombo_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_slash_combo_atk_b (SFX).wav"), 1.f);
+    pModel->Register_Event("SFX_SlashCombo_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_tb_atk_whoosh4_01 (SFX).wav"), 1.f);
 
-         }
-     );
+        }
+    );
 
-     pModel->Register_Event("SFX_VO_StingCombo_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_slash_combo_atk_c (SFX).wav"), 1.f);
+    pModel->Register_Event("SFX_SlashCombo_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_roll_whoosh2_01 (SFX).wav"), 1.f);
 
-         }
-     );
+        }
+    );
 
-     pModel->Register_Event("SFX_VO_StingCombo_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_slash_combo_atk_d (SFX).wav"), 1.f);
+    pModel->Register_Event("SFX_SlashCombo_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_tb_atk_whoosh3_01 (SFX).wav"), 1.f);
 
-         }
-     );
+        }
+    );
+
+    pModel->Register_Event("SFX_SlashCombo_4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_turn_tb_whoosh2_01 (SFX).wav"), 1.f);
+
+        }
+    );
+
+    pModel->Register_Event("SFX_SlashCombo_5", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_slash_combo3_roll_whoosh2_01 (SFX).wav"), 1.f);
+
+        }
+    );
+
+    pModel->Register_Event("SFX_VO_StingCombo_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_slash_combo_atk_a (SFX).wav"), 1.f);
+
+        }
+    );
+
+
+    pModel->Register_Event("SFX_VO_StingCombo_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_slash_combo_atk_b (SFX).wav"), 1.f);
+
+        }
+    );
+
+    pModel->Register_Event("SFX_VO_StingCombo_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_slash_combo_atk_c (SFX).wav"), 1.f);
+
+        }
+    );
+
+    pModel->Register_Event("SFX_VO_StingCombo_End", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_slash_combo_atk_d (SFX).wav"), 1.f);
+
+        }
+    );
 
 
 #pragma endregion
 
 #pragma region JUMPATTACK
-     
 
-     pModel->Register_Event("SFX_VO_JumpAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_jump_roar_01 (SFX).wav"), 1.f);
 
-         }
-     );
+    pModel->Register_Event("SFX_VO_JumpAttack", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_jump_roar_01 (SFX).wav"), 1.f);
 
-     pModel->Register_Event("SFX_VO_JumpAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_jump_end_01 (SFX).wav"), 1.f);
+        }
+    );
 
-         }
-     );
+    pModel->Register_Event("SFX_VO_JumpAttack", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_jump_end_01 (SFX).wav"), 1.f);
+
+        }
+    );
 
 #pragma endregion
 
 #pragma region ROAR
-  
-     pModel->Register_Event("SFX_VO_Roar", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_jump_start_roar_01 (SFX).wav"), 1.f);
 
-         }
-     );
+    pModel->Register_Event("SFX_VO_Roar", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_jump_start_roar_01 (SFX).wav"), 1.f);
+
+        }
+    );
 #pragma endregion
-     
+
 #pragma region CS_SIT
-   
-     pModel->Register_Event("SFX_JumpStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_jump_01 (SFX).wav"), 1.f);
-         }
-     );
+
+    pModel->Register_Event("SFX_JumpStart", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_jump_01 (SFX).wav"), 1.f);
+        }
+    );
 #pragma endregion
 
 #pragma region CS_TALK
 
-     pModel->Register_Event("SFX_cs_DWSWDDSLand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_foley1_01 (SFX).wav"), 1.f);
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_impact_01 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_cs_DWSWDDSLand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_foley1_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_jump_attack_impact_01 (SFX).wav"), 1.f);
+        }
+    );
 
-     pModel->Register_Event("SFX_Land_Breath_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_breath_01 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_Land_Breath_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_breath_01 (SFX).wav"), 1.f);
+        }
+    );
 
-     pModel->Register_Event("SFX_Land_Breath_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_breath_04 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_Land_Breath_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_breath_04 (SFX).wav"), 1.f);
+        }
+    );
 
 #pragma endregion
 
 #pragma region CS_ROAR
 
-     pModel->Register_Event("SFX_CutScene_Roar", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_jump_start_roar_01 (SFX).wav"), 1.f);
-         }
-     );
+    pModel->Register_Event("SFX_CutScene_Roar", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_jump_start_roar_01 (SFX).wav"), 1.f);
+        }
+    );
 
 #pragma endregion
 
 #pragma region CS_Down
-     //SFX_cn_Down_1
-     pModel->Register_Event("SFX_cn_Down_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_dmg_strong_03 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)));
-         }
-     );
+    //SFX_cn_Down_1
+    pModel->Register_Event("SFX_cn_Down_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_dmg_strong_03 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)));
+        }
+    );
 
-     pModel->Register_Event("SFX_cn_Down_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_dmg_strong_02 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT2)));
+    pModel->Register_Event("SFX_cn_Down_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_dmg_strong_02 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT2)));
 
-         }
-     );
+        }
+    );
 
-     pModel->Register_Event("SFX_cn_Down_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_swing_combo_bodyfall_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)));
-         }
-     );
+    pModel->Register_Event("SFX_cn_Down_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_swing_combo_bodyfall_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)));
+        }
+    );
 
-     pModel->Register_Event("SFX_cn_PickUp_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_cn_embars_be_02_sfx_02 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
-         }
-     );
+    pModel->Register_Event("SFX_cn_PickUp_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_cn_embars_be_02_sfx_02 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
+        }
+    );
 
-     pModel->Register_Event("SFX_cn_PickUp_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_cn_embars_be_01_sfx_03 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)));
-         }
-     );
+    pModel->Register_Event("SFX_cn_PickUp_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_cn_embars_be_01_sfx_03 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)));
+        }
+    );
 
-     // 칼 집을떄
+    // 칼 집을떄
 
-     pModel->Register_Event("SFX_PickUp_Core", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("UI_mainmenu_open_renew (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT3)));
-         }
-     );
+    pModel->Register_Event("SFX_PickUp_Core", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_mainmenu_open_renew (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT3)));
+        }
+    );
 
-     pModel->Register_Event("SFX_PickUp_Core", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundLoop(TEXT("Fire_Burning.mp3"), 0.2f);
-         }
-     );
+    pModel->Register_Event("SFX_PickUp_Core", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundLoop(TEXT("Fire_Burning.mp3"), 0.2f);
+        }
+    );
 
-     // 땅바닥 내려치기
-     pModel->Register_Event("SFX_Hemoptysis_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_stomp_03 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)));
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_combo_start_roar_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT2)));
-         }
-     );
+    // 땅바닥 내려치기
+    pModel->Register_Event("SFX_Hemoptysis_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_stomp_03 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)));
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_combo_start_roar_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT2)));
+        }
+    );
 
 
-     pModel->Register_Event("SFX_Hemoptysis_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_cn_embars_be_02_sfx_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)));
-         }
-     );
-     
+    pModel->Register_Event("SFX_Hemoptysis_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_cn_embars_be_02_sfx_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)));
+        }
+    );
+
 
 #pragma endregion
 
@@ -4561,9 +4567,9 @@ HRESULT CViper::Ready_SFX_P2()
     pP2Model->Register_Event("SFX_P2LockOn_B_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_Move_P2(1); });
     pP2Model->Register_Event("SFX_P2LockOn_F_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_Move_P2(1); });
     pP2Model->Register_Event("SFX_P2LockOn_F_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_Move_P2(1); });
-    pP2Model->Register_Event("SFX_P2LockOn_F_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_Move_P2(1);});
-    pP2Model->Register_Event("SFX_P2LockOn_L_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_Move_P2(1);});
-    pP2Model->Register_Event("SFX_P2LockOn_R_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_Move_P2(1);});
+    pP2Model->Register_Event("SFX_P2LockOn_F_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_Move_P2(1); });
+    pP2Model->Register_Event("SFX_P2LockOn_L_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_Move_P2(1); });
+    pP2Model->Register_Event("SFX_P2LockOn_R_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_Move_P2(1); });
 
 #pragma endregion
 
@@ -4577,18 +4583,18 @@ HRESULT CViper::Ready_SFX_P2()
 #pragma endregion
 
 #pragma region HANDSTOMP
-    pP2Model->Register_Event("SFX_HandStomp_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_HAND_SWISH(1);});
-    pP2Model->Register_Event("SFX_HandStomp_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_STOMP_P2(1);});
+    pP2Model->Register_Event("SFX_HandStomp_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_HAND_SWISH(1); });
+    pP2Model->Register_Event("SFX_HandStomp_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_STOMP_P2(1); });
 
-    pP2Model->Register_Event("SFX_VO_HandStompssssssssssssssswSWSSDWADADD_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_P2_ATTACK_VO(5);});
-    pP2Model->Register_Event("SFX_VO_HandStompssssssssssssssswSWSSDWADADD_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_P2_ATTACK_VO_END(5);});
+    pP2Model->Register_Event("SFX_VO_HandStompssssssssssssssswSWSSDWADADD_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_P2_ATTACK_VO(5); });
+    pP2Model->Register_Event("SFX_VO_HandStompssssssssssssssswSWSSDWADADD_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_P2_ATTACK_VO_END(5); });
 
 
 #pragma endregion
 
 #pragma region HANDSTOMPSTR
 
-    pP2Model->Register_Event("SFX_HandStompStr_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_STOMP_P2(1);});
+    pP2Model->Register_Event("SFX_HandStompStr_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_STOMP_P2(1); });
     pP2Model->Register_Event("SFX_HandStompStr_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_STOMP_P2(1); });
 
     pP2Model->Register_Event("SFX_VO_StompStr_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_P2_ATTACK_VO(5); });
@@ -4605,24 +4611,24 @@ HRESULT CViper::Ready_SFX_P2()
     //Mon_efx_viper_p2_dash_upper_foley_end_01 (SFX).wav
 
 
-    pP2Model->Register_Event("SFX_DashUpper_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() 
+    pP2Model->Register_Event("SFX_DashUpper_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_foley_start_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_foley_start_01 (SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_DashUpper_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_whoosh_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_whoosh_01 (SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_DashUpper_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_stomp_de_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_stomp_de_01 (SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_DashUpper_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_foley_end_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_foley_end_01 (SFX).wav"), 1.f);
         });
 
 
@@ -4636,12 +4642,12 @@ HRESULT CViper::Ready_SFX_P2()
     //SFX_DashUpperStr_1
     pP2Model->Register_Event("SFX_DashUpperStr_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_foley_start_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_foley_start_01 (SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_DashUpperStr_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_whoosh_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_upper_whoosh_01 (SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_VO_DashUpperStr", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_P2_ATTACK_VO(2); });
@@ -4677,11 +4683,11 @@ HRESULT CViper::Ready_SFX_P2()
     //Mon_efx_viper_p2_r_sword_whoosh_b_01 (SFX).wav
     pP2Model->Register_Event("SFX_SwordSwing2_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_hand_whoosh_short_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_hand_whoosh_short_01 (SFX).wav"), 1.f);
         });
     pP2Model->Register_Event("SFX_SwordSwing2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_HAND_SWISH(0); });
 
-   
+
     pP2Model->Register_Event("SFX_SwordSwing2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_P2_ATTACK_VO(0); });
     pP2Model->Register_Event("SFX_SwordSwing2_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_P2_ATTACK_VO(0); });
 
@@ -4692,7 +4698,7 @@ HRESULT CViper::Ready_SFX_P2()
     //SFX_SwordSwing3_2
     pP2Model->Register_Event("SFX_SwordSwing3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_hand_whoosh_short_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_hand_whoosh_short_01 (SFX).wav"), 1.f);
         });
     pP2Model->Register_Event("SFX_SwordSwing3_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_HAND_SWISH(0); });
 
@@ -4702,7 +4708,7 @@ HRESULT CViper::Ready_SFX_P2()
 #pragma endregion
 
 #pragma region FAKERUNATTACK
-    
+
     //Mon_efx_viper_p2_snow_scratch_layer_01 (SFX).wav
     //SFX_FakeRunAttack_1
     //SFX_FakeRunAttack_2
@@ -4710,16 +4716,16 @@ HRESULT CViper::Ready_SFX_P2()
 
     pP2Model->Register_Event("SFX_FakeRunAttack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_fake_run_atk_jump_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_fake_run_atk_jump_01 (SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_FakeRunAttack_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_snow_scratch_layer_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_snow_scratch_layer_01 (SFX).wav"), 1.f);
         });
     pP2Model->Register_Event("SFX_FakeRunAttack_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_fake_run_atk_jump_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_fake_run_atk_jump_01 (SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_FakeRunAttack_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_HAND_SWISH(0); });
@@ -4729,12 +4735,12 @@ HRESULT CViper::Ready_SFX_P2()
 
     pP2Model->Register_Event("SFX_VO_FakeRun_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_fake_atk_a_01(SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_fake_atk_a_01(SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_VO_FakeRun_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_fake_atk_b_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_fake_atk_b_01 (SFX).wav"), 1.f);
         });
 
 
@@ -4754,23 +4760,23 @@ HRESULT CViper::Ready_SFX_P2()
 
     pP2Model->Register_Event("SFX_P2_BackJump_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_hand_whoosh_short_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_hand_whoosh_short_01 (SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_P2_BackJump_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_jump_impact_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_jump_impact_01 (SFX).wav"), 1.f);
         });
 
 
     pP2Model->Register_Event("SFX_P2_BackJump_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_hand_whoosh_short_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_hand_whoosh_short_01 (SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_P2_BackJump_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_jump_impact_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_jump_impact_02 (SFX).wav"), 1.f);
         });
 
 
@@ -4788,33 +4794,33 @@ HRESULT CViper::Ready_SFX_P2()
 
     pP2Model->Register_Event("SFX_SideJump_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_side_step_jump_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_side_step_jump_01 (SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_SideJump_L", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_snow_scratch_layer_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_snow_scratch_layer_01 (SFX).wav"), 1.f);
         });
 
 
     pP2Model->Register_Event("SFX_SideJump_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_side_step_jump_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_side_step_jump_01 (SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_SideJump_R", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_snow_scratch_layer_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_snow_scratch_layer_01 (SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_VO_SideStep_R", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_side_step_jump_01(SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_side_step_jump_01(SFX).wav"), 1.f);
         });
 
     pP2Model->Register_Event("SFX_VO_SideStep_L", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_side_step_jump_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_side_step_jump_02 (SFX).wav"), 1.f);
         });
 
 
@@ -4824,7 +4830,7 @@ HRESULT CViper::Ready_SFX_P2()
 
     //SFX_P2_SwingRound_1 Start
     //SFX_P2_SwingRound_2 Loop, end
-  
+
     //Mon_efx_viper_p2_swing_round_start_01 (SFX).wav
     //Mon_efx_viper_p2_swing_round_loop_01 (SFX).wav
     //Mon_efx_viper_p2_swing_round_end_01(SFX).wav
@@ -4836,24 +4842,24 @@ HRESULT CViper::Ready_SFX_P2()
 
 
 
-     pP2Model->Register_Event("SFX_P2_SwingRound_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+    pP2Model->Register_Event("SFX_P2_SwingRound_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_swing_round_start_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_swing_round_start_01 (SFX).wav"), 1.f);
         });
 
 
-     pP2Model->Register_Event("SFX_P2_SwingRound_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_swing_round_loop_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-         });
+    pP2Model->Register_Event("SFX_P2_SwingRound_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_swing_round_loop_01 (SFX).wav"), 1.f);
+        });
 
 
-     pP2Model->Register_Event("SFX_P2_SwingRound_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_swing_round_end_01(SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_round_end_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+    pP2Model->Register_Event("SFX_P2_SwingRound_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_swing_round_end_01(SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_round_end_01 (SFX).wav"), 1.f);
 
-         });
+        });
 
 
 
@@ -4862,64 +4868,64 @@ HRESULT CViper::Ready_SFX_P2()
 
 #pragma region SWINGCOMBO
 
-     //SFX_P2_SwingComboRoar
-     // 로어
-     // 칼 휘두루기
-     // 
-          //Mon_efx_viper_p2_r_swing_combo_whoosh_a_01 (SFX).wav
-     // 손
-     // Mon_efx_viper_p2_l_swing_combo_hand_01 (SFX).wav
-     // 
-     // SFX_P2_SwingCombo_2
-     // 손
-     // Mon_efx_viper_p2_l_swing_combo_hand_02 (SFX).wav
-     // 손
-     // Mon_efx_viper_p2_l_swing_combo_hand_03 (SFX).wav
-     // 넘어지기
-     // SFX_P2_SwingCombo_3
-     // Mon_efx_viper_p2_swing_combo_bodyfall_01 (SFX).wav
-     // 칼 찍기
-     // Mon_efx_viper_p2_swing_combo_slide_atk_01 (SFX).wav
-     // SFX_P2_SwingCombo_4
-     // 러쉬
-     // 
-     // 손 휘두루기
-     // Mon_efx_viper_p2_r_swing_combo_hand_04 (SFX).wav
+    //SFX_P2_SwingComboRoar
+    // 로어
+    // 칼 휘두루기
+    // 
+         //Mon_efx_viper_p2_r_swing_combo_whoosh_a_01 (SFX).wav
+    // 손
+    // Mon_efx_viper_p2_l_swing_combo_hand_01 (SFX).wav
+    // 
+    // SFX_P2_SwingCombo_2
+    // 손
+    // Mon_efx_viper_p2_l_swing_combo_hand_02 (SFX).wav
+    // 손
+    // Mon_efx_viper_p2_l_swing_combo_hand_03 (SFX).wav
+    // 넘어지기
+    // SFX_P2_SwingCombo_3
+    // Mon_efx_viper_p2_swing_combo_bodyfall_01 (SFX).wav
+    // 칼 찍기
+    // Mon_efx_viper_p2_swing_combo_slide_atk_01 (SFX).wav
+    // SFX_P2_SwingCombo_4
+    // 러쉬
+    // 
+    // 손 휘두루기
+    // Mon_efx_viper_p2_r_swing_combo_hand_04 (SFX).wav
 
-     pP2Model->Register_Event("SFX_P2_SwingComboRoar", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_combo_start_roar_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-         });
-
-
-     pP2Model->Register_Event("SFX_P2_SwingCombo_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_swing_combo_whoosh_a_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-         });
-
- 
-     pP2Model->Register_Event("SFX_P2_SwingCombo_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_HAND_SWISH(1); });
-     pP2Model->Register_Event("SFX_P2_SwingCombo_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_HAND_SWISH(1); });
-     pP2Model->Register_Event("SFX_P2_SwingCombo_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_HAND_SWISH(1); });
+    pP2Model->Register_Event("SFX_P2_SwingComboRoar", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_combo_start_roar_01 (SFX).wav"), 1.f);
+        });
 
 
-     pP2Model->Register_Event("SFX_P2_SwingCombo_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_swing_combo_bodyfall_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-         });
-
-     pP2Model->Register_Event("SFX_P2_SwingCombo_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_swing_combo_slide_atk_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-         });
-
-     pP2Model->Register_Event("SFX_P2_SwingCombo_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_swing_combo_hand_04 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
-         });
+    pP2Model->Register_Event("SFX_P2_SwingCombo_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_swing_combo_whoosh_a_01 (SFX).wav"), 1.f);
+        });
 
 
-     //Mon_vo_viper_p2_swing_combo_roar_01 (SFX).wav
+    pP2Model->Register_Event("SFX_P2_SwingCombo_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_HAND_SWISH(1); });
+    pP2Model->Register_Event("SFX_P2_SwingCombo_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {SFX_HAND_SWISH(1); });
+    pP2Model->Register_Event("SFX_P2_SwingCombo_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {SFX_HAND_SWISH(1); });
+
+
+    pP2Model->Register_Event("SFX_P2_SwingCombo_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_swing_combo_bodyfall_01 (SFX).wav"), 1.f);
+        });
+
+    pP2Model->Register_Event("SFX_P2_SwingCombo_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_swing_combo_slide_atk_01 (SFX).wav"), 1.f);
+        });
+
+    pP2Model->Register_Event("SFX_P2_SwingCombo_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_swing_combo_hand_04 (SFX).wav"), 1.f);
+        });
+
+
+    //Mon_vo_viper_p2_swing_combo_roar_01 (SFX).wav
 //Mon_vo_viper_p2_swing_combo_l_whoosh_a_01 (SFX).wav
 //Mon_vo_viper_p2_swing_combo_l_whoosh_b_01 (SFX).wav
 //Mon_vo_viper_p2_swing_combo_l_whoosh_c_01 (SFX).wav
@@ -4927,120 +4933,120 @@ HRESULT CViper::Ready_SFX_P2()
 //Mon_vo_viper_p2_swing_combo_stand_roar_01 (SFX).wav
 
 
-        
+
 #pragma endregion
-     
+
 #pragma region JUMPATTACK
 
-     pP2Model->Register_Event("SFX_VO_JumpAttack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_jump_start_roar_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
-         });
+    pP2Model->Register_Event("SFX_VO_JumpAttack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_jump_start_roar_01 (SFX).wav"), 1.f);
+        });
 
-     pP2Model->Register_Event("SFX_VO_JumpAttack_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_combo_stand_roar_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)), 30.f);
+    pP2Model->Register_Event("SFX_VO_JumpAttack_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_swing_combo_stand_roar_01 (SFX).wav"), 1.f);
 
-         });
-     
+        });
+
 #pragma endregion
 
 #pragma region CUTSCENE
 
 
 
-     pP2Model->Register_Event("SFX_PullOut_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
+    pP2Model->Register_Event("SFX_PullOut_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
 
-         });
-     pP2Model->Register_Event("SFX_PullOut_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
+        });
+    pP2Model->Register_Event("SFX_PullOut_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
 
-         });
+        });
 
-     pP2Model->Register_Event("SFX_PullOut_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_02 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
+    pP2Model->Register_Event("SFX_PullOut_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_02 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
 
-         });
-     pP2Model->Register_Event("SFX_PullOut_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_02 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
+        });
+    pP2Model->Register_Event("SFX_PullOut_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_02 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
 
-         });
+        });
 
-     pP2Model->Register_Event("SFX_PullOut_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_03 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
+    pP2Model->Register_Event("SFX_PullOut_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_03 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
 
-         });
-     pP2Model->Register_Event("SFX_PullOut_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)));
+        });
+    pP2Model->Register_Event("SFX_PullOut_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::EFFECT1)));
 
-         });
-
-
-
-     pP2Model->Register_Event("SFX_Walk_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
-
-         });
-     pP2Model->Register_Event("SFX_Walk_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_02 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
-
-         });
-
-     pP2Model->Register_Event("SFX_Walk_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_04 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
-
-         });
-     pP2Model->Register_Event("SFX_Walk_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
-
-         });
-
-     pP2Model->Register_Event("SFX_Walk_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
-
-         });
-     pP2Model->Register_Event("SFX_Walk_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_05 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)));
-
-         });
-
-     pP2Model->Register_Event("SFX_Walk_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_05 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
-
-         });
-     pP2Model->Register_Event("SFX_Walk_4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)));
-
-         });
+        });
 
 
 
+    pP2Model->Register_Event("SFX_Walk_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
+
+        });
+    pP2Model->Register_Event("SFX_Walk_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_02 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
+
+        });
+
+    pP2Model->Register_Event("SFX_Walk_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_04 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
+
+        });
+    pP2Model->Register_Event("SFX_Walk_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
+
+        });
+
+    pP2Model->Register_Event("SFX_Walk_3", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
+
+        });
+    pP2Model->Register_Event("SFX_Walk_3", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_walk_hand_05 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)));
+
+        });
+
+    pP2Model->Register_Event("SFX_Walk_4", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_05 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::MOVE)));
+
+        });
+    pP2Model->Register_Event("SFX_Walk_4", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)));
+
+        });
 
 
-     pP2Model->Register_Event("SFX_P2_Cn_Roar", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
-         {
-             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_start_roar_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)));
 
-         });
+
+
+    pP2Model->Register_Event("SFX_P2_Cn_Roar", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_dash_drift_start_roar_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)));
+
+        });
 
 #pragma endregion
 
-    
+
 
     return S_OK;
 }
@@ -5054,14 +5060,14 @@ HRESULT CViper::Ready_SFX_CIN()
 
 
     // 시네마틱 그르릉
-    
-    
+
+
     pModel->Register_Event("SFX_cn_Con_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_growl_a_01 (SFX).wav"), 3.f, Get_SoundChannel(ENUM_CLASS(MONSFX::ATVO)));
 
         });
-     
+
 
     pModel->Register_Event("SFX_cn_Con_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
         {
@@ -5232,10 +5238,9 @@ _float CViper::Clamp_TargetDistance()
     _float fMinDist = pBB->Get_Value<_float>(m_strName, "AttackRange");
     _float fMaxDist = pBB->Get_Value<_float>(m_strName, "ChaseRange");
 
-    _float fResult = UtilityScore::DistanceScore(fDist,fMinDist,fMaxDist);
-
-
-    return fResult + 0.7f;
+    _float fResult = UtilityScore::DistanceScore(fDist, fMinDist, fMaxDist);
+    
+     return fResult += 0.6f;
 
 }
 
@@ -5340,7 +5345,7 @@ void CViper::Throw_ViperRock()
 }
 
 _vector CViper::Decompose_Rotation(_matrix W, _vector localRot, _vector offset)
-{ 
+{
     _vector S, Q, T;
 
     _matrix Local_Rotation = XMMatrixRotationQuaternion(localRot);
@@ -5416,7 +5421,7 @@ void CViper::FX_2PhaseEyeTrail()
     _vector vLeftEyeRight = m_pTransformCom->Get_State(STATE::LOOK);
     vLeftEyePos += XMVector4Normalize(vLeftEyeRight) * 0.1f;
     m_pLineTrail[ENUM_CLASS(EYE::LEFT)]->Add_ControlPoint(vLeftEyePos);
-    
+
     _vector vRightEyePos = m_pPahse2Body->Get_BoneMatrix("Bone_eye_R").r[3];
     //_vector vRightEyeRight = m_pPahse2Body->Get_BoneMatrix("Bone_eye_R").r[0];
     _vector vRightEyeRight = m_pTransformCom->Get_State(STATE::LOOK);
@@ -5429,19 +5434,19 @@ void CViper::SFX_Move()
     _uint iSoundIndex = m_pGameInstance->Rand(0, 6);
 
     if (iSoundIndex == 0)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_01 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_01 (SFX).wav"), Clamp_TargetDistance());
     else if (iSoundIndex == 1)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_02 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_02 (SFX).wav"), Clamp_TargetDistance());
     else if (iSoundIndex == 2)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_03 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_03 (SFX).wav"), Clamp_TargetDistance());
     else if (iSoundIndex == 3)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_04 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), Clamp_TargetDistance());
     else if (iSoundIndex == 4)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_05 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_05 (SFX).wav"), Clamp_TargetDistance());
     else if (iSoundIndex == 5)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_06 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_06 (SFX).wav"), Clamp_TargetDistance());
     else if (iSoundIndex == 6)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_common_walk_foot_01 (SFX).wav"), Clamp_TargetDistance());
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_b_01 (SFX).wav"), Clamp_TargetDistance());
 
 }
 
@@ -5578,9 +5583,9 @@ void CViper::SFX_P2_ATTACK_VO_END(_uint iIndex)
     {
         _uint iSoundIndex = m_pGameInstance->Rand(0, 1);
 
-        if(iSoundIndex == 0)
+        if (iSoundIndex == 0)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_l_hand_stomp_end_b_01 (SFX).wav"), 1.f);
-        else if(iSoundIndex == 1)
+        else if (iSoundIndex == 1)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_l_hand_stomp_end_a_01 (SFX).wav"), 1.f);
     }
 
@@ -5610,26 +5615,26 @@ void CViper::SFX_Move_P2(_uint iIndex)
 
     else if (iIndex == 2)
     {
-         if (iSoundIndex == 0)
+        if (iSoundIndex == 0)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_01 (SFX).wav"), Clamp_TargetDistance());
-        else if (iSoundIndex == 1)                                                             
+        else if (iSoundIndex == 1)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_02 (SFX).wav"), Clamp_TargetDistance());
-        else if (iSoundIndex == 2)                                                              
+        else if (iSoundIndex == 2)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_03 (SFX).wav"), Clamp_TargetDistance());
-        else if (iSoundIndex == 3)                                                            
+        else if (iSoundIndex == 3)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_04 (SFX).wav"), Clamp_TargetDistance());
-        else if (iSoundIndex == 4)                                                             
+        else if (iSoundIndex == 4)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_05 (SFX).wav"), Clamp_TargetDistance());
-        else if (iSoundIndex == 5)                                                             
+        else if (iSoundIndex == 5)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_a_06 (SFX).wav"), Clamp_TargetDistance());
-        else if (iSoundIndex == 6)                                                             
+        else if (iSoundIndex == 6)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_sprint_foot_b_01 (SFX).wav"), Clamp_TargetDistance());
     }
 }
 
 void CViper::SFX_STOMP_P2(_uint iIndex)
 {
-    _uint iSoundIndex = m_pGameInstance->Rand(0,2);
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 2);
 
     // 손 찍기
     if (iIndex == 1)
@@ -5652,7 +5657,7 @@ void CViper::SFX_STOMP_P2(_uint iIndex)
         else if (iSoundIndex == 2)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_stomp_03 (SFX).wav"), 1.f);
     }
-    
+
     // DashUpper
     else if (iIndex == 3)
     {
@@ -5680,19 +5685,19 @@ void CViper::SFX_HAND_SWISH(_uint iIndex)
     if (iIndex == 1)
     {
         if (iSoundIndex == 0)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_short_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_short_01 (SFX).wav"), 0.7f);
         else if (iSoundIndex == 1)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_a_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_a_01 (SFX).wav"), 0.7f);
         else if (iSoundIndex == 2)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_a_02 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_a_02 (SFX).wav"), 0.7f);
         else if (iSoundIndex == 3)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_a_03 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_a_03 (SFX).wav"), 0.7f);
         else if (iSoundIndex == 4)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_b_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_b_01 (SFX).wav"), 0.7f);
         else if (iSoundIndex == 5)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_b_02 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_b_02 (SFX).wav"), 0.7f);
         else if (iSoundIndex == 6)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_b_03 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_whoosh_b_03 (SFX).wav"), 0.7f);
     }
 
     // 어퍼
@@ -5702,15 +5707,15 @@ void CViper::SFX_HAND_SWISH(_uint iIndex)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_01 (SFX).wav"), 1.f);
         else if (iSoundIndex == 1)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_02 (SFX).wav"), 1.f);
-        else if (iSoundIndex == 2)                                                             
+        else if (iSoundIndex == 2)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_03 (SFX).wav"), 1.f);
-        else if (iSoundIndex == 3)                                                             
+        else if (iSoundIndex == 3)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_04 (SFX).wav"), 1.f);
-        else if (iSoundIndex == 4)                                                             
+        else if (iSoundIndex == 4)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_01 (SFX).wav"), 1.f);
-        else if (iSoundIndex == 5)                                                             
+        else if (iSoundIndex == 5)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_02 (SFX).wav"), 1.f);
-        else if (iSoundIndex == 6)                                                             
+        else if (iSoundIndex == 6)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_l_hand_upper_03 (SFX).wav"), 1.f);
     }
 
@@ -5719,38 +5724,38 @@ void CViper::SFX_HAND_SWISH(_uint iIndex)
     {
         //
         if (iSoundIndex == 0)
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_01 (SFX).wav"),  1.f);
-        else if (iSoundIndex == 1)                                                                          
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_02 (SFX).wav"),  1.f);
-        else if (iSoundIndex == 2)                                                                          
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_03 (SFX).wav"),  1.f);
-        else if (iSoundIndex == 3)                                                                          
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_01 (SFX).wav"),  1.f);
-        else if (iSoundIndex == 4)                                                                          
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_02 (SFX).wav"),  1.f);
-        else if (iSoundIndex == 5)                                                                          
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_03 (SFX).wav"),  1.f);
-        else if (iSoundIndex == 6)                                                                          
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_03 (SFX).wav"),  1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_03 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 3)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 4)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 5)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_03 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 6)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_back_step_whoosh_03 (SFX).wav"), 1.f);
     }
 
 
     else if (iIndex == 0)
     {
-        
+
         if (iSoundIndex == 0)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_01 (SFX).wav"), 1.f);
-        else if (iSoundIndex == 1)                                                                 
+        else if (iSoundIndex == 1)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_02 (SFX).wav"), 1.f);
-        else if (iSoundIndex == 2)                                                                 
+        else if (iSoundIndex == 2)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_03 (SFX).wav"), 1.f);
-        else if (iSoundIndex == 3)                                                                 
+        else if (iSoundIndex == 3)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_01 (SFX).wav"), 1.f);
-        else if (iSoundIndex == 4)                                                                 
+        else if (iSoundIndex == 4)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_02 (SFX).wav"), 1.f);
-        else if (iSoundIndex == 5)                                                                 
+        else if (iSoundIndex == 5)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_03 (SFX).wav"), 1.f);
-        else if (iSoundIndex == 6)                                                                 
+        else if (iSoundIndex == 6)
             m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_r_sword_whoosh_a_01 (SFX).wav"), 1.f);
     }
 
@@ -5769,13 +5774,14 @@ void CViper::SFX_DASHDRIFT()
 
     if (iSoundIndex == 0)
         m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_loop_01 (SFX).wav"), 1.f);
-    else if (iSoundIndex == 1)                                                                
+    else if (iSoundIndex == 1)
         m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_loop_02 (SFX).wav"), 1.f);
-    else if (iSoundIndex == 2)                                                                
+    else if (iSoundIndex == 2)
         m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_viper_p2_dash_drift_loop_03 (SFX).wav"), 1.f);
 
 
 }
+
 
 void CViper::Viper_Cinematic_ShaderSettings()
 {
@@ -5855,7 +5861,7 @@ void CViper::Viper_Cinematic_ShaderSettings()
     CloudDesc.vLightDir = _float3(0.f, 1.f, 0.f);
     CloudDesc.fDynamic = 1.f;
     static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(LEVEL::VIPER), TEXT("Layer_Sky"), 1))->Start_LerpCloud(CloudDesc, fDuration);
-    
+
     LightDesc.fDuration = fDuration;
     LightDesc.vFadeTime = _float2(fDuration, 0.f);
     LightDesc.vDiffuse = _float4(0.f, 0.f, 0.f, 0.f);
@@ -5953,7 +5959,7 @@ void CViper::Viper_2PhaseBerserker_ShaderSettings()
 void CViper::Viper_2PhaseBerserkerEnd_ShaderSettings()
 {
     // 림라이트 켜기
-    m_pGameInstance-> Set_EnableRimLight(true);
+    m_pGameInstance->Set_EnableRimLight(true);
 
     _float fDuration = 3.f;
 
@@ -6055,8 +6061,8 @@ void CViper::Start_Thunder(_float fDuration, _uint iBlinkCount)
     LightDesc.vSpecular = LightDesc.vDiffuse;
     LightDesc.isReturnToStart = true;
     LightDesc.iBlinkCount = iBlinkCount;
-    LightDesc.Callback = [&]() 
-        { 
+    LightDesc.Callback = [&]()
+        {
             m_pGameInstance->Set_LightEnable(TEXT("Viper_Thunder"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false);
             m_pGameInstance->Set_LightEnable(TEXT("Viper_Thunder_Ambient"), ENUM_CLASS(CClientInstance::GetInstance()->Get_CurrLevel()), false);
         };
@@ -6116,12 +6122,12 @@ void CViper::SpwanParticle(_fvector pos)
     {
         m_fParticleTimeAcc = 0.f;
         m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Twinkle_Small_Once"), pos);
-    } 
+    }
 }
 
 void CViper::SpwanLand()
 {
-    _vector pos = m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]; 
+    _vector pos = m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3];
     pos = XMVectorSetY(pos, XMVectorGetY(pos) + 1.5f);
     m_pGameInstance->Spawn_Effect(m_pGameInstance->Get_CurrentLevelID(), TEXT("Viper_Land_Big"), pos);
 }
@@ -6158,7 +6164,7 @@ void CViper::Free()
 
     for (auto& pTrail : m_p1PhaseTrail)
         Safe_Release(pTrail);
-    
+
     Safe_Release(m_pBody);
     Safe_Release(m_pCinematicBody);
     Safe_Release(m_pWeapon);
