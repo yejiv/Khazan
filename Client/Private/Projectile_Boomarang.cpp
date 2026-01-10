@@ -229,13 +229,13 @@ void CProjectile_Boomarang::BoomarangHitSFX()
      _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
 
     if (iSoundIndex == 0)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Exp_01 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Exp_01 (SFX).wav"), 0.8f);
 
     else if (iSoundIndex == 1)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Exp_02 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Exp_02 (SFX).wav"), 0.8f);
 
     else if (iSoundIndex == 2)
-        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Exp_03 (SFX).wav"), Get_Position(), Get_SoundChannel(ENUM_CLASS(MONSFX::SWISH)), 30.f);
+        m_pGameInstance->PlaySoundOnce(TEXT("Mon_DemonImpWizard_Boomerang_Obj_Exp_03 (SFX).wav"), 0.8f);
 }
 
 void CProjectile_Boomarang::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)

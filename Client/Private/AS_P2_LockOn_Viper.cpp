@@ -29,14 +29,14 @@ void CAS_P2_LockOn_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
     _vector vTargetPos = pTargetTransform->Get_State(STATE::POSITION);
-  
+
     _vector vDiff = vTargetPos - vOwnerPos;
-    vDiff = XMVectorSetY(vDiff,0.f);
+    vDiff = XMVectorSetY(vDiff, 0.f);
     _float fStartDist = XMVectorGetX(XMVector3Length(vDiff));
     m_fEndDist = fStartDist * 0.5f; // 시작거리의 60% 정도 가까워지면 탈출
-    
+
     Update_Direction(pOwnerTransform, pTargetTransform, pModel);
-  
+
     // 블랙보드에 저장
     pBB->Set_Value<_uint>(pViper->Get_Name(), "LockDir", static_cast<_uint>(m_eDirState));
 
@@ -57,12 +57,12 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     _vector vOwnerPos = pOwnerTransform->Get_State(STATE::POSITION);
 
     m_fTimeAcc += fTimeDelta;
-    
+
     //pOwnerTransform->LookAt_Lerp(vTargetPos, fTimeDelta, 0.5f);
     pOwnerTransform->LookAt_Lerp(vTargetPos, fTimeDelta, m_fTurnSpeed);
 
     // 방향으로 이동
-    Move_To_Direction(pOwnerTransform,fTimeDelta);
+    Move_To_Direction(pOwnerTransform, fTimeDelta);
 
     // 탈출 조건: Look 방향이 타겟 방향과 맞음
     _vector vDir = XMVector3Normalize(vTargetPos - vOwnerPos);
@@ -90,7 +90,7 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     {
         if (fDotF > m_fDotThreshold)
             isLockOnFinished = true;
-        
+
 
         if (fDist >= m_fEndDist)
             isLockOnFinished = true;
@@ -100,7 +100,7 @@ void CAS_P2_LockOn_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     {
         pBB->Set_Value(pViper->Get_Name(), "isP2_LockOn_Finished", true);
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isP2LockOn", false);
-        pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE),pViper);
+        pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pViper);
     }
     pModel->Play_Animation(fTimeDelta);
 
@@ -117,7 +117,7 @@ void CAS_P2_LockOn_Viper::Update_Direction(CTransform* pOwnerTransform, CTransfo
     _vector vTargetPos = pTargetTransfrom->Get_State(STATE::POSITION);
 
     _vector vDir = vTargetPos - vOwnerPos;
-    vDir = XMVectorSetY(vDir,0.f);
+    vDir = XMVectorSetY(vDir, 0.f);
     vDir = XMVector3Normalize(vDir);
 
     _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
@@ -128,18 +128,18 @@ void CAS_P2_LockOn_Viper::Update_Direction(CTransform* pOwnerTransform, CTransfo
     vRight = XMVectorSetY(vRight, 0.f);
     vRight = XMVector3Normalize(vRight);
 
-    _float fDotF = XMVectorGetX(XMVector3Dot(vDir,vLook));
-    _float fDotR = XMVectorGetX(XMVector3Dot(vDir,vRight));
+    _float fDotF = XMVectorGetX(XMVector3Dot(vDir, vLook));
+    _float fDotR = XMVectorGetX(XMVector3Dot(vDir, vRight));
 
 
     _vector vDiff = vTargetPos - vOwnerPos;
     _float fDist = XMVectorGetX(XMVector3Length(vDiff));
-    _bool isBackward = {false};    
+    _bool isBackward = { false };
 
 
     if (fDist < 300.f)
     {
-        _float fChance = m_pGameInstance->Rand(0,1);
+        _float fChance = m_pGameInstance->Rand(0, 1);
         if (fChance < 0.4)
             isBackward = true;
     }

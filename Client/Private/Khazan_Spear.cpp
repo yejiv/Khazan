@@ -469,9 +469,9 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
     case Client::HITREACTION::GROGGY:
         break;
     case Client::HITREACTION::GRAB_FINISHED:
+        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F");
+        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
 
-        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F");
-        //m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
         break;
     case Client::HITREACTION::BRUTAL_ATTACK:
         break;

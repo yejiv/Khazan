@@ -59,19 +59,19 @@ void CAS_StingSlashCombo_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollis
 
         if (iAttackCnt == 1)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+            pTarget->Take_Damage(120.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 20.f, 60.f);
         }
         else if (iAttackCnt == 2)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+            pTarget->Take_Damage(142.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 20.f, 60.f);
         }
         else if (iAttackCnt == 3)
         {
-            pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_STRONG);
+            pTarget->Take_Damage(245.f, HITREACTION::KNOCKBACK_STRONG);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 25.f, 50.f);
         }
