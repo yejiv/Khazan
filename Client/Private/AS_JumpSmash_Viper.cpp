@@ -22,7 +22,7 @@ void CAS_JumpSmash_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_Body()->Get_Component(TEXT("Com_Model")));
 
- 
+
     if (pModel->Play_Animation(fTimeDelta))
     {
         CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
@@ -43,9 +43,9 @@ void CAS_JumpSmash_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLay
 
     if (COLLISION_LAYER::PLAYER == eLayer)
     {
-        CViper* pViper =  static_cast<CViper*>(pOwner);
+        CViper* pViper = static_cast<CViper*>(pOwner);
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
-        pTarget->Take_Damage(40.f, HITREACTION::KNOCKBACK_STRONG);
+        pTarget->Take_Damage(266.f, HITREACTION::KNOCKBACK_STRONG);
         CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
         if (nullptr == pOwnerTransform)
             return;

@@ -53,6 +53,8 @@ HRESULT CMainApp::Initialize()
 
 	Ready_Debug();
 
+    CHECK_FAILED(m_pGameInstance->Font_Load(TEXT("Blade_Medium_18"), "../../Client/Bin/Resources/Font/DNFForgedBlade-Medium.ttf", 18), E_FAIL);
+
 	return S_OK;
 }
 

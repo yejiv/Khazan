@@ -64,7 +64,7 @@ void CAS_P2_SwingRound_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisio
         if (nullptr == pOwnerTransform)
             return;
 
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+        pTarget->Take_Damage(53.f, HITREACTION::KNOCKBACK_NORMAL);
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
         pTarget->KnockBack(vLook, 15.f, 60.f);
 

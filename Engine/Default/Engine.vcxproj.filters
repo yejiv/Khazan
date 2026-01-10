@@ -1314,5 +1314,8 @@
     <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Decal.hlsl">
       <Filter>95.ShaderFiles</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Engine_Shader_Font.hlsl">
+      <Filter>95.ShaderFiles</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
