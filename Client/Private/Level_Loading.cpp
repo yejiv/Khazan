@@ -10,6 +10,7 @@
 #include "Level_Embars.h"
 #include "Level_Viper.h"
 #include "Level_Test.h"
+#include "Level_Training.h"
 
 #pragma region MAP OBJECT HEADER
 #include "MapObject_Header.h"
@@ -126,10 +127,14 @@ void CLevel_Loading::Update(_float fTimeDelta)
             m_pGameInstance->CreateOctree({ 0.f, -30.f, 20.f }, 300.f, 3);
 			pNewLevel = CLevel_Embars::Create(m_pDevice, m_pContext);
 			break;
-		case LEVEL::VIPER:
-			m_pGameInstance->CreateOctree({ 0.f, 0.f, 150.f }, 300.f, 3);
-			pNewLevel = CLevel_Viper::Create(m_pDevice, m_pContext);
-			break;
+        case LEVEL::VIPER:
+            m_pGameInstance->CreateOctree({ 0.f, 0.f, 150.f }, 300.f, 3);
+            pNewLevel = CLevel_Viper::Create(m_pDevice, m_pContext);
+            break;
+        case LEVEL::TRAINING:
+            m_pGameInstance->CreateOctree({ 0.f, 0.f, 0.f }, 50.f, 3);
+            pNewLevel = CLevel_Training::Create(m_pDevice, m_pContext);
+            break;
 		}
 
 		if (FAILED(m_pGameInstance->Open_Level(static_cast<_uint>(m_eNextLevelID), pNewLevel)))

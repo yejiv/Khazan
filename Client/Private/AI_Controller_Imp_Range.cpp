@@ -164,7 +164,8 @@ CONDITION CAI_Controller_Imp_Range::GetCallbackCondition(CGameObject* pOwner, co
 
                     if (eHitRection == HITREACTION::KNOCKBACK_WEAK ||
                         eHitRection == HITREACTION::KNOCKBACK_NORMAL ||
-                        eHitRection == HITREACTION::KNOCKBACK_STRONG)
+                        eHitRection == HITREACTION::KNOCKBACK_STRONG ||
+                        eHitRection == HITREACTION::BRUTAL_ATTACK)
                     {
                         // 조건 통과 (부수효과 없음)
                         return true;

@@ -50,7 +50,7 @@ void CAI_Controller_Yetuga::Update(CGameObject* pOwner, _float fTimeDelta)
         {
             CYetuga* pYetuga = static_cast<CYetuga*>(pOwner);
 
-            m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::THROWBALL), pYetuga);
+            m_pFSM->Change_State(ENUM_CLASS(YETUGA_STATE::JUMPGRAB), pYetuga);
 
         }
 

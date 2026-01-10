@@ -1158,6 +1158,8 @@ HRESULT CRenderer::Ready_Matrices()
     return S_OK;
 }
 
+#ifdef _DEBUG
+
 HRESULT CRenderer::Ready_DebugRender()
 {
     if (FAILED(m_pGameInstance->Ready_RT_Debug(TEXT("RT_Diffuse"), 150.0f, 150.0f, 300.f, 300.f)))
@@ -1209,6 +1211,7 @@ HRESULT CRenderer::Ready_DebugRender()
 
     return S_OK;
 }
+#endif
 
 HRESULT CRenderer::SetUp_Viewport(_float fWidth, _float fHeight)
 {

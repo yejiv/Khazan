@@ -89,8 +89,6 @@ void CBody_Pet_Danjinjar::Update(_float fTimeDelta)
 
 void CBody_Pet_Danjinjar::Late_Update(_float fTimeDelta)
 {
-    if (FAILED(m_pGameInstance->Add_RenderGroup(RENDERGROUP::DYNAMIC, this)))
-        return;
 }
 
 HRESULT CBody_Pet_Danjinjar::Render()

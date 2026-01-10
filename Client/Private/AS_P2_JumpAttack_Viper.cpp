@@ -38,7 +38,7 @@ void CAS_P2_JumpAttack_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _
 
 void CAS_P2_JumpAttack_Viper::Exit(CStateMachine* pFSM, CGameObject* pOwner)
 {
-  
+
 }
 
 void CAS_P2_JumpAttack_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
@@ -57,13 +57,13 @@ void CAS_P2_JumpAttack_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisio
 
         if (iAttackCnt == 1)
         {
-            pTarget->Take_Damage(50.f, HITREACTION::KNOCKBACK_STRONG);
+            pTarget->Take_Damage(299.f, HITREACTION::KNOCKBACK_STRONG);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             //pTarget->KnockBack(vLook, 20.f, 40.f);
         }
         else if (iAttackCnt == 2)
         {
-            pTarget->Take_Damage(20.f, HITREACTION::KNOCKBACK_NORMAL);
+            pTarget->Take_Damage(147.f, HITREACTION::KNOCKBACK_NORMAL);
             _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
             pTarget->KnockBack(vLook, 20.f, 40.f);
         }

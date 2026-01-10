@@ -18,20 +18,20 @@ void CAS_P2_HandStomp_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
     pModel->Set_Animation(31);
-  
+
 }
 
 void CAS_P2_HandStomp_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
     CViper* pViper = static_cast<CViper*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pViper->Get_P2Body()->Get_Component(TEXT("Com_Model")));
-  
-   
+
+
     if (pModel->Play_Animation(fTimeDelta))
     {
         CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
         pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::IDLE), pViper);
-        pBB->Set_Value<_bool>(pViper->Get_Name(),"is_P2_HandStompFinished",true);
+        pBB->Set_Value<_bool>(pViper->Get_Name(), "is_P2_HandStompFinished", true);
     }
 }
 
@@ -52,7 +52,7 @@ void CAS_P2_HandStomp_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollision
         if (nullptr == pOwnerTransform)
             return;
 
-        pTarget->Take_Damage(10.f, HITREACTION::KNOCKBACK_NORMAL);
+        pTarget->Take_Damage(145.f, HITREACTION::KNOCKBACK_NORMAL);
         _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
         pTarget->KnockBack(vLook, 20.f, 60.f);
 

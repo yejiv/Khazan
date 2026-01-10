@@ -86,8 +86,6 @@ PS_OUT PS_MAIN(PS_IN In)
     Out.vColor.rgb = finalColor;
     Out.vColor.a = alpha;
     
-    Out.vColor = float4(1.f, 0.f, 0.f, 1.f);
-    
     return Out;
 }
 
