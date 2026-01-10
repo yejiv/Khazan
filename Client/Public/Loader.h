@@ -94,6 +94,14 @@ private:
 
 #pragma endregion
 
+#pragma region 훈련장 
+    HRESULT Loading_For_Training_Level();
+    HRESULT Loading_For_Training_Texture();
+    HRESULT Loading_For_Training_Model();
+    HRESULT Loading_For_Training_Shader();
+    HRESULT Loading_For_Training_GameObject();
+#pragma endregion
+
 #pragma region 이펙트
     HRESULT Loading_For_Effect_Static(_uint level);
 #pragma endregion

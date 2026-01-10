@@ -580,12 +580,16 @@ void CClientInstance::AMB_UnMute()
 
 void CClientInstance::All_Mute()
 {
+    return;
+
     m_pBGM_Manager->Mute_BGM();
     m_pBGM_Manager->Mute_AMB();
 }
 
 void CClientInstance::All_UnMute()
 {
+    return;
+
     m_pBGM_Manager->UnMute_BGM();
     m_pBGM_Manager->UnMute_AMB();
 }
@@ -617,116 +621,162 @@ void CClientInstance::ChangeAMB(const _tchar* pSoundKey, _float fFadeTime, _bool
 
 void CClientInstance::BGM_HeinMach_Entry(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->HeinMach_Entry(fFadeTime);
 }
 
 void CClientInstance::BGM_HeinMach_Dawn(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->HeinMach_Dawn(fFadeTime);
 }
 
 void CClientInstance::BGM_HeinMach_CutScene(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->HeinMach_CutScene(fFadeTime);
 }
 
 void CClientInstance::BGM_HeinMach_Cave(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->HeinMach_Cave(fFadeTime);
 }
 
 void CClientInstance::BGM_HeinMach_Day(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->HeinMach_Day(fFadeTime);
 }
 
 void CClientInstance::BGM_HeinMach_Halberd(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->HeinMach_Halberd(fFadeTime);
 }
 
 void CClientInstance::BGM_HeinMach_Yetuga_CutScene(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->HeinMach_Yetuga_CutScene(fFadeTime);
 }
 
 void CClientInstance::BGM_HeinMach_Yetuga_1Phase(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->HeinMach_Yetuga_1Phase(fFadeTime);
 }
 
 void CClientInstance::BGM_Embars_Entry(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Embars_Entry(fFadeTime);
 }
 
 void CClientInstance::BGM_Embars_B1(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Embars_B1(fFadeTime);
 }
 
 void CClientInstance::BGM_Embars_Club(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Embars_Club(fFadeTime);
 }
 
 void CClientInstance::BGM_Embars_Club_Game(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Embars_Club_Game(fFadeTime);
 }
 
 void CClientInstance::Embars_Club_Shuffle_0(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Embars_Club_Shuffle_0(fFadeTime);
 }
 
 void CClientInstance::Embars_Club_Shuffle_1(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Embars_Club_Shuffle_1(fFadeTime);
 }
 
 void CClientInstance::Embars_Club_Shuffle_2(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Embars_Club_Shuffle_2(fFadeTime);
 }
 
 void CClientInstance::BGM_Embars_1F(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Embars_1F(fFadeTime);
 }
 
 void CClientInstance::BGM_Embars_Elamein(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Embars_Elamein(fFadeTime);
 }
 
 void CClientInstance::BGM_Viper_Entry(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Viper_Entry(fFadeTime);
 }
 
 void CClientInstance::BGM_Viper_1PhaseCutScene(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Viper_1PhaseCutScene(fFadeTime);
 }
 
 void CClientInstance::BGM_Viper_1Phase(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Viper_1Phase(fFadeTime);
 }
 
 void CClientInstance::BGM_Viper_2PhaseCutScene(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Viper_2PhaseCutScene(fFadeTime);
 }
 
 void CClientInstance::BGM_Viper_2Phase(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Viper_2Phase(fFadeTime);
 }
 
 void CClientInstance::BGM_Viper_End(_float fFadeTime)
 {
+    return;
+
     m_pBGM_Manager->Viper_End(fFadeTime);
 }
 
