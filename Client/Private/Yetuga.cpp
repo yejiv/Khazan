@@ -1292,9 +1292,6 @@ HRESULT CYetuga::Ready_AnimEvent()
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isGhost = true;
-            
-            CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
-            pTarget->Take_Damage(0.f, HITREACTION::GRAB);
         });
 
     pModel->Register_Event("Grab_Hand", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()

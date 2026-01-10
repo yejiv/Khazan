@@ -1387,10 +1387,6 @@ HRESULT CViper::Ready_AnimEvent()
         });
 
 
-
-
-
-
     pModel->Register_Event("StingGrab_Hold", ANIM_EVENT_TRIGGERTYPE::CONTINUE, [this]()
         {
             m_isLookAt = false;
@@ -1402,6 +1398,8 @@ HRESULT CViper::Ready_AnimEvent()
         {
             CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
             pTarget->Take_Damage(350.f, HITREACTION::GRAB_FINISHED);
+            CClientInstance::GetInstance()->Set_PlayerInput(true);
+
         });
 
 
