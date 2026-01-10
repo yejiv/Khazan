@@ -1333,6 +1333,7 @@ HRESULT CViper::Ready_AnimEvent()
             m_isLookAt = true;
             m_pWeapon->Set_OnAttackCollision_L(true);
             m_fTurnSpeed = 10.f;
+
         });
 
 
@@ -1347,6 +1348,7 @@ HRESULT CViper::Ready_AnimEvent()
         {
             m_isLookAt = true;
             m_fTurnSpeed = 20.f;
+            m_pGameInstance->PlaySoundOnce(TEXT("UI_Grapple_Atk02_Sccu (SFX).wav"));
 
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isP1_StingGrab_StepBack", true);
 

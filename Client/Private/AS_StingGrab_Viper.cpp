@@ -20,6 +20,7 @@ void CAS_StingGrab_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     //pModel->Set_Animation(59);
     m_eState = VIPERGRAB_STATE::NONE;
 
+
 }
 
 void CAS_StingGrab_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
