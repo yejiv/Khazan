@@ -152,6 +152,7 @@ private:
 	HRESULT Ready_MRTs();
 	HRESULT Ready_Components();
     HRESULT Ready_Matrices();
+    HRESULT Ready_DebugRender();
 	HRESULT SetUp_Viewport(_float fWidth, _float fHeight);
     HRESULT Bind_Pipeline_ShaderResources();
 
