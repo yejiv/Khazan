@@ -22,26 +22,55 @@ HRESULT CAI_Controller_Gomdol::Initialize(CCreature* pOwner)
         return E_FAIL;
 
     m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+    m_isActiveController = true;
 
     return S_OK;
 }
 
 void CAI_Controller_Gomdol::Update(CGameObject* pOwner, _float fTimeDelta)
 {
-    m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
-    Update_Aggro(pOwner, fTimeDelta);
 
-    _float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+   {
 
-    if (m_pBB->Get_Value<_bool>(m_strMonstertag, "HasAggro"))
-        m_pBB->Set_Value<_float>(m_strMonstertag, "CurrentTime", fPervTime + fTimeDelta);
-    else
-        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+       if (m_pGameInstance->Key_Down(DIK_B))
+       {
+           CGomdol* pGomdol = static_cast<CGomdol*>(pOwner);
+           m_isActiveController = false;
+           pGomdol->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-4.f, 0.f, 17.78f, 1.f));
+           pGomdol->Set_InitPosition();
+           m_pBB->Set_Value<_bool>(m_strMonstertag, "isDetected",false);
+           m_pFSM->Change_State(ENUM_CLASS(GOMDOL_STATE::SLEEP), pGomdol);
+
+       }
+       if (m_pGameInstance->Key_Down(DIK_N))
+       {
+           CGomdol* pGomdol = static_cast<CGomdol*>(pOwner);
+           m_isActiveController = true;
+           m_pBB->Set_Value<_bool>(pGomdol->Get_Name(), "isSleep", false);
+           m_pBB->Set_Value<_bool>(m_strMonstertag, "isDetected", false);
+           m_pFSM->Change_State(ENUM_CLASS(GOMDOL_STATE::SLEEP), pGomdol);
+           
+       }
+   }
+
+    if (m_isActiveController)
+    {
+        m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
+        Update_Aggro(pOwner, fTimeDelta);
+
+        _float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
+
+        if (m_pBB->Get_Value<_bool>(m_strMonstertag, "HasAggro"))
+            m_pBB->Set_Value<_float>(m_strMonstertag, "CurrentTime", fPervTime + fTimeDelta);
+        else
+            m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
 
-    if (!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
-        m_pBT->Update();
-
+        if (!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
+            m_pBT->Update();
+      
+    }
     m_pFSM->Update(pOwner, fTimeDelta);
 }
 

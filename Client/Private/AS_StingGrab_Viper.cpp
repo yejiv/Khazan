@@ -35,9 +35,9 @@ void CAS_StingGrab_Viper::Update(CStateMachine* pFSM, CGameObject* pOwner, _floa
 
     if (isGrabbed && !m_isGrabbed)
     {
+      
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isP1_StingGrab_Rush", false);
         pModel->Set_Animation(59);
-        CClientInstance::GetInstance()->Set_PlayerInput(false);
         CCreature* pTarget = static_cast<CCreature*>(pBB->Get_Value<CGameObject*>(pViper->Get_Name(), "Target"));
         m_eState = VIPERGRAB_STATE::SUCCESS;
         m_isGrabbed = true;
@@ -93,6 +93,7 @@ void CAS_StingGrab_Viper::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLay
         CBlackBoard* pBB = pViper->Get_Controller()->Get_BlackBoard();
         CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
         pTarget->Take_Damage(0, HITREACTION::GRAB, nullptr);
+        CClientInstance::GetInstance()->Set_PlayerInput(false);
         pBB->Set_Value<_bool>(pViper->Get_Name(), "isGrabbed", true);
 
     }

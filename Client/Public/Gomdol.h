@@ -13,7 +13,7 @@ private:
 public:
 	virtual _float4*				Get_LockOnPosition();
 	class CBody_Gomdol*				Get_Body() { return m_pBody; }
-
+    void                            Set_InitPosition();
 
 public:
 	virtual HRESULT					Initialize_Prototype() override;

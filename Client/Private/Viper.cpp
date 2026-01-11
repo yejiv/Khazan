@@ -1376,6 +1376,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("P1_StingGrab_Rush", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision_L(true);
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isP1_StingGrab_Rush", true);
 
         });
@@ -1400,11 +1401,11 @@ HRESULT CViper::Ready_AnimEvent()
         {
             CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
             pTarget->Take_Damage(350.f, HITREACTION::GRAB_FINISHED);
+            _vector vDir = m_pTransformCom->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vDir,30,60.f);
+            CClientInstance::GetInstance()->Set_PlayerInput(true);
+
         });
-
-
-
-
 
 
 #pragma endregion
@@ -2241,10 +2242,8 @@ HRESULT CViper::Ready_AnimEvent()
             // 왼손 공격 콜라이더 ON
             m_pPahse2Body->Set_OnAttackCollision(true);
             CClientInstance::GetInstance()->ActiveCamera_Shaking(3.f, 1.f);
-            SFX_STOMP_P2(1);
-
             //Mon_vo_viper_p2_jump_atk_jump_01 (SFX).wav
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_jump_atk_stomp_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_jump_atk_stomp_01 (SFX).wav"), 0.7f);
 
         });
 
