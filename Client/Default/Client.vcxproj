@@ -181,6 +181,7 @@
     <ClInclude Include="..\Public\AS_Attack_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Boomarang_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_ChainSmash_Imp_Melee.h" />
+    <ClInclude Include="..\Public\AS_ComboAttack_Gomdol.h" />
     <ClInclude Include="..\Public\AS_CutScene_2Phase_Viper.h" />
     <ClInclude Include="..\Public\AS_CutScene_Start_Viper.h" />
     <ClInclude Include="..\Public\AS_CutScene_Yetuga.h" />
@@ -649,6 +650,7 @@
     <ClCompile Include="..\Private\AI_Controller_Halberd.cpp" />
     <ClCompile Include="..\private\AI_Controller_Elamein.cpp" />
     <ClCompile Include="..\private\AI_Controller_Pet_Danjinjar.cpp" />
+    <ClCompile Include="..\Private\AS_ComboAttack_Gomdol.cpp" />
     <ClCompile Include="..\Private\AS_CutScene_2Phase_Viper.cpp" />
     <ClCompile Include="..\Private\AS_CutScene_Start_Viper.cpp" />
     <ClCompile Include="..\private\AS_Dr_Melee_Attack.cpp" />

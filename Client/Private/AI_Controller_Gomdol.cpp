@@ -225,6 +225,29 @@ CONDITION CAI_Controller_Gomdol::GetCallbackCondition(CGameObject* pOwner, const
 
 #pragma region ATTACK SELECTOR
 
+
+    else if ("ComboAttack" == name)
+    {
+        return [pGomdol](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pGomdol->Get_Name(), "TargetDist");
+                _float fAttackRanage = BB->Get_Value<_float>(pGomdol->Get_Name(), "AttackRange");
+
+                if (fDist <= fAttackRanage)
+                {
+
+                    _bool isDamaged = BB->Get_Value<_bool>(pGomdol->Get_Name(), "DamageInterrupt");
+                    if (isDamaged)
+                        return false;
+
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
     else if ("FrontAttack" == name)
     {
         return [pGomdol](CBlackBoard* BB)->_bool
@@ -337,6 +360,32 @@ ACTION CAI_Controller_Gomdol::GetCallbackAction(CGameObject* pOwner, const strin
 
 
 #pragma region ATTACK SELECTOR
+
+    
+    else if ("ComboAttack" == name)
+    {
+        return [pGomdol](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                _bool isDamaged = BB->Get_Value<_bool>(pGomdol->Get_Name(), "DamageInterrupt");
+                if (isDamaged)
+                    return BTNODESTATE::FAILURE;
+
+                if (BB->Get_Value<_bool>(pGomdol->Get_Name(), "isComboAttackFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pGomdol->Get_Name(), "isComboAttack", true);
+
+                pGomdol->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(GOMDOL_STATE::COMBOATTACK), pGomdol);
+                return BTNODESTATE::RUNNING;
+
+
+            };
+    }
+
 
     else if ("FrontAttack" == name)
     {
@@ -471,6 +520,23 @@ TERMINATE CAI_Controller_Gomdol::GetCallbackTeminate(CGameObject* pOwner, const 
 
 
 #pragma region ATTACK SELECTOR
+
+    else if ("ComboAttack" == name)
+    {
+        return [pGomdol](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pGomdol->Get_Name(), "isComboAttack", false);
+                    BB->Set_Value<_bool>(pGomdol->Get_Name(), "isComboAttackFinished", false);
+                }
+            };
+    }
+
+
 
     else if ("FrontAttack" == name)
     {

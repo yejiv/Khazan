@@ -2,7 +2,8 @@
 #include "CharacterVirtual.h"
 #include "Body_Gomdol.h"
 #include "AI_Controller_Gomdol.h"
-
+#include "Mon_HP.h"
+#include "GameInstance.h"
 
 CGomdol::CGomdol(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
     :CMonster{pDevice,pContext}
@@ -72,10 +73,32 @@ void CGomdol::Update(_float fTimeDelta)
 
 
     __super::Update(fTimeDelta);
+
+    m_vLockOnPosition = m_pBody->Get_BonePointEX("FX_Body_ExpGained");
+
 }
 
 void CGomdol::Late_Update(_float fTimeDelta)
 {
+    if (!m_isDetected)
+    {
+
+        CBlackBoard* pBB = m_pController->Get_BlackBoard();
+        if (pBB->Get_Value<_bool>(m_strName, "isDetected"))
+        {
+            m_isDetected = true;
+
+            m_pUI_HP = static_cast<CMon_HP*>(m_pGameInstance->Pop_PoolObject(ENUM_CLASS(LEVEL::STATIC), TEXT("Pool_Mon_HP")));
+
+            if (m_pUI_HP != nullptr)
+            {
+                m_pUI_HP->Setting_HP(m_vLockOnPosition, { 0.f, 80.f }, &m_fCurrentHP, &m_fMaxHP, &m_fCurrentStamina, &m_fMaxStamina);
+                m_pGameInstance->Push_PoolObject_ToLayer(ENUM_CLASS(LEVEL::TRAINING), TEXT("Layer_UI"), m_pUI_HP);
+            }
+        }
+    }
+
+
     CContainerObject::Late_Update(fTimeDelta);
 }
 
@@ -86,6 +109,61 @@ HRESULT CGomdol::Render()
 
 void CGomdol::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+
+    if (COLLISION_LAYER::PLAYER_ATTACK == eLayer)
+    {
+
+        _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+        _vector vHitDir = XMLoadFloat3(&vContactPoint) - vPosition;
+        vHitDir = XMVector3Normalize(vHitDir);
+
+        _vector vLook = XMVector3Normalize(
+            m_pTransformCom->Get_State(STATE::LOOK));
+
+        _float fDot = XMVectorGetX(XMVector3Dot(vLook, vHitDir));
+        _float fCrossY = XMVectorGetY(XMVector3Cross(vLook, vHitDir));
+
+        if (fabsf(fDot) >= fabsf(fCrossY))
+        {
+            // 앞 / 뒤
+            if (fDot >= 0.f)
+            {
+                m_tHitDirInfo.Clear_Flag();
+                m_tHitDirInfo.Add_Flag(m_tHitDirInfo.F);
+            }
+            else
+            {
+                m_tHitDirInfo.Clear_Flag();
+                m_tHitDirInfo.Add_Flag(m_tHitDirInfo.B);
+
+            }
+        }
+        else
+        {
+            // 좌 / 우
+            if (fCrossY >= 0.f)
+            {
+                m_tHitDirInfo.Clear_Flag();
+                m_tHitDirInfo.Add_Flag(m_tHitDirInfo.R);
+
+            }
+            else
+            {
+                m_tHitDirInfo.Clear_Flag();
+                m_tHitDirInfo.Add_Flag(m_tHitDirInfo.L);
+
+            }
+        }
+
+
+
+    }
+
+
+    
+
+
 }
 
 void CGomdol::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -156,6 +234,51 @@ HRESULT CGomdol::Ready_PartObjects()
 
 HRESULT CGomdol::Ready_AnimEvent()
 {
+    CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+    if (nullptr == pModel)
+        return E_FAIL;
+
+#pragma region FrontAttack
+
+    pModel->Register_Event("FrontAttack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pBody->Set_OnAttackCollision_RH(true);
+        });
+
+    pModel->Register_Event("FrontAttack_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pBody->Set_OnAttackCollision_RH(false);
+        });
+
+
+#pragma endregion
+
+
+#pragma region ComboAttack
+
+    pModel->Register_Event("ComboAttack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pBody->Set_OnAttackCollision_LH(true);
+        });
+
+    pModel->Register_Event("ComboAttack_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pBody->Set_OnAttackCollision_LH(false);
+        });
+
+
+    pModel->Register_Event("ComboAttack_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
+        m_pBody->Set_OnAttackCollision_LH(true);
+        });
+
+    pModel->Register_Event("ComboAttack_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]() {
+        m_pBody->Set_OnAttackCollision_LH(false);
+        });
+
+
+
+#pragma endregion
+
+
+
+
+
     return S_OK;
 }
 

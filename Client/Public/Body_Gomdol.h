@@ -24,7 +24,8 @@ public:
 	_float4*				Get_BonePointEX(const _char* pBoneName);
 	_matrix					Get_BoneMatrix(const _char* pBoneName);
 
-	void					Set_OnAttackCollision(_bool isToggle) { m_isOnAttackCollision = isToggle; }
+	void					Set_OnAttackCollision_LH(_bool isToggle) { m_isOnAttackCollision_LH = isToggle; }
+	void					Set_OnAttackCollision_RH(_bool isToggle) { m_isOnAttackCollision_RH = isToggle; }
 
 
 private:
@@ -75,8 +76,11 @@ private:
 	_float4x4				m_RightHandMatrix = {};
 	_float4x4				m_LeftHandMatrix = {};
 
-	_bool					m_isOnAttackCollision = { false };
+	_bool					m_isOnAttackCollision_LH = { false };
+	_bool					m_isOnAttackCollision_RH = { false };
 
+    COLLISION_DESC			m_tCollision_RHDescGomdol = {};
+    COLLISION_DESC			m_tCollision_LHDescGomdol = {};
 
 public:
 	static	CBody_Gomdol*	Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
