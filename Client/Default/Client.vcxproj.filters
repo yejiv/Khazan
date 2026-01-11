@@ -1546,6 +1546,9 @@
     <Filter Include="92.AI\State\Gomdol\Hit">
       <UniqueIdentifier>{24c1cbfe-6fa9-4578-8ffb-8a0e81196627}</UniqueIdentifier>
     </Filter>
+    <Filter Include="92.AI\State\Gomdol\ComboAttack">
+      <UniqueIdentifier>{c7a37f2c-911f-4447-86b4-9731f8e4c325}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -2985,6 +2988,9 @@
     <ClInclude Include="..\Public\AS_Hit_Gomdol.h">
       <Filter>92.AI\State\Gomdol\Hit</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\AS_ComboAttack_Gomdol.h">
+      <Filter>92.AI\State\Gomdol\ComboAttack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -4403,6 +4409,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\AS_Hit_Gomdol.cpp">
       <Filter>92.AI\State\Gomdol\Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\AS_ComboAttack_Gomdol.cpp">
+      <Filter>92.AI\State\Gomdol\ComboAttack</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

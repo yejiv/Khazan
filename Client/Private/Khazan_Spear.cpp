@@ -131,6 +131,11 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     m_EffectTimeDelta = 0.f;
 
     m_pCharVirCom->Teleport(XMVectorSet(0.f, 1.f, 0.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+
+    if (m_pClientInstance->Get_CurrLevel() == LEVEL::TRAINING)
+    {
+        m_pCharVirCom->Teleport(XMVectorSet(4.67f, -1.225f, -20.048f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+    }
 #pragma region 3D UI 테스트
     //CUIObject::UIOBJECT_DESC Desc;
 
@@ -179,6 +184,11 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 
     // 이전 프레임 월드 행렬 저장
     m_pTransformCom->Cache_PrevWorldMatrix();
+
+#ifdef _DEBUG
+    // 스태틱 렌더 계산용
+    m_pGameInstance->Jolt_Set_TargetPos_DebugRender(m_pTransformCom->Get_State(STATE::POSITION));
+#endif // _DEBUG
 }
 
 void CKhazan_Spear::Update(_float fTimeDelta)

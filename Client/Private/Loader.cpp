@@ -3488,6 +3488,56 @@ HRESULT CLoader::Loading_For_Training_Model()
 
 #pragma endregion
 
+#pragma region Chunk
+    /* Prototype_Component_Model_Fence_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Fence_Chunk_1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk1/Fence_Chunk1.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Fence_Chunk_2"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk2/Fence_Chunk2.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Fence_Chunk_3"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk3/Fence_Chunk3.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Fence_Chunk_4"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk4/Fence_Chunk4.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Fence_Chunk_5"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Fence/Fence_Chunk5/Fence_Chunk5.dat", false)), E_FAIL);
+
+    /* Prototype_Component_Model_Pot_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Pot_Chunk_1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk1/Pot_Chunk1.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Pot_Chunk_2"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk2/Pot_Chunk2.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Pot_Chunk_3"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk3/Pot_Chunk3.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Pot_Chunk_4"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk4/Pot_Chunk4.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Pot_Chunk_5"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Pot_Chunk5/Pot_Chunk5.dat", false)), E_FAIL);
+
+    /* Prototype_Component_Model_Barrel_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Barrel_Chunk_1"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk1/Barrel_Chunk1.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Barrel_Chunk_2"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk2/Barrel_Chunk2.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Barrel_Chunk_3"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk3/Barrel_Chunk3.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Barrel_Chunk_4"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk4/Barrel_Chunk4.dat", false)), E_FAIL);
+
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Barrel_Chunk_5"),
+        CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Map/Prop/NonAnim/Box/Barrel_Chunk5/Barrel_Chunk5.dat", false)), E_FAIL);
+#pragma endregion
+
     return S_OK;
 }
 
@@ -3720,6 +3770,35 @@ HRESULT CLoader::Loading_For_Training_GameObject()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Yetuga_Roar"),
         CEffect_Prefab::Create(m_pDevice, m_pContext, "../../Client/Bin/Data/Effect/Baked/Yetuga_scream"))))
         return E_FAIL;
+
+
+#pragma endregion
+
+#pragma region Chunk
+
+    /* Prototype_GameObject_Prop_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_GameObject_Prop_Chunk"),
+        CProp_Chunk::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Fence */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_GameObject_Prop_Fence"),
+        CFence::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Pot */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_GameObject_Prop_Pot"),
+        CPot::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Prop_Barrel */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_GameObject_Prop_Barrel"),
+        CBarrel::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Chunk */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_GameObject_Chunk"),
+        CChunk::Create(m_pDevice, m_pContext)), E_FAIL);
+
+    /* Prototype_GameObject_Destructible_Stone */
+    CHECK_FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_GameObject_Destructible_Stone"),
+        CDestructible_Stone::Create(m_pDevice, m_pContext)), E_FAIL);
 
 
 #pragma endregion

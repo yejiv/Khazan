@@ -65,18 +65,19 @@ void CLevel_Title::Update(_float fTimeDelta)
             m_isOpenLevel = true;
         }
     }
+    if (!m_isOpenLevel)
+    {
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD9, INPUT_TYPE::FORCE))
+        {
+            if (!m_isOpenLevel) {
+                m_pGameInstance->StopAll();
+                if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::TRAINING))))
+                    return;
 
-    //if (m_pGameInstance->Key_Down(DIK_NUMPAD9, INPUT_TYPE::FORCE))
-    //{
-    //    if (!m_isOpenLevel) {
-    //        m_pGameInstance->StopAll();
-    //        if (FAILED(m_pGameInstance->Open_Level(ENUM_CLASS(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::TRAINING))))
-    //            return;
-
-    //        m_isOpenLevel = true;
-    //    }
-    //}
-
+                m_isOpenLevel = true;
+            }
+        }
+    }
 
 	return;
 }

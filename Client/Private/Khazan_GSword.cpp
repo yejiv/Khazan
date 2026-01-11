@@ -232,6 +232,11 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
     {
         m_pPlayerData->fCulHp = 10.f;
     }
+
+#ifdef _DEBUG
+    // 스태틱 렌더 계산용
+    m_pGameInstance->Jolt_Set_TargetPos_DebugRender(m_pTransformCom->Get_State(STATE::POSITION));
+#endif // _DEBUG
 }
 
 void CKhazan_GSword::Update(_float fTimeDelta)
@@ -526,9 +531,10 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
     case Client::HITREACTION::GROGGY:
         break;
     case Client::HITREACTION::GRAB_FINISHED:
-        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_DamAir_F");
-        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
-        m_pCharVirCom->End_Ladder();
+        //m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_DamAir_F");
+        //m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
+        //m_pCharVirCom->End_Ladder();
+        m_isGrabFinish2 = false;
         break;
     case Client::HITREACTION::BRUTAL_ATTACK:
         break;
@@ -540,9 +546,11 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         Clear_Step1();
         m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Burrow_Predation_Kazan_DamageHold");
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
-        m_pCharVirCom->Begin_Ladder();
+        //m_pCharVirCom->Begin_Ladder();
         m_fGrabFinishTime.x = 0.f;
         m_isGrab = true;
+        m_isGrabFinish2 = true;
+        m_isViperGrab = true;
 
         break;
     case Client::HITREACTION::KNOCKBACK_WEAK:
@@ -715,8 +723,13 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
     }
 
     /* Fall ?긽?깭 理쒖슦?꽑 泥댄겕 */
-    if (!m_isGrab && !m_isGrabFinish  && Fall_Input(fTimeDelta))
-        return;
+   /* if (!m_isGrab && !m_isGrabFinish  && Fall_Input(fTimeDelta))
+        return;*/
+    if (!m_isViperGrab)
+    {
+        if (Fall_Input(fTimeDelta))
+            return;
+    }
 
     /* ?씠?쟾 ?긽?깭 ????옣*/
     m_iPrevMainState = m_iCurMainState;
@@ -1979,14 +1992,26 @@ void CKhazan_GSword::ExecuteAnimationExit()
 
 _bool CKhazan_GSword::ChangeGrabAnimation(_float fTimeDelta)
 {
-    if(m_isGrab && m_pCharVirCom->Get_isGround())
+    if (m_isGrab && !m_isGrab2)
+    {
+        m_fGrabStartTime.x += fTimeDelta;
+
+        if (m_fGrabStartTime.y <= m_fGrabStartTime.x)
+        {
+            m_isGrab2 = true;
+            m_fGrabStartTime.x = 0.f;
+        }
+        return false;
+    }
+
+    if (m_isGrab && m_isGrab2 && m_pCharVirCom->Get_isGround())
     {
         m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_GSword_DamAir_F");
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
 
         m_isGrabFinish = true;
-        m_isGrab = false;
-      
+        m_isGrab = m_isGrab2 = false;
+
     }
 
     if (m_isGrabFinish)
@@ -1995,12 +2020,11 @@ _bool CKhazan_GSword::ChangeGrabAnimation(_float fTimeDelta)
 
         if (m_fGrabFinishTime.y <= m_fGrabFinishTime.x)
         {
+            m_pClientInstance->Set_PlayerInput(true);
             m_isGrabFinish = m_isGrabFinish = false;
             return true;
         }
     }
-
-
 
     return false;
 }
@@ -2512,8 +2536,15 @@ void CKhazan_GSword::Get_HitReaction(_float3 vContactPoint)
 
 void CKhazan_GSword::Check_IsInAir(_float fTimeDelta)
 {
+
     if (m_pCharVirCom->Get_isGround())
         return;
+
+    if (m_isGrab || m_isGrabFinish)
+    {
+        Remove_Status(FALLING | FALLING_ATTACK | PRE_LAND);
+        return;
+    }
 
     _vector vRayStart = m_pTransformCom->Get_State(STATE::POSITION);
     _vector vRayEnd = vRayStart + XMVectorSet(0.f, -m_fRayLength, 0.f, 0.f);
