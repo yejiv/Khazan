@@ -131,6 +131,11 @@ HRESULT CKhazan_Spear::Initialize_Clone(void* pArg)
     m_EffectTimeDelta = 0.f;
 
     m_pCharVirCom->Teleport(XMVectorSet(0.f, 1.f, 0.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+
+    if (m_pClientInstance->Get_CurrLevel() == LEVEL::TRAINING)
+    {
+        m_pCharVirCom->Teleport(XMVectorSet(4.67f, -1.225f, -20.048f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+    }
 #pragma region 3D UI 테스트
     //CUIObject::UIOBJECT_DESC Desc;
 
@@ -179,6 +184,11 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 
     // 이전 프레임 월드 행렬 저장
     m_pTransformCom->Cache_PrevWorldMatrix();
+
+#ifdef _DEBUG
+    // 스태틱 렌더 계산용
+    m_pGameInstance->Jolt_Set_TargetPos_DebugRender(m_pTransformCom->Get_State(STATE::POSITION));
+#endif // _DEBUG
 }
 
 void CKhazan_Spear::Update(_float fTimeDelta)
@@ -472,8 +482,6 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F");
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
 
-        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F");
-        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
         break;
     case Client::HITREACTION::BRUTAL_ATTACK:
         break;
@@ -1146,7 +1154,7 @@ void CKhazan_Spear::Move_Input(_float fTimeDelta)
         }
 
         /* Walk,  Run */
-        if (!isSpaceHandled && !Has_State(CAT::M_ATTACK | CAT::M_SKILL))
+        if (!isSpaceHandled && !Has_State(CAT::M_ATTACK | CAT::M_SKILL) && !m_pAnimInteraction->Is_Heal())
         {
             if (m_pGameInstance->Key_Pressing(DIK_LALT, fTimeDelta))  Add_SubState(MOV::MOVE_WALK);
             else
@@ -1653,6 +1661,7 @@ _bool CKhazan_Spear::Interaction_Input(_float fTimeDelta)
     {
         m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), m_FXIdx[FX_LACRIMA], mat_arm, (m_SpearOffset_Matrix * mat_arm * m_pTransformCom->Get_WorldMatrix()).r[3]);
         m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"), m_FXIdx[FX_LACRIMA_HAND], (m_SpearOffset_Matrix * mat_hand * m_pTransformCom->Get_WorldMatrix()).r[3]);
+        Clear_Step2();
     }
     return false; 
 }   
@@ -1733,6 +1742,12 @@ void CKhazan_Spear::Change_MoveIdle(_float fTimeDelt)
     if ((isIdleState && Has_Status(LOCKON) && isNothingState) || (isIdleState && isCurAnimFinished))
     {
         if ((Has_Status(STAMINA_EXHAUSTION)))
+            return;
+
+        //if (m_pAnimInteraction->Is_Heal())
+        //    return;
+
+        if (!Has_Status(YETUGA_GRAB))
             return;
 
         if (m_isInteractDestinyStone)
@@ -1843,7 +1858,6 @@ _bool CKhazan_Spear::ChangeGrabAnimation(_float fTimeDelta)
 
         m_iCurAnimIndex = iGetupAnimIndex;
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
-
         return true;
     }
 

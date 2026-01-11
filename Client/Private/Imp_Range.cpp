@@ -147,8 +147,52 @@ HRESULT CImp_Range::Render()
 void CImp_Range::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
     COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
-    if (eLayer == COLLISION_LAYER::PLAYER_ATTACK)
-        int a = 10;
+
+    if (COLLISION_LAYER::PLAYER_ATTACK == eLayer)
+    {
+
+        _vector vPosition = m_pTransformCom->Get_State(STATE::POSITION);
+        _vector vHitDir = XMLoadFloat3(&vContactPoint) - vPosition;
+        vHitDir = XMVector3Normalize(vHitDir);
+
+        _vector vLook = XMVector3Normalize(
+            m_pTransformCom->Get_State(STATE::LOOK));
+
+        _float fDot = XMVectorGetX(XMVector3Dot(vLook, vHitDir));
+        _float fCrossY = XMVectorGetY(XMVector3Cross(vLook, vHitDir));
+
+        if (fabsf(fDot) >= fabsf(fCrossY))
+        {
+            // 앞 / 뒤
+            if (fDot >= 0.f)
+            {
+                m_tHitDirInfo.Clear_Flag();
+                m_tHitDirInfo.Add_Flag(m_tHitDirInfo.F);
+            }
+            else
+            {
+                m_tHitDirInfo.Clear_Flag();
+                m_tHitDirInfo.Add_Flag(m_tHitDirInfo.B);
+
+            }
+        }
+        else
+        {
+            // 좌 / 우
+            if (fCrossY >= 0.f)
+            {
+                m_tHitDirInfo.Clear_Flag();
+                m_tHitDirInfo.Add_Flag(m_tHitDirInfo.R);
+
+            }
+            else
+            {
+                m_tHitDirInfo.Clear_Flag();
+                m_tHitDirInfo.Add_Flag(m_tHitDirInfo.L);
+
+            }
+        }
+    }
 
 }
 

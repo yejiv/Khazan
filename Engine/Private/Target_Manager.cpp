@@ -167,7 +167,7 @@ ID3D11DepthStencilView* CTarget_Manager::Get_CurrentDSV_AddRef()
 	return m_pOriginalDSV;
 }
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 
 HRESULT CTarget_Manager::Ready_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
 {
@@ -201,7 +201,7 @@ HRESULT CTarget_Manager::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 	return S_OK;
 }
 
-#endif
+//  #endif
 
 CRenderTarget* CTarget_Manager::Find_RenderTarget(const _wstring& strTargetTag)
 {

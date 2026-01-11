@@ -177,6 +177,15 @@ void CBody_Phase2_Viper::Update(_float fTimeDelta)
     m_pMotionTrailCom->Set_Config(Config);
 
     m_pMotionTrailCom->Update(fTimeDelta);
+
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    {
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
+            m_isEnableEdge = false;
+
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
+            m_isEnableEdge = true;
+    }
 }
 
 void CBody_Phase2_Viper::Late_Update(_float fTimeDelta)
@@ -218,6 +227,9 @@ HRESULT CBody_Phase2_Viper::Render()
     //  _float fGreenIntensity = 0.9f;
     //  if (FAILED(m_pShaderCom->Bind_RawValue("g_fGreenIntensity", &fGreenIntensity, sizeof(_float))))
     //      return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableEdge", &m_isEnableEdge)))
+        return E_FAIL;
 
     for (size_t i = 0; i < iNumMeshes; i++)
     {

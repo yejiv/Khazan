@@ -195,6 +195,10 @@ private:
     _bool                       m_isGrab = { false };
     _bool                       m_isGrabFinish = { false };
     _float2                     m_fGrabFinishTime = { 0.f, 1.5f };
+    _bool                       m_isGrab2 = { false };
+    _float2                     m_fGrabStartTime = { 0.f, 0.75f };
+    _bool                       m_isGrabFinish2 = { false };
+       _bool                    m_isViperGrab = { false };
 
     /* ====== const ======*/
     const	_float				m_fMinSprintTime = { 0.15f };
