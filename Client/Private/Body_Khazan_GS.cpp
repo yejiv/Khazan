@@ -1933,8 +1933,8 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvents()
 }
 HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
 {
-    /* (노티파이 키 값 , 노티파이 최대 수, 진입점, 사운드 그룹 타입, 볼륨, 어떤 채널사용 ) */
-    auto Register_EventGroup = [&](const string& strEventKey, _int iCount, ANIM_EVENT_TRIGGERTYPE eTrigger, SOUND_TYPE eSoundType, _float fVolume, SOUND_CHANNEL eChannelType) {
+    /* (노티파이 키 값 , 노티파이 최대 수, 진입점, 사운드 그룹 타입, 볼륨, 어떤 채널사용, 확률적으로 소리 재생할 때 사용할 비율(0.f~100.f), 확률적으로 소리 재생할 건지? ) */
+    auto Register_EventGroup = [&](const string& strEventKey, _int iCount, ANIM_EVENT_TRIGGERTYPE eTrigger, SOUND_TYPE eSoundType, _float fVolume, SOUND_CHANNEL eChannelType,_float fRandomRatio = 0.f , _bool isRandom = false) {
 
         if (iCount <= 0) return;
 
@@ -1946,14 +1946,21 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
             ss << std::setw(2) << std::setfill('0') << i;
             strTempEventKey += "_" + ss.str();
 
-            m_pModelCom->Register_Event(strTempEventKey, eTrigger, [this, eSoundType, fVolume, eChannelType]() {
-              if(m_isPlaySound) m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume, Get_SoundChannel(eChannelType)); });
+            m_pModelCom->Register_Event(strTempEventKey, eTrigger, [this, eSoundType, fVolume, eChannelType, fRandomRatio, isRandom]() {
+                if (isRandom)
+                {
+                    _float fRandom = m_pGameInstance->Rand(0.f, 100.f);
+                    if (fRandom <= fRandomRatio)
+                        return;
+                }
+
+              if(m_isPlaySound) m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume, Get_SoundChannel(eChannelType));  });
         }
     };
 
 
     /* Idle*/
-    Register_EventGroup("SFX_Idle", 3, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::IDLE, 10.f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Idle", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::IDLE, 2.f, SOUND_CHANNEL::VOICE, 40.f, true);
     //Register_EventGroup("SFX_Idle_Rattle", 3, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::IDLE_RATTLE, 10.f, SOUND_CHANNEL::MOVE);
 
     /* Move */
@@ -1961,7 +1968,7 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
     Register_EventGroup("SFX_Move_Injure_L", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_R, 0.35f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Walk", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_WALK, 1.5f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Run", 12, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RUN, 1.f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Sprint_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_START, 0.6f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Move_Sprint_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_START, 5.f, SOUND_CHANNEL::VOICE, 20.f, true);
     Register_EventGroup("SFX_Move_Sprint", 16, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT, 0.45f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Sprint_Stop", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_STOP, 0.5f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Sprint_Rattle", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_RATTLE, 0.45f, SOUND_CHANNEL::MOVE);
@@ -1975,34 +1982,34 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
 
     /* Attack */
     Register_EventGroup("SFX_Attack_Gs_Weak1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK1, 0.8f, SOUND_CHANNEL::WEAPON);
-    Register_EventGroup("SFX_Attack_Gs_Weak1_Impact", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK1_IMPACT, 0.8f, SOUND_CHANNEL::WEAPON);
-    Register_EventGroup("SFX_Attack_Gs_Weak2", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK2, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Weak1_Impact", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK1_IMPACT, 0.8f, SOUND_CHANNEL::WEAPON); 
+    Register_EventGroup("SFX_Attack_Gs_Weak2", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK2, 0.8f, SOUND_CHANNEL::WEAPON);  
     Register_EventGroup("SFX_Attack_Gs_Weak3", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK3, 0.8f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Attack_Gs_Weak3_Impact", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK3_IMPACT, 0.8f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Attack_Gs_Weak3_Foley", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK3_FOLEY, 0.8f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Attack_Gs_Weak1_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK1_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
-    Register_EventGroup("SFX_Attack_Gs_Weak1_Charging_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK1_CHARGING_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Weak1_Charging_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK1_CHARGING_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON); 
     Register_EventGroup("SFX_Attack_Gs_Weak2_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK2_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
-    Register_EventGroup("SFX_Attack_Gs_Weak2_Charging_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK2_CHARGING_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Weak2_Charging_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_WEAK2_CHARGING_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);  
     Register_EventGroup("SFX_Attack_Gs_Strong", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_STRONG, 0.8f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Attack_Gs_Strong_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_STRONG_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Attack_Gs_Strong_Charging_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_STRONG_CHARGING_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Attack_Gs_Dodge_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_DODGE_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
-    Register_EventGroup("SFX_Attack_Gs_Dodge_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_DODGE_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Dodge_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_DODGE_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON); 
     Register_EventGroup("SFX_Attack_Gs_Dodge_Impact", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_DODGE_IMPACT, 0.8f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Attack_Gs_Brutal_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_BRUTAL_START, 0.8f, SOUND_CHANNEL::WEAPON);
-    Register_EventGroup("SFX_Attack_Gs_Brutal1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_BRUTAL1, 0.8f, SOUND_CHANNEL::WEAPON);
-    Register_EventGroup("SFX_Attack_Gs_Brutal2", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_BRUTAL2, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Attack_Gs_Brutal1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_BRUTAL1, 0.8f, SOUND_CHANNEL::WEAPON);  
+    Register_EventGroup("SFX_Attack_Gs_Brutal2", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_BRUTAL2, 0.8f, SOUND_CHANNEL::WEAPON);  
     Register_EventGroup("SFX_Attack_Gs_Fall", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::ATTACK_GS_FALL, 0.8f, SOUND_CHANNEL::WEAPON);
 
     /* Skill */
     Register_EventGroup("SFX_Skill_Gs_Breathtaking_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Skill_Gs_Breathtaking_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_START, 0.8f, SOUND_CHANNEL::EFFECT1);
-    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON); 
     Register_EventGroup("SFX_Skill_Gs_Breathtaking_Success", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_SUCCESS, 0.8f, SOUND_CHANNEL::EFFECT2);
     Register_EventGroup("SFX_Skill_Gs_Breathtaking_Bloodshed_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_BLOODSHED_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Skill_Gs_Breathtaking_Bloodshed_Charging_Success", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_BLOODSHED_CHARGING_SUCCESS, 0.8f, SOUND_CHANNEL::EFFECT1);
-    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Bloodshed_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_BLOODSHED_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Bloodshed_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_BLOODSHED_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON); 
     Register_EventGroup("SFX_Skill_Gs_Breathtaking_Bloodshed_Success", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_BREATHTAKING_BLOODSHED_SUCCESS, 0.8f, SOUND_CHANNEL::EFFECT2);
     Register_EventGroup("SFX_Skill_Gs_Gianthunt_Charging", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_GIANTHUNT_CHARGING, 0.8f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Skill_Gs_Gianthunt_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_GIANTHUNT_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
@@ -2022,6 +2029,23 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
     Register_EventGroup("SFX_Skill_Gs_Inner_Fury_Charging_Success", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_INNER_FURY_CHARGING_SUCCESS, 0.8f, SOUND_CHANNEL::EFFECT1);
     Register_EventGroup("SFX_Skill_Gs_Inner_Fury_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_GS_INNER_FURY_ATTACK, 0.8f, SOUND_CHANNEL::WEAPON);
 
+    /* ATTACK & SKILL VOICE */
+    Register_EventGroup("SFX_Move_Dodge_Front", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_MIDDLE, 0.7f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Move_Dodge_Rear", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_MIDDLE, 0.7f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Move_Dodge_Side", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_MIDDLE, 0.7f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Attack_Gs_Weak1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_NORMAL, 1.f, SOUND_CHANNEL::VOICE);   /// N
+    Register_EventGroup("SFX_Attack_Gs_Weak2", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_NORMAL, 1.f, SOUND_CHANNEL::VOICE);   /// N
+    Register_EventGroup("SFX_Attack_Gs_Weak3", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE);   /// S
+    Register_EventGroup("SFX_Attack_Gs_Strong", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE);  /// S
+    Register_EventGroup("SFX_Attack_Gs_Weak1_Charging_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE);  /// S
+    Register_EventGroup("SFX_Attack_Gs_Weak2_Charging_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE);  /// S
+    Register_EventGroup("SFX_Attack_Gs_Dodge_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_MIDDLE, 1.f, SOUND_CHANNEL::VOICE);   ///M
+    Register_EventGroup("SFX_Attack_Gs_Brutal1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_MIDDLE, 1.f, SOUND_CHANNEL::VOICE);        ///  M
+    Register_EventGroup("SFX_Attack_Gs_Brutal2", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE);        ///  S
+    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE);     ///  S
+    Register_EventGroup("SFX_Skill_Gs_Breathtaking_Bloodshed_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE); ///   S
+
+
     /* Disc */ 
     Register_EventGroup("SFX_GS_Weapon_Rustle", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GS_WEAPON_RUSTLE, 0.8f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_GS_Pose_Return1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GS_POSE_RETURN1, 0.8f, SOUND_CHANNEL::WEAPON);
@@ -2029,12 +2053,12 @@ HRESULT CBody_Khazan_GS::Ready_AnimationEvent_SFX()
     Register_EventGroup("SFX_GS_Pose_Return3", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GS_POSE_RETURN3, 0.8f, SOUND_CHANNEL::WEAPON);
 
     /* Damaged */
-    Register_EventGroup("SFX_Damaged_Normal", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::DAMAGED_NORMAL, 1.f, SOUND_CHANNEL::VOICE);
-    Register_EventGroup("SFX_Damaged_Hard", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::DAMAGED_HARD, 1.f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Damaged_Normal", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::DAMAGED_NORMAL, 4.f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Damaged_Hard", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::DAMAGED_HARD, 4.f, SOUND_CHANNEL::VOICE);
 
     /* Guard*/
-    Register_EventGroup("SFX_Guard_On_Gs", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_ON_GS, 1.f, SOUND_CHANNEL::WEAPON);
-    Register_EventGroup("SFX_Guard_Off_Gs", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_OFF_GS, 1.f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Guard_On_Gs", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_ON_GS, 7.f, SOUND_CHANNEL::EFFECT3);
+    Register_EventGroup("SFX_Guard_Off_Gs", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_OFF_GS, 7.f, SOUND_CHANNEL::EFFECT3);
     Register_EventGroup("SFX_Guard_Tunal", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_TUNAL, 1.f, SOUND_CHANNEL::EFFECT1);
     Register_EventGroup("SFX_Guard_Success", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_SUCCESS, 1.f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Justguard_Effect", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::JUSTGUARD_EFFECT, 1.f, SOUND_CHANNEL::EFFECT2);

@@ -19,6 +19,7 @@ public:
         class CImp_Melee* pOwner = { nullptr };
         _bool* pDissolve = { nullptr };
         _float* pDecreaseAlpha;
+
     }BODY_DESC;
 
 public:

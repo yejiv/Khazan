@@ -48,7 +48,8 @@ HRESULT CKhazan_SoundHelper::Initialize()
 	EmplaceGroup(MOVE_SPRINT_RATTLE, TEXT("sprint_stop_rattle_kz_01 (SFX)"), 7);
 	EmplaceGroup(MOVE_DODGE_FRONT, TEXT("PLYR_Dodge_Front_01 (SFX)"), 1);
 	EmplaceGroup(MOVE_DODGE_REAR, TEXT("PLYR_Dodge_Rear_01 (SFX)"), 1);
-	EmplaceGroup(MOVE_DODGE_SIDE, TEXT("khazan_dodge_stone_01 (SFX)"), 7);
+    EmplaceGroup(MOVE_DODGE_SIDE, TEXT("khazan_dodge_stone_01 (SFX)"), 7);
+    EmplaceGroup(MOVE_DODGE_VOICE, TEXT("khazan_dodge_stone_01 (SFX)"), 7);
 	EmplaceGroup(MOVE_FALL, TEXT("PLYR_Movement_Fall_01 (SFX)"), 1);
 	EmplaceGroup(MOVE_RANDING, TEXT("PLYR_Movement_Landing_Concrete_01 (SFX)"), 3);
 	EmplaceGroup(MOVE_CLIMB, TEXT("PLYR_Movement_Climb_Move_Wood_01 (SFX)"), 8);
@@ -205,6 +206,13 @@ HRESULT CKhazan_SoundHelper::Initialize()
     EmplaceGroup(GS_POSE_RETURN1, TEXT("efx_gsword_pose_return3_01 (SFX)"), 4); 
     EmplaceGroup(GS_POSE_RETURN2, TEXT("efx_gsword_pose_return4_01 (SFX)"), 4); 
     EmplaceGroup(GS_POSE_RETURN3, TEXT("efx_gsword_pose_return5_01 (SFX)"), 4); 
+
+    // =================================================================================
+    //  Attack Voice
+    // =================================================================================
+    EmplaceGroup(VOICE_ATTACK_NORMAL, TEXT("vo_pc_attack_normal_01 (Korean(KR))"), 7);
+    EmplaceGroup(VOICE_ATTACK_MIDDLE, TEXT("vo_pc_attack_middle_01 (Korean(KR))"), 14);
+    EmplaceGroup(VOICE_ATTACK_STRONG, TEXT("vo_pc_attack_strong_01 (Korean(KR))"), 11);
 
 
 	// =================================================================================

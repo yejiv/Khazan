@@ -633,7 +633,11 @@ void CBody_Khazan_Spear::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObje
             /* ?ä§?ÉúÎØ∏ÎÇò Í∞êÏÜå */
             m_pPlayerData->fCulStamina -= m_pPlayerData->fUsedStamina * 0.3f;
             *m_pParentIsCanStaminaRecovery = false;
+            return;
         }
+
+        /* damaged */
+
     }
 
 }
@@ -1787,10 +1791,11 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent()
 
 HRESULT CBody_Khazan_Spear::Ready_AnimationEvent_SFX()
 {
-    /* (?Ö∏?ã∞?åå?ù¥ ?Ç§ Í∞? , ?Ö∏?ã∞?åå?ù¥ ÏµúÎ?? ?àò, ÏßÑÏûÖ?†ê, ?Ç¨?ö¥?ìú Í∑∏Î£π ????ûÖ, Î≥ºÎ•®, ?ñ¥?ñ§ Ï±ÑÎÑê?Ç¨?ö© ) */
-    auto Register_EventGroup = [&](const string& strEventKey, _int iCount, ANIM_EVENT_TRIGGERTYPE eTrigger, SOUND_TYPE eSoundType, _float fVolume, SOUND_CHANNEL eChannelType) {
+    /* (≥Î∆º∆ƒ¿Ã ≈∞ ∞™ , ≥Î∆º∆ƒ¿Ã √÷¥Î ºˆ, ¡¯¿‘¡°, ªÁøÓµÂ ±◊∑Ï ≈∏¿‘, ∫º∑˝, æÓ∂≤ √§≥ŒªÁøÎ, »Æ∑¸¿˚¿∏∑Œ º“∏Æ ¿Áª˝«“ ∂ß ªÁøÎ«“ ∫Ò¿≤(0.f~100.f), »Æ∑¸¿˚¿∏∑Œ º“∏Æ ¿Áª˝«“ ∞«¡ˆ? ) */
+    auto Register_EventGroup = [&](const string& strEventKey, _int iCount, ANIM_EVENT_TRIGGERTYPE eTrigger, SOUND_TYPE eSoundType, _float fVolume, SOUND_CHANNEL eChannelType, _float fRandomRatio = 0.f, _bool isRandom = false) {
 
         if (iCount <= 0) return;
+
 
         for (_int i = 1; i <= iCount; ++i)
         {
@@ -1800,15 +1805,27 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent_SFX()
             ss << std::setw(2) << std::setfill('0') << i;
             strTempEventKey += "_" + ss.str();
 
-            m_pModelCom->Register_Event(strTempEventKey, eTrigger, [this, eSoundType, fVolume, eChannelType]() {
-            // m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume, Get_SoundChannel(eChannelType)); });
-            if(m_isPlaySound) m_pGameInstance->PlaySoundOnce( m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume,  Get_SoundChannel(eChannelType) ); });
-
+            m_pModelCom->Register_Event(strTempEventKey, eTrigger, [this, strEventKey, eSoundType, fVolume, eChannelType, fRandomRatio, isRandom]() {
+                if (isRandom)
+                {
+                    _float fRandom = m_pGameInstance->Rand(0.f, 100.f);
+                    if (fRandom <= fRandomRatio)
+                        return;
+                }
+                if (Has_Status(CKhazan_Spear::INJURED) && strEventKey == "SFX_Damaged_Hard")
+                {
+                    _float fRandom = m_pGameInstance->Rand(0.f, 100.f);
+                    if (fRandom <= 40.f)
+                        return;
+                }
+                if (m_isPlaySound) m_pGameInstance->PlaySoundOnce(m_pSoundHelper->Get_NextSoundKey(eSoundType, eChannelType), fVolume, Get_SoundChannel(eChannelType)); });
         }
         };
 
+
+
     /* Idle*/
-    Register_EventGroup("SFX_Idle", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::IDLE, 1.f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Idle", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::IDLE, 2.f, SOUND_CHANNEL::VOICE, 40.f, true);
     Register_EventGroup("SFX_Idle_Rattle", 3, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::IDLE_RATTLE, 1.f, SOUND_CHANNEL::MOVE);
 
     /* Move */
@@ -1816,7 +1833,7 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent_SFX()
     Register_EventGroup("SFX_Move_Injure_L", 9, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_INJURE_R, 2.85f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Walk", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_WALK, 2.22f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Run", 11, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_RUN, 2.22f, SOUND_CHANNEL::MOVE);
-    Register_EventGroup("SFX_Move_Sprint_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_START, 1.02f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Move_Sprint_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_START, 5.02f, SOUND_CHANNEL::VOICE, 70.f, true);
     Register_EventGroup("SFX_Move_Sprint", 16, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT, 1.02f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Sprint_Stop", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_STOP, 1.02f, SOUND_CHANNEL::MOVE);
     Register_EventGroup("SFX_Move_Sprint_Rattle", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::MOVE_SPRINT_RATTLE, 1.02f, SOUND_CHANNEL::MOVE);
@@ -1861,16 +1878,42 @@ HRESULT CBody_Khazan_Spear::Ready_AnimationEvent_SFX()
     Register_EventGroup("SFX_Skill_Spear_Shadow_Cleave_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_SPEAR_SHADOW_CLEAVE_START, 0.8f, SOUND_CHANNEL::WEAPON);
     Register_EventGroup("SFX_Skill_Spear_Shadow_Cleave_Impact", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SKILL_SPEAR_SHADOW_CLEAVE_IMPACT, 0.8f, SOUND_CHANNEL::WEAPON);
 
+    /* ATTACK & SKILL VOICE */
+    Register_EventGroup("SFX_Move_Dodge_Front", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_MIDDLE, 0.7f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Move_Dodge_Rear", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_MIDDLE, 0.7f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Move_Dodge_Side", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_MIDDLE, 0.7f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Attack_Spear_Weak1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_NORMAL, 1.f, SOUND_CHANNEL::VOICE);//n
+    Register_EventGroup("SFX_Attack_Spear_Weak2", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_NORMAL, 1.f, SOUND_CHANNEL::VOICE);//n
+    Register_EventGroup("SFX_Attack_Spear_Weak3", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE);//s
+    Register_EventGroup("SFX_Attack_Spear_Strong1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_NORMAL, 1.f, SOUND_CHANNEL::VOICE);//n
+    Register_EventGroup("SFX_Attack_Spear_Strong2", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_NORMAL, 1.f, SOUND_CHANNEL::VOICE);//n
+    Register_EventGroup("SFX_Attack_Spear_Strong3", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE);//s
+    Register_EventGroup("SFX_Attack_Spear_Strong_Charging_Attack", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE);//s
+    Register_EventGroup("SFX_Attack_Spear_Dodge", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_NORMAL, 1.f, SOUND_CHANNEL::VOICE);//n
+    Register_EventGroup("SFX_Attack_Spear_Weak_Sprint", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_NORMAL, 1.f, SOUND_CHANNEL::VOICE);//n
+    Register_EventGroup("SFX_Attack_Spear_Strong_Sprint", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_NORMAL, 1.f, SOUND_CHANNEL::VOICE);//n
+    Register_EventGroup("SFX_Attack_Spear_Brutal1", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_MIDDLE, 1.f, SOUND_CHANNEL::VOICE);//m
+    Register_EventGroup("SFX_Attack_Spear_Brutal2", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE);//s
+    Register_EventGroup("SFX_Attack_Spear_Fall", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE);//s
+    Register_EventGroup("SFX_Skill_Spear_Moonlight_Slash", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE);//s
+    Register_EventGroup("SFX_Skill_Spear_Full_Moon", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 1.f, SOUND_CHANNEL::VOICE);//s
+    Register_EventGroup("SFX_Skill_Spear_Spiral_Thrust_Impact", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_NORMAL, 1.f, SOUND_CHANNEL::VOICE);//n
+    Register_EventGroup("SFX_Skill_Spear_Spiral_Thrust_Whirlwind_Impact", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_STRONG, 0.8f, SOUND_CHANNEL::VOICE);//s
+    Register_EventGroup("SFX_Skill_Spear_Moment_Slash", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_NORMAL, 1.f, SOUND_CHANNEL::VOICE);//n
+    Register_EventGroup("SFX_Skill_Spear_Critical_Strike", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_NORMAL, 1.f, SOUND_CHANNEL::VOICE);//n
+    Register_EventGroup("SFX_Skill_Spear_Shadow_Cleave_Start", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::VOICE_ATTACK_NORMAL, 1.f, SOUND_CHANNEL::VOICE);//n
+
+
     /*  Pose  */
     Register_EventGroup("Spear_Pose_Return", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::SPEAR_POSE_RETURN, 1.f, SOUND_CHANNEL::WEAPON);
 
     /* Damaged */
-    Register_EventGroup("SFX_Damaged_Normal", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::DAMAGED_NORMAL, 1.f, SOUND_CHANNEL::VOICE);
-    Register_EventGroup("SFX_Damaged_Hard", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::DAMAGED_HARD, 1.f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Damaged_Normal", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::DAMAGED_NORMAL, 4.f, SOUND_CHANNEL::VOICE);
+    Register_EventGroup("SFX_Damaged_Hard", 2, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::DAMAGED_HARD, 4.f, SOUND_CHANNEL::VOICE);
 
     /* Guard*/
-    Register_EventGroup("SFX_Guard_On_Spear", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_ON_SPEAR, 1.f, SOUND_CHANNEL::WEAPON);
-    Register_EventGroup("SFX_Guard_Off_Spear", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_OFF_SPEAR, 1.f, SOUND_CHANNEL::WEAPON);
+    Register_EventGroup("SFX_Guard_On_Spear", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_ON_SPEAR, 7.f, SOUND_CHANNEL::EFFECT3);
+    Register_EventGroup("SFX_Guard_Off_Spear", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_OFF_SPEAR, 7.f, SOUND_CHANNEL::EFFECT3);
     Register_EventGroup("SFX_Guard_Foley", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_FOLEY, 1.f, SOUND_CHANNEL::EFFECT1);
     //Register_EventGroup("SFX_Guard_Success", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::GUARD_SUCCESS, 1.f, SOUND_CHANNEL::WEAPON);  ÏßÅÏ†ë Ï≤òÎ¶¨ ?Ö∏?ã∞?åå?ù¥x
     Register_EventGroup("SFX_Justguard_Effect", 1, ANIM_EVENT_TRIGGERTYPE::ENTER, SOUND_TYPE::JUSTGUARD_EFFECT, 1.f, SOUND_CHANNEL::EFFECT2);
