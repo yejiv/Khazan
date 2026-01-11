@@ -1376,6 +1376,7 @@ HRESULT CViper::Ready_AnimEvent()
     pModel->Register_Event("P1_StingGrab_Rush", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
         {
             m_isLookAt = false;
+            m_pWeapon->Set_OnAttackCollision_L(true);
             m_pController->Get_BlackBoard()->Set_Value<_bool>(m_strName, "isP1_StingGrab_Rush", true);
 
         });
@@ -1400,11 +1401,11 @@ HRESULT CViper::Ready_AnimEvent()
         {
             CCreature* pTarget = static_cast<CCreature*>(m_pTarget);
             pTarget->Take_Damage(350.f, HITREACTION::GRAB_FINISHED);
+            _vector vDir = m_pTransformCom->Get_State(STATE::LOOK);
+            pTarget->KnockBack(vDir,30,60.f);
+            CClientInstance::GetInstance()->Set_PlayerInput(true);
+
         });
-
-
-
-
 
 
 #pragma endregion

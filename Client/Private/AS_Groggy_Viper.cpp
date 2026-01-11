@@ -36,7 +36,7 @@ void CAS_Groggy_Viper::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     m_eState = GROGGY::START;
     m_vBonePosition = pViper->Get_LockOnPosition();
-
+    CClientInstance::GetInstance()->Set_PlayerInput(true);
     m_fBrutalAttackDelayTime = 0.5f;
 
 }
