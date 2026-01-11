@@ -60,7 +60,7 @@ HRESULT CLevel_Training::Initialize()
     for (_uint i = 0; i < 1; ++i)
     {
         CHECK_FAILED(Ready_Layer_MapObject_SubLV(TEXT("Layer_MapObject"), TEXT("Training"), i, LEVEL::TRAINING), E_FAIL);
-        //CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_MapObject"), TEXT("Training"), i, LEVEL::TRAINING), E_FAIL);
+        CHECK_FAILED(Ready_Layer_Monster_SubLV(TEXT("Layer_MapObject"), TEXT("Training"), i, LEVEL::TRAINING), E_FAIL);
     }
 
     //CHECK_FAILED(Ready_Layer_MapObject_Interactive(TEXT("Layer_MapObject_Interact"), TEXT("Training"), LEVEL::TRAINING), E_FAIL);
@@ -585,11 +585,11 @@ HRESULT CLevel_Training::Ready_Layer_Monster_SubLV(const _wstring& strLayerTag, 
             MonsterDesc.fRotationPerSec = 180.f;
 
             MonsterDesc.WorldMatrix = WorldMatrix;
-            MonsterDesc.strName = MonsterData.MonsterKey[i];
+            MonsterDesc.strName = "Gomdol";
             MonsterDesc.iLevelIndex = ENUM_CLASS(LEVEL::TRAINING);
 
             if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TRAINING), TEXT("Layer_Monster"),
-                ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_GameObject_Monster_Imp_Range"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
+                ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_GameObject_Monster_Gomdol"), TIME_CHANNEL::ENEMY, &MonsterDesc)))
                 return E_FAIL;
         }
     }
