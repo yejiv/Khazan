@@ -53,8 +53,6 @@ HRESULT CMainApp::Initialize()
 
 	Ready_Debug();
 
-    CHECK_FAILED(m_pGameInstance->Font_Load(TEXT("Blade_Medium_18"), "../../Client/Bin/Resources/Font/DNFForgedBlade-Medium.ttf", 18), E_FAIL);
-
 	return S_OK;
 }
 
@@ -191,6 +189,14 @@ HRESULT CMainApp::Ready_Prototype_ForStatic()
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_MotionTrail"),
         CMotionTrail::Create(m_pDevice, m_pContext))))
         return E_FAIL;
+
+    // Font
+    CHECK_FAILED(m_pGameInstance->Font_Load(TEXT("Blade_Medium_18"), "../../Client/Bin/Resources/Font/DNFForgedBlade-Medium.ttf", 18), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Font_Load(TEXT("Blade_Medium_20"), "../../Client/Bin/Resources/Font/DNFForgedBlade-Medium.ttf", 20), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Font_Load(TEXT("Blade_Medium_22"), "../../Client/Bin/Resources/Font/DNFForgedBlade-Medium.ttf", 22), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Font_Load(TEXT("Blade_Medium_24"), "../../Client/Bin/Resources/Font/DNFForgedBlade-Medium.ttf", 24), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Font_Load(TEXT("Blade_Medium_26"), "../../Client/Bin/Resources/Font/DNFForgedBlade-Medium.ttf", 26), E_FAIL);
+    CHECK_FAILED(m_pGameInstance->Font_Load(TEXT("Blade_Medium_28"), "../../Client/Bin/Resources/Font/DNFForgedBlade-Medium.ttf", 28), E_FAIL);
 
 	return S_OK;
 }
