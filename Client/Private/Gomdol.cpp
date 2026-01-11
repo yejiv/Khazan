@@ -17,7 +17,7 @@ CGomdol::CGomdol(const CGomdol& Prototype)
 
 _float4* CGomdol::Get_LockOnPosition()
 {
-    return nullptr;
+    return m_vLockOnPosition;
 }
 
 void CGomdol::Set_InitPosition()
