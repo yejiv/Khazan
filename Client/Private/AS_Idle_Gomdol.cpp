@@ -14,7 +14,7 @@ void CAS_Idle_Gomdol::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CGomdol* pGomdol = static_cast<CGomdol*>(pOwner);
     CModel* pModel = static_cast<CModel*>(pGomdol->Get_Body()->Get_Component(TEXT("Com_Model")));
 
-    pModel->Set_Animation(0);
+    pModel->Set_Animation(25);
 
 }
 

@@ -102,19 +102,29 @@ HRESULT CGomdol::Ready_Components()
     tCharVirDesc.eShapeType = SHAPE::CAPSULE;
     tCharVirDesc.vPos = vPos;
     tCharVirDesc.vQuat = vQuat;
-    tCharVirDesc.vShapeOffset = _float3(0.f, 2.1f, 0.f);
+    tCharVirDesc.vShapeOffset = _float3(0.f, 0.9f, 0.f);
     tCharVirDesc.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
     tCharVirDesc.fRadius = 1.f;
-    tCharVirDesc.fHeight = 2.f;
+    tCharVirDesc.fHeight = 0.3f;
     tCharVirDesc.fMaxSlopeAngle = 45.f;
+    tCharVirDesc.fMass = 10.f;
+    tCharVirDesc.fMaxStrength = 10.f;
+    tCharVirDesc.vStickToFloorStepDown = _float3(0.f, 0.f, 0.f);
+    tCharVirDesc.vWalkStairsStepUp = _float3(0.f, 0.f, 0.f);
+    tCharVirDesc.vWalkStairsStepDownExtra = _float3(0.f, 0.f, 0.f);
 
-    m_tCollisionDesc.pGameObject = this;
-    //pCollDesc.pInfo = ?? // 작성하기
-    tCharVirDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_tGomdolCharvir.pGameObject = this;
+    m_tGomdolCharvir.strName = TEXT("tGomdolChaVir");
+    m_tGomdolCharvir.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTER);
+    tCharVirDesc.pCollisionDesc = &m_tGomdolCharvir;
 
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_CharacterVirtual"),
         TEXT("Com_CharacterVirtual"), reinterpret_cast<CComponent**>(&m_pCharVirCom), &tCharVirDesc)))
         return E_FAIL;
+
+    m_pCharVirCom->Collision_Active(true);
+
+
 
     return S_OK;
 }

@@ -3457,7 +3457,7 @@ HRESULT CLoader::Loading_For_Training_Model()
 #pragma region Gomdol
     // Prototype_Component_Model_Gomdel
     if (FAILED(m_pGameInstance->Add_Prototype(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Gomdol"),
-    	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/BigBear/BigBear/BigBear.dat"))))
+    	CModel::Create(m_pDevice, m_pContext, "../Bin/Data/Monster/Model/BigBear/BigBear.dat"))))
     	return E_FAIL;
 #pragma endregion
 

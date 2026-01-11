@@ -36,6 +36,8 @@ private:
 
 private:
 	class CBody_Gomdol*				m_pBody = { nullptr };
+    COLLISION_DESC                  m_tGomdolCharvir = {};
+
 
 public:
 	static CGomdol*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
