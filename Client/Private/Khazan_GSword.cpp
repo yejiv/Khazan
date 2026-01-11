@@ -224,11 +224,14 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
 
     }
 
-    if (m_pGameInstance->Key_Down(DIK_O))
+    //if (m_pGameInstance->Key_Down(DIK_O))
+    //{
+    //    m_pClientInstance->Add_SkillExp(1000.f);
+    //}
+    if (m_pGameInstance->Key_Down(DIK_P))
     {
-        m_pClientInstance->Add_SkillExp(1000.f);
+        m_pPlayerData->fCulHp = 10.f;
     }
-
 }
 
 void CKhazan_GSword::Update(_float fTimeDelta)
@@ -531,10 +534,10 @@ void CKhazan_GSword::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGame
         break;
     case Client::HITREACTION::GRAB:
 
-        //if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
-        //if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
-        //if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
-        //Clear_Step1();
+        if (Has_State(CAT::M_ATTACK)) m_pAnimAttack->Exit();
+        if (Has_State(CAT::M_GUARD)) m_pAnimGuard->Exit();
+        if (Has_State(CAT::M_MOVE)) m_pAnimMove->Exit();
+        Clear_Step1();
         m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Burrow_Predation_Kazan_DamageHold");
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
         m_pCharVirCom->Begin_Ladder();
@@ -630,6 +633,8 @@ void CKhazan_GSword::Update_Stats(_float fTimeDelta)
             Clear_Step1();
             m_pBody->Get_Model()->Set_AnimationSet("Set_StaminaExhaustion");
             m_pClientInstance->Set_PlayerInput(false);     //?엯?젰 留됯린 
+
+            m_pGameInstance->PlaySoundOnce(TEXT("vo_pc_dmg_01 (Korean(KR)).wav"), 1.2f);
         }
 
         if (Has_Status(STAMINA_EXHAUSTION) && (m_pBody->Get_Model()->IsFinished()/* || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_StaminaExhaustion")*/))
@@ -710,7 +715,7 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
     }
 
     /* Fall ?긽?깭 理쒖슦?꽑 泥댄겕 */
-    if (Fall_Input(fTimeDelta))
+    if (!m_isGrab && !m_isGrabFinish  && Fall_Input(fTimeDelta))
         return;
 
     /* ?씠?쟾 ?긽?깭 ????옣*/
@@ -777,7 +782,7 @@ void CKhazan_GSword::Update_State(_float fTimeDelta)
         }
 
         // 怨듦꺽 以묒씪 ?븣?뒗 Move_Input?쓣 ?셿?쟾?엳 李⑤떒
-        if (!Has_State(CAT::M_ATTACK | CAT::M_GUARD | CAT::M_SKILL) && !m_pAnimAttack->Is_Attacking() && m_pAnimAttack)
+        if (!Has_State(CAT::M_ATTACK | CAT::M_GUARD | CAT::M_SKILL) && !m_pAnimAttack->Is_Attacking() && m_pAnimAttack && !m_pAnimInteraction->Is_Heal())
             Move_Input(fTimeDelta);
 
         if (Has_State(CAT::M_ATTACK | CAT::M_SKILL))
@@ -1756,6 +1761,7 @@ _bool CKhazan_GSword::Interaction_Input(_float fTimeDelta)
     {
         m_pGameInstance->Update_Effect_World(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma_Arm"), m_FXIdx[FX_LACRIMA], mat_arm, (m_Offset_Matrix * mat_arm * m_pTransformCom->Get_WorldMatrix()).r[3]);
         m_pGameInstance->Update_Effect_Position(m_pGameInstance->Get_CurrentLevelID(), TEXT("Lachryma"), m_FXIdx[FX_LACRIMA_HAND], (m_Offset_Matrix * mat_hand * m_pTransformCom->Get_WorldMatrix()).r[3]);
+        Clear_Step2();
     }
 
     return false;

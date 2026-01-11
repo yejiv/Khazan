@@ -249,9 +249,9 @@ void CE_Body_Khazan_Spear::Render_Part(CModel* pModel)
         if (FAILED(pModel->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i)))
             continue;
 
-        //  m_pShaderCom->Begin(1);
+        m_pShaderCom->Begin(1);
         // Blink Rim Light Test
-        m_pShaderCom->Begin(12);
+        //  m_pShaderCom->Begin(12);
         pModel->Render(i);
     }
 }

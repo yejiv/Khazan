@@ -74,6 +74,12 @@ public:
     void Set_EnableRimLight(_bool isEnable) { m_isEnableRimLight = isEnable; }
     const RENDERGROUP& Get_CurrentRenderGroup() { return m_CurRenderGroup; }
 
+    // RenderTarget Debug
+    void Set_UnlitMode(_bool isEnable) { m_isUnlitMode = isEnable; }
+    void Set_LitMode(_bool isEnable) { m_isLitMode = isEnable; }
+    void Set_EnableSpecular(_bool isEnable) { m_isEnableSpecular = isEnable; }
+    void Set_EnableBloom(_bool isEnable) { m_isEnableBloom = isEnable; }
+
 private:
 	ID3D11Device*				m_pDevice = { nullptr };
 	ID3D11DeviceContext*		m_pContext = { nullptr };
@@ -109,6 +115,12 @@ private:
     // Rim Light
     _bool                       m_isEnableRimLight = { true };
     RIM_LIGHT_DESC              m_RimLightDesc = { 5.f, false, 1.f, 0.3f };
+
+    // Render ON / OFF
+    _bool                       m_isUnlitMode = {};
+    _bool                       m_isLitMode = {};
+    _bool                       m_isEnableSpecular = {};
+    _bool                       m_isEnableBloom = { true };
 
 #ifdef _DEBUG
 private:
