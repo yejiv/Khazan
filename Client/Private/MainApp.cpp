@@ -77,6 +77,7 @@ void CMainApp::Update(_float fTimeDelta)
 	m_pGameInstance->Update_Engine(tTimeDelta);
 	m_pClientInstance->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 	
+    KeyInput_Render(fTimeDelta);
 }
 
 HRESULT CMainApp::Render()
@@ -736,6 +737,78 @@ HRESULT CMainApp::Ready_DebugTool()
 
 		
 	return S_OK;
+}
+
+void CMainApp::KeyInput_Render(_float fTimeDelta)
+{
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    {
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
+        {
+            m_pGameInstance->Set_UnlitMode(true);
+            m_pGameInstance->Set_LitMode(false);
+            m_pGameInstance->Set_EnableSpecular(false);
+            m_pGameInstance->Set_EnableRimLight(false);
+            m_pGameInstance->Set_EnableToonShade(false);
+            m_pGameInstance->Set_EnableSSAO(false);
+            m_pGameInstance->Set_EnableShadow(false);
+            m_pGameInstance->Set_EnableFog(false);
+            m_pGameInstance->Set_EnableBloom(false);
+            m_pGameInstance->Set_EnableMotionBlur(false);
+            m_pGameInstance->Set_EnableLUT(false);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+        {
+            m_pGameInstance->Set_LitMode(true);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+        {
+            m_pGameInstance->Set_EnableSpecular(true);
+            m_pGameInstance->Set_EnableRimLight(true);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
+        {
+            m_pGameInstance->Set_EnableToonShade(true);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
+        {
+            m_pGameInstance->Set_EnableSSAO(true);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD5))
+        {
+            m_pGameInstance->Set_UnlitMode(false);
+            m_pGameInstance->Set_EnableShadow(true);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
+        {
+            m_pGameInstance->Set_EnableFog(true);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD7))
+        {
+            m_pGameInstance->Set_EnableBloom(true);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD8))
+        {
+            m_pGameInstance->Set_EnableMotionBlur(true);
+            MOTION_BLUR_DESC Desc = m_pGameInstance->Get_MotionBlurDesc();
+            Desc.fStrength = 0.6f;  // Default 0.45
+            m_pGameInstance->Set_MotionBlurDesc(Desc);
+        }
+
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD9))
+        {
+            m_pGameInstance->Set_EnableLUT(true);
+            m_pGameInstance->Set_LUTIntensity(0.5f);    // Default 0.1
+        }
+    }
 }
 
 CMainApp* CMainApp::Create()

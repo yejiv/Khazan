@@ -22,26 +22,55 @@ HRESULT CAI_Controller_Gomdol::Initialize(CCreature* pOwner)
         return E_FAIL;
 
     m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+    m_isActiveController = true;
 
     return S_OK;
 }
 
 void CAI_Controller_Gomdol::Update(CGameObject* pOwner, _float fTimeDelta)
 {
-    m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
-    Update_Aggro(pOwner, fTimeDelta);
 
-    _float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+   {
 
-    if (m_pBB->Get_Value<_bool>(m_strMonstertag, "HasAggro"))
-        m_pBB->Set_Value<_float>(m_strMonstertag, "CurrentTime", fPervTime + fTimeDelta);
-    else
-        m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
+       if (m_pGameInstance->Key_Down(DIK_B))
+       {
+           CGomdol* pGomdol = static_cast<CGomdol*>(pOwner);
+           m_isActiveController = false;
+           pGomdol->Get_Transform()->Set_State(STATE::POSITION, XMVectorSet(-4.f, 0.f, 17.78f, 1.f));
+           pGomdol->Set_InitPosition();
+           m_pBB->Set_Value<_bool>(m_strMonstertag, "isDetected",false);
+           m_pFSM->Change_State(ENUM_CLASS(GOMDOL_STATE::SLEEP), pGomdol);
+
+       }
+       if (m_pGameInstance->Key_Down(DIK_N))
+       {
+           CGomdol* pGomdol = static_cast<CGomdol*>(pOwner);
+           m_isActiveController = true;
+           m_pBB->Set_Value<_bool>(pGomdol->Get_Name(), "isSleep", false);
+           m_pBB->Set_Value<_bool>(m_strMonstertag, "isDetected", false);
+           m_pFSM->Change_State(ENUM_CLASS(GOMDOL_STATE::SLEEP), pGomdol);
+           
+       }
+   }
+
+    if (m_isActiveController)
+    {
+        m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
+        Update_Aggro(pOwner, fTimeDelta);
+
+        _float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
+
+        if (m_pBB->Get_Value<_bool>(m_strMonstertag, "HasAggro"))
+            m_pBB->Set_Value<_float>(m_strMonstertag, "CurrentTime", fPervTime + fTimeDelta);
+        else
+            m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
 
-    if (!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
-        m_pBT->Update();
-
+        if (!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
+            m_pBT->Update();
+      
+    }
     m_pFSM->Update(pOwner, fTimeDelta);
 }
 
@@ -196,6 +225,29 @@ CONDITION CAI_Controller_Gomdol::GetCallbackCondition(CGameObject* pOwner, const
 
 #pragma region ATTACK SELECTOR
 
+
+    else if ("ComboAttack" == name)
+    {
+        return [pGomdol](CBlackBoard* BB)->_bool
+            {
+                _float fDist = BB->Get_Value<_float>(pGomdol->Get_Name(), "TargetDist");
+                _float fAttackRanage = BB->Get_Value<_float>(pGomdol->Get_Name(), "AttackRange");
+
+                if (fDist <= fAttackRanage)
+                {
+
+                    _bool isDamaged = BB->Get_Value<_bool>(pGomdol->Get_Name(), "DamageInterrupt");
+                    if (isDamaged)
+                        return false;
+
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
     else if ("FrontAttack" == name)
     {
         return [pGomdol](CBlackBoard* BB)->_bool
@@ -308,6 +360,32 @@ ACTION CAI_Controller_Gomdol::GetCallbackAction(CGameObject* pOwner, const strin
 
 
 #pragma region ATTACK SELECTOR
+
+    
+    else if ("ComboAttack" == name)
+    {
+        return [pGomdol](CBlackBoard* BB)-> BTNODESTATE
+            {
+
+                _bool isDamaged = BB->Get_Value<_bool>(pGomdol->Get_Name(), "DamageInterrupt");
+                if (isDamaged)
+                    return BTNODESTATE::FAILURE;
+
+                if (BB->Get_Value<_bool>(pGomdol->Get_Name(), "isComboAttackFinished"))
+                {
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pGomdol->Get_Name(), "isComboAttack", true);
+
+                pGomdol->Get_Controller()->Get_State_Machine()->
+                    Change_State(ENUM_CLASS(GOMDOL_STATE::COMBOATTACK), pGomdol);
+                return BTNODESTATE::RUNNING;
+
+
+            };
+    }
+
 
     else if ("FrontAttack" == name)
     {
@@ -442,6 +520,23 @@ TERMINATE CAI_Controller_Gomdol::GetCallbackTeminate(CGameObject* pOwner, const 
 
 
 #pragma region ATTACK SELECTOR
+
+    else if ("ComboAttack" == name)
+    {
+        return [pGomdol](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pGomdol->Get_Name(), "isComboAttack", false);
+                    BB->Set_Value<_bool>(pGomdol->Get_Name(), "isComboAttackFinished", false);
+                }
+            };
+    }
+
+
 
     else if ("FrontAttack" == name)
     {

@@ -1,0 +1,66 @@
+#include "AS_ComboAttack_Gomdol.h"
+#include "AI_Controller.h"
+#include "Gomdol.h"
+#include "GameInstance.h"
+#include "BlackBoard.h"
+#include "Body_Gomdol.h"
+#include "FSM_Gomdol.h"
+
+CAS_ComboAttack_Gomdol::CAS_ComboAttack_Gomdol()
+{
+}
+
+void CAS_ComboAttack_Gomdol::Enter(CStateMachine* pFSM, CGameObject* pOwner)
+{
+    CGomdol* pYetuga = static_cast<CGomdol*>(pOwner);
+    CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+    CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+    pModel->Set_Animation(14);
+}
+
+void CAS_ComboAttack_Gomdol::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
+{
+    CGomdol* pYetuga = static_cast<CGomdol*>(pOwner);
+    CModel* pModel = static_cast<CModel*>(pYetuga->Get_Body()->Get_Component(TEXT("Com_Model")));
+
+    if (pModel->Play_Animation(fTimeDelta))
+    {
+        CBlackBoard* pBB = pYetuga->Get_Controller()->Get_BlackBoard();
+        pBB->Set_Value<_bool>(pYetuga->Get_Name(), "isComboAttackFinished", true);
+        pFSM->Change_State(ENUM_CLASS(GOMDOL_STATE::IDLE), pOwner);
+
+    }
+}
+
+void CAS_ComboAttack_Gomdol::Exit(CStateMachine* pFSM, CGameObject* pOwner)
+{
+
+}
+
+void CAS_ComboAttack_Gomdol::OnCollision(COLLISION_DESC* pDesc, _uint iCollisionLayer, CGameObject* pOwner)
+{
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iCollisionLayer);
+
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        CCreature* pTarget = static_cast<CCreature*>(pDesc->pGameObject);
+        pTarget->Take_Damage(30.f, HITREACTION::KNOCKBACK_WEAK);
+        CTransform* pOwnerTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
+        if (nullptr == pOwnerTransform)
+            return;
+
+        _vector vLook = pOwnerTransform->Get_State(STATE::LOOK);
+        pTarget->KnockBack(vLook, 15.f, 60.f);
+
+    }
+}
+
+CAS_ComboAttack_Gomdol* CAS_ComboAttack_Gomdol::Create()
+{
+    return new CAS_ComboAttack_Gomdol();
+}
+
+void CAS_ComboAttack_Gomdol::Free()
+{
+    __super::Free();
+}

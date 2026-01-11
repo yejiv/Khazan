@@ -15,10 +15,8 @@ void CAS_Hit_Gomdol::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CModel* pModel = static_cast<CModel*>(pGomdol->Get_Body()->Get_Component(TEXT("Com_Model")));
     CBlackBoard* pBB = pGomdol->Get_Controller()->Get_BlackBoard();
     HITREACTION eHitreaction = static_cast<HITREACTION>(pBB->Get_Value<_uint>(pGomdol->Get_Name(), "DamageType"));
-    DIRECTION_INFO Info{};
-    Info.iDirFlag = pBB->Get_Value<_uint>(pGomdol->Get_Name(), "HitDirection");
 
-    HIT_DIR eHitDir = Convert_HitFlag(Info);
+    HIT_DIR eHitDir = Convert_HitFlag(pGomdol->Get_HitDirInfo());
     _uint iAnimIndex = Make_AnimIndex(eHitreaction, eHitDir);
 
     pModel->Set_Animation(iAnimIndex);
