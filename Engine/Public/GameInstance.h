@@ -82,13 +82,13 @@ public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pRenderObject);
     HRESULT Add_RenderComponent(class CComponent* pComponent);
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 public:
 	void Set_EnableShadow(_bool isEnable);
 	void Set_EnableSSAO(_bool isEnable);
 	void Set_EnableToonShade(_bool isEnable);
 	void Set_EnableOutline(_bool isEnable);
-#endif
+//  #endif
 
 public:
 	void Set_ToonShadeLevel(_float fLevel);
@@ -176,10 +176,10 @@ public:
 
 	ID3D11DepthStencilView* Get_CurrentDSV_AddRef();
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 	HRESULT Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT Render_RT_Debug(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
-#endif
+//  #endif
 #pragma endregion
 
 #pragma region PICKING 
@@ -365,10 +365,10 @@ public:
 
     const SHADOW_DESC&  Get_ShadowDesc() const;
     void                Set_ShadowDesc(const SHADOW_DESC& Desc);
-#ifdef _DEBUG
+//  #ifdef _DEBUG
     HRESULT				Ready_Shadow_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
     HRESULT				Render_Shadow_Debug(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
-#endif
+//  #endif
 #pragma endregion
 
 #pragma region SSAO

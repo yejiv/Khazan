@@ -65,7 +65,6 @@ void CLevel_Title::Update(_float fTimeDelta)
             m_isOpenLevel = true;
         }
     }
-
     if (!m_isOpenLevel)
     {
         if (m_pGameInstance->Key_Down(DIK_NUMPAD9, INPUT_TYPE::FORCE))
@@ -78,7 +77,6 @@ void CLevel_Title::Update(_float fTimeDelta)
                 m_isOpenLevel = true;
             }
         }
-
     }
 
 	return;

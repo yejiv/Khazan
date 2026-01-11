@@ -25,6 +25,10 @@ HRESULT CShadow::Initialize()
 	m_Desc.fBias = 0.001f;
 	m_Desc.fIntensity = 0.6f;
 
+    m_pShader = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Font.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements);
+    if (nullptr == m_pShader)
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -172,7 +176,7 @@ void CShadow::Clear_DSV()
     m_pContext->ClearDepthStencilView(m_pShadowDSV, D3D11_CLEAR_DEPTH, 1.f, 0);	
 }
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 HRESULT CShadow::Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
 {
 	_uint			iNumViewports = { 1 };
@@ -183,6 +187,8 @@ HRESULT CShadow::Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
     XMStoreFloat4x4(&m_WorldMatrix, XMMatrixScaling(fSizeX, fSizeY, 1.f));
     m_WorldMatrix._41 = fX - ViewportDesc.Width * 0.5f;
     m_WorldMatrix._42 = -fY + ViewportDesc.Height * 0.5f;
+
+    m_vLTPos = { fX - (fSizeX * 0.5f), fY - (fSizeY * 0.5f) };
 
 	return S_OK;
 }
@@ -200,9 +206,25 @@ HRESULT CShadow::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
     pVIBuffer->Bind_Resources();
     pVIBuffer->Render();
 
+    // Font 출력
+    m_pShader->Begin(0);
+
+    // Outline
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), TEXT("RT_Shadow"), m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), TEXT("RT_Shadow"), m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), TEXT("RT_Shadow"), m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), TEXT("RT_Shadow"), m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), TEXT("RT_Shadow"), m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), TEXT("RT_Shadow"), m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), TEXT("RT_Shadow"), m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), TEXT("RT_Shadow"), m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+
+    // Fill
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), TEXT("RT_Shadow"), m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(0.f, 0.f, 0.f, 1.f));
+
 	return S_OK;
 }
-#endif
+//  #endif
 
 HRESULT CShadow::Ready_ShaderResources()
 {
@@ -266,6 +288,8 @@ CShadow* CShadow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 void CShadow::Free()
 {
     __super::Free();
+
+    Safe_Release(m_pShader);
 
     Safe_Release(m_pShadowSRV);
     Safe_Release(m_pShadowDSV);

@@ -240,6 +240,15 @@ void CBody_Khazan_GS::Update(_float fTimeDelta)
     m_isAttackActive = m_pBodyCom_Attack->Get_Collision_Active()
         || m_pBodyCom_RangeAttack->Get_Collision_Active()
         || m_pBodyCom_BodyAttack->Get_Collision_Active();
+
+    if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
+    {
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
+            m_isEnableEdge = false;
+
+        if (m_pGameInstance->Key_Down(DIK_NUMPAD3))
+            m_isEnableEdge = true;
+    }
 }
 
 void CBody_Khazan_GS::Late_Update(_float fTimeDelta)
@@ -299,6 +308,9 @@ HRESULT CBody_Khazan_GS::Render()
 
     _float3 vRimColor = _float3(1.f, 0.f, 0.f);
     if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float3))))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableEdge", &m_isEnableEdge)))
         return E_FAIL;
 
     _uint    iNumMeshes = m_pModelCom->Get_NumMeshes();
