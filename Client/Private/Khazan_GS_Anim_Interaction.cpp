@@ -261,7 +261,10 @@ _bool CKhazan_GS_Anim_Interaction::Is_Lachryma() const
 
 _bool CKhazan_GS_Anim_Interaction::Is_Heal() const
 {
-    return m_iHealAnimIndex == m_pModel->Get_CurAnimIndex();
+    _bool isHeal = m_iHealAnimIndex == m_pModel->Get_CurAnimIndex();
+    if (isHeal && *m_pModel->Get_CurTrackPosition() == m_pModel->Get_CurDuration())
+        return false;
+    return isHeal;
 }
 
 CKhazan_GS_Anim_Interaction* CKhazan_GS_Anim_Interaction::Create()

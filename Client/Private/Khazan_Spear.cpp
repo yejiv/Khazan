@@ -186,7 +186,7 @@ void CKhazan_Spear::Update(_float fTimeDelta)
     if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_P))
     {
 
-        m_pCharVirCom->Teleport(XMVectorSet(120.f, 8.f, 116.f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
+        m_pCharVirCom->Teleport(XMVectorSet(410.3f, 6.f, 360.6f, 1.f), m_pTransformCom->Get_Rotation_Quat(), m_pTransformCom);
 
     }
     if (m_pGameInstance->Key_Pressing(DIK_LSHIFT, fTimeDelta) && m_pGameInstance->Key_Down(DIK_M))
@@ -472,6 +472,8 @@ void CKhazan_Spear::Take_Damage(_float fDamage, HITREACTION eHitreaction, CGameO
         m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F");
         m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
 
+        m_iCurAnimIndex = m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_Spear_Com_Down_Loop_F");
+        m_pBody->Get_Model()->Set_Animation(m_iCurAnimIndex);
         break;
     case Client::HITREACTION::BRUTAL_ATTACK:
         break;
@@ -567,6 +569,8 @@ void CKhazan_Spear::Update_Stats(_float fTimeDelta)
             Add_Status(STAMINA_EXHAUSTION);
             m_pBody->Get_Model()->Set_AnimationSet("Set_StaminaExhaustion");
             m_pClientInstance->Set_PlayerInput(false);     //입력 막기 
+
+            m_pGameInstance->PlaySoundOnce(TEXT("vo_pc_dmg_01 (Korean(KR)).wav"), 1.2f);
         }
 
         if (Has_Status(STAMINA_EXHAUSTION) && (m_pBody->Get_Model()->IsFinished()/* || m_pBody->Get_Model()->Get_CurAnimIndex() != m_pBody->Get_Model()->Get_AnimIndexByName("CA_P_Kazan_StaminaExhaustion")*/))

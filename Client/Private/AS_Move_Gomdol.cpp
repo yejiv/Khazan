@@ -22,20 +22,15 @@ void CAS_Move_Gomdol::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
     if (Info.iStateFlag == Info.WALK)
     {
-       /* m_fSpeedPerSec = pTransform->Get_SpeedPerSec();
-        pModel->Set_Animation(1);
-        m_AnimationSpeed = 1.f;*/
-        m_fSpeedPerSec = pBB->Get_Value<_float>(pGomdol->Get_Name(), "RunSpeed");
-        pModel->Set_Animation(2);
-        m_AnimationSpeed = 1.25f;
+        m_fSpeedPerSec = 3.f;
+        pModel->Set_Animation(26);
 
 
     }
     else if (Info.iStateFlag == Info.RUN)
     {
         m_fSpeedPerSec = pBB->Get_Value<_float>(pGomdol->Get_Name(), "RunSpeed");
-        pModel->Set_Animation(2);
-        m_AnimationSpeed = 1.25f;
+        pModel->Set_Animation(22);
     }
 
 
@@ -58,7 +53,7 @@ void CAS_Move_Gomdol::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
             m_fSpeedPerSec,
             fTimeDelta);
 
-    if (pModel->Play_Animation(fTimeDelta * m_AnimationSpeed)) {}
+    if (pModel->Play_Animation(fTimeDelta)) {}
 
 
 }

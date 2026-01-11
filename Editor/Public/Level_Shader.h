@@ -54,9 +54,8 @@ private:
 	_bool					m_isRenderShadow = { false };
 	_bool					m_isRenderSSAO = { true };
 	_bool					m_isEnableEmissive = {};
-	_bool					m_isEnableBloom = {};
 	_bool					m_isEnableFog = { false };
-	_bool					m_isEnableToonShade = {};
+	_bool					m_isEnableToonShade = { true };
 	_bool					m_isEnableOutline = {};
 	_bool					m_isEnableVignette = {};
     _bool                   m_isEnableLUT = {};
@@ -65,6 +64,10 @@ private:
     _bool                   m_isEnableEdge = { true };
     _bool                   m_isEnableRimLight = { true };
     _bool                   m_isEnableMotionTrail = {};
+    _bool                   m_isUnlitMode = {};
+    _bool                   m_isLitMode = {};
+    _bool                   m_isEnableSpecular = {};
+    _bool                   m_isEnableBloom = { true };
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
