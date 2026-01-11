@@ -11,6 +11,7 @@ private:
 	virtual ~CGomdol() = default;
 
 public:
+    DIRECTION_INFO                  Get_HitDirInfo() const { return m_tHitDirInfo; }
 	virtual _float4*				Get_LockOnPosition();
 	class CBody_Gomdol*				Get_Body() { return m_pBody; }
     void                            Set_InitPosition();
@@ -36,8 +37,12 @@ private:
 
 private:
 	class CBody_Gomdol*				m_pBody = { nullptr };
+    class CMon_HP*                  m_pUI_HP = { nullptr };
+
     COLLISION_DESC                  m_tGomdolCharvir = {};
 
+    _bool                           m_isDetected = { false };
+    DIRECTION_INFO                  m_tHitDirInfo = {};
 
 public:
 	static CGomdol*					Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
