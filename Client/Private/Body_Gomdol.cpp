@@ -83,17 +83,13 @@ void CBody_Gomdol::Update(_float fTimeDelta)
     {
         m_pLH_BodyCom->Activate(true);
         m_pRH_BodyCom->Activate(true);
-#ifdef _DEBUG
-        //m_pGameInstance->Set_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
-#endif
+
     }
     else
     {
         m_pLH_BodyCom->Activate(false);
         m_pRH_BodyCom->Activate(false);
-#ifdef _DEBUG
-        m_pGameInstance->Remove_DrawFilter(ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK));
-#endif
+
     }
 
 
@@ -152,7 +148,7 @@ HRESULT CBody_Gomdol::Ready_Components()
         TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom), nullptr)))
         return E_FAIL;
 
-    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_Component_Model_Gomdol"),
+    if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::TRAINING), TEXT("Prototype_Component_Model_Gomdol"),
         TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom), nullptr)))
         return E_FAIL;
 

@@ -226,6 +226,7 @@
     <ClInclude Include="..\Public\AS_FrontAttack_Gomdol.h" />
     <ClInclude Include="..\Public\AS_Groggy_Viper.h" />
     <ClInclude Include="..\Public\AS_Groggy_Yetuga.h" />
+    <ClInclude Include="..\Public\AS_Hit_Gomdol.h" />
     <ClInclude Include="..\Public\AS_Hit_Imp_Melee.h" />
     <ClInclude Include="..\Public\AS_Hit_Imp_Range.h" />
     <ClInclude Include="..\Public\AS_Hit_Viper.h" />
@@ -690,6 +691,7 @@
     <ClCompile Include="..\Private\AS_Halberd_Turn.cpp" />
     <ClCompile Include="..\private\AS_Elamein_Turn.cpp" />
     <ClCompile Include="..\Private\AS_Groggy_Viper.cpp" />
+    <ClCompile Include="..\Private\AS_Hit_Gomdol.cpp" />
     <ClCompile Include="..\Private\AS_Hit_Viper.cpp" />
     <ClCompile Include="..\Private\AS_P2_BackJump_Viper.cpp" />
     <ClCompile Include="..\Private\AS_P2_BerserkerJump_Viper.cpp" />
