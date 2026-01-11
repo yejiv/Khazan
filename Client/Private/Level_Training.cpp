@@ -28,6 +28,7 @@
 //TEST
 #include "UI_Inven.h"
 
+#include "Fence.h"
 #include "Destructible_Stone.h"
 #include "Chunk.h"
 #pragma endregion
@@ -76,6 +77,8 @@ HRESULT CLevel_Training::Initialize()
     //CHECK_FAILED(Ready_SoundSetting(), E_FAIL);
 
     CHECK_FAILED(Ready_ShaderSettings(), E_FAIL);
+
+    CHECK_FAILED(Raedy_DestructibleObject(), E_FAIL);
 
     if (!Wait_All_Futures())
         return E_FAIL;
@@ -1234,6 +1237,46 @@ HRESULT CLevel_Training::Ready_ShaderSettings()
 
     // 프리즈너 비네트 활성화
     m_pGameInstance->Set_EnableVignette(true, 4.f);
+
+    return S_OK;
+}
+
+HRESULT CLevel_Training::Raedy_DestructibleObject()
+{
+    CFence::PROP_FENCE_DESC FenceDesc = {};
+
+    FenceDesc.eLevel = LEVEL::TRAINING;
+
+    _matrix WorldMatrix = XMMatrixIdentity();
+
+    WorldMatrix.r[0] = XMVector3Normalize(WorldMatrix.r[0]);
+    WorldMatrix.r[1] = XMVector3Normalize(WorldMatrix.r[1]);
+    WorldMatrix.r[2] = XMVector3Normalize(WorldMatrix.r[2]);
+    WorldMatrix.r[3] = XMVectorSet(27.356f, -1.405f, -1.4f, 1.f);
+    XMStoreFloat4x4(&FenceDesc.WorldMatrix, WorldMatrix);
+
+    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TRAINING), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(LEVEL::TRAINING),
+        TEXT("Prototype_GameObject_Prop_Fence"), TIME_CHANNEL::MAP, &FenceDesc), E_FAIL);
+
+    CPot::PROP_POT_DESC PotDesc = {};
+
+    PotDesc.eLevel = LEVEL::TRAINING;
+
+    WorldMatrix.r[3] = XMVectorSet(30.356f, -1.405f, -1.4f, 1.f);
+    XMStoreFloat4x4(&PotDesc.WorldMatrix, WorldMatrix);
+
+    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TRAINING), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(LEVEL::TRAINING),
+        TEXT("Prototype_GameObject_Prop_Pot"), TIME_CHANNEL::MAP, &PotDesc), E_FAIL);
+
+    CBarrel::PROP_BARREL_DESC BarrelDesc = {};
+
+    BarrelDesc.eLevel = LEVEL::TRAINING;
+
+    WorldMatrix.r[3] = XMVectorSet(33.356f, -1.405f, -1.4f, 1.f);
+    XMStoreFloat4x4(&BarrelDesc.WorldMatrix, WorldMatrix);
+
+    CHECK_FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::TRAINING), TEXT("Layer_MapObject_Interact"), ENUM_CLASS(LEVEL::TRAINING),
+        TEXT("Prototype_GameObject_Prop_Barrel"), TIME_CHANNEL::MAP, &BarrelDesc), E_FAIL);
 
     return S_OK;
 }
