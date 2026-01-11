@@ -19,6 +19,11 @@ _float4* CGomdol::Get_LockOnPosition()
     return nullptr;
 }
 
+void CGomdol::Set_InitPosition()
+{
+    m_pCharVirCom->Set_Position(XMVectorSet(-4.f, 0.f, 17.78f, 1.f));
+}
+
 HRESULT CGomdol::Initialize_Prototype()
 {
  

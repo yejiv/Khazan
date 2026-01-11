@@ -2242,10 +2242,8 @@ HRESULT CViper::Ready_AnimEvent()
             // 왼손 공격 콜라이더 ON
             m_pPahse2Body->Set_OnAttackCollision(true);
             CClientInstance::GetInstance()->ActiveCamera_Shaking(3.f, 1.f);
-            SFX_STOMP_P2(1);
-
             //Mon_vo_viper_p2_jump_atk_jump_01 (SFX).wav
-            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_jump_atk_stomp_01 (SFX).wav"), 1.f);
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_viper_p2_jump_atk_stomp_01 (SFX).wav"), 0.7f);
 
         });
 

@@ -73,19 +73,19 @@ void CAI_Controller_Viper::Update(CGameObject* pOwner, _float fTimeDelta)
 
     //    m_pBB->Set_Value<_bool>(m_strMonstertag, "is_Berserker", true);
 
-    if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
-    {
+    //if (m_pGameInstance->Key_Pressing(DIK_RSHIFT, fTimeDelta))
+    //{
 
-        if (m_pGameInstance->Key_Down(DIK_B))
-        {
-            //m_pBB->Set_Value<_uint>(m_strMonstertag,"DebugIndex",0);
-            CViper* pViper = static_cast<CViper*>(pOwner);
-            //pViper->Set_PhaseWeapon_Phase2();
-            pViper->Set_Weapon_Phase1();
-            m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::STINGGRAB), pViper);
-        }
-    }
+    //    if (m_pGameInstance->Key_Down(DIK_B))
+    //    {
+    //        //m_pBB->Set_Value<_uint>(m_strMonstertag,"DebugIndex",0);
+    //        CViper* pViper = static_cast<CViper*>(pOwner);
+    //        //pViper->Set_PhaseWeapon_Phase2();
+    //        pViper->Set_Weapon_Phase1();
+    //        m_pFSM->Change_State(ENUM_CLASS(VIPER_STATE_P1::STINGGRAB), pViper);
+    //    }
     //}
+    ////}
 
     //if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
     //{
@@ -1321,7 +1321,9 @@ ACTION CAI_Controller_Viper::GetCallbackAction(CGameObject* pOwner, const string
               
                 if (m_is2PhaseCutSceneFinished)
                 {
-                    pViper->Set_HP(100.f,100.f);
+                    /*pViper->Set_HP(100.f,100.f);
+                    pViper->Set_Stamina(1200.f, 1200.f);*/
+                    pViper->Set_HP(20000.f, 20000);
                     pViper->Set_Stamina(1200.f, 1200.f);
 
                     static_cast<CUI_HUD*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("HUD")))->Switch_Panel(true);
