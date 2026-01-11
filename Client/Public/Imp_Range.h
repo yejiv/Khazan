@@ -11,6 +11,7 @@ private:
     virtual ~CImp_Range() = default;
 
 public:
+    DIRECTION_INFO                  Get_HitDirInfo() const { return m_tHitDirInfo; }
     virtual _float4*                Get_LockOnPosition();
     class   CBody_Imp_Range*        Get_Body() { return m_pBody; }
     void                            Cast_Failed();
@@ -73,6 +74,8 @@ private:
     class CProjectile_Boomarang*    m_pBoomarang = { nullptr };
 
     COLLISION_DESC                  m_tImp_RangeColliderDesc = {};
+    DIRECTION_INFO                  m_tHitDirInfo = {};
+
 
     _bool                           m_isDissolve = { false };
     _bool                           m_isDissolveEnd = { false };

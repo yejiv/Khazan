@@ -63,6 +63,8 @@ private:
 
     HRESULT Ready_ShaderSettings();
 
+    HRESULT Raedy_DestructibleObject();
+
     _bool Wait_All_Futures();
 
 private:

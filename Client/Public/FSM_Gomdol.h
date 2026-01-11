@@ -9,6 +9,7 @@ enum class GOMDOL_STATE
 	MOVE,
 	TURN,
 	ATTACK,
+    COMBOATTACK,
     HIT,
     DEAD,
 };
