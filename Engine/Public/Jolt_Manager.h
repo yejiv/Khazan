@@ -56,6 +56,12 @@ public:
     void				Remove_DrawFilter(_uint iObjectLayer) {
         m_DrawFilter->Remove_LayerToFilter(iObjectLayer);
     };
+
+    void Set_TargetPos_DebugRender(const _vector& vPos)
+    {
+        Vec3 VecPos = LoadVec3(vPos);
+        m_DrawFilter->SetTargetPos(VecPos);
+    }
 #endif
     void Set_Gravity(_vector vGravity);
     void Reset_Gravity(); 

@@ -1109,6 +1109,10 @@ void CGameInstance::Remove_DrawFilter(_uint iObjectLayer)
 {
 	m_pJolt_Manager->Remove_DrawFilter(iObjectLayer);
 }
+void CGameInstance::Jolt_Set_TargetPos_DebugRender(const _vector& vPos)
+{
+    m_pJolt_Manager->Set_TargetPos_DebugRender(vPos);
+}
 #endif
 #pragma endregion
 

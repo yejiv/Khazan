@@ -179,6 +179,11 @@ void CKhazan_Spear::Priority_Update(_float fTimeDelta)
 
     // 이전 프레임 월드 행렬 저장
     m_pTransformCom->Cache_PrevWorldMatrix();
+
+#ifdef _DEBUG
+    // 스태틱 렌더 계산용
+    m_pGameInstance->Jolt_Set_TargetPos_DebugRender(m_pTransformCom->Get_State(STATE::POSITION));
+#endif // _DEBUG
 }
 
 void CKhazan_Spear::Update(_float fTimeDelta)
