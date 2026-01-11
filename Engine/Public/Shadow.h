@@ -25,11 +25,11 @@ public:
     void                Start_ShadowTransition(_float fDuration, _float fTargetIntensity);
     void                Clear_DSV();
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 public:
 	HRESULT				Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT				Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
-#endif
+//  #endif
 
 private:
 	ID3D11Device*						m_pDevice = { nullptr };
@@ -48,6 +48,9 @@ private:
 	_float								m_fTransTimeAcc = {};
 	_float								m_fDuration = {};
 	_float								m_fTargetIntensity = {};
+
+    _float2                             m_vLTPos = {};
+    class CShader*                      m_pShader = { nullptr };
 
 private:
 	HRESULT				Ready_ShaderResources();
