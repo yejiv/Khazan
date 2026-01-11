@@ -28,18 +28,51 @@ HRESULT CAI_Controller_Gomdol::Initialize(CCreature* pOwner)
 
 void CAI_Controller_Gomdol::Update(CGameObject* pOwner, _float fTimeDelta)
 {
-    m_pPerception->Update(pOwner, m_pBB,fTimeDelta);
+    m_pPerception->Update(pOwner, m_pBB, fTimeDelta);
+    Update_Aggro(pOwner, fTimeDelta);
 
-    _float fPervTime = m_pBB->Get_Value<_float>("Gomdol", "CurrentTime");
-    if (m_pBB->Get_Value<_bool>("Gomdol", "isDetected"))
-        m_pBB->Set_Value<_float>("Gomdol", "CurrentTime", fPervTime + fTimeDelta);
+    _float fPervTime = m_pBB->Get_Value<_float>(m_strMonstertag, "CurrentTime");
+
+    if (m_pBB->Get_Value<_bool>(m_strMonstertag, "HasAggro"))
+        m_pBB->Set_Value<_float>(m_strMonstertag, "CurrentTime", fPervTime + fTimeDelta);
     else
         m_pBB->Set_Value(m_strMonstertag, "CurrentTime", 0.f);
 
-    m_pBT->Update();
+
+    if (!m_pBB->Get_Value<_bool>(m_strMonstertag, "isDeadFinished"))
+        m_pBT->Update();
 
     m_pFSM->Update(pOwner, fTimeDelta);
 }
+
+
+void CAI_Controller_Gomdol::Update_Aggro(CGameObject* pOwner, _float fTimeDelta)
+{
+    CGameObject* pTarget = m_pBB->Get_Value<CGameObject*>(m_strMonstertag, "Target");
+    _bool isDetected = m_pBB->Get_Value<_bool>(m_strMonstertag, "isDetected");
+
+
+    const _float fFrogetDelay = 10.f;
+    if (isDetected)
+    {
+        m_fLostSightTime = 0.f;
+        m_pBB->Set_Value<_bool>(m_strMonstertag, "HasAggro", true);
+    }
+    else
+    {
+        if (m_pBB->Get_Value<_bool>(m_strMonstertag, "HasAggro"))
+        {
+            m_fLostSightTime += fTimeDelta;
+            if (m_fLostSightTime > fFrogetDelay)
+            {
+                m_pBB->Set_Value<_bool>(m_strMonstertag, "isDetected", false);
+                m_pBB->Set_Value<_bool>(m_strMonstertag, "HasAggro", false);
+            }
+        }
+    }
+}
+
+
 
 HRESULT CAI_Controller_Gomdol::Ready_Perception(CGameObject* pOwner, const AIPERCEPTION_DATA& Desc)
 {
@@ -88,6 +121,57 @@ CONDITION CAI_Controller_Gomdol::GetCallbackCondition(CGameObject* pOwner, const
     if (nullptr == pGomdol)
         return nullptr;
 
+
+    if ("Dead" == name)
+    {
+        return [pGomdol](CBlackBoard* BB)->_bool
+            {
+
+                BB->Set_Value<_bool>(pGomdol->Get_Name(), "DamageInterrupt", false);
+
+                if (pGomdol->Get_CurrentHP() <= 0.f)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            };
+    }
+
+
+
+#pragma region HIT SEQUENCE
+
+
+    if ("Hit" == name)
+    {
+        return [pGomdol](CBlackBoard* BB) -> _bool
+            {
+
+                if (!BB->Get_Value<_bool>(pGomdol->Get_Name(), "isHit"))
+                {
+                    // DamageType 체크
+                    HITREACTION eHitRection = static_cast<HITREACTION>(
+                        BB->Get_Value<_uint>(pGomdol->Get_Name(), "DamageType"));
+
+                    if (eHitRection == HITREACTION::KNOCKBACK_WEAK ||
+                        eHitRection == HITREACTION::KNOCKBACK_NORMAL ||
+                        eHitRection == HITREACTION::KNOCKBACK_STRONG ||
+                        eHitRection == HITREACTION::BRUTAL_ATTACK)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+                return false;
+            };
+    }
+
+
+#pragma endregion
+
+
+
 #pragma region SLEEP SEQUENCE
 
     if ("Sleep" == name)
@@ -116,15 +200,16 @@ CONDITION CAI_Controller_Gomdol::GetCallbackCondition(CGameObject* pOwner, const
     {
         return [pGomdol](CBlackBoard* BB)->_bool
             {
-                //cout << "FrontAttack Condition" << endl;
-
                 _float fDist = BB->Get_Value<_float>(pGomdol->Get_Name(), "TargetDist");
                 _float fAttackRanage = BB->Get_Value<_float>(pGomdol->Get_Name(), "AttackRange");
 
-                if (fDist <= fAttackRanage && !BB->Get_Value<_bool>(pGomdol->Get_Name(), "isFrontAttack"))
+                if (fDist <= fAttackRanage)
                 {
-                    BB->Set_Value<_bool>(pGomdol->Get_Name(), "AttackInterrupt", true);
-                    //cout << "AttackCondtion True" << endl;
+
+                    _bool isDamaged = BB->Get_Value<_bool>(pGomdol->Get_Name(), "DamageInterrupt");
+                    if (isDamaged)
+                        return false;
+
                     return true;
                 }
                 else
@@ -172,6 +257,36 @@ ACTION CAI_Controller_Gomdol::GetCallbackAction(CGameObject* pOwner, const strin
         return nullptr;
 
 
+
+#pragma region HIT SEQUENCE
+
+    if ("Hit" == name)
+    {
+        return [pGomdol](CBlackBoard* BB)->BTNODESTATE
+            {
+                // 애니 종료 플래그가 true면 SUCCESS
+                if (true == BB->Get_Value<_bool>(pGomdol->Get_Name(), "isHitFinished"))
+                {
+                    BB->Set_Value<_bool>(pGomdol->Get_Name(), "DamageInterrupt", false);
+                    BB->Set_Value<_uint>(pGomdol->Get_Name(), "DamageType", ENUM_CLASS(HITREACTION::NONE));
+                    return BTNODESTATE::SUCCESS;
+                }
+
+                BB->Set_Value(pGomdol->Get_Name(), "isHit", true);
+                BB->Set_Value(pGomdol->Get_Name(), "isHitFinished", false);
+
+                pGomdol->Get_Controller()->Get_State_Machine()->Change_State(
+                    ENUM_CLASS(GOMDOL_STATE::HIT), pGomdol);
+
+                return BTNODESTATE::RUNNING;
+
+            };
+    }
+
+
+#pragma endregion
+
+
 #pragma region SLEEP SEQUENCE
 
     if ("Sleep" == name)
@@ -198,7 +313,11 @@ ACTION CAI_Controller_Gomdol::GetCallbackAction(CGameObject* pOwner, const strin
     {
         return [pGomdol](CBlackBoard* BB)-> BTNODESTATE
             {
-               // cout << "FrontAttack Action" << endl;
+             
+                _bool isDamaged = BB->Get_Value<_bool>(pGomdol->Get_Name(), "DamageInterrupt");
+                if (isDamaged)
+                    return BTNODESTATE::FAILURE;
+
                 if (BB->Get_Value<_bool>(pGomdol->Get_Name(), "isFrontAttackFinished"))
                 {
                     return BTNODESTATE::SUCCESS;
@@ -209,6 +328,7 @@ ACTION CAI_Controller_Gomdol::GetCallbackAction(CGameObject* pOwner, const strin
                 pGomdol->Get_Controller()->Get_State_Machine()->
                     Change_State(ENUM_CLASS(GOMDOL_STATE::ATTACK), pGomdol);
                 return BTNODESTATE::RUNNING;
+
 
             };
     }
@@ -223,7 +343,7 @@ ACTION CAI_Controller_Gomdol::GetCallbackAction(CGameObject* pOwner, const strin
             {
                 _bool isDamaged = BB->Get_Value<_bool>(pGomdol->Get_Name(), "DamageInterrupt");
                 if (isDamaged)
-                    return BTNODESTATE::SUCCESS;
+                    return BTNODESTATE::FAILURE;
 
                 if (BB->Get_Value<_float>(pGomdol->Get_Name(), "TargetDist") <=
                     BB->Get_Value<_float>(pGomdol->Get_Name(), "AttackRange"))
@@ -232,10 +352,6 @@ ACTION CAI_Controller_Gomdol::GetCallbackAction(CGameObject* pOwner, const strin
                 _float fDist = BB->Get_Value<_float>(pGomdol->Get_Name(), "TargetDist");
                 _float fChaseRange = BB->Get_Value<_float>(pGomdol->Get_Name(), "ChaseRange");
                 _float fRunRange = BB->Get_Value<_float>(pGomdol->Get_Name(), "RunRange");
-
-                /*  cout << "DIST: " << fDist << endl;
-              cout << "ChaseRange: " << fChaseRange << endl;
-              cout << "AttackRange: " << fRunRange << endl;*/
 
                 CGomdol::MONSTER_INFO Info{};
                 Info.Clear_State();
@@ -281,6 +397,30 @@ TERMINATE CAI_Controller_Gomdol::GetCallbackTeminate(CGameObject* pOwner, const 
     if (nullptr == pGomdol)
         return nullptr;
 
+
+#pragma region HIT SEQUENCE
+
+    if ("Hit" == name)
+    {
+        return [pGomdol](CBlackBoard* BB, BTNODESTATE eState)
+            {
+                if (nullptr == BB)
+                    return;
+
+                if (eState == BTNODESTATE::SUCCESS || eState == BTNODESTATE::FAILURE)
+                {
+                    BB->Set_Value<_bool>(pGomdol->Get_Name(), "isHit", false);
+                    BB->Set_Value<_bool>(pGomdol->Get_Name(), "isHitFinished", false);
+                    BB->Set_Value<_bool>(pGomdol->Get_Name(), "DamageInterrupt", false);
+
+                }
+            };
+    }
+
+#pragma endregion
+
+
+
 #pragma region SLEEP SEQUENCE
 
     else if ("Sleep" == name)
@@ -314,8 +454,6 @@ TERMINATE CAI_Controller_Gomdol::GetCallbackTeminate(CGameObject* pOwner, const 
                 {
                     BB->Set_Value<_bool>(pGomdol->Get_Name(), "isFrontAttack", false);
                     BB->Set_Value<_bool>(pGomdol->Get_Name(), "isFrontAttackFinished", false);
-                    BB->Set_Value<_bool>(pGomdol->Get_Name(), "AttackInterrupt", false);
-                    pGomdol->Get_Controller()->Get_State_Machine()->Change_State(ENUM_CLASS(GOMDOL_STATE::IDLE), pGomdol);
                 }
             };
     }
@@ -351,28 +489,15 @@ INTERRUPTCONDITION CAI_Controller_Gomdol::GetCallbackInterruptCondition(CGameObj
     if (nullptr == pGomdol)
         return nullptr;
 
-    if ("AttackInterrupt" == name)
+    if("Root_Interrupt" == name)
     {
         return [pGomdol](CBlackBoard* BB)
             {
-                _bool isAttack = BB->Get_Value<_bool>(pGomdol->Get_Name(), "AttackInterrupt");
-                if (isAttack)
-                {
+                if (BB->Get_Value<_bool>(pGomdol->Get_Name(), "isDead"))
                     return true;
-                }
-                return false;
-            };
-    }
+                if (BB->Get_Value<_bool>(pGomdol->Get_Name(), "DamageInterrupt"))
+                    return true;
 
-    else if ("DamagedInterrupt" == name)
-    {
-        return [pGomdol](CBlackBoard* BB)
-            {
-                _bool isDamaged = BB->Get_Value<_bool>(pGomdol->Get_Name(), "DamageInterrupt");
-                if (isDamaged)
-                {
-                    return true;
-                }
                 return false;
             };
     }
@@ -395,7 +520,7 @@ PERCEPTIONCALLBACK CAI_Controller_Gomdol::GetCallBackPerception(CGameObject* pOw
                     }
                     else
                     {
-                        m_pBB->Set_Value(m_strMonstertag, "isDetected", false);
+                        m_pPerception->Reset_Fov();
                     }
                 }
             };
@@ -412,11 +537,7 @@ PERCEPTIONCALLBACK CAI_Controller_Gomdol::GetCallBackPerception(CGameObject* pOw
                     {
                         m_pBB->Set_Value<_uint>(m_strMonstertag, "DamageType", Stim.iDamageType);
                         m_pBB->Set_Value(m_strMonstertag, "DamageInterrupt", true);
-                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
-                    }
-                    else
-                    {
-                        m_pBB->Set_Value(m_strMonstertag, "DamageACC", m_pPerception->Get_DamageAcc());
+                        m_pBB->Set_Value(m_strMonstertag, "isDetected", true);
                     }
                 }
             };

@@ -579,6 +579,26 @@ const RENDERGROUP& CGameInstance::Get_CurrentRenderGroup()
     return m_pRenderer->Get_CurrentRenderGroup();
 }
 
+void CGameInstance::Set_UnlitMode(_bool isEnable)
+{
+    m_pRenderer->Set_UnlitMode(isEnable);
+}
+
+void CGameInstance::Set_LitMode(_bool isEnable)
+{
+    m_pRenderer->Set_LitMode(isEnable);
+}
+
+void CGameInstance::Set_EnableSpecular(_bool isEnable)
+{
+    m_pRenderer->Set_EnableSpecular(isEnable);
+}
+
+void CGameInstance::Set_EnableBloom(_bool isEnable)
+{
+    m_pRenderer->Set_EnableBloom(isEnable);
+}
+
 #pragma endregion
 
 #pragma region TIMER_MANAGER
