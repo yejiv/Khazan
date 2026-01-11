@@ -78,8 +78,8 @@ void CLevel_Title::Update(_float fTimeDelta)
                 m_isOpenLevel = true;
             }
         }
-    }
 
+    }
 
 	return;
 }

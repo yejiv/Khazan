@@ -1919,6 +1919,9 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
         if ((Has_Status(STAMINA_EXHAUSTION)))
             return;
 
+        if (m_pAnimInteraction->Is_Heal())
+            return;
+
         if (m_pBody->Get_Model()->IsCurSetAnimation())
             return;
 
