@@ -7,15 +7,15 @@
 CRenderTarget::CRenderTarget(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice{ pDevice }
 	, m_pContext{ pContext }
-#ifdef _DEBUG
+//  #ifdef _DEBUG
     , m_pGameInstance { CGameInstance::GetInstance() }
-#endif
+//  #endif
 {
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
-#ifdef _DEBUG
+//  #ifdef _DEBUG
     Safe_AddRef(m_pGameInstance);
-#endif
+//  #endif
 }
 
 HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vClearColor)
@@ -47,11 +47,11 @@ HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixel
 
 	m_vClearColor = vClearColor;
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
     m_pShader = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Engine_Shader_Font.hlsl"), VTXPOSTEX::Elements, VTXPOSTEX::iNumElements);
     if (nullptr == m_pShader)
         return E_FAIL;
-#endif
+//  #endif
 
 	return S_OK;
 }
@@ -74,7 +74,7 @@ HRESULT CRenderTarget::Copy_Resource(ID3D11Texture2D* pDestTexture)
 	return S_OK;
 }
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 
 HRESULT CRenderTarget::Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
 {
@@ -107,22 +107,22 @@ HRESULT CRenderTarget::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
     m_pShader->Begin(0);
 
     // Outline
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_26"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_26"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_26"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_26"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_26"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_26"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_26"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_26"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
 
     // Fill
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_26"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(0.f, 0.f, 0.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(0.f, 0.f, 0.f, 1.f));
 
 	return S_OK;
 }
 
-#endif
+//  #endif
 
 CRenderTarget* CRenderTarget::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vClearColor)
 {
@@ -141,10 +141,10 @@ void CRenderTarget::Free()
 {
 	__super::Free();
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
     Safe_Release(m_pShader);
     Safe_Release(m_pGameInstance);
-#endif
+//  #endif
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

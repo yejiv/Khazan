@@ -70,6 +70,11 @@ HRESULT CBody_Gomdol::Initialize_Clone(void* pArg)
     if (FAILED(Ready_Colliders()))
         return E_FAIL;
         
+
+    m_pLH_BodyCom->Activate(false);
+    m_pRH_BodyCom->Activate(false);
+
+
     return S_OK;
 }
 
@@ -79,16 +84,16 @@ void CBody_Gomdol::Priority_Update(_float fTimeDelta)
 
 void CBody_Gomdol::Update(_float fTimeDelta)
 {
-    if (m_isOnAttackCollision)
-    {
-        m_pLH_BodyCom->Activate(true);
-        m_pRH_BodyCom->Activate(true);
+    if (m_isOnAttackCollision_LH)
+        m_pLH_BodyCom->Collision_Active(true);
 
-    }
+    else if(m_isOnAttackCollision_RH)
+        m_pRH_BodyCom->Collision_Active(true);
+
     else
     {
-        m_pLH_BodyCom->Activate(false);
-        m_pRH_BodyCom->Activate(false);
+        m_pLH_BodyCom->Collision_Active(false);
+        m_pRH_BodyCom->Collision_Active(false);
 
     }
 
@@ -132,6 +137,12 @@ HRESULT CBody_Gomdol::Render()
 
 void CBody_Gomdol::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
 {
+    COLLISION_LAYER eLayer = static_cast<COLLISION_LAYER>(iOtherObjectLayer);
+
+    if (COLLISION_LAYER::PLAYER == eLayer)
+    {
+        m_pOwner->Get_Controller()->AI_React_Collision(pDesc, iOtherObjectLayer, m_pOwner);
+    }
 }
 
 void CBody_Gomdol::Collision_Stay(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _float3 vContactPoint, _float3 ContactNormal, COLLISION_DESC* pMyDesc)
@@ -220,8 +231,10 @@ HRESULT CBody_Gomdol::Ready_Colliders()
     BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_tCollision_RHDescGomdol.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    m_tCollision_RHDescGomdol.strName = TEXT("tCollision_RHDescGomdol");
+    m_tCollision_RHDescGomdol.pGameObject = this;
+    BodyDesc.pCollisionDesc = &m_tCollision_RHDescGomdol;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_RH"), reinterpret_cast<CComponent**>(&m_pRH_BodyCom), &BodyDesc)))
@@ -237,15 +250,17 @@ HRESULT CBody_Gomdol::Ready_Colliders()
         XMLoadFloat4x4(&BoneMatrix) * XMLoadFloat4x4(m_pParentMatrix));
     /* _vector vScale, vQuat, vTrans;*/
      // 쪼갠다.
-    XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_RightHandMatrix));
+    XMMatrixDecompose(&vScale, &vQuat, &vTrans, XMLoadFloat4x4(&m_LeftHandMatrix));
     // 위치값
     BodyDesc.vPos = _float3(vTrans.m128_f32[0], vTrans.m128_f32[1], vTrans.m128_f32[2]);
     // 쿼터니언
     BodyDesc.vQuat = _float4(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]);
 
     BodyDesc.vShapeOffset = _float3(0.f, 0.f, 0.f);
-    m_tCollisionDesc.pGameObject = this;
-    BodyDesc.pCollisionDesc = &m_tCollisionDesc;
+    m_tCollision_LHDescGomdol.iObjectLayer = ENUM_CLASS(COLLISION_LAYER::MONSTERATTACK);
+    m_tCollision_LHDescGomdol.strName = TEXT("tCollision_LHDescGomdol");
+    m_tCollision_LHDescGomdol.pGameObject = this;
+    BodyDesc.pCollisionDesc = &m_tCollision_LHDescGomdol;
     BodyDesc.bIsTrigger = true;
     if (FAILED(CGameObject::Add_Component(ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_Component_Body"),
         TEXT("Com_Body_LH"), reinterpret_cast<CComponent**>(&m_pLH_BodyCom), &BodyDesc)))

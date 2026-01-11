@@ -4,6 +4,7 @@
 #include "AS_Move_Gomdol.h"
 #include "AS_FrontAttack_Gomdol.h"
 #include "AS_Hit_Gomdol.h"
+#include "AS_ComboAttack_Gomdol.h"
 
 CFSM_Gomdol::CFSM_Gomdol()
 {
@@ -22,6 +23,9 @@ HRESULT CFSM_Gomdol::Initialize(CGameObject* pOwner)
         return E_FAIL;
 
     if (FAILED(Add_State(ENUM_CLASS(GOMDOL_STATE::ATTACK), CAS_FrontAttack_Gomdol::Create())))
+        return E_FAIL;
+
+    if (FAILED(Add_State(ENUM_CLASS(GOMDOL_STATE::COMBOATTACK), CAS_ComboAttack_Gomdol::Create())))
         return E_FAIL;
 
     if (FAILED(Add_State(ENUM_CLASS(GOMDOL_STATE::HIT), CAS_Hit_Gomdol::Create())))

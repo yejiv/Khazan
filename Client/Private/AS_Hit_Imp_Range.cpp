@@ -16,10 +16,8 @@ void CAS_Hit_Imp_Range::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     CBlackBoard* pBB = pImp->Get_Controller()->Get_BlackBoard();
 
     HITREACTION eHitreaction = static_cast<HITREACTION>(pBB->Get_Value<_uint>(pImp->Get_Name(), "DamageType"));
-    DIRECTION_INFO Info{};
-    Info.iDirFlag = pBB->Get_Value<_uint>(pImp->Get_Name(), "HitDirection");
 
-    HIT_DIR eHitDir = Convert_HitFlag(Info);
+    HIT_DIR eHitDir = Convert_HitFlag(pImp->Get_HitDirInfo());
     _uint iAnimIndex = Make_AnimIndex(eHitreaction, eHitDir);
 
     pImp->Cast_Failed();

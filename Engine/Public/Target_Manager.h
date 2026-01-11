@@ -33,11 +33,11 @@ public:
 	ID3D11DepthStencilView* Get_CurrentDSV_AddRef();
 
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 public:
 	HRESULT Ready_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
-#endif
+//  #endif
 
 private:
 	ID3D11Device*				m_pDevice = { nullptr };

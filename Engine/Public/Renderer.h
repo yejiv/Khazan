@@ -51,13 +51,13 @@ public:
     HRESULT Add_RenderComponent(class CComponent* pComponent);
 	HRESULT Draw();
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 public:
 	void Set_EnableShadow(_bool isEnable) { m_isEnableShadow = isEnable; }
 	void Set_EnableSSAO(_bool isEnable) { m_isEnableSSAO = isEnable; }
 	void Set_EnableToonShade(_bool isEnable) { m_isEnableToonShade = isEnable; }
 	void Set_EnableOutline(_bool isEnable) { m_isEnableOutline = isEnable; }
-#endif
+//  #endif
 
 public:
 	void Set_ToonShadeLevel(_float fLevel) { m_fToonShadeLevel = fLevel; }
@@ -122,7 +122,7 @@ private:
     _bool                       m_isEnableSpecular = {};
     _bool                       m_isEnableBloom = { true };
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 private:
 	_bool						m_isEnableDebugRender = {};
 	_bool						m_isEnableShadow = { true };
@@ -131,7 +131,7 @@ private:
 	_bool						m_isEnableOutline = {};
 	_bool						m_isEnableVignette = {};
 	_bool						m_isEnableDistortion = {};
-#endif
+//  #endif
 
 private:
 	HRESULT Render_Priority();
@@ -174,9 +174,9 @@ private:
 
 	void Deferred_JobAndImmediate(vector<class CGameObject*>& Deferred, vector<class CGameObject*>& Immediate);
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 	HRESULT Render_Debug();
-#endif
+//  #endif
 
 private:
 	_bool isEnableShadow();
@@ -184,10 +184,10 @@ private:
 	_bool isEnableToonShade();
     _bool isEnableRimLight();
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 private:
 	_bool isEnableDebugRender();
-#endif
+//  #endif
 
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

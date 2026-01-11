@@ -16,7 +16,8 @@ private:
     virtual ~CImp_Melee() = default;
 
 public:
-    virtual _float4* Get_LockOnPosition();
+    DIRECTION_INFO              Get_HitDirInfo() const { return m_tHitDirInfo; }
+    virtual _float4*            Get_LockOnPosition();
     class   CBody_Imp_Melee*    Get_Body() { return m_pBody; }
     class   CImp_Sword*         Get_Sword() { return m_pWeapon; }
 
@@ -65,6 +66,7 @@ private:
 
     _float4                         m_vSwordStart{}, m_vSwordEnd{};
     COLLISION_DESC                  m_tImpMeleeColliderDesc = {};
+    DIRECTION_INFO                  m_tHitDirInfo = {};
 
     _bool                           m_isDissolve = { false };
     _bool                           m_isDissolveEnd = { false };

@@ -149,14 +149,14 @@ void CCamera_Compre::Priority_Update(_float fTimeDelta)
     if (!m_isActive)
         return;
 
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
-    {
-        m_isMouseOn = true;
-    }
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
-    {
-        m_isMouseOn = false;
-    }
+    //  if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    //  {
+    //      m_isMouseOn = true;
+    //  }
+    //  if (m_pGameInstance->Key_Down(DIK_NUMPAD1))
+    //  {
+    //      m_isMouseOn = false;
+    //  }
 
     //======================================================================================================
 

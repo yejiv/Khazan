@@ -11,9 +11,29 @@ public:
     {
     }
 
+    void SetTargetPos(const Vec3& vPos)
+    {
+        m_vTargetPos = vPos;
+    }
+
     bool ShouldDraw(const JPH::Body& b) const override
     {
-        return mLayers.find(b.GetObjectLayer()) != mLayers.end();
+        if (b.GetObjectLayer() == 0)
+        {
+            if (mLayers.find(b.GetObjectLayer()) != mLayers.end())
+            {
+                if ((m_vTargetPos - b.GetPosition()).Length() < 30.f)
+                    return true;
+                else
+                    return false;
+            }
+            else
+                return false;
+        }
+        else
+        {
+            return mLayers.find(b.GetObjectLayer()) != mLayers.end();
+        }        
     }
 
     void SetUp_LayerToFilter(_uint iObjectLayer)
@@ -35,6 +55,7 @@ public:
 
 private:
     std::unordered_set<JPH::ObjectLayer> mLayers;
+    Vec3 m_vTargetPos = Vec3(0.f ,0.f ,0.f);
 };
 
 NS_END
