@@ -510,7 +510,7 @@ HRESULT CGameInstance::Add_RenderComponent(CComponent* pComponent)
     return m_pRenderer->Add_RenderComponent(pComponent);
 }
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 
 void CGameInstance::Set_EnableShadow(_bool isEnable)
 {
@@ -532,7 +532,7 @@ void CGameInstance::Set_EnableOutline(_bool isEnable)
 	m_pRenderer->Set_EnableOutline(isEnable);
 }
 
-#endif
+//  #endif
 
 void CGameInstance::Set_ToonShadeLevel(_float fLevel)
 {
@@ -844,7 +844,7 @@ ID3D11DepthStencilView* CGameInstance::Get_CurrentDSV_AddRef()
 	return m_pTarget_Manager->Get_CurrentDSV_AddRef();
 }
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 
 HRESULT CGameInstance::Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
 {
@@ -855,7 +855,7 @@ HRESULT CGameInstance::Render_RT_Debug(CShader* pShader, CVIBuffer_Rect* pVIBuff
 {
 	return m_pTarget_Manager->Render(pShader, pVIBuffer);
 }
-#endif 
+//  #endif 
 
 #pragma endregion
 
@@ -1108,6 +1108,10 @@ void CGameInstance::Set_DrawFilter(_uint iObjectLayer)
 void CGameInstance::Remove_DrawFilter(_uint iObjectLayer)
 {
 	m_pJolt_Manager->Remove_DrawFilter(iObjectLayer);
+}
+void CGameInstance::Jolt_Set_TargetPos_DebugRender(const _vector& vPos)
+{
+    m_pJolt_Manager->Set_TargetPos_DebugRender(vPos);
 }
 #endif
 #pragma endregion
@@ -1366,7 +1370,7 @@ void CGameInstance::Set_ShadowDesc(const SHADOW_DESC& Desc)
     m_pShadow->Set_ShadowDesc(Desc);
 }
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 HRESULT CGameInstance::Ready_Shadow_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
 {
     return m_pShadow->Ready_Debug(fX, fY, fSizeX, fSizeY);
@@ -1376,7 +1380,7 @@ HRESULT CGameInstance::Render_Shadow_Debug(CShader* pShader, CVIBuffer_Rect* pVI
 {
     return m_pShadow->Render(pShader, pVIBuffer);
 }
-#endif
+//  #endif
 
 #pragma endregion
 
