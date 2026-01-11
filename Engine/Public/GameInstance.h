@@ -258,6 +258,7 @@ public:
 
 	void				Set_DrawFilter(_uint iObjectLayer);
 	void				Remove_DrawFilter(_uint iObjectLayer);
+    void                Jolt_Set_TargetPos_DebugRender(const _vector& vPos);
 #endif
 #pragma endregion
 
