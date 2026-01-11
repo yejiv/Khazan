@@ -9,6 +9,8 @@ enum class GOMDOL_STATE
 	MOVE,
 	TURN,
 	ATTACK,
+    HIT,
+    DEAD,
 };
 
 NS_BEGIN(Engine)

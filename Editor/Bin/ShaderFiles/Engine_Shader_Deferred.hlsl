@@ -226,7 +226,7 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
 {
     PS_OUT_BACKBUFFER Out = (PS_OUT_BACKBUFFER) 0;
     
-    vector vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);    
     vector vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
 
     if (1.f == vDiffuse.r && 1.f == vDiffuse.g && 1.f == vDiffuse.b && 0.f == vDiffuse.a)
@@ -237,6 +237,19 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
 
     float4 vLitColor = vDiffuse * vShade + vEmissive;
     Out.vColor = vLitColor + vSpecular;
+    
+    // Unlit
+    if (g_isUnlitMode)
+    {
+        if (g_isEnableSpecular)
+            Out.vColor = vLitColor + vSpecular;
+        else if (g_isLitMode)
+            Out.vColor = vDiffuse * vShade;
+        else
+            Out.vColor = vDiffuse;
+        
+        return Out;
+    }
     
     vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     float4 vViewPos = Compute_ViewPosition_FromDepth(In.vTexcoord, vDepthDesc.x, vDepthDesc.y);
@@ -509,13 +522,12 @@ PS_OUT_BACKBUFFER PS_COMBINED(PS_IN In)
     if (1.f == vPostSceneDesc.r && 1.f == vPostSceneDesc.g && 1.f == vPostSceneDesc.b && 0.f == vPostSceneDesc.a)
         discard;
 
-    float4 vFinalColor = vPostSceneDesc + vBloomDesc;
+    float4 vFinalColor = vPostSceneDesc;
     
-    //  if (true == g_isEnableFog)
-    //      vFinalColor = vFogDesc + vBloomDesc;
-    //  else
-    //      vFinalColor = vPostSceneDesc + vBloomDesc;
-
+    // Bloom
+    if (g_isEnableBloom)
+        vFinalColor = vPostSceneDesc + vBloomDesc;
+    
     // Outline
     if (g_isEnableOutline)
     {

@@ -3,7 +3,7 @@
 #include "Client_Defines.h"
 
 
-enum class GOMDOL_SLEEP_STATE {SLEEP, WAKEUP, LOAR ,END, };
+enum class GOMDOL_SLEEP_STATE { SLEEP, WAKEUP, BRUTALATTACK, END, };
 
 NS_BEGIN(Client)
 

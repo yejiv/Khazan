@@ -28,9 +28,21 @@ public:
 	virtual INTERRUPTCONDITION		GetCallbackInterruptCondition(class CGameObject* pOwner, const string& name);
 	virtual PERCEPTIONCALLBACK		GetCallBackPerception(class CGameObject* pOwner, const string& name);
 
+
+private:
+    void                            Update_Aggro(CGameObject* pOwner, _float fTimeDelta);
+
+private:
+    _float                          m_fLostSightTime = {};
+
+
 public:
 	static CAI_Controller_Gomdol*	Create(class CCreature* pOwner);
 	virtual void					Free() override;
+
+
+
+
 
 };
 
