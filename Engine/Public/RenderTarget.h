@@ -20,13 +20,13 @@ public:
     void Clear();
 	HRESULT Copy_Resource(ID3D11Texture2D* pDestTexture);
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 public:
 	HRESULT Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
     void Set_Name(const _wstring& strName) { m_strName = strName; }
     void Set_LTPos(_float fLeft, _float fTop) { m_vLTPos = { fLeft, fTop }; }
-#endif
+//  #endif
 
 private:
 	ID3D11Device*               m_pDevice = { nullptr };
@@ -38,7 +38,7 @@ private:
 private:
 	_float4		                m_vClearColor = {};
 
-#ifdef _DEBUG
+//  #ifdef _DEBUG
 private:
 	_float4x4		            m_WorldMatrix = {};
     _wstring                    m_strName = {};
@@ -47,7 +47,7 @@ private:
 
     class CShader*              m_pShader = { nullptr };
     class CGameInstance*        m_pGameInstance = { nullptr };
-#endif
+//  #endif
 
 public:
 	static CRenderTarget* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vClearColor);

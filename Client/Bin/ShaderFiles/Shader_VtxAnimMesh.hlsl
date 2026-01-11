@@ -945,11 +945,14 @@ PS_OUT PS_VIPER(PS_IN In)
     Out.vSpecular.rgb = g_SpecularTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
     Out.vSpecular.a = 0.f;
     float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
-        
-    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
-    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
-    vMtrlDiffuse *= fEdgeMask;
-    vMtrlDiffuse *= fShadeMask;
+
+    if (g_isEnableEdge)
+    {
+        float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+        float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+        vMtrlDiffuse *= fEdgeMask;
+        vMtrlDiffuse *= fShadeMask;
+    }
     
     vMtrlDiffuse.g *= g_fGreenIntensity;
     
@@ -1278,10 +1281,14 @@ PS_OUT PS_PLAYER(PS_IN In)
     //  Out.vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
     
     float4 vMetalnessDesc = g_MetalnessTexture.Sample(DefaultSampler, In.vTexcoord);
-    float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
-    float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
-    Out.vDiffuse *= fEdgeMask;
-    Out.vDiffuse *= fShadeMask;
+    
+    if (g_isEnableEdge)
+    {
+        float fEdgeMask = lerp(1.f - g_fEdgeIntensity, 1.f, vMetalnessDesc.r);
+        float fShadeMask = lerp(1.f - g_fShadeIntensity, 1.f, vMetalnessDesc.g); // 음영 보간 0인 부분인 0.5, 1인 부분은 원색
+        Out.vDiffuse *= fEdgeMask;
+        Out.vDiffuse *= fShadeMask;
+    }
 
     // Heal Rim Light
     if (g_isEnableHealRimLight)
