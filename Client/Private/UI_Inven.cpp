@@ -1075,8 +1075,9 @@ void CUI_Inven::Selete_Slot()
 void CUI_Inven::Setting_Item()
 {
     //창
-    m_pItems[ENUM_CLASS(ITEMTYPE::SPEAR)][0]->Add_Item(4011);
-    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::WEAPON)]->Add_Item(4011, m_pItems[ENUM_CLASS(ITEMTYPE::SPEAR)][0], false);
+    m_pItems[ENUM_CLASS(ITEMTYPE::SPEAR)][0]->Add_Item(4012);
+    m_pItems[ENUM_CLASS(ITEMTYPE::SPEAR)][1]->Add_Item(4011);
+    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::WEAPON)]->Add_Item(4011, m_pItems[ENUM_CLASS(ITEMTYPE::SPEAR)][1], false);
 
     //머리
     //m_pItems[ENUM_CLASS(ITEMTYPE::HEAD)][0]->Add_Item(5001);

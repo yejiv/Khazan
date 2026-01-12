@@ -234,17 +234,17 @@ void CPlayer_Manager::Setting_Data()
 {
     //초기 데이터 셋팅용
     
-    m_Data.iGold = 11250;
-    m_Data.iLachryma = 1300;
-    m_Data.iStone = 15;
-    m_Data.fSkillLevel_EXP = 50.f;
-    m_Data.iSkillLevel = 10;
-    m_Data.iSkilPoint = 0;
+    m_Data.iGold = 66400;
+    m_Data.iLachryma = 2770;
+    m_Data.iStone = 5;
+    m_Data.fSkillLevel_EXP = 80.f;
+    m_Data.iSkillLevel = 30;
+    m_Data.iSkilPoint = 10;
 
-    m_Data.iLevel = 16;
+    m_Data.iLevel = 20;
     m_Data.iVitality = { 10 };
     m_Data.iEndurance = { 10 };
-    m_Data.iPower = { 16 };
+    m_Data.iPower = { 20 };
     m_Data.iCompetency = { 10 };
     m_Data.iWill = { 10 };
 }
