@@ -56,7 +56,7 @@ HRESULT CSkill_Slot_Panel::Setting_Slot(_int iTapIndex, _int iPanelIndex)
 	Panel_NameMapping(iTapIndex, iPanelIndex);
 
     //데이터 셋팅
-    //Setting_Data();
+    Setting_Data();
 	return S_OK;
 }
 
@@ -192,7 +192,15 @@ void CSkill_Slot_Panel::Setting_Data()
     for (auto pSlot : m_Skill)
     {
         pSlot->Setting_Data(101, 1);
-        pSlot->Setting_Data(106, 3);
+        pSlot->Setting_Data(102, 1);
+        pSlot->Setting_Data(104, 1);
+        pSlot->Setting_Data(105, 1);
+        pSlot->Setting_Data(106, 1);
+        pSlot->Setting_Data(107, 1);
+        pSlot->Setting_Data(108, 1);
+        pSlot->Setting_Data(111, 1);
+        pSlot->Setting_Data(110, 1);
+        pSlot->Setting_Data(114, 1);
     }
 }
 
