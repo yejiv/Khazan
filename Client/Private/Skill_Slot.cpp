@@ -10,12 +10,12 @@
 #include "UI_Slot_Over_Fx.h"
 #include "UI_Slot_Selete_Fx.h"
 CSkill_Slot::CSkill_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-    : CUI_Slot{ pDevice , pContext}
+    : CUI_Slot{ pDevice , pContext }
 {
 }
 
 CSkill_Slot::CSkill_Slot(const CSkill_Slot& Prototype)
-    :  CUI_Slot(Prototype)
+    : CUI_Slot(Prototype)
 {
 }
 
@@ -25,14 +25,14 @@ void CSkill_Slot::Setting_Skill()
         m_isLock = false;
     else
         m_isLock = true;
-    
+
     if (m_isLock)
     {
         m_pIcon->Set_Texture(CClientInstance::GetInstance()->Get_AtlasUV("T_Icon_Skill_Lock_UI.png", 4), 4);
         m_pIcon->Update_Scaling(1.5f);
         m_pIcon->Set_Color({ 1.f,1.f,1.f,0.8f });
         m_pLine->Set_Color({ 1.f,1.f,1.f,0.8f });
-       
+
         if (m_pSkilData->iMaxPoint >= 2)
         {
             m_pPointBG->Update_Visible(false);
@@ -91,7 +91,7 @@ void CSkill_Slot::Render_SkillInfo()
         case 3: Desc.iOffsetPos = { 1060.f, 595.f }; break;
         }
     }
- 
+
     Desc.isEquip = false;
     m_iSkillPoint > 0 ? Desc.isGet = true : Desc.isGet = false;
     m_iSkillPoint >= m_iMaxCount ? Desc.isMaxLevel = true : Desc.isMaxLevel = false;
@@ -106,15 +106,15 @@ void CSkill_Slot::Reset_Slot()
     CClientInstance::GetInstance()->Add_SkillPoint(m_iSkillPoint);
     m_iSkillPoint = 0;
     m_pSlot_Selete->Update_Visible(false);
-    
+
     m_pGameInstance->Emit_Event<EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), { false, m_iSkillIndex });
-    
+
     if (m_pSkilData->iType == 0 && m_pSkilData->iIndex)
     {
         CClientInstance::GetInstance()->Lock_Skill(1 << m_pSkilData->iIndex);
         static_cast<CSkill_QuickSlot*>(CClientInstance::GetInstance()->Get_RootUI(TEXT("SkillSlot_Quick")))->Equip_Check(m_iSkillIndex);
     }
-        
+
 }
 
 void CSkill_Slot::Setting_Data(_int iSkillIndex, _int SKillPoint)
@@ -131,7 +131,7 @@ void CSkill_Slot::Setting_Data(_int iSkillIndex, _int SKillPoint)
 HRESULT CSkill_Slot::Initialize_Prototype(_uint iLevel)
 {
     m_iLevel = iLevel;
-	return S_OK;
+    return S_OK;
 }
 
 HRESULT CSkill_Slot::Initialize_Clone(void* pArg)
@@ -178,15 +178,15 @@ HRESULT CSkill_Slot::Initialize_Clone(void* pArg)
     }
 
     m_pGameInstance->Subscribe_Event<EVENT_SKILL_OPEN>(ENUM_CLASS(EVENT_TYPE::SKILL_EVENT), [&](const EVENT_SKILL_OPEN& e)
-        { Setting_Skill();});
+        { Setting_Skill(); });
 
     m_pGameInstance->Subscribe_Event<EVENT_SKILL_ON>(ENUM_CLASS(EVENT_TYPE::PreSKILL_On), [&](const EVENT_SKILL_ON& e)
         { On_PreSkill(e); });
-    
+
     m_pGameInstance->Subscribe_Event<EVENT_SKILL_RESET>(ENUM_CLASS(EVENT_TYPE::SKILL_RESET), [&](const EVENT_SKILL_RESET& e)
         { Reset_Slot(); });
 
-	return S_OK;
+    return S_OK;
 }
 
 void CSkill_Slot::Priority_Update(_float fTimeDelta)
@@ -209,7 +209,7 @@ void CSkill_Slot::Update(_float fTimeDelta)
             m_pGameInstance->PlaySoundOnce(wstrSound.c_str());
         }
         m_pSlot_Over->Anim_On();
-        if(m_pGameInstance->Get_InputType() == INPUT_TYPE::UI)
+        if (m_pGameInstance->Get_InputType() == INPUT_TYPE::UI)
             Render_SkillInfo();
 
         if (CClientInstance::GetInstance()->Get_PlayerData().iSkilPoint > 0 && m_pGameInstance->Mouse_Down(MOUSEKEYSTATE::LB, INPUT_TYPE::UI))
@@ -234,9 +234,9 @@ void CSkill_Slot::Update(_float fTimeDelta)
                         {
                             CSkill_QuickSlot::SKILLQUICK_DESC Desc = {};
                             Desc.iSkillIndex = m_iSkillIndex;
-                            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkillSlot_Quick"),&Desc);
+                            CClientInstance::GetInstance()->UI_UpdateSwitch(TEXT("SkillSlot_Quick"), &Desc);
                         }
-                        if (m_pSkilData->iType == 0 && m_pSkilData->iIndex < 99)
+                        if (m_pSkilData->iType == 1)
                         {
                             CClientInstance::GetInstance()->Unlock_Skill(1 << m_pSkilData->iIndex);
                         }
@@ -354,7 +354,7 @@ HRESULT CSkill_Slot::Ready_Child(const SKILL_DB* pData)
         return E_FAIL;
     m_Children.push_back(m_pIcon);
     Safe_AddRef(m_pIcon);
-   
+
     m_iPreSkillIndex = m_pSkilData->iPreSkill;
 
 
@@ -382,7 +382,7 @@ HRESULT CSkill_Slot::Ready_Child(const SKILL_DB* pData)
             m_Children.push_back(pAtlas);
             Safe_AddRef(pAtlas);
         }
-        else if(iValueX > 0)
+        else if (iValueX > 0)
         {
             AtlasDesc.fDepth = m_fDepth + 1;
             AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
@@ -417,7 +417,7 @@ HRESULT CSkill_Slot::Ready_Child(const SKILL_DB* pData)
             Safe_AddRef(pAtlas);
         }
 
- 
+
     }
     else if (m_pSkilData->iType != 0 && m_iPreSkillIndex > 0)
     {
@@ -426,13 +426,13 @@ HRESULT CSkill_Slot::Ready_Child(const SKILL_DB* pData)
         _int iValueY = m_pSkilData->iLevel - pPreData->iLevel;
         _int iValueX = m_pSkilData->iSlotX - pPreData->iSlotX;
 
-      
+
         for (; iValueY > 0; --iValueY)
         {
             AtlasDesc.fDepth = m_fDepth + 1;
             AtlasDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
             AtlasDesc.szName = "PreSkill_Line";
-            if(iValueX < 0)
+            if (iValueX < 0)
                 AtlasDesc.vLocalPos = _float2{ 70.f, -40.f + (-80.f * (iValueY - 1)) };
             else if (iValueX > 0)
                 AtlasDesc.vLocalPos = _float2{ -70.f, -40.f + (-80.f * (iValueY - 1)) };
@@ -550,13 +550,13 @@ HRESULT CSkill_Slot::Ready_Child(const SKILL_DB* pData)
     FXDesc.vLocalSize = { 64.f, 64.f };
 
     m_pSlot_Over = static_cast<CUI_Slot_Over_Fx*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_UI_Slot_Over_Fx"), &FXDesc));
-    
+
     if (m_pSlot_Over == nullptr)
         return E_FAIL;
 
     m_Children.push_back(m_pSlot_Over);
     Safe_AddRef(m_pSlot_Over);
-    
+
     FXDesc.fDepth = m_fDepth + 1.1f;
     FXDesc.iUIType = ENUM_CLASS(UITYPE::TEXTURE);
     FXDesc.szName = "Selete";
@@ -572,7 +572,7 @@ HRESULT CSkill_Slot::Ready_Child(const SKILL_DB* pData)
     Safe_AddRef(m_pSlot_Selete);
 
     m_pSlot_Selete->Update_Visible(false);
-    
+
     return S_OK;
 }
 
@@ -600,7 +600,7 @@ CGameObject* CSkill_Slot::Clone(void* pArg)
 
 void CSkill_Slot::Free()
 {
-	__super::Free();
+    __super::Free();
     Safe_Release(m_pLine);
     Safe_Release(m_pIcon);
 
@@ -613,4 +613,4 @@ void CSkill_Slot::Free()
     Safe_Release(m_pSlot_Over);
     Safe_Release(m_pSlot_Selete);
     m_pSkilData = nullptr;
-}   
+}
