@@ -46,6 +46,9 @@ HRESULT CGomdol::Initialize_Clone(void* pArg)
     if (FAILED(Ready_AnimEvent()))
         return E_FAIL;
 
+    if (FAILED(Ready_SFX()))
+        return E_FAIL;
+
     m_pController = CAI_Controller_Gomdol::Create(this);
     if (nullptr == m_pController)
         return E_FAIL;
@@ -238,6 +241,7 @@ HRESULT CGomdol::Ready_AnimEvent()
     if (nullptr == pModel)
         return E_FAIL;
 
+
 #pragma region FrontAttack
 
     pModel->Register_Event("FrontAttack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -272,15 +276,290 @@ HRESULT CGomdol::Ready_AnimEvent()
         });
 
 
+#pragma endregion
+
+#pragma region ROAR
+
+#pragma endregion
+
+
+
+    return S_OK;
+}
+
+HRESULT CGomdol::Ready_SFX()
+{
+
+    CModel* pModel = static_cast<CModel*>(m_pBody->Get_Component(TEXT("Com_Model")));
+    if (nullptr == pModel)
+        return E_FAIL;
+
+#pragma region WALK
+
+    pModel->Register_Event("SFX_Walk_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_bigbear_footstep_r_04 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFX_Walk_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_bigbear_footstep_l_04 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFX_Walk_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_bigbear_footstep_r_04 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFX_Walk_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_bigbear_footstep_l_04 (SFX).wav"), 0.6f);
+        }
+    );
+
+
+#pragma endregion
+
+#pragma region RUN
+
+    pModel->Register_Event("SFX_Run_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_BigBear_Footstep_Run_B_01 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFX_Run_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_BigBear_Footstep_Run_B_02 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFX_Run_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_BigBear_Footstep_Run_B_03 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFX_Run_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_BigBear_Footstep_Run_B_02 (SFX).wav"), 0.6f);
+        }
+    );
+
+#pragma endregion
+
+#pragma region
+
+#pragma region FrontAttackSFX
+    
+    //vo
+    pModel->Register_Event("SFXAASASWS_FrontAttack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            _uint iSoundIndex = m_pGameInstance->Rand(0, 2);
+
+            if (iSoundIndex == 0)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Atk_S_01 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 1)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Atk_S_02 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 2)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Atk_S_03 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFXAASASWS_FrontAttack_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            _uint iSoundIndex = m_pGameInstance->Rand(0, 2);
+
+            if (iSoundIndex == 0)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_BigBear_1H_Swish_01 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 1)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_BigBear_1H_Swish_02 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 2)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_BigBear_1H_Swish_03 (SFX).wav"), 0.6f);
+        }
+    );
+
+
+#pragma endregion
+
+
+#pragma region ComboAttackSFX
+
+    pModel->Register_Event("SFX_VO_ComboAttack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            _uint iSoundIndex = m_pGameInstance->Rand(0, 2);
+
+            if (iSoundIndex == 0)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Atk_S_01 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 1)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Atk_S_02 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 2)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Atk_S_03 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFX_VO_ComboAttack_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            _uint iSoundIndex = m_pGameInstance->Rand(0, 2);
+
+            if (iSoundIndex == 0)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Atk_S_01 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 1)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Atk_S_02 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 2)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Atk_S_03 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFX_VO_ComboAttack_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            _uint iSoundIndex = m_pGameInstance->Rand(0, 2);
+
+            if (iSoundIndex == 0)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Roar_S_01 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 1)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Roar_S_02 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 2)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Roar_S_03 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFX_ComboAttack_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            _uint iSoundIndex = m_pGameInstance->Rand(0, 2);
+
+            if (iSoundIndex == 0)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_BigBear_1H_Swish_01 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 1)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_BigBear_1H_Swish_02 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 2)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_BigBear_1H_Swish_03 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFX_ComboAttack_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            _uint iSoundIndex = m_pGameInstance->Rand(0, 2);
+
+            if (iSoundIndex == 0)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_BigBear_1H_Swish_01 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 1)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_BigBear_1H_Swish_02 (SFX).wav"), 0.6f);
+            else if (iSoundIndex == 2)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_BigBear_1H_Swish_03 (SFX).wav"), 0.6f);
+        }
+    );
+
+
+#pragma endregion
+
+
+#pragma region SLEEP
+
+    pModel->Register_Event("SFX_Sleep_Step_1", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_bigbear_footstep_r_04 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFX_Sleep_Step_1", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_bigbear_footstep_l_04 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFX_Sleep_Step_2", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_bigbear_footstep_r_04 (SFX).wav"), 0.6f);
+
+        }
+    );
+
+    pModel->Register_Event("SFX_Sleep_Step_2", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_efx_bigbear_footstep_l_04 (SFX).wav"), 0.6f);
+        }
+    );
+
+    pModel->Register_Event("SFX_Sleep_Sniff", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]()
+        {
+            _uint iSoundIndex = m_pGameInstance->Rand(0, 2);
+
+            if (iSoundIndex == 0)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_bigbear_idle_sniff_01 (SFX).wav"), 1.f);
+            else if (iSoundIndex == 1)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_bigbear_idle_sniff_02 (SFX).wav"), 1.f);
+            else if (iSoundIndex == 2)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_bigbear_idle_sniff_03 (SFX).wav"), 1.f);
+        }
+    );
+
+    pModel->Register_Event("SFX_Sleep_Sniff", ANIM_EVENT_TRIGGERTYPE::EXIT, [this]()
+        {
+            _uint iSoundIndex = m_pGameInstance->Rand(0, 2);
+
+            if (iSoundIndex == 0)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_bigbear_idle_sniff_01 (SFX).wav"), 1.f);
+            else if (iSoundIndex == 1)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_bigbear_idle_sniff_02 (SFX).wav"), 1.f);
+            else if (iSoundIndex == 2)
+                m_pGameInstance->PlaySoundOnce(TEXT("Mon_vo_bigbear_idle_sniff_03 (SFX).wav"), 1.f);
+        }
+    );
 
 #pragma endregion
 
 
 
 
-
+    
     return S_OK;
 }
+
+
+void CGomdol::SFX_HIT(_uint iHitIndex)
+{
+    _uint iSoundIndex = m_pGameInstance->Rand(0, 3);
+
+    if (iHitIndex == 0)
+    {
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Dmg_S_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Dmg_S_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Dmg_S_03 (SFX).wav"), 1.f);
+    }
+
+    else if (iHitIndex == 1)
+    {
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Dmg_M_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Dmg_M_02 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Dmg_M_03 (SFX).wav"), 1.f);
+    }
+
+    else if (iHitIndex == 2)
+    {
+        if (iSoundIndex == 0)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Dmg_L_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 1)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Dmg_L_01 (SFX).wav"), 1.f);
+        else if (iSoundIndex == 2)
+            m_pGameInstance->PlaySoundOnce(TEXT("Mon_VO_BigBear_Dmg_L_01 (SFX).wav"), 1.f);
+    }
+
+
+}
+
+
+
+
 
 CGomdol* CGomdol::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

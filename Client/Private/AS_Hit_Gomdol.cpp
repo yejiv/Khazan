@@ -22,6 +22,14 @@ void CAS_Hit_Gomdol::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     pModel->Set_Animation(iAnimIndex);
     pModel->Set_AnimationLoop(false);
 
+    if (iAnimIndex >= 9 && iAnimIndex <= 12)
+        pGomdol->SFX_HIT(0);
+    else if (iAnimIndex >= 1 && iAnimIndex <= 4)
+        pGomdol->SFX_HIT(1);
+    else if (iAnimIndex >= 5 && iAnimIndex <= 8)
+        pGomdol->SFX_HIT(2);
+
+
 
 }
 
