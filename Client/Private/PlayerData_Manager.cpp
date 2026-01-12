@@ -67,15 +67,15 @@ HRESULT CPlayerData_Manager::Initialize()
     //UsedSpear();
 
     m_ePlayerEquipment.iFace = 10;
-    m_ePlayerEquipment.iHair = 21;
-    m_ePlayerEquipment.iTorso = 5002;
-    m_ePlayerEquipment.iArm = 5003;
-    m_ePlayerEquipment.iLeg = 5004;
-    m_ePlayerEquipment.iShoes = 5005;
+    m_ePlayerEquipment.iHair = 5006;
+    m_ePlayerEquipment.iTorso = 5007;
+    m_ePlayerEquipment.iArm = 5008;
+    m_ePlayerEquipment.iLeg = 5009;
+    m_ePlayerEquipment.iShoes = 5010;
     m_ePlayerEquipment.iSpear = 4011;
     m_ePlayerEquipment.iGSword = 4001;
-    m_ePlayerEquipment.isSpear = true;
-    m_ePlayerEquipment.isGSword = false;
+    m_ePlayerEquipment.isSpear = false;
+    m_ePlayerEquipment.isGSword = true;
     UsedSpear();
 
     return S_OK;

@@ -80,6 +80,12 @@ private:
 
     _bool m_isPop = { false };
 
+    _bool m_isEffect0 = { false };
+    _float m_fEffect0 = { 0.f };
+
+    _bool m_isEffect1 = { false };
+    _float m_fEffect1 = { 0.f };
+
 private:
     COLLISION_DESC m_TriggerCollisionDesc;
 

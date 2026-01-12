@@ -1075,39 +1075,50 @@ void CUI_Inven::Selete_Slot()
 void CUI_Inven::Setting_Item()
 {
     //창
-    m_pItems[ENUM_CLASS(ITEMTYPE::SPEAR)][0]->Add_Item(4011);
-    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::WEAPON)]->Add_Item(4011, m_pItems[ENUM_CLASS(ITEMTYPE::SPEAR)][0], false);
+    //m_pItems[ENUM_CLASS(ITEMTYPE::SPEAR)][0]->Add_Item(4012);
+    //m_pItems[ENUM_CLASS(ITEMTYPE::SPEAR)][1]->Add_Item(4011);
+    //m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::WEAPON)]->Add_Item(4011, m_pItems[ENUM_CLASS(ITEMTYPE::SPEAR)][1], false);
+
+    //대검
+    m_pItems[ENUM_CLASS(ITEMTYPE::GREATE)][0]->Add_Item(4002);
+    m_pItems[ENUM_CLASS(ITEMTYPE::GREATE)][1]->Add_Item(4001);
+    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::WEAPON)]->Add_Item(4001, m_pItems[ENUM_CLASS(ITEMTYPE::GREATE)][1], false);
 
     //머리
-    //m_pItems[ENUM_CLASS(ITEMTYPE::HEAD)][0]->Add_Item(5001);
+    m_pItems[ENUM_CLASS(ITEMTYPE::HEAD)][0]->Add_Item(5006);
+    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::HEAD)]->Add_Item(5006, m_pItems[ENUM_CLASS(ITEMTYPE::HEAD)][0], false);
 
     //상의
-    m_pItems[ENUM_CLASS(ITEMTYPE::TOP)][0]->Add_Item(5002);
-    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::TOP)]->Add_Item(5002, m_pItems[ENUM_CLASS(ITEMTYPE::TOP)][0], false);
+    m_pItems[ENUM_CLASS(ITEMTYPE::TOP)][0]->Add_Item(5007);
+    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::TOP)]->Add_Item(5007, m_pItems[ENUM_CLASS(ITEMTYPE::TOP)][0], false);
 
     //장갑
-    m_pItems[ENUM_CLASS(ITEMTYPE::GLOVES)][0]->Add_Item(5003);
-    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::GLOVES)]->Add_Item(5003, m_pItems[ENUM_CLASS(ITEMTYPE::GLOVES)][0], false);
+    m_pItems[ENUM_CLASS(ITEMTYPE::GLOVES)][0]->Add_Item(5008);
+    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::GLOVES)]->Add_Item(5008, m_pItems[ENUM_CLASS(ITEMTYPE::GLOVES)][0], false);
 
     //하의
-    m_pItems[ENUM_CLASS(ITEMTYPE::BOTTOM)][0]->Add_Item(5004);
-    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::BOTTOM)]->Add_Item(5004, m_pItems[ENUM_CLASS(ITEMTYPE::BOTTOM)][0], false);
+    m_pItems[ENUM_CLASS(ITEMTYPE::BOTTOM)][0]->Add_Item(5009);
+    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::BOTTOM)]->Add_Item(5009, m_pItems[ENUM_CLASS(ITEMTYPE::BOTTOM)][0], false);
 
     //신발
-    m_pItems[ENUM_CLASS(ITEMTYPE::SHOES)][0]->Add_Item(5005);
-    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::SHOES)]->Add_Item(5005, m_pItems[ENUM_CLASS(ITEMTYPE::SHOES)][0], false);
+    m_pItems[ENUM_CLASS(ITEMTYPE::SHOES)][0]->Add_Item(5010);
+    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::SHOES)]->Add_Item(5011, m_pItems[ENUM_CLASS(ITEMTYPE::SHOES)][0], false);
 
     //목걸이
-    //m_pItems[ENUM_CLASS(ITEMTYPE::NECK)][0]->Add_Item(6001);
+    m_pItems[ENUM_CLASS(ITEMTYPE::NECK)][0]->Add_Item(6001);
+    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::NECK)]->Add_Item(6001, m_pItems[ENUM_CLASS(ITEMTYPE::NECK)][0], false);
 
     //반지
-    //m_pItems[ENUM_CLASS(ITEMTYPE::RING)][0]->Add_Item(6011);
+    m_pItems[ENUM_CLASS(ITEMTYPE::RING)][0]->Add_Item(6011);
+    m_pEquipSlot[ENUM_CLASS(EQUIPSLOT_TYPE::RING)]->Add_Item(6011, m_pItems[ENUM_CLASS(ITEMTYPE::RING)][0], false);
 
     //소모품
     m_pItems[ENUM_CLASS(ITEMTYPE::ATIVE)][0]->Add_Item(1101);
     m_pItems[ENUM_CLASS(ITEMTYPE::ATIVE)][1]->Add_Item(1004);
     m_pItems[ENUM_CLASS(ITEMTYPE::ATIVE)][1]->Add_Item(1004);
     m_pItems[ENUM_CLASS(ITEMTYPE::ATIVE)][1]->Add_Item(1004);
+    m_pItems[ENUM_CLASS(ITEMTYPE::ATIVE)][2]->Add_Item(1001);
+    m_pItems[ENUM_CLASS(ITEMTYPE::ATIVE)][2]->Add_Item(1001);
     m_pItems[ENUM_CLASS(ITEMTYPE::ATIVE)][2]->Add_Item(1001);
     m_pItems[ENUM_CLASS(ITEMTYPE::ATIVE)][2]->Add_Item(1001);
     m_pItems[ENUM_CLASS(ITEMTYPE::ATIVE)][2]->Add_Item(1001);
