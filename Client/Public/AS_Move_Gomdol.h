@@ -21,6 +21,8 @@ private:
 	_uint						m_iPrevMovementFlag = {};
 	_float						m_AnimationSpeed = {1.f};
 
+    _bool                       m_isFirstFrame = { false };
+
 public:
 	static CAS_Move_Gomdol*		Create();
 	virtual void				Free() override;
