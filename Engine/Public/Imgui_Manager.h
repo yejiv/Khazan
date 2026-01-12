@@ -70,6 +70,8 @@ private:
 
     class CGameObject* m_pGizmoObject = { nullptr };
 
+    _bool m_isShowTopBar = true;
+
 public:
     static CImgui_Manager* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, list<wstring> Menu, HWND hWnd, _uint iWinSizeX, _uint iWinSizeY);
     virtual void Free() override;

@@ -41,7 +41,7 @@ HRESULT CPlayer_Manager::Initialize()
 
     m_Data.fWeight = { 0.f };
     //데이터 셋팅
-    //Setting_Data();
+    Setting_Data();
 
     m_UsedSpearSkill.assign(GetBitPosition(CPlayerData_Manager::SPEAR_END), false);
 
@@ -54,14 +54,14 @@ HRESULT CPlayer_Manager::Initialize()
     //BindSkillToButton(R, CPlayerData_Manager::SHADOW_CLEAVE);
 
     ///* 임시 */
-    //m_pClientInstance->UsedGSword();
-    //BindSkillToButton(Q, CPlayerData_Manager::GIANTHUNT);   /* 거인 사냥 */
-    //BindSkillToButton(E, CPlayerData_Manager::PHANTOM_SHADOWOFDARKNESS);    /* 귀신 : 어둠의 그림자*/
-    //BindSkillToButton(R, CPlayerData_Manager::BREAK_THROUGH);   /* 정면 돌파 */
-    //BindSkillToButton(CTRL_LB, CPlayerData_Manager::WARCRY);    /* 거대한 포효 */ 
-    //BindSkillToButton(CTRL_RB, CPlayerData_Manager::INNER_FURY);    /* 내재된 분노 */
+    m_pClientInstance->UsedGSword();
+    BindSkillToButton(Q, CPlayerData_Manager::GIANTHUNT);   /* 거인 사냥 */
+    BindSkillToButton(E, CPlayerData_Manager::BREAK_THROUGH);   /* 정면 돌파 */
+    BindSkillToButton(R, CPlayerData_Manager::WARCRY);    /* 거대한 포효 */
+    BindSkillToButton(CTRL_LB, CPlayerData_Manager::LIMIT_BREAK);    /* 한계 극복 */
+    BindSkillToButton(CTRL_RB, CPlayerData_Manager::INNER_FURY);    /* 내재된 분노 */
 
-    m_pClientInstance->UsedSpear();
+    //m_pClientInstance->UsedSpear();
 
 	return S_OK;
 }
@@ -234,17 +234,17 @@ void CPlayer_Manager::Setting_Data()
 {
     //초기 데이터 셋팅용
     
-    m_Data.iGold = 2000;
-    m_Data.iLachryma = 5100;
-    m_Data.iStone = 8;
-    m_Data.fSkillLevel_EXP = 50.f;
-    m_Data.iSkillLevel = 10;
-    m_Data.iSkilPoint = 0;
+    m_Data.iGold = 66400;
+    m_Data.iLachryma = 2770;
+    m_Data.iStone = 5;
+    m_Data.fSkillLevel_EXP = 80.f;
+    m_Data.iSkillLevel = 30;
+    m_Data.iSkilPoint = 10;
 
-    m_Data.iLevel = 10;
-    m_Data.iVitality = { 13 };
-    m_Data.iEndurance = { 16 };
-    m_Data.iPower = { 11 };
+    m_Data.iLevel = 20;
+    m_Data.iVitality = { 10 };
+    m_Data.iEndurance = { 10 };
+    m_Data.iPower = { 20 };
     m_Data.iCompetency = { 10 };
     m_Data.iWill = { 10 };
 }
