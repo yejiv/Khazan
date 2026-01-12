@@ -140,7 +140,7 @@ HRESULT CUI_State::Initialize_Clone(void* pArg)
     m_pLachryma = &CClientInstance::GetInstance()->Get_ptrPlayerData().iLachryma;
 
     //데이터 셋팅
-    //Setting_Data();
+    Setting_Data();
 	return S_OK;
 }
 
