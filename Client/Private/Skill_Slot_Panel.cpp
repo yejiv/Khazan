@@ -191,16 +191,24 @@ void CSkill_Slot_Panel::Setting_Data()
 {
     for (auto pSlot : m_Skill)
     {
-        pSlot->Setting_Data(101, 1);
-        pSlot->Setting_Data(102, 1);
-        pSlot->Setting_Data(104, 1);
-        pSlot->Setting_Data(105, 1);
-        pSlot->Setting_Data(106, 1);
-        pSlot->Setting_Data(107, 1);
-        pSlot->Setting_Data(108, 1);
-        pSlot->Setting_Data(111, 1);
-        pSlot->Setting_Data(110, 1);
-        pSlot->Setting_Data(114, 1);
+        pSlot->Setting_Data(201, 1);
+        pSlot->Setting_Data(202, 1);
+        pSlot->Setting_Data(203, 1);
+        pSlot->Setting_Data(204, 1);
+        pSlot->Setting_Data(205, 1);
+        pSlot->Setting_Data(206, 1);
+        pSlot->Setting_Data(207, 1);
+        pSlot->Setting_Data(208, 1);
+        pSlot->Setting_Data(209, 1);
+        pSlot->Setting_Data(210, 1);
+        pSlot->Setting_Data(211, 1);
+        pSlot->Setting_Data(212, 1);
+        pSlot->Setting_Data(213, 1);
+        pSlot->Setting_Data(214, 1);
+        pSlot->Setting_Data(215, 1);
+        pSlot->Setting_Data(216, 1);
+        pSlot->Setting_Data(217, 1);
+        pSlot->Setting_Data(218, 1);
     }
 }
 
