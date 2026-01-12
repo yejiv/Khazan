@@ -80,6 +80,8 @@ void CImgui_Manager::BeginFrame()
 void CImgui_Manager::Render()
 {
     // Rendering
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
+        m_isShowTopBar = !m_isShowTopBar;
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	m_io = &(ImGui::GetIO());
@@ -175,8 +177,11 @@ void CImgui_Manager::Render_Docking()
         ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoBringToFrontOnFocus |
         ImGuiWindowFlags_NoNavFocus |
-        ImGuiWindowFlags_MenuBar |
+        //ImGuiWindowFlags_MenuBar |
         ImGuiWindowFlags_NoBackground;
+
+    if (m_isShowTopBar)
+        hostFlags |= ImGuiWindowFlags_MenuBar;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
@@ -189,7 +194,7 @@ void CImgui_Manager::Render_Docking()
         ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(dockspace_id, ImVec2(0, 0), dockFlags);
 
-        if (ImGui::BeginMenuBar())
+        if (m_isShowTopBar && ImGui::BeginMenuBar())
         {
             for (auto& widget : m_Widgets)
             {
