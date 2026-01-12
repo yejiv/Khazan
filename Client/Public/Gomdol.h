@@ -17,6 +17,10 @@ public:
     void                            Set_InitPosition();
 
 public:
+    void                            SFX_HIT(_uint iHitIndex);
+
+
+public:
 	virtual HRESULT					Initialize_Prototype() override;
 	virtual HRESULT					Initialize_Clone(void* pArg) override;
 	virtual void					Priority_Update(_float fTimeDelta) override;
@@ -34,6 +38,7 @@ private:
 	HRESULT							Ready_Components();
 	HRESULT							Ready_PartObjects();
 	HRESULT							Ready_AnimEvent();
+    HRESULT                         Ready_SFX();
 
 private:
 	class CBody_Gomdol*				m_pBody = { nullptr };
