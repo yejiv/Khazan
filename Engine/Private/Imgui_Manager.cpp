@@ -80,7 +80,7 @@ void CImgui_Manager::BeginFrame()
 void CImgui_Manager::Render()
 {
     // Rendering
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD4))
+    if (m_pGameInstance->Key_Down(DIK_NUMPAD4, INPUT_TYPE::FORCE))
         m_isShowTopBar = !m_isShowTopBar;
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
