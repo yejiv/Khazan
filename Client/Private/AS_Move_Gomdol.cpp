@@ -31,6 +31,7 @@ void CAS_Move_Gomdol::Enter(CStateMachine* pFSM, CGameObject* pOwner)
     {
         m_fSpeedPerSec = pBB->Get_Value<_float>(pGomdol->Get_Name(), "RunSpeed");
         pModel->Set_Animation(22);
+        m_isFirstFrame = true;
     }
 
 
@@ -39,6 +40,10 @@ void CAS_Move_Gomdol::Enter(CStateMachine* pFSM, CGameObject* pOwner)
 
 void CAS_Move_Gomdol::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fTimeDelta)
 {
+
+
+
+
     CGomdol* pGomdol = static_cast<CGomdol*>(pOwner);
     CBlackBoard* pBB = pGomdol->Get_Controller()->Get_BlackBoard();
     CTransform* pTransform = static_cast<CTransform*>(pOwner->Get_Component(TEXT("Com_Transform")));
@@ -55,6 +60,12 @@ void CAS_Move_Gomdol::Update(CStateMachine* pFSM, CGameObject* pOwner, _float fT
 
     if (pModel->Play_Animation(fTimeDelta)) {}
 
+    if (m_isFirstFrame)
+    {
+        _vector vCurrentPos = pGomdol->Get_Transform()->Get_State(STATE::POSITION);
+        pGomdol->Get_Transform()->Set_State(STATE::POSITION, vCurrentPos);
+        m_isFirstFrame = false;
+    }
 
 }
 
