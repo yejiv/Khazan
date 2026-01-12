@@ -132,6 +132,11 @@ void CFence::Collision_Enter(COLLISION_DESC* pDesc, _uint iOtherObjectLayer, _fl
                 CBody_Khazan_GS* pKhazan = dynamic_cast<CBody_Khazan_GS*>(pDesc->pGameObject);
                 if (pKhazan) isAttack = pKhazan->IsAttackActive();
             }
+            else  if (m_iLevelIndex == ENUM_CLASS(LEVEL::TRAINING))
+            {
+                CBody_Khazan_Spear* pKhazan = dynamic_cast<CBody_Khazan_Spear*>(pDesc->pGameObject);
+                if (pKhazan) isAttack = pKhazan->Get_IsAttackCollisionActive();
+            }
 
             if (isAttack)
             {

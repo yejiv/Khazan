@@ -38,6 +38,7 @@ private:
 	HRESULT Start_Level(LEVEL eStartLevelID);
 
 	HRESULT Ready_DebugTool();
+    void KeyInput_Render(_float fTimeDelta);
 
 public:
 	static CMainApp* Create();

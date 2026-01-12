@@ -116,16 +116,16 @@ void CLevel_HeinMach::Update(_float fTimeDelta)
 
     }
 
-    if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
-    {
-        CDestructible_Stone::STONE_DESC Desc;
-        Desc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
-        Desc.vPos = XMVectorSet(0.f, 1.f, 0.f, 1.f);
-
-        if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Chunk"),
-            ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Destructible_Stone"), TIME_CHANNEL::ENEMY, &Desc)))
-            return;
-    }
+    //  if (m_pGameInstance->Key_Down(DIK_NUMPAD2))
+    //  {
+    //      CDestructible_Stone::STONE_DESC Desc;
+    //      Desc.iLevelIndex = ENUM_CLASS(LEVEL::HEINMACH);
+    //      Desc.vPos = XMVectorSet(0.f, 1.f, 0.f, 1.f);
+    //  
+    //      if (FAILED(m_pGameInstance->Add_GameObject_ToLayer(ENUM_CLASS(LEVEL::HEINMACH), TEXT("Layer_Chunk"),
+    //          ENUM_CLASS(LEVEL::HEINMACH), TEXT("Prototype_GameObject_Destructible_Stone"), TIME_CHANNEL::ENEMY, &Desc)))
+    //          return;
+    //  }
 
     if (m_pGameInstance->Key_Down(DIK_F1, INPUT_TYPE::FORCE))
     {

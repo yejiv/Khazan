@@ -232,6 +232,11 @@ void CKhazan_GSword::Priority_Update(_float fTimeDelta)
     {
         m_pPlayerData->fCulHp = 10.f;
     }
+
+#ifdef _DEBUG
+    // 스태틱 렌더 계산용
+    m_pGameInstance->Jolt_Set_TargetPos_DebugRender(m_pTransformCom->Get_State(STATE::POSITION));
+#endif // _DEBUG
 }
 
 void CKhazan_GSword::Update(_float fTimeDelta)
@@ -1920,6 +1925,9 @@ void CKhazan_GSword::Change_MoveIdle(_float fTimeDelt)
     if ((isIdleState && Has_Status(LOCKON) && isNothingState) || (isIdleState && m_pBody->Get_Model()->IsFinished()))
     {
         if ((Has_Status(STAMINA_EXHAUSTION)))
+            return;
+
+        if (m_pAnimInteraction->Is_Heal())
             return;
 
         if (m_pBody->Get_Model()->IsCurSetAnimation())

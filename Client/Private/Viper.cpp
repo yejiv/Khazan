@@ -3177,7 +3177,8 @@ HRESULT CViper::Ready_AnimEffectEvent()
         cout << "----------------------- Hand_DashUpper_FX::EXIT ----------------------" << endl;
 
         // 이미시브 데칼 스폰
-        Spawn_EmissiveCrackDecal(m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
+        //  Spawn_EmissiveCrackDecal(m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
+        Spawn_EmissiveCrackDecal(m_pP2Weapon->Get_BladeTipPos());
         });
 
     pModel->Register_Event("Hand_DashUpper_STR_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -3206,7 +3207,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         cout << "----------------------- Sword_Swing_Stamp_Fin_FX::EXIT ----------------------" << endl;
 
         // 이미시브 데칼 스폰
-        Spawn_EmissiveCrackDecal(m_pTransformCom->Get_State(STATE::POSITION));
+        Spawn_EmissiveCrackDecal(m_pP2Weapon->Get_BladeTipPos());
         });
 
     //pModel->Register_Event("FakeRun_Trail0_FX", ANIM_EVENT_TRIGGERTYPE::ENTER, [this]() {
@@ -3248,7 +3249,7 @@ HRESULT CViper::Ready_AnimEffectEvent()
         cout << "----------------------- SwingRound_Land_FX::EXIT ----------------------" << endl;
 
         // 이미시브 데칼 스폰
-        Spawn_EmissiveCrackDecal(m_pTransformCom->Get_State(STATE::POSITION));
+        Spawn_EmissiveCrackDecal(m_pPahse2Body->Get_BoneMatrix("Bip001-L-Finger2").r[3]);
         // 암전 쉐이킹
         CClientInstance::GetInstance()->ActiveCamera_Shaking(2.f, 1.f);
         Viper_2PhaseBerserker_ShaderSettings();
@@ -6102,7 +6103,7 @@ void CViper::Spawn_EmissiveCrackDecal(_fvector vPosition)
     Desc.vFadeTime = _float2(0.2f, 0.2f);
     Desc.eType = DECALTYPE::EMISSIVE;
     XMStoreFloat3(&Desc.vPosition, vPosition);
-    Desc.vScale = _float3(7.f, 0.7f, 7.f);
+    Desc.vScale = _float3(7.f, 2.f, 7.f);
     Desc.EmissiveDesc.vBaseColor = _float3(0.12f, 0.1f, 0.08f);
     Desc.EmissiveDesc.vEmissiveColor = _float3(1.2f, 1.f, 0.8f);
     Desc.EmissiveDesc.vBorderColor = _float3(0.f, 0.f, 0.f);
