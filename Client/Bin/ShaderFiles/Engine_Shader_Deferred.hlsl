@@ -238,6 +238,9 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
     float4 vLitColor = vDiffuse * vShade + vEmissive;
     Out.vColor = vLitColor + vSpecular;
     
+    if (false == g_isEnableSpecular)
+        Out.vColor = vLitColor;
+    
     // Unlit
     if (g_isUnlitMode)
     {
@@ -350,27 +353,37 @@ PS_OUT_BACKBUFFER PS_POSTSCENE(PS_IN In)
 
     float fLightDepth = vLightProjPos.z;
     
-    float fShadowSum = 0.f;
-    float2 vOffset;
-
-    for (int i = -1; i <= 1; ++i)
+    if (g_isEnablePCF)
     {
-        for (int j = -1; j <= 1; ++j)
+        float fShadowSum = 0.f;
+        float2 vOffset;
+        
+        for (int i = -1; i <= 1; ++i)
         {
-            vOffset.x = j * 1.f / g_vShadowMapSize.x;
-            vOffset.y = i * 1.f / g_vShadowMapSize.y;
-            float2 vSampleUV = vTexcoord + vOffset;
-            
-            if (0.f > vSampleUV.x || 1.f < vSampleUV.x || 0.f > vSampleUV.y || 1.f < vSampleUV.y)
-                fShadowSum += 1.f;
-            else
-                fShadowSum += g_ShadowTexture.SampleCmpLevelZero(ComparisonSampler, vSampleUV, fLightDepth - g_fShadowBias);
+            for (int j = -1; j <= 1; ++j)
+            {
+                vOffset.x = j * 1.f / g_vShadowMapSize.x;
+                vOffset.y = i * 1.f / g_vShadowMapSize.y;
+                float2 vSampleUV = vTexcoord + vOffset;
+                
+                if (0.f > vSampleUV.x || 1.f < vSampleUV.x || 0.f > vSampleUV.y || 1.f < vSampleUV.y)
+                    fShadowSum += 1.f;
+                else
+                    fShadowSum += g_ShadowTexture.SampleCmpLevelZero(ComparisonSampler, vSampleUV, fLightDepth - g_fShadowBias);
+            }
         }
+        
+        fShadowSum /= 9.f;
+        
+        Out.vColor = lerp(Out.vColor * g_fShadowIntensity, Out.vColor, fShadowSum);
     }
+    else
+    {
+        vector vShadowDesc = g_ShadowTexture.Sample(PointSampler, vTexcoord);
     
-    fShadowSum /= 9.f;
-    
-    Out.vColor = lerp(Out.vColor * g_fShadowIntensity, Out.vColor, fShadowSum);
+        if (fLightDepth - g_fShadowBias > vShadowDesc.x)
+            Out.vColor *= g_fShadowIntensity;
+    }
     
     return Out;
 }

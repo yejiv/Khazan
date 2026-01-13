@@ -538,6 +538,9 @@ HRESULT CRenderer::Render_PostScene()
     if (FAILED(m_pShader->Bind_Bool("g_isEnableSpecular", &m_isEnableSpecular)))
         return E_FAIL;
 
+    if (FAILED(m_pShader->Bind_Bool("g_isEnablePCF", &m_isEnablePCF)))
+        return E_FAIL;
+
 //  #ifdef _DEBUG
     if (FAILED(m_pShader->Bind_Bool("g_isEnableShadow", &m_isEnableShadow)))
         return E_FAIL;

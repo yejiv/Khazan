@@ -114,3 +114,4 @@ bool g_isUnlitMode;
 bool g_isLitMode;
 bool g_isEnableSpecular;
 bool g_isEnableBloom;
+bool g_isEnablePCF;

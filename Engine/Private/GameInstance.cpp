@@ -599,6 +599,11 @@ void CGameInstance::Set_EnableBloom(_bool isEnable)
     m_pRenderer->Set_EnableBloom(isEnable);
 }
 
+void CGameInstance::Set_EnablePCF(_bool isEnable)
+{
+    m_pRenderer->Set_EnablePCF(isEnable);
+}
+
 #pragma endregion
 
 #pragma region TIMER_MANAGER

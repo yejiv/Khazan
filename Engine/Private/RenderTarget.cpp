@@ -106,18 +106,31 @@ HRESULT CRenderTarget::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
     // Font 출력
     m_pShader->Begin(0);
 
+    //  // Outline
+    //  m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    //  m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    //  m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    //  m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(1.f, 1.f, 1.f, 1.f));
+    //  m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(1.f, 1.f, 1.f, 1.f));
+    //  m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    //  m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    //  m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    //  
+    //  // Fill
+    //  m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(0.f, 0.f, 0.f, 1.f));
+
     // Outline
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f - 2.f : m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f + 2.f : m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y + 25.f - 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y + 25.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y + 25.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 3.f, m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 7.f, m_vLTPos.y + 25.f + 2.f, _float4(1.f, 1.f, 1.f, 1.f));
 
     // Fill
-    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y == 0.f ? m_vLTPos.y + 45.f : m_vLTPos.y + 25.f, _float4(0.f, 0.f, 0.f, 1.f));
+    m_pGameInstance->Draw_Text(TEXT("Blade_Medium_20"), m_strName, m_vLTPos.x + 5.f, m_vLTPos.y + 25.f, _float4(0.f, 0.f, 0.f, 1.f));
 
 	return S_OK;
 }

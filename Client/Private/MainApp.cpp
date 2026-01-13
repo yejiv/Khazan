@@ -77,7 +77,7 @@ void CMainApp::Update(_float fTimeDelta)
 	m_pGameInstance->Update_Engine(tTimeDelta);
 	m_pClientInstance->Update(tTimeDelta.TimeDeltas[ENUM_CLASS(TIME_CHANNEL::WORLD)]);
 	
-    KeyInput_Render(fTimeDelta);
+    //  KeyInput_Render(fTimeDelta);
 }
 
 HRESULT CMainApp::Render()
@@ -741,8 +741,30 @@ HRESULT CMainApp::Ready_DebugTool()
 
 void CMainApp::KeyInput_Render(_float fTimeDelta)
 {
+    if (m_pGameInstance->Key_Down(DIK_NUMPADENTER))
+    {
+        CClientInstance::GetInstance()->Set_UIAllRenderSet(false);
+    }
+
     if (m_pGameInstance->Key_Pressing(DIK_RCONTROL, fTimeDelta))
     {
+        if (m_pGameInstance->Key_Down(DIK_ADD))
+        {
+            //  m_pGameInstance->Set_EnableSpecular(false);
+            //  m_pGameInstance->Set_EnableRimLight(false);
+            //  m_pGameInstance->Set_EnableSSAO(false);
+            //  m_pGameInstance->Set_EnablePCF(false);
+            //  m_pGameInstance->Set_EnableFog(false);
+            //  m_pGameInstance->Set_EnableVignette(false);
+
+            //  FOG_CONFIG FogConfig = m_pGameInstance->Get_FogConfig();
+            //  FogConfig.fLightBleedStrength = 0.f;
+            //  m_pGameInstance->Set_FogConfig(FogConfig);
+            //  m_pGameInstance->Set_EnableBloom(false);
+            //  m_pGameInstance->Set_EnableMotionBlur(false);
+            m_pGameInstance->Set_EnableLUT(false);
+        }
+
         if (m_pGameInstance->Key_Down(DIK_NUMPAD0))
         {
             m_pGameInstance->Set_UnlitMode(true);
@@ -783,11 +805,15 @@ void CMainApp::KeyInput_Render(_float fTimeDelta)
         {
             m_pGameInstance->Set_UnlitMode(false);
             m_pGameInstance->Set_EnableShadow(true);
+            m_pGameInstance->Set_EnablePCF(true);
         }
 
         if (m_pGameInstance->Key_Down(DIK_NUMPAD6))
         {
             m_pGameInstance->Set_EnableFog(true);
+            //  FOG_CONFIG FogConfig = m_pGameInstance->Get_FogConfig();
+            //  FogConfig.fLightBleedStrength = 1.f;
+            //  m_pGameInstance->Set_FogConfig(FogConfig);
         }
 
         if (m_pGameInstance->Key_Down(DIK_NUMPAD7))

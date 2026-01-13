@@ -104,6 +104,7 @@ public:
     void Set_LitMode(_bool isEnable);
     void Set_EnableSpecular(_bool isEnable);
     void Set_EnableBloom(_bool isEnable);
+    void Set_EnablePCF(_bool isEnable);
 #pragma endregion
 
 #pragma region TIMER_MANAGER
