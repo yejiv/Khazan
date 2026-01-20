@@ -88,6 +88,10 @@ public:
     void                        On_MotionTrail(const _wstring strKey, _bool isActive) { m_pMotionTrailCom->Set_Config(strKey); m_isActiveMotionTrail = isActive; }
     void                        Start_HealRimLight(_float fDuration, const _float2& vFadeTime, _float fMaxIntensity);
     void                        Reset_HealRimLightFlag() { m_isFinishedHealRimLight = false; }
+    _float                      Get_EdgeIntensity() { return m_fEdgeIntensity; }
+    _float                      Get_ShadeIntensity() { return m_fShadeIntensity; }
+    void                        Set_EdgeIntensity(_float fIntensity) { m_fEdgeIntensity = fIntensity; }
+    void                        Set_ShadeIntensity(_float fIntensity) { m_fShadeIntensity = fIntensity; }
 
 public:
     const TRAIL_CONFIG&         Get_TrailConfig() const;
@@ -194,6 +198,8 @@ private:
     _bool                       m_isEnableHealRimLight = { false };
     _bool                       m_isFinishedHealRimLight = { false };
     PLAYER_HEAL_RIMLIGHT_DESC   m_HealRimLightDesc;
+    _float                      m_fEdgeIntensity = {};
+    _float                      m_fShadeIntensity = {};
 
     /* Sound */
     vector<FMOD_CHANNEL*>       m_pChannel;

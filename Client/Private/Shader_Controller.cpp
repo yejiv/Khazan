@@ -46,9 +46,9 @@ HRESULT CShader_Controller::Initialize()
     m_ShadowDesc = m_pGameInstance->Get_ShadowDesc();
     m_VignetteConfig = m_pGameInstance->Get_VignetteConfig();
 
-    m_TargetLightDesc.vDiffuse = _float4(10.f, 9.f, 8.f, 1.f);
-    m_TargetLightDesc.vAmbient = _float4(1.f, 0.9f, 0.8f, 1.f);
-    m_TargetLightDesc.vSpecular = m_TargetLightDesc.vDiffuse;
+    //  m_TargetLightDesc.vDiffuse = _float4(10.f, 9.f, 8.f, 1.f);
+    //  m_TargetLightDesc.vAmbient = _float4(1.f, 0.9f, 0.8f, 1.f);
+    //  m_TargetLightDesc.vSpecular = m_TargetLightDesc.vDiffuse;
 
     m_DecalDesc.fLifeTime = 5.f;
     m_DecalDesc.vFadeTime = { 0.5f, 0.5f };
@@ -88,45 +88,7 @@ void CShader_Controller::Update(_float fTimeDelta)
 void CShader_Controller::Ready_Level()
 {
 #ifdef _DEBUG
-	m_pGameInstance->AddWidget(TEXT("Shader"), [&]()
-		{
-			ImGui::Begin("Select Level");
-			static const struct { const char* label; LEVEL value; } kItems[] = {
-			{ "HEINMACH", LEVEL::HEINMACH },
-			{ "CREVICE",  LEVEL::CREVICE  },
-			{ "EMBARS",   LEVEL::EMBARS   },
-			{ "VIPER",    LEVEL::VIPER    },
-			};
 
-			// 현재 선택을 int로 보유(라디오 그룹은 int 포인터 사용 권장)
-			int iCurrent = static_cast<int>(m_eCurrentLevel);
-
-			for (const auto& it : kItems)
-			{
-				const int v_button = static_cast<int>(it.value);
-				// 동일 int*를 공유하면 "그룹"으로 동작 (하나만 선택됨)
-				if (ImGui::RadioButton(it.label, &iCurrent, v_button))
-				{
-					m_eCurrentLevel = static_cast<LEVEL>(iCurrent);
-
-					if (m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Test")) != nullptr)
-					{
-                        CKhazan_Spear* pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),
-							TEXT("Layer_Creature_Test"), 0));
-						CBody_Khazan_Spear* pBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
-						OUTLINE_CONFIG PlayerOutlineConfig = pBody->Get_OutlineConfig();
-						m_OutlineConfig.vColor = PlayerOutlineConfig.vColor;
-						m_OutlineConfig.fSize = PlayerOutlineConfig.fSize;
-						OUTLINE_CONFIG RendererOutlineConfig = m_pGameInstance->Get_OutlineConfig();
-						m_OutlineConfig.fAlpha = RendererOutlineConfig.fAlpha;
-						m_OutlineConfig.fBias = RendererOutlineConfig.fBias;
-					}
-
-				}
-			}
-
-			ImGui::End();
-		});
 #endif
 }
 
@@ -136,6 +98,18 @@ void CShader_Controller::Ready_Shader()
 	m_pGameInstance->AddWidget(TEXT("Shader"), [&]()
 		{
 			ImGui::Begin("Shader Settings");
+
+            if (ImGui::CollapsingHeader("Select Level"))
+            {
+                Select_Level();
+                ImGui::Separator();
+            }
+
+            if (ImGui::CollapsingHeader("Debug"))
+            {
+                Debug_Settings();
+                ImGui::Separator();
+            }
 
             if (ImGui::CollapsingHeader("Lighting Calculation"))
             {
@@ -159,59 +133,9 @@ void CShader_Controller::Ready_Shader()
 			if (ImGui::CollapsingHeader("Post Processing"))
 			{
                 Fog_Settings();
-
-                ImGui::SeparatorText("Blur");
-
-                if (ImGui::Checkbox("Bloom", &m_isEnableBloom))
-                    m_pGameInstance->Set_EnableBloom(m_isEnableBloom);
-
-                if (m_isEnableBloom)
-                {
-                    ImGui::Indent();
-
-                    if (ImGui::TreeNodeEx("Gaussian Blur Settings", ImGuiTreeNodeFlags_DefaultOpen))
-                    {
-                        // 가우시안 블러 범위(반경)
-                        if (ImGui::InputInt("Gaussian Blur Radius", &m_GaussianBlurConfig.iRadius, 2, 4))
-                            m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
-
-                        // 가우시안 블러 가중치 밀집도
-                        if (ImGui::SliderFloat("Gaussian Blur Concentration", &m_GaussianBlurConfig.fSigma, 1.f, 10.f))
-                            m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
-
-                        // 가우시안 블러 가중치 합 정규화 수치
-                        if (ImGui::SliderFloat("Gaussian Blur Normalization", &m_GaussianBlurConfig.fNormalization, 0.f, 15.f))
-                            m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
-
-                        ImGui::TreePop();
-                    }
-
-                    ImGui::Unindent();
-                }
-
+                Bloom_Settings();
                 MotionBlur_Settings();
-
-                ImGui::SeparatorText("Color Grading");
-
-                if (ImGui::Checkbox("LUT", &m_isEnableLUT))
-                    m_pGameInstance->Set_EnableLUT(m_isEnableLUT);
-
-                if (m_isEnableLUT)
-                {
-                    ImGui::Indent();
-
-                    if (ImGui::TreeNodeEx("Settings##LUT0", ImGuiTreeNodeFlags_DefaultOpen))
-                    {
-                        // LUT 강도
-                        if (ImGui::SliderFloat("Intensity##LUT1", &m_fLUTIntensity, 0.f, 1.f, "%.2f"))
-                            m_pGameInstance->Set_LUTIntensity(m_fLUTIntensity);
-
-                        ImGui::TreePop();
-                    }
-
-                    ImGui::Unindent();
-                }
-			
+                LUT_Settings();
                 ImGui::Separator();
             }
 
@@ -235,12 +159,80 @@ void CShader_Controller::Ready_Shader()
             {
                 MeshTrail_Settings();
                 Environment_Settings();
-                ImGui::Separator();
             }
 
 			ImGui::End();
 		});
 #endif
+}
+
+void CShader_Controller::Select_Level()
+{
+    static const struct { const char* label; LEVEL value; } kItems[] = {
+                { "HEINMACH", LEVEL::HEINMACH },
+                { "CREVICE",  LEVEL::CREVICE  },
+                { "EMBARS",   LEVEL::EMBARS   },
+                { "VIPER",    LEVEL::VIPER    },
+    };
+
+    // 현재 선택을 int로 보유(라디오 그룹은 int 포인터 사용 권장)
+    int iCurrent = static_cast<int>(m_eCurrentLevel);
+
+    for (const auto& it : kItems)
+    {
+        const int v_button = static_cast<int>(it.value);
+        // 동일 int*를 공유하면 "그룹"으로 동작 (하나만 선택됨)
+        if (ImGui::RadioButton(it.label, &iCurrent, v_button))
+            m_eCurrentLevel = static_cast<LEVEL>(iCurrent);
+    }
+}
+
+void CShader_Controller::Debug_Settings()
+{
+    if (ImGui::Button("Raw Render Mode"))
+        Set_RawRenderMode();
+
+    if (ImGui::Checkbox("UI Render", &m_isVisibleUI))
+        CClientInstance::GetInstance()->Set_UIAllRenderSet(m_isVisibleUI);
+}
+
+void CShader_Controller::Set_RawRenderMode()
+{
+    m_pGameInstance->Set_UnlitMode(true);
+    m_pGameInstance->Set_LitMode(false);
+    m_pGameInstance->Set_EnableSpecular(false);
+    m_pGameInstance->Set_EnableRimLight(false);
+    m_pGameInstance->Set_EnableToonShade(false);
+
+    CKhazan_Spear* pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+    CBody_Khazan_Spear* pBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+    pBody->Set_EnableEdge(false);
+
+    m_pGameInstance->Set_EnableSSAO(false);
+    m_pGameInstance->Set_EnableShadow(false);
+    m_pGameInstance->Set_EnablePCF(false);
+    m_pGameInstance->Set_EnableFog(false);
+    m_pGameInstance->Set_EnableBloom(false);
+    m_pGameInstance->Set_EnableMotionBlur(false);
+    m_pGameInstance->Set_EnableLUT(false);
+    m_pGameInstance->Set_EnableVignette(false);
+
+    m_isRenderShadow = { false };
+    m_isRenderSSAO = { false };
+    m_isEnableFog = { false };
+    m_isEnableToonShade = { false };
+    m_isEnableLUT = { false };
+    m_isEnableRadialBlur = { false };
+    m_isEnableMotionBlur = { false };
+    m_isEnableEdge = { false };
+    m_isEnableRimLight = { false };
+    m_isEnableMotionTrail = {};
+    m_isUnlitMode = { true };
+    m_isLitMode = { false };
+    m_isEnableSpecular = { false };
+    m_isEnableBloom = { false };
+    m_isEnableShadowPCF = { false };
+    m_isEnableVignette = { false };
 }
 
 void CShader_Controller::Lighting_Calculation_Settings()
@@ -319,14 +311,73 @@ void CShader_Controller::Cartoon_Rendering_Settings()
         ImGui::Unindent();
     }
 
-    if (ImGui::Checkbox("Edge", &m_isEnableEdge))
-    {
-        CKhazan_Spear* pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel),
-            TEXT("Layer_Creature_Player"), 0));
-        CBody_Khazan_Spear* pKhazanBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
-        pKhazanBody->Set_EnableEdge(m_isEnableEdge);
+    ImGui::SeparatorText("Default Shade");
 
-        // Edge, Shade 수치 조절 추가
+    DefaultShade_Settings();
+}
+
+void CShader_Controller::DefaultShade_Settings()
+{
+    const _char* ObjectTags[] = { "Khazan_Spear", "Khazan_GS", "Yetuga", "Viper", "Danjin" };
+    ImGui::Combo("GameObject List", &m_iSelectedDSGameObjectIndex, ObjectTags, IM_ARRAYSIZE(ObjectTags));
+
+    CKhazan_Spear* pKhazan = {};
+    CBody_Khazan_Spear* pBody = {};
+
+    switch (m_iSelectedDSGameObjectIndex)
+    {
+    case 0:
+        pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+        pBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+        m_fEdgeIntensity = pBody->Get_EdgeIntensity();
+        m_fShadeIntensity = pBody->Get_ShadeIntensity();
+        break;
+
+    default:
+        m_iSelectedDSGameObjectIndex = -1;
+        break;
+    }
+
+    if (0 <= m_iSelectedDSGameObjectIndex)
+    {
+        if (ImGui::Checkbox("Enable###DefaultShade3", &m_isEnableEdge))
+        {
+            switch (m_iSelectedDSGameObjectIndex)
+            {
+            case 0:
+                pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+                pBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                pBody->Set_EnableEdge(m_isEnableEdge);
+                break;
+            }
+        }
+
+        if (m_isEnableEdge)
+        {
+            if (ImGui::SliderFloat("Edge Intensity###DefaultShade1", &m_fEdgeIntensity, 0.f, 1.f, "%.2f"))
+            {
+                switch (m_iSelectedDSGameObjectIndex)
+                {
+                case 0:
+                    pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+                    pBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                    pBody->Set_EdgeIntensity(m_fEdgeIntensity);
+                    break;
+                }
+            }
+
+            if (ImGui::SliderFloat("Shade Intensity###DefaultShade2", &m_fShadeIntensity, 0.f, 1.f, "%.2f"))
+            {
+                switch (m_iSelectedDSGameObjectIndex)
+                {
+                case 0:
+                    pKhazan = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+                    pBody = dynamic_cast<CBody_Khazan_Spear*>(pKhazan->Find_PartObject(TEXT("Part_Body")));
+                    pBody->Set_ShadeIntensity(m_fShadeIntensity);
+                    break;
+                }
+            }
+        }
     }
 }
 
@@ -555,6 +606,38 @@ void CShader_Controller::Fog_Settings()
     }
 }
 
+void CShader_Controller::Bloom_Settings()
+{
+    ImGui::SeparatorText("Blur");
+
+    if (ImGui::Checkbox("Bloom", &m_isEnableBloom))
+        m_pGameInstance->Set_EnableBloom(m_isEnableBloom);
+
+    if (m_isEnableBloom)
+    {
+        ImGui::Indent();
+
+        if (ImGui::TreeNodeEx("Gaussian Blur Settings", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            // 가우시안 블러 범위(반경)
+            if (ImGui::InputInt("Radius###GaussianBlur0", &m_GaussianBlurConfig.iRadius, 2, 4))
+                m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
+
+            // 가우시안 블러 가중치 밀집도
+            if (ImGui::SliderFloat("Concentration###GaussianBlur1", &m_GaussianBlurConfig.fSigma, 1.f, 10.f))
+                m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
+
+            // 가우시안 블러 가중치 합 정규화 수치
+            if (ImGui::SliderFloat("Normalization###GaussianBlur2", &m_GaussianBlurConfig.fNormalization, 0.f, 15.f))
+                m_pGameInstance->Set_GaussianBlurConfig(m_GaussianBlurConfig);
+
+            ImGui::TreePop();
+        }
+
+        ImGui::Unindent();
+    }
+}
+
 void CShader_Controller::MotionBlur_Settings()
 {
     if (ImGui::Checkbox("Motion Blur", &m_isEnableMotionBlur))
@@ -581,6 +664,30 @@ void CShader_Controller::MotionBlur_Settings()
             // 블러 강도
             if (ImGui::SliderFloat("Strength###MotionBlur3", &m_MotionBlurDesc.fStrength, 0.f, 1.f, "%.1f"))
                 m_pGameInstance->Set_MotionBlurDesc(m_MotionBlurDesc);
+
+            ImGui::TreePop();
+        }
+
+        ImGui::Unindent();
+    }
+}
+
+void CShader_Controller::LUT_Settings()
+{
+    ImGui::SeparatorText("Color Grading");
+
+    if (ImGui::Checkbox("LUT", &m_isEnableLUT))
+        m_pGameInstance->Set_EnableLUT(m_isEnableLUT);
+
+    if (m_isEnableLUT)
+    {
+        ImGui::Indent();
+
+        if (ImGui::TreeNodeEx("Settings##LUT0", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            // LUT 강도
+            if (ImGui::SliderFloat("Intensity##LUT1", &m_fLUTIntensity, 0.f, 1.f, "%.2f"))
+                m_pGameInstance->Set_LUTIntensity(m_fLUTIntensity);
 
             ImGui::TreePop();
         }
@@ -948,14 +1055,17 @@ void CShader_Controller::Vignette_Settings()
             m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
 
         // 노이즈 사용 여부
-        ImGui::Checkbox("Noise###Vignette7", &m_VignetteConfig.isUseNoise);
+        if (ImGui::Checkbox("Noise###Vignette7", &m_VignetteConfig.isUseNoise))
+            m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
 
         if (true == m_VignetteConfig.isUseNoise)
         {
             // 텍스처 인덱스
-            ImGui::SliderInt("Texture Index###Vignette8", reinterpret_cast<_int*>(&m_VignetteConfig.iTextureIndex), 0, 3);
+            if (ImGui::SliderInt("Texture Index###Vignette8", reinterpret_cast<_int*>(&m_VignetteConfig.iTextureIndex), 0, 3))
+                m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
             // 대비
-            ImGui::SliderFloat("Contrast###Vignette9", &m_VignetteConfig.fContrast, 0.f, 10.f, "%.2f");
+            if (ImGui::SliderFloat("Contrast###Vignette9", &m_VignetteConfig.fContrast, 0.f, 10.f, "%.2f"))
+                m_pGameInstance->Set_VignetteConfig(m_VignetteConfig);
         }
 
         ImGui::SeparatorText("Duration Mode");
@@ -1146,197 +1256,200 @@ void CShader_Controller::Light_Transition_Settings()
 
 void CShader_Controller::MeshTrail_Settings()
 {
-    ImGui::SeparatorText("Mesh Trail");
-
-    const _char* ObjectTags[] = { "Elamein", "Dragonian_Melee", "Dragonian_Rampage", "Khazan_Spear", "Khazan_GS", "Beomsoo", "Viper" };
-    ImGui::Combo("Mesh Trail Owner List", &m_iTrailOwnerIndex, ObjectTags, IM_ARRAYSIZE(ObjectTags));
-
-    // 고르면 해당 객체의 모션 트레일 정보 Get해서 띄우기
-    CElamein* pElamein = {};
-    CDragonian_Melee* pDragonianMelee = {};
-    CDragonian_Rampage* pDragonianRampage = {};
-    CKhazan_Spear* pKhazanSpear = {};
-    CBody_Khazan_Spear* pBodyKhazanSpear = {};
-    CKhazan_GSword* pKhazanGS = {};
-    CBody_Khazan_GS* pBodyKhazanGS = {};
-    CHalberd* pHalberd = {};
-    CViper* pViper = {};
-
-    switch (m_iTrailOwnerIndex)
+    if (ImGui::TreeNode("Mesh Trail"))
     {
-    case 0:
-        pElamein = dynamic_cast<CElamein*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
-        m_TrailConfig = pElamein->Get_TrailConfig();
-        break;
+        const _char* ObjectTags[] = { "Elamein", "Dragonian_Melee", "Dragonian_Rampage", "Khazan_Spear", "Khazan_GS", "Beomsoo", "Viper" };
+        ImGui::Combo("Owner List###MeshTrail0", &m_iTrailOwnerIndex, ObjectTags, IM_ARRAYSIZE(ObjectTags));
 
-    case 1:
-        pDragonianMelee = dynamic_cast<CDragonian_Melee*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
-        m_TrailConfig = pDragonianMelee->Get_TrailConfig();
-        break;
-
-    case 2:
-        pDragonianRampage = dynamic_cast<CDragonian_Rampage*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
-        m_TrailConfig = pDragonianRampage->Get_TrailConfig();
-        break;
-
-    case 3:
-        pKhazanSpear = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
-        pBodyKhazanSpear = dynamic_cast<CBody_Khazan_Spear*>(pKhazanSpear->Find_PartObject(TEXT("Part_Body")));
-        m_TrailConfig = pBodyKhazanSpear->Get_TrailConfig();
-        break;
-
-    case 4:
-        pKhazanGS = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
-        pBodyKhazanGS = dynamic_cast<CBody_Khazan_GS*>(pKhazanGS->Find_PartObject(TEXT("Part_Body")));
-        m_TrailConfig = pBodyKhazanGS->Get_TrailConfig();
-        break;
-    case 5:
-        pHalberd = dynamic_cast<CHalberd*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
-        m_TrailConfig = pHalberd->Get_TrailConfig();
-        break;
-    case 6:
-        pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Viper"), 0));
-        m_TrailConfig = pViper->Get_TrailConfig();
-        break;
-
-    default:
-        m_iTrailOwnerIndex = -1;
-        break;
-    }
-
-    if (0 <= m_iTrailOwnerIndex)
-    {
-        // 특정 설정이 바뀔 때 Set
-        _bool isChanged = false;
-
-        isChanged |= ImGui::SliderFloat("Trail LifeTime", &m_TrailConfig.fLifeTime, 0.f, 3.f, "%.3f");
-        isChanged |= ImGui::SliderInt("Trail Division Count", reinterpret_cast<_int*>(&m_TrailConfig.iDivisionCount), 1, 10);
-        isChanged |= ImGui::ColorEdit4("Trail Main Color", reinterpret_cast<_float*>(&m_TrailConfig.vColor));
-        isChanged |= ImGui::ColorEdit4("Trail Sub Color", reinterpret_cast<_float*>(&m_TrailConfig.vSubColor));
-
-        ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.2f, 1.f), "Selected Texture Index : %d", m_TrailConfig.iTextureIdx);
-
-        ImGui::BeginChild("Trail Texture", ImVec2(0, 70), true, ImGuiWindowFlags_HorizontalScrollbar);
+        // 고르면 해당 객체의 모션 트레일 정보 Get해서 띄우기
+        CElamein* pElamein = {};
+        CDragonian_Melee* pDragonianMelee = {};
+        CDragonian_Rampage* pDragonianRampage = {};
+        CKhazan_Spear* pKhazanSpear = {};
+        CBody_Khazan_Spear* pBodyKhazanSpear = {};
+        CKhazan_GSword* pKhazanGS = {};
+        CBody_Khazan_GS* pBodyKhazanGS = {};
+        CHalberd* pHalberd = {};
+        CViper* pViper = {};
 
         switch (m_iTrailOwnerIndex)
         {
         case 0:
-            for (_uint i = 0; i < pElamein->Get_NumTrailTextures(); ++i)
-            {
-                ID3D11ShaderResourceView* pSRV = pElamein->Get_TrailTexture(i);
-
-                if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
-                {
-                    isChanged = true;
-                    m_TrailConfig.iTextureIdx = i;
-                }
-
-                ImGui::SameLine();
-            }
+            pElamein = dynamic_cast<CElamein*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
+            m_TrailConfig = pElamein->Get_TrailConfig();
             break;
 
         case 1:
-            for (_uint i = 0; i < pDragonianMelee->Get_NumTrailTextures(); ++i)
-            {
-                ID3D11ShaderResourceView* pSRV = pDragonianMelee->Get_TrailTexture(i);
-
-                if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
-                {
-                    isChanged = true;
-                    m_TrailConfig.iTextureIdx = i;
-                }
-
-                ImGui::SameLine();
-            }
+            pDragonianMelee = dynamic_cast<CDragonian_Melee*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
+            m_TrailConfig = pDragonianMelee->Get_TrailConfig();
             break;
 
         case 2:
-            for (_uint i = 0; i < pDragonianRampage->Get_NumTrailTextures(); ++i)
-            {
-                ID3D11ShaderResourceView* pSRV = pDragonianRampage->Get_TrailTexture(i);
-
-                if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
-                {
-                    isChanged = true;
-                    m_TrailConfig.iTextureIdx = i;
-                }
-
-                ImGui::SameLine();
-            }
+            pDragonianRampage = dynamic_cast<CDragonian_Rampage*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
+            m_TrailConfig = pDragonianRampage->Get_TrailConfig();
             break;
 
         case 3:
-            for (_uint i = 0; i < pBodyKhazanSpear->Get_NumTrailTextures(); ++i)
-            {
-                ID3D11ShaderResourceView* pSRV = pBodyKhazanSpear->Get_TrailTexture(i);
-
-                if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
-                {
-                    isChanged = true;
-                    m_TrailConfig.iTextureIdx = i;
-                }
-
-                ImGui::SameLine();
-            }
+            pKhazanSpear = dynamic_cast<CKhazan_Spear*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+            pBodyKhazanSpear = dynamic_cast<CBody_Khazan_Spear*>(pKhazanSpear->Find_PartObject(TEXT("Part_Body")));
+            m_TrailConfig = pBodyKhazanSpear->Get_TrailConfig();
             break;
 
         case 4:
-            for (_uint i = 0; i < pBodyKhazanGS->Get_NumTrailTextures(); ++i)
-            {
-                ID3D11ShaderResourceView* pSRV = pBodyKhazanGS->Get_TrailTexture(i);
-
-                if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
-                {
-                    isChanged = true;
-                    m_TrailConfig.iTextureIdx = i;
-                }
-
-                ImGui::SameLine();
-            }
+            pKhazanGS = dynamic_cast<CKhazan_GSword*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Creature_Player"), 0));
+            pBodyKhazanGS = dynamic_cast<CBody_Khazan_GS*>(pKhazanGS->Find_PartObject(TEXT("Part_Body")));
+            m_TrailConfig = pBodyKhazanGS->Get_TrailConfig();
             break;
         case 5:
-            for (_uint i = 0; i < pHalberd->Get_NumTrailTextures(); ++i)
-            {
-                ID3D11ShaderResourceView* pSRV = pHalberd->Get_TrailTexture(i);
-                if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
-                {
-                    isChanged = true;
-                    m_TrailConfig.iTextureIdx = i;
-                }
-
-                ImGui::SameLine();
-            }
+            pHalberd = dynamic_cast<CHalberd*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Monster"), 0));
+            m_TrailConfig = pHalberd->Get_TrailConfig();
+            break;
         case 6:
-            for (_uint i = 0; i < pViper->Get_NumTrailTextures(); ++i)
-            {
-                ID3D11ShaderResourceView* pSRV = pViper->Get_TrailTexture(i);
+            pViper = dynamic_cast<CViper*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Viper"), 0));
+            m_TrailConfig = pViper->Get_TrailConfig();
+            break;
 
-                if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
-                {
-                    isChanged = true;
-                    m_TrailConfig.iTextureIdx = i;
-                }
-
-                ImGui::SameLine();
-            }
+        default:
+            m_iTrailOwnerIndex = -1;
             break;
         }
 
-        ImGui::EndChild();
-
-        if (true == isChanged)
+        if (0 <= m_iTrailOwnerIndex)
         {
+            // 특정 설정이 바뀔 때 Set
+            _bool isChanged = false;
+
+            isChanged |= ImGui::SliderFloat("LifeTime###MeshTrail1", &m_TrailConfig.fLifeTime, 0.f, 3.f, "%.3f");
+            isChanged |= ImGui::SliderInt("Division Count###MeshTrail2", reinterpret_cast<_int*>(&m_TrailConfig.iDivisionCount), 1, 10);
+            isChanged |= ImGui::ColorEdit4("Main Color###MeshTrail3", reinterpret_cast<_float*>(&m_TrailConfig.vColor));
+            isChanged |= ImGui::ColorEdit4("Sub Color###MeshTrail4", reinterpret_cast<_float*>(&m_TrailConfig.vSubColor));
+
+            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.5f, 1.f), "Selected Texture Index : %d", m_TrailConfig.iTextureIdx);
+
+            ImGui::BeginChild("Trail Texture", ImVec2(0, 68), true, ImGuiWindowFlags_HorizontalScrollbar);
+
             switch (m_iTrailOwnerIndex)
             {
-            case 0: pElamein->Set_TrailConfig(m_TrailConfig); break;
-            case 1: pDragonianMelee->Set_TrailConfig(m_TrailConfig); break;
-            case 2: pDragonianRampage->Set_TrailConfig(m_TrailConfig); break;
-            case 3: pBodyKhazanSpear->Set_TrailConfig(m_TrailConfig); break;
-            case 4: pBodyKhazanGS->Set_TrailConfig(m_TrailConfig); break;
-            case 5: pHalberd->Set_TrailConfig(m_TrailConfig); break;
-            case 6: pViper->Set_TrailConfig(m_TrailConfig); break;
+            case 0:
+                for (_uint i = 0; i < pElamein->Get_NumTrailTextures(); ++i)
+                {
+                    ID3D11ShaderResourceView* pSRV = pElamein->Get_TrailTexture(i);
+
+                    if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                    {
+                        isChanged = true;
+                        m_TrailConfig.iTextureIdx = i;
+                    }
+
+                    ImGui::SameLine();
+                }
+                break;
+
+            case 1:
+                for (_uint i = 0; i < pDragonianMelee->Get_NumTrailTextures(); ++i)
+                {
+                    ID3D11ShaderResourceView* pSRV = pDragonianMelee->Get_TrailTexture(i);
+
+                    if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                    {
+                        isChanged = true;
+                        m_TrailConfig.iTextureIdx = i;
+                    }
+
+                    ImGui::SameLine();
+                }
+                break;
+
+            case 2:
+                for (_uint i = 0; i < pDragonianRampage->Get_NumTrailTextures(); ++i)
+                {
+                    ID3D11ShaderResourceView* pSRV = pDragonianRampage->Get_TrailTexture(i);
+
+                    if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                    {
+                        isChanged = true;
+                        m_TrailConfig.iTextureIdx = i;
+                    }
+
+                    ImGui::SameLine();
+                }
+                break;
+
+            case 3:
+                for (_uint i = 0; i < pBodyKhazanSpear->Get_NumTrailTextures(); ++i)
+                {
+                    ID3D11ShaderResourceView* pSRV = pBodyKhazanSpear->Get_TrailTexture(i);
+
+                    if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                    {
+                        isChanged = true;
+                        m_TrailConfig.iTextureIdx = i;
+                    }
+
+                    ImGui::SameLine();
+                }
+                break;
+
+            case 4:
+                for (_uint i = 0; i < pBodyKhazanGS->Get_NumTrailTextures(); ++i)
+                {
+                    ID3D11ShaderResourceView* pSRV = pBodyKhazanGS->Get_TrailTexture(i);
+
+                    if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                    {
+                        isChanged = true;
+                        m_TrailConfig.iTextureIdx = i;
+                    }
+
+                    ImGui::SameLine();
+                }
+                break;
+            case 5:
+                for (_uint i = 0; i < pHalberd->Get_NumTrailTextures(); ++i)
+                {
+                    ID3D11ShaderResourceView* pSRV = pHalberd->Get_TrailTexture(i);
+                    if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                    {
+                        isChanged = true;
+                        m_TrailConfig.iTextureIdx = i;
+                    }
+
+                    ImGui::SameLine();
+                }
+            case 6:
+                for (_uint i = 0; i < pViper->Get_NumTrailTextures(); ++i)
+                {
+                    ID3D11ShaderResourceView* pSRV = pViper->Get_TrailTexture(i);
+
+                    if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(pSRV), ImVec2(32, 32)))
+                    {
+                        isChanged = true;
+                        m_TrailConfig.iTextureIdx = i;
+                    }
+
+                    ImGui::SameLine();
+                }
+                break;
+            }
+
+            ImGui::EndChild();
+
+            if (true == isChanged)
+            {
+                switch (m_iTrailOwnerIndex)
+                {
+                case 0: pElamein->Set_TrailConfig(m_TrailConfig); break;
+                case 1: pDragonianMelee->Set_TrailConfig(m_TrailConfig); break;
+                case 2: pDragonianRampage->Set_TrailConfig(m_TrailConfig); break;
+                case 3: pBodyKhazanSpear->Set_TrailConfig(m_TrailConfig); break;
+                case 4: pBodyKhazanGS->Set_TrailConfig(m_TrailConfig); break;
+                case 5: pHalberd->Set_TrailConfig(m_TrailConfig); break;
+                case 6: pViper->Set_TrailConfig(m_TrailConfig); break;
+                }
             }
         }
+
+        ImGui::TreePop();
     }
 
     ImGui::Separator();
@@ -1344,58 +1457,62 @@ void CShader_Controller::MeshTrail_Settings()
 
 void CShader_Controller::Environment_Settings()
 {
-    // Sky / Cloud Settings
-
-    ImGui::SeparatorText("Sky");
-
-    if (ImGui::Button("Get Current Sky / Cloud Desc"))
+    if (ImGui::TreeNode("Environment"))
     {
-        m_SkyDesc = static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Get_SkyDesc();
-        m_CloudDesc = static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Get_CloudDesc();
+        _bool isChanged = false;
+
+        ImGui::SeparatorText("Sky");
+
+        isChanged |= ImGui::ColorEdit3("Sky Top Color", reinterpret_cast<_float*>(&m_SkyDesc.vNebulaColorR));
+        isChanged |= ImGui::ColorEdit3("Sky Middle Color", reinterpret_cast<_float*>(&m_SkyDesc.vNebulaColorG));
+        isChanged |= ImGui::ColorEdit3("Sky Bottom Color", reinterpret_cast<_float*>(&m_SkyDesc.vNebulaColorB));
+        isChanged |= ImGui::SliderFloat("Star Strength", &m_SkyDesc.fStarStrength, 0.f, 5.f, "%.2f");
+        isChanged |= ImGui::SliderFloat("Moon Size", &m_SkyDesc.fMoonSize, 0.f, 5.f, "%.2f");
+        isChanged |= ImGui::SliderFloat3("Moon Direction", reinterpret_cast<_float*>(&m_SkyDesc.vMoonDirection), -1.f, 1.f);
+        isChanged |= ImGui::ColorEdit3("Moon Color", reinterpret_cast<_float*>(&m_SkyDesc.vMoonColor));
+        isChanged |= ImGui::SliderFloat("Moon Intensity", &m_SkyDesc.fMoonIntensity, 0.f, 5.f, "%.2f");
+
+        ImGui::SeparatorText("Cloud");
+
+        isChanged |= ImGui::ColorEdit3("Color###Cloud0", reinterpret_cast<_float*>(&m_CloudDesc.vCloudColor));
+        isChanged |= ImGui::SliderFloat("Speed###Cloud1", &m_CloudDesc.fCloudSpeed, 0.f, 5.f, "%.3f");
+        isChanged |= ImGui::SliderFloat("Scale###Cloud2", &m_CloudDesc.fCloudScale, 0.f, 5.f, "%.3f");
+        isChanged |= ImGui::SliderFloat("Density###Cloud3", &m_CloudDesc.fCloudDensity, 0.f, 5.f, "%.3f");
+        isChanged |= ImGui::SliderFloat("Light Intensity###Cloud4", &m_CloudDesc.fCloudLightIntensity, 0.f, 5.f, "%.3f");
+        isChanged |= ImGui::SliderFloat3("Light Direction###Cloud5", reinterpret_cast<_float*>(&m_CloudDesc.vLightDir), -1.f, 1.f);
+        isChanged |= ImGui::SliderFloat("Dynamic###Cloud6", &m_CloudDesc.fDynamic, 0.f, 1.f, "%.0f");
+
+        if (isChanged)
+        {
+            if (m_fSkyCloudDuration == 0.f)
+            {
+                static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
+                static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
+            }
+        }
+
+        ImGui::SeparatorText("Environment Transition");
+
+        ImGui::SliderFloat("Duration###Environment", &m_fSkyCloudDuration, 0.f, 10.f, "%.2f");
+
+        if (ImGui::Button("Start Environment Transition"))
+        {
+            static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
+            static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Get Current Environment Info"))
+        {
+            m_SkyDesc = static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Get_SkyDesc();
+            m_CloudDesc = static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Get_CloudDesc();
+        }
+
+        ImGui::TreePop();
     }
 
-    if (ImGui::ColorEdit3("Sky Top Color", reinterpret_cast<_float*>(&m_SkyDesc.vNebulaColorR)))
-        static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
-    if (ImGui::ColorEdit3("Sky Middle Color", reinterpret_cast<_float*>(&m_SkyDesc.vNebulaColorG)))
-        static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
-    if (ImGui::ColorEdit3("Sky Bottom Color", reinterpret_cast<_float*>(&m_SkyDesc.vNebulaColorB)))
-        static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
-
-    if (ImGui::SliderFloat("Star Strength", &m_SkyDesc.fStarStrength, 0.f, 5.f, "%.2f"))
-        static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
-    if (ImGui::SliderFloat("Moon Size", &m_SkyDesc.fMoonSize, 0.f, 5.f, "%.2f"))
-        static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
-
-    if (ImGui::SliderFloat3("Moon Direction", reinterpret_cast<_float*>(&m_SkyDesc.vMoonDirection), -1.f, 1.f))
-        static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
-
-    if (ImGui::ColorEdit3("Moon Color", reinterpret_cast<_float*>(&m_SkyDesc.vMoonColor)))
-        static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
-
-    if (ImGui::SliderFloat("Moon Intensity", &m_SkyDesc.fMoonIntensity, 0.f, 5.f, "%.2f"))
-        static_cast<CSkySphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 0))->Start_LerpSky(m_SkyDesc, m_fSkyCloudDuration);
-
-    ImGui::SeparatorText("Cloud");
-
-    if (ImGui::ColorEdit3("Cloud Color", reinterpret_cast<_float*>(&m_CloudDesc.vCloudColor)))
-        static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
-
-    if (ImGui::SliderFloat("Cloud Speed", &m_CloudDesc.fCloudSpeed, 0.f, 5.f, "%.3f"))
-        static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
-    if (ImGui::SliderFloat("Cloud Scale", &m_CloudDesc.fCloudScale, 0.f, 5.f, "%.3f"))
-        static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
-    if (ImGui::SliderFloat("Cloud Density", &m_CloudDesc.fCloudDensity, 0.f, 5.f, "%.3f"))
-        static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
-    if (ImGui::SliderFloat("Cloud Light Intensity", &m_CloudDesc.fCloudLightIntensity, 0.f, 5.f, "%.3f"))
-        static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
-
-    if (ImGui::SliderFloat3("Cloud Light Direction", reinterpret_cast<_float*>(&m_CloudDesc.vLightDir), -1.f, 1.f))
-        static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
-
-    if (ImGui::SliderFloat("Cloud Dynamic", &m_CloudDesc.fDynamic, 0.f, 1.f, "%.0f"))
-        static_cast<CCloudSphere*>(m_pGameInstance->Find_GameObject(ENUM_CLASS(m_eCurrentLevel), TEXT("Layer_Sky"), 1))->Start_LerpCloud(m_CloudDesc, m_fSkyCloudDuration);
-
-    ImGui::SliderFloat("Sky Cloud Transition Duration", &m_fSkyCloudDuration, 0.f, 10.f, "%.2f");
+    ImGui::Separator();
 }
 
 CShader_Controller* CShader_Controller::Create()

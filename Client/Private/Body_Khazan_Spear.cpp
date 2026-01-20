@@ -103,6 +103,9 @@ HRESULT CBody_Khazan_Spear::Initialize_Clone(void* pArg)
     m_iTrailType = 0;
     m_TrailParticleTime = 0.f;
 
+    m_fEdgeIntensity = 0.3f;
+    m_fShadeIntensity = 0.2f;
+
     return S_OK;
 }
 
@@ -249,12 +252,10 @@ HRESULT CBody_Khazan_Spear::Render()
     if (FAILED(m_pShaderCom->Bind_Bool("g_isEnableEdge", &m_isEnableEdge)))
         return E_FAIL;
 
-    _float fEdgeIntensity = 0.3f;
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &fEdgeIntensity, sizeof(_float))))
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fEdgeIntensity", &m_fEdgeIntensity, sizeof(_float))))
         return E_FAIL;
 
-    _float fShadeIntensity = 0.2f;
-    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &fShadeIntensity, sizeof(_float))))
+    if (FAILED(m_pShaderCom->Bind_RawValue("g_fShadeIntensity", &m_fShadeIntensity, sizeof(_float))))
         return E_FAIL;
 
     // Heal RimLight
@@ -1129,6 +1130,7 @@ HRESULT CBody_Khazan_Spear::Ready_Components()
     MeshDsc.fLifeTime = .25f;
     MeshDsc.iDivisionCount = 10.f;
     MeshDsc.vColor = _float4(1.f, 1.f, 1.f, 1.f);
+    MeshDsc.vSubColor = {};
     m_pTrail = dynamic_cast<CMeshTrail*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, ENUM_CLASS(LEVEL::STATIC), TEXT("Prototype_GameObject_MeshTrail"), &MeshDsc));
 
     CMotionTrail::MOTIONTRAIL_DESC MTDesc{};

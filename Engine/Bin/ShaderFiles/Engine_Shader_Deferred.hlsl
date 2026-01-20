@@ -135,7 +135,7 @@ PS_OUT_LIGHT PS_DIRECTIONAL(PS_IN In)
     fRim *= fRimFactor;
     
     // Rim Toon
-    if (g_isToonLight)
+    if (g_isToonLight && g_fRimToonThreshold > 0.f)
         fRim = step(g_fRimToonThreshold, fRim);
     
     if (g_isEnableRimLight)
@@ -213,7 +213,7 @@ PS_OUT_LIGHT PS_POINT(PS_IN In)
     fRim *= fRimFactor;
     
     // Rim Toon
-    if (g_isToonLight)
+    if (g_isToonLight && g_fRimToonThreshold > 0.f)
         fRim = step(g_fRimToonThreshold, fRim);
     
     if (g_isEnableRimLight)

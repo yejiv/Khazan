@@ -57,13 +57,20 @@ private:
     // ¼Îµµ¿ì PCF ON / OFF
 
 private:
+    void Select_Level();
+    void Debug_Settings();
+    void Set_RawRenderMode();
+
     void Lighting_Calculation_Settings();
     void Cartoon_Rendering_Settings();
+    void DefaultShade_Settings();
     void SSAO_Settings();
     void Shadow_Settings();
 
     void Fog_Settings();
+    void Bloom_Settings();
     void MotionBlur_Settings();
+    void LUT_Settings();
 
     void MotionTrail_Settings();
     void Decal_Settings();
@@ -106,13 +113,14 @@ private:
     _bool                   m_isEnableEdge = { true };
     _bool                   m_isEnableRimLight = { true };
     _bool                   m_isEnableMotionTrail = {};
-    _bool					m_isEnableVignette = {};
-    _bool                   m_isUnlitMode = {};
-    _bool                   m_isLitMode = {};
-    _bool                   m_isEnableSpecular = {};
+    _bool					m_isEnableVignette = { true };
+    _bool                   m_isUnlitMode = { false };
+    _bool                   m_isLitMode = { true };
+    _bool                   m_isEnableSpecular = { true };
     _bool                   m_isEnableBloom = { true };
     _bool                   m_isEnableDistortionSettings = {};
     _bool                   m_isEnableShadowPCF = { true };
+    _bool                   m_isVisibleUI = { true };
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
@@ -184,6 +192,11 @@ private:
 
     // Blur
     GAUSSIAN_BLUR_CONFIG	m_GaussianBlurConfig = {};
+
+    // Default Shade
+    _float                  m_fEdgeIntensity = {};
+    _float                  m_fShadeIntensity = {};
+    _int                    m_iSelectedDSGameObjectIndex = { -1 };
 
 public:
 	static CShader_Controller* Create();
