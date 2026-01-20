@@ -84,8 +84,9 @@ void CClientInstance::Update(_float fTimeDelta)
     if (fTimeDelta > 1.f)
         return;
 
-
 	m_pUI_Manager->UIObjectToRenderer();
+
+    m_pShader_Controller->Update(fTimeDelta);
 
 #ifdef _DEBUG
 	m_pDebug_Manager->Update(fTimeDelta);

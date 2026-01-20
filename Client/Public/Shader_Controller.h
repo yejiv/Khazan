@@ -17,7 +17,65 @@ public:
 private:
 	void Ready_Level();
 	void Ready_Shader();
-	
+
+    // ===== Lighting Calculation =====
+    // Lit / Unlit Mode
+    // Specular
+    // RimLight
+        // ===== Cartoon Rendering =====
+        // ToonShade
+        // Edge, Shade
+    
+    // ===== Light Transition =====
+    // Light Transition
+
+    // ===== Ambient Occlusion =====
+    // SSAO
+    
+    // ===== Cascade Shadow =====
+    // Shadow
+    
+    // ===== Post Processing =====
+    // Fog
+    // Bloom + GaussianBlur Setting
+    // MotionBlur
+    // LUT
+
+    // ===== VFX =====
+    // Motion Trail
+    // Decal
+    // RadialBlur
+    // Distortion
+    // Vignette
+
+    // 기타
+    // 하늘 / 구름 세팅
+    // 메쉬 트레일 세팅
+
+    // 추가해야 될 것
+    // 블룸 가우시안 블러 세팅
+    // 셰도우 PCF ON / OFF
+
+private:
+    void Lighting_Calculation_Settings();
+    void Cartoon_Rendering_Settings();
+    void SSAO_Settings();
+    void Shadow_Settings();
+
+    void Fog_Settings();
+    void MotionBlur_Settings();
+
+    void MotionTrail_Settings();
+    void Decal_Settings();
+    void RadialBlur_Settings();
+    void Distortion_Settings();
+    void Vignette_Settings();
+    
+    void Light_Settings();
+    void Light_Transition_Settings();
+
+    void MeshTrail_Settings();
+    void Environment_Settings();
 
 private:
 	class CGameInstance*    m_pGameInstance = { nullptr };
@@ -49,6 +107,12 @@ private:
     _bool                   m_isEnableRimLight = { true };
     _bool                   m_isEnableMotionTrail = {};
     _bool					m_isEnableVignette = {};
+    _bool                   m_isUnlitMode = {};
+    _bool                   m_isLitMode = {};
+    _bool                   m_isEnableSpecular = {};
+    _bool                   m_isEnableBloom = { true };
+    _bool                   m_isEnableDistortionSettings = {};
+    _bool                   m_isEnableShadowPCF = { true };
 
 	// SSAO
 	SSAO_CONFIG				m_SSAOConfig = {};
@@ -111,6 +175,15 @@ private:
 
 	LEVEL                   m_eCurrentLevel = { LEVEL::TITLE };
 	_bool                   m_isSelectLevel[ENUM_CLASS(LEVEL::END)];
+
+    // Decal
+    DECAL_DESC				m_DecalDesc = {};
+
+    // Distortion
+    DISTORTION_DESC			m_DistortionDesc = {};
+
+    // Blur
+    GAUSSIAN_BLUR_CONFIG	m_GaussianBlurConfig = {};
 
 public:
 	static CShader_Controller* Create();
