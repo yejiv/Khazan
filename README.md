@@ -2,7 +2,7 @@
 # 퍼스트 버서커: 카잔
 
 <div align="center">
-  <video src="https://github.com/user-attachments/assets/36842f61-8681-4e6c-ac62-4d8300c5ab0b" width="800" alt="퍼스트 버서커: 카잔 실행 영상">
+  <img src="https://github.com/user-attachments/assets/a26ff3b4-305b-4d54-908e-2b84090d339b" width="800" alt="퍼스트 버서커: 카잔 실행 영상">
   <br><br>
   👇 <b>유튜브 영상 바로가기</b>
   <br>
