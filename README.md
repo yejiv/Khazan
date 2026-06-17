@@ -3,7 +3,7 @@
 <div align="center">
   <a href="https://youtu.be/OJpX6eox33w">
     <img src="https://img.youtube.com/vi/OJpX6eox33w/maxresdefault.jpg" width="800" alt="퍼스트 버서커: 카잔 실행 영상">
-  </a>
+  </a> 
   <br><br>
   👆 <b>위 이미지를 클릭하면 고화질 게임 실행 영상이 재생됩니다!</b>
   <br>
