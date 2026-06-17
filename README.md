@@ -1,9 +1,12 @@
 # 퍼스트 버서커: 카잔
 
 <p align="center">
-  <a href="https://youtu.be/OJpX6eox33w">
-    <img src="https://i.imgur.com/0UqMBUW.gif" width="800" alt="퍼스트 버서커: 카잔">
-  </a>
+  <video src="https://i.imgur.com/0UqMBUW.mp4" width="800" autoplay loop muted playsinline></video>
+</p>
+
+<p align="center">
+ 게임 실행 영상 바로가기!<br>
+ <a href="https://youtu.be/OJpX6eox33w">https://youtu.be/OJpX6eox33w</a>
 </p>
 
 <p align="center">
