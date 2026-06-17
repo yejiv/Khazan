@@ -1,11 +1,9 @@
 # 퍼스트 버서커: 카잔
 
 <div align="center">
-  <a href="https://youtu.be/OJpX6eox33w">
-    <img src="https://github.com/user-attachments/assets/64313b6f-ea08-4b77-8fbc-bba73aca5acf" width="800" alt="퍼스트 버서커: 카잔 실행 영상">
-  </a>
+  <img src="https://i.imgur.com/Cb4OPB1.gif" width="800" alt="퍼스트 버서커: 카잔 실행 영상">
   <br><br>
-  👆 <b>위 이미지를 클릭하면 고화질 게임 실행 영상이 재생됩니다!</b>
+  👇 <b>유튜브 영상 바로가기</b>
   <br>
   <a href="https://youtu.be/OJpX6eox33w">https://youtu.be/OJpX6eox33w</a>
 </div>
