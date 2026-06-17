@@ -1,7 +1,7 @@
 # 퍼스트 버서커: 카잔
 
 <div align="center">
-  <img src="https://i.imgur.com/Cb4OPB1.mp4" width="800" alt="퍼스트 버서커: 카잔 실행 영상">
+  <video src="https://i.imgur.com/Cb4OPB1.mp4" width="800" autoplay loop muted playsinline></video>
   <br><br>
   👇 <b>유튜브 영상 바로가기</b>
   <br>
