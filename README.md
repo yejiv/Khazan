@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://youtu.be/OJpX6eox33w">
-    <img src="https://i.imgur.com/9wiEPeB.gif" width="800" alt="퍼스트 버서커: 카잔">
+    <img src="https://i.imgur.com/znayvLz.gif" width="800" alt="퍼스트 버서커: 카잔">
   </a>
 </p>
 
@@ -26,19 +26,19 @@
 
 <div align="center">
 
-| [<img src="https://imgur.com/3pJ6Tnb.png" width="180" alt="정오현">](https://github.com/dhgus110) | [<img src="https://imgur.com/yjlR89S.png" width="180" alt="김송헌">](https://github.com/AtoTony) | [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="김정훈">](https://github.com/kimjunghon) | [<img src="https://imgur.com/MmLkGDO.png" width="180" alt="탁예지">](https://github.com/yejiv) |
+| [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="조정환">](https://github.com/lasval) | [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="정오현">](https://github.com/dhgus110) | [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="권성은">](https://github.com/kwon7330) | [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="박준영">](https://github.com/zuuun-0) |
 | :---: | :---: | :---: | :---: |
-| **\[팀장\]** 정오현 | 김송헌 | 김정훈 | 탁예지 |
-| 메인프레임, 맵 오브젝트 | 몬스터 | 플레이어, 맵 오브젝트 | 맵 에디터, 이펙트, 보스 |
-| [<img src="https://imgur.com/yoldESr.png" width="60" alt="정오현 깃허브">](https://github.com/dhgus110) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="김송헌 깃허브">](https://github.com/AtoTony) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="김정훈 깃허브">](https://github.com/kimjunghon) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="탁예지 깃허브">](https://github.com/yejiv) [<img src="https://imgur.com/3yif98T.png" width="22" alt="탁예지 블로그">](https://velog.io/@yejiv/posts) |
+| **\[팀장\]** 조정환 | 정오현 | 권성은 | 박준영 |
+| 메인프레임, 카메라 | 애니메이션 | AI | 맵 |
+| [<img src="https://imgur.com/yoldESr.png" width="60" alt="조정환 깃허브">](https://github.com/lasval) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="정오현 깃허브">](https://github.com/dhgus110) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="권성은 깃허브">](https://github.com/kwon7330) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="박준영 깃허브">](https://github.com/zuuun-0) |
 
 <br/>
 
-| [<img src="이미지링크5" width="180" alt="팀원5">](깃허브링크5) | [<img src="이미지링크6" width="180" alt="팀원6">](깃허브링크6) | [<img src="이미지링크7" width="180" alt="팀원7">](깃허브링크7) |
+| [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="김범수">](https://github.com/kimbumsu0312) | [<img src="https://imgur.com/MmLkGDO.png" width="180" alt="탁예지">](https://github.com/yejiv) | [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="이단비">](https://github.com/eksql010) |
 | :---: | :---: | :---: |
-| 팀원5 이름 | 팀원6 이름 | 팀원7 이름 |
-| 팀원5 역할 | 팀원6 역할 | 팀원7 역할 |
-| [<img src="https://imgur.com/yoldESr.png" width="60" alt="팀원5 깃허브">](깃허브링크5) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="팀원6 깃허브">](깃허브링크6) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="팀원7 깃허브">](깃허브링크7) |
+| 김범수 | 탁예지 | 이단비 |
+| UI, AI | 맵 에디터, 이펙트, 보스 | 셰이더 |
+| [<img src="https://imgur.com/yoldESr.png" width="60" alt="김범수 깃허브">](https://github.com/kimbumsu0312) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="탁예지 깃허브">](https://github.com/yejiv) [<img src="https://imgur.com/3yif98T.png" width="22" alt="탁예지 블로그">](https://velog.io/@yejiv/posts) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="이단비 깃허브">](https://github.com/eksql010) |
 
 </div>
 
@@ -48,7 +48,7 @@
 
 | IDE | Language | OS | Graphic API | Communication |
 | :---: | :---: | :---: | :---: | :---: |
-| ![Visual Studio](https://img.shields.io/badge/Visual%20Studio-5C2D91.svg?style=for-the-badge&logo=visual-studio&logoColor=white) | ![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white) | ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) | <img src="https://imgur.com/Ud4PnR5.png" width="80" alt="DirectX9"> | ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) ![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white) ![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white) |
+| ![Visual Studio](https://img.shields.io/badge/Visual%20Studio-5C2D91.svg?style=for-the-badge&logo=visual-studio&logoColor=white) ![Visual Studio Code](https://img.shields.io/badge/VS%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white) | ![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white) ![HLSL](https://img.shields.io/badge/HLSL-302E31?style=for-the-badge) | ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) | ![DirectX](https://img.shields.io/badge/DirectX-000000?style=for-the-badge&logo=windows&logoColor=white) | ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) ![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white) ![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white) |
 
 <br/><br/>
 
