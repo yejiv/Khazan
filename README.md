@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://youtu.be/OJpX6eox33w">
-    <img src="https://i.imgur.com/0UqMBUW.gif" width="800" alt="퍼스트 버서커: 카잔">
+    <video src="https://i.imgur.com/0UqMBUW.mp4" width="800" autoplay loop muted playsinline></video>
   </a>
 </p>
 
