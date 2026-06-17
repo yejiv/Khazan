@@ -5,15 +5,8 @@
 </p>
 
 <p align="center">
- 게임 실행 영상 바로가기!<br>
+ 고화질 게임 실행 영상 보러가기! <br>
  <a href="https://youtu.be/OJpX6eox33w">https://youtu.be/OJpX6eox33w</a>
-</p>
-
-<p align="center">
- 게임 실행 영상 바로가기!
-</p>
-<p align="center">
- https://youtu.be/OJpX6eox33w
 </p>
 
 <br/><br/>
