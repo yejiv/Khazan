@@ -115,8 +115,9 @@ swap(m_iReadIdx, m_iWriteIdx);
 <div align="center">
   <video src="https://github.com/user-attachments/assets/879611c3-dcda-4a9c-8fb3-d8cd43188ba3" width="49%" autoplay loop muted playsinline></video>
   <video src="https://github.com/user-attachments/assets/885ca47c-0732-45c9-9248-80477fb2b40f" width="49%" autoplay loop muted playsinline></video>
-
+</div>
 <br/>
+
 노이즈 텍스처와 수명(Life-time)에 따른 알파 감쇠 변수(`fDecreaseAlpha`)를 활용하여, 몬스터나 객체가 불타며 단계적으로 사라지는 소멸 효과를 구현했다.
 
 * **셰이더 공용화 및 재사용성 확보** — 모든 클라이언트 셰이더 파일에서 즉시 호출할 수 있도록 `Dissolve()` 공용 함수로 모듈화하여 파이프라인의 코드 중복을 최소화했다.
