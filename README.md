@@ -11,9 +11,9 @@
 <br/><br/>
 
 ## 📌 프로젝트 개요
-- **DirectX9를 사용한 “퍼스트 버서커: 카잔” 모작**
+- **DirectX11을 사용한 “퍼스트 버서커: 카잔” 모작**
 - **클라이언트 프레임워크 구현 및 별도의 프로젝트로 구성된 엔진 프로젝트를 DLL로 빌드하여 클라이언트에서 사용**
-- **개발 기간 : 2025. 05. 19 ~ 2025. 06. 15**
+- **개발 기간 : 2025. 10. 01 ~ 2025. 12. 15**
 
 <br/><br/>
 
@@ -21,7 +21,7 @@
 
 <div align="center">
 
-| [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="조정환">](https://github.com/lasval) | [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="정오현">](https://github.com/dhgus110) | [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="권성은">](https://github.com/kwon7330) | [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="박준영">](https://github.com/zuuun-0) |
+| [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="조정환">](https://github.com/lasval) | [<img src="https://imgur.com/3pJ6Tnb.png" width="180" alt="정오현">](https://github.com/dhgus110) | [<img src="https://i.imgur.com/kq4xJD3.png" width="180" alt="권성은">](https://github.com/kwon7330) | [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="박준영">](https://github.com/zuuun-0) |
 | :---: | :---: | :---: | :---: |
 | **\[팀장\]** 조정환 | 정오현 | 권성은 | 박준영 |
 | 메인프레임, 카메라 | 애니메이션 | AI | 맵 |
@@ -32,7 +32,7 @@
 | [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="김범수">](https://github.com/kimbumsu0312) | [<img src="https://imgur.com/MmLkGDO.png" width="180" alt="탁예지">](https://github.com/yejiv) | [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="이단비">](https://github.com/eksql010) |
 | :---: | :---: | :---: |
 | 김범수 | 탁예지 | 이단비 |
-| UI, AI | 맵 에디터, 이펙트, 보스 | 셰이더 |
+| UI, AI | 이펙트 | 셰이더 |
 | [<img src="https://imgur.com/yoldESr.png" width="60" alt="김범수 깃허브">](https://github.com/kimbumsu0312) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="탁예지 깃허브">](https://github.com/yejiv) [<img src="https://imgur.com/3yif98T.png" width="22" alt="탁예지 블로그">](https://velog.io/@yejiv/posts) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="이단비 깃허브">](https://github.com/eksql010) |
 
 </div>
