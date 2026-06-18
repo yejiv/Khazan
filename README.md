@@ -49,7 +49,7 @@
 
 ## 🛠️ 주요 구현 내용 (탁예지)
 
-### Order-Independent Transparency (Weight Blend)
+### ① Order-Independent Transparency (Weight Blend)
 투명 오브젝트의 Z값 정렬 시 파티클 수가 증가할수록 CPU 소팅 비용이 커지고 시각적 아티팩트가 발생하는 한계를 해결하기 위해 설계했다. 깊이 정렬 없이 픽셀 단위 기여도를 계산하는 Weight Blended OIT 기법을 적용했다.
 
 ```hlsl
@@ -65,7 +65,7 @@ Out.vAccumAlpha = vFinalColor.a;  // 배경 노출도(Revealage)
 * **가중치 (Weight) 계산** — 깊이(`z`)와 알파(`a`) 값을 기반으로 가중치를 부여해 전면에 위치한 객체가 상대적으로 자연스럽게 강조되도록 누적.
 * 정렬 연산(Sorting)을 제거하여 수백 개 이상의 반투명 이펙트가 중첩되는 상황에서도 프레임 저하 없이 투명 레이어링 효과 구현.
 
-### Double Staging Buffer (CPU-GPU 동기화 병목 완화)
+### ② Double Staging Buffer (CPU-GPU 동기화 병목 완화)
 Compute Shader에서 연산된 결과(Dead Flag 등)를 CPU 로직에서 참조할 때, `CopyResource` 직후 `Map`을 호출하면서 발생하는 GPU 작업 대기 및 프레임 드랍 현상을 해결했다.
 
 ```cpp
@@ -87,16 +87,16 @@ swap(m_iReadIdx, m_iWriteIdx);
 * `Map(D3D11_MAP_READ)` — 이전 프레임에 복사 요청한 버퍼(`m_iReadIdx`)를 타겟으로 지정하여, 대기 시간 없이 즉시 데이터 참조.
 * CPU-GPU 병렬성 확보를 통해 동기화 병목현상 제거 및 안정적인 프레임 유지 달성 (FPS 39 ➔ 60 개선).
 
-### Data-Driven Effect Tool & Instancing
+### ③ Data-Driven Effect Tool & Instancing
 * **이펙트 에디터 및 타임트랙** — 이펙트 프리팹이 지닌 하위 객체 속성(개수, 위치, 수명, 텍스처 등)을 에디터에서 직관적으로 파싱 및 수정 가능하도록 구성. 타임트랙 기반 이벤트 시스템을 적용해 이펙트들이 시간 흐름에 따라 순차 재생되도록 제어했다.
 * **Point / Mesh Instancing** — 메쉬 및 포인트 파티클에 인스턴싱 기법을 적용, 단일 지오메트리를 공유하고 인스턴스 데이터를 GPU 버퍼로 일괄 전달하여 Draw Call을 최소화했다.
 
-### Advanced Shader Effects
+### ④ Advanced Shader Effects
 * **UV Scrolling & Turbulence** — 디퓨즈/마스크 텍스처를 스크롤링하여 시각적 흐름과 타이밍을 제어. Compute Shader 단계에서 3차원 축 조합(yz, xz, xy)으로 노이즈를 샘플링해 파티클의 난기류 움직임을 구현.
 * **Stretched & Gravity Particle** — 이동 벡터 기준 Up 벡터와 카메라 외적을 통해 궤적을 강조하는 스트레치 형태 구성. 파티클별 속도 벡터에 중력 가속도를 누적 연산하여 물리적 무게감 표현.
 * **Fresnel & Dissolve** — 픽셀 법선과 카메라 방향 내적을 통해 매쉬 가장자리를 강조(Fresnel). 노이즈 텍스처를 샘플링한 뒤 Dissolve 값과 픽셀 셰이더에서 비교하여 소멸 경계를 불타는 듯이 연출(`discard`).
 
-### Trail System Architecture
+### ⑤ Trail System Architecture
 * **Mesh & Line Trail** — 무기 궤적 생성을 위해 보간을 적용한 트레일 전용 버퍼 컴포넌트 설계. 2개의 월드 좌표를 사용하는 `Mesh` 방식과, 단일 중심 경로에 offset을 적용하는 `Line` 방식으로 정점 구성 로직을 분리 및 재사용.
 * **Screen Trail** — 기존 Line Trail 로직을 바탕으로 함수 오버로딩과 셰이더 패스만 분리하여 공간 변환 처리. 픽셀 셰이더에서 U 좌표를 기준으로 알파 페이딩을 제어해 점진적으로 사라지는 궤적 구현.
 
