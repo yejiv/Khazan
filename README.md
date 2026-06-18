@@ -50,7 +50,7 @@
 ## 🛠️ 주요 구현 내용 (탁예지)
 
 ### ① Order-Independent Transparency (Weight Blend)
-투명 오브젝트의 Z값 정렬 시 파티클 수가 증가할수록 CPU 소팅 비용이 커지고 시각적 아티팩트가 발생하는 한계를 해결하기 위해 설계했다. 깊이 정렬 없이 픽셀 단위 기여도를 계산하는 Weight Blended OIT 기법을 적용했다.
+<font color="gray">투명 오브젝트의 Z값 정렬 시 파티클 수가 증가할수록 CPU 소팅 비용이 커지고 시각적 아티팩트가 발생하는 한계를 해결하기 위해 설계했다. 깊이 정렬 없이 픽셀 단위 기여도를 계산하는 Weight Blended OIT 기법을 적용했다.</font>
 
 ~~~hlsl
 // Weight Blend Pixel Shader
@@ -61,12 +61,15 @@ vFinalColor.a *= exp(-z * 0.75f); // 지수 감쇠 형태의 가중치 계산
 Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
 Out.vAccumAlpha = vFinalColor.a;  // 배경 노출도(Revealage) 
 ~~~
-* **누적 렌더 타겟 (MRT)** — 가중치가 적용된 색상 누적용 버퍼(`RT_AccumColor`)와 배경 노출도 누적용 버퍼(`RT_AccumAlpha`)를 생성하여 병렬 출력.
-* **가중치 (Weight) 계산** — 깊이(`z`)와 알파(`a`) 값을 기반으로 가중치를 부여해 전면에 위치한 객체가 상대적으로 자연스럽게 강조되도록 누적.
-* 정렬 연산(Sorting)을 제거하여 수백 개 이상의 반투명 이펙트가 중첩되는 상황에서도 프레임 저하 없이 투명 레이어링 효과 구현.
+
+| 핵심 기술 | 구현 내용 및 설명 |
+| :--- | :--- |
+| **누적 렌더 타겟 (MRT)** | 가중치가 적용된 색상 누적용 버퍼(`RT_AccumColor`)와 배경 노출도 누적용 버퍼(`RT_AccumAlpha`)를 생성하여 병렬 출력 |
+| **가중치 (Weight) 계산** | 깊이(`z`)와 알파(`a`) 값을 기반으로 가중치를 부여해 전면에 위치한 객체가 상대적으로 자연스럽게 강조되도록 누적 |
+| **정렬 연산(Sorting) 제거** | 수백 개 이상의 반투명 이펙트가 중첩되는 상황에서도 프레임 저하 없이 투명 레이어링 효과 구현 |
 
 ### ② Double Staging Buffer (CPU-GPU 동기화 병목 완화)
-Compute Shader에서 연산된 결과(Dead Flag 등)를 CPU 로직에서 참조할 때, `CopyResource` 직후 `Map`을 호출하면서 발생하는 GPU 작업 대기 및 프레임 드랍 현상을 해결했다.
+<font color="gray">Compute Shader에서 연산된 결과(Dead Flag 등)를 CPU 로직에서 참조할 때, `CopyResource` 직후 `Map`을 호출하면서 발생하는 GPU 작업 대기 및 프레임 드랍 현상을 해결했다.</font>
 
 ~~~cpp
 // 1. 이번 프레임 연산 데이터 복사 요청 (비동기)
@@ -83,9 +86,12 @@ if (SUCCEEDED(m_pContext->Map(m_pStagingBuffer[m_iReadIdx], 0, D3D11_MAP_READ, 0
 // 3. 프레임 종료 시 버퍼 인덱스 교체
 swap(m_iReadIdx, m_iWriteIdx);
 ~~~
-* `CopySubresourceRegion()` — 전체 버퍼 복사 대신 필요한 범위만 부분 복사 요청하여 메모리 전송 비용 최적화.
-* `Map(D3D11_MAP_READ)` — 이전 프레임에 복사 요청한 버퍼(`m_iReadIdx`)를 타겟으로 지정하여, 대기 시간 없이 즉시 데이터 참조.
-* CPU-GPU 병렬성 확보를 통해 동기화 병목현상 제거 및 안정적인 프레임 유지 달성 (FPS 39 ➔ 60 개선).
+
+| 핵심 기술 | 구현 내용 및 설명 |
+| :--- | :--- |
+| **`CopySubresourceRegion()`** | 전체 버퍼 복사 대신 필요한 범위만 부분 복사 요청하여 메모리 전송 비용 최적화 |
+| **`Map(D3D11_MAP_READ)`** | 이전 프레임에 복사 요청한 버퍼(`m_iReadIdx`)를 타겟으로 지정하여, 대기 시간 없이 즉시 데이터 참조 |
+| **CPU-GPU 병렬성 확보** | 동기화 병목현상 제거 및 안정적인 프레임 유지 달성 (FPS 39 ➔ 60 개선) |
 
 ### ③ Data-Driven Effect Tool & Instancing
 <div align="center">
@@ -94,8 +100,10 @@ swap(m_iReadIdx, m_iWriteIdx);
 </div>
 <br/>
 
-* **이펙트 에디터 및 타임트랙** — 이펙트 프리팹이 지닌 하위 객체 속성(개수, 위치, 수명, 텍스처 등)을 에디터에서 직관적으로 파싱 및 수정 가능하도록 구성. 타임트랙 기반 이벤트 시스템을 적용해 이펙트들이 시간 흐름에 따라 순차 재생되도록 제어했다.
-* **Point / Mesh Instancing** — 메쉬 및 포인트 파티클에 인스턴싱 기법을 적용, 단일 지오메트리를 공유하고 인스턴스 데이터를 GPU 버퍼로 일괄 전달하여 Draw Call을 최소화했다.
+| 시스템 | 구현 내용 및 설명 |
+| :--- | :--- |
+| **이펙트 에디터 및 타임트랙** | 이펙트 프리팹이 지닌 하위 객체 속성(개수, 위치, 수명, 텍스처 등)을 에디터에서 직관적으로 파싱 및 수정 가능하도록 구성. 타임트랙 기반 이벤트 시스템을 적용해 이펙트들이 시간 흐름에 따라 순차 재생되도록 제어 |
+| **Point / Mesh Instancing** | 메쉬 및 포인트 파티클에 인스턴싱 기법을 적용, 단일 지오메트리를 공유하고 인스턴스 데이터를 GPU 버퍼로 일괄 전달하여 Draw Call 최소화 |
 
 ### ④ Advanced Shader Effects
 
@@ -115,8 +123,10 @@ swap(m_iReadIdx, m_iWriteIdx);
 </div>
 <br/>
 
-* **Mesh & Line Trail** — 무기 궤적 생성을 위해 보간을 적용한 트레일 전용 버퍼 컴포넌트 설계. 2개의 월드 좌표를 사용하는 `Mesh` 방식과, 단일 중심 경로에 offset을 적용하는 `Line` 방식으로 정점 구성 로직을 분리 및 재사용.
-* **Screen Trail** — 기존 Line Trail 로직을 바탕으로 함수 오버로딩과 셰이더 패스만 분리하여 공간 변환 처리. 픽셀 셰이더에서 U 좌표를 기준으로 알파 페이딩을 제어해 점진적으로 사라지는 궤적 구현.
+| 기법 (Trail) | 구현 내용 및 설명 |
+| :--- | :--- |
+| **Mesh & Line Trail** | 무기 궤적 생성을 위해 보간을 적용한 트레일 전용 버퍼 컴포넌트 설계. 2개의 월드 좌표를 사용하는 `Mesh` 방식과, 단일 중심 경로에 offset을 적용하는 `Line` 방식으로 정점 구성 로직을 분리 및 재사용 |
+| **Screen Trail** | 기존 Line Trail 로직을 바탕으로 함수 오버로딩과 셰이더 패스만 분리하여 공간 변환 처리. 픽셀 셰이더에서 U 좌표를 기준으로 알파 페이딩을 제어해 점진적으로 사라지는 궤적 구현 |
 
 ### ⑥ Dissolve
 <div align="center">
@@ -125,10 +135,12 @@ swap(m_iReadIdx, m_iWriteIdx);
 </div>
 <br/>
 
-노이즈 텍스처와 수명(Life-time)에 따른 알파 감쇠 변수(`fDecreaseAlpha`)를 활용하여, 몬스터나 객체가 불타며 단계적으로 사라지는 소멸 효과를 구현했다.
+<font color="gray">노이즈 텍스처와 수명(Life-time)에 따른 알파 감쇠 변수(`fDecreaseAlpha`)를 활용하여, 몬스터나 객체가 불타며 단계적으로 사라지는 소멸 효과를 구현했다.</font>
 
-* **셰이더 공용화 및 재사용성 확보** — 모든 클라이언트 셰이더 파일에서 즉시 호출할 수 있도록 `Dissolve()` 공용 함수로 모듈화하여 파이프라인의 코드 중복을 최소화했다.
-* **디테일 제어 및 이미시브(Emissive) 적용** — 소멸 경계(Edge)의 두께와 색상을 파라미터(`g_fEdgeWidth`, `g_fEdgeColor`)로 주입받아 객체 특성에 맞게 유연하게 조절할 수 있도록 설계했다. 경계 색상에 자동으로 이미시브가 적용되도록 연산하여 타들어가는 시각적 완성도를 높였다.
+| 특징 | 설명 |
+| :--- | :--- |
+| **셰이더 공용화 및 재사용성 확보** | 모든 클라이언트 셰이더 파일에서 즉시 호출할 수 있도록 `Dissolve()` 공용 함수로 모듈화하여 파이프라인의 코드 중복을 최소화 |
+| **디테일 제어 및 이미시브(Emissive) 적용** | 소멸 경계(Edge)의 두께와 색상을 파라미터(`g_fEdgeWidth`, `g_fEdgeColor`)로 주입받아 객체 특성에 맞게 유연하게 조절할 수 있도록 설계. 경계 색상에 자동으로 이미시브가 적용되도록 연산하여 타들어가는 시각적 완성도 향상 |
 
 ~~~hlsl
 // HLSL: 픽셀 셰이더 내 Dissolve 공용 함수 적용
