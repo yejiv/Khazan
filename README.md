@@ -49,9 +49,9 @@
 
 ## 🛠️ 주요 구현 내용 (탁예지)
 
-### ① Order-Independent Transparency (Weight Blend)
+### ① Weight Blend (OIT)
 
-> 투명 오브젝트의 Z값 정렬 시 파티클 수가 증가할수록 CPU 소팅 비용이 커지고 시각적 아티팩트가 발생하는 한계를 해결하기 위해 설계했다. 깊이 정렬 없이 픽셀 단위 기여도를 계산하는 Weight Blended OIT 기법을 적용했다.
+> 투명 오브젝트의 Z값 정렬 시 파티클 수가 증가할수록 CPU 소팅 비용이 커지고 시각적 아티팩트가 발생하는 한계를 해결하기 위해 구현. 깊이 정렬 없이 픽셀 단위 기여도를 계산하는 Weight Blended OIT 기법을 적용.
 
 ~~~hlsl
 // Weight Blend Pixel Shader
@@ -71,7 +71,7 @@ Out.vAccumAlpha = vFinalColor.a;  // 배경 노출도(Revealage)
 
 ### ② Double Staging Buffer (CPU-GPU 동기화 병목 완화)
 
-> Compute Shader에서 연산된 결과(Dead Flag 등)를 CPU 로직에서 참조할 때, `CopyResource` 직후 `Map`을 호출하면서 발생하는 GPU 작업 대기 및 프레임 드랍 현상을 해결했다.
+> Compute Shader에서 연산된 결과(Dead Flag 등)를 CPU 로직에서 참조할 때, `CopyResource` 직후 `Map`을 호출하면서 발생하는 GPU 작업 대기 및 프레임 드랍 현상을 해결.
 
 ~~~cpp
 // 1. 이번 프레임 연산 데이터 복사 요청 (비동기)
@@ -95,7 +95,7 @@ swap(m_iReadIdx, m_iWriteIdx);
 | **`Map(D3D11_MAP_READ)`** | 이전 프레임에 복사 요청한 버퍼(`m_iReadIdx`)를 타겟으로 지정하여, 대기 시간 없이 즉시 데이터 참조 |
 | **CPU-GPU 병렬성 확보** | 동기화 병목현상 제거 및 안정적인 프레임 유지 달성 (FPS 39 ➔ 60 개선) |
 
-### ③ Data-Driven Effect Tool & Instancing
+### ③ Effect Tool & Instancing
 <div align="center">
   <img src="https://github.com/user-attachments/assets/db3a8c31-924e-4310-8945-f73115465057" width="49%" alt="이펙트 툴 시연 화면 1">
   <img src="https://github.com/user-attachments/assets/ebe90100-e033-4442-8bc0-a251e6e20132" width="49%" alt="이펙트 툴 시연 화면 2">
@@ -107,17 +107,17 @@ swap(m_iReadIdx, m_iWriteIdx);
 | **이펙트 에디터 및 타임트랙** | 이펙트 프리팹이 지닌 하위 객체 속성(개수, 위치, 수명, 텍스처 등)을 에디터에서 직관적으로 파싱 및 수정 가능하도록 구성. 타임트랙 기반 이벤트 시스템을 적용해 이펙트들이 시간 흐름에 따라 순차 재생되도록 제어 |
 | **Point / Mesh Instancing** | 메쉬 및 포인트 파티클에 인스턴싱 기법을 적용, 단일 지오메트리를 공유하고 인스턴스 데이터를 GPU 버퍼로 일괄 전달하여 Draw Call 최소화 |
 
-### ④ Advanced Shader Effects
+### ④ Shader Effects
 
 | 기법 (Effect) | 구현 내용 및 설명 |
 | :--- | :--- |
 | **UV Scrolling** | 디퓨즈 및 마스크 텍스처를 스크롤링하여 시각적 흐름과 타이밍 제어 |
-| **Turbulence** | Compute Shader 단계에서 3차원 축 조합(yz, xz, xy)으로 노이즈를 샘플링해 난기류 움직임 구현 |
+| **Turbulence** | Compute Shader 단계에서 3차원 축 조합(yz, xz, xy)으로 노이즈 텍스쳐를 샘플링해 난기류 움직임 구현 |
 | **Stretched Particle** | 이동 벡터 기준 Up 벡터와 카메라 외적을 통해 궤적을 강조하는 스트레치 형태 구성 |
 | **Gravity Particle** | 파티클별 속도 벡터에 중력 가속도를 누적 연산하여 물리적인 무게감 표현 |
 | **Fresnel** | 픽셀 법선과 카메라 방향의 내적을 통해 매쉬 가장자리를 자연스럽게 강조 |
 
-### ⑤ Trail System Architecture
+### ⑤ Trail
 <div align="center">
   <img src="https://github.com/user-attachments/assets/f39ba48a-ea24-4aeb-870c-de27abec1057" width="32%" alt="트레일 1">
   <img src="https://github.com/user-attachments/assets/d7e4fadb-16aa-4292-bb7d-e0bfe20d7be3" width="32%" alt="트레일 2">
