@@ -29,7 +29,7 @@
 
 <br/>
 
-| [<img src="https://i.imgur.com/DCdj845.png" width="180" alt="김범수">](https://github.com/kimbumsu0312) | [<img src="https://imgur.com/MmLkGDO.png" width="180" alt="탁예지">](https://github.com/yejiv) | [<img src="https://imgur.com/Dmve5hf.png" width="180" alt="이단비">](https://github.com/eksql010) |
+| [<img src="https://i.imgur.com/DCdj845.png" width="180" alt="김범수">](https://github.com/kimbumsu0312) | [<img src="https://imgur.com/MmLkGDO.png" width="180" alt="탁예지">](https://github.com/yejiv) | [<img src="https://i.imgur.com/rC3PiFr.jpeg" width="180" alt="이단비">](https://github.com/eksql010) |
 | :---: | :---: | :---: |
 | 김범수 | 탁예지 | 이단비 |
 | UI, AI | 이펙트 | 셰이더 |
