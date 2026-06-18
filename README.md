@@ -108,10 +108,11 @@ swap(m_iReadIdx, m_iWriteIdx);
   <video src="https://github.com/user-attachments/assets/a13660d1-cab6-42c1-8343-ca7eddbbc8e6" width="32%" autoplay loop muted playsinline></video>
 </div>
 <br/>
+
 * **Mesh & Line Trail** — 무기 궤적 생성을 위해 보간을 적용한 트레일 전용 버퍼 컴포넌트 설계. 2개의 월드 좌표를 사용하는 `Mesh` 방식과, 단일 중심 경로에 offset을 적용하는 `Line` 방식으로 정점 구성 로직을 분리 및 재사용.
 * **Screen Trail** — 기존 Line Trail 로직을 바탕으로 함수 오버로딩과 셰이더 패스만 분리하여 공간 변환 처리. 픽셀 셰이더에서 U 좌표를 기준으로 알파 페이딩을 제어해 점진적으로 사라지는 궤적 구현.
 
-### ❻ Dissolve
+### ⑥ Dissolve
 <div align="center">
   <video src="https://github.com/user-attachments/assets/879611c3-dcda-4a9c-8fb3-d8cd43188ba3" width="49%" autoplay loop muted playsinline></video>
   <video src="https://github.com/user-attachments/assets/885ca47c-0732-45c9-9248-80477fb2b40f" width="49%" autoplay loop muted playsinline></video>
