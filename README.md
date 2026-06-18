@@ -102,8 +102,49 @@ swap(m_iReadIdx, m_iWriteIdx);
 * **Fresnel & Dissolve** — 픽셀 법선과 카메라 방향 내적을 통해 매쉬 가장자리를 강조(Fresnel). 노이즈 텍스처를 샘플링한 뒤 Dissolve 값과 픽셀 셰이더에서 비교하여 소멸 경계를 불타는 듯이 연출(`discard`).
 
 ### ⑤ Trail System Architecture
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/f39ba48a-ea24-4aeb-870c-de27abec1057" width="32%" autoplay loop muted playsinline></video>
+  <video src="https://github.com/user-attachments/assets/d7e4fadb-16aa-4292-bb7d-e0bfe20d7be3" width="32%" autoplay loop muted playsinline></video>
+  <video src="https://github.com/user-attachments/assets/a13660d1-cab6-42c1-8343-ca7eddbbc8e6" width="32%" autoplay loop muted playsinline></video>
+</div>
+<br/>
 * **Mesh & Line Trail** — 무기 궤적 생성을 위해 보간을 적용한 트레일 전용 버퍼 컴포넌트 설계. 2개의 월드 좌표를 사용하는 `Mesh` 방식과, 단일 중심 경로에 offset을 적용하는 `Line` 방식으로 정점 구성 로직을 분리 및 재사용.
 * **Screen Trail** — 기존 Line Trail 로직을 바탕으로 함수 오버로딩과 셰이더 패스만 분리하여 공간 변환 처리. 픽셀 셰이더에서 U 좌표를 기준으로 알파 페이딩을 제어해 점진적으로 사라지는 궤적 구현.
+
+### ❻ Dissolve
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/879611c3-dcda-4a9c-8fb3-d8cd43188ba3" width="49%" autoplay loop muted playsinline></video>
+  <video src="https://github.com/user-attachments/assets/885ca47c-0732-45c9-9248-80477fb2b40f" width="49%" autoplay loop muted playsinline></video>
+
+<br/>
+노이즈 텍스처와 수명(Life-time)에 따른 알파 감쇠 변수(`fDecreaseAlpha`)를 활용하여, 몬스터나 객체가 불타며 단계적으로 사라지는 소멸 효과를 구현했다.
+
+* **셰이더 공용화 및 재사용성 확보** — 모든 클라이언트 셰이더 파일에서 즉시 호출할 수 있도록 `Dissolve()` 공용 함수로 모듈화하여 파이프라인의 코드 중복을 최소화했다.
+* **디테일 제어 및 이미시브(Emissive) 적용** — 소멸 경계(Edge)의 두께와 색상을 파라미터(`g_fEdgeWidth`, `g_fEdgeColor`)로 주입받아 객체 특성에 맞게 유연하게 조절할 수 있도록 설계했다. 경계 색상에 자동으로 이미시브가 적용되도록 연산하여 타들어가는 시각적 완성도를 높였다.
+
+```hlsl
+// HLSL: 픽셀 셰이더 내 Dissolve 공용 함수 적용
+float noise = g_DissolveTexture.Sample(PointSampler, fScrolledEffectUV).r;
+
+// 수명에 따른 fDecreaseAlpha 값과 노이즈를 비교하여 경계색 및 최종 알파 연산
+vFinalColor = Dissolve(fDecreaseAlpha, noise, g_EdgeWidth, g_EdgeColor, vFinalColor);
+
+// 기준치 미달 픽셀 제거 (최적화 및 소멸 처리)
+if (vFinalColor.a <= 0.f)
+    discard;
+```
+
+```cpp
+// C++: 디졸브 데이터 파싱 및 셰이더 패스 바인딩
+m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", 0);
+
+m_pShaderCom->Bind_RawValue("g_fDecreaseAlpha", &fDecreaseAlpha, sizeof(_float));
+m_pShaderCom->Bind_RawValue("g_fEdgeWidth", &fEdgeWidth, sizeof(_float));
+m_pShaderCom->Bind_RawValue("g_fEdgeColor", &fEdgeColor, sizeof(_float4));
+
+// 애니메이션 매쉬 렌더 패스 호출
+m_pShaderCom->Begin(17); 
+```
 
 <br/><br/>
 
