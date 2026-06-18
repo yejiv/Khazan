@@ -25,8 +25,7 @@
 | :---: | :---: | :---: | :---: |
 | **\[팀장\]** 조정환 | 정오현 | 권성은 | 박준영 |
 | 메인프레임, 카메라 | 애니메이션 | AI | 맵 |
-| [<img src="https://imgur.com/yoldESr.png" width="60" alt="조정환 깃허브">](https://github.com/lasval) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="정오현 깃허브">](https://github.com/dhgus110) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="권성은 깃허브">](https://github.com/kwon7330) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="박준영 깃허브">](https://github.com/zuuun-0) |
-
+| [<img src="https://imgur.com/yoldESr.png" width="60" alt="조정환 깃허브">](https://github.com/lasval) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="정오현 깃허브">](https://github.com/dhgus110) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="권성은 깃허브">](https://github.com/kwon7330) [<img src="https://cdn.simpleicons.org/naver/03C75A" width="22" alt="권성은 블로그">](https://blog.naver.com/fplls) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="박준영 깃허브">](https://github.com/zuuun-0) |
 <br/>
 
 | [<img src="https://i.imgur.com/DCdj845.png" width="180" alt="김범수">](https://github.com/kimbumsu0312) | [<img src="https://imgur.com/MmLkGDO.png" width="180" alt="탁예지">](https://github.com/yejiv) | [<img src="https://i.imgur.com/rC3PiFr.jpeg" width="180" alt="이단비">](https://github.com/eksql010) |
