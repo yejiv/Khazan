@@ -50,7 +50,8 @@
 ## 🛠️ 주요 구현 내용 (탁예지)
 
 ### ① Order-Independent Transparency (Weight Blend)
-<font color="gray">투명 오브젝트의 Z값 정렬 시 파티클 수가 증가할수록 CPU 소팅 비용이 커지고 시각적 아티팩트가 발생하는 한계를 해결하기 위해 설계했다. 깊이 정렬 없이 픽셀 단위 기여도를 계산하는 Weight Blended OIT 기법을 적용했다.</font>
+
+> 투명 오브젝트의 Z값 정렬 시 파티클 수가 증가할수록 CPU 소팅 비용이 커지고 시각적 아티팩트가 발생하는 한계를 해결하기 위해 설계했다. 깊이 정렬 없이 픽셀 단위 기여도를 계산하는 Weight Blended OIT 기법을 적용했다.
 
 ~~~hlsl
 // Weight Blend Pixel Shader
@@ -69,7 +70,8 @@ Out.vAccumAlpha = vFinalColor.a;  // 배경 노출도(Revealage)
 | **정렬 연산(Sorting) 제거** | 수백 개 이상의 반투명 이펙트가 중첩되는 상황에서도 프레임 저하 없이 투명 레이어링 효과 구현 |
 
 ### ② Double Staging Buffer (CPU-GPU 동기화 병목 완화)
-<font color="gray">Compute Shader에서 연산된 결과(Dead Flag 등)를 CPU 로직에서 참조할 때, `CopyResource` 직후 `Map`을 호출하면서 발생하는 GPU 작업 대기 및 프레임 드랍 현상을 해결했다.</font>
+
+> Compute Shader에서 연산된 결과(Dead Flag 등)를 CPU 로직에서 참조할 때, `CopyResource` 직후 `Map`을 호출하면서 발생하는 GPU 작업 대기 및 프레임 드랍 현상을 해결했다.
 
 ~~~cpp
 // 1. 이번 프레임 연산 데이터 복사 요청 (비동기)
@@ -135,7 +137,7 @@ swap(m_iReadIdx, m_iWriteIdx);
 </div>
 <br/>
 
-<font color="gray">노이즈 텍스처와 수명(Life-time)에 따른 알파 감쇠 변수(`fDecreaseAlpha`)를 활용하여, 몬스터나 객체가 불타며 단계적으로 사라지는 소멸 효과를 구현했다.</font>
+> 노이즈 텍스처와 수명(Life-time)에 따른 알파 감쇠 변수(`fDecreaseAlpha`)를 활용하여, 몬스터나 객체가 불타며 단계적으로 사라지는 소멸 효과를 구현했다.
 
 | 특징 | 설명 |
 | :--- | :--- |
