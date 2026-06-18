@@ -103,9 +103,9 @@ swap(m_iReadIdx, m_iWriteIdx);
 
 ### ⑤ Trail System Architecture
 <div align="center">
-  <video src="https://github.com/user-attachments/assets/f39ba48a-ea24-4aeb-870c-de27abec1057" width="32%" autoplay loop muted playsinline></video>
-  <video src="https://github.com/user-attachments/assets/d7e4fadb-16aa-4292-bb7d-e0bfe20d7be3" width="32%" autoplay loop muted playsinline></video>
-  <video src="https://github.com/user-attachments/assets/a13660d1-cab6-42c1-8343-ca7eddbbc8e6" width="32%" autoplay loop muted playsinline></video>
+  <img src="https://github.com/user-attachments/assets/f39ba48a-ea24-4aeb-870c-de27abec1057" width="32%" alt="트레일 1">
+  <img src="https://github.com/user-attachments/assets/d7e4fadb-16aa-4292-bb7d-e0bfe20d7be3" width="32%" alt="트레일 2">
+  <img src="https://github.com/user-attachments/assets/a13660d1-cab6-42c1-8343-ca7eddbbc8e6" width="32%" alt="트레일 3">
 </div>
 <br/>
 
@@ -114,8 +114,8 @@ swap(m_iReadIdx, m_iWriteIdx);
 
 ### ⑥ Dissolve
 <div align="center">
-  <video src="https://github.com/user-attachments/assets/879611c3-dcda-4a9c-8fb3-d8cd43188ba3" width="49%" autoplay loop muted playsinline></video>
-  <video src="https://github.com/user-attachments/assets/885ca47c-0732-45c9-9248-80477fb2b40f" width="49%" autoplay loop muted playsinline></video>
+  <img src="https://github.com/user-attachments/assets/879611c3-dcda-4a9c-8fb3-d8cd43188ba3" width="49%" alt="Dissolve 1">
+  <img src="https://github.com/user-attachments/assets/885ca47c-0732-45c9-9248-80477fb2b40f" width="49%" alt="Dissolve 2">
 </div>
 <br/>
 
