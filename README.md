@@ -1,7 +1,7 @@
 # 퍼스트 버서커: 카잔
 
 <div align="center">
-  <video src="https://i.imgur.com/Cb4OPB1.mp4" width="800" autoplay loop muted playsinline></video>
+   <img src="https://github.com/user-attachments/assets/21cd38ed-1671-4a37-8efd-da2371e03a44" width="800" alt="퍼스트 버서커: 카잔 실행 영상">
   <br><br>
   👇 <b>유튜브 영상 바로가기</b>
   <br>
@@ -11,8 +11,8 @@
 <br/><br/>
 
 ## 📌 프로젝트 개요
-- **DirectX11 기반 '퍼스트 버서커: 카잔' 3D 모작**
-- **DLL 프레임워크 구현 프로젝트**로, 클라이언트와 분리된 구조를 바탕으로 시스템 이펙트 및 렌더링 최적화를 중점적으로 구현했습니다.
+- **DirectX11을 사용한 “퍼스트 버서커: 카잔” 3D 모작**
+- **클라이언트 프레임워크 구현 및 별도의 프로젝트로 구성된 엔진 프로젝트를 DLL로 빌드하여 클라이언트에서 사용**
 - **개발 기간 : 2025. 10. 01 ~ 2025. 12. 15**
 
 <br/><br/>
@@ -47,48 +47,64 @@
 
 <br/><br/>
 
+## 🛠️ 주요 구현 내용 (탁예지)
+
+### Order-Independent Transparency (Weight Blend)
+투명 오브젝트의 Z값 정렬 시 파티클 수가 증가할수록 CPU 소팅 비용이 커지고 시각적 아티팩트가 발생하는 한계를 해결하기 위해 설계했다. 깊이 정렬 없이 픽셀 단위 기여도를 계산하는 Weight Blended OIT 기법을 적용했다.
+
+```hlsl
+// Weight Blend Pixel Shader
+float z = In.vProjPos.z / In.vProjPos.w;
+vFinalColor.a *= exp(-z * 0.75f); // 지수 감쇠 형태의 가중치 계산
+
+// RGB 채널: 가중 평균의 분자 / A 채널: 가중 평균의 분모 역할
+Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
+Out.vAccumAlpha = vFinalColor.a;  // 배경 노출도(Revealage) 
+```
+* **누적 렌더 타겟 (MRT)** — 가중치가 적용된 색상 누적용 버퍼(`RT_AccumColor`)와 배경 노출도 누적용 버퍼(`RT_AccumAlpha`)를 생성하여 병렬 출력.
+* **가중치 (Weight) 계산** — 깊이(`z`)와 알파(`a`) 값을 기반으로 가중치를 부여해 전면에 위치한 객체가 상대적으로 자연스럽게 강조되도록 누적.
+* 정렬 연산(Sorting)을 제거하여 수백 개 이상의 반투명 이펙트가 중첩되는 상황에서도 프레임 저하 없이 투명 레이어링 효과 구현.
+
+### Double Staging Buffer (CPU-GPU 동기화 병목 완화)
+Compute Shader에서 연산된 결과(Dead Flag 등)를 CPU 로직에서 참조할 때, `CopyResource` 직후 `Map`을 호출하면서 발생하는 GPU 작업 대기 및 프레임 드랍 현상을 해결했다.
+
+```cpp
+// 1. 이번 프레임 연산 데이터 복사 요청 (비동기)
+m_pContext->CopySubresourceRegion(m_pStagingBuffer[m_iWriteIdx], 0, 0, 0, 0, m_pSpeedBuffer, 0, &m_SourceBox);
+
+// 2. 이전 프레임에 요청했던 데이터 읽기 (병목 제거)
+D3D11_MAPPED_SUBRESOURCE mappedResource;
+if (SUCCEEDED(m_pContext->Map(m_pStagingBuffer[m_iReadIdx], 0, D3D11_MAP_READ, 0, &mappedResource))) {
+    POINT_INSTANCE_SPEED_PARAMS* aliveCount = reinterpret_cast<POINT_INSTANCE_SPEED_PARAMS*>(mappedResource.pData);
+    m_pContext->Unmap(m_pStagingBuffer[m_iReadIdx], 0);
+    if (aliveCount->bDead) flag = true;
+}
+
+// 3. 프레임 종료 시 버퍼 인덱스 교체
+swap(m_iReadIdx, m_iWriteIdx);
+```
+* `CopySubresourceRegion()` — 전체 버퍼 복사 대신 필요한 범위만 부분 복사 요청하여 메모리 전송 비용 최적화.
+* `Map(D3D11_MAP_READ)` — 이전 프레임에 복사 요청한 버퍼(`m_iReadIdx`)를 타겟으로 지정하여, 대기 시간 없이 즉시 데이터 참조.
+* CPU-GPU 병렬성 확보를 통해 동기화 병목현상 제거 및 안정적인 프레임 유지 달성 (FPS 39 ➔ 60 개선).
+
+### Data-Driven Effect Tool & Instancing
+* **이펙트 에디터 및 타임트랙** — 이펙트 프리팹이 지닌 하위 객체 속성(개수, 위치, 수명, 텍스처 등)을 에디터에서 직관적으로 파싱 및 수정 가능하도록 구성. 타임트랙 기반 이벤트 시스템을 적용해 이펙트들이 시간 흐름에 따라 순차 재생되도록 제어했다.
+* **Point / Mesh Instancing** — 메쉬 및 포인트 파티클에 인스턴싱 기법을 적용, 단일 지오메트리를 공유하고 인스턴스 데이터를 GPU 버퍼로 일괄 전달하여 Draw Call을 최소화했다.
+
+### Advanced Shader Effects
+* **UV Scrolling & Turbulence** — 디퓨즈/마스크 텍스처를 스크롤링하여 시각적 흐름과 타이밍을 제어. Compute Shader 단계에서 3차원 축 조합(yz, xz, xy)으로 노이즈를 샘플링해 파티클의 난기류 움직임을 구현.
+* **Stretched & Gravity Particle** — 이동 벡터 기준 Up 벡터와 카메라 외적을 통해 궤적을 강조하는 스트레치 형태 구성. 파티클별 속도 벡터에 중력 가속도를 누적 연산하여 물리적 무게감 표현.
+* **Fresnel & Dissolve** — 픽셀 법선과 카메라 방향 내적을 통해 매쉬 가장자리를 강조(Fresnel). 노이즈 텍스처를 샘플링한 뒤 Dissolve 값과 픽셀 셰이더에서 비교하여 소멸 경계를 불타는 듯이 연출(`discard`).
+
+### Trail System Architecture
+* **Mesh & Line Trail** — 무기 궤적 생성을 위해 보간을 적용한 트레일 전용 버퍼 컴포넌트 설계. 2개의 월드 좌표를 사용하는 `Mesh` 방식과, 단일 중심 경로에 offset을 적용하는 `Line` 방식으로 정점 구성 로직을 분리 및 재사용.
+* **Screen Trail** — 기존 Line Trail 로직을 바탕으로 함수 오버로딩과 셰이더 패스만 분리하여 공간 변환 처리. 픽셀 셰이더에서 U 좌표를 기준으로 알파 페이딩을 제어해 점진적으로 사라지는 궤적 구현.
+
+<br/><br/>
+
 > [!warning]
 > [Build 주의사항]
 > 
 > 1. DirectX SDK 경로를 환경 변수로 설정 (DXSDK_DIR)
+>
 > 2. Engine 프로젝트를 먼저 빌드하여 DLL이 생성된 후, Client에서 참조 필요
-
-<br/><br/>
-
-## 🛠️ 주요 구현 내용 (탁예지)
-
-### 1. Effect System & Tool
-
-**Data-Driven 이펙트 툴 및 타임트랙 시스템**
-* 하나의 이펙트 프리팹이 다양한 형태의 이펙트 객체들을 타임트랙으로 관리하도록 구조화했다.
-* 이펙트의 종류, 실행 시점, 동작 정보를 시간 기준으로 제어하는 이벤트 시스템을 구축하여 여러 이펙트가 흐름에 따라 순차 재생되도록 구현했다.
-* 에디터 상에서 파티클의 개수, 범위, 위치, 사이즈, 수명, 색상, 텍스처 등을 직관적으로 조절할 수 있도록 구성했다.
-
-**Advanced Shader Effects**
-* **UV Scrolling:** 디퓨즈 텍스처를 이동시켜 흐르는 효과를 연출했으며, 특정 매쉬의 UV 데이터 구조에 맞춰 축(Axis) 방향을 의도적으로 스왑하여 스크롤링 로직이 정상 작동하도록 처리했다. 마스크 텍스처 조작을 통해 이펙트 노출 영역과 타이밍을 제어한다.
-* **Stretched & Gravity Particle:** 파티클 이동 벡터 기준 Up 벡터를 구성하고 카메라 방향과의 외적을 통해 궤적을 강조하는 스트레치 파티클을 구현했다. 중력 가속도를 누적하여 무게감을 표현했으며, `fDecreaseAlpha` 변수를 적용해 파티클 수명(Life-time)에 따른 자연스러운 알파 감쇠 로직을 구현했다.
-* **Fresnel Shader:** 픽셀의 법선 벡터와 카메라 방향 벡터를 내적하고 절대값을 적용하여, 양방향에서 매쉬 가장자리가 자연스럽게 강조되도록 처리했다.
-* **Turbulence:** `Compute Shader` 단계에서 노이즈 텍스처를 샘플링해 난기류를 구현했다. 월드 좌표의 3차원 축 조합(yz, xz, xy)을 사용해 파티클들이 개별적으로 흔들리면서도 전체적인 흐름을 유지하도록 구성했다.
-* **Dissolve:** 시간에 따른 Dissolve 값과 노이즈 텍스처를 픽셀 셰이더에서 비교하여 단계적 픽셀 `discard`를 수행했다. Edge 영역에 별도의 색상과 두께를 주어 소멸 경계의 불타는 연출을 추가했다.
-
-### 2. Rendering Optimization
-
-**Point / Mesh Instancing**
-* 파티클 렌더링 시 동일한 지오메트리를 공유하도록 메쉬/포인트 인스턴싱을 적용했다. 인스턴스 데이터를 GPU 버퍼로 일괄 전달하여 파티클 수효와 무관하게 드로우 콜(Draw Call)을 최소화했다.
-
-**Order-Independent Transparency (Weight Blend)**
-* **문제:** 파티클 증가에 따른 기존 Z-Sorting의 CPU 정렬 비용 증가 및 시각적 아티팩트 발생.
-* **해결:** 픽셀이 화면에 미치는 영향을 계산하는 `Weight Blend` 기법을 도입했다. 각 파티클의 색상과 알파 값을 깊이에 따른 가중치로 변환해 픽셀 단위 누적 블렌딩을 수행함으로써, 정렬 비용 없이 투명 레이어링 효과를 안정적으로 표현했다.
-
-**Compute Shader & Double Staging Buffer**
-* **문제:** 수백 개의 파티클 상태를 CPU에서 접근해 업데이트할 경우 발생하는 병목 현상.
-* **해결:** 파티클 로직을 렌더링과 독립된 `Compute Shader` 패스로 옮겨 GPU 병렬 처리를 수행했다. 또한, 동기화 대기 시간을 없애기 위해 2개의 Staging Buffer를 설계하여 '이번 프레임에 요청한 데이터를 다음 프레임에 읽도록' 파이프라인을 구성, 프레임 드랍을 효과적으로 방지했다.
-
-### 3. Trail System
-
-**Mesh Trail & Line Trail**
-* 무기 궤적 표현을 위한 트레일 클래스와 전용 버퍼 컴포넌트를 설계했다. 보간을 적용해 부드러운 경로를 샘플링하고 GPU 정점 버퍼 생성을 컴포넌트 단계로 위임했다.
-* `Mesh Trail`이 두 개의 월드 좌표로 메쉬를 구성한다면, `Line Trail`은 단일 중심 경로에 offset을 적용해 정점을 구성하도록 로직을 재사용 및 분리했다.
-
-**Screen Trail 적용 및 셰이더 분리**
-* 기존 `Line Trail`의 로직을 기반으로 버퍼 컴포넌트의 입력을 함수 오버로딩으로 확장했다. 동일한 데이터를 사용하되 셰이더 패스만 분리하여 좌표계 변환을 제어했으며, U 좌표 기준 알파 페이딩으로 궤적이 점진적으로 소멸하도록 구현했다.
