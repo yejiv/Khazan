@@ -25,4 +25,140 @@
 | :---: | :---: | :---: | :---: |
 | **\[팀장\]** 조정환 | 정오현 | 권성은 | 박준영 |
 | 메인프레임, 카메라 | 애니메이션 | AI | 맵 |
-| [<img src="https://imgur.com/yoldESr.png" width="60" alt="조정환 깃허브">](https://github.com/lasval) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="정오현 깃허브">](https://github.com/dhgus110) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="권성은 깃허브">](https://github.com/kwon7330) [<img src="https://cdn.simpleicons.org/naver/03C75A" width="22" alt="권성은 블로그">](https://blog.naver.com/fplls) | [<img src="
+| [<img src="https://imgur.com/yoldESr.png" width="60" alt="조정환 깃허브">](https://github.com/lasval) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="정오현 깃허브">](https://github.com/dhgus110) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="권성은 깃허브">](https://github.com/kwon7330) [<img src="https://cdn.simpleicons.org/naver/03C75A" width="22" alt="권성은 블로그">](https://blog.naver.com/fplls) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="박준영 깃허브">](https://github.com/zuuun-0) |
+
+<br/>
+
+| [<img src="https://i.imgur.com/DCdj845.png" width="180" alt="김범수">](https://github.com/kimbumsu0312) | [<img src="https://imgur.com/MmLkGDO.png" width="180" alt="탁예지">](https://github.com/yejiv) | [<img src="https://i.imgur.com/rC3PiFr.jpeg" width="180" alt="이단비">](https://github.com/eksql010) |
+| :---: | :---: | :---: |
+| 김범수 | 탁예지 | 이단비 |
+| UI, AI | 이펙트 | 셰이더 |
+| [<img src="https://imgur.com/yoldESr.png" width="60" alt="김범수 깃허브">](https://github.com/kimbumsu0312) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="탁예지 깃허브">](https://github.com/yejiv) [<img src="https://imgur.com/3yif98T.png" width="22" alt="탁예지 블로그">](https://velog.io/@yejiv/posts) | [<img src="https://imgur.com/yoldESr.png" width="60" alt="이단비 깃허브">](https://github.com/eksql010) |
+
+</div>
+
+<br/><br/>
+
+## 💻 개발 환경
+
+| IDE | Language | OS | Graphic API | Communication |
+| :---: | :---: | :---: | :---: | :---: |
+| ![Visual Studio](https://img.shields.io/badge/Visual%20Studio-5C2D91.svg?style=for-the-badge&logo=visual-studio&logoColor=white) ![Visual Studio Code](https://img.shields.io/badge/VS%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white) | ![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white) ![HLSL](https://img.shields.io/badge/HLSL-302E31?style=for-the-badge) | ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) | ![DirectX](https://img.shields.io/badge/DirectX-000000?style=for-the-badge&logo=windows&logoColor=white) | ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) ![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white) ![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white) |
+
+<br/><br/>
+
+## 🛠️ 주요 구현 내용 (탁예지)
+
+### ① Order-Independent Transparency (Weight Blend)
+투명 오브젝트의 Z값 정렬 시 파티클 수가 증가할수록 CPU 소팅 비용이 커지고 시각적 아티팩트가 발생하는 한계를 해결하기 위해 설계했다. 깊이 정렬 없이 픽셀 단위 기여도를 계산하는 Weight Blended OIT 기법을 적용했다.
+
+~~~hlsl
+// Weight Blend Pixel Shader
+float z = In.vProjPos.z / In.vProjPos.w;
+vFinalColor.a *= exp(-z * 0.75f); // 지수 감쇠 형태의 가중치 계산
+
+// RGB 채널: 가중 평균의 분자 / A 채널: 가중 평균의 분모 역할
+Out.vAccumColor = float4(vFinalColor.rgb * vFinalColor.a, vFinalColor.a) * weight;
+Out.vAccumAlpha = vFinalColor.a;  // 배경 노출도(Revealage) 
+~~~
+* **누적 렌더 타겟 (MRT)** — 가중치가 적용된 색상 누적용 버퍼(`RT_AccumColor`)와 배경 노출도 누적용 버퍼(`RT_AccumAlpha`)를 생성하여 병렬 출력.
+* **가중치 (Weight) 계산** — 깊이(`z`)와 알파(`a`) 값을 기반으로 가중치를 부여해 전면에 위치한 객체가 상대적으로 자연스럽게 강조되도록 누적.
+* 정렬 연산(Sorting)을 제거하여 수백 개 이상의 반투명 이펙트가 중첩되는 상황에서도 프레임 저하 없이 투명 레이어링 효과 구현.
+
+### ② Double Staging Buffer (CPU-GPU 동기화 병목 완화)
+Compute Shader에서 연산된 결과(Dead Flag 등)를 CPU 로직에서 참조할 때, `CopyResource` 직후 `Map`을 호출하면서 발생하는 GPU 작업 대기 및 프레임 드랍 현상을 해결했다.
+
+~~~cpp
+// 1. 이번 프레임 연산 데이터 복사 요청 (비동기)
+m_pContext->CopySubresourceRegion(m_pStagingBuffer[m_iWriteIdx], 0, 0, 0, 0, m_pSpeedBuffer, 0, &m_SourceBox);
+
+// 2. 이전 프레임에 요청했던 데이터 읽기 (병목 제거)
+D3D11_MAPPED_SUBRESOURCE mappedResource;
+if (SUCCEEDED(m_pContext->Map(m_pStagingBuffer[m_iReadIdx], 0, D3D11_MAP_READ, 0, &mappedResource))) {
+    POINT_INSTANCE_SPEED_PARAMS* aliveCount = reinterpret_cast<POINT_INSTANCE_SPEED_PARAMS*>(mappedResource.pData);
+    m_pContext->Unmap(m_pStagingBuffer[m_iReadIdx], 0);
+    if (aliveCount->bDead) flag = true;
+}
+
+// 3. 프레임 종료 시 버퍼 인덱스 교체
+swap(m_iReadIdx, m_iWriteIdx);
+~~~
+* `CopySubresourceRegion()` — 전체 버퍼 복사 대신 필요한 범위만 부분 복사 요청하여 메모리 전송 비용 최적화.
+* `Map(D3D11_MAP_READ)` — 이전 프레임에 복사 요청한 버퍼(`m_iReadIdx`)를 타겟으로 지정하여, 대기 시간 없이 즉시 데이터 참조.
+* CPU-GPU 병렬성 확보를 통해 동기화 병목현상 제거 및 안정적인 프레임 유지 달성 (FPS 39 ➔ 60 개선).
+
+### ③ Data-Driven Effect Tool & Instancing
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/db3a8c31-924e-4310-8945-f73115465057" width="49%" alt="이펙트 툴 시연 화면 1">
+  <img src="https://github.com/user-attachments/assets/ebe90100-e033-4442-8bc0-a251e6e20132" width="49%" alt="이펙트 툴 시연 화면 2">
+</div>
+<br/>
+
+* **이펙트 에디터 및 타임트랙** — 이펙트 프리팹이 지닌 하위 객체 속성(개수, 위치, 수명, 텍스처 등)을 에디터에서 직관적으로 파싱 및 수정 가능하도록 구성. 타임트랙 기반 이벤트 시스템을 적용해 이펙트들이 시간 흐름에 따라 순차 재생되도록 제어했다.
+* **Point / Mesh Instancing** — 메쉬 및 포인트 파티클에 인스턴싱 기법을 적용, 단일 지오메트리를 공유하고 인스턴스 데이터를 GPU 버퍼로 일괄 전달하여 Draw Call을 최소화했다.
+
+### ④ Advanced Shader Effects
+
+| 기법 (Effect) | 구현 내용 및 설명 |
+| :--- | :--- |
+| **UV Scrolling** | 디퓨즈 및 마스크 텍스처를 스크롤링하여 시각적 흐름과 타이밍 제어 |
+| **Turbulence** | Compute Shader 단계에서 3차원 축 조합(yz, xz, xy)으로 노이즈를 샘플링해 난기류 움직임 구현 |
+| **Stretched Particle** | 이동 벡터 기준 Up 벡터와 카메라 외적을 통해 궤적을 강조하는 스트레치 형태 구성 |
+| **Gravity Particle** | 파티클별 속도 벡터에 중력 가속도를 누적 연산하여 물리적인 무게감 표현 |
+| **Fresnel** | 픽셀 법선과 카메라 방향의 내적을 통해 매쉬 가장자리를 자연스럽게 강조 |
+
+### ⑤ Trail System Architecture
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/f39ba48a-ea24-4aeb-870c-de27abec1057" width="32%" alt="트레일 1">
+  <img src="https://github.com/user-attachments/assets/d7e4fadb-16aa-4292-bb7d-e0bfe20d7be3" width="32%" alt="트레일 2">
+  <img src="https://github.com/user-attachments/assets/a13660d1-cab6-42c1-8343-ca7eddbbc8e6" width="32%" alt="트레일 3">
+</div>
+<br/>
+
+* **Mesh & Line Trail** — 무기 궤적 생성을 위해 보간을 적용한 트레일 전용 버퍼 컴포넌트 설계. 2개의 월드 좌표를 사용하는 `Mesh` 방식과, 단일 중심 경로에 offset을 적용하는 `Line` 방식으로 정점 구성 로직을 분리 및 재사용.
+* **Screen Trail** — 기존 Line Trail 로직을 바탕으로 함수 오버로딩과 셰이더 패스만 분리하여 공간 변환 처리. 픽셀 셰이더에서 U 좌표를 기준으로 알파 페이딩을 제어해 점진적으로 사라지는 궤적 구현.
+
+### ⑥ Dissolve
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/879611c3-dcda-4a9c-8fb3-d8cd43188ba3" width="49%" alt="Dissolve 1">
+  <img src="https://github.com/user-attachments/assets/885ca47c-0732-45c9-9248-80477fb2b40f" width="49%" alt="Dissolve 2">
+</div>
+<br/>
+
+노이즈 텍스처와 수명(Life-time)에 따른 알파 감쇠 변수(`fDecreaseAlpha`)를 활용하여, 몬스터나 객체가 불타며 단계적으로 사라지는 소멸 효과를 구현했다.
+
+* **셰이더 공용화 및 재사용성 확보** — 모든 클라이언트 셰이더 파일에서 즉시 호출할 수 있도록 `Dissolve()` 공용 함수로 모듈화하여 파이프라인의 코드 중복을 최소화했다.
+* **디테일 제어 및 이미시브(Emissive) 적용** — 소멸 경계(Edge)의 두께와 색상을 파라미터(`g_fEdgeWidth`, `g_fEdgeColor`)로 주입받아 객체 특성에 맞게 유연하게 조절할 수 있도록 설계했다. 경계 색상에 자동으로 이미시브가 적용되도록 연산하여 타들어가는 시각적 완성도를 높였다.
+
+~~~hlsl
+// HLSL: 픽셀 셰이더 내 Dissolve 공용 함수 적용
+float noise = g_DissolveTexture.Sample(PointSampler, fScrolledEffectUV).r;
+
+// 수명에 따른 fDecreaseAlpha 값과 노이즈를 비교하여 경계색 및 최종 알파 연산
+vFinalColor = Dissolve(fDecreaseAlpha, noise, g_EdgeWidth, g_EdgeColor, vFinalColor);
+
+// 기준치 미달 픽셀 제거 (최적화 및 소멸 처리)
+if (vFinalColor.a <= 0.f)
+    discard;
+~~~
+
+~~~cpp
+// C++: 디졸브 데이터 파싱 및 셰이더 패스 바인딩
+m_pTextureCom->Bind_Shader_Resource(m_pShaderCom, "g_DissolveTexture", 0);
+
+m_pShaderCom->Bind_RawValue("g_fDecreaseAlpha", &fDecreaseAlpha, sizeof(_float));
+m_pShaderCom->Bind_RawValue("g_fEdgeWidth", &fEdgeWidth, sizeof(_float));
+m_pShaderCom->Bind_RawValue("g_fEdgeColor", &fEdgeColor, sizeof(_float4));
+
+// 애니메이션 매쉬 렌더 패스 호출
+m_pShaderCom->Begin(17); 
+~~~
+
+<br/><br/>
+
+> [!warning]
+> [Build 주의사항]
+> 
+> 1. DirectX SDK 경로를 환경 변수로 설정 (DXSDK_DIR)
+>
+> 2. Engine 프로젝트를 먼저 빌드하여 DLL이 생성된 후, Client에서 참조 필요
