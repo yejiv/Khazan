@@ -88,6 +88,11 @@ swap(m_iReadIdx, m_iWriteIdx);
 * CPU-GPU 병렬성 확보를 통해 동기화 병목현상 제거 및 안정적인 프레임 유지 달성 (FPS 39 ➔ 60 개선).
 
 ### ③ Data-Driven Effect Tool & Instancing
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/db3a8c31-924e-4310-8945-f73115465057" width="49%" alt="이펙트 툴 시연 화면 1">
+  <img src="https://github.com/user-attachments/assets/ebe90100-e033-4442-8bc0-a251e6e20132" width="49%" alt="이펙트 툴 시연 화면 2">
+</div>
+<br/>
 * **이펙트 에디터 및 타임트랙** — 이펙트 프리팹이 지닌 하위 객체 속성(개수, 위치, 수명, 텍스처 등)을 에디터에서 직관적으로 파싱 및 수정 가능하도록 구성. 타임트랙 기반 이벤트 시스템을 적용해 이펙트들이 시간 흐름에 따라 순차 재생되도록 제어했다.
 * **Point / Mesh Instancing** — 메쉬 및 포인트 파티클에 인스턴싱 기법을 적용, 단일 지오메트리를 공유하고 인스턴스 데이터를 GPU 버퍼로 일괄 전달하여 Draw Call을 최소화했다.
 
